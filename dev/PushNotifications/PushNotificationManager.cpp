@@ -222,23 +222,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
-    void PushNotificationManager::RegisterActivator(PushNotificationActivationInfo const& details)
+    void PushNotificationManager::RegisterActivator(PushNotificationActivationInfo const& /*details */)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
 
         try
         {
-            THROW_HR_IF_NULL(E_INVALIDARG, details);
-
-            auto registrationActivators{ details.Activators() };
-
-            auto isBackgroundTaskFlagSet{ WI_IsAnyFlagSet(registrationActivators, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator) };
-            THROW_HR_IF(E_INVALIDARG, isBackgroundTaskFlagSet && !IsActivatorSupported(registrationActivators));
-
-            auto isProtocolActivatorSet{ WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::ProtocolActivator) };
-            THROW_HR_IF(E_INVALIDARG, isProtocolActivatorSet && !IsActivatorSupported(registrationActivators));
-
-            if (isProtocolActivatorSet)
+            // Pure unpackaged scenario
+            if (!AppModel::Identity::IsPackagedProcess())
             {
                 {
                     auto lock = s_activatorInfoLock.lock_shared();
@@ -260,7 +251,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             winrt::guid registeredClsid{ GUID_NULL };
             THROW_IF_FAILED(PushNotificationHelpers::GetComRegistrationFromRegistry(expectedPushServerArgs.data(), registeredClsid));
 
-            if (WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::PushTrigger) && PushNotificationHelpers::IsPackagedAppScenario())
+            // AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable() - Pure packaged scenario
+            if (PushNotificationHelpers::IsPackagedAppScenario())
             {
                 {
                     auto lock = s_activatorInfoLock.lock_shared();
@@ -270,6 +262,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 winrt::hstring taskClsidStr{ winrt::to_hstring(registeredClsid) };
                 winrt::hstring backgroundTaskFullName{ backgroundTaskName + taskClsidStr };
 
+                // Helper function to be done
                 auto tasks{ BackgroundTaskRegistration::AllTasks() };
                 bool isTaskRegistered{ std::any_of(std::begin(tasks), std::end(tasks),
                     [&](auto&& task)
@@ -303,11 +296,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     // In case the interface is not supported, let it throw.
                     auto builder5{ builder.as<winrt::IBackgroundTaskBuilder5>() };
                     builder5.SetTaskEntryPointClsid(registeredClsid);
-                    winrt::com_array<winrt::IBackgroundCondition> conditions = details.GetConditions();
+                   /* winrt::com_array<winrt::IBackgroundCondition> conditions = details.GetConditions();
                     for (auto condition : conditions)
                     {
                         builder.AddCondition(condition);
-                    }
+                    } */
                 }
             }
 
@@ -319,14 +312,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     s_comActivatorRegistration.reset();
 
                     // Clean the task registration only if it was created during this call
-                    if (registeredTaskFromBuilder)
+                    if (s_pushTriggerRegistration)
                     {
-                        registeredTaskFromBuilder.Unregister(true);
+                        s_pushTriggerRegistration.Unregister(true);
                     }
                 }
             ) };
 
-            if (WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::ComActivator))
+            // Packaged scenario but cannot register BI - LRP handles the notification
+            if (AppModel::Identity::IsPackagedProcess())
             {
                 {
                     auto lock{ s_activatorInfoLock.lock_shared() };
@@ -344,21 +338,21 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     &s_comActivatorRegistration));
             }
 
-            if (builder)
-            {
-                registeredTaskFromBuilder = builder.Register();
-            }
-
             scopeExitToCleanRegistrations.release();
             auto lock{ s_activatorInfoLock.lock_exclusive() };
-            s_pushTriggerRegistration = registeredTaskFromBuilder;
-            PushNotificationTelemetry::ActivatorRegisteredByApi(S_OK, details.Activators());
+
+            if (builder)
+            {
+                s_pushTriggerRegistration = builder.Register();
+            }
+
+           // PushNotificationTelemetry::ActivatorRegisteredByApi(S_OK, details.Activators());
         }
 
         catch(...)
         {
-            PushNotificationTelemetry::ActivatorRegisteredByApi(wil::ResultFromCaughtException(),
-                details == nullptr ? PushNotificationRegistrationActivators::Undefined : details.Activators());
+           /* PushNotificationTelemetry::ActivatorRegisteredByApi(wil::ResultFromCaughtException(),
+                details == nullptr ? PushNotificationRegistrationActivators::Undefined : details.Activators()); */
             throw;
         }
     }
