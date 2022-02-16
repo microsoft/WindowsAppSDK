@@ -603,5 +603,15 @@ namespace Test::ToastNotifications
         {
             RunTest(L"VerifyUnregisterTwice", testWaitTime());
         }
+
+        TEST_METHOD(VerifyToastProgressDataSequence0Fail)
+        {
+            RunTest(L"VerifyToastProgressDataSequence0Fail", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastUpdateZeroSequenceFail_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyToastUpdateZeroSequenceFail_Unpackaged", testWaitTime());
+        }
     };
 }
