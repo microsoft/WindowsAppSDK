@@ -1,13 +1,11 @@
 # Windows App SDK API Contracts
 
-Hi! I'm your first Markdown file in **StackEdit**. If you want to learn about StackEdit, you can read me. If you want to play with Markdown, you can edit me. Once you have finished with me, you can create new files by opening the **file explorer** on the left corner of the navigation bar.
-
-## summary
+## Summary
 Customers trust Microsoft that the products we make are sound, and will work.  Windows App SDK (WASDK) has recently released version 1.0.  As WASDK evolvs and more developers use WASDK in their own projects WASDK needs a way to guarantee that the API’s that ship are stable and that API versions are well documented.
 To keep customers’ trust in WASDK, and to make sure the WASDK API’s are
-1.	Binary compatible
-2.	Stable
-3.	Customizable so developers can include only the parts they want
+1.  Binary compatible
+2.  Stable
+3.  Customizable so developers can include only the parts they want
 
 Contracts, and contract versions should be added to WASDK.
 
@@ -22,36 +20,36 @@ The build systems will have enforcement gates to make sure that contracts are pr
 ## Example
     namespace Microsoft.Windows.System
     {
-	    [contractversion(2.0)]
-	    apicontract MicrosoftWindowsSystem
-		
-		// version 2.0
-		[Contract(MicrosoftWindowsSystem(2.0)]
-		public enum Scope
-		{
-			user,
-			machine
-		}
+        [contractversion(2.0)]
+        apicontract MicrosoftWindowsSystem
+        
+        // version 2.0
+        [Contract(MicrosoftWindowsSystem(2.0)]
+        public enum Scope
+        {
+            user,
+            machine
+        }
 
-		[Contract(MicrosoftWindowsSystem(2.0)]
-		public class EnvironmentManager
-		{
-			public String GetEnvironmentVariable(String name, Scope scope);
-		}
-		
-		// servicing
-		[Contract(MicrosoftWindowsSystem(1.5)]	    
-		public class EnvironmentManager
-		{
-			public String GetEnvironmentVariable(String name, String scope);
-		}
+        [Contract(MicrosoftWindowsSystem(2.0)]
+        public class EnvironmentManager
+        {
+            public String GetEnvironmentVariable(String name, Scope scope);
+        }
+        
+        // servicing
+        [Contract(MicrosoftWindowsSystem(1.5)]        
+        public class EnvironmentManager
+        {
+            public String GetEnvironmentVariable(String name, String scope);
+        }
 
-	    // base version
-	    [contract(MicrosoftWindowsSystem, 1.0),]
-		public class EnvironmentManager
-		{
-			public String GetEnvironmentVariable(String name);
-		}
+        // base version
+        [contract(MicrosoftWindowsSystem, 1.0),]
+        public class EnvironmentManager
+        {
+            public String GetEnvironmentVariable(String name);
+        }
     }
 
 ## 1.1 ship blocker
