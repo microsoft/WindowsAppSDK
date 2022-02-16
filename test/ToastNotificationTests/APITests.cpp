@@ -309,16 +309,6 @@ namespace Test::ToastNotifications
             RunTestUnpackaged(L"VerifyToastSuppressDisplay", testWaitTime());
         }
 
-        TEST_METHOD(VerifyToastProperties)
-        {
-            RunTest(L"VerifyToastPayload", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyToastProperties_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyToastPayload", testWaitTime());
-        }
-
         TEST_METHOD(VerifyToastExpiresOnReboot)
         {
             RunTest(L"VerifyToastExpiresOnReboot", testWaitTime());
@@ -327,6 +317,16 @@ namespace Test::ToastNotifications
         TEST_METHOD(VerifyToastExpiresOnReboot_Unpackaged)
         {
             RunTestUnpackaged(L"VerifyToastExpiresOnReboot", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyShowToast)
+        {
+            RunTest(L"VerifyShowToast", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyShowToast_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyShowToast_Unpackaged", testWaitTime());
         }
 
         TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndValidGroup)
@@ -346,7 +346,7 @@ namespace Test::ToastNotifications
 
         TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged", testWaitTime());
+            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup", testWaitTime());
         }
 
         TEST_METHOD(VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup)
@@ -369,19 +369,14 @@ namespace Test::ToastNotifications
             RunTestUnpackaged(L"VerifyFailedUpdateNotificationDataWithoutPostToast_Unpackaged", testWaitTime());
         }
 
-        TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup", testWaitTime());
-        }
-
         TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup)
         {
             RunTest(L"VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup", testWaitTime());
         }
 
-        TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup_Unpackaged)
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup", testWaitTime());
+            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup", testWaitTime());
         }
 
         TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup)
@@ -389,14 +384,199 @@ namespace Test::ToastNotifications
             RunTest(L"VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup", testWaitTime());
         }
 
-        TEST_METHOD(VerifyShowToast)
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup_Unpackaged)
         {
-            RunTest(L"VerifyShowToast", testWaitTime());
+            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup", testWaitTime());
         }
 
-        TEST_METHOD(VerifyShowToast_Unpackaged)
+        TEST_METHOD(VerifyGetAllAsyncWithZeroActiveToast)
         {
-            RunTestUnpackaged(L"VerifyShowToast_Unpackaged", testWaitTime());
+            RunTest(L"VerifyGetAllAsyncWithZeroActiveToast", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyGetAllAsyncWithZeroActiveToast_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyGetAllAsyncWithZeroActiveToast", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyGetAllAsyncWithOneActiveToast)
+        {
+            RunTest(L"VerifyGetAllAsyncWithOneActiveToast", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyGetAllAsyncWithOneActiveToast_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyGetAllAsyncWithOneActiveToast", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyGetAllAsyncWithMultipleActiveToasts)
+        {
+            RunTest(L"VerifyGetAllAsyncWithMultipleActiveToasts", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyGetAllAsyncWithMultipleActiveToasts_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyGetAllAsyncWithMultipleActiveToasts", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyGetAllAsyncIgnoresUpdatesToProgressData)
+        {
+            RunTest(L"VerifyGetAllAsyncIgnoresUpdatesToProgressData", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyGetAllAsyncIgnoresUpdatesToProgressData_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyGetAllAsyncIgnoresUpdatesToProgressData", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier)
+        {
+            RunTest(L"VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifierDoesNotThrow)
+        {
+            RunTest(L"VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifierDoesNotThrow", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifierDoesNotThrow_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifierDoesNotThrow", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier)
+        {
+            RunTest(L"VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithTagAsyncUsingEmptyTagThrows)
+        {
+            RunTest(L"VerifyRemoveWithTagAsyncUsingEmptyTagThrows", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithTagAsyncUsingEmptyTagThrows_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRemoveWithTagAsyncUsingEmptyTagThrows", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithTagAsyncUsingNonExistentTagDoesNotThrow)
+        {
+            RunTest(L"VerifyRemoveWithTagAsyncUsingNonExistentTagDoesNotThrow", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithTagAsyncUsingNonExistentTagDoesNotThrow_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRemoveWithTagAsyncUsingNonExistentTagDoesNotThrow", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithTagAsync)
+        {
+            RunTest(L"VerifyRemoveWithTagAsync", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithTagAsync_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRemoveWithTagAsync", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithTagGroupAsyncUsingEmptyTagThrows)
+        {
+            RunTest(L"VerifyRemoveWithTagGroupAsyncUsingEmptyTagThrows", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithTagGroupAsyncUsingEmptyTagThrows_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRemoveWithTagGroupAsyncUsingEmptyTagThrows", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithTagGroupAsyncUsingEmptyGroupThrows)
+        {
+            RunTest(L"VerifyRemoveWithTagGroupAsyncUsingEmptyGroupThrows", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithTagGroupAsyncUsingEmptyGroupThrows_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRemoveWithTagGroupAsyncUsingEmptyGroupThrows", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithTagGroupAsyncUsingNonExistentTagGroupDoesNotThrow)
+        {
+            RunTest(L"VerifyRemoveWithTagGroupAsyncUsingNonExistentTagGroupDoesNotThrow", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithTagGroupAsyncUsingNonExistentTagGroupDoesNotThrow_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRemoveWithTagGroupAsyncUsingNonExistentTagGroupDoesNotThrow", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithTagGroupAsync)
+        {
+            RunTest(L"VerifyRemoveWithTagGroupAsync", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveWithTagGroupAsync_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRemoveWithTagGroupAsync", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveGroupAsyncUsingEmptyGroupThrows)
+        {
+            RunTest(L"VerifyRemoveGroupAsyncUsingEmptyGroupThrows", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveGroupAsyncUsingEmptyGroupThrows_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRemoveGroupAsyncUsingEmptyGroupThrows", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveGroupAsyncUsingNonExistentGroupDoesNotThrow)
+        {
+            RunTest(L"VerifyRemoveGroupAsyncUsingNonExistentGroupDoesNotThrow", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveGroupAsyncUsingNonExistentGroupDoesNotThrow_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRemoveGroupAsyncUsingNonExistentGroupDoesNotThrow", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveGroupAsync)
+        {
+            RunTest(L"VerifyRemoveGroupAsync", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveGroupAsync_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRemoveGroupAsync", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveAllAsyncWithNoActiveToastDoesNotThrow)
+        {
+            RunTest(L"VerifyRemoveAllAsyncWithNoActiveToastDoesNotThrow", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveAllAsyncWithNoActiveToastDoesNotThrow_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRemoveAllAsyncWithNoActiveToastDoesNotThrow", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveAllAsync)
+        {
+            RunTest(L"VerifyRemoveAllAsync", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRemoveAllAsync_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRemoveAllAsync", testWaitTime());
         }
     };
 }

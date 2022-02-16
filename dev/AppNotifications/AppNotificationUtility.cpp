@@ -8,11 +8,19 @@
 #include <winrt/Windows.Foundation.h>
 #include <externs.h>
 #include <frameworkudk/pushnotifications.h>
+#include "AppNotification.h"
+#include "NotificationProgressData.h"
 
 namespace winrt
 {
     using namespace winrt::Windows::Foundation;
     using namespace Windows::ApplicationModel::Core;
+    using namespace winrt::Microsoft::Windows::AppNotifications;
+}
+
+namespace ToastABI
+{
+    using namespace ::ABI::Microsoft::Internal::ToastNotifications;
 }
 
 std::wstring Microsoft::Windows::AppNotifications::Helpers::RetrieveUnpackagedNotificationAppId()
@@ -211,4 +219,100 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::RegisterComActivator
 
     THROW_IF_WIN32_ERROR(status);
     return registeredGuid;
+}
+
+wil::unique_cotaskmem_string Microsoft::Windows::AppNotifications::Helpers::ConvertUtf8StringToWideString(unsigned long length, const byte* utf8String)
+{
+    int size{ MultiByteToWideChar(
+        CP_UTF8,
+        0,
+        reinterpret_cast<PCSTR>(utf8String),
+        length,
+        nullptr,
+        0) };
+    THROW_LAST_ERROR_IF(size == 0);
+
+    wil::unique_cotaskmem_string wideString{ wil::make_unique_string<wil::unique_cotaskmem_string>(nullptr, size) };
+
+    size = MultiByteToWideChar(
+        CP_UTF8,
+        0,
+        reinterpret_cast<PCSTR>(utf8String),
+        length,
+        wideString.get(),
+        size);
+    THROW_LAST_ERROR_IF(size == 0);
+
+    return wideString;
+}
+
+winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows::AppNotifications::Helpers::ToastNotificationFromToastProperties(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* properties)
+{
+    unsigned int payloadSize{};
+    wil::unique_cotaskmem_array_ptr<byte> payload{};
+    THROW_IF_FAILED(properties->get_Payload(&payloadSize, &payload));
+
+    auto wide{ ConvertUtf8StringToWideString(payloadSize, payload.get()) };
+    winrt::hstring xmlPayload{ wide.get() };
+
+    winrt::Windows::Data::Xml::Dom::XmlDocument xmlDocument{};
+    xmlDocument.LoadXml(xmlPayload);
+
+    winrt::Microsoft::Windows::AppNotifications::AppNotification notification(xmlDocument);
+
+    wil::unique_hstring tag{};
+    THROW_IF_FAILED(properties->get_Tag(&tag));
+    notification.Tag(wil::str_raw_ptr(tag));
+
+    wil::unique_hstring group{};
+    THROW_IF_FAILED(properties->get_Group(&group));
+    notification.Group(wil::str_raw_ptr(group));
+
+    unsigned int notificationId{};
+    THROW_IF_FAILED(properties->get_NotificationId(&notificationId));
+    winrt::Microsoft::Windows::AppNotifications::implementation::AppNotification* notificationImpl{ winrt::get_self< winrt::Microsoft::Windows::AppNotifications::implementation::AppNotification>(notification) };
+    notificationImpl->SetNotificationId(notificationId);
+
+    winrt::com_ptr<ToastABI::IToastProgressData> toastProgressData;
+    THROW_IF_FAILED(properties->get_ToastProgressData(toastProgressData.put()));
+    if (toastProgressData)
+    {
+        winrt::AppNotificationProgressData progressData{};
+
+        // SequenceNumber is transient and thus,  left to its default.
+
+        wil::unique_hstring status{};
+        THROW_IF_FAILED(toastProgressData->get_Status(&status));
+        progressData.Status(wil::str_raw_ptr(status));
+
+        wil::unique_hstring title{};
+        THROW_IF_FAILED(toastProgressData->get_Title(&title));
+        progressData.Title(wil::str_raw_ptr(title));
+
+        double progressValue{};
+        toastProgressData->get_Value(&progressValue);
+        progressData.Value(progressValue);
+
+        wil::unique_hstring progressValueString{};
+        THROW_IF_FAILED(toastProgressData->get_ValueStringOverride(&progressValueString));
+        progressData.ValueStringOverride(wil::str_raw_ptr(progressValueString));
+
+        notification.Progress(progressData);
+    }
+
+    unsigned long long expiry{};
+    THROW_IF_FAILED(properties->get_Expiry(&expiry));
+    FILETIME expiryFileTime{};
+    expiryFileTime.dwHighDateTime = expiry >> 32;
+    expiryFileTime.dwLowDateTime = static_cast<DWORD>(expiry);
+    auto expiryClock{ winrt::clock::from_file_time(expiryFileTime) };
+    notification.Expiration(expiryClock);
+
+    boolean expiresOnReboot{};
+    THROW_IF_FAILED(properties->get_ExpiresOnReboot(&expiresOnReboot));
+    notification.ExpiresOnReboot(expiresOnReboot);
+
+    // Priority and SupressDisplay are transient values that do not exist in ToastProperties and thus, are left to their default.
+
+    return notification;
 }

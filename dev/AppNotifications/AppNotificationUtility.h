@@ -62,4 +62,8 @@ namespace Microsoft::Windows::AppNotifications::Helpers
     std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::AppNotifications::AppNotificationActivationInfo const& details);
 
     void RegisterAssets(std::wstring const& appId, winrt::hstring const& displayName, winrt::Windows::Foundation::Uri const& iconUri, wil::unique_cotaskmem_string const& clsid);
+
+    wil::unique_cotaskmem_string ConvertUtf8StringToWideString(unsigned long length, const BYTE* utf8String);
+
+    winrt::Microsoft::Windows::AppNotifications::AppNotification ToastNotificationFromToastProperties(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* properties);
 }
