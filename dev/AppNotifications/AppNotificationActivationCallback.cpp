@@ -32,20 +32,7 @@ HRESULT __stdcall AppNotificationActivationCallback::Activate(
 
     winrt::AppNotificationActivatedEventArgs activatedEventArgs = winrt::make<winrt::Microsoft::Windows::AppNotifications::implementation::AppNotificationActivatedEventArgs>(invokedArgs, userInput);
 
-    if (GetAppNotificationHandlers())
-    {
-        /* As the process is already launched, we invoke the foreground toast event handlers with the activatedEventArgs */
-        GetAppNotificationHandlers()(winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::Default(), activatedEventArgs);
-    }
-    else
-    {
-        /* Activation results in a process launch, we cache the activatedEventArgs in the COM static store
-           and fire an event to let the main thread know that it is okay to infer into AppLifeCycle::GetToastActivatedEventArgs().
-        */
-        auto appProperties = winrt::CoreApplication::Properties();
-        appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
-        SetEvent(GetWaitHandleForArgs().get());
-    }
+ 
 
     return S_OK;
 }

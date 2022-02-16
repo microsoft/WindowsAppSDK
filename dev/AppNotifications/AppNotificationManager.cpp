@@ -15,13 +15,32 @@
 #include "NotificationTransientProperties.h"
 #include "AppNotification.h"
 #include <NotificationProgressData.h>
+#include <winrt/Windows.Foundation.Collections.h>
+
+typedef winrt::Windows::Foundation::TypedEventHandler<
+    winrt::Microsoft::Windows::AppNotifications::AppNotificationManager,
+    winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs> NotificationActivationEventHandler;
 
 namespace winrt
 {
     using namespace winrt::Windows::UI;
     using namespace winrt::Windows::Foundation;
+    using namespace winrt::Windows::Foundation::Collections;
     using namespace Windows::ApplicationModel::Core;
     using namespace winrt::Microsoft::Windows::AppNotifications;
+}
+
+static winrt::event<NotificationActivationEventHandler> g_notificationHandlers;
+static wil::unique_event g_waitHandleForActivation;
+
+wil::unique_event& GetWaitHandleForActivation()
+{
+    return g_waitHandleForActivation;
+}
+
+winrt::event<NotificationActivationEventHandler>& Microsoft::Windows::AppNotifications::Helpers::GetAppNotificationHandlers()
+{
+    return g_notificationHandlers;
 }
 
 namespace ToastABI
@@ -32,13 +51,6 @@ namespace ToastABI
 namespace PushNotificationHelpers
 {
     using namespace winrt::Microsoft::Windows::PushNotifications::Helpers;
-}
-
-static winrt::event<NotificationActivationEventHandler> g_notificationHandlers;
-
-winrt::event<NotificationActivationEventHandler>& Microsoft::Windows::AppNotifications::Helpers::GetAppNotificationHandlers()
-{
-    return g_notificationHandlers;
 }
 
 using namespace Microsoft::Windows::AppNotifications::Helpers;
@@ -80,7 +92,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         THROW_IF_FAILED(::CoRegisterClassObject(
             AppModel::Identity::IsPackagedProcess() ? details.TaskClsid() : winrt::guid(storedComActivatorString),
-            winrt::make<AppNotificationActivationCallbackFactory>().get(),
+            winrt::make<AppNotificationManagerFactory>().get(),
             CLSCTX_LOCAL_SERVER,
             REGCLS_MULTIPLEUSE,
             &s_notificationComActivatorRegistration));
@@ -109,14 +121,47 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         }
     }
 
-    winrt::event_token AppNotificationManager::AppNotificationActivated(winrt::Windows::Foundation::TypedEventHandler<winrt::Microsoft::Windows::AppNotifications::AppNotificationManager, winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs> const& handler)
+    HRESULT __stdcall AppNotificationManager::Activate(
+        LPCWSTR /* appUserModelId */,
+        LPCWSTR invokedArgs,
+        [[maybe_unused]] NOTIFICATION_USER_INPUT_DATA const* data,
+        [[maybe_unused]] ULONG dataCount) noexcept try
     {
-        return GetAppNotificationHandlers().add(handler);
+        winrt::IMap<winrt::hstring, winrt::hstring> userInput{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
+        for (unsigned long i = 0; i < dataCount; i++)
+        {
+            userInput.Insert(data[i].Key, data[i].Value);
+        }
+
+        winrt::AppNotificationActivatedEventArgs activatedEventArgs = winrt::make<winrt::Microsoft::Windows::AppNotifications::implementation::AppNotificationActivatedEventArgs>(invokedArgs, userInput);
+
+        if (m_notificationHandlers)
+        {
+            /* As the process is already launched, we invoke the foreground toast event handlers with the activatedEventArgs */
+            m_notificationHandlers(Default(), activatedEventArgs);
+        }
+        else
+        {
+            /* Activation results in a process launch, we cache the activatedEventArgs in the COM static store
+               and fire an event to let the main thread know that it is okay to infer into AppLifeCycle::GetToastActivatedEventArgs().
+            */
+            auto appProperties = winrt::CoreApplication::Properties();
+            appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
+            SetEvent(GetWaitHandleForArgs().get());
+        }
+
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    winrt::event_token AppNotificationManager::AppNotificationActivated(NotificationActivationEventHandler const& handler)
+    {
+        return m_notificationHandlers.add(handler);
     }
 
     void AppNotificationManager::AppNotificationActivated(winrt::event_token const& token) noexcept
     {
-        GetAppNotificationHandlers().remove(token);
+        m_notificationHandlers.remove(token);
     }
 
     void AppNotificationManager::Show(winrt::Microsoft::Windows::AppNotifications::AppNotification const& notification)
