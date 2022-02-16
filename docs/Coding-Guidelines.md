@@ -11,4 +11,4 @@ languages used in implementation or testing.
   - [Markdown](Coding-Guidelines/Languages-Markdown.md)
 - [Experimental](Coding-Guidelines/Experimental.md)-only features
   - Use [TerminalVelocity](Coding-Guidelines/TerminalVelocity.md) tag and disable features
-- [Api Contracts](Coding-Guidelines/WinRTAPIContracts.md)-make a stable API.
+- [Api Contracts](WinRTAPIContracts.md)-make a stable API.
