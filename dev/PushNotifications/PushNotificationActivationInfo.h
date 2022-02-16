@@ -4,6 +4,7 @@
 #pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationActivationInfo.g.h"
 
+// yup
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     struct PushNotificationActivationInfo : PushNotificationActivationInfoT<PushNotificationActivationInfo>
