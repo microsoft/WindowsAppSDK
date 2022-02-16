@@ -194,7 +194,7 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
     RegisterValue(hKey, L"CustomActivator", reinterpret_cast<const BYTE*>(wideStringClsid.c_str()), REG_SZ, wideStringClsid.size() * sizeof(wchar_t));
 }
 
-std::wstring Microsoft::Windows::AppNotifications::Helpers::RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::AppNotifications::AppNotificationActivationInfo const& details)
+std::wstring Microsoft::Windows::AppNotifications::Helpers::RegisterComActivatorGuidAndAssets(winrt::hstring displayName, winrt::Windows::Foundation::Uri iconUri)
 {
     std::wstring registeredGuid;
     HRESULT status = GetActivatorGuid(registeredGuid);
@@ -211,7 +211,7 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::RegisterComActivator
         THROW_IF_FAILED(StringFromCLSID(comActivatorGuid, &comActivatorGuidString));
 
         std::wstring notificationAppId{ RetrieveNotificationAppId() };
-        RegisterAssets(notificationAppId, details.DisplayName(), details.IconUri(), comActivatorGuidString);
+        RegisterAssets(notificationAppId, displayName, iconUri, comActivatorGuidString);
         RegisterComServer(processName, comActivatorGuidString);
 
         return comActivatorGuidString.get();

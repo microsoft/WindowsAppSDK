@@ -62,12 +62,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         return appNotificationManager;
     }
 
-    // TODO: Remove the details once unpackaged scenario (assets) are handled
-    void AppNotificationManager::Register(winrt::Microsoft::Windows::AppNotifications::AppNotificationActivationInfo const& details)
+    void AppNotificationManager::Register()
     {
         THROW_HR_IF_MSG(E_INVALIDARG, s_notificationComActivatorRegistration, "Toast activator already registered.");
-
-        THROW_HR_IF_NULL(E_INVALIDARG, details);
 
         std::wstring storedComActivatorString;
         if (!PushNotificationHelpers::IsPackagedAppScenario())
@@ -77,7 +74,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             {
                 THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(toastAppId.c_str(), GUID_NULL));
 
-                storedComActivatorString = RegisterComActivatorGuidAndAssets(details);
+
+                // TODO: Add permanent displayname and iconuri.
+                wil::unique_cotaskmem_string processName;
+                THROW_IF_FAILED(GetCurrentProcessPath(processName));
+
+                storedComActivatorString = RegisterComActivatorGuidAndAssets(processName.get(), winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
                 // Remove braces around the guid string
                 storedComActivatorString = storedComActivatorString.substr(1, storedComActivatorString.size() - 2);
             }

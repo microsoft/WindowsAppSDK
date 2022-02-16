@@ -5,24 +5,6 @@ import "..\AppLifecycle\AppLifecycle.idl";
 
 namespace Microsoft.Windows.AppNotifications
 {
-    // The Registration Info for Packaged and Unpackaged Notification Activations
-    [experimental]
-    runtimeclass AppNotificationActivationInfo
-    {
-        // Initialize using a manifest defined COM Activator Id. Only applicable to Packaged Win32 applications
-        // TODO: Remove this as COM Activator will now be obtained from registry
-        AppNotificationActivationInfo();
-
-        // Initialize using Notification Assets. Only applicable to Unpackaged Win32 applications which need to specify their own assets like DisplayName and Icon.
-        AppNotificationActivationInfo(String displayName, Windows.Foundation.Uri iconUri);
-
-        // The App friendly DisplayName for the Notification in Action Centre 
-        String DisplayName{ get; };
-
-        // The full file path for the icon image
-        Windows.Foundation.Uri IconUri{ get; };
-    }
-
     // Event args for the Notification Activation
     [experimental]
     runtimeclass AppNotificationActivatedEventArgs
@@ -126,8 +108,8 @@ namespace Microsoft.Windows.AppNotifications
         // Gets a Default instance of a AppNotificationManager
         static AppNotificationManager Default{ get; };
 
-        // Register an activator using an ActivationInfo context and caches the token for unregister
-        void Register(AppNotificationActivationInfo details);
+        // Register an activator and caches the token for unregister
+        void Register();
 
         // Unregisters the activator and removes the cached Registration token.
         void Unregister();

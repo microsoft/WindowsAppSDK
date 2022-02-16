@@ -232,75 +232,13 @@ bool PostToastHelper(std::wstring const& tag, std::wstring const& group)
     return true;
 }
 
-bool VerifyFailedRegisterActivatorUsingNullClsid()
-{
-    try
-    {
-        winrt::AppNotificationActivationInfo activationInfo{ winrt::guid(GUID_NULL) };
-        winrt::AppNotificationManager::Default().Register(activationInfo);
-    }
-    catch (...)
-    {
-        return winrt::to_hresult() == E_INVALIDARG;
-    }
-
-    return false;
-}
-
-bool VerifyFailedRegisterActivatorUsingNullClsid_Unpackaged()
-{
-    try
-    {
-        winrt::AppNotificationActivationInfo activationInfo{ winrt::guid(GUID_NULL) };
-        winrt::AppNotificationManager::Default().Register(activationInfo);
-    }
-    catch (...)
-    {
-        return winrt::to_hresult() == E_ILLEGAL_METHOD_CALL;
-    }
-
-    return false;
-}
-
-bool VerifyFailedRegisterActivatorUsingNullActivationInfo()
-{
-    try
-    {
-        winrt::AppNotificationActivationInfo activationInfo{ nullptr };
-        winrt::AppNotificationManager::Default().Register(activationInfo);
-    }
-    catch (...)
-    {
-        return winrt::to_hresult() == E_INVALIDARG;
-    }
-
-    return false;
-}
-
-bool VerifyFailedRegisterActivatorUsingNullActivationInfo_Unpackaged()
-{
-    try
-    {
-        winrt::AppNotificationActivationInfo activationInfo{ nullptr };
-        winrt::AppNotificationManager::Default().Register(activationInfo);
-    }
-    catch (...)
-    {
-        return winrt::to_hresult() == E_INVALIDARG;
-    }
-
-    return false;
-}
-
-bool VerifyRegisterActivatorandUnRegisterActivatorUsingClsid()
+bool VerifyRegisterActivatorandUnRegisterActivator()
 {
     winrt::AppNotificationManager::Default().Unregister();
 
     try
     {
-        winrt::AppNotificationActivationInfo activationInfo{};
-
-        winrt::AppNotificationManager::Default().Register(activationInfo);
+        winrt::AppNotificationManager::Default().Register();
 
         winrt::AppNotificationManager::Default().Unregister();
     }
@@ -311,86 +249,19 @@ bool VerifyRegisterActivatorandUnRegisterActivatorUsingClsid()
     return true;
 }
 
-bool VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged()
+bool VerifyFailedMultipleRegisterActivator()
 {
-
-    winrt::AppNotificationActivationInfo activationInfo(L"ToastNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-    winrt::AppNotificationManager::Default().Register(activationInfo);
-    winrt::AppNotificationManager::Default().Unregister();
-    return true;
-}
-
-bool VerifyFailedMultipleRegisterActivatorUsingSameClsid()
-{
+	winrt::AppNotificationManager::Default().Unregister();
     try
     {
-        winrt::AppNotificationActivationInfo activationInfo{ c_toastComServerId };
-        winrt::AppNotificationManager::Default().Register(activationInfo);
-        winrt::AppNotificationManager::Default().Register(activationInfo);
+        winrt::AppNotificationManager::Default().Register();
+        winrt::AppNotificationManager::Default().Register();
     }
     catch (...)
     {
         return winrt::to_hresult() == E_INVALIDARG;
     }
     
-    return false;
-}
-
-bool VerifyFailedMultipleRegisterActivatorUsingSameAssets_Unpackaged()
-{
-    try
-    {
-        winrt::AppNotificationActivationInfo activationInfo(L"ToastNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-        winrt::AppNotificationManager::Default().Register(activationInfo);
-        winrt::AppNotificationManager::Default().Register(activationInfo);
-    }
-    catch (...)
-    {
-        return winrt::to_hresult() == E_INVALIDARG;
-    }
-
-    return false;
-}
-
-bool VerifyFailedToastAssetsWithEmptyDisplayName_Unpackaged()
-{
-    try
-    {
-        winrt::AppNotificationActivationInfo activationInfo(L"", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-    }
-    catch (...)
-    {
-        return winrt::to_hresult() == E_INVALIDARG;
-    }
-
-    return false;
-}
-
-bool VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged()
-{
-    try
-    {
-        winrt::AppNotificationActivationInfo activationInfo(L"ToastNotificationApp", winrt::Uri{ L"" });
-    }
-    catch (...)
-    {
-        return winrt::to_hresult() == E_POINTER;
-    }
-
-    return false;
-}
-
-bool VerifyFailedToastAssetsWithNullIconPath_Unpackaged()
-{
-    try
-    {
-        winrt::AppNotificationActivationInfo activationInfo(L"ToastNotificationApp", nullptr);
-    }
-    catch (...)
-    {
-        return winrt::to_hresult() == E_POINTER;
-    }
-
     return false;
 }
 
@@ -587,10 +458,8 @@ bool VerifyShowToast()
 
 bool VerifyShowToast_Unpackaged()
 {
-    winrt::AppNotificationActivationInfo activationInfo(L"ToastNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-
+	// Registration happens in main()
     auto toastNotificationManager = winrt::AppNotificationManager::Default();
-    toastNotificationManager.Register(activationInfo);
 
     auto scope_exit = wil::scope_exit(
         [&] {
@@ -624,11 +493,7 @@ bool VerifyUpdateToastProgressDataUsingValidTagAndValidGroup()
 
 bool VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged()
 {
-    winrt::AppNotificationActivationInfo activationInfo(L"ToastNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-
     auto toastNotificationManager{ winrt::AppNotificationManager::Default() };
-
-    toastNotificationManager.Register(activationInfo);
 
     auto scope_exit = wil::scope_exit(
         [&] {
@@ -656,11 +521,7 @@ bool VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup()
 
 bool VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged()
 {
-    winrt::AppNotificationActivationInfo activationInfo(L"ToastNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-
     auto toastNotificationManager{ winrt::AppNotificationManager::Default() };
-
-    toastNotificationManager.Register(activationInfo);
 
     auto scope_exit = wil::scope_exit(
         [&] {
@@ -688,11 +549,7 @@ bool VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup()
 
 bool VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup_Unpackaged()
 {
-    winrt::AppNotificationActivationInfo activationInfo(L"ToastNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-
     auto toastNotificationManager{ winrt::AppNotificationManager::Default() };
-
-    toastNotificationManager.Register(activationInfo);
 
     auto scope_exit = wil::scope_exit(
         [&] {
@@ -718,11 +575,7 @@ bool VerifyFailedUpdateNotificationDataWithoutPostToast()
 
 bool VerifyFailedUpdateNotificationDataWithoutPostToast_Unpackaged()
 {
-    winrt::AppNotificationActivationInfo activationInfo(L"ToastNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-
     auto toastNotificationManager{ winrt::AppNotificationManager::Default() };
-
-    toastNotificationManager.Register(activationInfo);
 
     auto scope_exit = wil::scope_exit(
         [&] {
@@ -1273,20 +1126,11 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
     static std::map<std::string, bool(*)()> switchMapping = {
         { "BackgroundActivationTest", &BackgroundActivationTest},
         { "UnregisterBackgroundActivationTest", &UnregisterBackgroundActivationTest },
-        { "VerifyFailedRegisterActivatorUsingNullClsid", &VerifyFailedRegisterActivatorUsingNullClsid },
-        { "VerifyFailedRegisterActivatorUsingNullClsid_Unpackaged", &VerifyFailedRegisterActivatorUsingNullClsid_Unpackaged },
-        //{ "VerifyFailedRegisterActivatorUsingNullAssets", &VerifyFailedRegisterActivatorUsingNullAssets },
-        //{ "VerifyFailedRegisterActivatorUsingNullAssets_Unpackaged", &VerifyFailedRegisterActivatorUsingNullAssets_Unpackaged },
-        { "VerifyFailedRegisterActivatorUsingNullActivationInfo", &VerifyFailedRegisterActivatorUsingNullActivationInfo },
-        { "VerifyFailedRegisterActivatorUsingNullActivationInfo_Unpackaged", &VerifyFailedRegisterActivatorUsingNullActivationInfo_Unpackaged},
-        { "VerifyRegisterActivatorandUnRegisterActivatorUsingClsid", &VerifyRegisterActivatorandUnRegisterActivatorUsingClsid },
-        { "VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged", &VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged },
-        { "VerifyFailedMultipleRegisterActivatorUsingSameClsid", &VerifyFailedMultipleRegisterActivatorUsingSameClsid },
-        { "VerifyFailedMultipleRegisterActivatorUsingSameAssets_Unpackaged", &VerifyFailedMultipleRegisterActivatorUsingSameAssets_Unpackaged },
+        { "VerifyRegisterActivatorandUnRegisterActivatorUsingClsid", &VerifyRegisterActivatorandUnRegisterActivator },
+        { "VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged", &VerifyRegisterActivatorandUnRegisterActivator },
+        { "VerifyFailedMultipleRegisterActivatorUsingSameClsid", &VerifyFailedMultipleRegisterActivator },
+        { "VerifyFailedMultipleRegisterActivatorUsingSameAssets_Unpackaged", &VerifyFailedMultipleRegisterActivator },
 
-        { "VerifyFailedToastAssetsWithEmptyDisplayName_Unpackaged", &VerifyFailedToastAssetsWithEmptyDisplayName_Unpackaged },
-        { "VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged", &VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged },
-        { "VerifyFailedToastAssetsWithNullIconPath_Unpackaged", &VerifyFailedToastAssetsWithNullIconPath_Unpackaged },
         { "VerifyToastSettingEnabled", &VerifyToastSettingEnabled },
         { "VerifyToastPayload", &VerifyToastPayload },
         { "VerifyToastTag", &VerifyToastTag },
@@ -1369,11 +1213,7 @@ int main() try
 
     ::Test::Bootstrap::SetupBootstrap();
 
-    if (Test::AppModel::IsPackagedProcess())
-    {
-        winrt::AppNotificationActivationInfo activationInfo{ c_toastComServerId };
-        winrt::AppNotificationManager::Default().Register(activationInfo);
-    }
+    winrt::AppNotificationManager::Default().Register();
 
     auto args = winrt::AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();

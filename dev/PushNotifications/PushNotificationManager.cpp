@@ -334,7 +334,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 }
 
                 GetWaitHandleForArgs().create();
-                GetComServerClsid() = taskClsid;
+                GetComServerClsid() = registeredClsid;
                 
                 THROW_IF_FAILED(::CoRegisterClassObject(
                     registeredClsid,

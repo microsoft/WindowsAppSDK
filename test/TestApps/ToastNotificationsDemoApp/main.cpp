@@ -7,6 +7,7 @@
 #include "WindowsAppRuntime.Test.AppModel.h"
 #include <MddBootstrap.h>
 #include <MddBootstrapTest.h>
+#include <winrt/Windows.Data.Xml.Dom.h>
 
 namespace winrt
 {
@@ -18,6 +19,7 @@ namespace winrt
     using namespace winrt::Windows::Foundation;
     using namespace winrt::Windows::Foundation::Collections;
     using namespace winrt::Windows::Storage;
+    using namespace winrt::Windows::Data::Xml::Dom;
     using namespace winrt::Windows::Storage::Streams;
 }
 
@@ -107,6 +109,38 @@ std::wstring GetEnumString(winrt::AppNotificationSetting const& setting)
     return enumMapping[setting];
 }
 
+winrt::AppNotification CreateToastNotification(winrt::hstring message)
+{
+    winrt::hstring xmlPayload{ L"<toast>" + message + L"</toast>" };
+    winrt::XmlDocument xmlDocument{};
+    xmlDocument.LoadXml(xmlPayload);
+
+    return winrt::AppNotification(xmlDocument);
+}
+
+winrt::AppNotification CreateToastNotification()
+{
+    return CreateToastNotification(L"intrepidToast");
+}
+
+bool PostToastHelper(std::wstring const& tag, std::wstring const& group)
+{
+    winrt::AppNotification toast{ CreateToastNotification() };
+
+    toast.Tag(tag.c_str());
+    toast.Group(group.c_str());
+
+    winrt::AppNotificationManager::Default().Show(toast);
+
+    if (toast.Id() == 0)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+
 int main()
 {
     // Retrieve the app scenario.
@@ -136,24 +170,9 @@ int main()
     // Display the current AppNotificationSetting for the app.
     std::wcout << L"Printing AppNotificationSetting for app: " << GetEnumString(appNotificationManager.Enablement()) << "\n\n";
 
-    winrt::AppNotificationActivationInfo activationInfo{ nullptr };
-    // Create toastActivationInfo depending on packaged | unpackaged scenario.
-    if (isPackaged)
-    {
-        std::wcout << L"Calling AppNotificationActivationInfo with ToastActivatorCLSID in manifest...\n";
-        activationInfo = winrt::AppNotificationActivationInfo(winrt::guid("FE8C7374-A28F-4CBE-8D28-4288CBDFD431"));
-        std::wcout << L"Done.\n\n";
-    }
-    else
-    {
-        std::wcout << L"Calling AppNotificationActivationInfo with app assets...\n";
-        activationInfo = winrt::AppNotificationActivationInfo(L"AppNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-        std::wcout << L"Done.\n\n";
-    }
-
     // Registering app for activation
-    std::wcout << L"Calling AppNotificationActivationInfo::Register(activationInfo)...\n";
-    appNotificationManager.Register(activationInfo);
+    std::wcout << L"Calling AppNotificationManager::Register()...\n";
+    appNotificationManager.Register();
     std::wcout << L"Done.\n\n";
 
     // Retrieve the activation event args
@@ -195,6 +214,10 @@ int main()
 
     std::wcout << L"Requesting PushNotificationChannel...\n\n";
     winrt::PushNotificationChannel channel{ RequestChannel() };
+
+    std::wcout << L"Post a Toast..." << std::endl;
+    PostToastHelper(L"Tag", L"Group");
+    std::wcout << L"Done.\n\n";
 
     std::wcout << L"Press enter to exit the app.\n\n";
     std::cin.ignore();
