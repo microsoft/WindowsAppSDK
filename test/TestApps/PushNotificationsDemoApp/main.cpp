@@ -105,7 +105,8 @@ int main()
     if (PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
     {
         PushNotificationActivationInfo info(
-            PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
+            PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
+            winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2"));
 
         PushNotificationManager::Default().RegisterActivator(info);
     }
