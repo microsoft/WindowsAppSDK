@@ -13,13 +13,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         PushNotificationManager() = default;
 
         static winrt::Microsoft::Windows::PushNotifications::PushNotificationManager Default();
-        void RegisterActivator(Microsoft::Windows::PushNotifications::PushNotificationActivationInfo const& details);
-        void UnregisterActivator(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
-        void UnregisterAllActivators();
+        void Register();
+        void Unregister();
+        void UnregisterAll();
 
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> CreateChannelAsync(winrt::guid const remoteId);
-
-        static bool IsActivatorSupported(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
     };
 }
 

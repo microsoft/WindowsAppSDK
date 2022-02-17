@@ -222,7 +222,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
-    void PushNotificationManager::RegisterActivator(PushNotificationActivationInfo const& /*details */)
+    void PushNotificationManager::Register()
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
 
@@ -346,25 +346,24 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 s_pushTriggerRegistration = builder.Register();
             }
 
-           // PushNotificationTelemetry::ActivatorRegisteredByApi(S_OK, details.Activators());
+            PushNotificationTelemetry::ActivatorRegisteredByApi(S_OK);
         }
 
         catch(...)
         {
-           /* PushNotificationTelemetry::ActivatorRegisteredByApi(wil::ResultFromCaughtException(),
-                details == nullptr ? PushNotificationRegistrationActivators::Undefined : details.Activators()); */
+            PushNotificationTelemetry::ActivatorRegisteredByApi(wil::ResultFromCaughtException());
             throw;
         }
     }
 
-    void PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators const& activators)
+    void PushNotificationManager::Unregister()
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
 
         try
         {
             auto lock{ s_activatorInfoLock.lock_exclusive() };
-            if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::PushTrigger))
+            if (PushNotificationHelpers::IsPackagedAppScenario())
             {
                 THROW_HR_IF_NULL_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), s_pushTriggerRegistration, "PushTrigger not registered.");
                 s_pushTriggerRegistration.Unregister(true);
@@ -372,13 +371,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             }
 
             // Check for COM flag, a valid cookie
-            if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::ComActivator))
+            if (AppModel::Identity::IsPackagedProcess())
             {
                 THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !s_comActivatorRegistration, "ComActivator not registered.");
                 s_comActivatorRegistration.reset();
             }
 
-            if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::ProtocolActivator))
+            if (!AppModel::Identity::IsPackagedProcess())
             {
                 THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !s_protocolRegistration);
                 auto coInitialize = wil::CoInitializeEx();
@@ -394,14 +393,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch (...)
         {
-            PushNotificationTelemetry::ActivatorUnregisteredByApi(wil::ResultFromCaughtException(), activators);
+            PushNotificationTelemetry::ActivatorUnregisteredByApi(wil::ResultFromCaughtException());
             throw;
         }
 
-        PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK, activators);
+        PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK);
     }
 
-    void PushNotificationManager::UnregisterAllActivators()
+    void PushNotificationManager::UnregisterAll()
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
 
@@ -431,31 +430,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch(...)
         {
-            PushNotificationTelemetry::ActivatorUnregisteredByApi(wil::ResultFromCaughtException(),
-                PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
+            PushNotificationTelemetry::ActivatorUnregisteredByApi(wil::ResultFromCaughtException());
             throw;
         }
-        PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
-    }
-
-    bool PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators const& activators)
-    {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
-
-        THROW_HR_IF(E_INVALIDARG, activators == PushNotificationRegistrationActivators::Undefined);
-
-        auto isBackgroundTaskFlagSet{ WI_IsAnyFlagSet(activators, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator) };
-        auto isProtocolActivatorSet{ WI_IsFlagSet(activators, PushNotificationRegistrationActivators::ProtocolActivator) };
-
-        THROW_HR_IF(E_INVALIDARG, isBackgroundTaskFlagSet && isProtocolActivatorSet); // Invalid flag combination
-        if (AppModel::Identity::IsPackagedProcess() && isBackgroundTaskFlagSet)
-        {
-            return true;
-        }
-        else if(!AppModel::Identity::IsPackagedProcess() && isProtocolActivatorSet)
-        {
-            return true;
-        }
-        return false;
+        PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK);
     }
 }
