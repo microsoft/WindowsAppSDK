@@ -200,7 +200,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     }
 
                     // Need to register sink on new channel creation if handlers are registered
-                    if (m_foregroundHandlers)
+                    bool registeredEvent{ false };
+                    {
+                        auto lock{ m_lock.lock_shared() };
+                        registeredEvent = bool(m_foregroundHandlers);
+                    }
+                    if (registeredEvent)
                     {
                         RegisterSinkHelper();
                     }
@@ -474,8 +479,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         bool registeredEvent{ false };
         {
             auto lock{ m_lock.lock_shared() };
-            THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !m_comActivatorRegistration, "Must call Register() before registering handlers.");
             registeredEvent = bool(m_foregroundHandlers);
+            THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), m_comActivatorRegistration && !registeredEvent, "Must call Register() before registering handlers.");
         }
 
         if (!registeredEvent)
