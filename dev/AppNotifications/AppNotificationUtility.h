@@ -9,18 +9,12 @@
 #include <AppNotificationActivatedEventArgs.h>
 #include <FrameworkUdk/toastnotificationsrt.h>
 
-typedef winrt::Windows::Foundation::TypedEventHandler<
-    winrt::Microsoft::Windows::AppNotifications::AppNotificationManager,
-    winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs> NotificationActivationEventHandler;
-
 namespace Microsoft::Windows::AppNotifications::Helpers
 {
     const std::wstring c_appIdentifierPath{ LR"(Software\Classes\AppUserModelId\)" };
     const std::wstring c_clsIdPath{ LR"(Software\Classes\CLSID\)" };
     const std::wstring c_quote{ LR"(")" };
     const std::wstring c_notificationActivatedArgument{ L" ----AppNotificationActivated:" };
-
-    winrt::event<NotificationActivationEventHandler>& GetAppNotificationHandlers();
 
     inline const int GUID_LENGTH = 39; // GUID + '{' + '}' + '/0'
 
@@ -59,9 +53,9 @@ namespace Microsoft::Windows::AppNotifications::Helpers
 
     HRESULT GetActivatorGuid(std::wstring& activatorGuid) noexcept;
 
-    std::wstring RegisterComActivatorGuidAndAssets(winrt::hstring displayName, winrt::Windows::Foundation::Uri iconUri);
+    std::wstring RegisterComActivatorGuidAndAssets();
 
-    void RegisterAssets(std::wstring const& appId, winrt::hstring const& displayName, winrt::Windows::Foundation::Uri const& iconUri, wil::unique_cotaskmem_string const& clsid);
+    void RegisterAssets(std::wstring const& appId, wil::unique_cotaskmem_string const& clsid);
 
     wil::unique_cotaskmem_string ConvertUtf8StringToWideString(unsigned long length, const BYTE* utf8String);
 

@@ -18,6 +18,10 @@ namespace winrt
 }
 namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 {
+    const std::wstring c_serverIdCommandString = L"ServerId";
+    const std::wstring c_argumentCommandString = L"Arguments";
+    const std::wstring c_executableCommandString = L"Executable";
+
     inline std::string WideStringToUtf8String(_In_ std::wstring const& utf16string)
     {
         int size = WideCharToMultiByte(
@@ -143,7 +147,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
     inline HRESULT GetPackageFullName(wil::unique_cotaskmem_string& packagedFullName) noexcept try
     {
         WCHAR packageFullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1]{};
-        UINT32 packageFullNameLength = ARRAYSIZE(packageFullName);
+        UINT32 packageFullNameLength{ ARRAYSIZE(packageFullName) };
         THROW_IF_FAILED(GetCurrentPackageFullName(&packageFullNameLength, packageFullName));
 
         packagedFullName = wil::make_cotaskmem_string(packageFullName);
@@ -215,7 +219,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
             THROW_IF_FAILED(RegGetValueW(
                 HKEY_LOCAL_MACHINE,
                 clsidPathWithKey.c_str(),
-                L"ServerId",
+                c_serverIdCommandString.c_str(),
                 RRF_RT_REG_DWORD,
                 nullptr /* pdwType */,
                 &serverId,
@@ -228,7 +232,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
             THROW_IF_FAILED(RegGetValueW(
                 HKEY_LOCAL_MACHINE,
                 serverPath.c_str(),
-                L"Arguments",
+                c_argumentCommandString.c_str(),
                 RRF_RT_REG_SZ,
                 nullptr /* pdwType */,
                 &argumentsBuffer,
@@ -241,7 +245,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
             THROW_IF_FAILED(RegGetValueW(
                 HKEY_LOCAL_MACHINE,
                 serverPath.c_str(),
-                L"Executable",
+                c_executableCommandString.c_str(),
                 RRF_RT_REG_SZ,
                 nullptr /* pdwType */,
                 &exeBuffer,
