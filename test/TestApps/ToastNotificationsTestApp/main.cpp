@@ -258,13 +258,22 @@ bool VerifyRegisterActivatorandUnRegisterActivator()
 
 bool VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged()
 {
-    winrt::AppNotificationManager::Default().Register();
-    winrt::AppNotificationManager::Default().Unregister();
+    try
+    {
+        // Registration is done in main
+        winrt::AppNotificationManager::Default().Unregister();
+    }
+    catch (...)
+    {
+        return false;
+    }
+   
     return true;
 }
 
 bool VerifyExplicitAppId_Unpackaged()
 {
+    winrt::AppNotificationManager::Default().Unregister();
     try
     {
         THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(L"TestAppId"));
@@ -280,6 +289,7 @@ bool VerifyExplicitAppId_Unpackaged()
 
 bool VerifyUnregisterTwice_Unpackaged()
 {
+    winrt::AppNotificationManager::Default().Unregister();
     try
     {
         winrt::AppNotificationManager::Default().Register();
@@ -310,6 +320,7 @@ bool VerifyUnregisterTwice()
 
 bool VerifyUnregisterAll_Unpackaged()
 {
+    winrt::AppNotificationManager::Default().UnregisterAll();
     try
     {
         THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(L"TestAppId"));
@@ -341,7 +352,7 @@ bool VerifyFailedMultipleRegisterActivator()
 {
     try
     {
-        // Register is already called in main for packaged apps
+        // Register is already called in main for apps
         winrt::AppNotificationManager::Default().Register();
     }
     catch (...)
@@ -547,7 +558,7 @@ bool VerifyShowToast_Unpackaged()
 
     auto scope_exit = wil::scope_exit(
         [&] {
-            toastNotificationManager.Unregister();
+            toastNotificationManager.UnregisterAll();
         });
 
     EnsureNoActiveToasts();
@@ -567,7 +578,14 @@ bool VerifyShowToast_Unpackaged()
 bool VerifyUpdateToastProgressDataUsingValidTagAndValidGroup()
 {
     // Registration happens in main()
+    auto toastNotificationManager{ winrt::AppNotificationManager::Default() };
+
     PostToastHelper(L"PTag", L"PGroup");
+
+    auto scope_exit = wil::scope_exit(
+        [&] {
+            toastNotificationManager.UnregisterAll();
+        });
 
     winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", true, 1);
 
@@ -577,11 +595,12 @@ bool VerifyUpdateToastProgressDataUsingValidTagAndValidGroup()
 
 bool VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged()
 {
+    // Registration happens in main()
     auto toastNotificationManager{ winrt::AppNotificationManager::Default() };
 
     auto scope_exit = wil::scope_exit(
         [&] {
-            toastNotificationManager.Unregister();
+            toastNotificationManager.UnregisterAll();
         });
 
     PostToastHelper(L"Tag", L"Group");
@@ -595,6 +614,13 @@ bool VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged()
 bool VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup()
 {
     // Registration happens in main()
+    auto toastNotificationManager{ winrt::AppNotificationManager::Default() };
+
+    auto scope_exit = wil::scope_exit(
+        [&] {
+            toastNotificationManager.UnregisterAll();
+        });
+
     PostToastHelper(L"PTag", L"");
 
     winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", true, 1);
@@ -605,11 +631,12 @@ bool VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup()
 
 bool VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged()
 {
+    // Registration happens in main()
     auto toastNotificationManager{ winrt::AppNotificationManager::Default() };
 
     auto scope_exit = wil::scope_exit(
         [&] {
-            toastNotificationManager.Unregister();
+            toastNotificationManager.UnregisterAll();
         });
 
     PostToastHelper(L"Tag", L"");
@@ -622,11 +649,12 @@ bool VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged()
 
 bool VerifyToastUpdateZeroSequenceFail_Unpackaged()
 {
+    // Registration happens in main()
     auto toastNotificationManager{ winrt::AppNotificationManager::Default() };
-    toastNotificationManager.Register();
+
     auto scope_exit = wil::scope_exit(
         [&] {
-            toastNotificationManager.Unregister();
+            toastNotificationManager.UnregisterAll();
         });
     PostToastHelper(L"Tag", L"");
 
@@ -649,6 +677,14 @@ bool VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup()
 {
     try
     {
+        // Registration happens in main()
+        auto toastNotificationManager{ winrt::AppNotificationManager::Default() };
+
+        auto scope_exit = wil::scope_exit(
+            [&] {
+                toastNotificationManager.UnregisterAll();
+            });
+
         winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", true, 1);
 
         auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateAsync(progressData, L"", L"Group").get();
@@ -664,6 +700,14 @@ bool VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup()
 {
     try
     {
+        // Registration happens in main()
+        auto toastNotificationManager{ winrt::AppNotificationManager::Default() };
+
+        auto scope_exit = wil::scope_exit(
+            [&] {
+                toastNotificationManager.UnregisterAll();
+            });
+
         winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", true, 1);
 
         auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateAsync(progressData, L"", L"").get();
@@ -679,6 +723,14 @@ bool VerifyToastProgressDataSequence0Fail()
 {
     try
     {
+        // Registration happens in main()
+        auto toastNotificationManager{ winrt::AppNotificationManager::Default() };
+
+        auto scope_exit = wil::scope_exit(
+            [&] {
+                toastNotificationManager.UnregisterAll();
+            });
+
         winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", true, 0);
     }
     catch (...)
@@ -691,6 +743,14 @@ bool VerifyToastProgressDataSequence0Fail()
 bool VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup()
 {
     // Registration happens in main()
+
+    auto toastNotificationManager{ winrt::AppNotificationManager::Default() };
+
+    auto scope_exit = wil::scope_exit(
+        [&] {
+            toastNotificationManager.UnregisterAll();
+        });
+
     PostToastHelper(L"PTag", L"PGroup");
 
     winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", true, 1);
@@ -705,7 +765,7 @@ bool VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup_Unpackaged()
 
     auto scope_exit = wil::scope_exit(
         [&] {
-            toastNotificationManager.Unregister();
+            toastNotificationManager.UnregisterAll();
         });
 
     PostToastHelper(L"Tag", L"Group");
@@ -719,6 +779,13 @@ bool VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup_Unpackaged()
 bool VerifyFailedUpdateNotificationDataWithoutPostToast()
 {
     // Registration happens in main()
+    auto toastNotificationManager{ winrt::AppNotificationManager::Default() };
+
+    auto scope_exit = wil::scope_exit(
+        [&] {
+            toastNotificationManager.UnregisterAll();
+        });
+
     winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", true, 1);
 
     auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateAsync(progressData, L"Tag", L"Group");
@@ -731,7 +798,7 @@ bool VerifyFailedUpdateNotificationDataWithoutPostToast_Unpackaged()
 
     auto scope_exit = wil::scope_exit(
         [&] {
-            toastNotificationManager.Unregister();
+            toastNotificationManager.UnregisterAll();
         });
 
     winrt::AppNotificationProgressData progressData = GetToastProgressData(L"SomeStatus", L"SomeTitle", 0.14, L"14%", true, 1);
@@ -741,7 +808,6 @@ bool VerifyFailedUpdateNotificationDataWithoutPostToast_Unpackaged()
 
 bool VerifyGetAllAsyncWithZeroActiveToast()
 {
-
     EnsureNoActiveToasts();
 
     auto toastNotificationManager = winrt::AppNotificationManager::Default();
