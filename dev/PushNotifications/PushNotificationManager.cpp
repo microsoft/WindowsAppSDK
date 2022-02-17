@@ -342,7 +342,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     taskClsid,
                     winrt::make<PushNotificationBackgroundTaskFactory>().get(),
                     CLSCTX_LOCAL_SERVER,
-                    REGCLS_MULTIPLEUSE,
+                    PushNotificationHelpers::AreHandlersRegistered() ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE,
                     &s_comActivatorRegistration));
             }
 

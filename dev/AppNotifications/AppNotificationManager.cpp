@@ -82,7 +82,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             AppModel::Identity::IsPackagedProcess() ? details.TaskClsid() : winrt::guid(storedComActivatorString),
             winrt::make<AppNotificationActivationCallbackFactory>().get(),
             CLSCTX_LOCAL_SERVER,
-            REGCLS_MULTIPLEUSE,
+            GetAppNotificationHandlers() ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE,
             &s_notificationComActivatorRegistration));
 
         GetWaitHandleForArgs().create();

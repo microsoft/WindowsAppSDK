@@ -21,8 +21,24 @@ namespace PushNotificationHelpers
     using namespace winrt::Microsoft::Windows::PushNotifications::Helpers;
 }
 
+static std::unique_ptr<winrt::event<TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs>>> g_pushNotificationHandlers;
+
+bool winrt::Microsoft::Windows::PushNotifications::Helpers::AreHandlersRegistered()
+{
+    return g_pushNotificationHandlers && bool(*g_pushNotificationHandlers);
+}
+
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
+    PushNotificationChannel::PushNotificationChannel(struct ChannelDetails channelInfo)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
+
+        std::swap(m_channelInfo, channelInfo);
+
+        g_pushNotificationHandlers = std::unique_ptr<winrt::event<PushNotificationEventHandler>>();
+    };
+
     Uri PushNotificationChannel::Uri()
     {
         return winrt::Windows::Foundation::Uri{ m_channelInfo.channelUri };
@@ -43,7 +59,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         catch (...)
         {
-            auto channelCloseException { hresult_error(to_hresult()) };
+            auto channelCloseException{ hresult_error(to_hresult()) };
 
             PushNotificationTelemetry::ChannelClosedByApi(channelCloseException.code());
 
@@ -56,15 +72,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::event_token PushNotificationChannel::PushReceived(TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
     {
-        bool registeredEvent { false };
+        bool registeredEvent{ false };
         {
-            auto lock { m_lock.lock_shared() };
-            registeredEvent = bool(m_foregroundHandlers);
+            auto lock{ m_lock.lock_shared() };
+            registeredEvent = bool(*(g_pushNotificationHandlers));
         }
 
-        if(!registeredEvent)
+        if (!registeredEvent)
         {
-            if(PushNotificationHelpers::IsPackagedAppScenario())
+            if (PushNotificationHelpers::IsPackagedAppScenario())
             {
                 auto appUserModelId{ PushNotificationHelpers::GetAppUserModelId() };
 
@@ -83,20 +99,20 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             }
         }
 
-        auto lock { m_lock.lock_exclusive() };
-        return m_foregroundHandlers.add(handler);
+        auto lock{ m_lock.lock_exclusive() };
+        return g_pushNotificationHandlers->add(handler);
     }
 
     void PushNotificationChannel::PushReceived(winrt::event_token const& token) noexcept
     {
-        bool registeredEvent { false };
+        bool registeredEvent{ false };
         {
-            auto lock { m_lock.lock_exclusive() };
-            m_foregroundHandlers.remove(token);
-            registeredEvent = bool(m_foregroundHandlers);
+            auto lock{ m_lock.lock_exclusive() };
+            g_pushNotificationHandlers->remove(token);
+            registeredEvent = bool(*(g_pushNotificationHandlers));
         }
 
-        if(!registeredEvent)
+        if (!registeredEvent)
         {
             // Packaged apps with BI available will remove their handlers from the platform.
             // Unpackaged apps / Packaged apps treated as unpackaged will unregister from Long Running process.
@@ -121,13 +137,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     HRESULT __stdcall PushNotificationChannel::InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept try
     {
         auto args = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length);
-        m_foregroundHandlers(*this, args);
+        (*g_pushNotificationHandlers)(*this, args);
         *foregroundHandled = args.Handled();
         return S_OK;
     }
     CATCH_RETURN()
 
-    HRESULT __stdcall PushNotificationChannel::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept try
+        HRESULT __stdcall PushNotificationChannel::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept try
     {
         BOOL foregroundHandled = true;
         THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
@@ -145,4 +161,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         return S_OK;
     }
     CATCH_RETURN();
+
+    PushNotificationChannel::~PushNotificationChannel()
+    {
+        g_pushNotificationHandlers.reset();
+    }
 }

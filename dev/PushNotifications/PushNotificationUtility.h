@@ -135,4 +135,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
     {
         return AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable();
     }
+
+    bool AreHandlersRegistered();
 }

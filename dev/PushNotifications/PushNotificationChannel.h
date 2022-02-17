@@ -17,12 +17,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel, IWpnForegroundSink, ABI::Microsoft::Internal::PushNotifications::INotificationListener>
     {
-        PushNotificationChannel(struct ChannelDetails channelInfo)
-        {
-            THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
+        PushNotificationChannel(struct ChannelDetails channelInfo);
 
-            std::swap(m_channelInfo, channelInfo);
-        };
+        ~PushNotificationChannel();
 
         winrt::Windows::Foundation::Uri Uri();
         winrt::Windows::Foundation::DateTime ExpirationTime();
@@ -40,7 +37,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     private:
         struct ChannelDetails m_channelInfo{};
 
-        winrt::event<PushNotificationEventHandler> m_foregroundHandlers;
         wil::srwlock m_lock;
     };
 }
