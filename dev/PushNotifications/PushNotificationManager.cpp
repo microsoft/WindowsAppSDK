@@ -61,7 +61,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     inline constexpr auto c_maxBackoff{ 5min };
     inline constexpr auto c_initialBackoff{ 60s };
     inline constexpr auto c_backoffIncrement{ 60s };
-
+     
     const HRESULT WNP_E_NOT_CONNECTED = static_cast<HRESULT>(0x880403E8L);
     const HRESULT WNP_E_RECONNECTING = static_cast<HRESULT>(0x880403E9L);
     const HRESULT WNP_E_BIND_USER_BUSY = static_cast<HRESULT>(0x880403FEL);
@@ -476,6 +476,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::event_token PushNotificationManager::PushReceived(TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationManager, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
     {
+        THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !s_comActivatorRegistration, "Must call Register() before registering handlers.");
+
         bool registeredEvent{ false };
         {
             auto lock{ m_lock.lock_shared() };
