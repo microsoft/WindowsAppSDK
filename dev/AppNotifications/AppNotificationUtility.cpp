@@ -10,6 +10,7 @@
 #include <frameworkudk/pushnotifications.h>
 #include "AppNotification.h"
 #include "NotificationProgressData.h"
+#include <ShObjIdl_core.h>
 
 namespace winrt
 {
@@ -25,51 +26,61 @@ namespace ToastABI
 
 std::wstring Microsoft::Windows::AppNotifications::Helpers::RetrieveUnpackagedNotificationAppId()
 {
-    wil::unique_cotaskmem_string processName;
-    THROW_IF_FAILED(GetCurrentProcessPath(processName));
+    wil::unique_cotaskmem_string appId;
 
-    std::wstring wideStringProcessName{ processName.get() };
-    // subKey: L"Software\\Classes\\AppUserModelId\\{Path to ToastNotificationsTestApp.exe}"
-    std::wstring subKey{ c_appIdentifierPath + ConvertPathToKey(wideStringProcessName) };
-
-    wil::unique_hkey hKey;
-    THROW_IF_FAILED(RegCreateKeyEx(
-        HKEY_CURRENT_USER,
-        subKey.c_str(),
-        0,
-        nullptr /* lpClass */,
-        REG_OPTION_NON_VOLATILE,
-        KEY_ALL_ACCESS,
-        nullptr /* lpSecurityAttributes */,
-        &hKey,
-        nullptr /* lpdwDisposition */));
-
-    WCHAR registeredGuidBuffer[GUID_LENGTH];
-    DWORD bufferLength = sizeof(registeredGuidBuffer);
-    HRESULT status = RegGetValueW(
-        hKey.get(),
-        nullptr /* lpValue */,
-        L"NotificationGUID",
-        RRF_RT_REG_SZ,
-        nullptr /* pdwType */,
-        &registeredGuidBuffer,
-        &bufferLength);
-
-    if (status == ERROR_FILE_NOT_FOUND)
+    // If the developer has called into SetCurrentProcessExplicitAppUserModelID, we should honor that AppId rather than dynamically generate our own
+    if (SUCCEEDED(GetCurrentProcessExplicitAppUserModelID(&appId)))
     {
-        GUID newNotificationGuid;
-        THROW_IF_FAILED(CoCreateGuid(&newNotificationGuid));
-
-        wil::unique_cotaskmem_string newNotificationGuidString;
-        THROW_IF_FAILED(StringFromCLSID(newNotificationGuid, &newNotificationGuidString));
-
-        std::wstring guidWideStr{ newNotificationGuidString.get() };
-        RegisterValue(hKey, L"NotificationGUID", reinterpret_cast<const BYTE*>(guidWideStr.c_str()), REG_SZ, guidWideStr.size() * sizeof(wchar_t));
-        return guidWideStr;
+        return appId.get();
     }
+    else
+    {
+        wil::unique_cotaskmem_string processName;
+        THROW_IF_FAILED(GetCurrentProcessPath(processName));
 
-    THROW_HR_IF(status, FAILED_WIN32(status));
-    return registeredGuidBuffer;
+        std::wstring wideStringProcessName{ processName.get() };
+        // subKey: L"Software\\Classes\\AppUserModelId\\{Path to ToastNotificationsTestApp.exe}"
+        std::wstring subKey{ c_appIdentifierPath + ConvertPathToKey(wideStringProcessName) };
+
+        wil::unique_hkey hKey;
+        THROW_IF_FAILED(RegCreateKeyEx(
+            HKEY_CURRENT_USER,
+            subKey.c_str(),
+            0,
+            nullptr /* lpClass */,
+            REG_OPTION_NON_VOLATILE,
+            KEY_ALL_ACCESS,
+            nullptr /* lpSecurityAttributes */,
+            &hKey,
+            nullptr /* lpdwDisposition */));
+
+        WCHAR registeredGuidBuffer[GUID_LENGTH];
+        DWORD bufferLength = sizeof(registeredGuidBuffer);
+        HRESULT status = RegGetValueW(
+            hKey.get(),
+            nullptr /* lpValue */,
+            L"NotificationGUID",
+            RRF_RT_REG_SZ,
+            nullptr /* pdwType */,
+            &registeredGuidBuffer,
+            &bufferLength);
+
+        if (status == ERROR_FILE_NOT_FOUND)
+        {
+            GUID newNotificationGuid;
+            THROW_IF_FAILED(CoCreateGuid(&newNotificationGuid));
+
+            wil::unique_cotaskmem_string newNotificationGuidString;
+            THROW_IF_FAILED(StringFromCLSID(newNotificationGuid, &newNotificationGuidString));
+
+            std::wstring guidWideStr{ newNotificationGuidString.get() };
+            RegisterValue(hKey, L"NotificationGUID", reinterpret_cast<const BYTE*>(guidWideStr.c_str()), REG_SZ, guidWideStr.size() * sizeof(wchar_t));
+            return guidWideStr;
+        }
+
+        THROW_HR_IF(status, FAILED_WIN32(status));
+        return registeredGuidBuffer;
+    }
 }
 
 std::wstring Microsoft::Windows::AppNotifications::Helpers::RetrieveNotificationAppId()
@@ -123,6 +134,12 @@ void Microsoft::Windows::AppNotifications::Helpers::UnRegisterComServer(std::wst
 
 void Microsoft::Windows::AppNotifications::Helpers::UnRegisterNotificationAppIdentifierFromRegistry()
 {
+    wil::unique_cotaskmem_string appId;
+
+    if (SUCCEEDED(GetCurrentProcessExplicitAppUserModelID(&appId)))
+    {
+        return;
+    }
     std::wstring notificationAppId{ RetrieveNotificationAppId() };
 
     wil::unique_hkey hKey;
@@ -255,10 +272,7 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows:
     auto wide{ ConvertUtf8StringToWideString(payloadSize, payload.get()) };
     winrt::hstring xmlPayload{ wide.get() };
 
-    winrt::Windows::Data::Xml::Dom::XmlDocument xmlDocument{};
-    xmlDocument.LoadXml(xmlPayload);
-
-    winrt::Microsoft::Windows::AppNotifications::AppNotification notification(xmlDocument);
+    winrt::Microsoft::Windows::AppNotifications::AppNotification notification(xmlPayload);
 
     wil::unique_hstring tag{};
     THROW_IF_FAILED(properties->get_Tag(&tag));

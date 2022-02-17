@@ -7,6 +7,7 @@
 #include <winrt/Windows.ApplicationModel.Core.h>
 #include <iostream>
 #include <AppNotificationUtility.h>
+#include <AppNotificationManager.h>
 
 namespace winrt
 {
@@ -32,10 +33,12 @@ HRESULT __stdcall AppNotificationActivationCallback::Activate(
 
     winrt::AppNotificationActivatedEventArgs activatedEventArgs = winrt::make<winrt::Microsoft::Windows::AppNotifications::implementation::AppNotificationActivatedEventArgs>(invokedArgs, userInput);
 
-    if (GetAppNotificationHandlers())
+    winrt::AppNotificationManager notificationManager = winrt::AppNotificationManager::Default();
+    winrt::Microsoft::Windows::AppNotifications::implementation::AppNotificationManager* notificationManagerImpl = winrt::get_self<winrt::Microsoft::Windows::AppNotifications::implementation::AppNotificationManager>(notificationManager);
+    if (notificationManagerImpl->ContainsInvokeHandler())
     {
         /* As the process is already launched, we invoke the foreground toast event handlers with the activatedEventArgs */
-        GetAppNotificationHandlers()(winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::Default(), activatedEventArgs);
+        notificationManagerImpl->InvokeHandler(activatedEventArgs);
     }
     else
     {
