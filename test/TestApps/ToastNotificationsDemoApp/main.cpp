@@ -136,18 +136,18 @@ int main()
     // Setting up foreground handler for AppNotification
     std::wcout << L"Registering foreground handler to receive AppNotificationActivatedEventArgs...\n";
     winrt::event_token token = appNotificationManager.NotificationInvoked([](const auto&, winrt::AppNotificationActivatedEventArgs const& toastArgs)
-        {
-            std::wcout << L"AppNotification received foreground!\n";
-            winrt::hstring arguments{ toastArgs.ActivationArgs() };
-            std::wcout << arguments.c_str() << L"\n\n";
+    {
+        std::wcout << L"AppNotification received foreground!\n";
+        winrt::hstring arguments{ toastArgs.ActivationArgs() };
+        std::wcout << arguments.c_str() << L"\n\n";
 
-            winrt::IMap<winrt::hstring, winrt::hstring> userInput{ toastArgs.UserInput() };
-            for (auto pair : userInput)
-            {
-                std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << L"\n";
-            }
-            std::wcout << L"\n";
-        });
+        winrt::IMap<winrt::hstring, winrt::hstring> userInput{ toastArgs.UserInput() };
+        for (auto pair : userInput)
+        {
+            std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << L"\n";
+        }
+        std::wcout << L"\n";
+    });
     std::wcout << L"Done.\n\n";
 
     // Display the current AppNotificationSetting for the app.

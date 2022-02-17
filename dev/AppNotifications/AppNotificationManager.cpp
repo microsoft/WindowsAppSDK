@@ -70,7 +70,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         }
 
         {
-            auto lock{ m_registrationLock.lock_exclusive() };
+            auto lock{ m_lock.lock_exclusive() };
             THROW_HR_IF_MSG(E_INVALIDARG, m_notificationComActivatorRegistration, "Already Registered for App Notifications!");
             THROW_IF_FAILED(::CoRegisterClassObject(
                 AppModel::Identity::IsPackagedProcess() ? details.TaskClsid() : winrt::guid(storedComActivatorString),
@@ -90,7 +90,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationManager::Unregister()
     {
-        auto lock{ m_registrationLock.lock_exclusive() };
+        auto lock{ m_lock.lock_exclusive() };
         THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !m_notificationComActivatorRegistration, "Not Registered for App Notifications!");
         m_notificationComActivatorRegistration.reset();
     }
@@ -122,13 +122,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::event_token AppNotificationManager::NotificationInvoked(winrt::Windows::Foundation::TypedEventHandler<winrt::Microsoft::Windows::AppNotifications::AppNotificationManager, winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs> const& handler)
     {
-        auto lock{ m_registrationLock.lock_exclusive() };
+        auto lock{ m_lock.lock_exclusive() };
+        THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), m_notificationComActivatorRegistration, "Must call Register() before registering handlers.");
         return m_notificationHandlers.add(handler);
     }
 
     void AppNotificationManager::NotificationInvoked(winrt::event_token const& token) noexcept
     {
-        auto lock{ m_registrationLock.lock_exclusive() };
+        auto lock{ m_lock.lock_exclusive() };
         m_notificationHandlers.remove(token);
     }
 
@@ -147,11 +148,16 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         winrt::AppNotificationActivatedEventArgs activatedEventArgs = winrt::make<winrt::Microsoft::Windows::AppNotifications::implementation::AppNotificationActivatedEventArgs>(invokedArgs, userInput);
 
         // Need to store the first notification in the case of ToastActivation
+
+        auto lock{ m_lock.lock_exclusive() };
         if (!m_firstNotificationReceived)
         {
             m_firstNotificationReceived = true;
 
             std::wstring commandLine{ GetCommandLine() };
+
+            // If the app was not launched due to ToastActivation, we will invoke the foreground handler.
+            // Otherwise we store the EventArgs and signal to the Main thread
             auto pos{ commandLine.find(c_notificationActivatedArgument) };
             if (pos == std::wstring::npos)
             {

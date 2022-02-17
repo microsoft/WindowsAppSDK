@@ -31,6 +31,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         winrt::Windows::Foundation::IAsyncAction RemoveAllAsync();
         winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::AppNotifications::AppNotification>> GetAllAsync();
 
+        // INotificationActivationCallback
         HRESULT __stdcall Activate(
             LPCWSTR appUserModelId,
             LPCWSTR invokedArgs,
@@ -39,7 +40,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     private:
         wil::unique_com_class_object_cookie m_notificationComActivatorRegistration;
-        wil::srwlock m_registrationLock;
+        wil::srwlock m_lock;
         winrt::event<NotificationActivationEventHandler> m_notificationHandlers;
         bool m_firstNotificationReceived{ false };
     };
@@ -53,7 +54,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         }
         CATCH_RETURN()
 
-            STDMETHODIMP LockServer(BOOL fLock) noexcept final
+        STDMETHODIMP LockServer(BOOL fLock) noexcept final
         {
             if (fLock)
             {
