@@ -578,5 +578,40 @@ namespace Test::ToastNotifications
         {
             RunTestUnpackaged(L"VerifyRemoveAllAsync", testWaitTime());
         }
+
+        TEST_METHOD(VerifyExplicitAppId_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyExplicitAppId_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyUnregisterAll_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyUnregisterAll_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyUnregisterAll)
+        {
+            RunTest(L"VerifyUnregisterAll", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyUnregisterTwice_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyUnregisterTwice_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyUnregisterTwice)
+        {
+            RunTest(L"VerifyUnregisterTwice", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastProgressDataSequence0Fail)
+        {
+            RunTest(L"VerifyToastProgressDataSequence0Fail", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastUpdateZeroSequenceFail_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyToastUpdateZeroSequenceFail_Unpackaged", testWaitTime());
+        }
     };
 }

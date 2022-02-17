@@ -2,10 +2,16 @@
 #include "AppNotification.h"
 #include "Microsoft.Windows.AppNotifications.AppNotification.g.cpp"
 
+using namespace winrt::Windows::Data::Xml::Dom;
+
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
-    AppNotification::AppNotification(winrt::Windows::Data::Xml::Dom::XmlDocument const& payload)
+    AppNotification::AppNotification(hstring const& payload)
     {
+        XmlDocument xmlDocument{};
+
+        // We call LoadXml to verify the payload is xml
+        xmlDocument.LoadXml(payload);
         m_payload = payload;
     }
 
@@ -34,7 +40,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         return m_notificationId;
     }
 
-    winrt::Windows::Data::Xml::Dom::XmlDocument AppNotification::Payload()
+    hstring AppNotification::Payload()
     {
         return m_payload;
     }
