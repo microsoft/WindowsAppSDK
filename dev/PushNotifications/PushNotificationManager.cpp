@@ -357,7 +357,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             PushNotificationTelemetry::ActivatorRegisteredByApi(S_OK, details.Activators());
         }
 
-        catch (...)
+        catch(...)
         {
             PushNotificationTelemetry::ActivatorRegisteredByApi(wil::ResultFromCaughtException(),
                 details == nullptr ? PushNotificationRegistrationActivators::Undefined : details.Activators());
