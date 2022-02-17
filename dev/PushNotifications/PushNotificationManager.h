@@ -36,6 +36,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         HRESULT __stdcall OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept;
     private:
         winrt::event<PushNotificationEventHandler> m_foregroundHandlers;
+        winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration m_pushTriggerRegistration{ nullptr };
+        wil::unique_com_class_object_cookie m_comActivatorRegistration;
+        bool m_protocolRegistration{ false };
         wil::srwlock m_lock;
     };
 }
