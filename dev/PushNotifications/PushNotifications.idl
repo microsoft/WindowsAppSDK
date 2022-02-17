@@ -89,9 +89,6 @@ namespace Microsoft.Windows.PushNotifications
 
         // Unsubscribes the channel
         void Close();
-
-        // Event handler for Push Notifications
-        event Windows.Foundation.TypedEventHandler<PushNotificationChannel, PushNotificationReceivedEventArgs> PushReceived;
     }
 
     [feature(Feature_PushNotifications)]
@@ -135,5 +132,8 @@ namespace Microsoft.Windows.PushNotifications
 
         // Applications will call this to check which flags are supported for RegisterActivator
         static Boolean IsActivatorSupported(PushNotificationRegistrationActivators activators);
+
+        // Event handler for Push Notifications
+        event Windows.Foundation.TypedEventHandler<PushNotificationManager, PushNotificationReceivedEventArgs> PushReceived;
     };
 }

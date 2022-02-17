@@ -5,6 +5,7 @@
 #include <iostream>
 #include <winrt/Windows.ApplicationModel.Background.h>
 #include <MddBootstrap.h>
+#include <MddBootstrapTest.h>
 #include "WindowsAppRuntime.Test.AppModel.h"
 
 using namespace winrt::Microsoft::Windows::AppLifecycle;
@@ -51,16 +52,6 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
 
         auto channelExpiry = result.Channel().ExpirationTime();
 
-        // Register Push Event for Foreground
-        winrt::event_token token = result.Channel().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
-            {
-                auto payload = args.Payload();
-
-                // Do stuff to process the raw payload
-                std::string payloadString(payload.begin(), payload.end());
-                std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
-                args.Handled(true);
-            });
         // Caller's responsibility to keep the channel alive
         co_return result.Channel();
     }
@@ -94,11 +85,26 @@ int main()
 {
     if (!Test::AppModel::IsPackagedProcess())
     {
+        constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppRuntime.Test.DDLM" };
+        constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
+        RETURN_IF_FAILED(MddBootstrapTestInitialize(c_PackageNamePrefix, c_PackagePublisherId));
+
         // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
         const UINT32 c_Version_MajorMinor{ 0x00040001 };
         const PACKAGE_VERSION minVersion{};
         RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
     }
+
+    // Register Push Event for Foreground
+    winrt::event_token token = PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
+        {
+            auto payload = args.Payload();
+
+            // Do stuff to process the raw payload
+            std::string payloadString(payload.begin(), payload.end());
+            std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
+            args.Handled(true);
+        });
 
     if (PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
     {

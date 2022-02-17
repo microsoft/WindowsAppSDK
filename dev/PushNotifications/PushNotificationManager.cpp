@@ -20,6 +20,7 @@
 #include "NotificationsLongRunningProcess_h.h"
 #include "PushNotificationUtility.h"
 #include "AppNotificationUtility.h"
+#include "PushNotificationReceivedEventArgs.h"
 
 using namespace std::literals;
 using namespace Microsoft::Windows::AppNotifications::Helpers;
@@ -78,6 +79,27 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             return true;
         default:
             return false;
+        }
+    }
+
+    void RegisterSinkHelper()
+    {
+        if (PushNotificationHelpers::IsPackagedAppScenario())
+        {
+            auto appUserModelId{ PushNotificationHelpers::GetAppUserModelId() };
+
+            // Register a sink with platform which is initialized in the current process
+            THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), PushNotificationManager::Default().as<ABI::Microsoft::Internal::PushNotifications::INotificationListener>().get()));
+        }
+        else
+        {
+            auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
+
+            wil::unique_cotaskmem_string processName;
+            THROW_IF_FAILED(GetCurrentProcessPath(processName));
+
+            // Register a sink with platform brokered through PushNotificationsLongRunningProcess
+            THROW_IF_FAILED(notificationsLongRunningPlatform->RegisterForegroundActivator(PushNotificationManager::Default().as<IWpnForegroundSink>().get(), processName.get()));
         }
     }
 
@@ -180,6 +202,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                         std::wstring toastAppId{ RetrieveNotificationAppId() };
                         THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), toastAppId.c_str()));
+                    }
+
+                    // Need to register sink on new channel creation if handlers are registered
+                    if (m_foregroundHandlers)
+                    {
+                        RegisterSinkHelper();
                     }
 
                     PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId);
@@ -445,6 +473,84 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
     }
+
+    winrt::event_token PushNotificationManager::PushReceived(TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationManager, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
+    {
+        bool registeredEvent{ false };
+        {
+            auto lock{ m_lock.lock_shared() };
+            registeredEvent = bool(m_foregroundHandlers);
+        }
+
+        if (!registeredEvent)
+        {
+            // Need to register sink since foreground handler is being registered
+            RegisterSinkHelper();
+        }
+
+        auto lock{ m_lock.lock_exclusive() };
+        return m_foregroundHandlers.add(handler);
+    }
+
+
+    void PushNotificationManager::PushReceived(winrt::event_token const& token) noexcept
+    {
+        bool registeredEvent{ false };
+        {
+            auto lock{ m_lock.lock_exclusive() };
+            m_foregroundHandlers.remove(token);
+            registeredEvent = bool(m_foregroundHandlers);
+        }
+
+        if (!registeredEvent)
+        {
+            // Packaged apps with BI available will remove their handlers from the platform.
+            // Unpackaged apps / Packaged apps treated as unpackaged will unregister from Long Running process.
+            if (PushNotificationHelpers::IsPackagedAppScenario())
+            {
+                auto appUserModelId{ PushNotificationHelpers::GetAppUserModelId() };
+
+                THROW_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get()));
+            }
+            else
+            {
+                auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
+
+                wil::unique_cotaskmem_string processName;
+                THROW_IF_FAILED(GetCurrentProcessPath(processName));
+
+                THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterForegroundActivator(processName.get()));
+            }
+        }
+    }
+
+    HRESULT __stdcall PushNotificationManager::InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept try
+    {
+        auto args = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length);
+        m_foregroundHandlers(*this, args);
+        *foregroundHandled = args.Handled();
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    HRESULT __stdcall PushNotificationManager::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept try
+    {
+        BOOL foregroundHandled = true;
+        THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
+
+        if (!foregroundHandled)
+        {
+            if (!AppModel::Identity::IsPackagedProcess())
+            {
+                wil::unique_cotaskmem_string processName;
+                THROW_IF_FAILED(GetCurrentProcessPath(processName));
+                THROW_IF_FAILED(PushNotificationHelpers::ProtocolLaunchHelper(processName.get(), payloadLength, payload));
+            }
+        }
+
+        return S_OK;
+    }
+    CATCH_RETURN();
 
     bool PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators const& activators)
     {
