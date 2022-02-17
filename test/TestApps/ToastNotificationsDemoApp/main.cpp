@@ -194,7 +194,7 @@ int main()
     auto appNotificationManager{ winrt::AppNotificationManager::Default() };
 
     // Display the current AppNotificationSetting for the app.
-    std::wcout << L"Printing AppNotificationSetting for app: " << GetEnumString(appNotificationManager.Enablement()) << "\n\n";
+    std::wcout << L"Printing AppNotificationSetting for app: " << GetEnumString(appNotificationManager.Setting()) << "\n\n";
 
     // Registering app for activation
     std::wcout << L"Calling AppNotificationManager::Register()...\n";
@@ -223,7 +223,7 @@ int main()
 
     // Setting up foreground handler for AppNotification
     std::wcout << L"Registering foreground handler to receive AppNotificationActivatedEventArgs...\n";
-    winrt::event_token token = appNotificationManager.AppNotificationActivated([](const auto&, winrt::AppNotificationActivatedEventArgs const& toastArgs)
+    winrt::event_token token = appNotificationManager.NotificationInvoked([](const auto&, winrt::AppNotificationActivatedEventArgs const& toastArgs)
     {
         std::wcout << L"AppNotification received foreground!\n";
         winrt::hstring arguments{ toastArgs.ActivationArgs() };

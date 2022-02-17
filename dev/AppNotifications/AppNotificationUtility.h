@@ -9,18 +9,12 @@
 #include <AppNotificationActivatedEventArgs.h>
 #include <FrameworkUdk/toastnotificationsrt.h>
 
-typedef winrt::Windows::Foundation::TypedEventHandler<
-    winrt::Microsoft::Windows::AppNotifications::AppNotificationManager,
-    winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs> NotificationActivationEventHandler;
-
 namespace Microsoft::Windows::AppNotifications::Helpers
 {
     const std::wstring c_appIdentifierPath{ LR"(Software\Classes\AppUserModelId\)" };
     const std::wstring c_clsIdPath{ LR"(Software\Classes\CLSID\)" };
     const std::wstring c_quote{ LR"(")" };
     const std::wstring c_notificationActivatedArgument{ L" ----AppNotificationActivated:" };
-
-    winrt::event<NotificationActivationEventHandler>& GetAppNotificationHandlers();
 
     inline const int GUID_LENGTH = 39; // GUID + '{' + '}' + '/0'
 

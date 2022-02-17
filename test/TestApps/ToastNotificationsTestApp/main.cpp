@@ -4,6 +4,7 @@
 #include <wil/win32_helpers.h>
 #include "WindowsAppRuntime.Test.AppModel.h"
 #include <chrono>
+#include <ShObjIdl_core.h>
 
 namespace winrt
 {
@@ -11,7 +12,6 @@ namespace winrt
     using namespace winrt::Windows::ApplicationModel::Activation;
     using namespace winrt::Windows::Foundation;
     using namespace winrt::Microsoft::Windows::AppNotifications;
-    using namespace winrt::Windows::Data::Xml::Dom;
     using namespace winrt::Windows::Foundation;
 }
 
@@ -29,10 +29,7 @@ bool UnregisterBackgroundActivationTest()
 winrt::AppNotification CreateToastNotification(winrt::hstring message)
 {
     winrt::hstring xmlPayload{ L"<toast>" + message + L"</toast>" };
-        winrt::XmlDocument xmlDocument{};
-    xmlDocument.LoadXml(xmlPayload);
-
-    return winrt::AppNotification(xmlDocument);
+    return winrt::AppNotification(xmlPayload);
 }
 
 winrt::AppNotification CreateToastNotification()
@@ -131,8 +128,8 @@ bool VerifyToastNotificationIsValid(const winrt::AppNotification& expected, cons
         return false;
     }
 
-    auto expectedPayload = expected.Payload().GetElementsByTagName(L"toast").GetAt(0).GetXml();
-    auto actualPayload = actual.Payload().GetElementsByTagName(L"toast").GetAt(0).GetXml();
+    auto expectedPayload = expected.Payload();
+    auto actualPayload = actual.Payload();
     if (expectedPayload != actualPayload)
     {
         return false;
@@ -193,13 +190,23 @@ bool VerifyToastNotificationIsValid(const winrt::AppNotification& expected, cons
     return true;
 }
 
-winrt::AppNotificationProgressData GetToastProgressData(std::wstring const& status, std::wstring const& title, double const& progressValue, std::wstring const& progressValueString)
+winrt::AppNotificationProgressData GetToastProgressData(
+    std::wstring const& status,
+    std::wstring const& title,
+    double const& progressValue,
+    std::wstring const& progressValueString,
+    bool setSequence,
+    uint32_t sequenceNumber)
 {
     winrt::AppNotificationProgressData progressData{};
     progressData.Status(status);
     progressData.Title(title);
     progressData.Value(progressValue);
     progressData.ValueStringOverride(progressValueString);
+    if (setSequence)
+    {
+        progressData.SequenceNumber(sequenceNumber);
+    }
 
     return progressData;
 }
@@ -249,12 +256,92 @@ bool VerifyRegisterActivatorandUnRegisterActivator()
     return true;
 }
 
-bool VerifyFailedMultipleRegisterActivator()
+bool VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged()
 {
-	winrt::AppNotificationManager::Default().Unregister();
+    winrt::AppNotificationManager::Default().Register();
+    winrt::AppNotificationManager::Default().Unregister();
+    return true;
+}
+
+bool VerifyExplicitAppId_Unpackaged()
+{
+    try
+    {
+        THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(L"TestAppId"));
+        winrt::AppNotificationManager::Default().Register();
+        winrt::AppNotificationManager::Default().Unregister();
+    }
+    catch (...)
+    {
+        return false;
+    }
+    return true;
+}
+
+bool VerifyUnregisterTwice_Unpackaged()
+{
     try
     {
         winrt::AppNotificationManager::Default().Register();
+        winrt::AppNotificationManager::Default().Unregister();
+        winrt::AppNotificationManager::Default().Unregister();
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_NOT_SET;
+    }
+    return false;
+}
+
+bool VerifyUnregisterTwice()
+{
+    try
+    {
+        // Register is already called in main for packaged apps
+        winrt::AppNotificationManager::Default().Unregister();
+        winrt::AppNotificationManager::Default().Unregister();
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_NOT_SET;
+    }
+    return false;
+}
+
+bool VerifyUnregisterAll_Unpackaged()
+{
+    try
+    {
+        THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(L"TestAppId"));
+        winrt::AppNotificationManager::Default().Register();
+        winrt::AppNotificationManager::Default().UnregisterAll();
+    }
+    catch (...)
+    {
+        return false;
+    }
+    return true;
+}
+
+bool VerifyUnregisterAll()
+{
+    try
+    {
+        // Register is already called in main for packaged apps
+        winrt::AppNotificationManager::Default().UnregisterAll();
+    }
+    catch (...)
+    {
+        return false;
+    }
+    return true;
+}
+
+bool VerifyFailedMultipleRegisterActivator()
+{
+    try
+    {
+        // Register is already called in main for packaged apps
         winrt::AppNotificationManager::Default().Register();
     }
     catch (...)
@@ -267,19 +354,16 @@ bool VerifyFailedMultipleRegisterActivator()
 
 bool VerifyToastSettingEnabled()
 {
-    return winrt::AppNotificationManager::Default().Enablement() == winrt::AppNotificationSetting::Enabled;
+    return winrt::AppNotificationManager::Default().Setting() == winrt::AppNotificationSetting::Enabled;
 }
 
 bool VerifyToastPayload()
 {
     winrt::hstring xmlPayload{ L"<toast>intrepidToast</toast>" };
 
-    winrt::XmlDocument xmlDocument{};
-    xmlDocument.LoadXml(xmlPayload);
+    winrt::AppNotification toast{ xmlPayload };;
 
-    winrt::AppNotification toast{ xmlDocument };;
-
-    if (toast.Payload() != xmlDocument)
+    if (toast.Payload() != xmlPayload)
     {
         return false;
     }
@@ -485,9 +569,9 @@ bool VerifyUpdateToastProgressDataUsingValidTagAndValidGroup()
     // Registration happens in main()
     PostToastHelper(L"PTag", L"PGroup");
 
-    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%");
+    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", true, 1);
 
-    auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateProgressDataAsync(progressData, L"PTag", L"PGroup");
+    auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateAsync(progressData, L"PTag", L"PGroup");
     return ProgressResultOperationHelper(progressResultOperation, winrt::AppNotificationProgressResult::Succeeded);
 }
 
@@ -502,9 +586,9 @@ bool VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged()
 
     PostToastHelper(L"Tag", L"Group");
 
-    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"SomeStatus", L"SomeTitle", 0.14, L"14%");
+    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"SomeStatus", L"SomeTitle", 0.14, L"14%", true, 1);
 
-    auto progressResultOperation = toastNotificationManager.UpdateProgressDataAsync(progressData, L"Tag", L"Group");
+    auto progressResultOperation = toastNotificationManager.UpdateAsync(progressData, L"Tag", L"Group");
     return ProgressResultOperationHelper(progressResultOperation, winrt::AppNotificationProgressResult::Succeeded);
 }
 
@@ -513,9 +597,9 @@ bool VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup()
     // Registration happens in main()
     PostToastHelper(L"PTag", L"");
 
-    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%");
+    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", true, 1);
 
-    auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateProgressDataAsync(progressData, L"PTag");
+    auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateAsync(progressData, L"PTag");
     return ProgressResultOperationHelper(progressResultOperation, winrt::AppNotificationProgressResult::Succeeded);
 }
 
@@ -530,10 +614,78 @@ bool VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged()
 
     PostToastHelper(L"Tag", L"");
 
-    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"SomeStatus", L"SomeTitle", 0.14, L"14%");
+    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"SomeStatus", L"SomeTitle", 0.14, L"14%", true, 1);
 
-    auto progressResultOperation = toastNotificationManager.UpdateProgressDataAsync(progressData, L"Tag");
+    auto progressResultOperation = toastNotificationManager.UpdateAsync(progressData, L"Tag");
     return ProgressResultOperationHelper(progressResultOperation, winrt::AppNotificationProgressResult::Succeeded);
+}
+
+bool VerifyToastUpdateZeroSequenceFail_Unpackaged()
+{
+    auto toastNotificationManager{ winrt::AppNotificationManager::Default() };
+    toastNotificationManager.Register();
+    auto scope_exit = wil::scope_exit(
+        [&] {
+            toastNotificationManager.Unregister();
+        });
+    PostToastHelper(L"Tag", L"");
+
+    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"SomeStatus", L"SomeTitle", 0.14, L"14%", false, 1);
+
+    auto progressResultOperation = toastNotificationManager.UpdateAsync(progressData, L"Tag");
+
+    if (progressResultOperation.wait_for(std::chrono::seconds(2)) == winrt::AsyncStatus::Completed)
+    {
+        return false;
+    }
+    else
+    {
+        progressResultOperation.Cancel();
+        return true;
+    }
+}
+
+bool VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup()
+{
+    try
+    {
+        winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", true, 1);
+
+        auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateAsync(progressData, L"", L"Group").get();
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_INVALIDARG;
+    }
+    return false;
+}
+
+bool VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup()
+{
+    try
+    {
+        winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", true, 1);
+
+        auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateAsync(progressData, L"", L"").get();
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_INVALIDARG;
+    }
+    return false;
+}
+
+bool VerifyToastProgressDataSequence0Fail()
+{
+    try
+    {
+        winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", true, 0);
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_INVALIDARG;
+    }
+    return false;
 }
 
 bool VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup()
@@ -541,9 +693,9 @@ bool VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup()
     // Registration happens in main()
     PostToastHelper(L"PTag", L"PGroup");
 
-    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%");
+    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", true, 1);
 
-    auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateProgressDataAsync(progressData, L"NonExistentTag", L"NonExistentGroup");
+    auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateAsync(progressData, L"NonExistentTag", L"NonExistentGroup");
     return ProgressResultOperationHelper(progressResultOperation, winrt::AppNotificationProgressResult::AppNotificationNotFound);
 }
 
@@ -558,18 +710,18 @@ bool VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup_Unpackaged()
 
     PostToastHelper(L"Tag", L"Group");
 
-    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"SomeStatus", L"SomeTitle", 0.14, L"14%");
+    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"SomeStatus", L"SomeTitle", 0.14, L"14%", true, 1);
 
-    auto progressResultOperation = toastNotificationManager.UpdateProgressDataAsync(progressData, L"NonExistentTag", L"NonExistentGroup");
+    auto progressResultOperation = toastNotificationManager.UpdateAsync(progressData, L"NonExistentTag", L"NonExistentGroup");
     return ProgressResultOperationHelper(progressResultOperation, winrt::AppNotificationProgressResult::AppNotificationNotFound);
 }
 
 bool VerifyFailedUpdateNotificationDataWithoutPostToast()
 {
     // Registration happens in main()
-    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%");
+    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", true, 1);
 
-    auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateProgressDataAsync(progressData, L"Tag", L"Group");
+    auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateAsync(progressData, L"Tag", L"Group");
     return ProgressResultOperationHelper(progressResultOperation, winrt::AppNotificationProgressResult::AppNotificationNotFound);
 }
 
@@ -582,41 +734,9 @@ bool VerifyFailedUpdateNotificationDataWithoutPostToast_Unpackaged()
             toastNotificationManager.Unregister();
         });
 
-    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"SomeStatus", L"SomeTitle", 0.14, L"14%");
-    auto progressResultOperation = toastNotificationManager.UpdateProgressDataAsync(progressData, L"SomeRandomTag", L"SomeRandomGroup");
+    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"SomeStatus", L"SomeTitle", 0.14, L"14%", true, 1);
+    auto progressResultOperation = toastNotificationManager.UpdateAsync(progressData, L"SomeRandomTag", L"SomeRandomGroup");
     return ProgressResultOperationHelper(progressResultOperation, winrt::AppNotificationProgressResult::AppNotificationNotFound);
-}
-
-bool VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup()
-{
-    try
-    {
-        winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%");
-
-        auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateProgressDataAsync(progressData, L"", L"Group").get();
-    }
-    catch (...)
-    {
-        return winrt::to_hresult() == E_INVALIDARG;
-    }
-
-    return false;
-}
-
-bool VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup()
-{
-    try
-    {
-        winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%");
-
-        auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateProgressDataAsync(progressData, L"", L"").get();
-    }
-    catch (...)
-    {
-        return winrt::to_hresult() == E_INVALIDARG;
-    }
-
-    return false;
 }
 
 bool VerifyGetAllAsyncWithZeroActiveToast()
@@ -658,7 +778,7 @@ bool VerifyGetAllAsyncWithOneActiveToast()
     toast.Priority(winrt::AppNotificationPriority::High);
     toast.SuppressDisplay(true);
 
-    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"SomeStatus", L"SomeTitle", 0.14, L"14%");
+    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"SomeStatus", L"SomeTitle", 0.14, L"14%", false, 0);
     toast.Progress(progressData);
 
     auto toastNotificationManager = winrt::AppNotificationManager::Default();
@@ -714,7 +834,7 @@ bool VerifyGetAllAsyncWithMultipleActiveToasts()
     }
 
     auto actual = notifications.GetAt(0);
-    auto payload = actual.Payload().GetElementsByTagName(L"toast").GetAt(0).GetXml();
+    auto payload = actual.Payload();
 
     if (wcscmp(L"<toast>intrepidToast</toast>", payload.c_str()) != 0)
     {
@@ -733,13 +853,13 @@ bool VerifyGetAllAsyncIgnoresUpdatesToProgressData()
     winrt::AppNotification toast{ CreateToastNotification() };
     toast.Tag(L"Tag");
     toast.Group(L"Group");
-    winrt::AppNotificationProgressData initialProgressData = GetToastProgressData(L"Initial Status", L"Initial Title", 0.05, L"5%");
+    winrt::AppNotificationProgressData initialProgressData = GetToastProgressData(L"Initial Status", L"Initial Title", 0.05, L"5%", true, 1);
     toast.Progress(initialProgressData);
 
     toastNotificationManager.Show(toast);
 
-    winrt::AppNotificationProgressData updatedProgressData = GetToastProgressData(L"Updated Status", L"Updated Title", 0.14, L"14%");
-    auto progressResultOperation = toastNotificationManager.UpdateProgressDataAsync(updatedProgressData, L"Tag", L"Group");
+    winrt::AppNotificationProgressData updatedProgressData = GetToastProgressData(L"Updated Status", L"Updated Title", 0.14, L"14%", true, 2);
+    auto progressResultOperation = toastNotificationManager.UpdateAsync(updatedProgressData, L"Tag", L"Group");
     if (!ProgressResultOperationHelper(progressResultOperation, winrt::AppNotificationProgressResult::Succeeded))
     {
         return false;
@@ -836,7 +956,7 @@ bool VerifyRemoveWithTagAsyncUsingEmptyTagThrows()
 
     try
     {
-        toastNotificationManager.RemoveWithTagAsync(L"").get();
+        toastNotificationManager.RemoveByTagAsync(L"").get();
     }
     catch (...)
     {
@@ -852,7 +972,7 @@ bool VerifyRemoveWithTagAsyncUsingNonExistentTagDoesNotThrow()
 
     auto toastNotificationManager = winrt::AppNotificationManager::Default();
 
-    auto removeToastAsync{ toastNotificationManager.RemoveWithTagAsync(L"tag") };
+    auto removeToastAsync{ toastNotificationManager.RemoveByTagAsync(L"tag") };
     if (removeToastAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
     {
         return false;
@@ -890,7 +1010,7 @@ bool VerifyRemoveWithTagAsync()
         return false;
     }
 
-    auto removeToastAsync{ toastNotificationManager.RemoveWithTagAsync(L"Unique tag") };
+    auto removeToastAsync{ toastNotificationManager.RemoveByTagAsync(L"Unique tag") };
     if (removeToastAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
     {
         return false;
@@ -910,7 +1030,7 @@ bool VerifyRemoveWithTagGroupAsyncUsingEmptyTagThrows()
 
     try
     {
-        toastNotificationManager.RemoveWithTagGroupAsync(L"", L"group").get();
+        toastNotificationManager.RemoveByTagAndGroupAsync(L"", L"group").get();
     }
     catch (...)
     {
@@ -926,7 +1046,7 @@ bool VerifyRemoveWithTagGroupAsyncUsingEmptyGroupThrows()
 
     try
     {
-        toastNotificationManager.RemoveWithTagGroupAsync(L"tag", L"").get();
+        toastNotificationManager.RemoveByTagAndGroupAsync(L"tag", L"").get();
     }
     catch (...)
     {
@@ -942,7 +1062,7 @@ bool VerifyRemoveWithTagGroupAsyncUsingNonExistentTagGroupDoesNotThrow()
 
     auto toastNotificationManager = winrt::AppNotificationManager::Default();
 
-    auto removeToastAsync{ toastNotificationManager.RemoveWithTagGroupAsync(L"tag", L"group")};
+    auto removeToastAsync{ toastNotificationManager.RemoveByTagAndGroupAsync(L"tag", L"group")};
     if (removeToastAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
     {
         return false;
@@ -975,7 +1095,7 @@ bool VerifyRemoveWithTagGroupAsync()
         return false;
     }
 
-    auto removeToastAsync{ toastNotificationManager.RemoveWithTagGroupAsync(L"tag2", L"Shared group") };
+    auto removeToastAsync{ toastNotificationManager.RemoveByTagAndGroupAsync(L"tag2", L"Shared group") };
     if (removeToastAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
     {
         return false;
@@ -995,7 +1115,7 @@ bool VerifyRemoveGroupAsyncUsingEmptyGroupThrows()
 
     try
     {
-        toastNotificationManager.RemoveGroupAsync(L"").get();
+        toastNotificationManager.RemoveByGroupAsync(L"").get();
     }
     catch (...)
     {
@@ -1011,7 +1131,7 @@ bool VerifyRemoveGroupAsyncUsingNonExistentGroupDoesNotThrow()
 
     auto toastNotificationManager = winrt::AppNotificationManager::Default();
 
-    auto removeToastAsync{ toastNotificationManager.RemoveGroupAsync(L"group") };
+    auto removeToastAsync{ toastNotificationManager.RemoveByGroupAsync(L"group") };
     if (removeToastAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
     {
         return false;
@@ -1044,7 +1164,7 @@ bool VerifyRemoveGroupAsync()
         return false;
     }
 
-    auto removeToastAsync{ toastNotificationManager.RemoveGroupAsync(L"Shared group") };
+    auto removeToastAsync{ toastNotificationManager.RemoveByGroupAsync(L"Shared group") };
     if (removeToastAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
     {
         return false;
@@ -1142,7 +1262,6 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyToastExpiresOnReboot", &VerifyToastExpiresOnReboot },
         { "VerifyShowToast", &VerifyShowToast },
         { "VerifyShowToast_Unpackaged", &VerifyShowToast_Unpackaged },
-
         { "VerifyUpdateToastProgressDataUsingValidTagAndValidGroup", &VerifyUpdateToastProgressDataUsingValidTagAndValidGroup },
         { "VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged", &VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged },
         { "VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup", &VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup },
@@ -1153,12 +1272,10 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyFailedUpdateNotificationDataWithoutPostToast_Unpackaged", &VerifyFailedUpdateNotificationDataWithoutPostToast_Unpackaged },
         { "VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup", &VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup },
         { "VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup", &VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup },
-
         { "VerifyGetAllAsyncWithZeroActiveToast", &VerifyGetAllAsyncWithZeroActiveToast },
         { "VerifyGetAllAsyncWithOneActiveToast", &VerifyGetAllAsyncWithOneActiveToast },
         { "VerifyGetAllAsyncWithMultipleActiveToasts", &VerifyGetAllAsyncWithMultipleActiveToasts },
         { "VerifyGetAllAsyncIgnoresUpdatesToProgressData", &VerifyGetAllAsyncIgnoresUpdatesToProgressData },
-
         { "VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier", &VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier },
         { "VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifierDoesNotThrow", &VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifierDoesNotThrow },
         { "VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier", &VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier },
@@ -1174,6 +1291,13 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyRemoveGroupAsync", &VerifyRemoveGroupAsync },
         { "VerifyRemoveAllAsyncWithNoActiveToastDoesNotThrow", &VerifyRemoveAllAsyncWithNoActiveToastDoesNotThrow },
         { "VerifyRemoveAllAsync", &VerifyRemoveAllAsync },
+        { "VerifyExplicitAppId_Unpackaged", &VerifyExplicitAppId_Unpackaged },
+        { "VerifyUnregisterAll_Unpackaged", &VerifyUnregisterAll_Unpackaged },
+        { "VerifyUnregisterAll", &VerifyUnregisterAll },
+        { "VerifyUnregisterTwice", &VerifyUnregisterTwice },
+        { "VerifyUnregisterTwice_Unpackaged", &VerifyUnregisterTwice_Unpackaged },
+        { "VerifyToastProgressDataSequence0Fail", &VerifyToastProgressDataSequence0Fail },
+        { "VerifyToastUpdateZeroSequenceFail_Unpackaged", &VerifyToastUpdateZeroSequenceFail_Unpackaged },
       };
 
     return switchMapping;
