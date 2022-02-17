@@ -998,12 +998,12 @@ bool VerifyGetAllAsyncIgnoresUpdatesToProgressData()
     winrt::AppNotification toast{ CreateToastNotification() };
     toast.Tag(L"Tag");
     toast.Group(L"Group");
-    winrt::AppNotificationProgressData initialProgressData = GetToastProgressData(L"Initial Status", L"Initial Title", 0.05, L"5%", false, 0);
+    winrt::AppNotificationProgressData initialProgressData = GetToastProgressData(L"Initial Status", L"Initial Title", 0.05, L"5%", true, 1);
     toast.Progress(initialProgressData);
 
     toastNotificationManager.Show(toast);
 
-    winrt::AppNotificationProgressData updatedProgressData = GetToastProgressData(L"Updated Status", L"Updated Title", 0.14, L"14%", false, 0);
+    winrt::AppNotificationProgressData updatedProgressData = GetToastProgressData(L"Updated Status", L"Updated Title", 0.14, L"14%", true, 2);
     auto progressResultOperation = toastNotificationManager.UpdateAsync(updatedProgressData, L"Tag", L"Group");
     if (!ProgressResultOperationHelper(progressResultOperation, winrt::AppNotificationProgressResult::Succeeded))
     {
