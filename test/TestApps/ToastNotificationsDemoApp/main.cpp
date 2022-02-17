@@ -115,10 +115,7 @@ std::wstring GetEnumString(winrt::AppNotificationSetting const& setting)
 winrt::AppNotification CreateToastNotification(winrt::hstring message)
 {
     winrt::hstring xmlPayload{ L"<toast>" + message + L"</toast>" };
-    winrt::XmlDocument xmlDocument{};
-    xmlDocument.LoadXml(xmlPayload);
-
-    return winrt::AppNotification(xmlDocument);
+    return winrt::AppNotification(xmlPayload);
 }
 
 winrt::AppNotification CreateToastNotification()
