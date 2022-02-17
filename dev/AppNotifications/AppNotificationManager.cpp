@@ -75,8 +75,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         }
 
         winrt::guid registeredClsid{ GUID_NULL };
-        THROW_IF_FAILED(PushNotificationHelpers::GetComRegistrationFromRegistry(expectedAppServerArgs.data(), registeredClsid));
-        
+        if (AppModel::Identity::IsPackagedProcess())
+        {
+            THROW_IF_FAILED(PushNotificationHelpers::GetComRegistrationFromRegistry(expectedAppServerArgs.data(), registeredClsid));
+        }
+
+        // Create event handle before COM Registration otherwise if a notification arrives will lead to race condition
+        GetWaitHandleForArgs().create();
+
         {
             auto lock{ m_registrationLock.lock_exclusive() };
             THROW_HR_IF_MSG(E_INVALIDARG, m_notificationComActivatorRegistration, "Already Registered for App Notifications!");
@@ -87,8 +93,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                 REGCLS_MULTIPLEUSE,
                 &m_notificationComActivatorRegistration));
         }
-
-        GetWaitHandleForArgs().create();
     }
 
     void AppNotificationManager::Unregister()

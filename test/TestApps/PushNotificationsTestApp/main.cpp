@@ -118,7 +118,8 @@ bool ActivatorTest()
         if(PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator))
         {
             PushNotificationActivationInfo info(
-                PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
+                PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
+                c_fakeComServerId);
 
             PushNotificationManager::Default().RegisterActivator(info);
             PushNotificationManager::Default().UnregisterActivator(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
@@ -154,6 +155,44 @@ bool RegisterActivatorNullDetails()
     return false;
 }
 
+// Verify calling register activator with null clsid is not allowed.
+bool RegisterActivatorNullClsid()
+{
+    PushNotificationManager::Default().UnregisterAllActivators();
+    if (PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator))
+    {
+        try
+        {
+            PushNotificationActivationInfo info(
+                PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
+                winrt::guid());
+
+            PushNotificationManager::Default().RegisterActivator(info);
+        }
+        catch (...)
+        {
+            return to_hresult() == E_INVALIDARG;
+        }
+        return false;
+    }
+    else
+    {
+        try
+        {
+            PushNotificationActivationInfo info(
+                PushNotificationRegistrationActivators::ProtocolActivator,
+                winrt::guid());
+
+            PushNotificationManager::Default().RegisterActivator(info);
+        }
+        catch (...)
+        {
+            return false;
+        }
+        return true;
+    }
+}
+
 // Verify registering multiple activators is not allowed.
 bool MultipleRegisterActivatorTest()
 {
@@ -162,7 +201,8 @@ bool MultipleRegisterActivatorTest()
         if(PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator))
         {
             PushNotificationActivationInfo info(
-                PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator); // Fake clsid to test multiple activators
+                PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
+                c_fakeComServerId); // Fake clsid to test multiple activators
 
             PushNotificationManager::Default().RegisterActivator(info);
         }
@@ -239,6 +279,7 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "MultipleChannelRequestUsingSameRemoteId", &MultipleChannelRequestUsingSameRemoteId},
         { "MultipleChannelRequestUsingMultipleRemoteId", &MultipleChannelRequestUsingMultipleRemoteId},
         { "RegisterActivatorNullDetails", &RegisterActivatorNullDetails},
+        { "RegisterActivatorNullClsid", &RegisterActivatorNullClsid},
         { "ActivatorTest", &ActivatorTest},
         { "MultipleRegisterActivatorTest", &MultipleRegisterActivatorTest},
         { "BackgroundActivationTest", &BackgroundActivationTest},
@@ -290,7 +331,8 @@ int main() try
     if (PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
     {
         PushNotificationActivationInfo info(
-            PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator); // same clsid as app manifest
+            PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
+            winrt::guid(c_comServerId)); // same clsid as app manifest
 
         PushNotificationManager::Default().RegisterActivator(info);
     }

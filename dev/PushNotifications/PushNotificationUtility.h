@@ -169,8 +169,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 
     inline HRESULT GetComRegistrationFromRegistry(const std::wstring argumentToCheck, winrt::guid& comServerClsid) noexcept try
     {
-        RETURN_HR_IF(S_OK, !AppModel::Identity::IsPackagedProcess());
-
         wil::unique_cotaskmem_string packagedFullName;
         THROW_IF_FAILED(GetPackageFullName(packagedFullName));
 
@@ -240,36 +238,38 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 
             std::wstring argumentString{ argumentsBuffer };
 
-            WCHAR exeBuffer[MAX_VALUE_NAME];
-            DWORD exeBufferLength = sizeof(exeBuffer);
-            THROW_IF_FAILED(RegGetValueW(
-                HKEY_LOCAL_MACHINE,
-                serverPath.c_str(),
-                c_executableCommandString.c_str(),
-                RRF_RT_REG_SZ,
-                nullptr /* pdwType */,
-                &exeBuffer,
-                &exeBufferLength));
-
-            std::wstring exeString{ exeBuffer };
-            THROW_IF_FAILED(GetExeNameFromPath(exeString));
-
-            wil::unique_cotaskmem_string exePath;
-            THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, exePath));
-
-            std::wstring exeToCheck{ exePath.get() };
-            THROW_IF_FAILED(GetExeNameFromPath(exeToCheck));
-
             if (argumentString == argumentToCheck)
             {
+                WCHAR exeBuffer[MAX_VALUE_NAME];
+                DWORD exeBufferLength = sizeof(exeBuffer);
+                THROW_IF_FAILED(RegGetValueW(
+                    HKEY_LOCAL_MACHINE,
+                    serverPath.c_str(),
+                    c_executableCommandString.c_str(),
+                    RRF_RT_REG_SZ,
+                    nullptr /* pdwType */,
+                    &exeBuffer,
+                    &exeBufferLength));
+
+                std::wstring exeString{ exeBuffer };
+                THROW_IF_FAILED(GetExeNameFromPath(exeString));
+
+                wil::unique_cotaskmem_string exePath;
+                THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, exePath));
+
+                std::wstring exeToCheck{ exePath.get() };
+                THROW_IF_FAILED(GetExeNameFromPath(exeToCheck));
+
                 THROW_HR_IF_MSG(E_FAIL, exeString != exeToCheck, "Caller RegistrationProcess is not the same as COM Server!");
+
                 std::wstring storedComActivatorString{ comServerGuid.data() };
                 comServerClsid = winrt::guid(storedComActivatorString.substr(1, storedComActivatorString.size() - 2));
+
                 found = true;
                 break;
             }
         }
-        THROW_HR_IF(E_NOT_SET, found != true);
+        THROW_HR_IF(E_NOT_SET, !found);
 
         return S_OK;
     }

@@ -8,8 +8,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     struct PushNotificationActivationInfo : PushNotificationActivationInfoT<PushNotificationActivationInfo>
     {
+        PushNotificationActivationInfo(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators, winrt::guid const& taskClsid);
         PushNotificationActivationInfo(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
 
+        winrt::guid TaskClsid();
         Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators Activators();
         winrt::com_array<winrt::Windows::ApplicationModel::Background::IBackgroundCondition> GetConditions();
         void SetConditions(array_view<winrt::Windows::ApplicationModel::Background::IBackgroundCondition const> conditions);

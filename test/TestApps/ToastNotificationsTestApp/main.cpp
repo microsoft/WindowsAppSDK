@@ -239,7 +239,7 @@ bool PostToastHelper(std::wstring const& tag, std::wstring const& group)
     return true;
 }
 
-bool VerifyRegisterActivatorandUnRegisterActivator()
+bool VerifyRegisterActivatorandUnregisterActivator()
 {
     winrt::AppNotificationManager::Default().Unregister();
 
@@ -253,21 +253,6 @@ bool VerifyRegisterActivatorandUnRegisterActivator()
     {
         return false;
     }
-    return true;
-}
-
-bool VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged()
-{
-    try
-    {
-        // Registration is done in main
-        winrt::AppNotificationManager::Default().Unregister();
-    }
-    catch (...)
-    {
-        return false;
-    }
-   
     return true;
 }
 
@@ -1312,8 +1297,8 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
     static std::map<std::string, bool(*)()> switchMapping = {
         { "BackgroundActivationTest", &BackgroundActivationTest},
         { "UnregisterBackgroundActivationTest", &UnregisterBackgroundActivationTest },
-        { "VerifyRegisterActivatorandUnRegisterActivatorUsingClsid", &VerifyRegisterActivatorandUnRegisterActivator },
-        { "VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged", &VerifyRegisterActivatorandUnRegisterActivator },
+        { "VerifyRegisterActivatorandUnRegisterActivatorUsingClsid", &VerifyRegisterActivatorandUnregisterActivator },
+        { "VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged", &VerifyRegisterActivatorandUnregisterActivator },
         { "VerifyFailedMultipleRegisterActivatorUsingSameClsid", &VerifyFailedMultipleRegisterActivator },
         { "VerifyFailedMultipleRegisterActivatorUsingSameAssets_Unpackaged", &VerifyFailedMultipleRegisterActivator },
 

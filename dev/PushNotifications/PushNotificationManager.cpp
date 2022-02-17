@@ -25,7 +25,6 @@ using namespace std::literals;
 using namespace Microsoft::Windows::AppNotifications::Helpers;
 
 constexpr std::wstring_view backgroundTaskName = L"PushBackgroundTaskName"sv;
-constexpr std::wstring_view expectedPushServerArgs = L"----WindowsAppRuntimePushServer:"sv;
 
 static wil::unique_event g_waitHandleForArgs;
 static winrt::guid g_comServerClsid{ GUID_NULL };
@@ -257,17 +256,17 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             BackgroundTaskBuilder builder{ nullptr };
 
-            winrt::guid registeredClsid{ GUID_NULL };
-            THROW_IF_FAILED(PushNotificationHelpers::GetComRegistrationFromRegistry(expectedPushServerArgs.data(), registeredClsid));
-
             if (WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::PushTrigger) && PushNotificationHelpers::IsPackagedAppScenario())
             {
+                GUID taskClsid = details.TaskClsid();
+                THROW_HR_IF(E_INVALIDARG, taskClsid == GUID_NULL);
+
                 {
                     auto lock = s_activatorInfoLock.lock_shared();
                     THROW_HR_IF(E_INVALIDARG, s_pushTriggerRegistration);
                 }
 
-                winrt::hstring taskClsidStr{ winrt::to_hstring(registeredClsid) };
+                winrt::hstring taskClsidStr{ winrt::to_hstring(taskClsid) };
                 winrt::hstring backgroundTaskFullName{ backgroundTaskName + taskClsidStr };
 
                 auto tasks{ BackgroundTaskRegistration::AllTasks() };
@@ -302,7 +301,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                     // In case the interface is not supported, let it throw.
                     auto builder5{ builder.as<winrt::IBackgroundTaskBuilder5>() };
-                    builder5.SetTaskEntryPointClsid(registeredClsid);
+                    builder5.SetTaskEntryPointClsid(taskClsid);
                     winrt::com_array<winrt::IBackgroundCondition> conditions = details.GetConditions();
                     for (auto condition : conditions)
                     {
@@ -328,16 +327,19 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             if (WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::ComActivator))
             {
+                GUID taskClsid = details.TaskClsid();
+                THROW_HR_IF(E_INVALIDARG, taskClsid == GUID_NULL);
+
                 {
                     auto lock{ s_activatorInfoLock.lock_shared() };
                     THROW_HR_IF_MSG(E_INVALIDARG, s_comActivatorRegistration, "ComActivator already registered.");
                 }
 
                 GetWaitHandleForArgs().create();
-                GetComServerClsid() = registeredClsid;
-                
+                GetComServerClsid() = taskClsid;
+
                 THROW_IF_FAILED(::CoRegisterClassObject(
-                    registeredClsid,
+                    taskClsid,
                     winrt::make<PushNotificationBackgroundTaskFactory>().get(),
                     CLSCTX_LOCAL_SERVER,
                     REGCLS_MULTIPLEUSE,
@@ -355,7 +357,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             PushNotificationTelemetry::ActivatorRegisteredByApi(S_OK, details.Activators());
         }
 
-        catch(...)
+        catch (...)
         {
             PushNotificationTelemetry::ActivatorRegisteredByApi(wil::ResultFromCaughtException(),
                 details == nullptr ? PushNotificationRegistrationActivators::Undefined : details.Activators());
