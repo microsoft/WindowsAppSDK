@@ -278,9 +278,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     {
         co_await winrt::resume_background();
 
-        std::wstring appId{ RetrieveNotificationAppId() };
+        auto scopeExit{ wil::scope_exit([&]() { AppNotificationTelemetry::GetAllAsyncByAPI(); }) };
 
-        AppNotificationTelemetry::GetAllAsyncByAPI();
+        std::wstring appId{ RetrieveNotificationAppId() };
 
         winrt::com_ptr<ToastABI::IVector<ToastABI::INotificationProperties*>> toastPropertiesCollection{};
         auto result{ ToastNotifications_GetHistory(appId.c_str(), toastPropertiesCollection.put()) };
