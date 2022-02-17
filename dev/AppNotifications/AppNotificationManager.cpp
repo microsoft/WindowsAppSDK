@@ -74,12 +74,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             {
                 THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(toastAppId.c_str(), GUID_NULL));
 
-
-                // TODO: Add permanent displayname and iconuri.
-                wil::unique_cotaskmem_string processName;
-                THROW_IF_FAILED(GetCurrentProcessPath(processName));
-
-                storedComActivatorString = RegisterComActivatorGuidAndAssets(processName.get(), winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
+                storedComActivatorString = RegisterComActivatorGuidAndAssets();
                 // Remove braces around the guid string
                 storedComActivatorString = storedComActivatorString.substr(1, storedComActivatorString.size() - 2);
             }

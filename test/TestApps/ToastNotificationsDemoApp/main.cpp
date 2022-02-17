@@ -9,6 +9,9 @@
 #include <MddBootstrapTest.h>
 #include <winrt/Windows.Data.Xml.Dom.h>
 
+#include <propkey.h> //PKEY properties
+#include <propsys.h>
+
 namespace winrt
 {
     using namespace winrt::Microsoft::Windows::AppLifecycle;
@@ -140,6 +143,27 @@ bool PostToastHelper(std::wstring const& tag, std::wstring const& group)
     return true;
 }
 
+// This function is intended to be called in the unpackaged scenario.
+void SetDisplayNameAndIcon() noexcept try
+{
+    winrt::com_ptr<IPropertyStore> propertyStore;
+    wil::unique_hwnd hWindow{ GetConsoleWindow() };
+
+    THROW_IF_FAILED(SHGetPropertyStoreForWindow(hWindow.get(), IID_PPV_ARGS(&propertyStore)));
+
+    wil::unique_prop_variant propVariantIcon;
+    wil::unique_cotaskmem_string sth = wil::make_unique_string<wil::unique_cotaskmem_string>(LR"(%SystemRoot%\system32\@WLOGO_96x96.png)");
+    propVariantIcon.pwszVal = sth.release();
+    propVariantIcon.vt = VT_LPWSTR;
+    THROW_IF_FAILED(propertyStore->SetValue(PKEY_AppUserModel_RelaunchIconResource, propVariantIcon));
+
+    wil::unique_prop_variant propVariantAppName;
+    wil::unique_cotaskmem_string prodName = wil::make_unique_string<wil::unique_cotaskmem_string>(L"The Toast Demo App");
+    propVariantAppName.pwszVal = prodName.release();
+    propVariantAppName.vt = VT_LPWSTR;
+    THROW_IF_FAILED(propertyStore->SetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, propVariantAppName));
+}
+CATCH_LOG()
 
 int main()
 {
@@ -155,6 +179,8 @@ int main()
         const UINT32 c_Version_MajorMinor{ 0x00040001 };
         const PACKAGE_VERSION minVersion{};
         RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
+
+        SetDisplayNameAndIcon();
     }
 
     std::wcout << L"--------------------------------\n";
@@ -223,7 +249,7 @@ int main()
     std::cin.ignore();
 
     // If you want to stop receiving AppNotifications for the app
-    /* AppNotificationManager.UnregisterActivator(); */
+    appNotificationManager.Unregister();
     if (!isPackaged)
     {
         MddBootstrapShutdown();
