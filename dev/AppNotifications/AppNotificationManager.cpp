@@ -88,7 +88,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             THROW_HR_IF_MSG(E_INVALIDARG, m_notificationComActivatorRegistration, "Already Registered for App Notifications!");
             THROW_IF_FAILED(::CoRegisterClassObject(
                 AppModel::Identity::IsPackagedProcess() ? registeredClsid : winrt::guid(storedComActivatorString),
-                winrt::make<AppNotificationActivationCallbackFactory>().get(),
+                winrt::make<AppNotificationManagerFactory>().get(),
                 CLSCTX_LOCAL_SERVER,
                 REGCLS_MULTIPLEUSE,
                 &m_notificationComActivatorRegistration));
