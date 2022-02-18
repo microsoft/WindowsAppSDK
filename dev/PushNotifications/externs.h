@@ -29,19 +29,3 @@ inline HRESULT GetCurrentProcessPath(wil::unique_cotaskmem_string& processName)
 {
     return wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processName);
 };
-
-inline winrt::Windows::Foundation::IInspectable GetArgsFromComStore()
-{
-    const DWORD receiveArgsTimeoutInMSec{ 2000 };
-    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !GetWaitHandleForArgs().wait(receiveArgsTimeoutInMSec));
-
-    // If COM static store was uninit, let it throw
-    if (PushNotificationHelpers::IsPackagedAppScenario())
-    {
-        return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
-    }
-    else
-    {
-        return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(LRP_ACTIVATED_EVENT_ARGS_KEY);
-    }
-}
