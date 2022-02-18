@@ -86,6 +86,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         {
             auto lock{ m_lock.lock_exclusive() };
             THROW_HR_IF_MSG(E_INVALIDARG, m_notificationComActivatorRegistration, "Already Registered for App Notifications!");
+
+            // Check if the caller has registered event handlers, if so the REGCLS_MULTIPLEUSE flag will cause COM to ensure that all activators
+            // are routed improc, otherwise with REGCLS_MULTIPLEUSE COM will launch a new process of the Win32 app for each invocation.
             THROW_IF_FAILED(::CoRegisterClassObject(
                 AppModel::Identity::IsPackagedProcess() ? registeredClsid : winrt::guid(storedComActivatorString),
                 winrt::make<AppNotificationManagerFactory>().get(),
