@@ -246,7 +246,7 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
     wil::unique_prop_variant propVariantIcon;
     // Throw in case of failure, since Icon is mandatory and we don't have a fallback!
     THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchIconResource, &propVariantIcon));
-    THROW_HR_IF_MSG(E_UNEXPECTED, propVariantDisplayName.vt == VT_EMPTY, "You must specify an app icon before calling Register().");
+    THROW_HR_IF_MSG(E_UNEXPECTED, propVariantIcon.vt == VT_EMPTY, "You must specify an app icon before calling Register().");
 
     iconFilePath = propVariantIcon.pwszVal;
 
