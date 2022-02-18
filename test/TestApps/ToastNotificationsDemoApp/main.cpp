@@ -11,6 +11,7 @@
 
 #include <propkey.h> //PKEY properties
 #include <propsys.h>
+#include <ShObjIdl_core.h>
 
 namespace winrt
 {
@@ -143,6 +144,10 @@ bool PostToastHelper(std::wstring const& tag, std::wstring const& group)
 // This function is intended to be called in the unpackaged scenario.
 void SetDisplayNameAndIcon() noexcept try
 {
+    // Not mandatory, but it's highly recommended to specify AppUserModelId
+    THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(L"TestAppId"));
+
+    // Icon is mandatory
     winrt::com_ptr<IPropertyStore> propertyStore;
     wil::unique_hwnd hWindow{ GetConsoleWindow() };
 
@@ -154,6 +159,7 @@ void SetDisplayNameAndIcon() noexcept try
     propVariantIcon.vt = VT_LPWSTR;
     THROW_IF_FAILED(propertyStore->SetValue(PKEY_AppUserModel_RelaunchIconResource, propVariantIcon));
 
+    // App name is not mandatory, but it's highly recommended to specify it
     wil::unique_prop_variant propVariantAppName;
     wil::unique_cotaskmem_string prodName = wil::make_unique_string<wil::unique_cotaskmem_string>(L"The Toast Demo App");
     propVariantAppName.pwszVal = prodName.release();

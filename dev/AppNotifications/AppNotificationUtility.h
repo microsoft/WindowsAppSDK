@@ -55,7 +55,7 @@ namespace Microsoft::Windows::AppNotifications::Helpers
 
     std::wstring RegisterComActivatorGuidAndAssets();
 
-    void RegisterAssets(std::wstring const& appId, wil::unique_cotaskmem_string const& clsid);
+    void RegisterAssets(std::wstring const& appId, std::wstring const& clsid);
 
     wil::unique_cotaskmem_string ConvertUtf8StringToWideString(unsigned long length, const BYTE* utf8String);
 
