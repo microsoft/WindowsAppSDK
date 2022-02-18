@@ -207,6 +207,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         auto lock{ m_lock.lock_shared() };
                         registeredEvent = bool(m_foregroundHandlers);
                     }
+
+                    // Channel creation removes old sink, need to add sink if foreground handlers.
                     if (registeredEvent)
                     {
                         RegisterSinkHelper();
@@ -359,14 +361,23 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             if (AppModel::Identity::IsPackagedProcess())
             {
+                bool registeredEvent{ false };
+
                 {
                     auto lock{ m_lock.lock_shared() };
+                    registeredEvent = bool(m_foregroundHandlers);
                     THROW_HR_IF_MSG(E_INVALIDARG, m_comActivatorRegistration, "ComActivator already registered.");
                 }
 
                 // Create event handle before COM Registration otherwise if a notification arrives will lead to race condition
                 GetWaitHandleForArgs().create();
-                
+
+                if (registeredEvent)
+                {
+                    // Need to register foreground sink if foreground handler exists.
+                    RegisterSinkHelper();
+                }
+
                 THROW_IF_FAILED(::CoRegisterClassObject(
                     registeredClsid,
                     winrt::make<PushNotificationBackgroundTaskFactory>().get(),
@@ -456,7 +467,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             auto lock{ m_lock.lock_shared() };
             registeredEvent = bool(m_foregroundHandlers);
-            THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), m_comActivatorRegistration && !registeredEvent, "Must call Register() before registering handlers.");
+            THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), m_comActivatorRegistration, "Must register event handlers before calling Register().");
         }
 
         if (!registeredEvent)
