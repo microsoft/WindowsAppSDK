@@ -180,33 +180,9 @@ namespace Test::PushNotifications
             VERIFY_NO_THROW(LocalBackgroundTask.Run(mockBackgroundTaskInstance));
         }
 
-        TEST_METHOD(BackgroundActivation_Unpackaged)
-        {
-            RunTestUnpackaged(L"BackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
-
-            auto LocalBackgroundTask = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
-            auto mockBackgroundTaskInstance = winrt::make<MockBackgroundTaskInstance>();
-            VERIFY_NO_THROW(LocalBackgroundTask.Run(mockBackgroundTaskInstance));
-        }
-
         TEST_METHOD(MultipleBackgroundActivation)
         {
             RunTest(L"BackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
-
-            auto LocalBackgroundTask1 = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
-            auto mockBackgroundTaskInstance1 = winrt::make<MockBackgroundTaskInstance>();
-
-            auto LocalBackgroundTask2 = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
-            auto mockBackgroundTaskInstance2 = winrt::make<MockBackgroundTaskInstance>();
-
-            VERIFY_NO_THROW(LocalBackgroundTask1.Run(mockBackgroundTaskInstance1));
-            VERIFY_NO_THROW(LocalBackgroundTask2.Run(mockBackgroundTaskInstance2));
-
-        }
-
-        TEST_METHOD(MultipleBackgroundActivation_Unpackaged)
-        {
-            RunTestUnpackaged(L"BackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
 
             auto LocalBackgroundTask1 = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
             auto mockBackgroundTaskInstance1 = winrt::make<MockBackgroundTaskInstance>();
@@ -264,34 +240,14 @@ namespace Test::PushNotifications
             RunTestUnpackaged(L"MultipleChannelRequestUsingMultipleRemoteId", channelTestWaitTime());
         }
 
-        TEST_METHOD(ActivatorTest)
+        TEST_METHOD(VerifyRegisterandUnregisterActivator)
         {
-            RunTest(L"ActivatorTest", testWaitTime());
+            RunTest(L"VerifyRegisterandUnregisterActivator", testWaitTime());
         }
 
-        TEST_METHOD(ActivatorTest_Unpackaged)
+        TEST_METHOD(VerifyRegisterandUnregisterActivator_Unpackaged)
         {
-            RunTestUnpackaged(L"ActivatorTest", channelTestWaitTime());
-        }
-
-        TEST_METHOD(RegisterActivatorNullDetails)
-        {
-            RunTest(L"RegisterActivatorNullDetails", testWaitTime());
-        }
-
-        TEST_METHOD(RegisterActivatorNullDetails_Unpackaged)
-        {
-            RunTestUnpackaged(L"RegisterActivatorNullDetails", testWaitTime());
-        }
-
-        TEST_METHOD(RegisterActivatorNullClsid)
-        {
-            RunTest(L"RegisterActivatorNullClsid", testWaitTime());
-        }
-
-        TEST_METHOD(RegisterActivatorNullClsid_Unpackaged)
-        {
-            RunTestUnpackaged(L"RegisterActivatorNullClsid", testWaitTime());
+            RunTestUnpackaged(L"VerifyRegisterandUnregisterActivator", channelTestWaitTime());
         }
 
         TEST_METHOD(MultipleRegisterActivatorTest)
@@ -304,39 +260,34 @@ namespace Test::PushNotifications
             RunTestUnpackaged(L"MultipleRegisterActivatorTest", testWaitTime());
         }
 
-        TEST_METHOD(VerifyComActivatorSupported)
+        TEST_METHOD(VerifyUnregisterTwice)
         {
-            RunTest(L"VerifyComActivatorSupported", testWaitTime());
+            RunTest(L"VerifyUnregisterTwice", testWaitTime());
         }
 
-        TEST_METHOD(VerifyComActivatorNotSupported_Unpackaged)
+        TEST_METHOD(VerifyUnregisterTwice_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyComActivatorNotSupported", testWaitTime());
+            RunTestUnpackaged(L"VerifyUnregisterTwice", testWaitTime());
         }
 
-        TEST_METHOD(VerifyProtocolActivatorSupported_Unpackaged)
+        TEST_METHOD(VerifyUnregisterAll)
         {
-            RunTestUnpackaged(L"VerifyProtocolActivatorSupported", testWaitTime());
+            RunTest(L"VerifyUnregisterAll", testWaitTime());
         }
 
-        TEST_METHOD(VerifyProtocolActivatorNotSupported)
+        TEST_METHOD(VerifyUnregisterAll_Unpackaged)
         {
-            RunTest(L"VerifyProtocolActivatorNotSupported", testWaitTime());
+            RunTestUnpackaged(L"VerifyUnregisterAll", testWaitTime());
         }
 
-        TEST_METHOD(VerifyComAndProtocolActivatorNotSupported)
+        TEST_METHOD(VerifyUnregisterAllTwice)
         {
-            RunTest(L"VerifyComAndProtocolActivatorNotSupported", testWaitTime());
+            RunTest(L"VerifyUnregisterAllTwice", testWaitTime());
         }
 
-        TEST_METHOD(VerifyComAndProtocolActivatorNotSupported_Unpackaged)
+        TEST_METHOD(VerifyUnregisterAllTwice_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyComAndProtocolActivatorNotSupported", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyNullActivatorNotSupported)
-        {
-            RunTest(L"VerifyNullActivatorNotSupported", testWaitTime());
+            RunTestUnpackaged(L"VerifyUnregisterAllTwice", testWaitTime());
         }
 
         TEST_METHOD(VerifyProtocolActivation_Unpackaged)

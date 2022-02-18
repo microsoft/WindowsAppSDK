@@ -105,21 +105,10 @@ int main()
             std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
             args.Handled(true);
         });
+
     AppNotificationManager::Default().Register();
 
-    if (PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
-    {
-        PushNotificationActivationInfo info(
-            PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
-            winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2"));
-
-        PushNotificationManager::Default().RegisterActivator(info);
-    }
-    else
-    {
-        PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator);
-        PushNotificationManager::Default().RegisterActivator(info);
-    }
+    PushNotificationManager::Default().Register();
 
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
@@ -155,16 +144,14 @@ int main()
         std::cin.ignore();
     }
 
-    if (PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
-    {
-        // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure.
-        PushNotificationManager::Default().UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
-    }
+    PushNotificationManager::Default().Unregister();
 
     AppNotificationManager::Default().Unregister();
+
     if (!Test::AppModel::IsPackagedProcess())
     {
         MddBootstrapShutdown();
     }
+
     return 0;
 }
