@@ -90,7 +90,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                 AppModel::Identity::IsPackagedProcess() ? registeredClsid : winrt::guid(storedComActivatorString),
                 winrt::make<AppNotificationActivationCallbackFactory>().get(),
                 CLSCTX_LOCAL_SERVER,
-                REGCLS_MULTIPLEUSE,
+                m_notificationHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE,
                 &m_notificationComActivatorRegistration));
         }
     }
