@@ -59,7 +59,6 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
                 // Do stuff to process the raw payload
                 std::string payloadString(payload.begin(), payload.end());
                 std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
-                args.Handled(true);
             });
         // Caller's responsibility to keep the channel alive
         co_return result.Channel();
