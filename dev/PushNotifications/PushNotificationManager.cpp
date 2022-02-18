@@ -463,17 +463,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::event_token PushNotificationManager::PushReceived(TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationManager, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
     {
-        bool registeredEvent{ false };
         {
             auto lock{ m_lock.lock_shared() };
-            registeredEvent = bool(m_foregroundHandlers);
             THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), m_comActivatorRegistration, "Must register event handlers before calling Register().");
-        }
-
-        if (!registeredEvent)
-        {
-            // Need to register sink since foreground handler is being registered
-            RegisterSinkHelper();
         }
 
         auto lock{ m_lock.lock_exclusive() };
