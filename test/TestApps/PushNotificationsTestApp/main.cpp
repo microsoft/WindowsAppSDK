@@ -191,6 +191,35 @@ bool VerifyUnregisterAllTwice()
     return true;
 }
 
+bool VerifyForegroundHandlerSucceeds()
+{
+    PushNotificationManager::Default().UnregisterAll();
+    try
+    {
+        PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args) {});
+        PushNotificationManager::Default().Register();
+    }
+    catch (...)
+    {
+        return false;
+    }
+    return true;
+}
+
+bool VerifyForegroundHandlerFails()
+{
+    try
+    {
+        // Register is already called in main
+        PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args) {});
+    }
+    catch (...)
+    {
+        return true;
+    }
+    return false;
+}
+
 
 std::map<std::string, bool(*)()> const& GetSwitchMapping()
 {
@@ -200,13 +229,14 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "MultipleChannelClose", &MultipleChannelClose},
         { "MultipleChannelRequestUsingSameRemoteId", &MultipleChannelRequestUsingSameRemoteId},
         { "MultipleChannelRequestUsingMultipleRemoteId", &MultipleChannelRequestUsingMultipleRemoteId},
-
         { "VerifyRegisterandUnregisterActivator", &VerifyRegisterandUnregisterActivator},
         { "MultipleRegisterActivatorTest", &MultipleRegisterActivatorTest},
         { "BackgroundActivationTest", &BackgroundActivationTest},
         { "VerifyUnregisterTwice", &VerifyUnregisterTwice},
         { "VerifyUnregisterAll", &VerifyUnregisterAll},
         { "VerifyUnregisterAllTwice", &VerifyUnregisterAllTwice},
+        { "VerifyForegroundHandlerSucceeds", &VerifyForegroundHandlerSucceeds },
+        { "VerifyForegroundHandlerFails", &VerifyForegroundHandlerFails }
     };
     return switchMapping;
 }

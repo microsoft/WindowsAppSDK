@@ -285,6 +285,16 @@ namespace Test::PushNotifications
             RunTest(L"VerifyUnregisterAllTwice", testWaitTime());
         }
 
+        TEST_METHOD(VerifyForegroundHandlerSucceeds)
+        {
+            RunTest(L"VerifyForegroundHandlerSucceeds", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyForegroundHandlerFails)
+        {
+            RunTest(L"VerifyForegroundHandlerFails", testWaitTime());
+        }
+
         TEST_METHOD(VerifyUnregisterAllTwice_Unpackaged)
         {
             RunTestUnpackaged(L"VerifyUnregisterAllTwice", testWaitTime());
