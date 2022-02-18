@@ -18,13 +18,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         PushNotificationManager() = default;
 
         static winrt::Microsoft::Windows::PushNotifications::PushNotificationManager Default();
-        void RegisterActivator(Microsoft::Windows::PushNotifications::PushNotificationActivationInfo const& details);
-        void UnregisterActivator(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
-        void UnregisterAllActivators();
+        void Register();
+        void Unregister();
+        void UnregisterAll();
 
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> CreateChannelAsync(winrt::guid const remoteId);
-
-        static bool IsActivatorSupported(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
 
         winrt::event_token PushReceived(winrt::Windows::Foundation::TypedEventHandler<Microsoft::Windows::PushNotifications::PushNotificationManager, Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler);
         void PushReceived(winrt::event_token const& token) noexcept;
@@ -35,6 +33,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         // INotificationHandler
         HRESULT __stdcall OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept;
     private:
+
+        bool IsBackgroundTaskRegistered(winrt::hstring const& backgroundTaskFullName);
         winrt::event<PushNotificationEventHandler> m_foregroundHandlers;
         winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration m_pushTriggerRegistration{ nullptr };
         wil::unique_com_class_object_cookie m_comActivatorRegistration;
