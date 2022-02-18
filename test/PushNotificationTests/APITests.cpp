@@ -57,6 +57,13 @@ namespace Test::PushNotifications
         {
             try
             {
+                // Cleanup previous installations. Need this to remove any manual installations outside of running this tests.
+                TP::RemovePackage(GetTestPackageFullName());
+                TP::RemovePackage_PushNotificationsLongRunningTask();
+                TP::RemovePackage_DynamicDependencyLifetimeManager();
+                TP::RemovePackage_DynamicDependencyDataStore();
+                TP::RemovePackage_WindowsAppRuntimeFramework();
+
                 TP::AddPackage_WindowsAppRuntimeFramework();       // Installs WARfwk
                 TP::AddPackage_DynamicDependencyDataStore();       // Installs WARmain
                 TP::AddPackage_DynamicDependencyLifetimeManager(); // Installs WARddlm
@@ -234,7 +241,7 @@ namespace Test::PushNotifications
 
         TEST_METHOD(MultipleChannelClose_Unpackaged)
         {
-            RunTestUnpackaged(L"MultipleChannelClose", channelTestWaitTime());
+            RunTestUnpackaged(L"MultipleChannelClose", 3000000);
         }
 
         TEST_METHOD(MultipleChannelRequestUsingSameRemoteId)

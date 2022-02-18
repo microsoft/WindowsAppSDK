@@ -5,26 +5,6 @@ import "..\AppLifecycle\AppLifecycle.idl";
 
 namespace Microsoft.Windows.AppNotifications
 {
-    // The Registration Info for Packaged and Unpackaged Notification Activations
-    [experimental]
-    runtimeclass AppNotificationActivationInfo
-    {
-        // Initialize using a manifest defined COM Activator Id. Only applicable to Packaged Win32 applications
-        AppNotificationActivationInfo(Guid taskClsid);
-
-        // Initialize using Notification Assets. Only applicable to Unpackaged Win32 applications which need to specify their own assets like DisplayName and Icon.
-        AppNotificationActivationInfo(String displayName, Windows.Foundation.Uri iconUri);
-
-        // The CLSID associated with the Client COM server that Windows App SDK will activate
-        Guid TaskClsid{ get; };
-
-        // The App friendly DisplayName for the Notification in Action Centre 
-        String DisplayName{ get; };
-
-        // The full file path for the icon image
-        Windows.Foundation.Uri IconUri{ get; };
-    }
-
     // Event args for the Notification Activation
     [experimental]
     runtimeclass AppNotificationActivatedEventArgs
@@ -133,9 +113,6 @@ namespace Microsoft.Windows.AppNotifications
         // For Packaged apps, the COM server is defined in the manifest. The Process calling Register() and the process defined as the COM server are required to be the same.
         // For Unpackaged apps, the caller process will be registered as the COM server. And assets like displayname and icon will be gleaned from Shell and registered as well.
         void Register();
-
-        // Deprecated: Will be removed once Register() is implemented
-        void Register(AppNotificationActivationInfo details);
 
         // Unregisters the COM Service so that a subsequent activation will launch a new process
         void Unregister();

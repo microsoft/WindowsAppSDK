@@ -6,10 +6,16 @@
 #include "AppNotificationUtility.h"
 #include <winrt/Windows.ApplicationModel.Core.h>
 #include <winrt/Windows.Foundation.h>
+#include <winrt/base.h>
 #include <externs.h>
 #include <frameworkudk/pushnotifications.h>
 #include "AppNotification.h"
 #include "NotificationProgressData.h"
+
+#include <wil/resource.h>
+#include <wil/win32_helpers.h>
+#include <propkey.h> // PKEY properties
+#include <propsys.h> // IPropertyStore
 #include <ShObjIdl_core.h>
 
 namespace winrt
@@ -187,7 +193,7 @@ HRESULT Microsoft::Windows::AppNotifications::Helpers::GetActivatorGuid(std::wst
 }
 CATCH_RETURN()
 
-void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring const& appId, winrt::hstring const& displayName, winrt::Windows::Foundation::Uri const& iconUri, wil::unique_cotaskmem_string const& clsid)
+void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring const& appId, std::wstring const& clsid)
 {
     wil::unique_hkey hKey;
     // subKey: \Software\Classes\AppUserModelId\{AppGUID}
@@ -204,37 +210,95 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
         &hKey,
         nullptr /* lpdwDisposition */));
 
-    RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.c_str()), REG_EXPAND_SZ, displayName.size() * sizeof(wchar_t));
-    RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(iconUri.AbsoluteUri().c_str()), REG_EXPAND_SZ, iconUri.AbsoluteUri().size() * sizeof(wchar_t));
+    // Retrieve DisplayName and IconUri
+    // - DisplayName: Retrieve from Shell. If not specified, fall back to filename.
+    // - Icon: Retrieve from Shell. If it's not the case or the file extension is unsupported, then throw.
+    winrt::com_ptr<IPropertyStore> propertyStore;
+    wil::unique_hwnd hWindow{ GetConsoleWindow() };
+    THROW_IF_FAILED(SHGetPropertyStoreForWindow(hWindow.get(), IID_PPV_ARGS(propertyStore.put())));
 
-    std::wstring wideStringClsid{ clsid.get() };
-    RegisterValue(hKey, L"CustomActivator", reinterpret_cast<const BYTE*>(wideStringClsid.c_str()), REG_SZ, wideStringClsid.size() * sizeof(wchar_t));
-}
+    // Retrieve the display name
+    std::wstring displayName{};
 
-std::wstring Microsoft::Windows::AppNotifications::Helpers::RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::AppNotifications::AppNotificationActivationInfo const& details)
-{
-    std::wstring registeredGuid;
-    HRESULT status = GetActivatorGuid(registeredGuid);
-    if (status == ERROR_FILE_NOT_FOUND)
+    wil::unique_prop_variant propVariantDisplayName;
+    // Do not throw in case of failure. We can use the filepath approach below as fallback to set a DisplayName.
+    LOG_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, &propVariantDisplayName));
+
+    displayName = propVariantDisplayName.vt != VT_EMPTY ? propVariantDisplayName.pwszVal : L"";
+
+    if (displayName.length() == 0)
     {
         wil::unique_cotaskmem_string processName;
         THROW_IF_FAILED(GetCurrentProcessPath(processName));
 
+        displayName = processName.get();
+
+        size_t lastBackslashPosition{ displayName.rfind(L"\\") };
+        THROW_HR_IF(E_UNEXPECTED, lastBackslashPosition == std::wstring::npos);
+        displayName = displayName.substr(lastBackslashPosition + 1); // One after the delimiter
+
+        displayName.erase(displayName.find_first_of(L".")); // Remove file extension
+    }
+
+    // Retrieve the icon
+    std::wstring iconFilePath{};
+
+    wil::unique_prop_variant propVariantIcon;
+    // Throw in case of failure, since Icon is mandatory and we don't have a fallback!
+    THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchIconResource, &propVariantIcon));
+    THROW_HR_IF_MSG(E_UNEXPECTED, propVariantIcon.vt == VT_EMPTY, "You must specify an app icon before calling Register().");
+
+    iconFilePath = propVariantIcon.pwszVal;
+
+    // Icon filepaths from Shell APIs have this format: <filepath>,-<index>,
+    // since .ico files can have multiple icons in the same file.
+    // NotificationController doesn't seem to support such format, so let it take the first icon by default.
+    auto iteratorForCommaDelimiter = iconFilePath.find_first_of(L",");
+    if (iteratorForCommaDelimiter != std::wstring::npos) // It may or may not have an index, which is fine.
+    {
+        iconFilePath.erase(iteratorForCommaDelimiter);
+    }
+
+    auto iteratorForFileExtension = iconFilePath.find_first_of(L".");
+    THROW_HR_IF_MSG(E_UNEXPECTED, iteratorForFileExtension == std::wstring::npos, "You must provide a valid filepath as the app icon.");
+
+    std::wstring iconFileExtension = iconFilePath.substr(iteratorForFileExtension);
+    THROW_HR_IF_MSG(E_UNEXPECTED, iconFileExtension != L".ico" && iconFileExtension != L".png",
+        "You must provide a supported file extension as the icon (.ico or .png).");
+
+    RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.c_str()), REG_EXPAND_SZ, displayName.size() * sizeof(wchar_t));
+    RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(iconFilePath.c_str()), REG_EXPAND_SZ, iconFilePath.size() * sizeof(wchar_t));
+    RegisterValue(hKey, L"CustomActivator", reinterpret_cast<const BYTE*>(clsid.c_str()), REG_SZ, clsid.size() * sizeof(wchar_t));
+}
+
+std::wstring Microsoft::Windows::AppNotifications::Helpers::RegisterComActivatorGuidAndAssets()
+{
+    std::wstring registeredGuid;
+    HRESULT status = GetActivatorGuid(registeredGuid);
+
+    THROW_HR_IF(status, FAILED(status) && status != HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
+
+    if (status == ERROR_FILE_NOT_FOUND)
+    {
+        // Get process name to identify the app 
+        wil::unique_cotaskmem_string processName;
+        THROW_IF_FAILED(GetCurrentProcessPath(processName));
+
+        // Create a GUID for the COM Activator
         GUID comActivatorGuid = GUID_NULL;
         THROW_IF_FAILED(CoCreateGuid(&comActivatorGuid));
 
-        // StringFromCLSID returns GUID String with braces.
+        // StringFromCLSID returns GUID String with braces
         wil::unique_cotaskmem_string comActivatorGuidString;
         THROW_IF_FAILED(StringFromCLSID(comActivatorGuid, &comActivatorGuidString));
-
-        std::wstring notificationAppId{ RetrieveNotificationAppId() };
-        RegisterAssets(notificationAppId, details.DisplayName(), details.IconUri(), comActivatorGuidString);
         RegisterComServer(processName, comActivatorGuidString);
 
-        return comActivatorGuidString.get();
+        registeredGuid = comActivatorGuidString.get();
     }
 
-    THROW_IF_WIN32_ERROR(status);
+    std::wstring notificationAppId{ RetrieveNotificationAppId() };
+    RegisterAssets(notificationAppId, registeredGuid);
+
     return registeredGuid;
 }
 

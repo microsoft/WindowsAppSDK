@@ -105,12 +105,13 @@ int main()
             std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
             args.Handled(true);
         });
+    AppNotificationManager::Default().Register();
 
     if (PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
     {
         PushNotificationActivationInfo info(
             PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
-            winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
+            winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2"));
 
         PushNotificationManager::Default().RegisterActivator(info);
     }
@@ -160,6 +161,7 @@ int main()
         PushNotificationManager::Default().UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
     }
 
+    AppNotificationManager::Default().Unregister();
     if (!Test::AppModel::IsPackagedProcess())
     {
         MddBootstrapShutdown();
