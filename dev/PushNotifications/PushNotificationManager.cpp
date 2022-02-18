@@ -361,9 +361,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             if (AppModel::Identity::IsPackagedProcess())
             {
-                GUID taskClsid = details.TaskClsid();
                 bool registeredEvent{ false };
-                THROW_HR_IF(E_INVALIDARG, taskClsid == GUID_NULL);
+                THROW_HR_IF(E_INVALIDARG, registeredClsid == winrt::guid());
 
                 {
                     auto lock{ m_lock.lock_shared() };
@@ -372,7 +371,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 }
 
                 GetWaitHandleForArgs().create();
-                GetComServerClsid() = taskClsid;
 
                 if (registeredEvent)
                 {
@@ -381,7 +379,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 }
 
                 THROW_IF_FAILED(::CoRegisterClassObject(
-                    taskClsid,
+                    registeredClsid,
                     winrt::make<PushNotificationBackgroundTaskFactory>().get(),
                     CLSCTX_LOCAL_SERVER,
                     REGCLS_MULTIPLEUSE,
