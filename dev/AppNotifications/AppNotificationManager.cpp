@@ -130,7 +130,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     winrt::event_token AppNotificationManager::NotificationInvoked(winrt::Windows::Foundation::TypedEventHandler<winrt::Microsoft::Windows::AppNotifications::AppNotificationManager, winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs> const& handler)
     {
         auto lock{ m_lock.lock_exclusive() };
-        THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), m_notificationComActivatorRegistration && !m_notificationHandlers, "Must call Register() when registering handlers.");
+        THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), m_notificationComActivatorRegistration, "Must register event handlers before calling Register()");
         return m_notificationHandlers.add(handler);
     }
 
