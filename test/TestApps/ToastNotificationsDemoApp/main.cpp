@@ -211,6 +211,7 @@ int main()
             }
             std::wcout << L"\n";
         });
+
     std::wcout << L"Done.\n\n";
 
     // Display the current AppNotificationSetting for the app.
