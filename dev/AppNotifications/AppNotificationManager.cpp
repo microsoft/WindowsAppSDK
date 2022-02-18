@@ -14,7 +14,14 @@
 #include "NotificationTransientProperties.h"
 #include "AppNotification.h"
 #include <NotificationProgressData.h>
+#include <algorithm>
+#include <winerror.h>
+#include <string_view>
 #include <winrt/Windows.Foundation.Collections.h>
+
+using namespace std::literals;
+
+constexpr std::wstring_view expectedAppServerArgs = L"----AppNotificationActivated:"sv;
 
 namespace winrt
 {
@@ -46,10 +53,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         return appNotificationManager;
     }
 
-    void AppNotificationManager::Register(winrt::Microsoft::Windows::AppNotifications::AppNotificationActivationInfo const& details)
+    void AppNotificationManager::Register()
     {
-        THROW_HR_IF_NULL(E_INVALIDARG, details);
-
         std::wstring storedComActivatorString;
         if (!PushNotificationHelpers::IsPackagedAppScenario())
         {
@@ -58,7 +63,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             {
                 THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(toastAppId.c_str(), GUID_NULL));
 
-                storedComActivatorString = RegisterComActivatorGuidAndAssets(details);
+                storedComActivatorString = RegisterComActivatorGuidAndAssets();
                 // Remove braces around the guid string
                 storedComActivatorString = storedComActivatorString.substr(1, storedComActivatorString.size() - 2);
             }
@@ -69,23 +74,25 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), toastAppId.c_str()));
         }
 
+        winrt::guid registeredClsid{ GUID_NULL };
+        if (AppModel::Identity::IsPackagedProcess())
+        {
+            THROW_IF_FAILED(PushNotificationHelpers::GetComRegistrationFromRegistry(expectedAppServerArgs.data(), registeredClsid));
+        }
+
+        // Create event handle before COM Registration otherwise if a notification arrives will lead to race condition
+        GetWaitHandleForArgs().create();
+
         {
             auto lock{ m_lock.lock_exclusive() };
             THROW_HR_IF_MSG(E_INVALIDARG, m_notificationComActivatorRegistration, "Already Registered for App Notifications!");
             THROW_IF_FAILED(::CoRegisterClassObject(
-                AppModel::Identity::IsPackagedProcess() ? details.TaskClsid() : winrt::guid(storedComActivatorString),
+                AppModel::Identity::IsPackagedProcess() ? registeredClsid : winrt::guid(storedComActivatorString),
                 winrt::make<AppNotificationManagerFactory>().get(),
                 CLSCTX_LOCAL_SERVER,
                 REGCLS_MULTIPLEUSE,
                 &m_notificationComActivatorRegistration));
         }
-
-        GetWaitHandleForArgs().create();
-    }
-
-    void AppNotificationManager::Register()
-    {
-        THROW_HR(E_NOTIMPL);
     }
 
     void AppNotificationManager::Unregister()
@@ -200,7 +207,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressResult> AppNotificationManager::UpdateAsync(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const data, hstring const tag, hstring const group)
     {
-        THROW_HR_IF_MSG(E_INVALIDARG, tag == winrt::hstring(L""), "Update operation isn't guarenteed to find a specific notification to replace correctly.");
+        THROW_HR_IF_MSG(E_INVALIDARG, tag == winrt::hstring(L""), "Update operation isn't guaranteed to find a specific notification to replace correctly.");
         THROW_HR_IF_MSG(E_INVALIDARG, data.SequenceNumber() == 0, "Sequence Number for Updates should be greater than 0!");
 
         std::wstring appId{ RetrieveNotificationAppId() };

@@ -15,7 +15,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         static winrt::Microsoft::Windows::AppNotifications::AppNotificationManager Default();
         void Register();
-        void Register(winrt::Microsoft::Windows::AppNotifications::AppNotificationActivationInfo const& details);
         void Unregister();
         void UnregisterAll();
         winrt::event_token NotificationInvoked(winrt::Windows::Foundation::TypedEventHandler<winrt::Microsoft::Windows::AppNotifications::AppNotificationManager, winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs> const& handler);

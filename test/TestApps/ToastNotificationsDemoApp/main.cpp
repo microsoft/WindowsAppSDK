@@ -7,6 +7,11 @@
 #include "WindowsAppRuntime.Test.AppModel.h"
 #include <MddBootstrap.h>
 #include <MddBootstrapTest.h>
+#include <winrt/Windows.Data.Xml.Dom.h>
+
+#include <propkey.h> //PKEY properties
+#include <propsys.h>
+#include <ShObjIdl_core.h>
 
 namespace winrt
 {
@@ -18,6 +23,7 @@ namespace winrt
     using namespace winrt::Windows::Foundation;
     using namespace winrt::Windows::Foundation::Collections;
     using namespace winrt::Windows::Storage;
+    using namespace winrt::Windows::Data::Xml::Dom;
     using namespace winrt::Windows::Storage::Streams;
 }
 
@@ -107,6 +113,61 @@ std::wstring GetEnumString(winrt::AppNotificationSetting const& setting)
     return enumMapping[setting];
 }
 
+winrt::AppNotification CreateToastNotification(winrt::hstring message)
+{
+    winrt::hstring xmlPayload{ L"<toast>" + message + L"</toast>" };
+    return winrt::AppNotification(xmlPayload);
+}
+
+winrt::AppNotification CreateToastNotification()
+{
+    return CreateToastNotification(L"intrepidToast");
+}
+
+bool PostToastHelper(std::wstring const& tag, std::wstring const& group)
+{
+    winrt::AppNotification toast{ CreateToastNotification() };
+
+    toast.Tag(tag.c_str());
+    toast.Group(group.c_str());
+
+    winrt::AppNotificationManager::Default().Show(toast);
+
+    if (toast.Id() == 0)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+// This function is intended to be called in the unpackaged scenario.
+void SetDisplayNameAndIcon() noexcept try
+{
+    // Not mandatory, but it's highly recommended to specify AppUserModelId
+    THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(L"TestAppId"));
+
+    // Icon is mandatory
+    winrt::com_ptr<IPropertyStore> propertyStore;
+    wil::unique_hwnd hWindow{ GetConsoleWindow() };
+
+    THROW_IF_FAILED(SHGetPropertyStoreForWindow(hWindow.get(), IID_PPV_ARGS(&propertyStore)));
+
+    wil::unique_prop_variant propVariantIcon;
+    wil::unique_cotaskmem_string sth = wil::make_unique_string<wil::unique_cotaskmem_string>(LR"(%SystemRoot%\system32\@WLOGO_96x96.png)");
+    propVariantIcon.pwszVal = sth.release();
+    propVariantIcon.vt = VT_LPWSTR;
+    THROW_IF_FAILED(propertyStore->SetValue(PKEY_AppUserModel_RelaunchIconResource, propVariantIcon));
+
+    // App name is not mandatory, but it's highly recommended to specify it
+    wil::unique_prop_variant propVariantAppName;
+    wil::unique_cotaskmem_string prodName = wil::make_unique_string<wil::unique_cotaskmem_string>(L"The Toast Demo App");
+    propVariantAppName.pwszVal = prodName.release();
+    propVariantAppName.vt = VT_LPWSTR;
+    THROW_IF_FAILED(propertyStore->SetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, propVariantAppName));
+}
+CATCH_LOG()
+
 int main()
 {
     // Retrieve the app scenario.
@@ -121,6 +182,8 @@ int main()
         const UINT32 c_Version_MajorMinor{ 0x00040001 };
         const PACKAGE_VERSION minVersion{};
         RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
+
+        SetDisplayNameAndIcon();
     }
 
     std::wcout << L"--------------------------------\n";
@@ -136,41 +199,27 @@ int main()
     // Setting up foreground handler for AppNotification
     std::wcout << L"Registering foreground handler to receive AppNotificationActivatedEventArgs...\n";
     winrt::event_token token = appNotificationManager.NotificationInvoked([](const auto&, winrt::AppNotificationActivatedEventArgs const& toastArgs)
-    {
-        std::wcout << L"AppNotification received foreground!\n";
-        winrt::hstring arguments{ toastArgs.ActivationArgs() };
-        std::wcout << arguments.c_str() << L"\n\n";
-
-        winrt::IMap<winrt::hstring, winrt::hstring> userInput{ toastArgs.UserInput() };
-        for (auto pair : userInput)
         {
-            std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << L"\n";
-        }
-        std::wcout << L"\n";
-    });
+            std::wcout << L"AppNotification received foreground!\n";
+            winrt::hstring arguments{ toastArgs.ActivationArgs() };
+            std::wcout << arguments.c_str() << L"\n\n";
+
+            winrt::IMap<winrt::hstring, winrt::hstring> userInput{ toastArgs.UserInput() };
+            for (auto pair : userInput)
+            {
+                std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << L"\n";
+            }
+            std::wcout << L"\n";
+        });
+
     std::wcout << L"Done.\n\n";
 
     // Display the current AppNotificationSetting for the app.
     std::wcout << L"Printing AppNotificationSetting for app: " << GetEnumString(appNotificationManager.Setting()) << "\n\n";
 
-    winrt::AppNotificationActivationInfo activationInfo{ nullptr };
-    // Create toastActivationInfo depending on packaged | unpackaged scenario.
-    if (isPackaged)
-    {
-        std::wcout << L"Calling AppNotificationActivationInfo with ToastActivatorCLSID in manifest...\n";
-        activationInfo = winrt::AppNotificationActivationInfo(winrt::guid("FE8C7374-A28F-4CBE-8D28-4288CBDFD431"));
-        std::wcout << L"Done.\n\n";
-    }
-    else
-    {
-        std::wcout << L"Calling AppNotificationActivationInfo with app assets...\n";
-        activationInfo = winrt::AppNotificationActivationInfo(L"AppNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-        std::wcout << L"Done.\n\n";
-    }
-
     // Registering app for activation
-    std::wcout << L"Calling AppNotificationActivationInfo::Register(activationInfo)...\n";
-    appNotificationManager.Register(activationInfo);
+    std::wcout << L"Calling AppNotificationManager::Register()...\n";
+    appNotificationManager.Register();
     std::wcout << L"Done.\n\n";
 
     // Retrieve the activation event args
@@ -196,11 +245,15 @@ int main()
     std::wcout << L"Requesting PushNotificationChannel...\n\n";
     winrt::PushNotificationChannel channel{ RequestChannel() };
 
+    std::wcout << L"Post a Toast..." << std::endl;
+    PostToastHelper(L"Tag", L"Group");
+    std::wcout << L"Done.\n\n";
+
     std::wcout << L"Press enter to exit the app.\n\n";
     std::cin.ignore();
 
-    // If you want to stop receiving AppNotifications for the app
-    /* AppNotificationManager.UnregisterActivator(); */
+    // Call Unregister so that COM can launch a new process for ToastInvokes after we terminate this process.
+    appNotificationManager.Unregister();
     if (!isPackaged)
     {
         MddBootstrapShutdown();

@@ -174,26 +174,6 @@ namespace Test::ToastNotifications
             RunTest(L"UnregisterBackgroundActivationTest", testWaitTime()); // Need to launch again to unregister activation
         }
 
-        TEST_METHOD(VerifyFailedRegisterActivatorUsingNullClsid)
-        {
-            RunTest(L"VerifyFailedRegisterActivatorUsingNullClsid", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyFailedRegisterActivatorUsingNullClsid_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyFailedRegisterActivatorUsingNullClsid_Unpackaged", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyFailedRegisterActivatorUsingNullActivationInfo)
-        {
-            RunTest(L"VerifyFailedRegisterActivatorUsingNullActivationInfo", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyFailedRegisterActivatorUsingNullActivationInfo_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyFailedRegisterActivatorUsingNullActivationInfo_Unpackaged", testWaitTime());
-        }
-
         TEST_METHOD(VerifyRegisterActivatorandUnRegisterActivatorUsingClsid)
         {
             RunTest(L"VerifyRegisterActivatorandUnRegisterActivatorUsingClsid", testWaitTime());
@@ -212,21 +192,6 @@ namespace Test::ToastNotifications
         TEST_METHOD(VerifyFailedMultipleRegisterActivatorUsingSameAssets_Unpackaged)
         {
             RunTestUnpackaged(L"VerifyFailedMultipleRegisterActivatorUsingSameAssets_Unpackaged", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyFailedToastAssetsWithEmptyDisplayName_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyFailedToastAssetsWithEmptyDisplayName_Unpackaged", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyFailedToastAssetsWithNullIconPath_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged", testWaitTime());
         }
 
         TEST_METHOD(VerifyToastSettingEnabled_Unpackaged)
