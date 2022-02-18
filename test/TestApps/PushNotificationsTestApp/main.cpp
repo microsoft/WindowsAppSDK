@@ -159,7 +159,7 @@ bool RegisterActivatorNullDetails()
 bool RegisterActivatorNullClsid()
 {
     PushNotificationManager::Default().UnregisterAllActivators();
-    if(PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator))
+    if (PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator))
     {
         try
         {
@@ -169,7 +169,7 @@ bool RegisterActivatorNullClsid()
 
             PushNotificationManager::Default().RegisterActivator(info);
         }
-        catch(...)
+        catch (...)
         {
             return to_hresult() == E_INVALIDARG;
         }
@@ -185,7 +185,7 @@ bool RegisterActivatorNullClsid()
 
             PushNotificationManager::Default().RegisterActivator(info);
         }
-        catch(...)
+        catch (...)
         {
             return false;
         }

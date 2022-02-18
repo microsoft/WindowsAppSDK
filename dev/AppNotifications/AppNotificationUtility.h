@@ -53,9 +53,9 @@ namespace Microsoft::Windows::AppNotifications::Helpers
 
     HRESULT GetActivatorGuid(std::wstring& activatorGuid) noexcept;
 
-    std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::AppNotifications::AppNotificationActivationInfo const& details);
+    std::wstring RegisterComActivatorGuidAndAssets();
 
-    void RegisterAssets(std::wstring const& appId, winrt::hstring const& displayName, winrt::Windows::Foundation::Uri const& iconUri, wil::unique_cotaskmem_string const& clsid);
+    void RegisterAssets(std::wstring const& appId, std::wstring const& clsid);
 
     wil::unique_cotaskmem_string ConvertUtf8StringToWideString(unsigned long length, const BYTE* utf8String);
 

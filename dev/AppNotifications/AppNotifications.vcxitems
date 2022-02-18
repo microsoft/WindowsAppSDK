@@ -15,7 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationManager.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationActivationInfo.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotification.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationProgressData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationActivatedEventArgs.h" />
@@ -27,7 +26,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationManager.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationActivationInfo.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotification.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationProgressData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationUtility.cpp" />
