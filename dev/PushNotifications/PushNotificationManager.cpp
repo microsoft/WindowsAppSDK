@@ -206,6 +206,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         registeredEvent = bool(m_foregroundHandlers);
                     }
 
+                    // Channel creation removes old sink, need to add sink if foreground handlers.
                     if (registeredEvent)
                     {
                         RegisterSinkHelper();
