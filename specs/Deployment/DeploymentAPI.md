@@ -129,6 +129,53 @@ again.
     }
 ```
 
+### DeploymentOptions
+
+#### ForceTargetApplicationShutDown
+
+When this API may install newer version of one or more of the packages (i.e. an update) and
+if there are any currently running process(es) associated with that package(s) (in other words,
+if any of the packages to be updated are currently in use), then this API will fail installing
+that package. But this update to the packages can be forced by using DeploymentOptions object
+and setting ForceTargetApplicationShutDown option before passing it to this API. This option
+when set will shutdown the application(s) associated with the package, update the package
+and restart the application(s).
+
+[ToDo] If this option is set when updating main package, then whether the out of process
+com server from the main package such as push Notifications needs to be explictly restarted
+needs to be understood. If restart it is needed, then the API will handle explicitly restarting it.
+
+When the API is updating framework package and ForceTargetApplicationShutDown option is set,
+then all dependent packages that are NOT currently in use will be immediately re-installed
+to refer to the updated framework package and all dependent packages that are currently in use
+will be re-installed, after they shut down, to refer to the updated framework package.
+
+```C#
+    if (DeploymentManager.GetStatus().Status != DeploymentStatus.Ok)
+    {
+        // Create DeploymentOptions object and set ForceTargetApplicationShutDown option
+        // to allow for force updating of the packages even if they are currently in use.
+        DeploymentOptions deploymentOptions = new DeploymentOptions {};
+        deploymentOptions.ForceTargetApplicationShutdown = true;
+
+        // Initialize does a status check, and if the status is not Ok it will attempt to get
+        // the WindowsAppRuntime into a good state by deploying packages. Unlike a simple
+        // status check, Initialize can sometimes take several seconds to deploy the packages.
+        // These should be run on a separate thread so as not to hang your app while the
+        // packages deploy.
+        var initializeTask = Task.Run(() => DeploymentManager.Initialize());
+        initializeTask.Wait();
+
+        // Check the result.
+        if (initializeTask.Result.Status != DeploymentStatus.Ok)
+        {
+            // The WindowsAppRuntime is in a bad state which Initialize() did not fix.
+            // Do error reporting or gather information for submitting a bug.
+            // Gracefully exit the program or carry on without using the WindowsAppRuntime.
+        }
+    }
+```
+
 # API Details
 
 ```c#
@@ -143,7 +190,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         PackageInstallFailed,
     };
 
-    /// Represents the a result of a Deployment Manager method.
+    /// Represents the result of a Deployment Manager method.
     runtimeclass DeploymentResult
     {
         DeploymentResult(DeploymentStatus status, HRESULT extendedError);
@@ -155,6 +202,15 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         HRESULT ExtendedError{ get; };
     };
 
+    /// This object is used to specify deployment options to apply when using DeploymentManager's
+    /// Initialize method
+    runtimeClass DeploymentOptions
+    {
+        /// Gets or sets a value that indicates whether the processes associated with the package will be
+        /// shut down forcibly so that installation of the packages can continue if they are currently in use
+        bool ForceTargetApplicationShutdown{ get; set;};
+    };
+    
     /// Used to query deployment information for WindowsAppRuntime
     static runtimeclass DeploymentManager
     {
@@ -164,6 +220,10 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         /// Checks the status of the WindowsAppRuntime of the current package and attempts to
         /// register any missing packages that can be registered.
         static DeploymentResult Initialize();
+
+        /// Checks the status of the WindowsAppRuntime of the current package and attempts to
+        /// register any missing packages that can be registered while applying the DeploymentOptions passed in
+        static DeploymentResult Initialize(Microsoft.Windows.ApplicationModel.WindowsAppRuntime::DeploymentOptions deploymentOptions);
     };
 }
 ```
