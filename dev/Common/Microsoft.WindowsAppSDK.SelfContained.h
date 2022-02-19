@@ -25,7 +25,7 @@ inline bool IsSelfContained()
     THROW_IF_FAILED(GetCurrentPackageInfo(flags, packagePathType, packageInfoCount, packageInfo, buffer));
     for (uint32_t index=0; index < packageInfoCount; ++index)
     {
-        PCWSTR c_windowsAppRuntimePackageFamilyName{ L"Microsoft.WindowsAppRuntime." _STRINGIZE(WINDOWSAPPSDK_RELEASE_MAJOR) L"_" _STRINGIZE(WINDOWSAPPSDK_RELEASE_MINOR) WINDOWSAPPSDK_RELEASE_VERSION_TAG_W L"_" WINDOWSAPPSDK_RUNTIME_IDENTITY_PUBLISHERID_W };
+        auto c_windowsAppRuntimePackageFamilyName{ ::Microsoft::WindowsAppSDK::Runtime::Packages::Framework::PackageFamilyName };
         if (CompareStringOrdinal(packageInfo[index].packageFamilyName, -1, c_windowsAppRuntimePackageFamilyName, -1, TRUE) == CSTR_EQUAL)
         {
             // Found the Windows App SDK framework package in the package graph. Not self-contained!
