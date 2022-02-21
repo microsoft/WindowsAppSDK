@@ -22,6 +22,13 @@ namespace PushNotificationHelpers
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
+    PushNotificationChannel::PushNotificationChannel(struct ChannelDetails channelInfo)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
+
+        std::swap(m_channelInfo, channelInfo);
+    }
+
     Uri PushNotificationChannel::Uri()
     {
         return winrt::Windows::Foundation::Uri{ m_channelInfo.channelUri };

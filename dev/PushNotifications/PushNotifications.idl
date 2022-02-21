@@ -92,7 +92,7 @@ namespace Microsoft.Windows.PushNotifications
         // Unregisters the COM Service
         void Unregister();
 
-        // Unregister all services registered for the application
+        // Disables Push completely for Packaged and Unpackaged apps. Register() needs to be called again for Push to work
         void UnregisterAll();
 
         // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID

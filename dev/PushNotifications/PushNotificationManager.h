@@ -35,6 +35,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     private:
 
         bool IsBackgroundTaskRegistered(winrt::hstring const& backgroundTaskFullName);
+
         winrt::event<PushNotificationEventHandler> m_foregroundHandlers;
         winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration m_pushTriggerRegistration{ nullptr };
         wil::unique_com_class_object_cookie m_comActivatorRegistration;

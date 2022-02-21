@@ -12,12 +12,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel>
     {
-        PushNotificationChannel(struct ChannelDetails channelInfo)
-        {
-            THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
-
-            std::swap(m_channelInfo, channelInfo);
-        };
+        PushNotificationChannel(struct ChannelDetails channelInfo);
 
         winrt::Windows::Foundation::Uri Uri();
         winrt::Windows::Foundation::DateTime ExpirationTime();

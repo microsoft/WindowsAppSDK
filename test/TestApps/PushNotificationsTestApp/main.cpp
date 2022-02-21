@@ -117,8 +117,8 @@ bool VerifyRegisterandUnregisterActivator()
     try
     {
         PushNotificationManager::Default().Register();
+        PushNotificationManager::Default().UnregisterAll();
 
-        // UnregisterAll is called in main
     }
     catch (...)
     {
@@ -136,7 +136,7 @@ bool MultipleRegisterActivatorTest()
     }
     catch (...)
     {
-        return to_hresult() == E_INVALIDARG;
+        return to_hresult() == E_FAIL;
     }
     return false;
 }
