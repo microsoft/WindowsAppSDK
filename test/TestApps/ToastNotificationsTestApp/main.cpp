@@ -5,6 +5,8 @@
 #include "WindowsAppRuntime.Test.AppModel.h"
 #include <chrono>
 #include <ShObjIdl_core.h>
+#include <propkey.h> //PKEY properties
+#include <propsys.h>
 
 namespace winrt
 {
@@ -1378,6 +1380,32 @@ bool runUnitTest(std::string unitTest)
     return it->second();
 }
 
+// This function is intended to be called in the unpackaged scenario.
+void SetDisplayNameAndIcon() noexcept try
+{
+    // Not mandatory, but it's highly recommended to specify AppUserModelId
+    THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(L"TestAppId"));
+
+    // Icon is mandatory
+    winrt::com_ptr<IPropertyStore> propertyStore;
+    wil::unique_hwnd hWindow{ GetConsoleWindow() };
+
+    THROW_IF_FAILED(SHGetPropertyStoreForWindow(hWindow.get(), IID_PPV_ARGS(&propertyStore)));
+
+    wil::unique_prop_variant propVariantIcon;
+    wil::unique_cotaskmem_string sth = wil::make_unique_string<wil::unique_cotaskmem_string>(LR"(%SystemRoot%\system32\@WLOGO_96x96.png)");
+    propVariantIcon.pwszVal = sth.release();
+    propVariantIcon.vt = VT_LPWSTR;
+    THROW_IF_FAILED(propertyStore->SetValue(PKEY_AppUserModel_RelaunchIconResource, propVariantIcon));
+
+    // App name is not mandatory, but it's highly recommended to specify it
+    wil::unique_prop_variant propVariantAppName;
+    wil::unique_cotaskmem_string prodName = wil::make_unique_string<wil::unique_cotaskmem_string>(L"The Toast Demo App");
+    propVariantAppName.pwszVal = prodName.release();
+    propVariantAppName.vt = VT_LPWSTR;
+    THROW_IF_FAILED(propertyStore->SetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, propVariantAppName));
+}
+CATCH_LOG()
 
 int main() try
 {
@@ -1387,6 +1415,11 @@ int main() try
         });
 
     ::Test::Bootstrap::SetupBootstrap();
+
+    if (!Test::AppModel::IsPackagedProcess())
+    {
+        SetDisplayNameAndIcon();
+    }
 
     winrt::AppNotificationManager::Default().Register();
 
