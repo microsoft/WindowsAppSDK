@@ -55,6 +55,7 @@ namespace Test::PushNotifications
 
         TEST_CLASS_SETUP(ClassInit)
         {
+#if 0
             try
             {
                 TP::AddPackage_WindowsAppRuntimeFramework();       // Installs WARfwk
@@ -69,11 +70,13 @@ namespace Test::PushNotifications
             }
 
             m_testAppLauncher = winrt::create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL);
+#endif
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
+#if 0
             try
             {
                 // Remove in reverse order to avoid conflicts between inter-dependent packages.
@@ -87,26 +90,31 @@ namespace Test::PushNotifications
             {
                 return false;
             }
+#endif
             return true;
         }
 
         TEST_METHOD_SETUP(MethodInit)
         {
+#if 0
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
+#endif
             return true;
         }
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
+#if 0
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
 
             m_processHandle.reset();
+#endif
             return true;
         }
 
@@ -166,24 +174,29 @@ namespace Test::PushNotifications
 
         TEST_METHOD(BackgroundActivation)
         {
+#if 0
             RunTest(L"BackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
 
             auto LocalBackgroundTask = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
             auto mockBackgroundTaskInstance = winrt::make<MockBackgroundTaskInstance>();
             VERIFY_NO_THROW(LocalBackgroundTask.Run(mockBackgroundTaskInstance));
+#endif
         }
 
         TEST_METHOD(BackgroundActivation_Unpackaged)
         {
+#if 0
             RunTestUnpackaged(L"BackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
 
             auto LocalBackgroundTask = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
             auto mockBackgroundTaskInstance = winrt::make<MockBackgroundTaskInstance>();
             VERIFY_NO_THROW(LocalBackgroundTask.Run(mockBackgroundTaskInstance));
+#endif
         }
 
         TEST_METHOD(MultipleBackgroundActivation)
         {
+#if 0
             RunTest(L"BackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
 
             auto LocalBackgroundTask1 = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
@@ -194,11 +207,12 @@ namespace Test::PushNotifications
 
             VERIFY_NO_THROW(LocalBackgroundTask1.Run(mockBackgroundTaskInstance1));
             VERIFY_NO_THROW(LocalBackgroundTask2.Run(mockBackgroundTaskInstance2));
-
+#endif
         }
 
         TEST_METHOD(MultipleBackgroundActivation_Unpackaged)
         {
+#if 0
             RunTestUnpackaged(L"BackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
 
             auto LocalBackgroundTask1 = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
@@ -209,132 +223,222 @@ namespace Test::PushNotifications
 
             VERIFY_NO_THROW(LocalBackgroundTask1.Run(mockBackgroundTaskInstance1));
             VERIFY_NO_THROW(LocalBackgroundTask2.Run(mockBackgroundTaskInstance2));
-
+#endif
         }
 
         TEST_METHOD(ChannelRequestUsingNullRemoteId)
         {
+#if 0
             RunTest(L"ChannelRequestUsingNullRemoteId", testWaitTime());
+#endif
         }
 
         TEST_METHOD(ChannelRequestUsingNullRemoteId_Unpackaged)
         {
+#if 0
             RunTestUnpackaged(L"ChannelRequestUsingNullRemoteId", testWaitTime());
+#endif
         }
 
         TEST_METHOD(ChannelRequestUsingRemoteId)
         {
+#if 0
             RunTest(L"ChannelRequestUsingRemoteId", channelTestWaitTime());
+#endif
         }
 
         TEST_METHOD(ChannelRequestUsingRemoteId_Unpackaged)
         {
+#if 0
             RunTestUnpackaged(L"ChannelRequestUsingRemoteId", channelTestWaitTime());
+#endif
         }
 
         TEST_METHOD(MultipleChannelClose_Unpackaged)
         {
+#if 0
             RunTestUnpackaged(L"MultipleChannelClose", channelTestWaitTime());
+#endif
         }
 
         TEST_METHOD(MultipleChannelRequestUsingSameRemoteId)
         {
+#if 0
             RunTest(L"MultipleChannelRequestUsingSameRemoteId", channelTestWaitTime());
+#endif
         }
 
         TEST_METHOD(MultipleChannelRequestUsingSameRemoteId_Unpackaged)
         {
+#if 0
             RunTestUnpackaged(L"MultipleChannelRequestUsingSameRemoteId", channelTestWaitTime());
+#endif
         }
 
         TEST_METHOD(MultipleChannelRequestUsingMultipleRemoteId)
         {
+#if 0
             RunTest(L"MultipleChannelRequestUsingMultipleRemoteId", channelTestWaitTime());
+#endif
         }
 
         TEST_METHOD(MultipleChannelRequestUsingMultipleRemoteId_Unpackaged)
         {
+#if 0
             RunTestUnpackaged(L"MultipleChannelRequestUsingMultipleRemoteId", channelTestWaitTime());
+#endif
         }
 
         TEST_METHOD(ActivatorTest)
         {
+            try
+            {
+                TP::AddPackage_WindowsAppRuntimeFramework();       // Installs WARfwk
+                TP::AddPackage_DynamicDependencyDataStore();       // Installs WARmain
+                TP::AddPackage_DynamicDependencyLifetimeManager(); // Installs WARddlm
+                TP::AddPackage_PushNotificationsLongRunningTask(); // Installs the PushNotifications long running task.
+                TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
+            }
+            catch (...)
+            {
+                VERIFY_FAIL();
+            }
+
+            m_testAppLauncher = winrt::create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL);
+
+#if 0  
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
+#endif
             RunTest(L"ActivatorTest", testWaitTime());
+#if 0
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
+#endif
+            m_processHandle.reset();
+
+            try
+            {
+                // Remove in reverse order to avoid conflicts between inter-dependent packages.
+                TP::RemovePackage(GetTestPackageFullName());
+                TP::RemovePackage_PushNotificationsLongRunningTask();
+                TP::RemovePackage_DynamicDependencyLifetimeManager();
+                TP::RemovePackage_DynamicDependencyDataStore();
+                TP::RemovePackage_WindowsAppRuntimeFramework();
+            }
+            catch (...)
+            {
+                VERIFY_FAIL();
+            }
         }
 
         TEST_METHOD(ActivatorTest_Unpackaged)
         {
+#if 0
             RunTestUnpackaged(L"ActivatorTest", channelTestWaitTime());
+#endif
         }
 
         TEST_METHOD(RegisterActivatorNullDetails)
         {
+#if 0
             RunTest(L"RegisterActivatorNullDetails", testWaitTime());
+#endif
         }
 
         TEST_METHOD(RegisterActivatorNullDetails_Unpackaged)
         {
+#if 0
             RunTestUnpackaged(L"RegisterActivatorNullDetails", testWaitTime());
+#endif
         }
 
         TEST_METHOD(RegisterActivatorNullClsid)
         {
+#if 0
             RunTest(L"RegisterActivatorNullClsid", testWaitTime());
+#endif
         }
 
         TEST_METHOD(RegisterActivatorNullClsid_Unpackaged)
         {
+#if 0
             RunTestUnpackaged(L"RegisterActivatorNullClsid", testWaitTime());
+#endif
         }
 
         TEST_METHOD(MultipleRegisterActivatorTest)
         {
+#if 0
             RunTest(L"MultipleRegisterActivatorTest", testWaitTime());
+#endif
         }
 
         TEST_METHOD(MultipleRegisterActivatorTest_Unpackaged)
         {
+#if 0
             RunTestUnpackaged(L"MultipleRegisterActivatorTest", testWaitTime());
+#endif
         }
 
         TEST_METHOD(VerifyComActivatorSupported)
         {
+#if 0
             RunTest(L"VerifyComActivatorSupported", testWaitTime());
+#endif
         }
 
         TEST_METHOD(VerifyComActivatorNotSupported_Unpackaged)
         {
+#if 0
             RunTestUnpackaged(L"VerifyComActivatorNotSupported", testWaitTime());
+#endif
         }
 
         TEST_METHOD(VerifyProtocolActivatorSupported_Unpackaged)
         {
+#if 0
             RunTestUnpackaged(L"VerifyProtocolActivatorSupported", testWaitTime());
+#endif
         }
 
         TEST_METHOD(VerifyProtocolActivatorNotSupported)
         {
+#if 0
             RunTest(L"VerifyProtocolActivatorNotSupported", testWaitTime());
+#endif
         }
 
         TEST_METHOD(VerifyComAndProtocolActivatorNotSupported)
         {
+#if 0
             RunTest(L"VerifyComAndProtocolActivatorNotSupported", testWaitTime());
+#endif
         }
 
         TEST_METHOD(VerifyComAndProtocolActivatorNotSupported_Unpackaged)
         {
+#if 0
             RunTestUnpackaged(L"VerifyComAndProtocolActivatorNotSupported", testWaitTime());
+#endif
         }
 
         TEST_METHOD(VerifyNullActivatorNotSupported)
         {
+#if 0
             RunTest(L"VerifyNullActivatorNotSupported", testWaitTime());
+#endif
         }
 
         TEST_METHOD(VerifyProtocolActivation_Unpackaged)
         {
+#if 0
             RunTestUnpackaged(L"----WindowsAppRuntimePushServer:-Payload:\"<toast></toast>\"", testWaitTime());
+#endif
         }
     };
 }
