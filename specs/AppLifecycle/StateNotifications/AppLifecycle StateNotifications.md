@@ -247,7 +247,7 @@ In addition, the PowerRegisterForEffectivePowerModeNotifications API is brought 
 
 | Existing API                                             | Description                             | New property and event                          |
 | -------------------------------------------------------- | --------------------------------------- | ----------------------------------------------- |
-| PowerRegisterForEffectivePowerModeNotifications function | The effective power mode of the system. | `EffectivePowerMode, EffectivePowerModeChanged` |
+| PowerRegisterForEffectivePowerModeNotifications function | The effective power mode of the system. Note: while the new API does include an additional EffectivePowerMode property, this should not be used: use EffectivePowerMode2 instead. | `EffectivePowerMode2, EffectivePowerModeChanged` |
 
 The existing PowerManager class exposes only static properties and events: all members are valid to
 be brought over to the Windows App SDK version. Many existing enumerated values are brought over as-is as
@@ -347,6 +347,7 @@ namespace Microsoft.Windows.System.Power
         static event Windows.Foundation.EventHandler<Object> SystemIdleStatusChanged;
 
         static Windows.Foundation.IAsyncOperation<EffectivePowerMode> EffectivePowerMode{ get; };
+        static EffectivePowerMode EffectivePowerMode2{ get; };
         static event Windows.Foundation.EventHandler<Object> EffectivePowerModeChanged;
 
         static UserPresenceStatus UserPresenceStatus{ get; };
