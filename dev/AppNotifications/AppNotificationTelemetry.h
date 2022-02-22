@@ -117,7 +117,9 @@ public:
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(RemoveByTagAsyncByAPI)() noexcept try
+    DEFINE_EVENT_METHOD(RemoveByTagAsyncByAPI)(
+        winrt::hresult hr,
+        std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -125,8 +127,9 @@ public:
                 "RemoveByTagAsyncByAPI",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName(), "AppName"));
+                TraceLoggingWideString(appId.c_str(), "AppId"));
         }
     }
     CATCH_LOG()

@@ -270,20 +270,66 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         THROW_IF_FAILED(ToastNotifications_RemoveToast(appId.c_str(), notificationId));
     }
 
+#if 1
+    auto getHrFromExceptionOrOk()
+    {
+        return std::uncaught_exceptions() ? wil::ResultFromCaughtException() : S_OK;
+    }
+
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByTagAsync(hstring const tag)
     {
-        THROW_HR_IF(E_INVALIDARG, tag == winrt::hstring(L""));
+        std::wstring appId{ RetrieveNotificationAppId() };
 
-        auto logTelemetry = wil::scope_exit([&]() { AppNotificationTelemetry::RemoveByTagAsyncByAPI(); });
+        auto logTelemetry{ wil::scope_exit([&appId]()
+        {
+            AppNotificationTelemetry::RemoveByTagAsyncByAPI(getHrFromExceptionOrOk(), appId);
+        }) };
+
+        THROW_HR_IF(E_INVALIDARG, tag == winrt::hstring(L""));
 
         std::wstring _tag{ tag.c_str() };
 
         co_await winrt::resume_background();
 
-        std::wstring appId{ RetrieveNotificationAppId() };
-
         THROW_IF_FAILED(ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), _tag.c_str(), nullptr));
     }
+#else
+    std::wstring RetrieveNotificationAppIdOrEmpty() noexcept try
+    {
+        try
+        {
+            return RetrieveNotificationAppId();
+        }
+        catch (...)
+        {
+            return {};
+        }
+    }
+    CATCH_LOG()
+
+    winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByTagAsync(hstring const tag)
+    {
+        try
+        {
+            THROW_HR_IF(E_INVALIDARG, tag == winrt::hstring(L""));
+
+            std::wstring _tag{ tag.c_str() };
+
+            co_await winrt::resume_background();
+
+            std::wstring appId{ RetrieveNotificationAppId() };
+
+            THROW_IF_FAILED(ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), _tag.c_str(), nullptr));
+
+            AppNotificationTelemetry::RemoveByTagAsyncByAPI(S_OK, appId);
+        }
+        catch (...)
+        {
+            AppNotificationTelemetry::RemoveByTagAsyncByAPI(wil::ResultFromCaughtException(), RetrieveNotificationAppIdOrEmpty());
+            throw;
+        }
+    }
+#endif
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByTagAndGroupAsync(hstring const tag, hstring const group)
     {
