@@ -19,7 +19,7 @@ class AppNotificationTelemetry : public wil::TraceLoggingProvider
     //using RegistrationActivators = winrt::Microsoft::Windows::AppNotifications::AppNotificationRegistrationActivators;
 
 public:
-    DEFINE_EVENT_METHOD(RegisterByAPI)() noexcept try
+    DEFINE_EVENT_METHOD(RegisterByAPI)(winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -27,13 +27,14 @@ public:
                 "RegisterByAPI",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(UnregisterByAPI)() noexcept try
+    DEFINE_EVENT_METHOD(UnregisterByAPI)(winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -41,13 +42,14 @@ public:
                 "UnregisterByAPI",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(UnregisterAllByAPI)() noexcept try
+    DEFINE_EVENT_METHOD(UnregisterAllByAPI)(winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -55,13 +57,14 @@ public:
                 "UnregisterAllByAPI",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(ShowByAPI)() noexcept try
+    DEFINE_EVENT_METHOD(ShowByAPI)(winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -69,13 +72,14 @@ public:
                 "ShowByAPI",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(UpdateAsyncByAPI)() noexcept try
+    DEFINE_EVENT_METHOD(UpdateAsyncByAPI)(winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -83,13 +87,14 @@ public:
                 "UpdateAsyncByAPI",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(SettingByAPI)() noexcept try
+    DEFINE_EVENT_METHOD(SettingByAPI)(winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -97,13 +102,14 @@ public:
                 "SettingByAPI",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(RemoveByIdAsyncByAPI)() noexcept try
+    DEFINE_EVENT_METHOD(RemoveByIdAsyncByAPI)(winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -111,6 +117,7 @@ public:
                 "RemoveByIdAsyncByAPI",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
@@ -134,7 +141,7 @@ public:
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(RemoveByTagAndGroupAsyncByAPI)() noexcept try
+    DEFINE_EVENT_METHOD(RemoveByTagAndGroupAsyncByAPI)(winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -142,13 +149,14 @@ public:
                 "RemoveByTagAndGroupAsyncByAPI",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(RemoveByGroupAsyncByAPI)() noexcept try
+    DEFINE_EVENT_METHOD(RemoveByGroupAsyncByAPI)(winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -156,13 +164,14 @@ public:
                 "RemoveByGroupAsyncByAPI",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(RemoveAllAsyncByAPI)() noexcept try
+    DEFINE_EVENT_METHOD(RemoveAllAsyncByAPI)(winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -170,13 +179,14 @@ public:
                 "RemoveAllAsyncByAPI",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(GetAllAsyncByAPI)() noexcept try
+    DEFINE_EVENT_METHOD(GetAllAsyncByAPI)(winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -184,6 +194,7 @@ public:
                 "GetAllAsyncByAPI",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
