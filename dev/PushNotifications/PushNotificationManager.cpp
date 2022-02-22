@@ -108,6 +108,17 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         THROW_IF_FAILED(notificationPlatform->RegisterFullTrustApplication(processName.get(), remoteId, &unpackagedAppUserModelId));
     }
 
+    PushNotificationManager::PushNotificationManager()
+    {
+        THROW_IF_FAILED(GetCurrentProcessPath(m_processName));
+
+        if (AppModel::Identity::IsPackagedProcess())
+        {
+            // Returns ComActivator CLSID from registry. This CLSID provided in manifest is registered when a packaged app is installed
+            THROW_IF_FAILED(PushNotificationHelpers::GetComRegistrationFromRegistry(expectedPushServerArgs.data(), m_registeredClsid));
+        }
+    }
+
     winrt::hresult CreateChannelWithRemoteIdHelper(wil::unique_cotaskmem_string const& appId, const winrt::guid& remoteId, ChannelDetails& channelInfo) noexcept try
     {
         HRESULT operationalCode{};
@@ -189,18 +200,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                         auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
 
-                        winrt::guid registeredClsid{ GUID_NULL };
-                        if (AppModel::Identity::IsPackagedProcess())
-                        {
-                            THROW_IF_FAILED(PushNotificationHelpers::GetComRegistrationFromRegistry(expectedPushServerArgs.data(), registeredClsid));
-                        }
-
-                        wil::unique_cotaskmem_string processName;
-                        THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                        THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivatorWithClsid(processName.get(), registeredClsid));
+                        THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivatorWithClsid(m_processName.get(), m_registeredClsid));
 
                         std::wstring toastAppId{ RetrieveNotificationAppId() };
-                        THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), toastAppId.c_str()));
+                        THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.get(), toastAppId.c_str()));
                     }
 
                     // Need to register sink on new channel creation if handlers are registered
@@ -279,13 +282,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         try
         {
-            winrt::guid registeredClsid{ GUID_NULL };
-            if (AppModel::Identity::IsPackagedProcess())
-            {
-                // Returns ComActivator CLSID from registry. This CLSID provided in manifest is registered when a packaged app is installed
-                THROW_IF_FAILED(PushNotificationHelpers::GetComRegistrationFromRegistry(expectedPushServerArgs.data(), registeredClsid));
-            }
-
             auto scopeExitToCleanRegistrations{ wil::scope_exit(
             [&]() {
                     auto lock{ m_lock.lock_exclusive() };
@@ -330,7 +326,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     THROW_HR_IF_MSG(E_FAIL, m_pushTriggerRegistration, "PushTrigger has already been registered once!");
                 }
 
-                winrt::hstring backgroundTaskFullName{ backgroundTaskName + winrt::to_hstring(registeredClsid) };
+                winrt::hstring backgroundTaskFullName{ backgroundTaskName + winrt::to_hstring(m_registeredClsid) };
 
                 if (!IsBackgroundTaskRegistered(backgroundTaskFullName))
                 {
@@ -342,7 +338,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     builder.SetTrigger(trigger);
 
                     auto builder5{ builder.as<winrt::IBackgroundTaskBuilder5>() };
-                    builder5.SetTaskEntryPointClsid(registeredClsid);
+                    builder5.SetTaskEntryPointClsid(m_registeredClsid);
 
                     auto lock{ m_lock.lock_exclusive() };
                     m_pushTriggerRegistration = builder.Register();
@@ -352,7 +348,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             else if (AppModel::Identity::IsPackagedProcess())
             {
                 bool registeredEvent{ false };
-                THROW_HR_IF(E_UNEXPECTED, registeredClsid == winrt::guid());
 
                 {
                     auto lock{ m_lock.lock_exclusive() };
@@ -371,7 +366,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 {
                     auto lock{ m_lock.lock_exclusive() };
                     THROW_IF_FAILED(::CoRegisterClassObject(
-                        registeredClsid,
+                        m_registeredClsid,
                         winrt::make<PushNotificationBackgroundTaskFactory>().get(),
                         CLSCTX_LOCAL_SERVER,
                         REGCLS_MULTIPLEUSE,
@@ -403,6 +398,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !m_comActivatorRegistration, "ComActivator not registered.");
                 m_comActivatorRegistration.reset();
             }
+            else if (!AppModel::Identity::IsPackagedProcess())
+            {
+                auto coInitialize{ wil::CoInitializeEx() };
+                auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
+
+                LOG_IF_FAILED(notificationPlatform->UnregisterForegroundActivator(m_processName.get()));
+            }
         }
         catch (...)
         {
@@ -427,8 +429,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 m_pushTriggerRegistration.Unregister(true);
                 m_pushTriggerRegistration = nullptr;
             }
-
-            if (!AppModel::Identity::IsPackagedProcess())
+            else if (!AppModel::Identity::IsPackagedProcess())
             {
                 THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !m_protocolRegistration, "Protocol Activator not registered");
 
@@ -436,9 +437,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
 
-                wil::unique_cotaskmem_string processName;
-                THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                LOG_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get()));
+                LOG_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(m_processName.get()));
 
                 m_protocolRegistration = false;
             }

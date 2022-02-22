@@ -15,7 +15,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     struct PushNotificationManager : PushNotificationManagerT<PushNotificationManager, IWpnForegroundSink, ABI::Microsoft::Internal::PushNotifications::INotificationListener>
     {
-        PushNotificationManager() = default;
+        PushNotificationManager();
 
         static winrt::Microsoft::Windows::PushNotifications::PushNotificationManager Default();
         void Register();
@@ -41,6 +41,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         wil::unique_com_class_object_cookie m_comActivatorRegistration;
         bool m_protocolRegistration{ false };
         wil::srwlock m_lock;
+        wil::unique_cotaskmem_string m_processName;
+        winrt::guid m_registeredClsid{ GUID_NULL };
     };
 }
 

@@ -89,7 +89,8 @@ namespace Microsoft.Windows.PushNotifications
         // For packaged applications without Background Infrastructure support, registers a COM Service
         void Register();
 
-        // Unregisters the COM Service
+        // Packaged Apps: Force COM to launch a new process
+//      // Unpackaged apps: Remove the Foreground Sink to force Long Running Process Singleton to launch a new process instance.
         void Unregister();
 
         // Disables Push completely for Packaged and Unpackaged apps. Register() needs to be called again for Push to work
