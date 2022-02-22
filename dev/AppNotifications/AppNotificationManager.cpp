@@ -278,14 +278,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByTagAsync(hstring const tag)
     {
+        THROW_HR_IF(E_INVALIDARG, tag == winrt::hstring(L""));
+
         std::wstring appId{ RetrieveNotificationAppId() };
 
         auto logTelemetry{ wil::scope_exit([&appId]()
         {
             AppNotificationTelemetry::RemoveByTagAsyncByAPI(getHrFromExceptionOrOk(), appId);
         }) };
-
-        THROW_HR_IF(E_INVALIDARG, tag == winrt::hstring(L""));
 
         std::wstring _tag{ tag.c_str() };
 
@@ -309,7 +309,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByTagAsync(hstring const tag)
     {
-
         THROW_HR_IF(E_INVALIDARG, tag == winrt::hstring(L""));
 
         try
