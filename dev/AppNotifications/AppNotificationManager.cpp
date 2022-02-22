@@ -270,7 +270,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         THROW_IF_FAILED(ToastNotifications_RemoveToast(appId.c_str(), notificationId));
     }
 
-#if 1
+#if 0
     auto getHrFromExceptionOrOk()
     {
         return std::uncaught_exceptions() ? wil::ResultFromCaughtException() : S_OK;
@@ -309,10 +309,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByTagAsync(hstring const tag)
     {
+
+        THROW_HR_IF(E_INVALIDARG, tag == winrt::hstring(L""));
+
         try
         {
-            THROW_HR_IF(E_INVALIDARG, tag == winrt::hstring(L""));
-
             std::wstring _tag{ tag.c_str() };
 
             co_await winrt::resume_background();
