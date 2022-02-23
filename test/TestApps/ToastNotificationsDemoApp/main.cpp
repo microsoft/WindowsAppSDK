@@ -113,15 +113,17 @@ std::wstring GetEnumString(winrt::AppNotificationSetting const& setting)
     return enumMapping[setting];
 }
 
-winrt::AppNotification CreateToastNotification(winrt::hstring message)
-{
-    winrt::hstring xmlPayload{ L"<toast>" + message + L"</toast>" };
-    return winrt::AppNotification(xmlPayload);
-}
-
 winrt::AppNotification CreateToastNotification()
 {
-    return CreateToastNotification(L"intrepidToast");
+    winrt::hstring payload =
+        LR"(<toast launch="action = viewDownload &amp; downloadId = 9438108">
+        <visual>
+            <binding template = "ToastGeneric">
+                <text>Downloading this week's new music...</text>
+            </binding>
+        </visual>
+    </toast>)";
+    return winrt::AppNotification(payload);
 }
 
 bool PostToastHelper(std::wstring const& tag, std::wstring const& group)

@@ -149,6 +149,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         [[maybe_unused]] NOTIFICATION_USER_INPUT_DATA const* data,
         [[maybe_unused]] ULONG dataCount) noexcept try
     {
+
         winrt::IMap<winrt::hstring, winrt::hstring> userInput{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
         for (unsigned long i = 0; i < dataCount; i++)
         {
@@ -169,9 +170,29 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             // If the app was not launched due to ToastActivation, we will invoke the foreground handler.
             // Otherwise we store the EventArgs and signal to the Main thread
             auto pos{ commandLine.find(c_notificationActivatedArgument) };
-            if (pos == std::wstring::npos)
+            if (pos == std::wstring::npos) // !AppNotification
             {
-                m_notificationHandlers(Default(), activatedEventArgs);
+                if (!m_notificationHandlers)
+                {
+                    winrt::guid registeredClsid{ GUID_NULL };
+                    if (AppModel::Identity::IsPackagedProcess())
+                    {
+                        THROW_IF_FAILED(PushNotificationHelpers::GetComRegistrationFromRegistry(expectedAppServerArgs.data(), registeredClsid));
+                    }
+                    else
+                    {
+                        std::wstring storedComActivatorString{ RegisterComActivatorGuidAndAssets() };
+                        // Remove braces around the guid string
+                        registeredClsid = winrt::guid(storedComActivatorString.substr(1, storedComActivatorString.size() - 2));
+                    }
+
+                    auto notificationCallback = winrt::create_instance<INotificationActivationCallback>(registeredClsid, CLSCTX_ALL);
+                    notificationCallback->Activate(L"", invokedArgs, data, dataCount);
+                }
+                else
+                {
+                    m_notificationHandlers(Default(), activatedEventArgs);
+                }
             }
             else
             {
