@@ -18,11 +18,10 @@ namespace Microsoft::WindowsAppSDK::SelfContained
 inline bool IsSelfContained()
 {
     const UINT32 flags{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC | PACKAGE_INFORMATION_BASIC };
-    const PackagePathType packagePathType{ PackagePathType_Install }; // Don't need the path so use the leanest possible answer
     uint32_t packageInfoCount{};
     const PACKAGE_INFO* packageInfo{};
     wil::unique_cotaskmem_ptr<BYTE[]> buffer;
-    THROW_IF_FAILED(GetCurrentPackageInfo(flags, packagePathType, packageInfoCount, packageInfo, buffer));
+    THROW_IF_FAILED(::AppModel::PackageGraph::GetCurrentPackageGraph(flags, packageInfoCount, packageInfo, buffer));
     for (uint32_t index=0; index < packageInfoCount; ++index)
     {
         auto c_windowsAppRuntimePackageFamilyName{ ::Microsoft::WindowsAppSDK::Runtime::Packages::Framework::PackageFamilyName };
