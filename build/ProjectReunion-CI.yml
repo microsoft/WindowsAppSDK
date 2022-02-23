@@ -69,7 +69,7 @@ jobs:
     displayName: 'Publish BuildOutput'
     inputs:
       artifactName: BuildOutput
-      targetPath: '$(buildOutputDir)'
+      PathtoPublish: '$(buildOutputDir)'
 
   - task: BinSkim@3
     inputs:
@@ -121,7 +121,7 @@ jobs:
     displayName: 'Publish BuildOutput'
     inputs:
       artifactName: BuildOutput
-      targetPath: '$(buildOutputDir)'
+      PathtoPublish: '$(buildOutputDir)'
 
   - task: BinSkim@3
     inputs:
