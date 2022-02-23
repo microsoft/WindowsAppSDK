@@ -141,9 +141,10 @@ ForceTargetApplicationShutDown option before passing it to this API. This option
 shutdown the application(s) associated with the package, update the package and restart the
 application(s).
 
-// TODO: If this option is set when updating main package, then whether the out of process // com
-server from the main package such as push Notifications needs to be explictly restarted // needs to
-be understood. If restart it is needed, then the API will handle explicitly restarting it.
+// OPENISSUE: If this option is set when updating main package, then whether the out of process com
+server from the main package such as push Notifications needs to be explictly restarted needs to be
+understood. If restart it is needed, then the API will handle explicitly restarting it. This is
+under investigation.
 
 When the API is updating framework package and ForceTargetApplicationShutDown option is set, then
 all dependent packages that are NOT currently in use will be immediately re-installed to refer to
