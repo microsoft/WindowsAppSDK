@@ -15,11 +15,11 @@ Currently, packaged apps can only declare dependencies on framework packages. In
 other packages (main, singleton) deployed, apps can use the mechanism described here as part of
 their first-run experience.
 
-> **Note that in Windows App SDK version 1.0**, only unpackaged apps that are full trust or 
-> MSIX packaged apps that have the packageManagement restricted capability have the permission 
-> to use the Deployment API to install the main and singleton package dependencies. Support for
-> partial trust MSIX packaged apps will be coming in later releases. Additionally, support for main
-> and singleton package deployment through the Microsoft Store will be coming in later releases.
+> **Note that in Windows App SDK version 1.0**, only unpackaged apps that are full trust or MSIX
+> packaged apps that have the packageManagement restricted capability have the permission to use the
+> Deployment API to install the main and singleton package dependencies. Support for partial trust
+> MSIX packaged apps will be coming in later releases. Additionally, support for main and singleton
+> package deployment through the Microsoft Store will be coming in later releases.
 
 # Description
 
@@ -108,7 +108,7 @@ Once the main and singleton packages have been deployed, they generally do not n
 again. If a user were to remove the main or singleton package, the API can be used to reinstall them
 again.
 
-```c#
+```C#
     if (DeploymentManager.GetStatus().Status != DeploymentStatus.Ok)
     {
         // Initialize does a status check, and if the status is not OK it will attempt to get
@@ -133,24 +133,24 @@ again.
 
 #### ForceTargetApplicationShutDown
 
-When this API may install newer version of one or more of the packages (i.e. an update) and
-if there are any currently running process(es) associated with that package(s) (in other words,
-if any of the packages to be updated are currently in use), then this API will fail installing
-that package. But this update to the packages can be forced by using DeploymentInitializeOptions object
-and setting ForceTargetApplicationShutDown option before passing it to this API. This option
-when set will shutdown the application(s) associated with the package, update the package
-and restart the application(s).
+When this API may install newer version of one or more of the packages (i.e. an update) and if there
+are any currently running process(es) associated with that package(s) (in other words, if any of the
+packages to be updated are currently in use), then this API will fail installing that package. But
+this update to the packages can be forced by using DeploymentInitializeOptions object and setting
+ForceTargetApplicationShutDown option before passing it to this API. This option when set will
+shutdown the application(s) associated with the package, update the package and restart the
+application(s).
 
-// TODO: If this option is set when updating main package, then whether the out of process
-// com server from the main package such as push Notifications needs to be explictly restarted
-// needs to be understood. If restart it is needed, then the API will handle explicitly restarting it.
+// TODO: If this option is set when updating main package, then whether the out of process // com
+server from the main package such as push Notifications needs to be explictly restarted // needs to
+be understood. If restart it is needed, then the API will handle explicitly restarting it.
 
-When the API is updating framework package and ForceTargetApplicationShutDown option is set,
-then all dependent packages that are NOT currently in use will be immediately re-installed
-to refer to the updated framework package and all dependent packages that are currently in use
-will be re-installed, after they shut down, to refer to the updated framework package.
+When the API is updating framework package and ForceTargetApplicationShutDown option is set, then
+all dependent packages that are NOT currently in use will be immediately re-installed to refer to
+the updated framework package and all dependent packages that are currently in use will be
+re-installed, after they shut down, to refer to the updated framework package.
 
-```c#
+```C#
     if (DeploymentManager.GetStatus().Status != DeploymentStatus.Ok)
     {
         // Create DeploymentInitializeOptions object and set ForceTargetApplicationShutDown option
@@ -178,7 +178,7 @@ will be re-installed, after they shut down, to refer to the updated framework pa
 
 # API Details
 
-```c# (but really MIDL3)
+```C# (but really MIDL3)
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
     /// Represents the current Deployment status of the WindowsAppRuntime
@@ -201,7 +201,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         /// Returns the first encountered error if there was an error or S_OK if no error.
         HRESULT ExtendedError{ get; };
     };
-    
+
     // TODO: https://task.ms/38272182 - add APIcontract once WinAppSDK's rules for them are defined [contract(name,version)]
     /// This object is used to specify deployment options to apply when using DeploymentManager's
     /// Initialize method
@@ -211,7 +211,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         /// shut down forcibly so that installation of the packages can continue if they are currently in use
         bool ForceTargetApplicationShutdown;
     };
-    
+
     /// Used to query deployment information for WindowsAppRuntime
     static runtimeclass DeploymentManager
     {
