@@ -41,7 +41,7 @@ namespace Microsoft::Windows::AppNotifications::Helpers
         return (str == nullptr || wcslen(str) == 0) ? wil::unique_hstring() : wil::make_unique_string<wil::unique_hstring>(str);
     }
 
-    inline void rethrowIf(std::exception_ptr eptr) try
+    inline void RethrowIf(std::exception_ptr eptr) try
     {
         if (eptr) std::rethrow_exception(eptr);
     }

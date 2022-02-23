@@ -315,7 +315,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         auto logTelemetry{ wil::scope_exit([&](){
             AppNotificationTelemetry::GetAllAsyncByAPI(telemetryResult, appId);
-            rethrowIf(eptr);
+            RethrowIf(eptr);
         }) };
 
         try
