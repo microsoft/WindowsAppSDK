@@ -65,11 +65,12 @@ jobs:
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
-  - task: PublishBuildArtifacts@1
+  - task: PublishPipelineArtifact@1
     displayName: 'Publish BuildOutput'
     inputs:
-      PathtoPublish: '$(buildOutputDir)'
+      artifactType: pipeline
       artifactName: BuildOutput
+      targetPath: '$(buildOutputDir)'
 
   - task: BinSkim@3
     inputs:
@@ -117,11 +118,12 @@ jobs:
     parameters:
       buildJobName: 'BuildMRTCore'
 
-  - task: PublishBuildArtifacts@1
+  - task: PublishPipelineArtifact@1
     displayName: 'Publish BuildOutput'
     inputs:
-      PathtoPublish: '$(buildOutputDir)'
+      artifactType: pipeline
       artifactName: BuildOutput
+      targetPath: '$(buildOutputDir)'
 
   - task: BinSkim@3
     inputs:
