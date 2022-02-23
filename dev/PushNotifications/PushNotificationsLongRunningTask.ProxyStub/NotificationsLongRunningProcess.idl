@@ -26,7 +26,9 @@ interface INotificationsLongRunningPlatform : IUnknown
     HRESULT UnregisterLongRunningActivator([in] LPCWSTR processName);
 
     HRESULT RegisterFullTrustApplication([in] LPCWSTR processName, [in] GUID remoteId, [out] LPWSTR* appId);
-    
+
+    HRESULT UnregisterFullTrustApplication([in] LPCWSTR processName);
+
     HRESULT RegisterForegroundActivator([in] IWpnForegroundSink* sink, [in] LPCWSTR processName);
 
     HRESULT UnregisterForegroundActivator([in] LPCWSTR processName);
