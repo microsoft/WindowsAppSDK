@@ -15,11 +15,11 @@ Currently, packaged apps can only declare dependencies on framework packages. In
 other packages (main, singleton) deployed, apps can use the mechanism described here as part of
 their first-run experience.
 
-> **Note that in Windows App SDK version 1.0**, only MSIX packaged apps that are full trust or have
-> the packageManagement restricted capability have the permission to use the Deployment API to
-> install the main and singleton package dependencies. Support for partial trust packaged apps will
-> be coming in later releases. Additionally, support for main and singleton package deployment
-> through the Microsoft Store will be coming in later releases.
+> **Note that in Windows App SDK version 1.0**, only unpackaged apps that are full trust or 
+> MSIX packaged apps that have the packageManagement restricted capability have the permission 
+> to use the Deployment API to install the main and singleton package dependencies. Support for
+> partial trust MSIX packaged apps will be coming in later releases. Additionally, support for main
+> and singleton package deployment through the Microsoft Store will be coming in later releases.
 
 # Description
 
@@ -108,10 +108,10 @@ Once the main and singleton packages have been deployed, they generally do not n
 again. If a user were to remove the main or singleton package, the API can be used to reinstall them
 again.
 
-```C#
+```c#
     if (DeploymentManager.GetStatus().Status != DeploymentStatus.Ok)
     {
-        // Initialize does a status check, and if the status is not Ok it will attempt to get
+        // Initialize does a status check, and if the status is not OK it will attempt to get
         // the WindowsAppRuntime into a good state by deploying packages. Unlike a simple
         // status check, Initialize can sometimes take several seconds to deploy the packages.
         // These should be run on a separate thread so as not to hang your app while the
@@ -129,36 +129,36 @@ again.
     }
 ```
 
-### DeploymentOptions
+### DeploymentInitializeOptions
 
 #### ForceTargetApplicationShutDown
 
 When this API may install newer version of one or more of the packages (i.e. an update) and
 if there are any currently running process(es) associated with that package(s) (in other words,
 if any of the packages to be updated are currently in use), then this API will fail installing
-that package. But this update to the packages can be forced by using DeploymentOptions object
+that package. But this update to the packages can be forced by using DeploymentInitializeOptions object
 and setting ForceTargetApplicationShutDown option before passing it to this API. This option
 when set will shutdown the application(s) associated with the package, update the package
 and restart the application(s).
 
-[ToDo] If this option is set when updating main package, then whether the out of process
-com server from the main package such as push Notifications needs to be explictly restarted
-needs to be understood. If restart it is needed, then the API will handle explicitly restarting it.
+// TODO: If this option is set when updating main package, then whether the out of process
+// com server from the main package such as push Notifications needs to be explictly restarted
+// needs to be understood. If restart it is needed, then the API will handle explicitly restarting it.
 
 When the API is updating framework package and ForceTargetApplicationShutDown option is set,
 then all dependent packages that are NOT currently in use will be immediately re-installed
 to refer to the updated framework package and all dependent packages that are currently in use
 will be re-installed, after they shut down, to refer to the updated framework package.
 
-```C#
+```c#
     if (DeploymentManager.GetStatus().Status != DeploymentStatus.Ok)
     {
-        // Create DeploymentOptions object and set ForceTargetApplicationShutDown option
+        // Create DeploymentInitializeOptions object and set ForceTargetApplicationShutDown option
         // to allow for force updating of the packages even if they are currently in use.
-        DeploymentOptions deploymentOptions = new DeploymentOptions {};
-        deploymentOptions.ForceTargetApplicationShutdown = true;
+        var deploymentInitializeOptions = new DeploymentInitializeOptions();
+        deploymentInitializeOptions.ForceTargetApplicationShutdown = true;
 
-        // Initialize does a status check, and if the status is not Ok it will attempt to get
+        // Initialize does a status check, and if the status is not OK it will attempt to get
         // the WindowsAppRuntime into a good state by deploying packages. Unlike a simple
         // status check, Initialize can sometimes take several seconds to deploy the packages.
         // These should be run on a separate thread so as not to hang your app while the
@@ -178,7 +178,7 @@ will be re-installed, after they shut down, to refer to the updated framework pa
 
 # API Details
 
-```c#
+```c# (but really MIDL3)
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
     /// Represents the current Deployment status of the WindowsAppRuntime
@@ -201,14 +201,15 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         /// Returns the first encountered error if there was an error or S_OK if no error.
         HRESULT ExtendedError{ get; };
     };
-
+    
+    // TODO: https://task.ms/38272182 - add APIcontract once WinAppSDK's rules for them are defined [contract(name,version)]
     /// This object is used to specify deployment options to apply when using DeploymentManager's
     /// Initialize method
-    runtimeClass DeploymentOptions
+    runtimeClass DeploymentInitializeOptions
     {
         /// Gets or sets a value that indicates whether the processes associated with the package will be
         /// shut down forcibly so that installation of the packages can continue if they are currently in use
-        bool ForceTargetApplicationShutdown{ get; set;};
+        bool ForceTargetApplicationShutdown;
     };
     
     /// Used to query deployment information for WindowsAppRuntime
@@ -222,8 +223,8 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         static DeploymentResult Initialize();
 
         /// Checks the status of the WindowsAppRuntime of the current package and attempts to
-        /// register any missing packages that can be registered while applying the DeploymentOptions passed in
-        static DeploymentResult Initialize(Microsoft.Windows.ApplicationModel.WindowsAppRuntime::DeploymentOptions deploymentOptions);
+        /// register any missing packages that can be registered while applying the DeploymentInitializeOptions passed in
+        static DeploymentResult Initialize(Microsoft.Windows.ApplicationModel.WindowsAppRuntime::DeploymentInitializeOptions deploymentInitializeOptions);
     };
 }
 ```
