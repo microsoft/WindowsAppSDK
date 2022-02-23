@@ -75,7 +75,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationManager::RegisterSinkHelper()
     {
-        if (m_foregroundHandlers)
+        bool registeredEvent{ false };
+        {
+            auto lock{ m_lock.lock_shared() };
+            registeredEvent = bool(m_foregroundHandlers);
+        }
+
+        if (registeredEvent)
         {
             if (PushNotificationHelpers::IsPackagedAppScenario())
             {
@@ -194,14 +200,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.get(), toastAppId.c_str()));
                     }
 
-                    // Need to register sink on new channel creation if handlers are registered
-                    bool registeredEvent{ false };
-                    {
-                        auto lock{ m_lock.lock_shared() };
-                        registeredEvent = bool(m_foregroundHandlers);
-                    }
-
-                    // Channel creation removes old sink, need to add sink if foreground handlers.
+                    // Need to recreate the Foreground sinks since channel creation removes the old sink
                     RegisterSinkHelper();
 
                     PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId);
