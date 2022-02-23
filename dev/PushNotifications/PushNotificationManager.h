@@ -33,7 +33,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         // INotificationHandler
         HRESULT __stdcall OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept;
     private:
-
+        void RegisterPushActivations();
+        void RegisterSinkHelper();
         bool IsBackgroundTaskRegistered(winrt::hstring const& backgroundTaskFullName);
 
         winrt::event<PushNotificationEventHandler> m_foregroundHandlers;
