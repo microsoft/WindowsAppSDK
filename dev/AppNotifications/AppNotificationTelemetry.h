@@ -9,17 +9,17 @@
 DECLARE_TRACELOGGING_CLASS(AppNotificationTelemetryProvider,
     "Microsoft.WindowsAppSDK.Notifications.AppNotificationTelemetry",
     // {7c1b07ef-a7c0-56d1-5456-385ebd4412b2}
-    (0x7c1b07ef, 0xa7c0, 0x56d1, 0x54, 0x56, 0x38, 0x5e, 0xbd, 0x44, 0x12, 0xb2)); //ELx need a new provider here
+    (0x7c1b07ef, 0xa7c0, 0x56d1, 0x54, 0x56, 0x38, 0x5e, 0xbd, 0x44, 0x12, 0xb2)); //ELx need a new guid here
 
 
 class AppNotificationTelemetry : public wil::TraceLoggingProvider
 {
     IMPLEMENT_TELEMETRY_CLASS(AppNotificationTelemetry, AppNotificationTelemetryProvider);
 
-    //using RegistrationActivators = winrt::Microsoft::Windows::AppNotifications::AppNotificationRegistrationActivators;
-
 public:
-    DEFINE_EVENT_METHOD(RegisterByAPI)(winrt::hresult hr) noexcept try
+    DEFINE_EVENT_METHOD(RegisterByAPI)(
+        winrt::hresult hr,
+        std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -28,13 +28,16 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(UnregisterByAPI)(winrt::hresult hr) noexcept try
+    DEFINE_EVENT_METHOD(UnregisterByAPI)(
+        winrt::hresult hr,
+        std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -43,13 +46,16 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(UnregisterAllByAPI)(winrt::hresult hr) noexcept try
+    DEFINE_EVENT_METHOD(UnregisterAllByAPI)(
+        winrt::hresult hr,
+        std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -58,13 +64,16 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(ShowByAPI)(winrt::hresult hr) noexcept try
+    DEFINE_EVENT_METHOD(ShowByAPI)(
+        winrt::hresult hr,
+        std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -73,13 +82,16 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(UpdateAsyncByAPI)(winrt::hresult hr) noexcept try
+    DEFINE_EVENT_METHOD(UpdateAsyncByAPI)(
+        winrt::hresult hr,
+        std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -88,13 +100,16 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(SettingByAPI)(winrt::hresult hr) noexcept try
+    DEFINE_EVENT_METHOD(SettingByAPI)(
+        winrt::hresult hr,
+        std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -103,13 +118,16 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(RemoveByIdAsyncByAPI)(winrt::hresult hr) noexcept try
+    DEFINE_EVENT_METHOD(RemoveByIdAsyncByAPI)(
+        winrt::hresult hr,
+        std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -118,6 +136,7 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
@@ -135,13 +154,16 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(appId.c_str(), "AppId"));
+                TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(RemoveByTagAndGroupAsyncByAPI)(winrt::hresult hr) noexcept try
+    DEFINE_EVENT_METHOD(RemoveByTagAndGroupAsyncByAPI)(
+        winrt::hresult hr,
+        std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -150,13 +172,16 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(RemoveByGroupAsyncByAPI)(winrt::hresult hr) noexcept try
+    DEFINE_EVENT_METHOD(RemoveByGroupAsyncByAPI)(
+        winrt::hresult hr,
+        std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -165,13 +190,16 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(RemoveAllAsyncByAPI)(winrt::hresult hr) noexcept try
+    DEFINE_EVENT_METHOD(RemoveAllAsyncByAPI)(
+        winrt::hresult hr,
+        std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -180,13 +208,16 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(GetAllAsyncByAPI)(winrt::hresult hr) noexcept try
+    DEFINE_EVENT_METHOD(GetAllAsyncByAPI)(
+        winrt::hresult hr,
+        std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -195,6 +226,7 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
