@@ -95,12 +95,12 @@ jobs:
       restoreDirectory: packages
 
   # Download the BuildOutput from the Build stage(s).
-  - task: DownloadPipelineArtifact@0
+  - task: DownloadBuildArtifacts@0
     displayName: 'Download: BuildOutput'
     inputs:
       artifactName: 'BuildOutput'
       downloadPath: $(testPayloadDir)
-      patterns: '$(buildPlatform)/$(buildConfiguration)/**/*'
+      itemPattern: '$(buildPlatform)/$(buildConfiguration)/**/*'
 
   - powershell: |
       Write-Host ""

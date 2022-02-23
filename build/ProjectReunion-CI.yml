@@ -65,10 +65,9 @@ jobs:
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
-  - task: PublishPipelineArtifact@1
+  - task: PublishBuildArtifacts@1
     displayName: 'Publish BuildOutput'
     inputs:
-      artifactType: pipeline
       artifactName: BuildOutput
       targetPath: '$(buildOutputDir)'
 
@@ -118,10 +117,9 @@ jobs:
     parameters:
       buildJobName: 'BuildMRTCore'
 
-  - task: PublishPipelineArtifact@1
+  - task: PublishBuildArtifacts@1
     displayName: 'Publish BuildOutput'
     inputs:
-      artifactType: pipeline
       artifactName: BuildOutput
       targetPath: '$(buildOutputDir)'
 
