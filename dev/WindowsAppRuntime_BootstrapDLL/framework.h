@@ -9,6 +9,7 @@
 
 #include <thread>
 #include <mutex>
+#include <filesystem>
 
 #include <wil/cppwinrt.h>
 #include <wil/token_helpers.h>
