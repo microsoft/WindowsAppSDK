@@ -80,7 +80,7 @@ Link to the official Windows App SDK timeline can be found
 ## In this scenario, the process that Registers the Push Activator and the process specified as the COM server are the same
 
 The code in Main would follow the pattern below:
--   Both packaged and unpackaged apps will call into the registration API. 
+-   All apps will call into the registration API. 
     -   If the application is packaged, the registration API will simply abstract away the COM details from the developer 
         including registration of the in-process Windows App SDK component.
     -   If the application is unpackaged, it will also need to call into the bootstrapper API to have access to the Windows
