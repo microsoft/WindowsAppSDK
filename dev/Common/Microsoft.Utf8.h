@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #ifndef __MICROSOFT_UTF8_H
@@ -51,7 +51,7 @@ template<> inline winrt::hstring ToUtf16(PCSTR utf8)
 
 inline std::wstring ToUtf16(const std::string& utf8)
 {
-    return ToUtf16(utf8.c_str());
+    return ToUtf16<std::wstring>(utf8.c_str());
 }
 
 inline winrt::hstring ToHString(PCSTR utf8)

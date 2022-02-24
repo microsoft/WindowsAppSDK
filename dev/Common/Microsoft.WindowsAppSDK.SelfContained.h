@@ -4,7 +4,9 @@
 #ifndef __MICROSFT_WINDOWSAPPSDK_SELFCONTAINED_H
 #define __MICROSFT_WINDOWSAPPSDK_SELFCONTAINED_H
 
+#if !defined(WINDOWSAPPSDK_RUNTIME_PACKAGE_FRAMEWORK_PACKAGEFAMILYNAME_W)
 #include <WindowsAppRuntime-VersionInfo.h>
+#endif
 #include <AppModel.PackageGraph.h>
 
 // Rely on _STRINGIZE(x) in yvals_core.h
@@ -24,7 +26,7 @@ inline bool IsSelfContained()
     THROW_IF_FAILED(::AppModel::PackageGraph::GetCurrentPackageGraph(flags, packageInfoCount, packageInfo, buffer));
     for (uint32_t index=0; index < packageInfoCount; ++index)
     {
-        auto c_windowsAppRuntimePackageFamilyName{ ::Microsoft::WindowsAppSDK::Runtime::Packages::Framework::PackageFamilyName };
+        auto c_windowsAppRuntimePackageFamilyName{ WINDOWSAPPSDK_RUNTIME_PACKAGE_FRAMEWORK_PACKAGEFAMILYNAME_W };
         if (CompareStringOrdinal(packageInfo[index].packageFamilyName, -1, c_windowsAppRuntimePackageFamilyName, -1, TRUE) == CSTR_EQUAL)
         {
             // Found the Windows App SDK framework package in the package graph. Not self-contained!
