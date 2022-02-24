@@ -100,7 +100,7 @@ jobs:
     inputs:
       artifactName: 'BuildOutput'
       downloadPath: $(testPayloadDir)
-      itemPattern: 'BuildOutput/$(buildPlatform)/$(buildConfiguration)/**/*'
+      itemPattern: 'BuildOutput/$(buildConfiguration)/$(buildPlatform)/**/*'
 
   - powershell: |
       Write-Host ""
