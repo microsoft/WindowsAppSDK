@@ -355,9 +355,8 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows:
     THROW_IF_FAILED(properties->get_ToastProgressData(toastProgressData.put()));
     if (toastProgressData)
     {
+        // Sequence number is a transient property and we give it a default non-zero value of 1 in the ctor
         winrt::AppNotificationProgressData progressData{ 1 };
-
-        // SequenceNumber is transient and thus,  left to its default.
 
         wil::unique_hstring status{};
         THROW_IF_FAILED(toastProgressData->get_Status(&status));
