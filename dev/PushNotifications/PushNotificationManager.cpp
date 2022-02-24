@@ -30,7 +30,6 @@ constexpr std::wstring_view expectedPushServerArgs = L"----WindowsAppRuntimePush
 
 static wil::unique_event g_waitHandleForArgs;
 static winrt::guid g_comServerClsid{ GUID_NULL };
-static bool registering{ false };
 
 wil::unique_event& GetWaitHandleForArgs()
 {
@@ -275,8 +274,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         {
             auto lock{ m_lock.lock_exclusive() };
-            THROW_HR_IF_MSG(E_FAIL, registering, "Registration is in progress!");
-            registering = true;
+            THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_OPERATION_IN_PROGRESS), m_registering, "Registration is in progress!");
+            m_registering = true;
         }
 
         try
@@ -285,7 +284,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 {
                     auto lock{ m_lock.lock_shared() };
-                    THROW_HR_IF(E_INVALIDARG, m_comActivatorRegistration || m_pushTriggerRegistration);
+                    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_REGISTERED), m_comActivatorRegistration || m_pushTriggerRegistration);
                 }
 
                 auto scopeExitToCleanRegistrations{ wil::scope_exit([&]()
@@ -301,7 +300,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                             m_pushTriggerRegistration = nullptr;
                         }
 
-                        registering = false;
+                        m_registering = false;
                     }
 
                     auto appUserModelId{ PushNotificationHelpers::GetAppUserModelId() };
@@ -318,7 +317,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 // Register a PushTrigger for BI to activate the application through COM
                 if (!IsBackgroundTaskRegistered(backgroundTaskFullName))
                 {
-                    BackgroundTaskBuilder builder{ BackgroundTaskBuilder() };
+                    BackgroundTaskBuilder builder{};
 
                     builder.Name(backgroundTaskFullName);
 
@@ -354,7 +353,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 {
                     auto lock{ m_lock.lock_shared() };
-                    THROW_HR_IF(E_INVALIDARG, m_singletonForegroundRegistration && m_singletonBackgroundRegistration);
+                    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_REGISTERED), m_singletonForegroundRegistration && m_singletonBackgroundRegistration);
                 }
 
                 auto scopeExitToCleanRegistrations{ wil::scope_exit([&]()
@@ -365,7 +364,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         m_comActivatorRegistration.reset();
                         m_singletonBackgroundRegistration = false;
                         m_singletonForegroundRegistration = false;
-                        registering = false;
+                        m_registering = false;
                     }
 
                     auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
@@ -417,7 +416,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         {
             auto lock{ m_lock.lock_exclusive() };
-            registering = false;
+            m_registering = false;
         }
     }
 
@@ -425,14 +424,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         {
             auto lock{ m_lock.lock_exclusive() };
-            THROW_HR_IF_MSG(E_FAIL, registering, "Register or Unregister currently in progress!");
-            registering = true;
+            THROW_HR_IF_MSG(E_FAIL, m_registering, "Register or Unregister currently in progress!");
+            m_registering = true;
         }
 
         auto scope_exit = wil::scope_exit(
             [&] {
                 auto lock{ m_lock.lock_exclusive() };
-                registering = false;
+                m_registering = false;
             });
 
         try
@@ -441,7 +440,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 {
                     auto lock{ m_lock.lock_exclusive() };
-                    THROW_HR_IF_MSG(E_FAIL, !m_comActivatorRegistration, "No active COM registration");
+                    THROW_HR_IF_MSG(E_UNEXPECTED, !m_comActivatorRegistration, "Need to call Register() before calling Unregister().");
                     // m_comActivatorRegistration handles multiple unregistrations
                     m_comActivatorRegistration.reset();
                 }
@@ -454,13 +453,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 if (AppModel::Identity::IsPackagedProcess())
                 {
                     auto lock{ m_lock.lock_exclusive() };
-                    THROW_HR_IF_MSG(E_FAIL, !m_comActivatorRegistration, "No active COM registration");
+                    THROW_HR_IF_MSG(E_UNEXPECTED, !m_comActivatorRegistration, "Need to call Register() before calling Unregister().");
                     m_comActivatorRegistration.reset();
                 }
 
                 {
                     auto lock{ m_lock.lock_exclusive() };
-                    THROW_HR_IF_MSG(E_FAIL, !m_singletonForegroundRegistration, "No foreground sink registered");
+                    THROW_HR_IF_MSG(E_UNEXPECTED, !m_singletonForegroundRegistration, "Need to call Register() before calling Unregister().");
                 }
 
                 auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
@@ -497,14 +496,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         {
             auto lock{ m_lock.lock_exclusive() };
-            THROW_HR_IF_MSG(E_FAIL, registering, "Register or Unregister currently in progress!");
-            registering = true;
+            THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_OPERATION_IN_PROGRESS), m_registering, "Register or Unregister currently in progress!");
+            m_registering = true;
         }
 
         auto scope_exit = wil::scope_exit(
             [&] {
                 auto lock{ m_lock.lock_exclusive() };
-                registering = false;
+                m_registering = false;
             });
 
         try
@@ -527,7 +526,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 {
                     auto lock{ m_lock.lock_exclusive() };
-                    THROW_HR_IF_NULL(E_FAIL, m_pushTriggerRegistration);
+                    THROW_HR_IF_NULL(E_UNEXPECTED, m_pushTriggerRegistration);
 
                     m_pushTriggerRegistration.Unregister(true);
                     m_pushTriggerRegistration = nullptr;
@@ -539,7 +538,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 {
                     auto lock{ m_lock.lock_exclusive() };
-                    THROW_HR_IF(E_FAIL, !m_singletonBackgroundRegistration);
+                    THROW_HR_IF(E_UNEXPECTED, !m_singletonBackgroundRegistration);
                 }
 
                 // Removes the Long Running Singleton sink registered with platform for both packaged and unpackaged applications 
