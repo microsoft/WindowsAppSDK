@@ -642,20 +642,15 @@ bool VerifyToastUpdateZeroSequenceFail_Unpackaged()
         [&] {
             toastNotificationManager.UnregisterAll();
         });
-    PostToastHelper(L"Tag", L"");
 
-    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"SomeStatus", L"SomeTitle", 0.14, L"14%", 1);
-
-    auto progressResultOperation = toastNotificationManager.UpdateAsync(progressData, L"Tag");
-
-    if (progressResultOperation.wait_for(std::chrono::seconds(2)) == winrt::AsyncStatus::Completed)
+    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", 1);
+    try
     {
-        return false;
+        progressData.SequenceNumber(0);
     }
-    else
+    catch (...)
     {
-        progressResultOperation.Cancel();
-        return true;
+        return winrt::to_hresult() == E_INVALIDARG;
     }
 }
 
