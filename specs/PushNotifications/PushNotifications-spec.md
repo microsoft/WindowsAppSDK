@@ -114,8 +114,10 @@ int main()
         RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
     }
 
+    auto pushNotificationManager { PushNotificationManager::Default() };
+
     // Register Push Event for Foreground
-    winrt::event_token token = PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
+    winrt::event_token token = pushNotificationManager.PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
     {
         auto payload = args.Payload();
 
@@ -126,7 +128,7 @@ int main()
     });
 
     // Registers the application to receive push notifications
-    PushNotificationManager::Default().Register();
+    pushNotificationManager.Register();
 
     // Check to see if the WinMain activation is due to a Push Activator
     auto args { AppInstance::GetCurrent().GetActivatedEventArgs() };
@@ -150,7 +152,7 @@ int main()
     else if (kind == ExtendedActivationKind::Launch) // This indicates that the app is launching in the foreground
     {
         // Register the AAD RemoteIdentifier for the App to receive Push
-        auto channelOperation { PushNotificationManager::Default().CreateChannelAsync(
+        auto channelOperation { pushNotificationManager.CreateChannelAsync(
             winrt::guid("F80E541E-3606-48FB-xxxx-118A3C5F41F4")) };
 
         // Setup the inprogress event handler
@@ -207,7 +209,7 @@ int main()
 
     // If packaged: Unregisters foreground sink and the app as the ComServer
     // If unpackaged: Unregisters the foreground sink from the Long Running Process Singleton
-    PushNotificationManager::Default().Unregister();
+    pushNotificationManager.Unregister();
     if (!IsPackagedProcess())
     {
         MddBootstrapShutdown();
