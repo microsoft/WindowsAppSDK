@@ -34,10 +34,7 @@
 
 #include <WexTestClass.h>
 
-#if defined(WINDOWSAPPSDK_RUNTIME_PACKAGE_FRAMEWORK_PACKAGEFAMILYNAME_W)
-#error "Windows App SDK VersionInfo unexpectedly defined"
-#endif
-#define WINDOWSAPPSDK_RUNTIME_PACKAGE_FRAMEWORK_PACKAGEFAMILYNAME_W L"Microsoft.WindowsAppRuntime.Framework_8wekyb3d8bbwe"
+#define WINDOWSAPPSDK_SELFCONTAINED_RUNTIME_PACKAGE_FRAMEWORK_PACKAGEFAMILYNAME_W L"Microsoft.WindowsAppRuntime.Framework_8wekyb3d8bbwe"
 #include <Microsoft.WindowsAppSDK.SelfContained.h>
 #include <Microsoft.Utf8.h>
 
