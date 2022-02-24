@@ -1288,6 +1288,34 @@ bool VerifyRemoveAllAsync()
     return true;
 }
 
+
+bool VerifyForegroundRegistrationSuccess()
+{
+    winrt::AppNotificationManager::Default().Unregister();
+    try
+    {
+        winrt::event_token token{ winrt::AppNotificationManager::Default().NotificationInvoked([](const auto&, winrt::AppNotificationActivatedEventArgs const& toastArgs) {}) };
+    }
+    catch (...)
+    {
+        return false;
+    }
+    return true;
+}
+
+bool VerifyForegroundRegistrationFails()
+{
+    try
+    {
+        winrt::event_token token{ winrt::AppNotificationManager::Default().NotificationInvoked([](const auto&, winrt::AppNotificationActivatedEventArgs const& toastArgs) {}) };
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
+    }
+    return false;
+}
+
 std::map<std::string, bool(*)()> const& GetSwitchMapping()
 {
     static std::map<std::string, bool(*)()> switchMapping = {
@@ -1297,7 +1325,6 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged", &VerifyRegisterActivatorandUnregisterActivator },
         { "VerifyFailedMultipleRegisterActivatorUsingSameClsid", &VerifyFailedMultipleRegisterActivator },
         { "VerifyFailedMultipleRegisterActivatorUsingSameAssets_Unpackaged", &VerifyFailedMultipleRegisterActivator },
-
         { "VerifyToastSettingEnabled", &VerifyToastSettingEnabled },
         { "VerifyToastPayload", &VerifyToastPayload },
         { "VerifyToastTag", &VerifyToastTag },
@@ -1345,6 +1372,8 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyUnregisterTwice_Unpackaged", &VerifyUnregisterTwice_Unpackaged },
         { "VerifyToastProgressDataSequence0Fail", &VerifyToastProgressDataSequence0Fail },
         { "VerifyToastUpdateZeroSequenceFail_Unpackaged", &VerifyToastUpdateZeroSequenceFail_Unpackaged },
+        { "VerifyForegroundRegistrationSuccess", &VerifyForegroundRegistrationSuccess },
+        { "VerifyForegroundRegistrationFails", &VerifyForegroundRegistrationFails },
       };
 
     return switchMapping;

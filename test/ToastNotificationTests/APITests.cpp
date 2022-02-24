@@ -578,5 +578,14 @@ namespace Test::ToastNotifications
         {
             RunTestUnpackaged(L"VerifyToastUpdateZeroSequenceFail_Unpackaged", testWaitTime());
         }
+
+        TEST_METHOD(VerifyForegroundRegistrationSuccess)
+        {
+            RunTest(L"VerifyForegroundRegistrationSuccess", testWaitTime());
+        }
+        TEST_METHOD(VerifyForegroundRegistrationFails)
+        {
+            RunTest(L"VerifyForegroundRegistrationFails", testWaitTime());
+        }
     };
 }
