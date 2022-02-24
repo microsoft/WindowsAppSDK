@@ -251,7 +251,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 if (name == backgroundTaskFullName)
                 {
-                    m_pushTriggerRegistration = task.Value();
+                    {
+                        auto lock{ m_lock.lock_exclusive() };
+                        m_pushTriggerRegistration = task.Value();
+                    }
                     return true;
                 }
 
@@ -274,48 +277,63 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             if (PushNotificationHelpers::IsPackagedAppScenario())
             {
+                {
+                    auto lock{ m_lock.lock_shared() };
+                    THROW_HR_IF(E_INVALIDARG, m_comActivatorRegistration || m_pushTriggerRegistration);
+                }
+
                 auto scopeExitToCleanRegistrations{ wil::scope_exit([&]()
                 {
-                    m_comActivatorRegistration.reset();
-
-                    // Clean the task registration only if it was created during this call
-                    if (m_pushTriggerRegistration)
                     {
-                        m_pushTriggerRegistration.Unregister(true);
-                        m_pushTriggerRegistration = nullptr;
+                        auto lock { m_lock.lock_exclusive() };
+                        m_comActivatorRegistration.reset();
+
+                        // Clean the task registration only if it was created during this call
+                        if (m_pushTriggerRegistration)
+                        {
+                            m_pushTriggerRegistration.Unregister(true);
+                            m_pushTriggerRegistration = nullptr;
+                        }
+
+                        registering = false;
                     }
 
                     auto appUserModelId{ PushNotificationHelpers::GetAppUserModelId() };
-                    PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get());
+                    LOG_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get()));
                 }
                 )};
 
-                // Register a PushTrigger for BI to activate the application through COM
-                if (!m_pushTriggerRegistration)
+                winrt::hstring backgroundTaskFullName;
                 {
-                    winrt::hstring backgroundTaskFullName{ backgroundTaskName + winrt::to_hstring(m_registeredClsid) };
-                    if (!IsBackgroundTaskRegistered(backgroundTaskFullName))
+                    auto lock{ m_lock.lock_shared() };
+                    backgroundTaskFullName = backgroundTaskName + winrt::to_hstring(m_registeredClsid);
+                }
+
+                // Register a PushTrigger for BI to activate the application through COM
+                if (!IsBackgroundTaskRegistered(backgroundTaskFullName))
+                {
+                    BackgroundTaskBuilder builder{ BackgroundTaskBuilder() };
+
+                    builder.Name(backgroundTaskFullName);
+
+                    PushNotificationTrigger trigger{};
+                    builder.SetTrigger(trigger);
+
+                    auto builder5{ builder.as<winrt::IBackgroundTaskBuilder5>() };
                     {
-                        BackgroundTaskBuilder builder{ BackgroundTaskBuilder() };
-
-                        builder.Name(backgroundTaskFullName);
-
-                        PushNotificationTrigger trigger{};
-                        builder.SetTrigger(trigger);
-
-                        auto builder5{ builder.as<winrt::IBackgroundTaskBuilder5>() };
+                        auto lock{ m_lock.lock_exclusive() };
                         builder5.SetTaskEntryPointClsid(m_registeredClsid);
- 
                         m_pushTriggerRegistration = builder.Register();
                     }
+
                 }
 
                 // Register a sink for the application to receive foreground raw notifications
                 RegisterForegroundSinkHelper();
 
-                // Register a PushNotificationBackgroundTask to handle background activation scenarios
-                if (!m_comActivatorRegistration)
                 {
+                    auto lock{ m_lock.lock_exclusive() };
+                    // Register a PushNotificationBackgroundTask to handle background activation scenarios
                     THROW_IF_FAILED(::CoRegisterClassObject(
                         m_registeredClsid,
                         winrt::make<PushNotificationBackgroundTaskFactory>().get(),
@@ -328,32 +346,43 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             }
             else
             {
+                std::wstring processName;
+                {
+                    auto lock{ m_lock.lock_shared() };
+                    processName = m_processName.get();
+                    THROW_HR_IF(E_INVALIDARG, m_protocolRegistration);
+                }
+
                 auto scopeExitToCleanRegistrations{ wil::scope_exit([&]()
                 {
-                    m_comActivatorRegistration.reset();
-                    m_protocolRegistration = false;
+                    {
+                        auto lock { m_lock.lock_exclusive() };
+
+                        m_comActivatorRegistration.reset();
+                        m_protocolRegistration = false;
+                        registering = false;
+                    }
 
                     auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
-                    if (PushNotificationHelpers::IsPackagedAppScenario())
+                    if (AppModel::Identity::IsPackagedProcess())
                     {
                         auto appUserModelId{ PushNotificationHelpers::GetAppUserModelId() };
-                        PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get());
+                        LOG_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get()));
                     }
                     else
                     {
-                        notificationsLongRunningPlatform->UnregisterForegroundActivator(m_processName.get());
+                        LOG_IF_FAILED(notificationsLongRunningPlatform->UnregisterForegroundActivator(processName.c_str()));
                     }
-                    notificationsLongRunningPlatform->UnregisterFullTrustApplication(m_processName.get());
-
+                    LOG_IF_FAILED(notificationsLongRunningPlatform->UnregisterFullTrustApplication(processName.c_str()));
                 }
                 ) };
 
-                if (!m_protocolRegistration)
+                auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
+                wil::unique_cotaskmem_string unpackagedAppUserModelId;
+                // Apps treated as unpackaged need to call RegisterFullTrustApplication and register with the LRP
+                THROW_IF_FAILED(notificationPlatform->RegisterFullTrustApplication(processName.c_str(), GUID_NULL, &unpackagedAppUserModelId));
                 {
-                    auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
-                    wil::unique_cotaskmem_string unpackagedAppUserModelId;
-                    THROW_IF_FAILED(notificationPlatform->RegisterFullTrustApplication(m_processName.get(), GUID_NULL, &unpackagedAppUserModelId));
-
+                    auto lock{ m_lock.lock_exclusive() };
                     m_protocolRegistration = true;
                 }
 
@@ -361,8 +390,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 RegisterForegroundSinkHelper();
 
                 // Register a COM object for the PushNotificationLongRunningProcess to CoCreate in background activation scenarios
-                if (AppModel::Identity::IsPackagedProcess() && !m_comActivatorRegistration)
+                if (AppModel::Identity::IsPackagedProcess())
                 {
+                    auto lock{ m_lock.lock_exclusive() };
                     THROW_IF_FAILED(::CoRegisterClassObject(
                         m_registeredClsid,
                         winrt::make<PushNotificationBackgroundTaskFactory>().get(),
