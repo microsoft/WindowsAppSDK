@@ -124,28 +124,28 @@ jobs:
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'MrmUnitTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrmUnitTests.proj' -WorkItemPrefix 'MrtCore.MrmUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrmUnitTests.$(buildPlatform).$(buildConfiguration)'
+      arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrmUnitTests.proj' -WorkItemPrefix 'MrtCore.MrmUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrmUnitTests.$(buildPlatform).$(buildConfiguration)'
 
   - task: powershell@2
     displayName: 'Discover MRT Core BaseUnitTests'
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'MrmBaseUnitTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrmBaseUnitTests.proj' -WorkItemPrefix 'MrtCore.MrmBaseUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrmBaseUnitTests.$(buildPlatform).$(buildConfiguration)'
+      arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrmBaseUnitTests.proj' -WorkItemPrefix 'MrtCore.MrmBaseUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrmBaseUnitTests.$(buildPlatform).$(buildConfiguration)'
 
   - task: powershell@2
     displayName: 'Discover MRT Core UnpackagedTests'
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'MrtCoreUnpackagedTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrtCoreUnpackagedTests.proj' -WorkItemPrefix 'MrtCore.MrtCoreUnpackagedTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrtCoreUnpackagedTests.$(buildPlatform).$(buildConfiguration)'
+      arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrtCoreUnpackagedTests.proj' -WorkItemPrefix 'MrtCore.MrtCoreUnpackagedTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrtCoreUnpackagedTests.$(buildPlatform).$(buildConfiguration)'
 
   # In Helix, test folders are under subfolders of TAEF. MRTCore UnpackagedTests use reg-free WinRT activation. It requires the winmd file
   # under same folder as the executable.
   - task: CopyFiles@2
     displayName: 'Copy Microsoft.Windows.ApplicationModel.Resources.winmd to test root'
     inputs:
-      sourceFolder: $(testPayloadDir)\MrtCoreUnpackagedTests
+      sourceFolder: $(testPayloadDir)\MrtCoreUnpackagedTests\MrtCoreUnpackagedTests
       contents: |
         Microsoft.Windows.ApplicationModel.Resources.winmd
       targetFolder: $(testPayloadDir)
