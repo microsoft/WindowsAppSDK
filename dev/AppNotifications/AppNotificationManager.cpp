@@ -144,11 +144,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     }
 
     HRESULT __stdcall AppNotificationManager::Activate(
-        LPCWSTR /* appUserModelId */,
+        LPCWSTR appUserModelId,
         LPCWSTR invokedArgs,
         [[maybe_unused]] NOTIFICATION_USER_INPUT_DATA const* data,
         [[maybe_unused]] ULONG dataCount) noexcept try
     {
+
         winrt::IMap<winrt::hstring, winrt::hstring> userInput{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
         for (unsigned long i = 0; i < dataCount; i++)
         {
@@ -166,12 +167,34 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
             std::wstring commandLine{ GetCommandLine() };
 
-            // If the app was not launched due to ToastActivation, we will invoke the foreground handler.
+            // If the app was not launched due to ToastActivation, we will launch a new instance or invoke the foreground handlers.
             // Otherwise we store the EventArgs and signal to the Main thread
             auto pos{ commandLine.find(c_notificationActivatedArgument) };
-            if (pos == std::wstring::npos)
+            if (pos == std::wstring::npos) // Any launch kind that is not AppNotification
             {
-                m_notificationHandlers(Default(), activatedEventArgs);
+                // If the Process was launched due to other Activation Kinds, we will need to
+                // re-route the payload to a new process if there are no registered event handlers.
+                if (!m_notificationHandlers)
+                {
+                    winrt::guid registeredClsid{ GUID_NULL };
+                    if (AppModel::Identity::IsPackagedProcess())
+                    {
+                        THROW_IF_FAILED(PushNotificationHelpers::GetComRegistrationFromRegistry(expectedAppServerArgs.data(), registeredClsid));
+                    }
+                    else
+                    {
+                        std::wstring storedComActivatorString{ RegisterComActivatorGuidAndAssets() };
+                        // Remove braces around the guid string
+                        registeredClsid = winrt::guid(storedComActivatorString.substr(1, storedComActivatorString.size() - 2));
+                    }
+
+                    auto notificationCallback{ winrt::create_instance<INotificationActivationCallback>(registeredClsid, CLSCTX_ALL) };
+                    THROW_IF_FAILED(notificationCallback->Activate(appUserModelId, invokedArgs, data, dataCount));
+                }
+                else
+                {
+                    m_notificationHandlers(Default(), activatedEventArgs);
+                }
             }
             else
             {
