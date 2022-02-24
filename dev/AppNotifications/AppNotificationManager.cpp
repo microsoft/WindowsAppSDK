@@ -167,11 +167,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
             std::wstring commandLine{ GetCommandLine() };
 
-            // If the app was not launched due to ToastActivation, we will invoke the foreground handler.
+            // If the app was not launched due to ToastActivation, we will launch a new instance or invoke the foreground handlers.
             // Otherwise we store the EventArgs and signal to the Main thread
             auto pos{ commandLine.find(c_notificationActivatedArgument) };
-            if (pos == std::wstring::npos) // !AppNotification
+            if (pos == std::wstring::npos) // Any launch kind that is not AppNotification
             {
+                // If the Process was launched due to other Activation Kinds, we will need to
+                // re-route the payload to a new process if there are no registered event handlers.
                 if (!m_notificationHandlers)
                 {
                     winrt::guid registeredClsid{ GUID_NULL };
