@@ -367,7 +367,7 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows:
         progressData.Title(wil::str_raw_ptr(title));
 
         double progressValue{};
-        toastProgressData->get_Value(&progressValue);
+        THROW_IF_FAILED(toastProgressData->get_Value(&progressValue));
         progressData.Value(progressValue);
 
         wil::unique_hstring progressValueString{};
