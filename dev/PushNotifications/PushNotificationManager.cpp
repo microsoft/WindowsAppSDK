@@ -350,7 +350,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 {
                     auto lock{ m_lock.lock_shared() };
                     processName = m_processName.get();
-                    THROW_HR_IF(E_INVALIDARG, m_protocolRegistration);
+                    THROW_HR_IF(E_INVALIDARG, m_lrpRegistration);
                 }
 
                 auto scopeExitToCleanRegistrations{ wil::scope_exit([&]()
@@ -359,7 +359,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         auto lock { m_lock.lock_exclusive() };
 
                         m_comActivatorRegistration.reset();
-                        m_protocolRegistration = false;
+                        m_lrpRegistration = false;
                         registering = false;
                     }
 
@@ -383,7 +383,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 THROW_IF_FAILED(notificationPlatform->RegisterFullTrustApplication(processName.c_str(), GUID_NULL, &unpackagedAppUserModelId));
                 {
                     auto lock{ m_lock.lock_exclusive() };
-                    m_protocolRegistration = true;
+                    m_lrpRegistration = true;
                 }
 
                 // Register a sink for the application to receive foreground raw notifications
@@ -461,7 +461,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             }
             else if (!AppModel::Identity::IsPackagedProcess())
             {
-                THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !m_protocolRegistration, "Protocol Activator not registered");
+                THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !m_lrpRegistration, "Not registered with the PushNotificationsLongRunningProcess.");
 
                 auto coInitialize{ wil::CoInitializeEx() };
 
@@ -469,7 +469,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 LOG_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(m_processName.get()));
 
-                m_protocolRegistration = false;
+                m_lrpRegistration = false;
             }
         }
         catch (...)
@@ -484,7 +484,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         {
             auto lock{ m_lock.lock_shared() };
-            THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), m_comActivatorRegistration || m_protocolRegistration, "Must register event handlers before calling Register().");
+            THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), m_comActivatorRegistration || m_lrpRegistration, "Must register event handlers before calling Register().");
         }
 
         auto lock{ m_lock.lock_exclusive() };

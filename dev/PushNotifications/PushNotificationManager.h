@@ -39,7 +39,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::event<PushNotificationEventHandler> m_foregroundHandlers;
         winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration m_pushTriggerRegistration{ nullptr };
         wil::unique_com_class_object_cookie m_comActivatorRegistration;
-        bool m_protocolRegistration{ false };
+        bool m_lrpRegistration{ false }; // Defines if the app is registered with the PushNotificationsLongRunningProcess
         wil::srwlock m_lock;
         wil::unique_cotaskmem_string m_processName;
         winrt::guid m_registeredClsid{ GUID_NULL };
