@@ -355,7 +355,7 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows:
     THROW_IF_FAILED(properties->get_ToastProgressData(toastProgressData.put()));
     if (toastProgressData)
     {
-        winrt::AppNotificationProgressData progressData{};
+        winrt::AppNotificationProgressData progressData{ 1 };
 
         // SequenceNumber is transient and thus,  left to its default.
 

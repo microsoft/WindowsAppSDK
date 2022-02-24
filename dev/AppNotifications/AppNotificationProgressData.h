@@ -6,7 +6,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     struct AppNotificationProgressData : AppNotificationProgressDataT<AppNotificationProgressData>
     {
         AppNotificationProgressData() = default;
-
+        AppNotificationProgressData(uint32_t sequenceNumber);
         uint32_t SequenceNumber();
         void SequenceNumber(uint32_t sequenceNumber);
         hstring Title();
@@ -19,7 +19,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         void Status(hstring const& progressStatus);
 
     private:
-        uint32_t m_sequenceNumber{};
+        uint32_t m_sequenceNumber = 1;
         hstring m_title;
         double m_progressValue{};
         hstring m_progressValueString;

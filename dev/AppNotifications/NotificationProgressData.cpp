@@ -18,8 +18,12 @@ namespace ToastABI
 }
 
 NotificationProgressData::NotificationProgressData(winrt::AppNotificationProgressData const& progressData)
+    : m_progressData(progressData.SequenceNumber())
 {
-    m_progressData = progressData;
+    m_progressData.Status(progressData.Status());
+    m_progressData.Title(progressData.Title());
+    m_progressData.Value(progressData.Value());
+    m_progressData.ValueStringOverride(progressData.ValueStringOverride());
 }
 
 STDMETHODIMP NotificationProgressData::get_SequenceNumber(_Out_ unsigned int* value) noexcept
