@@ -44,7 +44,10 @@ NotificationProperties::NotificationProperties(winrt::AppNotification const& toa
 
     m_expiresOnReboot = toastNotification.ExpiresOnReboot();
 
-    m_toastProgressData = winrt::make_self<NotificationProgressData>(toastNotification.Progress());
+    if (toastNotification.Progress() != nullptr)
+    {
+        m_toastProgressData = winrt::make_self<NotificationProgressData>(toastNotification.Progress());
+    }
 }
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_NotificationId(_Out_ unsigned int* notificationId) noexcept
@@ -131,8 +134,11 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ExpiresOnReboot(_Ou
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ToastProgressData(_Out_ ToastABI::IToastProgressData** progressData) noexcept
 {
     auto lock{ m_lock.lock_shared() };
-
-    m_toastProgressData.copy_to(progressData);
+    *progressData = nullptr;
+    if (m_toastProgressData != nullptr)
+    {
+        m_toastProgressData.copy_to(progressData);
+    }
 
     return S_OK;
 }

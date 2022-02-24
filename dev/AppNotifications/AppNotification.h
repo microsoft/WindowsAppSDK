@@ -43,7 +43,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         winrt::hstring m_payload{};
 
-        winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData m_progressData{1};
+        winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData m_progressData{ nullptr };
 
         winrt::Windows::Foundation::DateTime m_expirationTime{};
 
