@@ -189,7 +189,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                     }
 
                     auto notificationCallback{ winrt::create_instance<INotificationActivationCallback>(registeredClsid, CLSCTX_ALL) };
-                    notificationCallback->Activate(appUserModelId, invokedArgs, data, dataCount);
+                    THROW_IF_FAILED(notificationCallback->Activate(appUserModelId, invokedArgs, data, dataCount));
                 }
                 else
                 {
