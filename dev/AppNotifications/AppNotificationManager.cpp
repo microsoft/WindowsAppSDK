@@ -144,7 +144,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     }
 
     HRESULT __stdcall AppNotificationManager::Activate(
-        LPCWSTR /* appUserModelId */,
+        LPCWSTR appUserModelId,
         LPCWSTR invokedArgs,
         [[maybe_unused]] NOTIFICATION_USER_INPUT_DATA const* data,
         [[maybe_unused]] ULONG dataCount) noexcept try
@@ -188,8 +188,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                         registeredClsid = winrt::guid(storedComActivatorString.substr(1, storedComActivatorString.size() - 2));
                     }
 
-                    auto notificationCallback = winrt::create_instance<INotificationActivationCallback>(registeredClsid, CLSCTX_ALL);
-                    notificationCallback->Activate(L"", invokedArgs, data, dataCount);
+                    auto notificationCallback{ winrt::create_instance<INotificationActivationCallback>(registeredClsid, CLSCTX_ALL) };
+                    notificationCallback->Activate(appUserModelId, invokedArgs, data, dataCount);
                 }
                 else
                 {
