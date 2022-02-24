@@ -145,7 +145,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'Copy Microsoft.Windows.ApplicationModel.Resources.winmd to test root'
     inputs:
-      sourceFolder: $(testPayloadDir)\MrtCoreUnpackagedTests\MrtCoreUnpackagedTests
+      sourceFolder: $(testPayloadDir)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests
       contents: |
         Microsoft.Windows.ApplicationModel.Resources.winmd
       targetFolder: $(testPayloadDir)
