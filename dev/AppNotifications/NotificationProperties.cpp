@@ -133,8 +133,8 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ExpiresOnReboot(_Ou
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ToastProgressData(_Out_ ToastABI::IToastProgressData** progressData) noexcept
 {
-    auto lock{ m_lock.lock_shared() };
     *progressData = nullptr;
+    auto lock{ m_lock.lock_shared() };
     if (m_toastProgressData != nullptr)
     {
         m_toastProgressData.copy_to(progressData);
