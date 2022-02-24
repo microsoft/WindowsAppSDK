@@ -4,6 +4,11 @@
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
+    AppNotificationProgressData::AppNotificationProgressData(uint32_t sequenceNumber)
+    {
+        THROW_HR_IF(E_INVALIDARG, sequenceNumber == 0); // The sequence number is always greater than 0
+        m_sequenceNumber = sequenceNumber;
+    }
     uint32_t AppNotificationProgressData::SequenceNumber()
     {
         auto lock{ m_lock.lock_shared() };
@@ -12,8 +17,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     }
     void AppNotificationProgressData::SequenceNumber(uint32_t sequenceNumber)
     {
-        auto lock{ m_lock.lock_exclusive() };
         THROW_HR_IF(E_INVALIDARG, sequenceNumber == 0); // The sequence number is always greater than 0
+
+        auto lock{ m_lock.lock_exclusive() };
+
         m_sequenceNumber = sequenceNumber;
     }
     hstring AppNotificationProgressData::Title()
