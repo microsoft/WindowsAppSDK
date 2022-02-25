@@ -365,7 +365,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 {
                     auto lock{ m_lock.lock_shared() };
-                    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_REGISTERED), m_singletonForegroundRegistration || m_singletonBackgroundRegistration);
+                    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_REGISTERED), m_singletonForegroundRegistration || m_singletonLongRunningSinkRegistration);
                 }
 
                 auto scopeExitToCleanRegistrations{ wil::scope_exit([&]()
@@ -417,13 +417,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 THROW_IF_FAILED(notificationsLongRunningPlatform->RegisterLongRunningActivatorWithClsid(processName.c_str(), registeredClsid));
                 {
                     auto lock{ m_lock.lock_exclusive() };
-                    m_singletonBackgroundRegistration = true;
+                    m_singletonLongRunningSinkRegistration = true;
                 }
 
                 auto scopeExitToCleanLongRunningSink{ wil::scope_exit([&]()
                 {
                     THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterLongRunningActivator(processName.c_str()));
-                    m_singletonBackgroundRegistration = false;
+                    m_singletonLongRunningSinkRegistration = false;
                 }
                 ) };
 
@@ -457,48 +457,45 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationManager::Unregister()
     {
-        {
-            auto lock{ m_lock.lock_exclusive() };
-            THROW_HR_IF_MSG(E_FAIL, m_registering, "Register or Unregister currently in progress!");
-            m_registering = true;
-        }
-
-        auto scope_exit = wil::scope_exit(
-            [&] {
-                auto lock{ m_lock.lock_exclusive() };
-                m_registering = false;
-            });
-
+        hresult hr = S_OK;
         try
         {
+            {
+                auto lock{ m_lock.lock_exclusive() };
+                THROW_HR_IF_MSG(E_FAIL, m_registering, "Register or Unregister currently in progress!");
+                m_registering = true;
+            }
+
+            auto scope_exit = wil::scope_exit(
+                [&] {
+                    auto lock{ m_lock.lock_exclusive() };
+                    m_registering = false;
+                });
+
+            if (AppModel::Identity::IsPackagedProcess())
+            {
+                auto lock{ m_lock.lock_exclusive() };
+                THROW_HR_IF_MSG(E_UNEXPECTED, !m_comActivatorRegistration, "Need to call Register() before calling Unregister().");
+                m_comActivatorRegistration.reset();
+            }
+
             if (PushNotificationHelpers::IsPackagedAppScenario())
             {
-                {
-                    auto lock{ m_lock.lock_exclusive() };
-                    THROW_HR_IF_MSG(E_UNEXPECTED, !m_comActivatorRegistration, "Need to call Register() before calling Unregister().");
-                    // m_comActivatorRegistration handles multiple unregistrations
-                    m_comActivatorRegistration.reset();
-                }
-
-                UnregisterSinkHelper();
+                auto appUserModelId{ PushNotificationHelpers::GetAppUserModelId() };
+                THROW_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get()));
             }
             else
             {
-                if (AppModel::Identity::IsPackagedProcess())
+                std::wstring processName;
                 {
-                    auto lock{ m_lock.lock_exclusive() };
-                    THROW_HR_IF_MSG(E_UNEXPECTED, !m_comActivatorRegistration, "Need to call Register() before calling Unregister().");
-                    m_comActivatorRegistration.reset();
-                }
-
-                {
-                    auto lock{ m_lock.lock_exclusive() };
+                    auto lock{ m_lock.lock_shared() };
                     THROW_HR_IF_MSG(E_UNEXPECTED, !m_singletonForegroundRegistration, "Need to call Register() before calling Unregister().");
+                    processName = m_processName.get();
                 }
 
                 auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
-                // Unregister foreground sink with the Long Running Process Singelton
-                THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterForegroundActivator(m_processName.get()));
+                // Unregister foreground sink with the Long Running Process Singleton
+                THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterForegroundActivator(processName.c_str()));
 
                 {
                     auto lock{ m_lock.lock_exclusive() };
@@ -508,112 +505,99 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch (...)
         {
-            PushNotificationTelemetry::ActivatorUnregisteredByApi(wil::ResultFromCaughtException());
-            throw;
+            hr = wil::ResultFromCaughtException();
+            PushNotificationTelemetry::ActivatorUnregisteredByApi(hr);
         }
 
-        PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK);
+        THROW_IF_FAILED(hr);
+
+        PushNotificationTelemetry::ActivatorUnregisteredByApi(hr);
     }
 
     void PushNotificationManager::UnregisterAll()
     {
-        bool unregisterCompleted{ false };
+        bool comActivatorRegistration{ false };
+        bool singletonForegroundRegistration{ false };
         {
-            auto lock{ m_lock.lock_exclusive() };
-            if (PushNotificationHelpers::IsPackagedAppScenario())
-            {
-                unregisterCompleted = !m_comActivatorRegistration;
-            }
-            else
-            {
-                if (AppModel::Identity::IsPackagedProcess())
-                {
-                    unregisterCompleted = (!m_singletonForegroundRegistration && !m_comActivatorRegistration);
-                }
-                else
-                {
-                    unregisterCompleted = !m_singletonForegroundRegistration;
-                }
-            }
+            auto lock{ m_lock.lock_shared() };
+            comActivatorRegistration = bool(m_comActivatorRegistration);
+            singletonForegroundRegistration = m_singletonForegroundRegistration;
         }
 
-        if (!unregisterCompleted)
+        if (comActivatorRegistration || singletonForegroundRegistration)
         {
             Unregister();
         }
 
-        {
-            auto lock{ m_lock.lock_exclusive() };
-            THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_OPERATION_IN_PROGRESS), m_registering, "Register or Unregister currently in progress!");
-            m_registering = true;
-        }
-
-        auto scope_exit = wil::scope_exit(
-            [&] {
-                auto lock{ m_lock.lock_exclusive() };
-                m_registering = false;
-            });
-
+        hresult hr = S_OK;
         try
         {
-            try
             {
                 auto lock{ m_lock.lock_exclusive() };
+                THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_OPERATION_IN_PROGRESS), m_registering, "Register or Unregister currently in progress!");
+                m_registering = true;
+            }
+
+            auto scope_exit = wil::scope_exit(
+                [&] {
+                    auto lock{ m_lock.lock_exclusive() };
+                    m_registering = false;
+                });
+
+            {
+                auto lock{ m_lock.lock_shared() };
                 if (m_channel != nullptr)
                 {
                     m_channel.Close();
                 }
-            }
-            catch (...)
-            {
-                LOG_IF_FAILED(wil::ResultFromCaughtException());
-            }
-
+            }       
 
             if (PushNotificationHelpers::IsPackagedAppScenario())
             {
-                {
-                    auto lock{ m_lock.lock_exclusive() };
-                    THROW_HR_IF_NULL(E_UNEXPECTED, m_pushTriggerRegistration);
+                auto lock{ m_lock.lock_exclusive() };
+                THROW_HR_IF_NULL(E_UNEXPECTED, m_pushTriggerRegistration);
 
-                    m_pushTriggerRegistration.Unregister(true);
-                    m_pushTriggerRegistration = nullptr;
-                }
+                m_pushTriggerRegistration.Unregister(true);
+                m_pushTriggerRegistration = nullptr;
             }
             else
             {
                 auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
 
+                std::wstring processName;
                 {
-                    auto lock{ m_lock.lock_exclusive() };
-                    THROW_HR_IF(E_UNEXPECTED, !m_singletonBackgroundRegistration);
+                    auto lock{ m_lock.lock_shared() };
+                    THROW_HR_IF(E_UNEXPECTED, !m_singletonLongRunningSinkRegistration);
+                    processName = m_processName.get();
                 }
 
                 // Removes the Long Running Singleton sink registered with platform for both packaged and unpackaged applications 
-                THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterLongRunningActivator(m_processName.get()));
-
-                THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterFullTrustApplication(m_processName.get()));
+                THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterLongRunningActivator(processName.c_str()));
 
                 {
                     auto lock{ m_lock.lock_exclusive() };
-                    m_singletonBackgroundRegistration = false;
+                    m_singletonLongRunningSinkRegistration = false;
                 }
+
+                THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterFullTrustApplication(processName.c_str()));
             }
         }
         catch (...)
         {
-            PushNotificationTelemetry::ActivatorUnregisteredByApi(wil::ResultFromCaughtException());
-            throw;
+            hr = wil::ResultFromCaughtException();
+            PushNotificationTelemetry::ActivatorUnregisteredByApi(hr);
         }
 
-        PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK);
+        THROW_IF_FAILED(hr);
+
+        PushNotificationTelemetry::ActivatorUnregisteredByApi(hr);
     }
 
     winrt::event_token PushNotificationManager::PushReceived(TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationManager, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
     {
         {
             auto lock{ m_lock.lock_shared() };
-            THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), m_comActivatorRegistration || m_singletonBackgroundRegistration, "Must register event handlers before calling Register().");
+            THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), m_comActivatorRegistration || m_singletonLongRunningSinkRegistration, "Must register event handlers before calling Register().");
         }
 
         auto lock{ m_lock.lock_exclusive() };

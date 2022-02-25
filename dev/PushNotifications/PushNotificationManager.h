@@ -38,7 +38,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::event<PushNotificationEventHandler> m_foregroundHandlers;
         winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration m_pushTriggerRegistration{ nullptr };
         wil::unique_com_class_object_cookie m_comActivatorRegistration;
-        bool m_singletonBackgroundRegistration{ false };   // Defines if the long running process singleton has registered a sink with the platform for a given app
+        bool m_singletonLongRunningSinkRegistration{ false };   // Defines if the long running singleton process has registered a sink with the platform for a given app
         bool m_singletonForegroundRegistration{ false };   // Defines if the app has registered a foreground sink with the Long running process singleton
         bool m_registering{ false };
         wil::srwlock m_lock;
