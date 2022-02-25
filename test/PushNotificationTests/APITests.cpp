@@ -260,34 +260,34 @@ namespace Test::PushNotifications
             RunTestUnpackaged(L"VerifyRegisterandUnregisterAll", testWaitTime());
         }
 
-        TEST_METHOD(MultipleRegisterTest)
+        TEST_METHOD(MultipleRegister)
         {
-            RunTest(L"MultipleRegisterTest", testWaitTime());
+            RunTest(L"MultipleRegister", testWaitTime());
         }
 
-        TEST_METHOD(MultipleRegisterTest_Unpackaged)
+        TEST_METHOD(MultipleRegister_Unpackaged)
         {
-            RunTestUnpackaged(L"MultipleRegisterTest", testWaitTime());
+            RunTestUnpackaged(L"MultipleRegister", testWaitTime());
         }
 
-        TEST_METHOD(VerifyMultipleRegisterAndUnregisterTest)
+        TEST_METHOD(VerifyMultipleRegisterAndUnregister)
         {
-            RunTest(L"VerifyMultipleRegisterAndUnregisterTest", testWaitTime());
+            RunTest(L"VerifyMultipleRegisterAndUnregister", testWaitTime());
         }
 
-        TEST_METHOD(VerifyMultipleRegisterAndUnregisterTest_Unpackaged)
+        TEST_METHOD(VerifyMultipleRegisterAndUnregister_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyMultipleRegisterAndUnregisterTest", testWaitTime());
+            RunTestUnpackaged(L"VerifyMultipleRegisterAndUnregister", testWaitTime());
         }
 
-        TEST_METHOD(VerifyMultipleRegisterAndUnregisterAllTest)
+        TEST_METHOD(VerifyMultipleRegisterAndUnregisterAll)
         {
-            RunTest(L"VerifyMultipleRegisterAndUnregisterAllTest", testWaitTime());
+            RunTest(L"VerifyMultipleRegisterAndUnregisterAll", testWaitTime());
         }
 
-        TEST_METHOD(VerifyMultipleRegisterAndUnregisterAllTest_Unpackaged)
+        TEST_METHOD(VerifyMultipleRegisterAndUnregisterAll_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyMultipleRegisterAndUnregisterAllTest", testWaitTime());
+            RunTestUnpackaged(L"VerifyMultipleRegisterAndUnregisterAll", testWaitTime());
         }
 
         TEST_METHOD(VerifyUnregisterTwice)
