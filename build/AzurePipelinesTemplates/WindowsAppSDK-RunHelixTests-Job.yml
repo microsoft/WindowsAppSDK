@@ -105,12 +105,6 @@ jobs:
       downloadPath: $(testPayloadDir)
       itemPattern: 'BuildOutput/$(buildConfiguration)/$(buildPlatform)/**/*'
 
-  - powershell: |
-      Write-Host ""
-      Write-Host "$(Build.SourcesDirectory)"
-      Tree /F /A $(Build.SourcesDirectory)
-    displayName: 'DIAG: dir'
-
   # Discover the TAEF test binaries to run and generate the Helix Work Items for them.
   # Note: There are 4 test suites for MRT Core. We currently run 3 of them in Helix.
   - task: powershell@2
