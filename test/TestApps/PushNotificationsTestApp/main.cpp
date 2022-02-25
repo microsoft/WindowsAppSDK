@@ -145,7 +145,7 @@ bool VerifyRegisterandUnregister()
 }
 
 // Verify registering multiple activators is not allowed.
-bool MultipleRegisterTest()
+bool MultipleRegister()
 {
     try
     {
@@ -296,7 +296,7 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
 
         { "VerifyRegisterandUnregister", &VerifyRegisterandUnregister},
         { "VerifyRegisterandUnregisterAll", &VerifyRegisterandUnregisterAll},
-        { "MultipleRegisterTest", &MultipleRegisterTest},
+        { "MultipleRegister", &MultipleRegister},
         { "VerifyMultipleRegisterAndUnregister", &VerifyMultipleRegisterAndUnregister},
         { "VerifyMultipleRegisterAndUnregisterAll", &VerifyMultipleRegisterAndUnregisterAll},
 
