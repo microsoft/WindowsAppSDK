@@ -9,7 +9,7 @@ parameters:
     default: False
   - name: "IgnoreFailures"
     type: boolean
-    default: False
+    default: True
   - name: "PublishToMaestro"
     type: boolean
     default: False
