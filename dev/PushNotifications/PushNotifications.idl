@@ -39,9 +39,10 @@ namespace Microsoft.Windows.PushNotifications
         // Initialize using a Registration option and optionally defined parameters like manifest defined activatorId
         // 1) If kind = PushTrigger is specified, only the Push Trigger will be Registered with Background Infra
         // 2) If kind = ComActivator is specified, the Background Task component will be Registered as an in-process COM server
+        // 3) If kind = ProtocolActivator is specified, the LRP will CoCreateInstance the application in background scenarios
         PushNotificationActivationInfo(PushNotificationRegistrationActivators activators, Guid taskClsid);
 
-        // Applications that need to use ProtocolActivator will use this constructor
+        // Unpackaged applications that need to register for activation will use this constructor
         PushNotificationActivationInfo(PushNotificationRegistrationActivators activators);
 
         // The CLSID associated with the Client COM server that Windows App SDK will activate
@@ -112,22 +113,25 @@ namespace Microsoft.Windows.PushNotifications
     };
 
     [feature(Feature_PushNotifications)]
-    static runtimeclass PushNotificationManager
+    runtimeclass PushNotificationManager
     {
+        // Gets a Default instance of a PushNotificationManager
+        static PushNotificationManager Default{ get; };
+
         // Register an activator using an ActivationInfo context and cache the flag for unregister
-        static void RegisterActivator(PushNotificationActivationInfo details);
+        void RegisterActivator(PushNotificationActivationInfo details);
 
         // Unregister any activator given PushNotificationRegistrationActivators
         // 1) If kind = PushTrigger is specified, the trigger itself will be removed
         // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will no longer act as an InProc COM Server
         // 3) If kind = ProtocolActivator is specified, the application will be unregistered from the long running process that handles activation
-        static void UnregisterActivator(PushNotificationRegistrationActivators activators);
+        void UnregisterActivator(PushNotificationRegistrationActivators activators);
 
         // Unregister all activators registered for the application
-        static void UnregisterAllActivators();
+        void UnregisterAllActivators();
 
         // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
-        static Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
+        Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
 
         // Applications will call this to check which flags are supported for RegisterActivator
         static Boolean IsActivatorSupported(PushNotificationRegistrationActivators activators);

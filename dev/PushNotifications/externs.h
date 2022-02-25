@@ -3,16 +3,25 @@
 
 #pragma once
 #include "pch.h"
+#include <winrt/Windows.ApplicationModel.Core.h>
+#include "PushNotificationUtility.h"
 
 wil::unique_event& GetWaitHandleForArgs();
+winrt::guid& GetComServerClsid();
 
 inline const winrt::hstring ACTIVATED_EVENT_ARGS_KEY = L"GlobalActivatedEventArgs";
+inline const winrt::hstring LRP_ACTIVATED_EVENT_ARGS_KEY = L"LRPActivatedEventArgs";
+
+namespace PushNotificationHelpers
+{
+    using namespace winrt::Microsoft::Windows::PushNotifications::Helpers;
+}
 
 struct ChannelDetails
 {
     winrt::hstring channelUri;
     winrt::hstring channelId;
-    winrt::hstring appUserModelId;
+    winrt::hstring appId;
     winrt::Windows::Foundation::DateTime channelExpiryTime;
 };
 
