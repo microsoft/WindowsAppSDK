@@ -8,8 +8,8 @@
 
 DECLARE_TRACELOGGING_CLASS(AppNotificationTelemetryProvider,
     "Microsoft.WindowsAppSDK.Notifications.AppNotificationTelemetry",
-    // {7c1b07ef-a7c0-56d1-5456-385ebd4412b2}
-    (0x7c1b07ef, 0xa7c0, 0x56d1, 0x54, 0x56, 0x38, 0x5e, 0xbd, 0x44, 0x12, 0xb2)); //ELx need a new guid here
+    // {1825c850-a487-537d-b768-f0ab298d2565}
+    (0x1825c850, 0xa487, 0x537d, 0xb7, 0x68, 0xf0, 0xab, 0x29, 0x8d, 0x25, 0x65));
 
 
 class AppNotificationTelemetry : public wil::TraceLoggingProvider
