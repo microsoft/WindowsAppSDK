@@ -48,5 +48,5 @@ private:
 
     bool m_expiresOnReboot = false;
 
-    winrt::com_ptr<ABI::Microsoft::Internal::ToastNotifications::IToastProgressData> m_toastProgressData;
+    winrt::com_ptr<ABI::Microsoft::Internal::ToastNotifications::IToastProgressData> m_toastProgressData{ nullptr };
 };

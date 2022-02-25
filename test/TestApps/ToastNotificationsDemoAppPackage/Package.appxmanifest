@@ -53,11 +53,6 @@
 				</com:ExeServer>
 			</com:ComServer>
 		</com:Extension>
-		<uap:Extension Category="windows.protocol" EntryPoint="Windows.FullTrustApplication">
-			<uap:Protocol Name="packagedtoast-protocol">
-				<uap:DisplayName>WindowsAppRuntimeTestProtocol</uap:DisplayName>
-        </uap:Protocol>
-		</uap:Extension>
 		<com:Extension Category="windows.comServer">
 			<com:ComServer>
 				<com:ExeServer Executable="ToastNotificationsDemoApp\ToastNotificationsDemoApp.exe" DisplayName="SampleBackgroundApp" Arguments="----WindowsAppRuntimePushServer:">

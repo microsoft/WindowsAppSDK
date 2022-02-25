@@ -21,9 +21,10 @@ namespace Microsoft.Windows.AppNotifications
     runtimeclass AppNotificationProgressData
     {
         // Initializes a new Instance of NotificationProgressData
-        AppNotificationProgressData();
+        // The sequence number is non-zero or this will throw.
+        AppNotificationProgressData(UInt32 sequenceNumber);
 
-        // Gets or sets the sequence number of this notification data.
+        // Gets or sets a non-zero sequence number of this notification data.
         // When multiple NotificationProgressData objects are received, the system displays the data with the greatest non-zero number. 
         UInt32 SequenceNumber;
 
