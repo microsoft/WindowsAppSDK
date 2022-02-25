@@ -12,7 +12,7 @@ parameters:
     default: False
   - name: "PublishToMaestro"
     type: boolean
-    default: False
+    default: True
   - name: "WindowsAppRuntimeInsightsSourceDirectory"
     type: string
     default: $(Build.SourcesDirectory)\dev\WindowsAppRuntime_Insights
