@@ -9,10 +9,10 @@ parameters:
     default: False
   - name: "IgnoreFailures"
     type: boolean
-    default: False
+    default: True
   - name: "PublishToMaestro"
     type: boolean
-    default: True
+    default: False
   - name: "WindowsAppRuntimeInsightsSourceDirectory"
     type: string
     default: $(Build.SourcesDirectory)\dev\WindowsAppRuntime_Insights
