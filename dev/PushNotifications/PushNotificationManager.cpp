@@ -147,7 +147,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             for (auto backOffTime = c_initialBackoff; ; backOffTime += c_backoffIncrement)
             {
-                bool channelRequestSucceeded{ false };
                 try
                 {
                     ChannelDetails channelInfo{};
@@ -200,8 +199,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         channel,
                         S_OK,
                         PushNotificationChannelStatus::CompletedSuccess);
-
-                    channelRequestSucceeded = true;
                 }
                 catch (...)
                 {
