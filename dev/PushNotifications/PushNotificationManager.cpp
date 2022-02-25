@@ -478,14 +478,16 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             }
             else
             {
+                std::wstring processName;
                 {
                     auto lock{ m_lock.lock_shared() };
                     THROW_HR_IF_MSG(E_UNEXPECTED, !m_singletonForegroundRegistration, "Need to call Register() before calling Unregister().");
+                    processName = m_processName.get();
                 }
 
                 auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
                 // Unregister foreground sink with the Long Running Process Singleton
-                THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterForegroundActivator(m_processName.get()));
+                THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterForegroundActivator(processName.c_str()));
 
                 {
                     auto lock{ m_lock.lock_exclusive() };
@@ -499,7 +501,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             PushNotificationTelemetry::ActivatorUnregisteredByApi(hr);
         }
 
-        THROW_HR_IF(hr, hr != S_OK);
+        THROW_IF_FAILED(hr);
 
         PushNotificationTelemetry::ActivatorUnregisteredByApi(hr);
     }
@@ -535,7 +537,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 });
 
             {
-                auto lock{ m_lock.lock_exclusive() };
+                auto lock{ m_lock.lock_shared() };
                 if (m_channel != nullptr)
                 {
                     m_channel.Close();
@@ -554,20 +556,22 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
 
+                std::wstring processName;
                 {
                     auto lock{ m_lock.lock_shared() };
                     THROW_HR_IF(E_UNEXPECTED, !m_singletonBackgroundRegistration);
+                    processName = m_processName.get();
                 }
 
                 // Removes the Long Running Singleton sink registered with platform for both packaged and unpackaged applications 
-                THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterLongRunningActivator(m_processName.get()));
+                THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterLongRunningActivator(processName.c_str()));
 
                 {
                     auto lock{ m_lock.lock_exclusive() };
                     m_singletonBackgroundRegistration = false;
                 }
 
-                THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterFullTrustApplication(m_processName.get()));
+                THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterFullTrustApplication(processName.c_str()));
             }
         }
         catch (...)
@@ -576,7 +580,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             PushNotificationTelemetry::ActivatorUnregisteredByApi(hr);
         }
 
-        THROW_HR_IF(hr, hr != S_OK);
+        THROW_IF_FAILED(hr);
 
         PushNotificationTelemetry::ActivatorUnregisteredByApi(hr);
     }
