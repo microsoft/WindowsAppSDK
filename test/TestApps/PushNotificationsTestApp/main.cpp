@@ -110,15 +110,32 @@ bool MultipleChannelRequestUsingMultipleRemoteId()
     return channelOperationResult2 == S_OK;
 }
 
-bool VerifyRegisterandUnregisterActivator()
+bool BackgroundActivationTest() // Activating application for background test.
 {
     PushNotificationManager::Default().UnregisterAll();
+    return true;
+}
 
+bool VerifyRegisterandUnregisterAll()
+{
     try
     {
-        PushNotificationManager::Default().Register();
+        // Register is already called in main
         PushNotificationManager::Default().UnregisterAll();
+    }
+    catch (...)
+    {
+        return false;
+    }
+    return true;
+}
 
+bool VerifyRegisterandUnregister()
+{
+    try
+    {
+        // Register is already called in main
+        PushNotificationManager::Default().Unregister();
     }
     catch (...)
     {
@@ -128,7 +145,7 @@ bool VerifyRegisterandUnregisterActivator()
 }
 
 // Verify registering multiple activators is not allowed.
-bool MultipleRegisterActivatorTest()
+bool MultipleRegisterTest()
 {
     try
     {
@@ -136,14 +153,59 @@ bool MultipleRegisterActivatorTest()
     }
     catch (...)
     {
-        return to_hresult() == E_FAIL;
+        return to_hresult() == HRESULT_FROM_WIN32(ERROR_ALREADY_REGISTERED);
     }
     return false;
 }
 
-bool BackgroundActivationTest() // Activating application for background test.
+bool VerifyMultipleRegisterAndUnregister()
 {
-    PushNotificationManager::Default().UnregisterAll();
+    try
+    {
+        // Register is already called in main
+        PushNotificationManager::Default().Unregister();
+
+        PushNotificationManager::Default().Register();
+
+        PushNotificationManager::Default().Unregister();
+    }
+    catch (...)
+    {
+        return to_hresult() == HRESULT_FROM_WIN32(ERROR_ALREADY_REGISTERED);
+    }
+    return false;
+}
+
+bool VerifyMultipleRegisterAndUnregisterAll()
+{
+    try
+    {
+        // Register is already called in main
+        PushNotificationManager::Default().UnregisterAll();
+
+        PushNotificationManager::Default().Register();
+
+        PushNotificationManager::Default().UnregisterAll();
+    }
+    catch (...)
+    {
+        return false;
+    }
+    return true;
+}
+
+bool VerifyUnregisterAndUnregisterAll()
+{
+    try
+    {
+        // Register is already called in main
+        PushNotificationManager::Default().Unregister();
+        PushNotificationManager::Default().UnregisterAll();
+    }
+    catch (...)
+    {
+        return false;
+    }
     return true;
 }
 
@@ -157,7 +219,7 @@ bool VerifyUnregisterTwice()
     }
     catch (...)
     {
-        return winrt::to_hresult() == E_NOT_SET;
+        return winrt::to_hresult() == E_UNEXPECTED;
     }
     return false;
 }
@@ -186,7 +248,7 @@ bool VerifyUnregisterAllTwice()
     }
     catch (...)
     {
-        return winrt::to_hresult() == E_NOT_SET;
+        return winrt::to_hresult() == E_UNEXPECTED;
     }
     return true;
 }
@@ -229,12 +291,20 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "MultipleChannelClose", &MultipleChannelClose},
         { "MultipleChannelRequestUsingSameRemoteId", &MultipleChannelRequestUsingSameRemoteId},
         { "MultipleChannelRequestUsingMultipleRemoteId", &MultipleChannelRequestUsingMultipleRemoteId},
-        { "VerifyRegisterandUnregisterActivator", &VerifyRegisterandUnregisterActivator},
-        { "MultipleRegisterActivatorTest", &MultipleRegisterActivatorTest},
+
         { "BackgroundActivationTest", &BackgroundActivationTest},
+
+        { "VerifyRegisterandUnregister", &VerifyRegisterandUnregister},
+        { "VerifyRegisterandUnregisterAll", &VerifyRegisterandUnregisterAll},
+        { "MultipleRegisterTest", &MultipleRegisterTest},
+        { "VerifyMultipleRegisterAndUnregister", &VerifyMultipleRegisterAndUnregister},
+        { "VerifyMultipleRegisterAndUnregisterAll", &VerifyMultipleRegisterAndUnregisterAll},
+
+        { "VerifyUnregisterAndUnregisterAll", &VerifyUnregisterAndUnregisterAll},
         { "VerifyUnregisterTwice", &VerifyUnregisterTwice},
         { "VerifyUnregisterAll", &VerifyUnregisterAll},
         { "VerifyUnregisterAllTwice", &VerifyUnregisterAllTwice},
+
         { "VerifyForegroundHandlerSucceeds", &VerifyForegroundHandlerSucceeds },
         { "VerifyForegroundHandlerFails", &VerifyForegroundHandlerFails }
     };

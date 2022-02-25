@@ -280,12 +280,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 auto name{ task.Value().Name() };
 
-                if (name == backgroundTaskFullName)
-                {
-                    return true;
-                }
-
-                return false;
+                return name == backgroundTaskFullName;
             }) };
 
         return isTaskRegistered;
@@ -392,7 +387,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 {
                     auto lock{ m_lock.lock_shared() };
-                    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_REGISTERED), m_singletonForegroundRegistration && m_singletonBackgroundRegistration);
+                    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_REGISTERED), m_singletonForegroundRegistration || m_singletonBackgroundRegistration);
                 }
 
                 auto scopeExitToCleanRegistrations{ wil::scope_exit([&]()
@@ -517,7 +512,21 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         bool unregisterCompleted{ false };
         {
             auto lock{ m_lock.lock_exclusive() };
-            unregisterCompleted = (!m_singletonForegroundRegistration || !m_comActivatorRegistration);
+            if (PushNotificationHelpers::IsPackagedAppScenario())
+            {
+                unregisterCompleted = !m_comActivatorRegistration;
+            }
+            else
+            {
+                if (AppModel::Identity::IsPackagedProcess())
+                {
+                    unregisterCompleted = (!m_singletonForegroundRegistration && !m_comActivatorRegistration);
+                }
+                else
+                {
+                    unregisterCompleted = !m_singletonForegroundRegistration;
+                }
+            }
         }
 
         if (!unregisterCompleted)

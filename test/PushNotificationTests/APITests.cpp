@@ -240,24 +240,54 @@ namespace Test::PushNotifications
             RunTestUnpackaged(L"MultipleChannelRequestUsingMultipleRemoteId", channelTestWaitTime());
         }
 
-        TEST_METHOD(VerifyRegisterandUnregisterActivator)
+        TEST_METHOD(VerifyRegisterandUnregister)
         {
-            RunTest(L"VerifyRegisterandUnregisterActivator", testWaitTime());
+            RunTest(L"VerifyRegisterandUnregister", testWaitTime());
         }
 
-        TEST_METHOD(VerifyRegisterandUnregisterActivator_Unpackaged)
+        TEST_METHOD(VerifyRegisterandUnregister_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyRegisterandUnregisterActivator", channelTestWaitTime());
+            RunTestUnpackaged(L"VerifyRegisterandUnregister", testWaitTime());
         }
 
-        TEST_METHOD(MultipleRegisterActivatorTest)
+        TEST_METHOD(VerifyRegisterandUnregisterAll)
         {
-            RunTest(L"MultipleRegisterActivatorTest", testWaitTime());
+            RunTest(L"VerifyRegisterandUnregisterAll", testWaitTime());
         }
 
-        TEST_METHOD(MultipleRegisterActivatorTest_Unpackaged)
+        TEST_METHOD(VerifyRegisterandUnregisterAll_Unpackaged)
         {
-            RunTestUnpackaged(L"MultipleRegisterActivatorTest", testWaitTime());
+            RunTestUnpackaged(L"VerifyRegisterandUnregisterAll", testWaitTime());
+        }
+
+        TEST_METHOD(MultipleRegisterTest)
+        {
+            RunTest(L"MultipleRegisterTest", testWaitTime());
+        }
+
+        TEST_METHOD(MultipleRegisterTest_Unpackaged)
+        {
+            RunTestUnpackaged(L"MultipleRegisterTest", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyMultipleRegisterAndUnregisterTest)
+        {
+            RunTest(L"VerifyMultipleRegisterAndUnregisterTest", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyMultipleRegisterAndUnregisterTest_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyMultipleRegisterAndUnregisterTest", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyMultipleRegisterAndUnregisterAllTest)
+        {
+            RunTest(L"VerifyMultipleRegisterAndUnregisterAllTest", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyMultipleRegisterAndUnregisterAllTest_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyMultipleRegisterAndUnregisterAllTest", testWaitTime());
         }
 
         TEST_METHOD(VerifyUnregisterTwice)
@@ -285,6 +315,21 @@ namespace Test::PushNotifications
             RunTest(L"VerifyUnregisterAllTwice", testWaitTime());
         }
 
+        TEST_METHOD(VerifyUnregisterAllTwice_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyUnregisterAllTwice", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyUnregisterAndUnregisterAll)
+        {
+            RunTest(L"VerifyUnregisterAndUnregisterAll", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyUnregisterAndUnregisterAll_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyUnregisterAndUnregisterAll", testWaitTime());
+        }
+
         TEST_METHOD(VerifyForegroundHandlerSucceeds)
         {
             RunTest(L"VerifyForegroundHandlerSucceeds", testWaitTime());
@@ -293,11 +338,6 @@ namespace Test::PushNotifications
         TEST_METHOD(VerifyForegroundHandlerFails)
         {
             RunTest(L"VerifyForegroundHandlerFails", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyUnregisterAllTwice_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyUnregisterAllTwice", testWaitTime());
         }
 
         TEST_METHOD(VerifyProtocolActivation_Unpackaged)
