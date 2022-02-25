@@ -220,26 +220,6 @@ namespace Test::PushNotifications
             RunTestUnpackaged(L"MultipleChannelClose", 3000000);
         }
 
-        TEST_METHOD(MultipleChannelRequestUsingSameRemoteId)
-        {
-            RunTest(L"MultipleChannelRequestUsingSameRemoteId", channelTestWaitTime());
-        }
-
-        TEST_METHOD(MultipleChannelRequestUsingSameRemoteId_Unpackaged)
-        {
-            RunTestUnpackaged(L"MultipleChannelRequestUsingSameRemoteId", channelTestWaitTime());
-        }
-
-        TEST_METHOD(MultipleChannelRequestUsingMultipleRemoteId)
-        {
-            RunTest(L"MultipleChannelRequestUsingMultipleRemoteId", channelTestWaitTime());
-        }
-
-        TEST_METHOD(MultipleChannelRequestUsingMultipleRemoteId_Unpackaged)
-        {
-            RunTestUnpackaged(L"MultipleChannelRequestUsingMultipleRemoteId", channelTestWaitTime());
-        }
-
         TEST_METHOD(VerifyRegisterandUnregister)
         {
             RunTest(L"VerifyRegisterandUnregister", testWaitTime());

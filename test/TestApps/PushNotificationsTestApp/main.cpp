@@ -89,27 +89,6 @@ bool MultipleChannelClose()
     return false;
 }
 
-bool MultipleChannelRequestUsingSameRemoteId()
-{
-
-    auto channelOperation1 = PushNotificationManager::Default().CreateChannelAsync(remoteId1);
-    auto channelOperation2 = PushNotificationManager::Default().CreateChannelAsync(remoteId1);
-    auto channelOperationResult2 = ChannelRequestHelper(channelOperation2);
-    auto channelOperationResult1 = ChannelRequestHelper(channelOperation1);
-
-    return channelOperationResult2 == S_OK;
-}
-
-bool MultipleChannelRequestUsingMultipleRemoteId()
-{
-    auto channelOperation1 = PushNotificationManager::Default().CreateChannelAsync(remoteId1);
-    auto channelOperation2 = PushNotificationManager::Default().CreateChannelAsync(remoteId2);
-    auto channelOperationResult2 = ChannelRequestHelper(channelOperation2);
-    auto channelOperationResult1 = ChannelRequestHelper(channelOperation1);
-
-    return channelOperationResult2 == S_OK;
-}
-
 bool BackgroundActivationTest() // Activating application for background test.
 {
     PushNotificationManager::Default().UnregisterAll();
@@ -289,9 +268,7 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "ChannelRequestUsingNullRemoteId",  &ChannelRequestUsingNullRemoteId },
         { "ChannelRequestUsingRemoteId", &ChannelRequestUsingRemoteId },
         { "MultipleChannelClose", &MultipleChannelClose},
-        { "MultipleChannelRequestUsingSameRemoteId", &MultipleChannelRequestUsingSameRemoteId},
-        { "MultipleChannelRequestUsingMultipleRemoteId", &MultipleChannelRequestUsingMultipleRemoteId},
-
+        
         { "BackgroundActivationTest", &BackgroundActivationTest},
 
         { "VerifyRegisterandUnregister", &VerifyRegisterandUnregister},
