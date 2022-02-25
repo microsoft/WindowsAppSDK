@@ -365,7 +365,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 {
                     auto lock{ m_lock.lock_shared() };
-                    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_REGISTERED), m_singletonForegroundRegistration || m_singletonBackgroundRegistration);
+                    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_REGISTERED), m_singletonForegroundRegistration || m_singletonLongRunningSinkRegistration);
                 }
 
                 auto scopeExitToCleanRegistrations{ wil::scope_exit([&]()
@@ -417,13 +417,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 THROW_IF_FAILED(notificationsLongRunningPlatform->RegisterLongRunningActivatorWithClsid(processName.c_str(), registeredClsid));
                 {
                     auto lock{ m_lock.lock_exclusive() };
-                    m_singletonBackgroundRegistration = true;
+                    m_singletonLongRunningSinkRegistration = true;
                 }
 
                 auto scopeExitToCleanLongRunningSink{ wil::scope_exit([&]()
                 {
                     THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterLongRunningActivator(processName.c_str()));
-                    m_singletonBackgroundRegistration = false;
+                    m_singletonLongRunningSinkRegistration = false;
                 }
                 ) };
 
@@ -567,7 +567,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 std::wstring processName;
                 {
                     auto lock{ m_lock.lock_shared() };
-                    THROW_HR_IF(E_UNEXPECTED, !m_singletonBackgroundRegistration);
+                    THROW_HR_IF(E_UNEXPECTED, !m_singletonLongRunningSinkRegistration);
                     processName = m_processName.get();
                 }
 
@@ -576,7 +576,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 {
                     auto lock{ m_lock.lock_exclusive() };
-                    m_singletonBackgroundRegistration = false;
+                    m_singletonLongRunningSinkRegistration = false;
                 }
 
                 THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterFullTrustApplication(processName.c_str()));
@@ -597,7 +597,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         {
             auto lock{ m_lock.lock_shared() };
-            THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), m_comActivatorRegistration || m_singletonBackgroundRegistration, "Must register event handlers before calling Register().");
+            THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), m_comActivatorRegistration || m_singletonLongRunningSinkRegistration, "Must register event handlers before calling Register().");
         }
 
         auto lock{ m_lock.lock_exclusive() };
