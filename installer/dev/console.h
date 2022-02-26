@@ -6,3 +6,5 @@
 #include "pch.h"
 
 void ShowHelp();
+void DisplayInfo();
+void DisplayInfoHeader();

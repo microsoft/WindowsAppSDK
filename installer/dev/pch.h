@@ -30,4 +30,5 @@
 
 #include <Security.IntegrityLevel.h>
 
+#include "tracelogging.h"
 #include "WindowsAppRuntime-License.h"

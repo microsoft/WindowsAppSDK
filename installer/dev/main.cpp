@@ -56,6 +56,10 @@ int wmain(int argc, wchar_t *argv[])
             ShowHelp();
             return 0;
         }
+        else if ((arg == L"--info"))
+        {
+            DisplayInfo();
+        }
         else
         {
             std::wcerr << "Unknown argument: " << arg.data() << std::endl;
