@@ -249,21 +249,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     IBackgroundTaskRegistration RetreiveBackgroundTaskRegistration(winrt::hstring const& backgroundTaskFullName)
     {
         auto tasks{ BackgroundTaskRegistration::AllTasks() };
-        IBackgroundTaskRegistration registration{};
-
-        // Custom version of std::find since we are looking for the name
-        // of the task not the registration.
-        auto first{ std::begin(tasks) };
-        auto last{ std::end(tasks) };
-        while (first != last)
+        auto registration{ std::find_if(tasks.begin(), tasks.end(), [&backgroundTaskFullName](const auto& task)
         {
-            if (first.Current().Value().Name() == backgroundTaskFullName)
-            {
-                return first.Current().Value();
-            }
-            ++first;
-        }
-        return nullptr;
+            return task.Value().Name() == backgroundTaskFullName;
+        }) };
+        return registration.Current().Value();
     }
 
     void PushNotificationManager::Register()
@@ -277,7 +267,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 m_registering = true;
             }
 
-            auto scopeExitToCleanRegistrations{ wil::scope_exit([&]()
+            auto registeringScopeExit{ wil::scope_exit([&]()
             {
                 auto lock { m_lock.lock_exclusive() };
                 m_registering = false;
@@ -365,7 +355,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 {
                     auto lock{ m_lock.lock_shared() };
-                    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_REGISTERED), m_singletonForegroundRegistration || m_singletonLongRunningSinkRegistration);
+                    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_REGISTERED), m_singletonForegroundRegistration || m_singletonLongRunningSinkRegistration || m_comActivatorRegistration);
                 }
 
                 auto scopeExitToCleanRegistrations{ wil::scope_exit([&]()
@@ -448,16 +438,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
-            PushNotificationTelemetry::ActivatorRegisteredByApi(hr);
         }
 
-        THROW_IF_FAILED(hr);
         PushNotificationTelemetry::ActivatorRegisteredByApi(hr);
+        THROW_IF_FAILED(hr);
     }
 
     void PushNotificationManager::Unregister()
     {
-        hresult hr = S_OK;
+        winrt::hresult hr{ S_OK };
         try
         {
             {
@@ -506,12 +495,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
-            PushNotificationTelemetry::ActivatorUnregisteredByApi(hr);
         }
 
-        THROW_IF_FAILED(hr);
-
         PushNotificationTelemetry::ActivatorUnregisteredByApi(hr);
+        THROW_IF_FAILED(hr);
     }
 
     void PushNotificationManager::UnregisterAll()
@@ -562,8 +549,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             }
             else
             {
-                auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
-
                 std::wstring processName;
                 {
                     auto lock{ m_lock.lock_shared() };
@@ -571,6 +556,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     processName = m_processName.get();
                 }
 
+                auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
                 // Removes the Long Running Singleton sink registered with platform for both packaged and unpackaged applications 
                 THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterLongRunningActivator(processName.c_str()));
 
@@ -585,12 +571,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
-            PushNotificationTelemetry::ActivatorUnregisteredByApi(hr);
         }
 
-        THROW_IF_FAILED(hr);
-
         PushNotificationTelemetry::ActivatorUnregisteredByApi(hr);
+        THROW_IF_FAILED(hr);
     }
 
     winrt::event_token PushNotificationManager::PushReceived(TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationManager, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
