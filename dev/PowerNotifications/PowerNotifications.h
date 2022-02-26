@@ -548,12 +548,6 @@ namespace winrt::Microsoft::Windows::System::Power
                 co_return res;
             }
 
-            Power::EffectivePowerMode EffectivePowerMode2()
-            {
-                UpdateValuesIfNecessary(effectivePowerModeFunc);
-                return static_cast<Power::EffectivePowerMode>(m_cachedPowerMode);
-            }
-
             event_token EffectivePowerModeChanged(const PowerEventHandler& handler)
             {
                 return AddCallback(effectivePowerModeFunc, handler);
@@ -690,11 +684,6 @@ namespace winrt::Microsoft::Windows::System::Power
             static winrt::Windows::Foundation::IAsyncOperation<Power::EffectivePowerMode> EffectivePowerMode()
             {
                 return Factory()->EffectivePowerMode();
-            }
-
-            static Power::EffectivePowerMode EffectivePowerMode2()
-            {
-                return Factory()->EffectivePowerMode2();
             }
 
             static Power::UserPresenceStatus UserPresenceStatus()
