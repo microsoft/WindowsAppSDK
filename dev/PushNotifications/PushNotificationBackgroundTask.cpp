@@ -28,6 +28,7 @@ namespace winrt
 
 void PushNotificationBackgroundTask::Run(winrt::IBackgroundTaskInstance const& taskInstance)
 {
+    // FirstNotificationReceived && Check the launch value 
     auto appProperties = winrt::CoreApplication::Properties();
     // This function can be triggered by either OS background infrastructure
     // or by the PushNotificationsLongRunningProcess.
