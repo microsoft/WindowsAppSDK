@@ -10,7 +10,7 @@ namespace Microsoft.Windows.AppNotifications
     runtimeclass AppNotificationActivatedEventArgs
     {
         // Arguments from the invoked button. Empty for Default Activation with no launch args specified in payload.
-        String ActivationArgs{ get; };
+        String Argument{ get; };
 
         // The data from the input elements of a Notification like a TextBox
         Windows.Foundation.Collections.IMap<String, String> UserInput{ get; };

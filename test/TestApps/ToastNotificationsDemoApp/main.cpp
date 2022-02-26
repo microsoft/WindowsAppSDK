@@ -203,7 +203,7 @@ int main()
     winrt::event_token token = appNotificationManager.NotificationInvoked([](const auto&, winrt::AppNotificationActivatedEventArgs const& toastArgs)
         {
             std::wcout << L"AppNotification received foreground!\n";
-            winrt::hstring arguments{ toastArgs.ActivationArgs() };
+            winrt::hstring arguments{ toastArgs.Argument() };
             std::wcout << arguments.c_str() << L"\n\n";
 
             winrt::IMap<winrt::hstring, winrt::hstring> userInput{ toastArgs.UserInput() };
@@ -233,7 +233,7 @@ int main()
     {
         std::wcout << L"Activated by AppNotification from background.\n";
         winrt::AppNotificationActivatedEventArgs appNotificationArgs{ args.Data().as<winrt::AppNotificationActivatedEventArgs>() };
-        winrt::hstring arguments{ appNotificationArgs.ActivationArgs() };
+        winrt::hstring arguments{ appNotificationArgs.Argument() };
         std::wcout << arguments.c_str() << std::endl << std::endl;
 
         winrt::IMap<winrt::hstring, winrt::hstring> userInput = appNotificationArgs.UserInput();
