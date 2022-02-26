@@ -33,14 +33,63 @@ void JustDoIt()
 ### Unit and Functional Testing
 
 Unit and Functional Tests using alternative test packages (not Integration Tests using the real
-MSIX packages) need to define the alternative framework package's family name **BEFORE**
-`#include`'ing the SelfContained header. This will alter the detection algorithm to look for the
-alternative (test) package rather than the product (real) package.
+MSIX packages) need to call `::WindowsAppRuntime::SelfContained::TestInitialize()` with a nonexistent
+alternative (test) framework package family name **BEFORE** calling `IsSelfContained()` to simulate
+running in a self-contained deployment.
 
 ```c++
-#define WINDOWSAPPSDK_SELFCONTAINED_RUNTIME_PACKAGE_FRAMEWORK_PACKAGEFAMILYNAME_W L"Microsoft.WindowsAppRuntime.Framework_8wekyb3d8bbwe"
+#include "pch.h"
+
 #include <Microsoft.WindowsAppSDK.SelfContained.h>
+
+namespace TB = ::Test::Bootstrap;
+namespace TP = ::Test::Packages;
+
+namespace Test::MyFeature
+{
+    class MyFeatureTests
+    {
+    public:
+        BEGIN_TEST_CLASS(SelfContainedTests)
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(ClassSetup)
+        {
+            ::TB::SetupPackages();
+            ::TB::SetupBootstrap();
+            const auto c_doesNotExistPackageFamilyName{ L"Test.SelfContained.PackageFamilyName.DoesNotExist_1234567890abc" };
+            ::WindowsAppRuntime::SelfContained::TestInitialize(c_doesNotExistPackageFamilyName);
+            return true;
+        }
+
+        TEST_CLASS_CLEANUP(ClassCleanup)
+        {
+            ::WindowsAppRuntime::SelfContained::TestShutdown();
+            ::TB::CleanupBootstrap();
+            ::TB::CleanupPackages();
+            return true;
+        }
+
+        TEST_METHOD(TestThis)
+        {
+            ...insert your test code here...
+        }
 ...
 ```
 
-See `test\common\Test_SelfContained.cpp` for examples using `IsSelfContained()`.
+Alternatively, replace
+
+```
+::WindowsAppRuntime::SelfContained::TestInitialize(c_doesNotExistPackageFamilyName);
+```
+
+with
+```
+::WindowsAppRuntime::SelfContained::TestInitialize(::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+```
+
+to simulate running in a non-self-contained environment (i.e. Windows App SDK via MSIX packages).
+
+See `test\common\Test_SelfContained.cpp` for more examples using `IsSelfContained()`.

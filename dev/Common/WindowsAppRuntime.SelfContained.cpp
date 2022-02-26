@@ -46,10 +46,16 @@ CATCH_RETURN();
 STDAPI WindowsAppRuntime_SelfContainedTestInitialize(
     PCWSTR frameworkPackageFamilyName) noexcept try
 {
-    RETURN_HR_IF(E_INVALIDARG, !frameworkPackageFamilyName);
-    RETURN_HR_IF(E_INVALIDARG, *frameworkPackageFamilyName == L'0');
-
-    g_test_frameworkPackageFamilyName = frameworkPackageFamilyName;
+    if (!frameworkPackageFamilyName || (*frameworkPackageFamilyName == L'0'))
+    {
+        // Shutdown test support
+        g_test_frameworkPackageFamilyName.clear();
+    }
+    else
+    {
+        // Initialize test support
+        g_test_frameworkPackageFamilyName = frameworkPackageFamilyName;
+    }
     return S_OK;
 }
 CATCH_RETURN();

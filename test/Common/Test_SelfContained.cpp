@@ -33,9 +33,10 @@ namespace Test::Common
         {
             ::TB::SetupBootstrap();
             auto cleanup = wil::scope_exit([&] {
+                ::WindowsAppRuntime::SelfContained::TestShutdown();
                 ::TB::CleanupBootstrap();
             });
-            const auto c_doesNotExistPackageFamilyName{ L"Test.SelfContained.PackageFamilyName.DoesNotExist_1234567890abc" };
+            const auto c_doesNotExistPackageFamilyName{ L"Test.PackageFamilyName.DoesNotExist_1234567890abc" };
             ::WindowsAppRuntime::SelfContained::TestInitialize(c_doesNotExistPackageFamilyName);
 
             VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
@@ -46,6 +47,7 @@ namespace Test::Common
             {
                 ::TB::SetupBootstrap();
                 auto cleanup = wil::scope_exit([&]{
+                    ::WindowsAppRuntime::SelfContained::TestShutdown();
                     ::TB::CleanupBootstrap();
                 });
                 ::WindowsAppRuntime::SelfContained::TestInitialize(::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
@@ -58,9 +60,10 @@ namespace Test::Common
         {
             ::TB::SetupBootstrap();
             auto cleanup = wil::scope_exit([&] {
+                ::WindowsAppRuntime::SelfContained::TestShutdown();
                 ::TB::CleanupBootstrap();
             });
-            const auto c_doesNotExistPackageFamilyName{ L"Test.SelfContained.PackageFamilyName.DoesNotExist_1234567890abc" };
+            const auto c_doesNotExistPackageFamilyName{ L"Test.PackageFamilyName.DoesNotExist_1234567890abc" };
             ::WindowsAppRuntime::SelfContained::TestInitialize(c_doesNotExistPackageFamilyName);
             VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
 
