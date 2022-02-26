@@ -95,19 +95,6 @@ int main()
         RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
     }
 
-    // Register Push Event for Foreground
-    winrt::event_token token = PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
-        {
-            auto payload = args.Payload();
-
-            // Do stuff to process the raw payload
-            std::string payloadString(payload.begin(), payload.end());
-            std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
-            args.Handled(true);
-        });
-
-    AppNotificationManager::Default().Register();
-
     PushNotificationManager::Default().Register();
 
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
@@ -145,10 +132,6 @@ int main()
     }
 
     PushNotificationManager::Default().Unregister();
-
-    AppNotificationManager::Default().Unregister();
-
-    AppNotificationManager::Default().Unregister();
     if (!Test::AppModel::IsPackagedProcess())
     {
         MddBootstrapShutdown();

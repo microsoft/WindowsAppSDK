@@ -10,7 +10,6 @@
 #include "PushNotifications-Constants.h"
 #include <winrt/Windows.ApplicationModel.background.h>
 #include <winrt/Windows.Networking.PushNotifications.h>
-#include "PushNotificationBackgroundTask.h"
 #include <winerror.h>
 #include <algorithm>
 #include "PushNotificationChannel.h"
@@ -374,6 +373,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 {
                     auto lock{ m_lock.lock_exclusive() };
                     // Register a PushNotificationBackgroundTask to handle background activation scenarios
+
+                    GetWaitHandleForArgs().create();
                     THROW_IF_FAILED(::CoRegisterClassObject(
                         m_registeredClsid,
                         winrt::make<PushNotificationManagerFactory>().get(),
@@ -425,6 +426,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 if (AppModel::Identity::IsPackagedProcess())
                 {
                     auto lock{ m_lock.lock_exclusive() };
+                    GetWaitHandleForArgs().create();
                     THROW_IF_FAILED(::CoRegisterClassObject(
                         m_registeredClsid,
                         winrt::make<PushNotificationManagerFactory>().get(),
@@ -638,13 +640,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         BOOL handlerRegistered{ false };
         THROW_IF_FAILED(InvokeAll(payloadLength, payload, &handlerRegistered));
-
-        if (!handlerRegistered)
-        {
-            winrt::guid registeredClsid;
-            THROW_IF_FAILED(PushNotificationHelpers::GetComRegistrationFromRegistry(expectedPushServerArgs.data(), registeredClsid));
-            THROW_IF_FAILED(PushNotificationHelpers::PackagedAppLauncherByClsid(registeredClsid, payloadLength, payload));
-        }
+        THROW_HR_IF(E_UNEXPECTED, !handlerRegistered);
 
         return S_OK;
     }
@@ -655,6 +651,24 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         auto appProperties = winrt::CoreApplication::Properties();
         // This function can be triggered by either OS background infrastructure
         // or by the PushNotificationsLongRunningProcess.
+        if (!m_firstNotificationReceived)
+        {
+            m_firstNotificationReceived = true;
+            std::wstring commandLine{ GetCommandLine() };
+            auto pos{ commandLine.find(expectedPushServerArgs) };
+            if (pos == std::wstring::npos) // Any launch kind that is not PushNotification
+            {
+                THROW_HR_IF(E_UNEXPECTED, m_foregroundHandlers);
+
+                winrt::guid registeredClsid{ GUID_NULL };
+                THROW_IF_FAILED(PushNotificationHelpers::GetComRegistrationFromRegistry(expectedPushServerArgs.data(), registeredClsid));
+
+                auto backgroundTask{ winrt::create_instance<IBackgroundTask>(registeredClsid, CLSCTX_ALL) };
+                backgroundTask.Run(taskInstance);
+                return;
+            }
+        }
+
         if (PushNotificationHelpers::IsPackagedAppScenario())
         {
             winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs activatedEventArgs{ winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(taskInstance) };
