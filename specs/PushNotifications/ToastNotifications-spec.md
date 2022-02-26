@@ -181,7 +181,7 @@ is upto the developer to process the Activation Arguments and decide whether to 
 //      <binding template="ToastGeneric">
 //          <text hint-maxLines="1">Jill Bender</text>
 //          <text>Check out where we camped last weekend! Incredible!!</text>
-//          <image placement="hero" src="https://unsplash.it/360/180?image=1043" />
+//          <image placement="hero" src="https://constoso.com/360/180?image=1043" />
 //      </binding>
 //  </visual>
 //  <actions>
@@ -198,12 +198,12 @@ is upto the developer to process the Activation Arguments and decide whether to 
 void ProcessNotificationArgs(const winrt::AppNotificationActivatedEventArgs& notificationActivatedEventArgs)
 {
     // If the user clicks on a toast, the code will need to launch the chat thread window
-    if (std::wstring(notificationActivatedEventArgs.ActivationArgs().c_str()).find(L"openThread") != std::wstring::npos)
+    if (std::wstring(notificationActivatedEventArgs.Argument().c_str()).find(L"openThread") != std::wstring::npos)
     {
         GenerateChatThreadWindow();
     }
     else // If the user responds to a message by clicking a button in the notification, we will need to reply back to the other user
-    if (std::wstring(notificationActivatedEventArgs.ActivationArgs().c_str()).find(L"reply") != std::wstring::npos)
+    if (std::wstring(notificationActivatedEventArgs.Argument().c_str()).find(L"reply") != std::wstring::npos)
     {
         auto input = notificationActivatedEventArgs.UserInput();
         auto replyBoxText = input.Lookup(L"ReplyBox");
@@ -260,7 +260,7 @@ void SendUpdatableNotificationWithProgress()
             <binding template = "ToastGeneric">
                 <text>Downloading this week's new music...</text>
                 <progress
-                    title = "{progressTitle}
+                    title = "{progressTitle}"
                     value = "{progressValue}"
                     valueStringOverride = "{progressValueString}"
                     status = "{progressStatus}" />
@@ -299,7 +299,7 @@ winrt::Windows::Foundation::IAsyncAction UpdateProgressAsync()
     auto result = co_await winrt::AppNotificationManager::Default().UpdateAsync(data, tag, group);
     if (result == winrt::AppNotificationProgressResult::AppNotificationNotFound)
     {
-        LOG_HR_MSG(E_NOT_SET, "Toast Progress Update Failed since the previous notification update is missing or has been cleared by the user!");
+        // Toast Progress Update Failed since the previous notification update is dismissed by the user! So account for this in your logic by stopping updates or starting a new Progress Update flow.
     }
 }
 ```
@@ -351,7 +351,7 @@ namespace Microsoft.Windows.AppNotifications
     runtimeclass AppNotificationActivatedEventArgs
     {
         // Arguments from the invoked button. Empty for Default Activation with no launch args specified in payload.
-        String ActivationArgs{ get; };
+        String Argument{ get; };
 
         // The data from the input elements of a Notification like a TextBox
         Windows.Foundation.Collections.IMap<String, String> UserInput{ get; };
