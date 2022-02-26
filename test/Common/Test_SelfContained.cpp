@@ -4,6 +4,7 @@
 #include "pch.h"
 
 namespace TB = ::Test::Bootstrap;
+namespace TP = ::Test::Packages;
 
 namespace Test::Common
 {
@@ -19,6 +20,7 @@ namespace Test::Common
         TEST_CLASS_SETUP(ClassSetup)
         {
             ::TB::SetupPackages();
+            ::WindowsAppRuntime::SelfContained::TestInitialize(::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
             return true;
         }
 
@@ -30,7 +32,7 @@ namespace Test::Common
 
         TEST_METHOD(Unpackaged_SelfContained_Yes)
         {
-            VERIFY_IS_TRUE(::Microsoft::WindowsAppSDK::SelfContained::IsSelfContained());
+            VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
         }
 
         TEST_METHOD(Unpackaged_SelfContained_No)
@@ -41,13 +43,13 @@ namespace Test::Common
                     ::TB::CleanupBootstrap();
                 });
 
-                VERIFY_IS_FALSE(::Microsoft::WindowsAppSDK::SelfContained::IsSelfContained());
+                VERIFY_IS_FALSE(::WindowsAppRuntime::SelfContained::IsSelfContained());
             }
         }
 
         TEST_METHOD(Unpackaged_SelfContained)
         {
-            VERIFY_IS_TRUE(::Microsoft::WindowsAppSDK::SelfContained::IsSelfContained());
+            VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
 
             {
                 ::TB::SetupBootstrap();
@@ -55,10 +57,10 @@ namespace Test::Common
                     ::TB::CleanupBootstrap();
                 });
 
-                VERIFY_IS_FALSE(::Microsoft::WindowsAppSDK::SelfContained::IsSelfContained());
+                VERIFY_IS_FALSE(::WindowsAppRuntime::SelfContained::IsSelfContained());
             }
 
-            VERIFY_IS_TRUE(::Microsoft::WindowsAppSDK::SelfContained::IsSelfContained());
+            VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
         }
     };
 }

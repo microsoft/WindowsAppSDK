@@ -34,9 +34,8 @@
 
 #include <WexTestClass.h>
 
-#define WINDOWSAPPSDK_SELFCONTAINED_RUNTIME_PACKAGE_FRAMEWORK_PACKAGEFAMILYNAME_W L"Microsoft.WindowsAppRuntime.Framework_8wekyb3d8bbwe"
-#include <Microsoft.WindowsAppSDK.SelfContained.h>
 #include <Microsoft.Utf8.h>
+#include <WindowsAppRuntime.SelfContained.h>
 
 #include <WindowsAppRuntime.Test.AppModel.h>
 #include <WindowsAppRuntime.Test.Package.h>
