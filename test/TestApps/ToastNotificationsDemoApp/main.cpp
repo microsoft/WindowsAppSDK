@@ -62,16 +62,6 @@ winrt::IAsyncOperation<winrt::PushNotificationChannel> RequestChannelAsync()
 
         auto channelExpiry = result.Channel().ExpirationTime();
 
-        // Register Push Event for Foreground
-        winrt::event_token token = result.Channel().PushReceived([](const auto&, winrt::PushNotificationReceivedEventArgs const& args)
-            {
-                auto payload = args.Payload();
-
-                // Do stuff to process the raw payload
-                std::string payloadString(payload.begin(), payload.end());
-                std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
-                args.Handled(true);
-            });
         // Caller's responsibility to keep the channel alive
         co_return result.Channel();
     }

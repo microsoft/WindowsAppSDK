@@ -5,6 +5,7 @@
 #include <iostream>
 #include <winrt/Windows.ApplicationModel.Background.h>
 #include <MddBootstrap.h>
+#include <MddBootstrapTest.h>
 #include "WindowsAppRuntime.Test.AppModel.h"
 
 using namespace winrt::Microsoft::Windows::AppLifecycle;
@@ -51,16 +52,6 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
 
         auto channelExpiry = result.Channel().ExpirationTime();
 
-        // Register Push Event for Foreground
-        winrt::event_token token = result.Channel().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
-            {
-                auto payload = args.Payload();
-
-                // Do stuff to process the raw payload
-                std::string payloadString(payload.begin(), payload.end());
-                std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
-                args.Handled(true);
-            });
         // Caller's responsibility to keep the channel alive
         co_return result.Channel();
     }
@@ -94,27 +85,30 @@ int main()
 {
     if (!Test::AppModel::IsPackagedProcess())
     {
+        constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppRuntime.Test.DDLM" };
+        constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
+        RETURN_IF_FAILED(MddBootstrapTestInitialize(c_PackageNamePrefix, c_PackagePublisherId));
+
         // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
         const UINT32 c_Version_MajorMinor{ 0x00040001 };
         const PACKAGE_VERSION minVersion{};
         RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
     }
 
+    // Register Push Event for Foreground
+    winrt::event_token token = PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
+        {
+            auto payload = args.Payload();
+
+            // Do stuff to process the raw payload
+            std::string payloadString(payload.begin(), payload.end());
+            std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
+            args.Handled(true);
+        });
+
     AppNotificationManager::Default().Register();
 
-    if (PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
-    {
-        PushNotificationActivationInfo info(
-            PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
-            winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2"));
-
-        PushNotificationManager::Default().RegisterActivator(info);
-    }
-    else
-    {
-        PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator);
-        PushNotificationManager::Default().RegisterActivator(info);
-    }
+    PushNotificationManager::Default().Register();
 
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
@@ -150,16 +144,15 @@ int main()
         std::cin.ignore();
     }
 
-    if (PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
-    {
-        // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure.
-        PushNotificationManager::Default().UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
-    }
+    PushNotificationManager::Default().Unregister();
+
+    AppNotificationManager::Default().Unregister();
 
     AppNotificationManager::Default().Unregister();
     if (!Test::AppModel::IsPackagedProcess())
     {
         MddBootstrapShutdown();
     }
+
     return 0;
 }
