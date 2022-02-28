@@ -585,7 +585,16 @@ namespace Test::ToastNotifications
         }
         TEST_METHOD(VerifyForegroundRegistrationFails)
         {
-            RunTest(L"VerifyForegroundRegistrationFails", testWaitTime());
+            RunTest(L"VerifyForegroundRegistrationFailsAfterRegister", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyForegroundRegistrationSuccess_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyForegroundRegistrationSuccess", testWaitTime());
+        }
+        TEST_METHOD(VerifyForegroundRegistrationFails_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyForegroundRegistrationFailsAfterRegister", testWaitTime());
         }
     };
 }

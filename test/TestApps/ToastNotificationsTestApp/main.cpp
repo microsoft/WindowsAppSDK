@@ -652,6 +652,7 @@ bool VerifyToastUpdateZeroSequenceFail_Unpackaged()
     {
         return winrt::to_hresult() == E_INVALIDARG;
     }
+    return false;
 }
 
 bool VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup()
@@ -1288,7 +1289,7 @@ bool VerifyRemoveAllAsync()
     return true;
 }
 
-
+// Registering a foreground handler should be done before calling Register(). Test must pass.
 bool VerifyForegroundRegistrationSuccess()
 {
     winrt::AppNotificationManager::Default().Unregister();
@@ -1303,7 +1304,8 @@ bool VerifyForegroundRegistrationSuccess()
     return true;
 }
 
-bool VerifyForegroundRegistrationFails()
+// Registering a foregorund handler after Register() is an invalid pattern for developers. Test must fail.
+bool VerifyForegroundRegistrationFailsAfterRegister()
 {
     try
     {
@@ -1373,7 +1375,7 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyToastProgressDataSequence0Fail", &VerifyToastProgressDataSequence0Fail },
         { "VerifyToastUpdateZeroSequenceFail_Unpackaged", &VerifyToastUpdateZeroSequenceFail_Unpackaged },
         { "VerifyForegroundRegistrationSuccess", &VerifyForegroundRegistrationSuccess },
-        { "VerifyForegroundRegistrationFails", &VerifyForegroundRegistrationFails },
+        { "VerifyForegroundRegistrationFailsAfterRegister", &VerifyForegroundRegistrationFailsAfterRegister },
       };
 
     return switchMapping;
