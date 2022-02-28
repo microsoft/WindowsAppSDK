@@ -3,6 +3,8 @@
 #include "NotificationActivationCallback.h"
 #include "AppNotificationUtility.h"
 
+constexpr PCWSTR c_appNotificationContractId = L"Windows.Toast";
+
 typedef winrt::Windows::Foundation::TypedEventHandler<
     winrt::Microsoft::Windows::AppNotifications::AppNotificationManager,
     winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs> NotificationActivationEventHandler;
@@ -37,6 +39,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             [[maybe_unused]] NOTIFICATION_USER_INPUT_DATA const* data,
             [[maybe_unused]] ULONG dataCount) noexcept;
 
+        static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri);
     private:
         wil::unique_com_class_object_cookie m_notificationComActivatorRegistration;
         wil::srwlock m_lock;

@@ -17,7 +17,6 @@
     <Midl Include="$(MSBuildThisFileDirectory)PushNotifications.idl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationBackgroundTask.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationChannel.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationCreateChannelResult.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationManager.cpp" />
@@ -25,9 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)externs.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)GetNotificationEventArgs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushBackgroundTaskInstance.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationBackgroundTask.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationChannel.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationCreateChannelResult.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationManager.h" />

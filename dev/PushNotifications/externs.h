@@ -7,8 +7,6 @@
 #include "PushNotificationUtility.h"
 #include <algorithm>
 
-wil::unique_event& GetWaitHandleForArgs();
-
 inline const winrt::hstring ACTIVATED_EVENT_ARGS_KEY = L"GlobalActivatedEventArgs";
 inline const winrt::hstring LRP_ACTIVATED_EVENT_ARGS_KEY = L"LRPActivatedEventArgs";
 
