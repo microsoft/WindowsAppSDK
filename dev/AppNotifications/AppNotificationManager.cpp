@@ -356,7 +356,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     {
         const DWORD receiveArgsTimeoutInMSec{ 2000 };
         THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), s_waitHandleForArgs.wait(receiveArgsTimeoutInMSec));
-
+        // If the COM static store was uninitialized, let it throw
         return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
     }
 }

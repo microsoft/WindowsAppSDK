@@ -24,14 +24,17 @@
 using namespace std::literals;
 using namespace Microsoft::Windows::AppNotifications::Helpers;
 
-static winrt::guid g_comServerClsid{ GUID_NULL };
-
 namespace winrt
 {
     using namespace Windows::ApplicationModel::Core;
     using namespace Windows::ApplicationModel::Background;
     using namespace Windows::Networking::PushNotifications;
     using namespace Windows::Foundation;
+}
+
+namespace PushNotificationsABI
+{
+    using namespace ABI::Microsoft::Internal::PushNotifications;
 }
 
 namespace PushNotificationHelpers
@@ -164,7 +167,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                                 auto lock{ m_lock.lock_exclusive() };
                                 m_sinkRegisteredWithPlatform = true;
                             }
-                            THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), PushNotificationManager::Default().as<ABI::Microsoft::Internal::PushNotifications::INotificationListener>().get()));
+                            THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), PushNotificationManager::Default().as<PushNotificationsABI::INotificationListener>().get()));
                         }
                     }
                     else
@@ -351,7 +354,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         auto lock{ m_lock.lock_exclusive() };
                         m_sinkRegisteredWithPlatform = true;
                     }
-                    THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), PushNotificationManager::Default().as<ABI::Microsoft::Internal::PushNotifications::INotificationListener>().get()));
+                    THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), PushNotificationManager::Default().as<PushNotificationsABI::INotificationListener>().get()));
                 }
 
                 auto scopeExitToCleanSink{ wil::scope_exit([&]()
@@ -456,7 +459,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         winrt::make<PushNotificationManagerFactory>().get(),
                         CLSCTX_LOCAL_SERVER,
                         m_foregroundHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE,
-                        & m_comActivatorRegistration));
+                        &m_comActivatorRegistration));
                 }
 
                 scopeExitToCleanLongRunningSink.release();
@@ -669,12 +672,20 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationManager::Run(winrt::IBackgroundTaskInstance const& taskInstance)
     {
-        auto appProperties = winrt::CoreApplication::Properties();
         // This function can be triggered by either OS background infrastructure
         // or by the PushNotificationsLongRunningProcess.
-        if (!m_firstNotificationReceived)
+        bool firstNotificationReceived{ false };
         {
-            m_firstNotificationReceived = true;
+            auto lock{ m_lock.lock_shared() };
+            firstNotificationReceived = m_firstNotificationReceived;
+        }
+        if (!firstNotificationReceived)
+        {
+            {
+                auto lock{ m_lock.lock_exclusive() };
+                m_firstNotificationReceived = true;
+            }
+
             std::wstring commandLine{ GetCommandLine() };
             auto pos{ commandLine.find(c_expectedPushServerArgs) };
             if (pos == std::wstring::npos) // Any launch kind that is not PushNotification
@@ -690,6 +701,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             }
         }
 
+        auto appProperties{ winrt::CoreApplication::Properties() };
         if (PushNotificationHelpers::IsPackagedAppScenario())
         {
             winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs activatedEventArgs{ winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(taskInstance) };
@@ -726,7 +738,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         
         THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !s_waitHandleForArgs.wait(receiveArgsTimeoutInMSec));
 
-        // If COM static store was uninit, let it throw
+        // If the COM static store was uninitialized, let it throw
         if (PushNotificationHelpers::IsPackagedAppScenario())
         {
             return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
