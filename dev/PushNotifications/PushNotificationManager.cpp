@@ -356,6 +356,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 auto scopeExitToCleanSink{ wil::scope_exit([&]()
                 {
+                    {
+                        auto lock{ m_lock.lock_exclusive() };
+                        m_sinkRegisteredWithPlatform = false;
+                    }
                     THROW_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get()));
                 }
                 ) };
@@ -505,6 +509,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 if (sinkRegisteredWithPlatform)
                 {
+                    {
+                        auto lock{ m_lock.lock_exclusive() };
+                        m_sinkRegisteredWithPlatform = false;
+                    }
                     THROW_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get()));
                 }
             }
