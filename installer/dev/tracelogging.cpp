@@ -6,6 +6,8 @@
 #include "pch.h"
 #include "InstallActivityContext.h"
 
+using namespace WindowsAppRuntimeInstaller::InstallActivityContent;
+
 void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcept
 {
     if (WindowsAppRuntimeInstaller_TraceLogger::IsEnabled())

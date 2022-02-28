@@ -8,6 +8,9 @@
 
 using namespace winrt;
 
+using namespace WindowsAppRuntimeInstaller::Console;
+using namespace WindowsAppRuntimeInstaller::InstallActivityContent;
+
 int wmain(int argc, wchar_t *argv[])
 {
     init_apartment();
@@ -53,17 +56,18 @@ int wmain(int argc, wchar_t *argv[])
         }
         else if ((arg == L"-?") || (arg == L"--help"))
         {
-            ShowHelp();
+            DisplayHelp();
             return 0;
         }
         else if ((arg == L"--info"))
         {
             DisplayInfo();
+            return 0;
         }
         else
         {
             std::wcerr << "Unknown argument: " << arg.data() << std::endl;
-            ShowHelp();
+            DisplayHelp();
             return ERROR_BAD_ARGUMENTS;
         }
 

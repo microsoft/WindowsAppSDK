@@ -5,7 +5,6 @@
 
 #include "pch.h"
 #include "packages.h"
-#include "InstallActivityContext.h"
 
 namespace WindowsAppRuntimeInstaller {
 
@@ -33,5 +32,4 @@ namespace WindowsAppRuntimeInstaller {
 
     HRESULT DeployPackages(const WindowsAppRuntimeInstaller::Options options);
 
-    void ShowErrorMessage(const HRESULT hr);
 }
