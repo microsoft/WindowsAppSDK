@@ -600,8 +600,16 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         auto args = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length);
 
         auto lock{ m_lock.lock_exclusive() };
-        m_foregroundHandlers(*this, args);
-        *foregroundHandled = args.Handled();
+        if (m_foregroundHandlers)
+        {
+            m_foregroundHandlers(*this, args);
+            *foregroundHandled = true;
+        }
+        else
+        {
+            *foregroundHandled = false;
+        }   
+        
         return S_OK;
     }
     CATCH_RETURN()

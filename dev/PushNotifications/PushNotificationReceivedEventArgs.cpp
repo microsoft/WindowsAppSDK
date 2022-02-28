@@ -115,33 +115,5 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             m_backgroundTaskInstance.Canceled(token);
         }
     }
-
-    bool PushNotificationReceivedEventArgs::Handled()
-    {
-        if (!m_unpackagedAppScenario)
-        {
-            THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_args, "Background activation cannot call this.");
-
-            return m_args.Cancel();
-        }
-        else
-        {
-            return m_handledUnpackaged;
-        }
-    }
-
-    void PushNotificationReceivedEventArgs::Handled(bool value)
-    {
-        if (!m_unpackagedAppScenario)
-        {
-            THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_args, "Background activation cannot call this.");
-
-            m_args.Cancel(value);
-        }
-        else
-        {
-            m_handledUnpackaged = value;
-        }
-    }
 }
 
