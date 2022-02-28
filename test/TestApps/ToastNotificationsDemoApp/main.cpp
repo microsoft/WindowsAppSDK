@@ -62,16 +62,6 @@ winrt::IAsyncOperation<winrt::PushNotificationChannel> RequestChannelAsync()
 
         auto channelExpiry = result.Channel().ExpirationTime();
 
-        // Register Push Event for Foreground
-        winrt::event_token token = result.Channel().PushReceived([](const auto&, winrt::PushNotificationReceivedEventArgs const& args)
-            {
-                auto payload = args.Payload();
-
-                // Do stuff to process the raw payload
-                std::string payloadString(payload.begin(), payload.end());
-                std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
-                args.Handled(true);
-            });
         // Caller's responsibility to keep the channel alive
         co_return result.Channel();
     }
@@ -203,7 +193,7 @@ int main()
     winrt::event_token token = appNotificationManager.NotificationInvoked([](const auto&, winrt::AppNotificationActivatedEventArgs const& toastArgs)
         {
             std::wcout << L"AppNotification received foreground!\n";
-            winrt::hstring arguments{ toastArgs.ActivationArgs() };
+            winrt::hstring arguments{ toastArgs.Argument() };
             std::wcout << arguments.c_str() << L"\n\n";
 
             winrt::IMap<winrt::hstring, winrt::hstring> userInput{ toastArgs.UserInput() };
@@ -233,7 +223,7 @@ int main()
     {
         std::wcout << L"Activated by AppNotification from background.\n";
         winrt::AppNotificationActivatedEventArgs appNotificationArgs{ args.Data().as<winrt::AppNotificationActivatedEventArgs>() };
-        winrt::hstring arguments{ appNotificationArgs.ActivationArgs() };
+        winrt::hstring arguments{ appNotificationArgs.Argument() };
         std::wcout << arguments.c_str() << std::endl << std::endl;
 
         winrt::IMap<winrt::hstring, winrt::hstring> userInput = appNotificationArgs.UserInput();

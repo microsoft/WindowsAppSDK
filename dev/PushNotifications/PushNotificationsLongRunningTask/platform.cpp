@@ -76,6 +76,25 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
 }
 CATCH_RETURN()
 
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterFullTrustApplication(
+    _In_ PCWSTR processName) noexcept try
+{
+    auto lock = m_lock.lock_exclusive();
+    THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+
+    const std::wstring appIdentifier{ GetAppIdentifier(processName) };
+    if (appIdentifier.empty())
+    {
+        return S_OK;
+    }
+
+    THROW_IF_FAILED(PushNotifications_UnregisterFullTrustApplication(appIdentifier.c_str()));
+    m_rawStorage.Values().Remove(appIdentifier);
+
+    return S_OK;
+}
+CATCH_RETURN()
+
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterLongRunningActivator(_In_ PCWSTR processName) noexcept try
 {
     auto lock = m_lock.lock_shared();

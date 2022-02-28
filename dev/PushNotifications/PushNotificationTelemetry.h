@@ -16,8 +16,6 @@ class PushNotificationTelemetry : public wil::TraceLoggingProvider
 {
     IMPLEMENT_TELEMETRY_CLASS(PushNotificationTelemetry, PushNotificationTelemetryProvider);
 
-    using RegistrationActivators = winrt::Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators;
-
 public:
     DEFINE_EVENT_METHOD(ChannelRequestedByApi)(
         winrt::hresult hr,
@@ -54,8 +52,7 @@ public:
     CATCH_LOG()
 
     DEFINE_EVENT_METHOD(ActivatorRegisteredByApi)(
-        winrt::hresult hr,
-        RegistrationActivators activators) noexcept try
+        winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -64,8 +61,6 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
-                TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationActivators>>(activators),
-                    "RegistrationActivators"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
@@ -74,8 +69,7 @@ public:
 
 
     DEFINE_EVENT_METHOD(ActivatorUnregisteredByApi)(
-        winrt::hresult hr,
-        RegistrationActivators activators) noexcept try
+        winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -84,8 +78,6 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
-                TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationActivators>>(activators),
-                    "RegistrationActivators"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
