@@ -62,7 +62,6 @@ steps:
       filePath: 'BuildAll.ps1'
       arguments: >
         -WindowsAppSDKPackageVersion ""
-        -Channel ${{ parameters.BuildType }}
         -Checkpoint "none"
         -Channel "dev"
         -Platform "x86,x64,arm64"
