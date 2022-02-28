@@ -64,6 +64,7 @@ steps:
         -WindowsAppSDKPackageVersion ""
         -Channel ${{ parameters.BuildType }}
         -Checkpoint "none"
+        -Channel "dev"
         -Platform "x86,x64,arm64"
         -Configuration "release,debug"
         -AzureBuildStep "all"
