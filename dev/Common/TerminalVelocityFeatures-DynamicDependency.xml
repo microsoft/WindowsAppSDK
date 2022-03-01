@@ -13,4 +13,9 @@
         <description>DynamicDependency APIs to access the package graph's current Generation Id</description>
         <state>AlwaysEnabled</state>
     </feature>
+    <feature>
+        <name>Feature_BootstrapCppInitialization</name>
+        <description>C++-specific DynamicDependency Bootstrap initialization APIs</description>
+        <state>AlwaysEnabled</state>
+    </feature>
 </features>
