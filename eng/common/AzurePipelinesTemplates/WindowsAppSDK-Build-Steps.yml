@@ -62,13 +62,13 @@ steps:
       filePath: 'BuildAll.ps1'
       arguments: >
         -WindowsAppSDKPackageVersion ""
-        -BuildType ${{ parameters.BuildType }}
+        -Channel ${{ parameters.BuildType }}
         -Checkpoint "none"
         -Platform "x86,x64,arm64"
         -Configuration "release,debug"
-        -YamlStep "all"
+        -AzureBuildStep "all"
         -TransportPackages "none"
-        -PipelineBuild
+        -AzurePipelineBuild
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Windows App SDK Packages'

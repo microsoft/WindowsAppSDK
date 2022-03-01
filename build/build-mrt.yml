@@ -180,26 +180,6 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-# Copy and Publish the test binaries so we can run them in Helix later.
-- task: CopyFiles@2
-  displayName: 'copy mrtcore test binaries'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
-    Contents: |
-      MrmBaseUnitTests\**
-      MrmUnitTest\**
-      MrtCoreManagedTest\**
-      MrtCoreUnpackagedTests\**
-    TargetFolder: '$(Agent.TempDirectory)\mrt_testbin\$(buildPlatform)'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish mrtcore test binaries'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    PathtoPublish: '$(Agent.TempDirectory)\mrt_testbin\$(buildPlatform)'
-    artifactName: mrtcore_test_binaries_$(buildPlatform)
-
 - task: ComponentGovernanceComponentDetection@0
   inputs:
     scanType: 'Register'
