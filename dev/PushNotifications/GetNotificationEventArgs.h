@@ -7,10 +7,11 @@
 #include "externs.h"
 
 constexpr PCWSTR c_pushContractId = L"Windows.Push";
+constexpr PCWSTR c_appNotificationContractId = L"Windows.Toast";
 
 namespace winrt::Microsoft::Windows::PushNotifications
 {
-    static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
+    static winrt::Windows::Foundation::IInspectable PushDeserialize(winrt::Windows::Foundation::Uri const& uri)
     {
         // Verify if the uri contains a background notification payload.
         // Otherwise, we expect to process the notification in a background task.
@@ -30,6 +31,22 @@ namespace winrt::Microsoft::Windows::PushNotifications
         THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !GetWaitHandleForArgs().wait(receiveArgsTimeoutInMSec));
 
         // If COM static store was uninit, let it throw
+        if (PushNotificationHelpers::IsPackagedAppScenario())
+        {
+            return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
+        }
+        else
+        {
+            // Need to mock a RawNotification object instead of winrt boxing: https://github.com/microsoft/WindowsAppSDK/issues/2075
+            return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(LRP_ACTIVATED_EVENT_ARGS_KEY);
+        }
+    }
+
+    static winrt::Windows::Foundation::IInspectable ToastDeserialize(winrt::Windows::Foundation::Uri const& /* uri */)
+    {
+        const DWORD receiveArgsTimeoutInMSec{ 2000 };
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !GetWaitHandleForArgs().wait(receiveArgsTimeoutInMSec));
+
         return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
     }
 }
