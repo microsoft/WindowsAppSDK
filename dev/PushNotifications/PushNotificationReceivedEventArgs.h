@@ -31,9 +31,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         std::vector<uint8_t> m_rawNotificationPayload;
 
         const winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance m_backgroundTaskInstance{};
-        const winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs m_args = nullptr;
 
         bool m_unpackagedAppScenario;
-        bool m_handledUnpackaged = true;
     };
 }

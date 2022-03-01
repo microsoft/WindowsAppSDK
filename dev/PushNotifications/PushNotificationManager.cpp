@@ -599,7 +599,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         auto args = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length);
 
-        auto lock{ m_lock.lock_exclusive() };
+        auto lock{ m_lock.lock_shared() };
         if (m_foregroundHandlers)
         {
             m_foregroundHandlers(*this, args);

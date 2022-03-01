@@ -35,7 +35,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
 
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args):
-        m_args(args),
         m_rawNotificationPayload(BuildPayload(args.RawNotification().ContentBytes())),
         m_unpackagedAppScenario(false)
     {
