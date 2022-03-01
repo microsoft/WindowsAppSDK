@@ -7,6 +7,7 @@
 #include <NotificationsLongRunningProcess_h.h>
 #include <frameworkudk/pushnotificationsRT.h>
 #include <winrt/Windows.ApplicationModel.background.h>
+#include "externs.h"
 
 constexpr PCWSTR c_pushContractId = L"Windows.Push";
 
@@ -16,12 +17,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::Microsoft::Windows::PushNotifications::PushNotificationManager,
         winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> PushNotificationEventHandler;
 
+
+
     struct PushNotificationManager : PushNotificationManagerT<PushNotificationManager, IWpnForegroundSink,
-                                                                ABI::Microsoft::Internal::PushNotifications::INotificationListener, winrt::Windows::ApplicationModel::Background::IBackgroundTask>
+                                                                ABI::Microsoft::Internal::PushNotifications::INotificationListener, winrt::Windows::ApplicationModel::Background::IBackgroundTask, INotificationDeserializer>
     {
         PushNotificationManager();
 
         static winrt::Microsoft::Windows::PushNotifications::PushNotificationManager Default();
+        static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri);
         void Register();
         void Unregister();
         void UnregisterAll();
@@ -46,7 +50,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
         }
 
-        static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri);
+        // INotificationDeserializer
+        winrt::Windows::Foundation::IInspectable Deserialize();
     private:
         bool IsBackgroundTaskRegistered(winrt::hstring const& backgroundTaskFullName);
 
@@ -62,6 +67,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         std::wstring m_processName;
         winrt::guid m_registeredClsid{ GUID_NULL };
         winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel m_channel{ nullptr };
+        wil::unique_event m_waitHandleForArgs;
     };
 
     struct PushNotificationManagerFactory : winrt::implements<PushNotificationManagerFactory, IClassFactory>

@@ -52,10 +52,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     const HRESULT WNP_E_NOT_CONNECTED = static_cast<HRESULT>(0x880403E8L);
     const HRESULT WNP_E_RECONNECTING = static_cast<HRESULT>(0x880403E9L);
     const HRESULT WNP_E_BIND_USER_BUSY = static_cast<HRESULT>(0x880403FEL);
-
-    // Must be static for PushNotificationManager::Deserialize
-    static wil::unique_event s_waitHandleForArgs;
-
+    
     bool IsChannelRequestRetryable(const hresult& hr)
     {
         switch (hr)
@@ -116,6 +113,31 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         return pushNotificationManager;
     }
 
+    winrt::Windows::Foundation::IInspectable PushNotificationManager::Deserialize(winrt::Windows::Foundation::Uri const&  /* uri */)
+    {
+        auto pushNotificationManager { Default() };
+        auto deserializer{ pushNotificationManager.as<INotificationDeserializer>() };
+        return deserializer->Deserialize();
+    }
+
+    winrt::Windows::Foundation::IInspectable PushNotificationManager::Deserialize()
+    {
+        const DWORD receiveArgsTimeoutInMSec{ 2000 };
+        
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(receiveArgsTimeoutInMSec));
+
+        // If the COM static store was uninitialized, let it throw
+        if (PushNotificationHelpers::IsPackagedAppScenario())
+        {
+            return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
+        }
+        else
+        {
+            // Need to mock a RawNotification object instead of winrt boxing: https://github.com/microsoft/WindowsAppSDK/issues/2075
+            return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(LRP_ACTIVATED_EVENT_ARGS_KEY);
+        }
+    }
+
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid remoteId)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
@@ -163,11 +185,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                         if (registeredEvent)
                         {
+                            THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), PushNotificationManager::Default().as<PushNotificationsABI::INotificationListener>().get()));
                             {
                                 auto lock{ m_lock.lock_exclusive() };
                                 m_sinkRegisteredWithPlatform = true;
                             }
-                            THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), PushNotificationManager::Default().as<PushNotificationsABI::INotificationListener>().get()));
                         }
                     }
                     else
@@ -350,27 +372,38 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 if (registeredEvent)
                 {
+                    THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), PushNotificationManager::Default().as<PushNotificationsABI::INotificationListener>().get()));
                     {
                         auto lock{ m_lock.lock_exclusive() };
                         m_sinkRegisteredWithPlatform = true;
                     }
-                    THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), PushNotificationManager::Default().as<PushNotificationsABI::INotificationListener>().get()));
                 }
 
                 auto scopeExitToCleanSink{ wil::scope_exit([&]()
                 {
+                    bool sinkRegistered { false };
+                    {
+                        auto lock{ m_lock.lock_shared() };
+                        sinkRegistered = m_sinkRegisteredWithPlatform;
+                    }
+
+                    if (sinkRegistered)
+                    {
+                        THROW_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get()));
+
+                    }
+
                     {
                         auto lock{ m_lock.lock_exclusive() };
                         m_sinkRegisteredWithPlatform = false;
                     }
-                    THROW_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get()));
                 }
                 ) };
 
                 {
                     auto lock{ m_lock.lock_exclusive() };
                     // Register a PushNotificationBackgroundTask to handle background activation scenarios
-                    s_waitHandleForArgs.create();
+                    m_waitHandleForArgs.create();
                     THROW_IF_FAILED(::CoRegisterClassObject(
                         m_registeredClsid,
                         winrt::make<PushNotificationManagerFactory>().get(),
@@ -453,7 +486,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 {
                     auto lock{ m_lock.lock_exclusive() };
 
-                    s_waitHandleForArgs.create();
+                    m_waitHandleForArgs.create();
                     THROW_IF_FAILED(::CoRegisterClassObject(
                         m_registeredClsid,
                         winrt::make<PushNotificationManagerFactory>().get(),
@@ -715,38 +748,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             appProperties.Insert(LRP_ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
         }
 
-        SetEvent(s_waitHandleForArgs.get());
-    }
-
-    winrt::Windows::Foundation::IInspectable PushNotificationManager::Deserialize(winrt::Windows::Foundation::Uri const& uri)
-    {
-        // Verify if the uri contains a background notification payload.
-        // Otherwise, we expect to process the notification in a background task.
-        for (auto const& pair : uri.QueryParsed())
-        {
-            if (pair.Name() == L"payload")
-            {
-                // Convert escaped components to its normal content
-                // from the conversion done in the LRP (see NotificationListener.cpp)
-                std::wstring payloadAsEscapedWstring{ pair.Value() };
-                std::wstring payloadAsWstring{ winrt::Windows::Foundation::Uri::UnescapeComponent(payloadAsEscapedWstring) };
-                return winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payloadAsWstring);
-            }
-        }
-
-        const DWORD receiveArgsTimeoutInMSec{ 2000 };
-        
-        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !s_waitHandleForArgs.wait(receiveArgsTimeoutInMSec));
-
-        // If the COM static store was uninitialized, let it throw
-        if (PushNotificationHelpers::IsPackagedAppScenario())
-        {
-            return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
-        }
-        else
-        {
-            // Need to mock a RawNotification object instead of winrt boxing: https://github.com/microsoft/WindowsAppSDK/issues/2075
-            return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(LRP_ACTIVATED_EVENT_ARGS_KEY);
-        }
+        SetEvent(m_waitHandleForArgs.get());
     }
 }

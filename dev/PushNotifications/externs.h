@@ -15,6 +15,11 @@ namespace PushNotificationHelpers
     using namespace winrt::Microsoft::Windows::PushNotifications::Helpers;
 }
 
+MIDL_INTERFACE("19858C8F-4597-401D-A9A8-CB1457198C95") INotificationDeserializer : IInspectable
+{
+    virtual winrt::Windows::Foundation::IInspectable Deserialize() = 0;
+};
+
 struct ChannelDetails
 {
     winrt::hstring channelUri;

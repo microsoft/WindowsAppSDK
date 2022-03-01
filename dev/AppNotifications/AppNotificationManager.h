@@ -2,6 +2,7 @@
 #include "Microsoft.Windows.AppNotifications.AppNotificationManager.g.h"
 #include "NotificationActivationCallback.h"
 #include "AppNotificationUtility.h"
+#include "externs.h"
 
 constexpr PCWSTR c_appNotificationContractId = L"Windows.Toast";
 
@@ -11,11 +12,12 @@ typedef winrt::Windows::Foundation::TypedEventHandler<
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
-    struct AppNotificationManager : AppNotificationManagerT<AppNotificationManager, INotificationActivationCallback>
+    struct AppNotificationManager : AppNotificationManagerT<AppNotificationManager, INotificationActivationCallback, INotificationDeserializer>
     {
         AppNotificationManager();
 
         static winrt::Microsoft::Windows::AppNotifications::AppNotificationManager Default();
+        static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri);
         void Register();
         void Unregister();
         void UnregisterAll();
@@ -39,13 +41,15 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             [[maybe_unused]] NOTIFICATION_USER_INPUT_DATA const* data,
             [[maybe_unused]] ULONG dataCount) noexcept;
 
-        static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri);
+        // INotificationDeserializer
+        winrt::Windows::Foundation::IInspectable Deserialize();
     private:
         wil::unique_com_class_object_cookie m_notificationComActivatorRegistration;
         wil::srwlock m_lock;
         winrt::event<NotificationActivationEventHandler> m_notificationHandlers;
         bool m_firstNotificationReceived{ false };
         std::wstring m_processName;
+        wil::unique_event m_waitHandleForArgs;
     };
 
     struct AppNotificationManagerFactory : winrt::implements<AppNotificationManagerFactory, IClassFactory>
