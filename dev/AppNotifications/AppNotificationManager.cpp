@@ -55,6 +55,20 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         return appNotificationManager;
     }
 
+    winrt::Windows::Foundation::IInspectable AppNotificationManager::Deserialize(winrt::Windows::Foundation::Uri const& /* uri */)
+    {
+        auto appNotificationManager{ Default() };
+        auto deserializer{ appNotificationManager.as<INotificationManagerDeserializer>() };
+        return deserializer->Deserialize();
+    }
+
+    winrt::Windows::Foundation::IInspectable AppNotificationManager::Deserialize()
+    {
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec));
+        // If the COM static store was uninitialized, let it throw
+        return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
+    }
+
     void AppNotificationManager::Register()
     {
         winrt::guid storedComActivatorGuid{ GUID_NULL };

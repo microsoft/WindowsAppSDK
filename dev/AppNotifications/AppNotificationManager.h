@@ -12,7 +12,7 @@ typedef winrt::Windows::Foundation::TypedEventHandler<
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
-    struct AppNotificationManager : AppNotificationManagerT<AppNotificationManager, INotificationActivationCallback, INotificationDeserializer>
+    struct AppNotificationManager : AppNotificationManagerT<AppNotificationManager, INotificationActivationCallback, INotificationManagerDeserializer>
     {
         AppNotificationManager();
 
@@ -41,7 +41,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             [[maybe_unused]] NOTIFICATION_USER_INPUT_DATA const* data,
             [[maybe_unused]] ULONG dataCount) noexcept;
 
-        // INotificationDeserializer
+        // INotificationManagerDeserializer
         winrt::Windows::Foundation::IInspectable Deserialize();
     private:
         wil::unique_com_class_object_cookie m_notificationComActivatorRegistration;

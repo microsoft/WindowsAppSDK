@@ -20,7 +20,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
 
     struct PushNotificationManager : PushNotificationManagerT<PushNotificationManager, IWpnForegroundSink,
-                                                                ABI::Microsoft::Internal::PushNotifications::INotificationListener, winrt::Windows::ApplicationModel::Background::IBackgroundTask, INotificationDeserializer>
+                                                                ABI::Microsoft::Internal::PushNotifications::INotificationListener, winrt::Windows::ApplicationModel::Background::IBackgroundTask, INotificationManagerDeserializer>
     {
         PushNotificationManager();
 
@@ -50,7 +50,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
         }
 
-        // INotificationDeserializer
+        // INotificationManagerDeserializer
         winrt::Windows::Foundation::IInspectable Deserialize();
     private:
         bool IsBackgroundTaskRegistered(winrt::hstring const& backgroundTaskFullName);

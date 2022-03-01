@@ -52,7 +52,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     const HRESULT WNP_E_NOT_CONNECTED = static_cast<HRESULT>(0x880403E8L);
     const HRESULT WNP_E_RECONNECTING = static_cast<HRESULT>(0x880403E9L);
     const HRESULT WNP_E_BIND_USER_BUSY = static_cast<HRESULT>(0x880403FEL);
-    
+
     bool IsChannelRequestRetryable(const hresult& hr)
     {
         switch (hr)
@@ -116,15 +116,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     winrt::Windows::Foundation::IInspectable PushNotificationManager::Deserialize(winrt::Windows::Foundation::Uri const&  /* uri */)
     {
         auto pushNotificationManager { Default() };
-        auto deserializer{ pushNotificationManager.as<INotificationDeserializer>() };
+        auto deserializer{ pushNotificationManager.as<INotificationManagerDeserializer>() };
         return deserializer->Deserialize();
     }
 
     winrt::Windows::Foundation::IInspectable PushNotificationManager::Deserialize()
-    {
-        const DWORD receiveArgsTimeoutInMSec{ 2000 };
-        
-        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(receiveArgsTimeoutInMSec));
+    {        
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec));
 
         // If the COM static store was uninitialized, let it throw
         if (PushNotificationHelpers::IsPackagedAppScenario())

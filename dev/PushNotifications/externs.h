@@ -9,13 +9,14 @@
 
 inline const winrt::hstring ACTIVATED_EVENT_ARGS_KEY = L"GlobalActivatedEventArgs";
 inline const winrt::hstring LRP_ACTIVATED_EVENT_ARGS_KEY = L"LRPActivatedEventArgs";
+inline const DWORD c_receiveArgsTimeoutInMSec{ 2000 };
 
 namespace PushNotificationHelpers
 {
     using namespace winrt::Microsoft::Windows::PushNotifications::Helpers;
 }
 
-MIDL_INTERFACE("19858C8F-4597-401D-A9A8-CB1457198C95") INotificationDeserializer : IInspectable
+MIDL_INTERFACE("19858C8F-4597-401D-A9A8-CB1457198C95") INotificationManagerDeserializer : IInspectable
 {
     virtual winrt::Windows::Foundation::IInspectable Deserialize() = 0;
 };
