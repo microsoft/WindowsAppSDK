@@ -77,6 +77,8 @@ public:
 #endif
 };
 
+#if defined(__WIL_RESOURCE) && defined(__WIL_RESULTMACROS_INCLUDED)
+#if defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
 namespace DynamicDependency::Bootstrap
 {
     // Automate Boostrap shutdown when leaving scope
@@ -150,6 +152,8 @@ namespace DynamicDependency::Bootstrap
         return S_OK;
     }
 }
+#endif // defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
+#endif // defined(__WIL_RESOURCE) && defined(__WIL_RESULTMACROS_INCLUDED)
 }
 #endif // defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined()WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
 #endif // defined(__cplusplus)
