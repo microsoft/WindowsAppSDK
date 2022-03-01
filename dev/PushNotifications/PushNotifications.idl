@@ -17,10 +17,6 @@ namespace Microsoft.Windows.PushNotifications
 
         // Subscribe to Cancelled event handler to be signalled when resource policies are no longer true like 30s wallclock timer
         event Windows.ApplicationModel.Background.BackgroundTaskCanceledEventHandler Canceled;
-
-        // Indicates if the foreground push notification will be re-posted through background activation.
-        // Default value is false, which allows re-posting.
-        Boolean Handled;
     };
 
     [feature(Feature_PushNotifications)]
