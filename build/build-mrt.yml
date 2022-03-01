@@ -13,6 +13,8 @@ steps:
     arguments: /envonly $(buildPlatform)fre
     modifyEnvironment: true
 
+- template: AzurePipelinesTemplates\WindowsAppSDK-InstallWindowsSDK-Steps.yml
+
 - task: NuGetToolInstaller@1
   displayName: 'Use NuGet 5.11'
   inputs:
