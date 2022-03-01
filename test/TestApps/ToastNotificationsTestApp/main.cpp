@@ -1304,7 +1304,7 @@ bool VerifyForegroundRegistrationSuccess()
     return true;
 }
 
-// Registering a foregorund handler after Register() is an invalid pattern for developers. Test must fail.
+// Registering a foreground handler after Register() is an invalid pattern for developers. Test must fail.
 bool VerifyForegroundRegistrationFailsAfterRegister()
 {
     try
