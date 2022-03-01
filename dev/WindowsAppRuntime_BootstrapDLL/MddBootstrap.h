@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#if !defined(MDDBOOSTRAP_H)
-#define MDDBOOSTRAP_H
+#if !defined(MDDBOOTSTRAP_H)
+#define MDDBOOTSTRAP_H
 
 #include <appmodel.h>
 
-/// Iniitalize the calling process to use Windows App Runtime framework package.
+/// Initialize the calling process to use Windows App Runtime framework package.
 ///
 /// Find a Windows App Runtime framework package meeting the criteria and make it available
 /// for use by the current process. If multiple packages meet the criteria the best
@@ -27,7 +27,6 @@ STDAPI MddBootstrapInitialize(
 STDAPI_(void) MddBootstrapShutdown() noexcept;
 
 // C++ friendly APIs
-#if defined(WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_BOOTSTRAPCPPINITIALIZATION_ENABLED) && (WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_BOOTSTRAPCPPINITIALIZATION_ENABLED == 1)
 #if defined(__cplusplus)
 #if defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
 namespace Microsoft::Windows::ApplicationModel
@@ -35,34 +34,13 @@ namespace Microsoft::Windows::ApplicationModel
 class PackageVersion : public PACKAGE_VERSION
 {
 public:
-    PackageVersion() = default;
-
-    // Create an instance with the value `major.0.0.0`.
-    PackageVersion(uint16_t major) :
-        PACKAGE_VERSION()
+    PackageVersion()
     {
-        Major = major;
-    }
-
-    // Create an instance with the value `major.minor.0.0`.
-    PackageVersion(uint16_t major, uint16_t minor) :
-        PACKAGE_VERSION()
-    {
-        Major = major;
-        Minor = minor;
-    }
-
-    // Create an instance with the value `major.minor.build.0`.
-    PackageVersion(uint16_t major, uint16_t minor, uint16_t build) :
-        PACKAGE_VERSION()
-    {
-        Major = major;
-        Minor = minor;
-        Build = build;
+        Version = 0;
     }
 
     // Create an instance with the value `major.minor.build.revision`.
-    PackageVersion(uint16_t major, uint16_t minor, uint16_t build, uint16_t revision) :
+    PackageVersion(uint16_t major, uint16_t minor = 0, uint16_t build = 0, uint16_t revision = 0) :
         PACKAGE_VERSION()
     {
         Major = major;
@@ -83,7 +61,7 @@ public:
         return Version;
     }
 
-#if defined(_STRSAFE_H_INCLUDED_) && defined(WI_VERIFY)
+#if defined(_XSTRING_) && defined(_STRSAFE_H_INCLUDED_) && defined(WI_VERIFY)
     // Return the string as a formatted value "major.minor.build.revision".
     std::wstring ToString() const
     {
@@ -101,57 +79,11 @@ public:
 
 namespace DynamicDependency::Bootstrap
 {
-    /// Initialize the calling process to use Windows App SDK's framework package.
-    /// Failure returns false with the failure HRESULT in the hresult parameter.
-    ///
-    /// Find a Windows App SDK framework package meeting the criteria and make it available
-    /// for use by the current process. If multiple packages meet the criteria the best
-    /// candidate is selected.
-    ///
-    /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
-    /// @param versionTag version tag (if any), e.g. "preview1".
-    /// @param minVersion the minimum version to use.
-    /// @param hresult the error code if an error occurred.
-    /// @see TryInitialize(uint32_t, PCWSTR)
-    /// @see Shutdown()
-    inline HRESULT TryInitialize(uint32_t majorMinorVersion, PCWSTR versionTag, PackageVersion minVersion)
-    {
-        const PACKAGE_VERSION{ minVersion.Version };
-        return ::MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion);
-    }
+    // Automate Boostrap shutdown when leaving scope.
+    using unique_mddbootstrapshutdown_call = wil::unique_call<decltype(&::MddBootstrapShutdown), ::MddBootstrapShutdown>;
 
-    /// Initialize the calling process to use Windows App SDK's framework package.
-    /// Failure returns false with the failure HRESULT in the hresult parameter.
+    /// Call MddBootstrapInitialize and fail-fasts if it fails; returns an RAII objecct that reverts
     ///
-    /// Find a Windows App SDK framework package meeting the criteria and make it available
-    /// for use by the current process. If multiple packages meet the criteria the best
-    /// candidate is selected.
-    ///
-    /// This is equivalent to `TryInitialize(majorMinorVersion, versionTag, PackageVersion())`.
-    ///
-    /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
-    /// @param versionTag version tag (if any), e.g. "preview1".
-    /// @see TryInitialize(uint32_t, PCWSTR, PackageVersion)
-    /// @see Shutdown()
-    inline HRESULT TryInitialize(uint32_t majorMinorVersion = WINDOWSAPPSDK_RELEASE_MAJORMINOR,
-                                 PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W)
-    {
-        const PackageVersion minVersion{};
-        return TryInitialize(majorMinorVersion, versionTag, minVersion);
-    }
-
-    /// Undo the changes made by Initialize().
-    ///
-    /// @warning Packages made available via `Initialize()` and
-    ///          the Dynamic Dependencies API should not be used after this call.
-    /// @see TryInitialize(uint32_t, PCWSTR)
-    /// @see TryInitialize(uint32_t, PCWSTR, PackageVersion)
-    inline void Shutdown()
-    {
-        ::MddBootstrapShutdown();
-    }
-
-#if defined(_CPPUNWIND) && defined(WIL_ENABLE_EXCEPTIONS)
     /// Initialize the calling process to use Windows App SDK's framework package.
     ///
     /// Find a Windows App SDK framework package meeting the criteria and make it available
@@ -161,74 +93,65 @@ namespace DynamicDependency::Bootstrap
     /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
     /// @param versionTag version tag (if any), e.g. "preview1".
     /// @param minVersion the minimum version to use
-    /// @see Initialize(uint32_t)
-    /// @see Initialize(uint32_t, PCWSTR)
+    /// @see Initialize(uint32_t, PCWSTR, PackageVersion)
+    /// @see Initialize_nothrow(uint32_t, PCWSTR, PackageVersion)
     /// @see Shutdown()
-    inline void Initialize(uint32_t majorMinorVersion, PCWSTR versionTag, PackageVersion minVersion)
+    WI_NODISCARD inline unique_mddbootstrapshutdown_call Initialize_failfast(uint32_t majorMinorVersion = WINDOWSAPPSDK_RELEASE_MAJORMINOR,
+                                                                             PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W,
+                                                                             PackageVersion minVersion = WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
     {
-        THROW_IF_FAILED(TryInitialize(majorMinorVersion, versionTag, minVersion));
+        FAIL_FAST_IF_FAILED(::MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion));
+        return unique_mddbootstrapshutdown_call();
     }
 
+#if defined(WIL_ENABLE_EXCEPTIONS)
+    // Call MddBootstrapInitialize and throws an exception if it fails; returns an RAII objecct that reverts
+    ///
     /// Initialize the calling process to use Windows App SDK's framework package.
     ///
     /// Find a Windows App SDK framework package meeting the criteria and make it available
     /// for use by the current process. If multiple packages meet the criteria the best
     /// candidate is selected.
     ///
-    /// This is equivalent to `Initialize(majorMinorVersion, versionTag, PackageVersion())`.
+    /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
+    /// @param versionTag version tag (if any), e.g. "preview1".
+    /// @param minVersion the minimum version to use
+    /// @see Initialize_failfast(uint32_t, PCWSTR, PackageVersion)
+    /// @see Initialize_nothrow(uint32_t, PCWSTR, PackageVersion)
+    /// @see Shutdown()
+    WI_NODISCARD inline unique_mddbootstrapshutdown_call Initialize(uint32_t majorMinorVersion = WINDOWSAPPSDK_RELEASE_MAJORMINOR,
+                                                                    PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W,
+                                                                    PackageVersion minVersion = WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
+    {
+        THROW_IF_FAILED(::MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion));
+        return unique_mddbootstrapshutdown_call();
+    }
+#endif // defined(WIL_ENABLE_EXCEPTIONS)
+
+    // Call MddBootstrapInitialize and returns failure HRESULT if it fails.
+    ///
+    /// Initialize the calling process to use Windows App SDK's framework package.
+    ///
+    /// Find a Windows App SDK framework package meeting the criteria and make it available
+    /// for use by the current process. If multiple packages meet the criteria the best
+    /// candidate is selected.
     ///
     /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
     /// @param versionTag version tag (if any), e.g. "preview1".
-    /// @see Initialize(uint32_t)
+    /// @param minVersion the minimum version to use
+    /// @see Initialize_failfast(uint32_t, PCWSTR, PackageVersion)
     /// @see Initialize(uint32_t, PCWSTR, PackageVersion)
     /// @see Shutdown()
-    inline void Initialize(uint32_t majorMinorVersion = WINDOWSAPPSDK_RELEASE_MAJORMINOR,
-                           PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W)
+    inline HRESULT Initialize_nothrow(uint32_t majorMinorVersion = WINDOWSAPPSDK_RELEASE_MAJORMINOR,
+                                      PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W,
+                                      PackageVersion minVersion = WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
     {
-        THROW_IF_FAILED(TryInitialize(majorMinorVersion, versionTag));
+        RETURN_IF_FAILED(::MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion));
+        return S_OK;
     }
-#endif // defined(_CPPUNWIND) && defined(WIL_ENABLE_EXCEPTIONS)
-
-    // Automate Boostrap shutdown when leaving scope.
-    class AutoShutdown
-    {
-    public:
-        AutoShutdown() = delete;
-
-        ~AutoShutdown()
-        {
-            Shutdown();
-        }
-    };
-
-#if defined(_CPPUNWIND) && defined(WIL_ENABLE_EXCEPTIONS)
-    // Automate Boostrap initialization and shutdown.
-    class AutoInitialize
-    {
-    public:
-        AutoInitialize(uint32_t majorMinorVersion = WINDOWSAPPSDK_RELEASE_MAJORMINOR,
-                       PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W)
-        {
-            const PackageVersion c_minVersion{ WINDOWSAPPSDK_RUNTIME_VERSION_UINT64 };
-            THROW_IF_FAILED(TryInitialize(majorMinorVersion, versionTag, c_minVersion));
-        }
-
-        AutoInitialize(uint32_t majorMinorVersion, PCWSTR versionTag, PackageVersion minVersion)
-        {
-            THROW_IF_FAILED(TryInitialize(majorMinorVersion, versionTag, minVersion));
-        }
-
-        ~AutoInitialize()
-        {
-            Shutdown();
-        }
-    };
-#endif // defined(_CPPUNWIND) && defined(WIL_ENABLE_EXCEPTIONS)
 }
 }
 #endif // defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined()WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
 #endif // defined(__cplusplus)
-#endif // defined(WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_BOOTSTRAPCPPINITIALIZATION_ENABLED) && (WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_BOOTSTRAPCPPINITIALIZATION_ENABLED == 1)
 
-
-#endif // MDDBOOSTRAP_H
+#endif // MDDBOOTSTRAP_H

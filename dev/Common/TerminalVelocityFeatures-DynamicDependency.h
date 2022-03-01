@@ -9,25 +9,17 @@
 #if defined(__midlrt)
 namespace features
 {
-    feature_name Feature_BootstrapCppInitialization = { DisabledByDefault, FALSE };
     feature_name Feature_GenerationId = { DisabledByDefault, FALSE };
 }
 #endif // defined(__midlrt)
 
 // Feature constants
-#define WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_BOOTSTRAPCPPINITIALIZATION_ENABLED 1
 #define WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_GENERATIONID_ENABLED 1
 
 #if defined(__cplusplus)
 
 namespace Microsoft::Windows::ApplicationModel::DynamicDependency
 {
-
-__pragma(detect_mismatch("ODR_violation_WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_BOOTSTRAPCPPINITIALIZATION_ENABLED_mismatch", "AlwaysEnabled"))
-struct Feature_BootstrapCppInitialization
-{
-    static constexpr bool IsEnabled() { return WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_BOOTSTRAPCPPINITIALIZATION_ENABLED == 1; }
-};
 
 __pragma(detect_mismatch("ODR_violation_WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_GENERATIONID_ENABLED_mismatch", "AlwaysEnabled"))
 struct Feature_GenerationId
