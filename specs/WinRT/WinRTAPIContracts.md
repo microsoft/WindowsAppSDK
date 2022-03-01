@@ -67,4 +67,4 @@ If there is an issue then the build should stop and no release should be made.
 ## Open issues
 1. Telemetry needed for the data science team. The Data Science team should be involved with our contracts so we can make sure they have the correct data to answer business questions. (No telemetry for API versions)
 2. Contract boundary.  1 contract for WASDK is too big.  Yet, 1 contract per API is too many.  1 contract per winmd is a good middle.  This is an open issue because there might be a better option.
-3. Should ProjectReunionClosed use contracts? (Yes)
+3. Should ProjectReunionClosed use contracts? (If there is a public API, yes.  Otherwise No)
