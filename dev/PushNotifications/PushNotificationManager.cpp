@@ -664,7 +664,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         BOOL foregroundHandled = true;
         THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
-        THROW_HR_IF(E_NOT_SET, !foregroundHandled);
+        THROW_HR_IF(E_UNEXPECTED, !foregroundHandled);
 
         return S_OK;
     }
