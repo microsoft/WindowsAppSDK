@@ -224,6 +224,7 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
+        [TestProperty("IsolationLevel", "Method")]
         public void DefaultResourceManagerWithExePri()
         {
             if (m_rs5)
