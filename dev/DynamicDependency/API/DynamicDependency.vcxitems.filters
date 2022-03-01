@@ -1,54 +1,156 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.AddPackageDependencyOptions.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.CreatePackageDependencyOptions.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependency.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyContext.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyRank.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)PackageGraph.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)MddDetourPackageGraph.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)PackageGraphNode.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDependency.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDependencyManager.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)PackageGraphManager.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)DataStore.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)MddWinRT.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)WinRTModuleManager.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)WinRTPackage.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)MddLifetimeManagement.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)appmodel_packageinfo.cpp" />
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.AddPackageDependencyOptions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.CreatePackageDependencyOptions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependency.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyContext.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyRank.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.Converters.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)PackageGraph.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)PackageGraphNode.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)MddDetourPackageGraph.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)wil_msixdynamicdependency.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)PackageDependency.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)PackageId.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)PackageDependencyManager.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)appmodel_msixdynamicdependency.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)PackageInfo.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)winrt_namespaces.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)MddCore.Architecture.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)PackageGraphManager.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)DataStore.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)MddWinRT.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)WinRTInprocModule.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)WinRTModuleManager.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)WinRTPackage.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)MddLifetimeManagement.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)MddLifetimeManagementTest.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)appmodel_packageinfo.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)winrt_msixdynamicdependency.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.AddPackageDependencyOptions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.CreatePackageDependencyOptions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependency.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyRank.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)MddDetourPackageGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageGraphNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDependency.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDependencyManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageGraphManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)DataStore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)MddWinRT.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)WinRTModuleManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)WinRTPackage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)MddLifetimeManagement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)appmodel_packageinfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.AddPackageDependencyOptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.CreatePackageDependencyOptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependency.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyRank.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.Converters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageGraph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageGraphNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)MddDetourPackageGraph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)wil_msixdynamicdependency.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageDependency.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageId.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageDependencyManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)appmodel_msixdynamicdependency.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)winrt_namespaces.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)MddCore.Architecture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageGraphManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)DataStore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)MddWinRT.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)WinRTInprocModule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)WinRTModuleManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)WinRTPackage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)MddLifetimeManagement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)MddLifetimeManagementTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)appmodel_packageinfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)winrt_msixdynamicdependency.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)M.AM.DynamicDependency.idl" />
