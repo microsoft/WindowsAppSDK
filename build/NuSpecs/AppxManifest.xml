@@ -55,11 +55,13 @@
 
           <!-- PowerNotifications -->
           <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Power.PowerManager" ThreadingModel="both" />
-		  
-		  <!-- ToastNotifications -->
-		  <ActivatableClass ActivatableClassId="Microsoft.Windows.ToastNotifications.ToastActivationInfo" ThreadingModel="both" />
-		  <ActivatableClass ActivatableClassId="Microsoft.Windows.ToastNotifications.ToastAssets" ThreadingModel="both" />
-		  <ActivatableClass ActivatableClassId="Microsoft.Windows.ToastNotifications.ToastNotificationManager" ThreadingModel="both" />
+
+          <!-- AppNotifications -->
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationActivationInfo" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationManager" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotification" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationProgressData" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationProgressResult" ThreadingModel="both" />
 
           <!-- AccessControl -->
           <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers" ThreadingModel="both" />

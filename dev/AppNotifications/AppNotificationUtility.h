@@ -32,7 +32,7 @@ namespace Microsoft::Windows::AppNotifications::Helpers
 
     inline void RegisterValue(wil::unique_hkey const& hKey, PCWSTR const& key, const BYTE* value, DWORD const& valueType, size_t const& size)
     {
-        THROW_IF_FAILED(RegSetValueExW(hKey.get(), key, 0, valueType, value, (DWORD)size));
+        THROW_IF_WIN32_ERROR(RegSetValueExW(hKey.get(), key, 0, valueType, value, static_cast<DWORD>(size)));
     }
 
     inline wil::unique_hstring safe_make_unique_hstring(PCWSTR str)
