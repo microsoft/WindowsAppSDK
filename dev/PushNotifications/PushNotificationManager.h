@@ -17,8 +17,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::Microsoft::Windows::PushNotifications::PushNotificationManager,
         winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> PushNotificationEventHandler;
 
-
-
     struct PushNotificationManager : PushNotificationManagerT<PushNotificationManager, IWpnForegroundSink,
                                                                 ABI::Microsoft::Internal::PushNotifications::INotificationListener, winrt::Windows::ApplicationModel::Background::IBackgroundTask, INotificationManagerDeserializer>
     {
@@ -68,6 +66,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::guid m_registeredClsid{ GUID_NULL };
         winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel m_channel{ nullptr };
         wil::unique_event m_waitHandleForArgs;
+        winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs m_backgroundTaskArgs{ nullptr };
     };
 
     struct PushNotificationManagerFactory : winrt::implements<PushNotificationManagerFactory, IClassFactory>

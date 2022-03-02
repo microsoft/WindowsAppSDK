@@ -51,8 +51,19 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Microsoft::Windows::AppNotifications::AppNotificationManager AppNotificationManager::Default()
     {
-        static auto appNotificationManager{winrt::make<AppNotificationManager>()};
-        return appNotificationManager;
+        auto appProperties{ winrt::CoreApplication::Properties() };
+        // Store the PushNotificationManager in the COM static store
+        auto storedAppNotificationManager{ appProperties.TryLookup(STORED_APPNOTIFICATION_MANAGER_KEY) };
+        if (storedAppNotificationManager)
+        {
+            return storedAppNotificationManager.as<winrt::Microsoft::Windows::AppNotifications::AppNotificationManager>();
+        }
+        else
+        {
+            auto appNotificationManager{ winrt::make<AppNotificationManager>() };
+            appProperties.Insert(STORED_APPNOTIFICATION_MANAGER_KEY, appNotificationManager);
+            return appNotificationManager;
+        }
     }
 
     winrt::Windows::Foundation::IInspectable AppNotificationManager::AppNotificationDeserialize(winrt::Windows::Foundation::Uri const& uri)
@@ -64,9 +75,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IInspectable AppNotificationManager::Deserialize(winrt::Windows::Foundation::Uri const& /* uri */)
     {
-        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec));
-        // If the COM static store was uninitialized, let it throw
-        return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec));
+        return m_activatedEventArgs;
     }
 
     void AppNotificationManager::Register()
@@ -206,9 +216,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             }
             else
             {
-                auto appProperties = winrt::CoreApplication::Properties();
-                appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
-                SetEvent(s_waitHandleForArgs.get());
+                m_activatedEventArgs = activatedEventArgs;
+                SetEvent(m_waitHandleForArgs.get());
             }
         }
         else
