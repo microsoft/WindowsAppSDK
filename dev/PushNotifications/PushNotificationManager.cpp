@@ -705,17 +705,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         // This function can be triggered by either OS background infrastructure
         // or by the PushNotificationsLongRunningProcess.
-        bool firstNotificationReceived{ false };
+        auto lock{ m_lock.lock_exclusive() };
+        bool storeBackgroundArgs { true };
+        if (!m_firstNotificationReceived)
         {
-            auto lock{ m_lock.lock_shared() };
-            firstNotificationReceived = m_firstNotificationReceived;
-        }
-        if (!firstNotificationReceived)
-        {
-            {
-                auto lock{ m_lock.lock_exclusive() };
-                m_firstNotificationReceived = true;
-            }
+            m_firstNotificationReceived = true;
 
             std::wstring commandLine{ GetCommandLine() };
             auto pos{ commandLine.find(c_expectedPushServerArgs) };
@@ -728,24 +722,27 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 auto backgroundTask{ winrt::create_instance<winrt::IBackgroundTask>(registeredClsid, CLSCTX_ALL) };
                 backgroundTask.Run(taskInstance);
-                return;
+                storeBackgroundArgs = false;
             }
         }
 
-        auto appProperties{ winrt::CoreApplication::Properties() };
-        if (PushNotificationHelpers::IsPackagedAppScenario())
+        if(storeBackgroundArgs)
         {
-            winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs activatedEventArgs{ winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(taskInstance) };
-            appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
-        }
-        else
-        {
-            // Need to mock a RawNotification object instead of winrt boxing: https://github.com/microsoft/WindowsAppSDK/issues/2075
-            winrt::hstring payload{ winrt::unbox_value<winrt::hstring>(taskInstance.TriggerDetails()) };
-            winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs activatedEventArgs{ winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload.c_str()) };
-            appProperties.Insert(LRP_ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
-        }
+            auto appProperties{ winrt::CoreApplication::Properties() };
+            if (PushNotificationHelpers::IsPackagedAppScenario())
+            {
+                winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs activatedEventArgs{ winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(taskInstance) };
+                appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
+            }
+            else
+            {
+                // Need to mock a RawNotification object instead of winrt boxing: https://github.com/microsoft/WindowsAppSDK/issues/2075
+                winrt::hstring payload{ winrt::unbox_value<winrt::hstring>(taskInstance.TriggerDetails()) };
+                winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs activatedEventArgs{ winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload.c_str()) };
+                appProperties.Insert(LRP_ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
+            }
 
-        SetEvent(m_waitHandleForArgs.get());
+            SetEvent(m_waitHandleForArgs.get());
+        }
     }
 }
