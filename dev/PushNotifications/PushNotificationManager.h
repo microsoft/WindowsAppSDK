@@ -25,7 +25,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         PushNotificationManager();
 
         static winrt::Microsoft::Windows::PushNotifications::PushNotificationManager Default();
-        static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri);
+        static winrt::Windows::Foundation::IInspectable PushDeserialize(winrt::Windows::Foundation::Uri const& uri);
         void Register();
         void Unregister();
         void UnregisterAll();
@@ -51,7 +51,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
 
         // INotificationManagerDeserializer
-        winrt::Windows::Foundation::IInspectable Deserialize();
+        winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri);
     private:
         bool IsBackgroundTaskRegistered(winrt::hstring const& backgroundTaskFullName);
 

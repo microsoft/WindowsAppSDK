@@ -113,15 +113,29 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         return pushNotificationManager;
     }
 
-    winrt::Windows::Foundation::IInspectable PushNotificationManager::Deserialize(winrt::Windows::Foundation::Uri const&  /* uri */)
+    winrt::Windows::Foundation::IInspectable PushNotificationManager::PushDeserialize(winrt::Windows::Foundation::Uri const& uri)
     {
         auto pushNotificationManager { Default() };
         auto deserializer{ pushNotificationManager.as<INotificationManagerDeserializer>() };
-        return deserializer->Deserialize();
+        return deserializer->Deserialize(uri);
     }
 
-    winrt::Windows::Foundation::IInspectable PushNotificationManager::Deserialize()
-    {        
+    winrt::Windows::Foundation::IInspectable PushNotificationManager::Deserialize(winrt::Windows::Foundation::Uri const& uri)
+    {
+        // Verify if the uri contains a background notification payload.
+        // Otherwise, we expect to process the notification in a background task.
+        for (auto const& pair : uri.QueryParsed())
+        {
+            if (pair.Name() == L"payload")
+            {
+                // Convert escaped components to its normal content
+                // from the conversion done in the LRP (see NotificationListener.cpp)
+                std::wstring payloadAsEscapedWstring{ pair.Value() };
+                std::wstring payloadAsWstring{ winrt::Windows::Foundation::Uri::UnescapeComponent(payloadAsEscapedWstring) };
+                return winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payloadAsWstring);
+            }
+        }
+
         THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec));
 
         // If the COM static store was uninitialized, let it throw

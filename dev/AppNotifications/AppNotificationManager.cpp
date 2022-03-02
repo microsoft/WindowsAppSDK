@@ -55,14 +55,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         return appNotificationManager;
     }
 
-    winrt::Windows::Foundation::IInspectable AppNotificationManager::Deserialize(winrt::Windows::Foundation::Uri const& /* uri */)
+    winrt::Windows::Foundation::IInspectable AppNotificationManager::AppNotificationDeserialize(winrt::Windows::Foundation::Uri const& uri)
     {
         auto appNotificationManager{ Default() };
         auto deserializer{ appNotificationManager.as<INotificationManagerDeserializer>() };
-        return deserializer->Deserialize();
+        return deserializer->Deserialize(uri);
     }
 
-    winrt::Windows::Foundation::IInspectable AppNotificationManager::Deserialize()
+    winrt::Windows::Foundation::IInspectable AppNotificationManager::Deserialize(winrt::Windows::Foundation::Uri const& /* uri */)
     {
         THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec));
         // If the COM static store was uninitialized, let it throw

@@ -17,7 +17,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         AppNotificationManager();
 
         static winrt::Microsoft::Windows::AppNotifications::AppNotificationManager Default();
-        static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri);
+        static winrt::Windows::Foundation::IInspectable AppNotificationDeserialize(winrt::Windows::Foundation::Uri const& uri);
         void Register();
         void Unregister();
         void UnregisterAll();
@@ -42,7 +42,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             [[maybe_unused]] ULONG dataCount) noexcept;
 
         // INotificationManagerDeserializer
-        winrt::Windows::Foundation::IInspectable Deserialize();
+        winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri);
     private:
         wil::unique_com_class_object_cookie m_notificationComActivatorRegistration;
         wil::srwlock m_lock;
