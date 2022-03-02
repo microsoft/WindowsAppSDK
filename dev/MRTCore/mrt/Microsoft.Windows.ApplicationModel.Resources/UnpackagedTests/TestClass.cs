@@ -110,24 +110,40 @@ namespace MrtCoreUnpackagedTests
         private static string m_exeFolder = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
         private static bool m_rs5 = false;
 
+        private static void FileDeleteWithRetry(String filename)
+        {
+            if (File.Exists(filename))
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    try
+                    {
+                        File.Delete(filename);
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        System.Threading.Thread.Sleep(200);
+                        if (i == 9)
+                        {
+                            throw e;
+                        }
+                    }
+                }
+            }
+        }
+
         private static void Cleanup()
         {
             GC.Collect(); // Force any ResourceManager objects to be cleaned up.
 
-            if (File.Exists(Path.Combine(m_exeFolder, "resources.pri")))
-            {
-                File.Delete(Path.Combine(m_exeFolder, "resources.pri"));
-            }
-            if (File.Exists(Path.Combine(m_exeFolder, "te.processhost.pri")))
-            {
-                File.Delete(Path.Combine(m_exeFolder, "te.processhost.pri"));
-            }
+            FileDeleteWithRetry(Path.Combine(m_exeFolder, "resources.pri"));
+
+            FileDeleteWithRetry(Path.Combine(m_exeFolder, "te.processhost.pri"));
+
             if (m_exeFolder != m_assemblyFolder)
             {
-                if (File.Exists(Path.Combine(m_exeFolder, "resources.pri.standalone")))
-                {
-                    File.Delete(Path.Combine(m_exeFolder, "resources.pri.standalone"));
-                }
+                FileDeleteWithRetry(Path.Combine(m_exeFolder, "resources.pri.standalone"));
             }
         }
 
@@ -135,11 +151,11 @@ namespace MrtCoreUnpackagedTests
         public static void ModuleSetup(TestContext testContext)
         {
             // Clean up any left over files just in case
-            File.Delete(Path.Combine(m_exeFolder, "resources.pri"));
-            File.Delete(Path.Combine(m_exeFolder, "te.processhost.pri"));
+            FileDeleteWithRetry(Path.Combine(m_exeFolder, "resources.pri"));
+            FileDeleteWithRetry(Path.Combine(m_exeFolder, "te.processhost.pri"));
             if (m_exeFolder != m_assemblyFolder)
             {
-                File.Delete(Path.Combine(m_exeFolder, "resources.pri.standalone"));
+                FileDeleteWithRetry(Path.Combine(m_exeFolder, "resources.pri.standalone"));
             }
             m_rs5 = (System.Environment.OSVersion.Version.Build < 18362);
         }
