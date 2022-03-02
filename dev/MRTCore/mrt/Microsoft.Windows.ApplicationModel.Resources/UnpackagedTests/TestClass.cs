@@ -132,6 +132,7 @@ namespace MrtCoreUnpackagedTests
         }
 
         [AssemblyInitialize]
+        [TestProperty("RunFixtureAs:Assembly", "Elevated")]
         public static void ModuleSetup(TestContext testContext)
         {
             // Clean up any left over files just in case
@@ -145,6 +146,7 @@ namespace MrtCoreUnpackagedTests
         }
 
         [AssemblyCleanup]
+        [TestProperty("RunFixtureAs:Assembly", "Elevated")]
         public static void ModuleCleanup()
         {
             Cleanup();
