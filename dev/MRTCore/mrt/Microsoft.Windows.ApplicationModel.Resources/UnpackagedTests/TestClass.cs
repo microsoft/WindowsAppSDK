@@ -149,7 +149,14 @@ namespace MrtCoreUnpackagedTests
         [TestProperty("RunFixtureAs:Assembly", "Elevated")]
         public static void ModuleCleanup()
         {
-            Cleanup();
+            try
+            {
+                Cleanup();
+            }
+            catch (Exception e)
+            {
+                Log.Comment(e.ToString());
+            }
         }
 
         [TestInitialize]
