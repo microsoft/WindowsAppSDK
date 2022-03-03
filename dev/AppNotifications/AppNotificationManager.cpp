@@ -58,10 +58,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         std::wstring storedComActivatorString;
         if (!PushNotificationHelpers::IsPackagedAppScenario())
         {
-            std::wstring toastAppId{ RetrieveNotificationAppId() };
+            std::wstring notificationId{ RetrieveNotificationAppId() };
             if (!AppModel::Identity::IsPackagedProcess())
             {
-                THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(toastAppId.c_str(), GUID_NULL));
+                THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(notificationId.c_str(), GUID_NULL));
 
                 storedComActivatorString = RegisterComActivatorGuidAndAssets();
                 // Remove braces around the guid string
@@ -71,7 +71,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             wil::unique_cotaskmem_string processName;
             THROW_IF_FAILED(GetCurrentProcessPath(processName));
             auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
-            THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), toastAppId.c_str()));
+            THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), notificationId.c_str()));
         }
 
         winrt::guid registeredClsid{ GUID_NULL };
@@ -120,13 +120,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         if (!AppModel::Identity::IsPackagedProcess())
         {
-            std::wstring toastAppId{ RetrieveNotificationAppId() };
+            std::wstring notificationId{ RetrieveNotificationAppId() };
             std::wstring storedComActivatorString;
-            THROW_IF_WIN32_ERROR(GetActivatorGuid(storedComActivatorString));
+            THROW_IF_FAILED(GetActivatorGuid(storedComActivatorString));
             UnRegisterComServer(storedComActivatorString);
             
             UnRegisterNotificationAppIdentifierFromRegistry();
-            THROW_IF_FAILED(PushNotifications_UnregisterFullTrustApplication(toastAppId.c_str()));
+            THROW_IF_FAILED(PushNotifications_UnregisterFullTrustApplication(notificationId.c_str()));
         }
     }
 
