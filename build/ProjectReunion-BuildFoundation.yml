@@ -477,18 +477,21 @@ jobs:
   condition: succeeded()
   pool: $(ProjectReunionBuildPool)
   variables:
-    WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
+    WindowsAppSDKTransportPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
+    VersionWithDevTag: >
+      $[format('{0}.{1}.{2}-{3}', 
+          variables['major'], variables['minor'], variables['patch'], 'dev')]
   steps:
     - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
       parameters:
-        WindowsAppSDKPackageVersion: $(versionWithDevTag)
+        WindowsAppSDKPackageVersion: $(VersionWithDevTag)
         TestSelection: '*Foundation_*'
         TransportPackageArtifactName: 'FullNuget'
         BuildType: 'stable'
         TransportPackages: 
           FoundationPackage:
             Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
-            Version: $(WindowsAppSDKPackageVersion)
+            Version: $(WindowsAppSDKTransportPackageVersion)
 
 # Publish
 - job: Publish
