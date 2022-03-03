@@ -1,4 +1,6 @@
 parameters:
+  BuildForHelix: 'true'
+  conditionForDiscoverTests: ''
   jobName: 'RunTestsInHelix'
   dependsOn: ''
   condition: ''
@@ -240,6 +242,34 @@ jobs:
     inputs:
       PathtoPublish: $(helixTestOutputBaseDir)
       artifactName: HelixTestOutput_$(buildPlatform)_$(buildConfiguration)
+
+  - ${{ if eq(parameters.BuildForHelix, 'true') }}:
+    # Discover the tests to run and generate the Helix Work Items.
+    - task: powershell@2
+      displayName: 'DynamicDependencies.Win32: Discover tests'
+      condition: ${{ parameters.conditionForDiscoverTests }}
+      inputs:
+        targetType: filePath
+        filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
+`        arguments: -TestFilePattern 'DynamicDependency_Test_Win32\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies-Tests-Win32.proj' -WorkItemPrefix 'DynamicDependencies.Win32.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.Win32.$(buildPlatform).$(buildConfiguration)'
+
+  - ${{ if eq(parameters.BuildForHelix, 'true') }}:
+    # Discover the tests to run and generate the Helix Work Items.
+    - task: powershell@2
+      displayName: 'DynamicDependencies.WinRT: Discover tests'
+      condition: ${{ parameters.conditionForDiscoverTests }}
+      inputs:
+        targetType: filePath
+        filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
+`        arguments: -TestFilePattern 'DynamicDependency_Test_WinRT\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies.WinRT-Tests.proj' -WorkItemPrefix 'DynamicDependencies.WinRT.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.WinRT.$(buildPlatform).$(buildConfiguration)'
+
+    # Publish the generated TestWorkItems.proj as a Pipeline artifact
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish test work items'
+      condition: ${{ parameters.conditionForDiscoverTests }}
+      inputs:
+        PathtoPublish: $(helixWorkItemsDir)
+        artifactName: 'HelixWorkItems${{ parameters.ArtifactNameSuffix }}'
 
   - task: powershell@2
     displayName: 'Remove test certificate for MSIX test packages (DevCheck)'
