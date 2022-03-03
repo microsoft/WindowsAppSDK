@@ -9,5 +9,4 @@ variables:
       variables['versionDate'], variables['versionCounter'])]
   versionWithDevTag: >
    $[format('{0}.{1}.{2}-{3}', 
-      variables['major'], variables['minor'], variables['patch'], variables['branch'],
-      'dev')]
+      variables['major'], variables['minor'], variables['patch'], 'dev')]
