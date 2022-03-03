@@ -40,6 +40,7 @@ steps:
   - template: WindowsAppSDK-Build-Steps.yml
     parameters:
       TransportPackageArtifactName: ${{ parameters.TransportPackageArtifactName }}
+      WindowsAppSDKPackageVersion: ${{ parameters.WindowsAppSDKPackageVersion }}
       BuildType:  ${{ parameters.BuildType }}
       TransportPackages: ${{ parameters.TransportPackages }}
   
