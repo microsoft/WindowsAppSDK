@@ -211,6 +211,7 @@ int main()
 
     // Registering app for activation
     std::wcout << L"Calling AppNotificationManager::Register()...\n";
+    Sleep(10000);
     appNotificationManager.Register();
     std::wcout << L"Done.\n\n";
 
@@ -245,7 +246,7 @@ int main()
     std::cin.ignore();
 
     // Call Unregister so that COM can launch a new process for ToastInvokes after we terminate this process.
-    appNotificationManager.Unregister();
+    appNotificationManager.UnregisterAll();
     if (!isPackaged)
     {
         MddBootstrapShutdown();

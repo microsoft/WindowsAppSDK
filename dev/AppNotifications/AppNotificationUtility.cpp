@@ -49,7 +49,7 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::RetrieveUnpackagedNo
         std::wstring subKey{ c_appIdentifierPath + ConvertPathToKey(wideStringProcessName) };
 
         wil::unique_hkey hKey;
-        THROW_IF_FAILED(RegCreateKeyEx(
+        THROW_IF_WIN32_ERROR(RegCreateKeyEx(
             HKEY_CURRENT_USER,
             subKey.c_str(),
             0,
@@ -108,8 +108,7 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterComServer(wil::uniqu
     wil::unique_hkey hKey;
     //subKey: Software\Classes\CLSID\{comActivatorGuidString}\LocalServer32
     std::wstring subKey{ c_clsIdPath + clsid.get() + LR"(\LocalServer32)" };
-
-    THROW_IF_FAILED(RegCreateKeyEx(
+    THROW_IF_WIN32_ERROR(RegCreateKeyEx(
         HKEY_CURRENT_USER,
         subKey.c_str(),
         0,
@@ -129,9 +128,8 @@ void Microsoft::Windows::AppNotifications::Helpers::UnRegisterComServer(std::wst
 {
     wil::unique_hkey hKey;
     //subKey: Software\Classes\CLSID\{comActivatorGuidString}\LocalServer32
-    std::wstring subKey{ c_clsIdPath + clsid + LR"(\LocalServer32)" };
-
-    THROW_IF_FAILED(RegDeleteKeyEx(
+    std::wstring subKey{ c_clsIdPath + clsid.get() + LR"(\LocalServer32)" };
+    THROW_IF_WIN32_ERROR(RegDeleteKeyExW(
         HKEY_CURRENT_USER,
         subKey.c_str(),
         KEY_WOW64_64KEY,
@@ -142,17 +140,13 @@ void Microsoft::Windows::AppNotifications::Helpers::UnRegisterNotificationAppIde
 {
     wil::unique_cotaskmem_string appId;
 
-    if (SUCCEEDED(GetCurrentProcessExplicitAppUserModelID(&appId)))
-    {
-        return;
-    }
     std::wstring notificationAppId{ RetrieveNotificationAppId() };
 
     wil::unique_hkey hKey;
     //subKey: \Software\Classes\AppUserModelId\{AppGUID}
     std::wstring subKey{ c_appIdentifierPath + notificationAppId };
 
-    THROW_IF_FAILED(RegDeleteKeyEx(
+    THROW_IF_WIN32_ERROR(RegDeleteKeyEx(
         HKEY_CURRENT_USER,
         subKey.c_str(),
         KEY_WOW64_64KEY,
@@ -166,7 +160,7 @@ HRESULT Microsoft::Windows::AppNotifications::Helpers::GetActivatorGuid(std::wst
     std::wstring subKey{ c_appIdentifierPath + notificationAppId };
 
     wil::unique_hkey hKey;
-    THROW_IF_FAILED(RegCreateKeyEx(
+    THROW_IF_WIN32_ERROR(RegCreateKeyEx(
         HKEY_CURRENT_USER,
         subKey.c_str(),
         0,
@@ -199,7 +193,7 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
     // subKey: \Software\Classes\AppUserModelId\{AppGUID}
     std::wstring subKey{ c_appIdentifierPath + appId };
 
-    THROW_IF_FAILED(RegCreateKeyEx(
+    THROW_IF_WIN32_ERROR(RegCreateKeyEx(
         HKEY_CURRENT_USER,
         subKey.c_str(),
         0,
