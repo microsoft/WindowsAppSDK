@@ -1314,7 +1314,7 @@ namespace DynamicDependency::Bootstrap
     // Automate Boostrap shutdown when leaving scope
     using unique_mddbootstrapshutdown_call = wil::unique_call<decltype(&::MddBootstrapShutdown), ::MddBootstrapShutdown>;
 
-    /// Call MddBootstrapInitialize and fail-fasts if it fails; returns an RAII objecct that reverts
+    /// Call MddBootstrapInitialize and fail-fasts if it fails; returns an RAII object that reverts
     ///
     /// Initialize the calling process to use Windows App SDK's framework package.
     ///
@@ -1334,7 +1334,7 @@ namespace DynamicDependency::Bootstrap
         PackageVersion minVersion = WINDOWSAPPSDK_RUNTIME_VERSION_UINT64);
 
 #if defined(WIL_ENABLE_EXCEPTIONS)
-    /// Call MddBootstrapInitialize and throws an exception if it fails; returns an RAII objecct that reverts
+    /// Call MddBootstrapInitialize and throws an exception if it fails; returns an RAII object that reverts
     ///
     /// Initialize the calling process to use Windows App SDK's framework package.
     ///
