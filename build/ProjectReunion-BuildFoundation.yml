@@ -479,8 +479,8 @@ jobs:
   variables:
     WindowsAppSDKTransportPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
     VersionWithDevTag: >
-      $[format('{0}.{1}.{2}-{3}', 
-          variables['major'], variables['minor'], variables['patch'], 'dev')]
+      $[format('{0}.{1}.{2}', 
+          variables['major'], variables['minor'], variables['patch'])]
   steps:
     - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
       parameters:
