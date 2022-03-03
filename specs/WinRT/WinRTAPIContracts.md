@@ -58,6 +58,7 @@ Developers are encouraged to use their best judgment when deciding where to plac
 To help keep ABI and binary compatibility between different versions of Windows App SDK here is a list of changes that should not happen between interface versions.
 1. Method order in the interface.
 2. Method signatures.
+3. Structs.
 
 ## 1.1 ship blocker
 Any APIs that changed between 1.0 and 1.1 need to add a contract or 1.1 will not ship.
