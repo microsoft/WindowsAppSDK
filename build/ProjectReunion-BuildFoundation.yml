@@ -481,7 +481,7 @@ jobs:
   steps:
     - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
       parameters:
-        WindowsAppSDKPackageVersion: '$(versionPrefix)-dev'
+        WindowsAppSDKPackageVersion: $(versionPrefixWithDevTag)
         TestSelection: '*Foundation_*'
         TransportPackageArtifactName: 'FullNuget'
         BuildType: 'stable'

@@ -1,5 +1,4 @@
 variables:
-  channel: 'experimental'
   rerunPassesRequiredToAvoidFailure: 5
   versionDate: $[format('{0:yyyyMMdd}', pipeline.startTime)]
   versionCounter: $[counter(variables['versionDate'], 0)]
@@ -7,6 +6,9 @@ variables:
    $[format('{0}.{1}.{2}', 
       variables['major'], variables['minor'], variables['patch'])]
   version: >
-   $[format('{0}.{1}.{2}-{3}.{4}.{5}', 
-      variables['major'], variables['minor'], variables['patch'], variables['branch'],
+   $[format('{0}-{1}.{2}.{3}', 
+      variables['versionPrefix'], variables['branch'],
       variables['versionDate'], variables['versionCounter'])]
+  versionPrefixWithDevTag: >
+   $[format('{0}-{1}', 
+      variables['versionPrefix'], 'dev')]
