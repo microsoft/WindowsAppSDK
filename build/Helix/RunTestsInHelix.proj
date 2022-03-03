@@ -27,6 +27,6 @@
   <Import Project="GeneratedWorkItems\MrtCore-MrtCoreUnpackagedTests.proj"/>
 
   <!-- Additional tests -->
-  <Import Project="$(ProjFilesPath)\DynamicDependencies-Tests.proj"/>
+  <Import Project="GeneratedWorkItems\DynamicDependencies-Tests.proj"/>
 
 </Project>
