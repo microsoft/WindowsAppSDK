@@ -211,7 +211,6 @@ int main()
 
     // Registering app for activation
     std::wcout << L"Calling AppNotificationManager::Register()...\n";
-    Sleep(10000);
     appNotificationManager.Register();
     std::wcout << L"Done.\n\n";
 

@@ -128,11 +128,19 @@ void Microsoft::Windows::AppNotifications::Helpers::UnRegisterComServer(std::wst
 {
     wil::unique_hkey hKey;
     //subKey: Software\Classes\CLSID\{comActivatorGuidString}\LocalServer32
-    std::wstring subKey{ c_clsIdPath + clsid.get() + LR"(\LocalServer32)" };
-    THROW_IF_WIN32_ERROR(RegDeleteKeyExW(
+    std::wstring clsidPath{ c_clsIdPath + clsid };
+    std::wstring subKey{ clsidPath + LR"(\LocalServer32)" };
+    THROW_IF_WIN32_ERROR(RegDeleteKeyEx(
         HKEY_CURRENT_USER,
         subKey.c_str(),
-        KEY_WOW64_64KEY,
+        KEY_ALL_ACCESS,
+        0));
+
+    
+    THROW_IF_WIN32_ERROR(RegDeleteKeyEx(
+        HKEY_CURRENT_USER,
+        clsidPath.c_str(),
+        KEY_ALL_ACCESS,
         0));
 }
 
