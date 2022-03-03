@@ -4,6 +4,9 @@ parameters:
   - name: TransportPackageArtifactName
     type: string
     default: ''
+  - name: WindowsAppSDKPackageVersion
+    type: string
+    default: ''
   - name: AzureSubscriptionServiceConnection
     type: string
     default: 'ProjectReunion Resource Manager'

@@ -3,6 +3,9 @@ variables:
   rerunPassesRequiredToAvoidFailure: 5
   versionDate: $[format('{0:yyyyMMdd}', pipeline.startTime)]
   versionCounter: $[counter(variables['versionDate'], 0)]
+  versionPrefix: >
+   $[format('{0}.{1}.{2}', 
+      variables['major'], variables['minor'], variables['patch'])]
   version: >
    $[format('{0}.{1}.{2}-{3}.{4}.{5}', 
       variables['major'], variables['minor'], variables['patch'], variables['branch'],
