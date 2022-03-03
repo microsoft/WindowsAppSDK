@@ -3,10 +3,14 @@
 
 namespace Microsoft.Windows.ApplicationModel.DynamicDependency
 {
+    [contractversion(1)]
+    apicontract DynamicDependency{};
+
     /// CPU architectures to optionally filter available packages against a package dependency.
     /// These generally correspond to processor architecture types supported by MSIX.
     /// @see Windows.System.ProcessorArchitecture
     [flags]
+    [contract(DynamicDependency, 1)]
     enum PackageDependencyProcessorArchitectures
     {
         None       = 0,
@@ -18,6 +22,7 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         X86OnArm64 = 0x00000020,
     };
 
+    [contract(DynamicDependency, 1)]
     enum PackageDependencyLifetimeArtifactKind
     {
         /// The current process is the lifetime artifact. The package dependency
@@ -35,6 +40,7 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
     };
 
     /// Options when 'pinning' a package dependency
+    [contract(DynamicDependency, 1)]
     runtimeclass CreatePackageDependencyOptions
     {
         CreatePackageDependencyOptions();
@@ -53,6 +59,7 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         String LifetimeArtifact;
     };
 
+    [contract(DynamicDependency, 1)]
     static runtimeclass PackageDependencyRank
     {
         /// The default value is zero (0).
@@ -60,6 +67,7 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
     };
 
     /// Options when adding a package dependency
+    [contract(DynamicDependency, 1)]
     runtimeclass AddPackageDependencyOptions
     {
         AddPackageDependencyOptions();
@@ -75,7 +83,7 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         Boolean PrependIfRankCollision;
     };
 
-    /// TBD
+    [contract(DynamicDependency, 1)]
     runtimeclass PackageDependency
     {
         /// Create an intstance of the package dependency identified by id defined for the current user.
@@ -277,6 +285,7 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
     };
 
     /// A unique identifier for a resolved package dependency
+    [contract(DynamicDependency, 1)]
     struct PackageDependencyContextId
     {
         UInt64 Id;
@@ -292,6 +301,7 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
     ///        a package dependency any files loaded from the package can continue
     ///        to be used; future package dependency resolution (via new calls to
     ///        PackageDependency.Add) will fail to see the removed package dependency.
+    [contract(DynamicDependency, 1)]
     runtimeclass PackageDependencyContext
     {
         /// Create an intstance of the package dependency context identified by context
