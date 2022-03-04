@@ -478,7 +478,7 @@ jobs:
   pool: $(ProjectReunionBuildPool)
   variables:
     WindowsAppSDKTransportPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
-    VersionWithDevTag: $[format('{0}.{1}.{2}-{3}', variables['major'], variables['minor'], variables['patch'], 'dev')]
+    VersionWithDevTag: $[format('{0}.{1}.{2}-{3}.{4}.{5}', variables['major'], variables['minor'], variables['patch'], 'dev', variables['versionDate'], variables['versionCounter'])]
   steps:
     - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
       parameters:
