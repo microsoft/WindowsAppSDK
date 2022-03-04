@@ -542,6 +542,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     hstring AppInstance::Key()
     {
+        auto releaseOnExit = m_dataMutex.acquire();
+
         if (m_key.IsValid())
         {
             return winrt::hstring(m_key.Get());
