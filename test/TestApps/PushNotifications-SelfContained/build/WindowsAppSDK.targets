@@ -1,0 +1,15 @@
+<!--
+  Copyright (c) Microsoft Corporation. Licensed under the MIT License
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <!--Imports for each component targets-->
+    <Import Project="$(MSBuildThisFileDirectory)Foundation.targets" Condition="Exists('$(MSBuildThisFileDirectory)Foundation.targets')" />
+    
+    <!--Import after all other props to ensure WindowsAppSDKSelfContained is set (required for SelfContained projects)-->
+    <Import Project="$(MSBuildThisFileDirectory)SelfContained.targets" Condition="'$(WindowsAppSDKSelfContained)'=='true'"/>
+
+    <!--Import after all other props to ensure WindowsAppSDKFrameworkPackageReference is set (required for C++ projects)-->
+    <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.AppXReference.props" Condition="'$(WindowsAppSDKFrameworkPackageReference)'!='false'"/>
+    
+</Project>

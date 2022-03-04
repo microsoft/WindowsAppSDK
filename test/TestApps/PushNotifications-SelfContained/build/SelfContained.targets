@@ -1,0 +1,326 @@
+<!--
+  Copyright (c) Microsoft Corporation. Licensed under the MIT License
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--Enable SelfContained mode (disabling Framework Package) in any project that sets WindowsAppSDKSelfContained-->
+  <PropertyGroup>
+    <PackageAppxManifest>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)'))Package.appxmanifest</PackageAppxManifest>
+    <WindowsAppSDKFrameworkPackage>false</WindowsAppSDKFrameworkPackage>
+
+    <!--Disable redundant unpacking of framework package to work around Xaml tooling issue in VS 16.9-->
+    <WindowsAppSDKCopyXamlToolingLibs>false</WindowsAppSDKCopyXamlToolingLibs>
+    
+    <!--Disable framework package references for all projects-->
+    <WindowsAppSDKFrameworkPackageReference>false</WindowsAppSDKFrameworkPackageReference>
+
+    <ManifestTool Condition="Exists('$(MSBuildThisFileDirectory)\..\tools\mt.exe')">$(MSBuildThisFileDirectory)\..\tools\mt.exe</ManifestTool>
+    <ManifestTool Condition="Exists('$(WindowsSDKBuildToolsBinVersionedArchFolder)\mt.exe')">$(WindowsSDKBuildToolsBinVersionedArchFolder)\mt.exe</ManifestTool>
+    <ManifestTool Condition="'$(ManifestTool)'==''">$(MSBuildProgramFiles32)\Windows Kits\10\bin\$(TargetPlatformVersion)\x86\mt.exe</ManifestTool>
+
+    <!--Microsoft.Common.CurrentVersion.targets initializes many *DependsOn properties, 
+            so GetCopyToOutputDirectoryItemsDependsOn must be assigned here.-->
+    <GetCopyToOutputDirectoryItemsDependsOn>
+      $(GetCopyToOutputDirectoryItemsDependsOn);
+      AddMicrosoftWindowsAppSDKPayloadFiles
+    </GetCopyToOutputDirectoryItemsDependsOn>
+
+    <EmbedManifest>true</EmbedManifest>
+    <GenerateManifest>true</GenerateManifest>
+    <IncludeGetResolvedSDKReferences>False</IncludeGetResolvedSDKReferences>
+
+    <!-- If IntermediateOutputPath is relative, prepend MSBuildProjectDirectory -->
+    <SelfContainedIntermediateOutputPath>$(MSBuildProjectDirectory)\$(IntermediateOutputPath)\</SelfContainedIntermediateOutputPath>
+    <SelfContainedIntermediateOutputPath Condition="$([System.IO.Path]::IsPathRooted($(IntermediateOutputPath)))">$(IntermediateOutputPath)\</SelfContainedIntermediateOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <WindowsAppSDKManifestFiles Include="$([MSBuild]::NormalizeDirectory('$(MicrosoftWindowsAppSDKPackageDir)','manifests'))*.manifest"/>
+    <!--<Manifest Condition="'$(MSBuildProjectExtension)' != '.csproj'" Include="@(WindowsAppSDKManifestFiles)" />-->
+  </ItemGroup>
+  
+  <Target Name="WindowsAppSDKSelfContainedVerifyConfiguration" Condition="'$(AppxBundlePlatforms)'==''" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(Platform)'=='AnyCPU' OR '$(Platform)'==''" Text="The platform '$(Platform)' is not supported for Self Contained mode."/>
+  </Target>
+
+  <Target Name="_OverrideGetPriIndexName"
+      AfterTargets="GetPriIndexName"
+      BeforeTargets="MarkupCompilePass1">
+    <!--
+        Setting PRI index name. The XAML compiler use this in the LoadComponent() string.
+        -->
+    <PropertyGroup>
+      <PriIndexName Condition="'$(MSBuildProjectExtension)' != '.wapproj'"></PriIndexName>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="GetNewAppManifestValues"
+      DependsOnTargets="ResolveReferences">
+    <PropertyGroup>
+      <OldApplicationManifest Condition="Exists('$(ApplicationManifest)')">$(MSBuildProjectDirectory)\$(ApplicationManifest)</OldApplicationManifest>
+      <NewApplicationManifest>$(SelfContainedIntermediateOutputPath)Manifests\mergeapp.manifest</NewApplicationManifest>
+      <ApplicationManifest>$(SelfContainedIntermediateOutputPath)Manifests\app.manifest</ApplicationManifest>
+    </PropertyGroup>
+    <ItemGroup>
+      <Manifest Include="$(ApplicationManifest)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="GetExtractMicrosoftWindowsAppSDKMsixFilesInputs"
+      DependsOnTargets="ResolveReferences">
+    <PropertyGroup>
+      <NativePlatform Condition="'$(Platform)' == 'Win32'">x86</NativePlatform>
+      <NativePlatform Condition="'$(Platform)' != 'Win32'">$(Platform)</NativePlatform>
+      <MicrosoftWindowsAppSDKMsixContent>$(SelfContainedIntermediateOutputPath)MsixContent</MicrosoftWindowsAppSDKMsixContent>
+      <WindowsAppSDKAppxManifest>$(MicrosoftWindowsAppSDKMsixContent)\AppxManifest.xml</WindowsAppSDKAppxManifest>
+    </PropertyGroup>
+    <ItemGroup>
+      <MicrosoftWindowsAppSDKMsix Include="$([MSBuild]::NormalizeDirectory('$(MicrosoftWindowsAppSDKPackageDir)','tools\Msix\win10-$(NativePlatform)'))Microsoft.WindowsAppRuntime.?.?.Msix"/>
+      <MicrosoftWindowsAppSDKMsix Include="$([MSBuild]::NormalizeDirectory('$(MicrosoftWindowsAppSDKPackageDir)','tools\Msix\win10-$(NativePlatform)'))Microsoft.WindowsAppRuntime.?.?-*.Msix"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="ExtractMicrosoftWindowsAppSDKMsixFiles"
+      Condition="'$(MSBuildProjectExtension)' != '.wapproj'"
+      Inputs="@(MicrosoftWindowsAppSDKMsix)"
+      Outputs="$(MicrosoftWindowsAppSDKMsixContent)\Microsoft.UI.Xaml.Controls.pri;$(WindowsAppSDKAppxManifest)"
+      DependsOnTargets="GetExtractMicrosoftWindowsAppSDKMsixFilesInputs">
+
+    <Unzip
+        SourceFiles="@(MicrosoftWindowsAppSDKMsix)"
+        DestinationFolder="$(MicrosoftWindowsAppSDKMsixContent)"
+        SkipUnchangedFiles="true"
+        OverwriteReadOnlyFiles="true" />
+    <!--Reverse the rename of Microsoft.UI.Xaml.Controls.pri to resources.pri to enable use of both from the app -->
+    <Move SourceFiles="$(MicrosoftWindowsAppSDKMsixContent)\resources.pri" DestinationFiles="$(MicrosoftWindowsAppSDKMsixContent)\Microsoft.UI.Xaml.Controls.pri"/>
+  </Target>
+
+  <Target Name="AddMicrosoftWindowsAppSDKPayloadFiles"
+      Condition="'$(MSBuildProjectExtension)' != '.wapproj'"
+      BeforeTargets="AssignTargetPaths;CoreCompile"
+      DependsOnTargets="ExtractMicrosoftWindowsAppSDKMsixFiles" >
+    <ItemGroup>
+      <MicrosoftWindowsAppSDKFiles Include="$(MicrosoftWindowsAppSDKMsixContent)\**\*.dll"/>
+      <MicrosoftWindowsAppSDKFiles Include="$(MicrosoftWindowsAppSDKMsixContent)\**\*.mui"/>
+      <MicrosoftWindowsAppSDKFiles Include="$(MicrosoftWindowsAppSDKMsixContent)\**\*.png"/>
+      <MicrosoftWindowsAppSDKFiles Include="$(MicrosoftWindowsAppSDKMsixContent)\**\*.winmd" Condition="!Exists('$(PackageAppxManifest)')"/>
+      <MicrosoftWindowsAppSDKFilesRes Include="$(MicrosoftWindowsAppSDKMsixContent)\**\*.pri"/>      
+    </ItemGroup>
+    <CreateItem Include="@(MicrosoftWindowsAppSDKFiles)"
+        AdditionalMetadata="CopyToOutputDirectory=PreserveNewest;Link=%(MicrosoftWindowsAppSDKFiles.RecursiveDir)%(MicrosoftWindowsAppSDKFiles.Filename)%(MicrosoftWindowsAppSDKFiles.Extension)" >
+      <Output TaskParameter="Include" ItemName="None"/>
+    </CreateItem>
+    <CreateItem Include="@(MicrosoftWindowsAppSDKFilesRes)"
+        AdditionalMetadata="CopyToOutputDirectory=PreserveNewest;Link=%(MicrosoftWindowsAppSDKFilesRes.RecursiveDir)%(MicrosoftWindowsAppSDKFilesRes.Filename)%(MicrosoftWindowsAppSDKFilesRes.Extension)" >
+      <Output TaskParameter="Include" ItemName="ReferenceCopyLocalPaths"/>
+    </CreateItem>
+
+    <!-- Target ResolveTargetingPackAssets incorrectly adds files to @(ReferenceCopyLocalPaths) from the Reunion \runtimes folder
+        But the \runtimes folder does not exist, so we need to remove them here.
+      -->
+    <!--
+    <PropertyGroup>
+      <PkgMicrosoft_WindowsAppSDK_Foundation>$(NuGetPackageRoot)microsoft.WindowsAppSDK.foundation\$(__ReunionVersion)</PkgMicrosoft_WindowsAppSDK_Foundation>
+      <PkgMicrosoft_WindowsAppSDK_Foundation_Runtime>$(PkgMicrosoft_WindowsAppSDK_Foundation)\build\..\runtimes\win10-$(NativePlatform)\native\</PkgMicrosoft_WindowsAppSDK_Foundation_Runtime>
+    </PropertyGroup>
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="'%(RelativeDir)'=='$(PkgMicrosoft_WindowsAppSDK_Foundation_Runtime)'" />
+    </ItemGroup>-->
+  </Target>
+
+  <Target Name="_RemoveFrameworkReferences"
+      BeforeTargets="_ConvertItems;_CalculateInputsForGenerateCurrentProjectAppxManifest">
+    <ItemGroup>
+      <FrameworkSdkReference Remove="@(FrameworkSdkReference)"/>
+    </ItemGroup>
+  </Target>
+
+  <!-- Prevent WinUI's legacy app-local behavior from colliding with WindowsAppSDK InApp behavior -->
+  <Target Name="_GetPathToXAMLWinRTImplementations" />
+  <Target Name="_ReplaceMUXWinRTRegistrations" />
+
+  <UsingTask TaskName="GenerateWinRTManifestFromAppx" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <AppxManifest ParameterType="System.String" Required="false" />
+      <DestinationFolder ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Xml" />
+      <Reference Include="System.Xml.Linq" />
+      <Using Namespace="System.Collections.Generic" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Linq" />
+      <Using Namespace="System.Text" />
+      <Using Namespace="System.Xml" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+            var headerF = @"<?xml version='1.0' encoding='utf-8' standalone='yes'?>
+<assembly
+  manifestVersion='1.0'
+  xmlns:asmv3='urn:schemas-microsoft-com:asm.v3'
+  xmlns='urn:schemas-microsoft-com:asm.v1'>
+  <trustInfo xmlns='urn:schemas-microsoft-com:asm.v2'>
+    <security>
+      <requestedPrivileges xmlns='urn:schemas-microsoft-com:asm.v3'>
+        <requestedExecutionLevel level='asInvoker' uiAccess='false' />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+  <compatibility xmlns='urn:schemas-microsoft-com:compatibility.v1'>
+    <application>
+      <maxversiontested Id='10.0.18362.0'/>
+      <supportedOS Id='{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}' />
+    </application>
+  </compatibility>
+  <application xmlns='urn:schemas-microsoft-com:asm.v3'>
+    <windowsSettings>
+      <dpiAware xmlns='http://schemas.microsoft.com/SMI/2005/WindowsSettings'>true/PM</dpiAware>
+      <dpiAwareness xmlns='http://schemas.microsoft.com/SMI/2016/WindowsSettings'>PerMonitorV2, PerMonitor</dpiAwareness>
+    </windowsSettings>
+  </application>";
+            var sb = new StringBuilder();
+            sb.Append(headerF);
+
+            if (!string.IsNullOrEmpty(AppxManifest))
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.Load(AppxManifest);
+                var nsmgr = new XmlNamespaceManager(doc.NameTable);
+                nsmgr.AddNamespace("m", "http://schemas.microsoft.com/appx/manifest/foundation/windows10");
+                var xQuery = "./m:Package/m:Extensions/m:Extension/m:InProcessServer";
+
+                foreach (XmlNode winRTFactory in doc.SelectNodes(xQuery, nsmgr))
+                {
+                    var dllPathNode = winRTFactory.SelectSingleNode("./m:Path", nsmgr);
+                    var dllPath = dllPathNode.InnerText;
+                    var typesNames = winRTFactory.SelectNodes("./m:ActivatableClass", nsmgr).OfType<XmlNode>();
+                    var xmlHeader = String.Format(@"    <asmv3:file name='{0}'>", dllPath);
+                    sb.Append(xmlHeader);
+                    foreach (var typeNode in typesNames)
+                    {
+                        var attribs = typeNode.Attributes.OfType<XmlAttribute>().ToArray();
+                        var typeName = attribs
+                            .OfType<XmlAttribute>()
+                            .SingleOrDefault(x => x.Name == "ActivatableClassId")
+                            .InnerText;
+                        var xmlEntry = String.Format(@"
+        <activatableClass
+            name='{0}'
+            threadingModel='both'
+            xmlns='urn:schemas-microsoft-com:winrt.v1'/>
+", typeName);
+                    sb.Append(xmlEntry);
+                }
+                var xmlFooter = @"
+    </asmv3:file>
+";
+                    sb.Append(xmlFooter);
+                }
+            }
+            var xmlFooterF = @"
+</assembly>";
+            sb.Append(xmlFooterF);
+            var manifestContent = sb.ToString();
+            var outFileName = Path.Combine(DestinationFolder, "app.manifest");
+            File.WriteAllText(outFileName, manifestContent, Encoding.UTF8);
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="CreateWinRTRegistration"
+    BeforeTargets="AssignTargetPaths;CoreCompile"
+    DependsOnTargets="GetNewAppManifestValues;ExtractMicrosoftWindowsAppSDKMsixFiles"
+    Inputs="$(WindowsAppSDKAppxManifest);$(OldApplicationManifest);@(WindowsAppSDKManifestFiles)"
+    Outputs="$(NewApplicationManifest)"
+    Condition="'$(MSBuildProjectExtension)' != '.wapproj'">
+    <MakeDir Directories="$(SelfContainedIntermediateOutputPath)Manifests\" />
+    <CreateProperty Value="$(SelfContainedIntermediateOutputPath)Manifests\app.manifest">
+      <Output
+        TaskParameter="Value"
+        PropertyName="GeneratedApplicationManifest" />
+    </CreateProperty>
+    <GenerateWinRTManifestFromAppx
+        AppxManifest="$(WindowsAppSDKAppxManifest)"
+        DestinationFolder="$(SelfContainedIntermediateOutputPath)Manifests\">
+    </GenerateWinRTManifestFromAppx>
+    <Exec
+      Condition="Exists('$(OldApplicationManifest)')"
+      Command="&quot;$(ManifestTool)&quot; -nologo -manifest &quot;$(GeneratedApplicationManifest)&quot; &quot;$(OldApplicationManifest)&quot; @(WindowsAppSDKManifestFiles, ' ') -out:&quot;$(NewApplicationManifest)&quot;"
+      WorkingDirectory="$(MSBuildProjectDirectory)" >
+    </Exec>
+    <Copy
+        Condition="!Exists('$(PackageAppxManifest)')"
+        SourceFiles="$(OldApplicationManifest)"
+        DestinationFiles="$(NewApplicationManifest)" >
+    </Copy>
+  </Target>
+
+  <Target Name="_GetAddManifestToResourcesInputs">
+    <PropertyGroup>
+      <Win32Res>$(SelfContainedIntermediateOutputPath)resources.res</Win32Res>
+      <_CreateResTool>$(MSBuildThisFileDirectory)_createres.ps1</_CreateResTool>
+      <Win32Resource>$(Win32Res)</Win32Resource>
+    </PropertyGroup>
+    <PropertyGroup>
+      <ApplicationManifest></ApplicationManifest>
+      <Win32Manifest></Win32Manifest>
+    </PropertyGroup>
+  </Target>
+<!--
+  <Target Name="_AddManifestToResources"
+     Condition="'$(MSBuildProjectExtension)' != '.wapproj'"
+     AfterTargets="SetWin32ManifestProperties"
+     DependsOnTargets="GetNewAppManifestValues;_GetAddManifestToResourcesInputs;CreateWinRTRegistration"
+     BeforeTargets="CoreCompile"
+     Inputs="$(Win32RC);$(NewApplicationManifest)"
+     Outputs="$(SelfContainedIntermediateOutputPath)resources.res">
+    <Exec Command="powershell -nologo -noprofile -ex bypass -c $(_CreateResTool) $(TargetPlatformVersion) $(SelfContainedIntermediateOutputPath) $(Win32RC) $(NewApplicationManifest) $(Win32Res) "/>
+  </Target>
+-->
+
+  <Target Name="_StompSourceProjectForWapProject" BeforeTargets="_ConvertItems" Condition="'$(MSBuildProjectExtension)' == '.wapproj'">
+    <ItemGroup>
+      <!-- Stomp all "SourceProject" values for all incoming dependencies to flatten the package. -->
+      <_TemporaryFilteredWapProjOutput Include="@(_FilteredNonWapProjProjectOutput)" />
+      <_FilteredNonWapProjProjectOutput Remove="@(_TemporaryFilteredWapProjOutput)" />
+      <_FilteredNonWapProjProjectOutput Include="@(_TemporaryFilteredWapProjOutput)">
+        <!-- Blank the SourceProject here to vend all files into the root of the package. -->
+        <SourceProject>
+        </SourceProject>
+      </_FilteredNonWapProjProjectOutput>
+
+      <!-- We need to disable DeterminePriPackageFiles for 2 reasons:
+              1. We are moving all the payload to root with @_FilteredNonWapProjProjectOutput
+                  DeterminePriPackageFiles searches in the payload for primary resources that need to be deployed to root.
+                  We dont need any of the work to determine which parts of the payload belong to a primary resource becuase we
+                  already moved all the payload to root.
+              2. The search for primary resources is super expensive, and large projects this search can takes minutes to complete,
+                  even for an incremental build with no changes. -->
+      <_DetailedPriXml Remove="@(_DetailedPriXml)" />
+
+    </ItemGroup>
+  </Target>
+
+  <!-- Workaround for VCRT issue: https://github.com/microsoft/vcrt-forwarders/issues/37 -->
+  <Target Name="_FixUpProjectConfigurations"
+      BeforeTargets="ResolveVCRTForwarderReferences"
+      Condition="'@(ProjectReferenceWithConfiguration)' != '' And '$(VCRTForwarders-IncludeDebugCRT)' == '' And '$(MSBuildProjectExtension)' == '.wapproj'">
+    <ItemGroup>
+      <_SavedProjectReferenceWithConfiguration Include="@(ProjectReferenceWithConfiguration)">
+        <Configuration>$(Configuration)</Configuration>
+        <Platform>$(Platform)</Platform>
+      </_SavedProjectReferenceWithConfiguration>
+      <ProjectReferenceWithConfiguration Remove="@(ProjectReferenceWithConfiguration)" />
+      <ProjectReferenceWithConfiguration Include="@(_SavedProjectReferenceWithConfiguration)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_RemoveWinMDFromAppxManifest"
+        BeforeTargets="_GenerateCurrentProjectAppxManifest">
+    <ItemGroup>
+      <_AppxWinmdFilesToHarvest Remove="@(_AppxWinmdFilesToHarvest)" />
+    </ItemGroup>
+  </Target>
+
+</Project>
