@@ -124,6 +124,14 @@ steps:
       mrm.h
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
 
+- task: CopyFiles@2
+  displayName: 'copy idl'
+  inputs:
+    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\mrt\Microsoft.Windows.ApplicationModel.Resources\src'
+    Contents: |
+      Microsoft.Windows.ApplicationModel.Resources.idl
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
+
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\fullnuget'
