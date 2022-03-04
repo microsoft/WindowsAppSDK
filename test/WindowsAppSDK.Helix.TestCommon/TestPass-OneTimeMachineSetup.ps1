@@ -5,6 +5,74 @@ Write-Host "TestPass-OneTimeMachineSetup.ps1"
 
 # This script is called by TestPass-OneTimeMachineSetupCore.ps1 which is a part of the WinUI.Helix package.
 
+# Install and start the TAEF Service on the machine.
+# Functions copied and modified from https://github.com/microsoft/WindowsAppSDK/blob/main/tools/DevCheck.ps1
+function Test-TAEFService
+{
+    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    if ([string]::IsNullOrEmpty($service))
+    {
+        Write-Host "TAEF service...Not Installed"
+        return 'NotFound'
+    }
+    elseif ($service.Status -ne "Running")
+    {
+        Write-Host "TAEF service...Not running ($service.Status)"
+        return 'NotRunning'
+    }
+    else
+    {
+        Write-Host "TAEF service...Running"
+        return 'Running'
+    }
+}
+function Repair-TAEFService
+{
+    $path = ".\Wex.Services.exe"
+    if (-not(Test-Path -Path $path -PathType Leaf))
+    {
+        Write-Host "Install TAEF service...Not Found ($path)"
+        return 'TAEFNotFound'
+    }
+    $args = '/install:TE.Service'
+    & $path $args
+    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    if ([string]::IsNullOrEmpty($service))
+    {
+        Write-Host "Install TAEF service...Failed"
+        return 'InstallError'
+    }
+    else
+    {
+        Write-Host "Install TAEF service...OK"
+        return 'NotRunning'
+    }
+}
+function Start-TAEFService
+{
+    $ok = Start-Service 'TE.Service'
+    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    if ($service.Status -ne "Running")
+    {
+        Write-Host "Start TAEF service...Failed"
+    }
+    else
+    {
+        Write-Host "Start TAEF service...OK"
+        return $true
+    }
+}
+
+$test = Test-TAEFService
+if ($test -eq 'NotFound')
+{
+    $test = Repair-TAEFService
+}
+if ($test -eq 'NotRunning')
+{
+    $test = Start-TAEFService
+}
+
 $packagesToFind = @(
     "Microsoft.VCLibs.*.appx",
     "Microsoft.NET.CoreRuntime.*.appx",
@@ -18,7 +86,7 @@ foreach($pattern in $packagesToFind)
     foreach($package in (Get-ChildItem $pattern))
     {
         Write-Host "Installing $package"
-        Add-AppxPackage $package -ErrorVariable appxerror -ErrorAction SilentlyContinue 
+        Add-AppxPackage $package -ErrorVariable appxerror -ErrorAction SilentlyContinue
         if($appxerror)
         {
             foreach($error in $appxerror)
@@ -57,7 +125,7 @@ if(Test-Path .\dotnet-windowsdesktop-runtime-installer.exe)
 }
 
 
-# If we set the registry from a 32-bit process on a 64-bit machine, we will set the "virtualized" syswow registry. 
+# If we set the registry from a 32-bit process on a 64-bit machine, we will set the "virtualized" syswow registry.
 # For crash dump collection we always want to set the "native" registry, so we make sure to invoke the native cmd.exe
 $nativeCmdPath = "$env:SystemRoot\system32\cmd.exe"
 if([Environment]::Is64BitOperatingSystem -and ![Environment]::Is64BitProcess)
@@ -84,10 +152,17 @@ function Enable-CrashDumpsForProcesses {
     }
 }
 
-# Note: te.exe and te.processhost.exe are already enabled for dump collection by TestPass-OneTimeMachineSetupCore.ps1
-
-# Enable dump collection for any additional apps/processes below:
+# enable dump collection for our test apps:
 $namesOfProcessesForDumpCollection = @(
+    "te.exe",
+    "te.processhost.exe"
 )
 
 Enable-CrashDumpsForProcesses $namesOfProcessesForDumpCollection
+
+#Install VCRT
+Get-ChildItem 'vc_redist.*.exe' | ForEach-Object {
+  & $_.FullName /install /quiet /norestart
+}
+
+Get-ChildItem -Recurse "C:\Program Files\WindowsApps\*" > "$env:HELIX_WORKITEM_UPLOAD_ROOT\dump_dir_windowsapps.txt"
