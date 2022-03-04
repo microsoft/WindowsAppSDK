@@ -126,6 +126,8 @@ int main()
         ProcessNotificationArgs(notificationActivatedEventArgs);
     }
 
+    // other app init and then message loop here
+    
     // Cleanup event handler
     winrt::AppNotificationManager::Default().NotificationInvoked(token);
 
@@ -221,7 +223,7 @@ in the Action Centre. In this example, the developer want to delete all Active N
 former friend except if the Notification falls under the Archived group.
 
 ```cpp
-winrt::Windows::Foundation::IAsyncAction RemoveAllNotificationsFromFormerFriend(std::wstring const& friendId)
+winrt::Windows::Foundation::IAsyncAction RemoveAllNotificationsFromFormerFriendAsync(const std::wstring friendId)
 {
     winrt::AppNotificationManager manager = winrt::AppNotificationManager::Default();
     auto notifications = co_await manager.GetAllAsync();
@@ -248,12 +250,13 @@ To accomplish that, the developer will need to use the AppNotificationProgressDa
 update the progress bar on the screen.
 
 ```cpp
+
+const winrt::hstring c_tag = L"weekly-playlist";
+const winrt::hstring c_group = L"downloads";
+
 // Send first Notification Progress Update
 void SendUpdatableNotificationWithProgress()
 {
-    winrt::hstring tag = L"weekly-playlist";
-    winrt::hstring group = L"downloads";
-
     winrt::hstring payload =
         LR"(<toast launch="action = viewDownload &amp; downloadId = 9438108">
         <visual>
@@ -269,8 +272,8 @@ void SendUpdatableNotificationWithProgress()
     </toast>)";
 
     winrt::AppNotification notification(payload);
-    notification.Tag(tag);
-    notification.Group(group);
+    notification.Tag(c_tag);
+    notification.Group(c_group);
 
     // Assign initial values for first notification progress UI
     winrt::AppNotificationProgressData data(1);
@@ -286,9 +289,6 @@ void SendUpdatableNotificationWithProgress()
 // Send subsequent progress updates
 winrt::Windows::Foundation::IAsyncAction UpdateProgressAsync()
 {
-    winrt::hstring tag = L"weekly-playlist";
-    winrt::hstring group = L"downloads";
-
     // Assign new values
     winrt::AppNotificationProgressData data(2 /* Sequence number */ );
     data.Title(L"Weekly playlist"); // Binds to {progressTitle} in xml payload
@@ -296,7 +296,7 @@ winrt::Windows::Foundation::IAsyncAction UpdateProgressAsync()
     data.ValueStringOverride(L"18/26 songs"); // Binds to {progressValueString} in xml payload
     data.Status(L"Downloading..."); // Binds to {progressStatus} in xml payload
 
-    auto result = co_await winrt::AppNotificationManager::Default().UpdateAsync(data, tag, group);
+    auto result = co_await winrt::AppNotificationManager::Default().UpdateAsync(data, c_tag, c_group);
     if (result == winrt::AppNotificationProgressResult::AppNotificationNotFound)
     {
         // Toast Progress Update Failed since the previous notification update is dismissed by the user! So account for this in your logic by stopping updates or starting a new Progress Update flow.
