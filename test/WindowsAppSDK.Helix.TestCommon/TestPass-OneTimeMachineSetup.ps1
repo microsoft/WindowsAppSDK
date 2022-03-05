@@ -159,12 +159,6 @@ $namesOfProcessesForDumpCollection = @(
 )
 
 Enable-CrashDumpsForProcesses $namesOfProcessesForDumpCollection
-# Install certificates
-$certificates = Get-ChildItem "*.cer"
-foreach ($cert in $certificates) {
-    Write-Host "Adding $cert to TrustedPeople"
-    certutil -addstore TrustedPeople $cert
-}
 
 #Install VCRT
 Get-ChildItem 'vc_redist.*.exe' | ForEach-Object {
