@@ -81,19 +81,19 @@ $packagesToFind = @(
     "Microsoft.NET.Native.Runtime.*.appx"
 )
 
-foreach($pattern in $packagesToFind)
+foreach ($pattern in $packagesToFind)
 {
-    foreach($package in (Get-ChildItem $pattern))
+    foreach ($package in (Get-ChildItem $pattern))
     {
         Write-Host "Installing $package"
         Add-AppxPackage $package -ErrorVariable appxerror -ErrorAction SilentlyContinue
-        if($appxerror)
+        if ($appxerror)
         {
-            foreach($error in $appxerror)
+            foreach ($error in $appxerror)
             {
                 # In the case where the package does not install becasuse a higher version is already installed
                 # we don't want to print an error message, since that is just noise. Filter out such errors.
-                if(($error.Exception.Message -match "0x80073D06") -or ($error.Exception.Message -match "0x80073CFB"))
+                if (($error.Exception.Message -match "0x80073D06") -or ($error.Exception.Message -match "0x80073CFB"))
                 {
                     Write-Host "The same or higher version of this package is already installed."
                 }
@@ -108,25 +108,29 @@ foreach($pattern in $packagesToFind)
 
 # Install any certificates (*.cer) included in $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\helixtests\certificates
 # NOTE: The current directory is $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\helixtests
-foreach($cerFile in (Get-ChildItem -Recurse ".\certificates\*.cer"))
+$certificates = Get-ChildItem -Recurse ".\certificates\*.cer"
+Write-Host "$($certificates.Length) found at .\certificates\*.cer"
+foreach ($cerFile in $certificates)
 {
     Write-Host "Adding certificate '$cerFile'"
     certutil -addstore TrustedPeople "$cerFile"
 }
 
 # Install any certificates (*.cer) included in $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\helixtests
-foreach($cerFile in (Get-ChildItem ".\*.cer"))
+$certificates = Get-ChildItem ".\*.cer"
+Write-Host "$($certificates.Length) found at .\*.cer"
+foreach ($cerFile in $certificates)
 {
     Write-Host "Adding certificate '$cerFile'"
     certutil -addstore TrustedPeople "$cerFile"
 }
 
-if(Test-Path .\dotnet-windowsdesktop-runtime-installer.exe)
+if (Test-Path .\dotnet-windowsdesktop-runtime-installer.exe)
 {
     Write-Host "Install dotnet runtime"
     .\dotnet-windowsdesktop-runtime-installer.exe /quiet /install /norestart /log dotnetinstalllog.txt |Out-Null
     Get-Content .\dotnetinstalllog.txt
-    if($env:HELIX_WORKITEM_UPLOAD_ROOT)
+    if ($env:HELIX_WORKITEM_UPLOAD_ROOT)
     {
         Copy-Item .\dotnetinstalllog.txt $env:HELIX_WORKITEM_UPLOAD_ROOT -Force
     }
@@ -136,14 +140,14 @@ if(Test-Path .\dotnet-windowsdesktop-runtime-installer.exe)
 # If we set the registry from a 32-bit process on a 64-bit machine, we will set the "virtualized" syswow registry.
 # For crash dump collection we always want to set the "native" registry, so we make sure to invoke the native cmd.exe
 $nativeCmdPath = "$env:SystemRoot\system32\cmd.exe"
-if([Environment]::Is64BitOperatingSystem -and ![Environment]::Is64BitProcess)
+if ([Environment]::Is64BitOperatingSystem -and ![Environment]::Is64BitProcess)
 {
     # The "sysnative" path is a 'magic' path that allows a 32-bit process to invoke the native 64-bit cmd.exe.
     $nativeCmdPath = "$env:SystemRoot\sysnative\cmd.exe"
 }
 
 $dumpFolder = $env:HELIX_DUMP_FOLDER
-if(!$dumpFolder)
+if (!$dumpFolder)
 {
     $dumpFolder = "C:\dumps"
 }
@@ -151,7 +155,7 @@ if(!$dumpFolder)
 function Enable-CrashDumpsForProcesses {
     Param([string[]]$namesOfProcessesForDumpCollection)
 
-    foreach($procName in $namesOfProcessesForDumpCollection )
+    foreach ($procName in $namesOfProcessesForDumpCollection )
     {
         Write-Host "Enabling local crash dumps for $procName"
         & $nativeCmdPath /c reg add "HKLM\Software\Microsoft\Windows\Windows Error Reporting\LocalDumps\$procName" /v DumpFolder /t REG_EXPAND_SZ /d $dumpFolder /f
