@@ -216,7 +216,7 @@ steps:
       sourceFolder: $(Build.SourcesDirectory)\.user
       contents: |
         **\*.cer
-      targetFolder: $(buildOutputDir)
+      targetFolder: $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)
 
   # DEBUG: DeleteMe
   - script: |

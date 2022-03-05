@@ -66,13 +66,13 @@ jobs:
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
   - task: CopyFiles@2
-    displayName: 'Copy certificates to BuildOutput'
+    displayName: '??? Copy certificates to BuildOutput'
     condition: always()
     inputs:
       sourceFolder: $(Build.SourcesDirectory)\.user
       contents: |
         **\*.cer
-      targetFolder: $(buildOutputDir)
+      targetFolder: $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)
 
   # DEBUG: DeleteMe
   - script: |
