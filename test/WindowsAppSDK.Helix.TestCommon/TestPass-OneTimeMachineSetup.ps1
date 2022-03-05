@@ -106,10 +106,17 @@ foreach($pattern in $packagesToFind)
     }
 }
 
-# Install any .cer files that were included in the payload:
+# Install any certificates (*.cer) included in $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)
+foreach($cerFile in (Get-ChildItem "..\*.cer"))
+{
+    Write-Host "Adding certificate '$cerFile'"
+    certutil -addstore TrustedPeople "$cerFile"
+}
+
+# Install any certificates (*.cer) included in $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\helixtests
 foreach($cerFile in (Get-ChildItem ".\*.cer"))
 {
-    Write-Host "Adding cert '$cerFile'"
+    Write-Host "Adding certificate '$cerFile'"
     certutil -addstore TrustedPeople "$cerFile"
 }
 
