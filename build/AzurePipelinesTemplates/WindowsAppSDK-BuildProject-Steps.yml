@@ -216,7 +216,8 @@ steps:
       sourceFolder: $(Build.SourcesDirectory)\.user
       contents: |
         **\*.cer
-      targetFolder: $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)
+      targetFolder: $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\HelixTests\Certificates
+    flattenFolders: false
 
   # DEBUG: DeleteMe
   - script: |

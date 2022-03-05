@@ -106,8 +106,9 @@ foreach($pattern in $packagesToFind)
     }
 }
 
-# Install any certificates (*.cer) included in $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)
-foreach($cerFile in (Get-ChildItem "..\*.cer"))
+# Install any certificates (*.cer) included in $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\helixtests\certificates
+# NOTE: The current directory is $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\helixtests
+foreach($cerFile in (Get-ChildItem -Recurse ".\certificates\*.cer"))
 {
     Write-Host "Adding certificate '$cerFile'"
     certutil -addstore TrustedPeople "$cerFile"
