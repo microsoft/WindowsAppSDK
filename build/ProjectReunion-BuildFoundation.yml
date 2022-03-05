@@ -491,12 +491,6 @@ jobs:
             Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
             Version: $(WindowsAppSDKTransportPackageVersion)
 
-    - task: PublishBuildArtifacts@1
-      displayName: Publish BuildOutput
-      inputs:
-        PathtoPublish: $(Build.SourcesDirectory)\PackLocation
-        artifactName: WindowsAppSDKNuget
-
 # Publish
 - job: Publish
   dependsOn: 
