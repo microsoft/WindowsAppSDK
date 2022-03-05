@@ -74,10 +74,12 @@ jobs:
         **\*.cer
       targetFolder: $(buildOutputDir)
 
+  # DEBUG: DeleteMe
   - script: |
       displayName: 'DIR Build.SourcesDirectory'
       dir /s $(Build.SourcesDirectory)
 
+  # DEBUG: DeleteMe
   - script: |
       displayName: 'DIR buildOutputDir'
       dir /s $(buildOutputDir)
