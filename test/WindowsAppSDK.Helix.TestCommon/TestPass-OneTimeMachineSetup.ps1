@@ -107,7 +107,7 @@ foreach($pattern in $packagesToFind)
 }
 
 # Install any .cer files that were included in the payload:
-foreach($cerFile in (Get-ChildItem "*.cer"))
+foreach($cerFile in (Get-ChildItem ".\*.cer"))
 {
     Write-Host "Adding cert '$cerFile'"
     certutil -addstore TrustedPeople "$cerFile"
@@ -159,6 +159,12 @@ $namesOfProcessesForDumpCollection = @(
 )
 
 Enable-CrashDumpsForProcesses $namesOfProcessesForDumpCollection
+# Install certificates
+$certificates = Get-ChildItem "*.cer"
+foreach ($cert in $certificates) {
+    Write-Host "Adding $cert to TrustedPeople"
+    certutil -addstore TrustedPeople $cert
+}
 
 #Install VCRT
 Get-ChildItem 'vc_redist.*.exe' | ForEach-Object {
