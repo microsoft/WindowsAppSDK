@@ -217,7 +217,7 @@ steps:
       contents: |
         **\*.cer
       targetFolder: $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\HelixTests\Certificates
-    flattenFolders: false
+      flattenFolders: false
 
   # DEBUG: DeleteMe
   - script: |
