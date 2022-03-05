@@ -65,6 +65,23 @@ jobs:
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
+  - task: CopyFiles@2
+    displayName: 'Copy certificates to BuildOutput'
+    condition: always()
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)\.user
+      contents: |
+        **\*.cer
+      targetFolder: $(buildOutputDir)
+
+  - script: |
+      displayName: 'DIR Build.SourcesDirectory'
+      dir /s $(Build.SourcesDirectory)
+
+  - script: |
+      displayName: 'DIR buildOutputDir'
+      dir /s $(buildOutputDir)
+
   - task: PublishBuildArtifacts@1
     displayName: 'Publish BuildOutput'
     inputs:
