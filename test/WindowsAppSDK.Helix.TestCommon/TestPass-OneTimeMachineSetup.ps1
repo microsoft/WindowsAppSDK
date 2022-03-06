@@ -107,7 +107,9 @@ foreach ($pattern in $packagesToFind)
 }
 
 # DEBUG: DeleteMe
-dir /s
+pwd
+Write-Host "$env:HELIX_CORRELATION_PAYLOAD"
+Tree /F /A $env:HELIX_CORRELATION_PAYLOAD
 
 # Install any certificates (*.cer) included in $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\helixtests\certificates
 # NOTE: The current directory is $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\helixtests
