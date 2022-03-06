@@ -106,6 +106,9 @@ foreach ($pattern in $packagesToFind)
     }
 }
 
+# DEBUG: DeleteMe
+dir /s
+
 # Install any certificates (*.cer) included in $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\helixtests\certificates
 # NOTE: The current directory is $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\helixtests
 $certificates = Get-ChildItem -Recurse ".\certificates\*.cer"
