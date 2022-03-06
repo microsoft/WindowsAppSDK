@@ -107,14 +107,14 @@ foreach ($pattern in $packagesToFind)
 }
 
 # DEBUG: DeleteMe
-pwd
+Get-ChildItem Env:
 Write-Host "$env:HELIX_CORRELATION_PAYLOAD"
 Tree /F /A $env:HELIX_CORRELATION_PAYLOAD
 
-# Install any certificates (*.cer) included in $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\helixtests\certificates
+# Install any certificates (*.cer) included in $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\certificates
 # NOTE: The current directory is $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\helixtests
-$certificates = Get-ChildItem -Recurse ".\certificates\*.cer"
-Write-Host "$($certificates.Length) found at .\certificates\*.cer"
+$certificates = Get-ChildItem -Recurse ".\BuildOutput\*.cer"
+Write-Host "$($certificates.Length) found at .\BuildOutput\*.cer"
 foreach ($cerFile in $certificates)
 {
     Write-Host "Adding certificate '$cerFile'"
