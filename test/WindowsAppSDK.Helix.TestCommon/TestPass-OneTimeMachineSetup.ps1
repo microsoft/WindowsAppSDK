@@ -106,22 +106,21 @@ foreach ($pattern in $packagesToFind)
     }
 }
 
-# DEBUG: DeleteMe
-Get-ChildItem Env:
-Write-Host "$env:HELIX_CORRELATION_PAYLOAD"
-Tree /F /A $env:HELIX_CORRELATION_PAYLOAD
-
-# Install any certificates (*.cer) included in $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\certificates
-# NOTE: The current directory is $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\helixtests
-$certificates = Get-ChildItem -Recurse ".\BuildOutput\*.cer"
-Write-Host "$($certificates.Length) found at .\BuildOutput\*.cer"
+# Install any certificates (*.cer) included in the "certificates" folder from the BuildOutput.
+# NOTE: When building up the "testPayloadDir" in WindowsAppSDK-RunHelixTests-Job.yml, the BuildOutput pipeline artifact is
+# unpacked under: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\HelixTests
+# However, it retains the same folder structure as within the artifact when unpacked, so the resulting folder structure looks like:
+#  $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\HelixTests\BuildOutput\$(buildConfiguration)\$(buildPlatform)
+# When running inside Helix, the current directory is the "HelixTests" folder, so we look under: BuildOutput\$(buildConfiguration)\$(buildPlatform)
+$certificates = Get-ChildItem -Recurse ".\BuildOutput\*\*\certificates\*.cer"
+Write-Host "$($certificates.Length) found at .\BuildOutput\*\*\certificates\*.cer"
 foreach ($cerFile in $certificates)
 {
     Write-Host "Adding certificate '$cerFile'"
     certutil -addstore TrustedPeople "$cerFile"
 }
 
-# Install any certificates (*.cer) included in $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\helixtests
+# Install any certificates (*.cer) included in $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\HelixTests
 $certificates = Get-ChildItem ".\*.cer"
 Write-Host "$($certificates.Length) found at .\*.cer"
 foreach ($cerFile in $certificates)
