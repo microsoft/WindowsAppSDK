@@ -109,8 +109,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
 
+        static wil::srwlock lock;
+
+        auto criticalSection{ lock.lock_exclusive() };
         auto appProperties{ winrt::CoreApplication::Properties() };
-        // Store the PushNotificationManager in the COM static store
         auto storedPushNotificationManager{ appProperties.TryLookup(STORED_PUSH_MANAGER_KEY) };
         if (storedPushNotificationManager)
         {
@@ -118,6 +120,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         else
         {
+            // Store the PushNotificationManager in the COM static store
             auto pushNotificationManager{ winrt::make<PushNotificationManager>() };
             appProperties.Insert(STORED_PUSH_MANAGER_KEY, pushNotificationManager);
             return pushNotificationManager;

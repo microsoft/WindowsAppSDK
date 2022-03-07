@@ -52,7 +52,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     winrt::Microsoft::Windows::AppNotifications::AppNotificationManager AppNotificationManager::Default()
     {
         auto appProperties{ winrt::CoreApplication::Properties() };
-        // Store the PushNotificationManager in the COM static store
+
+        static wil::srwlock lock;
+
+        auto criticalSection{ lock.lock_exclusive() };
         auto storedAppNotificationManager{ appProperties.TryLookup(STORED_APPNOTIFICATION_MANAGER_KEY) };
         if (storedAppNotificationManager)
         {
@@ -60,6 +63,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         }
         else
         {
+            // Store the AppNotificationManager in the COM static store
             auto appNotificationManager{ winrt::make<AppNotificationManager>() };
             appProperties.Insert(STORED_APPNOTIFICATION_MANAGER_KEY, appNotificationManager);
             return appNotificationManager;
