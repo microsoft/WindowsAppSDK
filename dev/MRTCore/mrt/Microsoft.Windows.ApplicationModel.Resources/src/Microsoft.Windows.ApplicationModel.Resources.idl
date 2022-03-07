@@ -8,7 +8,6 @@ namespace Microsoft.Windows.ApplicationModel.Resources
 
     [contract(MrtContract, 1.0)]
     [default_interface]
-    [interface_name("Microsoft.Windows.ApplicationModel.Resources.IResourceLoader", bc3f76bf-da46-54cd-8715-8b8aaf16eaac)]
     runtimeclass ResourceLoader
     {
         ResourceLoader();
@@ -30,22 +29,9 @@ namespace Microsoft.Windows.ApplicationModel.Resources
     }
 
     [contract(MrtContract, 1.0)]
-    [interface_name("Microsoft.Windows.ApplicationModel.Resources.IResourceManager", ac2291ef-81be-5c99-a0ae-bcee0180b8a8)]
-    runtimeclass ResourceManager
-    {
-        ResourceManager();
-        ResourceManager(String fileName);
-
-        ResourceMap MainResourceMap { get; };
-        ResourceContext CreateResourceContext();
-
-        event Windows.Foundation.TypedEventHandler<ResourceManager, ResourceNotFoundEventArgs> ResourceNotFound;
-    }
-
-    [contract(MrtContract, 1.0)]
     runtimeclass ResourceMap
     {
-        UInt32 ResourceCount { get; }; 
+        UInt32 ResourceCount { get; };
 
         ResourceMap GetSubtree(String reference);
         ResourceMap TryGetSubtree(String reference);
@@ -64,10 +50,32 @@ namespace Microsoft.Windows.ApplicationModel.Resources
     }
 
     [contract(MrtContract, 1.0)]
-    [interface_name("Microsoft.Windows.ApplicationModel.Resources.IResourceContext", 96fb48dc-f77d-55ff-af12-34861e3d4939)]
-    runtimeclass ResourceContext
+    interface IResourceManager
     {
-        IMap<String, String> QualifierValues { get; };
+        ResourceMap MainResourceMap{ get; };
+        ResourceContext CreateResourceContext();
+
+        event Windows.Foundation.TypedEventHandler<ResourceManager, ResourceNotFoundEventArgs> ResourceNotFound;
+    }
+
+    [contract(MrtContract, 1.0)]
+    [default_interface]
+    runtimeclass ResourceManager : [default] IResourceManager
+    {
+        ResourceManager();
+        ResourceManager(String fileName);
+    }
+
+    [contract(MrtContract, 1.0)]
+    interface IResourceContext
+    {
+        IMap<String, String> QualifierValues{ get; };
+    }
+
+    [contract(MrtContract, 1.0)]
+    [default_interface]
+    runtimeclass ResourceContext : [default] IResourceContext
+    {       
     }
 
     [contract(MrtContract, 1.0)]

@@ -23,6 +23,9 @@ parameters:
   - name: TransportPackageArtifactName
     type: string
     default: ''
+  - name: WindowsAppSDKPackageVersion
+    type: string
+    default: ''
   - name: BuildType
     displayName: "Build Type"
     type: string
@@ -61,7 +64,7 @@ steps:
     inputs:
       filePath: 'BuildAll.ps1'
       arguments: >
-        -WindowsAppSDKPackageVersion ""
+        -WindowsAppSDKPackageVersion ${{ parameters.WindowsAppSDKPackageVersion }}
         -Channel ${{ parameters.BuildType }}
         -Checkpoint "none"
         -Platform "x86,x64,arm64"
