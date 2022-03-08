@@ -191,7 +191,7 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: 'Run tests in Helix (open queues)'
     condition: and(succeeded(),eq(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
-    timeoutInMinutes: 60
+    timeoutInMinutes: 120
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     inputs:
@@ -203,7 +203,7 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: 'Run tests in Helix (closed queues)'
     condition: and(succeeded(),ne(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
-    timeoutInMinutes: 60
+    timeoutInMinutes: 120
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       HelixAccessToken: $(HelixApiAccessToken)
