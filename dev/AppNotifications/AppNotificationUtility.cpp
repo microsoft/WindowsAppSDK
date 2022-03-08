@@ -297,7 +297,7 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
     RegisterValue(hKey, L"CustomActivator", reinterpret_cast<const BYTE*>(clsid.c_str()), REG_SZ, clsid.size() * sizeof(wchar_t));
 }
 
-std::wstring Microsoft::Windows::AppNotifications::Helpers::RegisterComActivatorGuidAndAssets()
+winrt::guid Microsoft::Windows::AppNotifications::Helpers::RegisterComActivatorGuidAndAssets()
 {
     std::wstring registeredGuid;
     auto hr = GetActivatorGuid(registeredGuid);
@@ -327,7 +327,9 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::RegisterComActivator
     std::wstring notificationAppId{ RetrieveNotificationAppId() };
     RegisterAssets(notificationAppId, registeredGuid);
 
-    return registeredGuid;
+    // Remove braces around the guid string
+    return winrt::guid(registeredGuid.substr(1, registeredGuid.size() - 2));
+    
 }
 
 wil::unique_cotaskmem_string Microsoft::Windows::AppNotifications::Helpers::ConvertUtf8StringToWideString(unsigned long length, const byte* utf8String)

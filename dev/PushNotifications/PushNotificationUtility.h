@@ -162,7 +162,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
         return exePath.substr(pos + 1); // One after the delimiter
     }
 
-    inline HRESULT GetComRegistrationFromRegistry(const std::wstring argumentToCheck, winrt::guid& comServerClsid) noexcept try
+    inline winrt::guid GetComRegistrationFromRegistry(const std::wstring argumentToCheck)
     {
         wil::unique_cotaskmem_string packagedFullName;
         THROW_IF_FAILED(GetPackageFullName(packagedFullName));
@@ -197,6 +197,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 
         // Loop through registered ComServerGuids, grab the ServerId and check the registered Arguments/Executable
         bool found = false;
+        winrt::guid comServerClsid{ GUID_NULL };
         for (DWORD i = 0; i < comServerGuidCount; i++)
         {
             std::vector<wchar_t> comServerGuid;
@@ -264,7 +265,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
         }
         THROW_HR_IF(E_NOT_SET, !found);
 
-        return S_OK;
+        return comServerClsid;
     }
-    CATCH_RETURN();
 }

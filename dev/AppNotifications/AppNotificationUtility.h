@@ -53,7 +53,7 @@ namespace Microsoft::Windows::AppNotifications::Helpers
 
     HRESULT GetActivatorGuid(std::wstring& activatorGuid) noexcept;
 
-    std::wstring RegisterComActivatorGuidAndAssets();
+    winrt::guid RegisterComActivatorGuidAndAssets();
 
     void RegisterAssets(std::wstring const& appId, std::wstring const& clsid);
 
