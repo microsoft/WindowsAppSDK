@@ -16,9 +16,9 @@ namespace winrt
 }
 namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 {
-    const std::wstring c_serverIdCommandString = L"ServerId";
-    const std::wstring c_argumentCommandString = L"Arguments";
-    const std::wstring c_executableCommandString = L"Executable";
+    inline constexpr std::wstring_view c_serverIdCommandString = L"ServerId";
+    inline constexpr std::wstring_view c_argumentCommandString = L"Arguments";
+    inline constexpr std::wstring_view c_executableCommandString = L"Executable";
 
     inline std::string WideStringToUtf8String(_In_ std::wstring const& utf16string)
     {
@@ -162,7 +162,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
         return exePath.substr(pos + 1); // One after the delimiter
     }
 
-    inline HRESULT GetComRegistrationFromRegistry(const std::wstring argumentToCheck, winrt::guid& comServerClsid) noexcept try
+    inline winrt::guid GetComRegistrationFromRegistry(const std::wstring argumentToCheck)
     {
         wil::unique_cotaskmem_string packagedFullName;
         THROW_IF_FAILED(GetPackageFullName(packagedFullName));
@@ -197,6 +197,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 
         // Loop through registered ComServerGuids, grab the ServerId and check the registered Arguments/Executable
         bool found = false;
+        winrt::guid comServerClsid{ GUID_NULL };
         for (DWORD i = 0; i < comServerGuidCount; i++)
         {
             std::vector<wchar_t> comServerGuid;
@@ -212,7 +213,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
             THROW_IF_FAILED(RegGetValueW(
                 HKEY_LOCAL_MACHINE,
                 clsidPathWithKey.c_str(),
-                c_serverIdCommandString.c_str(),
+                c_serverIdCommandString.data(),
                 RRF_RT_REG_DWORD,
                 nullptr /* pdwType */,
                 &serverId,
@@ -225,7 +226,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
             THROW_IF_FAILED(RegGetValueW(
                 HKEY_LOCAL_MACHINE,
                 serverPath.c_str(),
-                c_argumentCommandString.c_str(),
+                c_argumentCommandString.data(),
                 RRF_RT_REG_SZ,
                 nullptr /* pdwType */,
                 &argumentsBuffer,
@@ -240,7 +241,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
                 THROW_IF_FAILED(RegGetValueW(
                     HKEY_LOCAL_MACHINE,
                     serverPath.c_str(),
-                    c_executableCommandString.c_str(),
+                    c_executableCommandString.data(),
                     RRF_RT_REG_SZ,
                     nullptr /* pdwType */,
                     &exeBuffer,
@@ -264,7 +265,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
         }
         THROW_HR_IF(E_NOT_SET, !found);
 
-        return S_OK;
+        return comServerClsid;
     }
-    CATCH_RETURN();
 }

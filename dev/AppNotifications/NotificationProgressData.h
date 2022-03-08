@@ -21,7 +21,5 @@ struct NotificationProgressData : winrt::implements<NotificationProgressData, ::
 
 private:
 
-    wil::srwlock m_lock;
-
     winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData m_progressData;
 };

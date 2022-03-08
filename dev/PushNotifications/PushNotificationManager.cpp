@@ -79,7 +79,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         if (AppModel::Identity::IsPackagedProcess())
         {
             // Returns ComActivator CLSID from registry. This CLSID provided in manifest is registered when a packaged app is installed
-            THROW_IF_FAILED(PushNotificationHelpers::GetComRegistrationFromRegistry(c_expectedPushServerArgs.data(), m_registeredClsid));
+            m_registeredClsid = PushNotificationHelpers::GetComRegistrationFromRegistry(c_expectedPushServerArgs.data());
         }
     }
 
@@ -121,7 +121,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
 
-        wil::winrt_module_reference moduleRef{};
+        auto strong = get_strong();
 
         try
         {
