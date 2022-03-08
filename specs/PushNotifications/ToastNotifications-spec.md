@@ -97,21 +97,23 @@ Packaged and Unpackaged Desktop apps will need to register themselves to handle 
 For Packaged apps, WinAppSDK will use the CLSID defined in the appx manifest to register the current
 process as the COM Server for Notification invokes. The process.exe declared in the manifest will
 have to be the same process calling into Register() for the API call to succeed. For Unpackaged
-apps, WinAppSDK will call into Shell libraries to determine appropriate DisplayName and and Icon.
-The current process.exe will be the COM Server for Notification invokes.
+apps, WinAppSDK will determine appropriate DisplayName and and Icon. The current process module(.exe
+file) will be the COM Server for Notification invokes.
 
 ```cpp
 
 int main()
 {
-    // Register an event handler before calling Register()
-    // If this is not done before calling Register(), the OS will bring up a new process everytime for a Notification Invoke.
+    // To ensure all Notification handling happens in this process instance, register for
+    // NotificationInvoked before calling Register(). Without this a new process will
+    // be launched to handle the notification.
     const auto token = winrt::AppNotificationManager::Default().NotificationInvoked([](const auto&, const winrt::AppNotificationActivatedEventArgs& notificationActivatedEventArgs)
     {
         ProcessNotificationArgs(notificationActivatedEventArgs);
     });
 
-    winrt::AppNotificationManager::Default().Register();
+    auto manager = winrt::AppNotificationManager::Default();
+    manager.Register();
 
     auto args = winrt::AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
@@ -127,25 +129,25 @@ int main()
     }
 
     // other app init and then message loop here
-    
+
     // Cleanup event handler
-    winrt::AppNotificationManager::Default().NotificationInvoked(token);
+    manager.NotificationInvoked(token);
 
     // Call Unregister() before exiting main so that subsequent invocations will launch a new process
-    winrt::AppNotificationManager::Default().Unregister();
+    manager.Unregister();
     return 0;
 }
 ```
 
 ## Displaying an App Notification
 
-To display a Notification, an app needs to define a payload using an xml schema. In the example
-below, the developer wants to do a bunch of things: Replace a prior chat notification from a friend
-for a specific chat group. The developer also wants to make sure that the notification is deleted in
-case the user reboots the machine.
+To display a Notification, an app needs to define a payload using in xml. In the example below, the
+developer wants to do a bunch of things: Replace a prior chat notification from a friend for a
+specific chat group. The developer also wants to make sure that the notification is deleted in case
+the user reboots the machine.
 
 ```cpp
-void DisplayNotificationForFriend(const winrt::hstring const& payload, const winrt::hstring const& friendId, const winrt::hstring const& chatGroupId)
+void DisplayNotificationForFriend(winrt::hstring const& payload, winrt::hstring const& friendId, winrt::hstring const& chatGroupId)
 {
     winrt::AppNotification notification(payload);
 
@@ -166,7 +168,7 @@ void DisplayNotificationForFriend(const winrt::hstring const& payload, const win
 The app will need to process the invocation in response to a User interacting with the Notification
 in Action Centre. There are 2 common scenarios here after the invoke takes place:
 
-1. The developer can choose to have the app launch in in a specific UI context OR
+1. The developer can choose to have the app launch in a specific UI context OR
 2. The developer can choose to have the app evaluate an action specific behavior (like a button
    press in the payload body) without rendering any UI.
 
@@ -308,21 +310,21 @@ winrt::Windows::Foundation::IAsyncAction UpdateProgressAsync()
 
 ## Registration
 
-The developer should always call the Notification Registration API first to register the current
-process as the target for Notification invokes. When the app is terminating, the developer should
-call Unregister() to free up COM and allow for subsequent invokes to launch a new process.
+Call AppNotificationManager::Register() first to register the current process as the target for
+Notification invokes. When the app is terminating, the developer should call
+AppNotificationManager::Unregister() to free up COM and allow for subsequent invokes to launch a new
+process.
 
 ## Event Handlers
 
-The developer should subscribe to Notification event handlers to handle invocations if the process
-happens to be already running. If this isn't done, the OS will launch a new process for every
-subsequent invocation.
+Subscribe to Notification event handlers to handle invocations if the process happens to be already
+running. If this isn't done, the OS will launch a new process for every subsequent invocation.
 
 ## Manifest Registration
 
-For MSIX, the COM activator GUID and the exe need to be specified in the manifest as part of the
-desktop and com extensions. In the example below, we use an activatorId =
-"1920DBA9-0F64-4F0D-8A4B-5E207B812E61". The launch args would need to be pre-set to
+For Packaged applications, the COM activator CLSID and the process module(.exe file) need to be
+specified in the manifest as part of the desktop and com extensions. In the example below, we use an
+activatorId = "1920DBA9-0F64-4F0D-8A4B-5E207B812E61". The launch args would need to be pre-set to
 "----AppNotificationActivated:" to ensure that WinAppSDK can process the payload as an
 AppNotification Kind.
 
@@ -347,7 +349,6 @@ AppNotification Kind.
 namespace Microsoft.Windows.AppNotifications
 {
     // Event args for the Notification Activation
-    [experimental]
     runtimeclass AppNotificationActivatedEventArgs
     {
         // Arguments from the invoked button. Empty for Default Activation with no launch args specified in payload.
@@ -358,7 +359,6 @@ namespace Microsoft.Windows.AppNotifications
     }
 
     // Notification Progress Data
-    [experimental]
     runtimeclass AppNotificationProgressData
     {
         // Initializes a new Instance of NotificationProgressData
@@ -383,7 +383,6 @@ namespace Microsoft.Windows.AppNotifications
     }
 
     // The Notification User Setting or Notification Group Policy Setting
-    [experimental]
     enum AppNotificationSetting
     {
         Enabled, // Notification is not blocked by settings or group policy
@@ -394,7 +393,6 @@ namespace Microsoft.Windows.AppNotifications
     };
 
     // The Result for a Notification Progress related operation
-    [experimental]
     enum AppNotificationProgressResult
     {
         Succeeded, // The progress operation succeeded
@@ -402,14 +400,12 @@ namespace Microsoft.Windows.AppNotifications
     };
 
     // The Priority of the Notification UI associated with it's popup in the Action Centre
-    [experimental]
     enum AppNotificationPriority
     {
         Default, // The notification should have default behavior in terms of delivery and display priority during connected standby mode.
         High, // The notification should be treated as high priority. For desktop PCs, this means during connected standby mode the incoming notification can turn on the screen for Surface-like devices if it doesn't have a closed lid detected.
     };
 
-    [experimental]
     runtimeclass AppNotification
     {
         // The notification payload representation in xml
@@ -445,7 +441,6 @@ namespace Microsoft.Windows.AppNotifications
     }
 
     // The manager class which encompasses all App Notification API Functionality
-    [experimental]
     runtimeclass AppNotificationManager
     {
         // Gets a Default instance of a AppNotificationManager
