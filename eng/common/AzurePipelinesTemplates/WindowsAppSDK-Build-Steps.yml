@@ -46,7 +46,7 @@ steps:
     - task: DownloadBuildArtifacts@0
       inputs:
         artifactName: ${{ parameters.TransportPackageArtifactName }}
-        downloadPath: '$(Build.SourcesDirectory)\build\packages'
+        downloadPath: '$(Build.SourcesDirectory)\localpackages'
         itemPattern: |
           **/*.nupkg
 
