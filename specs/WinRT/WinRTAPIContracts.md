@@ -35,7 +35,7 @@ talk about what contract the API will go under.
     namespace Microsoft.Windows.System
     {
         [contractversion(1)]
-        apicontract WindowsSystemContract
+        apicontract WindowsSystemContract {}
         
         [Contract(MicrosoftWindowsSystem, 1)]
         runtimeclass EnvironmentManager
