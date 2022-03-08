@@ -42,7 +42,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         bool m_singletonForegroundRegistration{ false };   // Defines if the app has registered a foreground sink with the Long running process singleton
         bool m_registering{ false };
         wil::srwlock m_lock;
-        wil::unique_cotaskmem_string m_processName;
+        std::wstring m_processName;
         winrt::guid m_registeredClsid{ GUID_NULL };
         winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel m_channel{ nullptr };
     };

@@ -41,12 +41,8 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::RetrieveUnpackagedNo
     }
     else
     {
-        wil::unique_cotaskmem_string processName;
-        THROW_IF_FAILED(GetCurrentProcessPath(processName));
-
-        std::wstring wideStringProcessName{ processName.get() };
         // subKey: L"Software\\Classes\\AppUserModelId\\{Path to ToastNotificationsTestApp.exe}"
-        std::wstring subKey{ c_appIdentifierPath + ConvertPathToKey(wideStringProcessName) };
+        std::wstring subKey{ c_appIdentifierPath + ConvertPathToKey(GetCurrentProcessPath()) };
 
         wil::unique_hkey hKey;
         THROW_IF_WIN32_ERROR(RegCreateKeyEx(
@@ -105,7 +101,7 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::RetrieveNotification
     }
 }
 
-void Microsoft::Windows::AppNotifications::Helpers::RegisterComServer(wil::unique_cotaskmem_string const& processName, wil::unique_cotaskmem_string const& clsid)
+void Microsoft::Windows::AppNotifications::Helpers::RegisterComServer(wil::unique_cotaskmem_string const& clsid)
 {
     wil::unique_hkey hKey;
     //subKey: Software\Classes\CLSID\{comActivatorGuidString}\LocalServer32
@@ -122,7 +118,7 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterComServer(wil::uniqu
         &hKey,
         nullptr /* lpdwDisposition */));
 
-    std::wstring comRegistrationExeString{ c_quote + processName.get() + c_quote + c_notificationActivatedArgument };
+    std::wstring comRegistrationExeString{ c_quote + GetCurrentProcessPath() + c_quote + c_notificationActivatedArgument };
 
     RegisterValue(hKey, nullptr, reinterpret_cast<const BYTE*>(comRegistrationExeString.c_str()), REG_SZ, (comRegistrationExeString.size() * sizeof(wchar_t)));
 }
@@ -254,10 +250,7 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
 
     if (displayName.length() == 0)
     {
-        wil::unique_cotaskmem_string processName;
-        THROW_IF_FAILED(GetCurrentProcessPath(processName));
-
-        displayName = processName.get();
+        THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, displayName));
 
         size_t lastBackslashPosition{ displayName.rfind(L"\\") };
         THROW_HR_IF(E_UNEXPECTED, lastBackslashPosition == std::wstring::npos);
@@ -304,10 +297,6 @@ winrt::guid Microsoft::Windows::AppNotifications::Helpers::RegisterComActivatorG
 
     if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
     {
-        // Get process name to identify the app 
-        wil::unique_cotaskmem_string processName;
-        THROW_IF_FAILED(GetCurrentProcessPath(processName));
-
         // Create a GUID for the COM Activator
         GUID comActivatorGuid = GUID_NULL;
         THROW_IF_FAILED(CoCreateGuid(&comActivatorGuid));
@@ -315,7 +304,7 @@ winrt::guid Microsoft::Windows::AppNotifications::Helpers::RegisterComActivatorG
         // StringFromCLSID returns GUID String with braces
         wil::unique_cotaskmem_string comActivatorGuidString;
         THROW_IF_FAILED(StringFromCLSID(comActivatorGuid, &comActivatorGuidString));
-        RegisterComServer(processName, comActivatorGuidString);
+        RegisterComServer(comActivatorGuidString);
 
         registeredGuid = comActivatorGuidString.get();
     }
