@@ -19,7 +19,7 @@ jobs:
   condition: ${{ parameters.condition }}
   pool:
     vmImage: 'windows-2019'
-  timeoutInMinutes: 720
+  timeoutInMinutes: 120
   strategy:
     maxParallel: ${{ parameters.maxParallel }}
     matrix: ${{ parameters.matrix }}
@@ -36,7 +36,7 @@ jobs:
     helixTargetQueuesClosed: 'windows.10.amd64.client20h2.reunion%3bwindows.10.amd64.clientrs5.reunion%3bwindows.10.amd64.client21h1.reunion'
 
     # When a test fails, it is re-run 10 times. This variable specifies how many times out of 10 it is required to pass
-    rerunPassesRequiredToAvoidFailure: 8
+    rerunPassesRequiredToAvoidFailure: 1
 
     # This must be unique for each test pass that is run in a given Pipeline execution.
     helixType: devtest.$(buildPlatform).$(buildConfiguration)
@@ -115,7 +115,7 @@ jobs:
       inputs:
         targetType: filePath
         filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-        arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\DynamicDependency_Test_Win32\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies.Win32-Tests.proj' -WorkItemPrefix 'DynamicDependencies.Win32.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.Win32.$(buildPlatform).$(buildConfiguration)'
+        arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\DynamicDependency_Test_Win32\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies.Win32-Tests.proj' -WorkItemPrefix 'DynamicDependencies.Win32.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.Win32.$(buildPlatform).$(buildConfiguration)' -TaefExtraParameters '/EnableEtwLogging /appendEtwLogging'
 
   - ${{ if eq(parameters.BuildForHelix, 'true') }}:
     # Discover the tests to run and generate the Helix Work Items.
@@ -125,40 +125,41 @@ jobs:
       inputs:
         targetType: filePath
         filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-        arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\DynamicDependency_Test_WinRT\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies.WinRT-Tests.proj' -WorkItemPrefix 'DynamicDependencies.WinRT.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.WinRT.$(buildPlatform).$(buildConfiguration)'
+        arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\DynamicDependency_Test_WinRT\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies.WinRT-Tests.proj' -TaefBaseQuery '@Name=*FullLifecycle_ProcessLifetime_Framework_WindowsAppRuntime_Elevated' -WorkItemPrefix 'DynamicDependencies.WinRT.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.WinRT.$(buildPlatform).$(buildConfiguration)' -TaefExtraParameters '/EnableEtwLogging /appendEtwLogging'
 
   # Discover the TAEF test binaries to run and generate the Helix Work Items for them.
   # Note: There are 4 test suites for MRT Core. We currently run 3 of them in Helix.
-  - task: powershell@2
-    displayName: 'Discover MRT Core UnitTests'
-    inputs:
-      targetType: filePath
-      filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrmUnitTests.proj' -WorkItemPrefix 'MrtCore.MrmUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrmUnitTests.$(buildPlatform).$(buildConfiguration)'
-
-  - task: powershell@2
-    displayName: 'Discover MRT Core BaseUnitTests'
-    inputs:
-      targetType: filePath
-      filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrmBaseUnitTests.proj' -WorkItemPrefix 'MrtCore.MrmBaseUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrmBaseUnitTests.$(buildPlatform).$(buildConfiguration)'
-
-  - task: powershell@2
-    displayName: 'Discover MRT Core UnpackagedTests'
-    inputs:
-      targetType: filePath
-      filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrtCoreUnpackagedTests.proj' -WorkItemPrefix 'MrtCore.MrtCoreUnpackagedTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrtCoreUnpackagedTests.$(buildPlatform).$(buildConfiguration)'
-
-  # In Helix, test folders are under subfolders of TAEF. MRTCore UnpackagedTests use reg-free WinRT activation. It requires the winmd file
-  # under same folder as the executable.
-  - task: CopyFiles@2
-    displayName: 'Copy Microsoft.Windows.ApplicationModel.Resources.winmd to test root'
-    inputs:
-      sourceFolder: $(testPayloadDir)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests
-      contents: |
-        Microsoft.Windows.ApplicationModel.Resources.winmd
-      targetFolder: $(testPayloadDir)
+# DEBUG: temp commenting out the MRT tests.  
+#  - task: powershell@2
+#    displayName: 'Discover MRT Core UnitTests'
+#    inputs:
+#      targetType: filePath
+#      filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
+#      arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrmUnitTests.proj' -WorkItemPrefix 'MrtCore.MrmUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrmUnitTests.$(buildPlatform).$(buildConfiguration)'
+#
+#  - task: powershell@2
+#    displayName: 'Discover MRT Core BaseUnitTests'
+#    inputs:
+#      targetType: filePath
+#      filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
+#      arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrmBaseUnitTests.proj' -WorkItemPrefix 'MrtCore.MrmBaseUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrmBaseUnitTests.$(buildPlatform).$(buildConfiguration)'
+#
+#  - task: powershell@2
+#    displayName: 'Discover MRT Core UnpackagedTests'
+#    inputs:
+#      targetType: filePath
+#      filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
+#      arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrtCoreUnpackagedTests.proj' -WorkItemPrefix 'MrtCore.MrtCoreUnpackagedTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrtCoreUnpackagedTests.$(buildPlatform).$(buildConfiguration)'
+#
+#  # In Helix, test folders are under subfolders of TAEF. MRTCore UnpackagedTests use reg-free WinRT activation. It requires the winmd file
+#  # under same folder as the executable.
+#  - task: CopyFiles@2
+#    displayName: 'Copy Microsoft.Windows.ApplicationModel.Resources.winmd to test root'
+#    inputs:
+#      sourceFolder: $(testPayloadDir)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests
+#      contents: |
+#        Microsoft.Windows.ApplicationModel.Resources.winmd
+#      targetFolder: $(testPayloadDir)
 
   # TODO: This test needs to be converted to TAEF to run in Helix.
   # - task: powershell@2
@@ -191,7 +192,7 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: 'Run tests in Helix (open queues)'
     condition: and(succeeded(),eq(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
-    timeoutInMinutes: 720
+    timeoutInMinutes: 120
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     inputs:
@@ -203,7 +204,7 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: 'Run tests in Helix (closed queues)'
     condition: and(succeeded(),ne(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
-    timeoutInMinutes: 720
+    timeoutInMinutes: 120
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       HelixAccessToken: $(HelixApiAccessToken)

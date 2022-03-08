@@ -120,14 +120,6 @@ foreach ($cerFile in $certificates)
     certutil -addstore TrustedPeople "$cerFile"
 }
 
-# Install any certificates (*.cer) included in $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\HelixTests
-$certificates = Get-ChildItem ".\*.cer"
-Write-Host "$($certificates.Length) found at .\*.cer"
-foreach ($cerFile in $certificates)
-{
-    Write-Host "Adding certificate '$cerFile'"
-    certutil -addstore TrustedPeople "$cerFile"
-}
 
 if (Test-Path .\dotnet-windowsdesktop-runtime-installer.exe)
 {
