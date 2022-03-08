@@ -245,8 +245,10 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
     wil::unique_prop_variant propVariantDisplayName;
     // Do not throw in case of failure. We can use the filepath approach below as fallback to set a DisplayName.
     LOG_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, &propVariantDisplayName));
-
-    displayName = propVariantDisplayName.vt != VT_EMPTY ? propVariantDisplayName.pwszVal : L"";
+    if (propVariantDisplayName.vt == VT_LPWSTR && propVariantDisplayName.pwszVal != nullptr)
+    {
+        displayName = propVariantDisplayName.pwszVal;
+    }
 
     if (displayName.length() == 0)
     {
