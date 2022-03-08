@@ -56,6 +56,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationManager::Register()
     {
+        HRESULT hr{ S_OK };
+        std::wstring appId{};
+
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationTelemetry::RegisterByAPI(hr, appId);
+            THROW_IF_FAILED(hr);
+        }) };
+
         winrt::guid storedComActivatorGuid{ GUID_NULL };
         if (!PushNotificationHelpers::IsPackagedAppScenario())
         {
@@ -99,6 +107,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationManager::Unregister()
     {
+        HRESULT hr{ S_OK };
+        std::wstring appId{};
+
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationTelemetry::UnregisterByAPI(hr, appId);
+            THROW_IF_FAILED(hr);
+        }) };
+
         auto lock{ m_lock.lock_exclusive() };
         THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !m_notificationComActivatorRegistration, "Not Registered for App Notifications!");
         m_notificationComActivatorRegistration.reset();
@@ -106,6 +122,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationManager::UnregisterAll()
     {
+        HRESULT hr{ S_OK };
+        std::wstring appId{};
+
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationTelemetry::UnregisterAllByAPI(hr, appId);
+            THROW_IF_FAILED(hr);
+        }) };
+
         Unregister();
 
         // Remove any Registrations from the Long Running Process that are necessary for Cloud toasts
@@ -213,6 +237,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     {
         THROW_HR_IF(WPN_E_NOTIFICATION_POSTED, notification.Id() != 0);
 
+        HRESULT hr{ S_OK };
+        std::wstring appId{};
+
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationTelemetry::ShowByAPI(hr, appId);
+            THROW_IF_FAILED(hr);
+        }) };
+
         winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties> notificationProperties = winrt::make_self<NotificationProperties>(notification);
 
         winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties> notificationTransientProperties = winrt::make_self<NotificationTransientProperties>(notification);
@@ -233,64 +265,134 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         THROW_HR_IF_MSG(E_INVALIDARG, tag == winrt::hstring(L""), "Update operation isn't guaranteed to find a specific notification to replace correctly.");
         THROW_HR_IF_MSG(E_INVALIDARG, data.SequenceNumber() == 0, "Sequence Number for Updates should be greater than 0!");
 
+        HRESULT hr{ S_OK };
+        std::wstring appId{};
+
         auto strong = get_strong();
         co_await resume_background();
 
-        std::wstring appId{ RetrieveNotificationAppId() };
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationTelemetry::UpdateAsyncByAPI(hr, appId);
+            if (hr != E_NOT_SET)
+            {
+                THROW_IF_FAILED(hr);
+            }
+        }) };
 
-        winrt::com_ptr<ToastABI::IToastProgressData> toastProgressData{ winrt::make_self<NotificationProgressData>(data) };
-
-        auto hr = ToastNotifications_UpdateNotificationData(appId.c_str(), tag.c_str(), group.c_str(), toastProgressData.get());
-
-        if (SUCCEEDED(hr))
+        try
         {
-            co_return winrt::AppNotificationProgressResult::Succeeded;
+            appId = RetrieveNotificationAppId();
+
+            winrt::com_ptr<ToastABI::IToastProgressData> toastProgressData{ winrt::make_self<NotificationProgressData>(data) };
+
+            hr = ToastNotifications_UpdateNotificationData(appId.c_str(), tag.c_str(), group.c_str(), toastProgressData.get());
+
+            if (SUCCEEDED(hr))
+            {
+                co_return winrt::AppNotificationProgressResult::Succeeded;
+            }
+            else if (hr == E_NOT_SET)
+            {
+                co_return winrt::AppNotificationProgressResult::AppNotificationNotFound;
+            }
+            else
+            {
+                THROW_HR(hr);
+            }
         }
-        else if (hr == E_NOT_SET)
+        catch (...)
         {
-            co_return winrt::AppNotificationProgressResult::AppNotificationNotFound;
-        }
-        else
-        {
-            THROW_HR(hr);
+            hr = wil::ResultFromCaughtException();
         }
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressResult> AppNotificationManager::UpdateAsync(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const data, hstring const tag)
     {
+        HRESULT hr{ S_OK };
+        std::wstring appId{};
+
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationTelemetry::UpdateAsyncByAPI(hr, appId);
+            THROW_IF_FAILED(hr);
+        }) };
+
         co_return co_await UpdateAsync(data, tag, L"");
     }
 
     winrt::Microsoft::Windows::AppNotifications::AppNotificationSetting AppNotificationManager::Setting()
     {
-        std::wstring appId{ RetrieveNotificationAppId() };
+        HRESULT hr{ S_OK };
+        std::wstring appId{};
 
-        DWORD appNotificationSetting{ 0 };
-        ToastNotifications_QuerySettings(appId.c_str(), &appNotificationSetting);
-        return static_cast<winrt::Microsoft::Windows::AppNotifications::AppNotificationSetting>(appNotificationSetting);
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationTelemetry::SettingByAPI(hr, appId);
+            THROW_IF_FAILED(hr);
+        }) };
+
+        try
+        {
+            appId = RetrieveNotificationAppId();
+
+            DWORD appNotificationSetting{ 0 };
+            ToastNotifications_QuerySettings(appId.c_str(), &appNotificationSetting);
+            return static_cast<winrt::Microsoft::Windows::AppNotifications::AppNotificationSetting>(appNotificationSetting);
+        }
+        catch (...)
+        {
+            hr = wil::ResultFromCaughtException();
+        }
     }
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByIdAsync(uint32_t notificationId)
     {
         THROW_HR_IF(E_INVALIDARG, notificationId == 0);
 
+        HRESULT hr{ S_OK };
+        std::wstring appId{};
+
         auto strong = get_strong();
         co_await winrt::resume_background();
 
-        std::wstring appId{ RetrieveNotificationAppId() };
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationTelemetry::RemoveByIdAsyncByAPI(hr, appId);
+            THROW_IF_FAILED(hr);
+        }) };
 
-        THROW_IF_FAILED(ToastNotifications_RemoveToast(appId.c_str(), notificationId));
+        try
+        {
+            appId = RetrieveNotificationAppId();
+            THROW_IF_FAILED(ToastNotifications_RemoveToast(appId.c_str(), notificationId));
+        }
+        catch (...)
+        {
+            hr = wil::ResultFromCaughtException();
+        }
     }
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByTagAsync(hstring const tag)
     {
         THROW_HR_IF(E_INVALIDARG, tag == winrt::hstring(L""));
 
+        HRESULT hr{ S_OK };
+        std::wstring appId{};
+
         auto strong = get_strong();
         co_await winrt::resume_background();
 
-        std::wstring appId{ RetrieveNotificationAppId() };
-        THROW_IF_FAILED(ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), tag.c_str(), nullptr));
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationTelemetry::RemoveByTagAsyncByAPI(hr, appId);
+            THROW_IF_FAILED(hr);
+        }) };
+
+        try
+        {
+            appId = RetrieveNotificationAppId();
+            THROW_IF_FAILED(ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), tag.c_str(), nullptr));
+        }
+        catch (...)
+        {
+            hr = wil::ResultFromCaughtException();
+        }
     }
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByTagAndGroupAsync(hstring const tag, hstring const group)
@@ -298,53 +400,93 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         THROW_HR_IF(E_INVALIDARG, tag == winrt::hstring(L""));
         THROW_HR_IF(E_INVALIDARG, group == winrt::hstring(L""));
 
+        HRESULT hr{ S_OK };
+        std::wstring appId{};
+
         auto strong = get_strong();
         co_await winrt::resume_background();
 
-        std::wstring appId{ RetrieveNotificationAppId() };
-        THROW_IF_FAILED(ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), tag.c_str(), group.c_str()));
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationTelemetry::RemoveByTagAndGroupAsyncByAPI(hr, appId);
+            THROW_IF_FAILED(hr);
+        }) };
+
+        try
+        {
+            appId = RetrieveNotificationAppId();
+            THROW_IF_FAILED(ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), tag.c_str(), group.c_str()));
+        }
+        catch (...)
+        {
+            hr = wil::ResultFromCaughtException();
+        }
     }
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByGroupAsync(hstring const group)
     {
         THROW_HR_IF(E_INVALIDARG, group == winrt::hstring(L""));
 
+        HRESULT hr{ S_OK };
+        std::wstring appId{};
+
         auto strong = get_strong();
         co_await winrt::resume_background();
 
-        std::wstring appId{ RetrieveNotificationAppId() };
-        THROW_IF_FAILED(ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), nullptr, group.c_str()));
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationTelemetry::RemoveByGroupAsyncByAPI(hr, appId);
+            THROW_IF_FAILED(hr);
+        }) };
+
+        try
+        {
+            appId = RetrieveNotificationAppId();
+            THROW_IF_FAILED(ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), nullptr, group.c_str()));
+        }
+        catch (...)
+        {
+            hr = wil::ResultFromCaughtException();
+        }
     }
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveAllAsync()
     {
+        HRESULT hr{ S_OK };
+        std::wstring appId{};
+
         auto strong = get_strong();
         co_await winrt::resume_background();
 
-        std::wstring appId{ RetrieveNotificationAppId() };
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationTelemetry::RemoveAllAsyncByAPI(hr, appId);
+            THROW_IF_FAILED(hr);
+        }) };
 
-        THROW_IF_FAILED(ToastNotifications_RemoveAllToastsForApp(appId.c_str()));
+        try
+        {
+            appId = RetrieveNotificationAppId();
+            THROW_IF_FAILED(ToastNotifications_RemoveAllToastsForApp(appId.c_str()));
+        }
+        catch (...)
+        {
+            hr = wil::ResultFromCaughtException();
+        }
     }
 
-#if 1 //  Option 1
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::AppNotifications::AppNotification>> AppNotificationManager::GetAllAsync()
     {
-        HRESULT telemetryResult{ S_OK };
-        std::exception_ptr eptr{};
+        HRESULT hr{ S_OK };
         std::wstring appId{};
 
         auto strong = get_strong();
         co_await winrt::resume_background();
 
         auto logTelemetry{ wil::scope_exit([&](){
-            AppNotificationTelemetry::GetAllAsyncByAPI(telemetryResult, appId);
-            RethrowIf(eptr);
+            AppNotificationTelemetry::GetAllAsyncByAPI(hr, appId);
+            THROW_IF_FAILED(hr);
         }) };
 
         try
         {
-            co_await winrt::resume_background();
-
             appId = RetrieveNotificationAppId();
 
             winrt::com_ptr<ToastABI::IVector<ToastABI::INotificationProperties*>> toastPropertiesCollection{};
@@ -374,53 +516,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         }
         catch (...)
         {
-            eptr = std::current_exception();
-            telemetryResult = wil::ResultFromCaughtException();
+            hr = wil::ResultFromCaughtException();
         }
     }
-#else // Option 2
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::AppNotifications::AppNotification>> AppNotificationManager::GetAllAsync()
-    {
-        std::wstring appId{};
-
-        try
-        {
-            co_await winrt::resume_background();
-
-            appId = RetrieveNotificationAppId();
-
-            winrt::com_ptr<ToastABI::IVector<ToastABI::INotificationProperties*>> toastPropertiesCollection{};
-            auto result{ ToastNotifications_GetHistory(appId.c_str(), toastPropertiesCollection.put()) };
-
-            THROW_HR_IF(result, result != S_OK && result != E_NOT_SET); // Swallow E_NOT_SET and return an empty properties vector to signal that there are no active toasts
-
-            unsigned int count{};
-            if (toastPropertiesCollection)
-            {
-                THROW_IF_FAILED(toastPropertiesCollection->get_Size(&count));
-            }
-
-            winrt::IVector<winrt::Microsoft::Windows::AppNotifications::AppNotification> toastNotifications{ winrt::single_threaded_vector<winrt::Microsoft::Windows::AppNotifications::AppNotification>() };
-
-            for (unsigned i = 0; i < count; ++i)
-            {
-                ToastABI::INotificationProperties* toastProperties;
-                THROW_IF_FAILED(toastPropertiesCollection->GetAt(i, &toastProperties));
-
-                auto toastNotification{ ToastNotificationFromToastProperties(toastProperties) };
-
-                toastNotifications.Append(toastNotification);
-            }
-
-            AppNotificationTelemetry::GetAllAsyncByAPI(S_OK, appId);
-
-            co_return toastNotifications;
-        }
-        catch (...)
-        {
-            AppNotificationTelemetry::GetAllAsyncByAPI(wil::ResultFromCaughtException(), appId);
-            throw;
-        }
-    }
-#endif
 }
