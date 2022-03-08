@@ -141,7 +141,7 @@ int main()
 
 ## Displaying an App Notification
 
-To display a Notification, an app needs to define a payload using in xml. In the example below, the
+To display a Notification, an app needs to define a payload in xml. In the example below, the
 developer wants to do a bunch of things: Replace a prior chat notification from a friend for a
 specific chat group. The developer also wants to make sure that the notification is deleted in case
 the user reboots the machine.
