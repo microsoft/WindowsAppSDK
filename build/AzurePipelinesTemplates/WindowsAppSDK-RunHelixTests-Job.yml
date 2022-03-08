@@ -19,7 +19,7 @@ jobs:
   condition: ${{ parameters.condition }}
   pool:
     vmImage: 'windows-2019'
-  timeoutInMinutes: 80
+  timeoutInMinutes: 720
   strategy:
     maxParallel: ${{ parameters.maxParallel }}
     matrix: ${{ parameters.matrix }}
@@ -191,7 +191,7 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: 'Run tests in Helix (open queues)'
     condition: and(succeeded(),eq(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
-    timeoutInMinutes: 120
+    timeoutInMinutes: 720
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     inputs:
@@ -203,7 +203,7 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: 'Run tests in Helix (closed queues)'
     condition: and(succeeded(),ne(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
-    timeoutInMinutes: 120
+    timeoutInMinutes: 720
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       HelixAccessToken: $(HelixApiAccessToken)
