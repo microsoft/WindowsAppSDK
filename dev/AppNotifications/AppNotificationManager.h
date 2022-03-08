@@ -11,7 +11,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
     struct AppNotificationManager : AppNotificationManagerT<AppNotificationManager, INotificationActivationCallback>
     {
-        AppNotificationManager() = default;
+        AppNotificationManager();
 
         static winrt::Microsoft::Windows::AppNotifications::AppNotificationManager Default();
         void Register();
@@ -42,6 +42,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         wil::srwlock m_lock;
         winrt::event<NotificationActivationEventHandler> m_notificationHandlers;
         bool m_firstNotificationReceived{ false };
+        std::wstring m_processName;
     };
 
     struct AppNotificationManagerFactory : winrt::implements<AppNotificationManagerFactory, IClassFactory>

@@ -7,33 +7,39 @@
 #include <MddBootstrap.h>
 #include <MddBootstrapTest.h>
 #include "WindowsAppRuntime.Test.AppModel.h"
+#include <propkey.h> //PKEY properties
+#include <propsys.h>
+#include <ShObjIdl_core.h>
 
-using namespace winrt::Microsoft::Windows::AppLifecycle;
-using namespace winrt::Microsoft::Windows::PushNotifications;
-using namespace winrt::Microsoft::Windows::AppNotifications;
-using namespace winrt::Windows::ApplicationModel::Activation;
-using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask APIs
-using namespace winrt::Windows::Foundation;
-using namespace winrt::Windows::Storage;
-using namespace winrt::Windows::Storage::Streams;
+namespace winrt
+{
+    using namespace winrt::Microsoft::Windows::AppLifecycle;
+    using namespace winrt::Microsoft::Windows::PushNotifications;
+    using namespace winrt::Microsoft::Windows::AppNotifications;
+    using namespace winrt::Windows::ApplicationModel::Activation;
+    using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask APIs
+    using namespace winrt::Windows::Foundation;
+    using namespace winrt::Windows::Storage;
+    using namespace winrt::Windows::Storage::Streams;
+}
 
-winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChannelAsync()
+winrt::IAsyncOperation<winrt::PushNotificationChannel> RequestChannelAsync()
 {
     // To obtain an AAD RemoteIdentifier for your app,
     // follow the instructions on https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app
-    auto channelOperation = PushNotificationManager::Default().CreateChannelAsync(
-        winrt::guid("0160ee84-0c53-4851-9ff2-d7f5a87ed914"));
+    auto channelOperation = winrt::PushNotificationManager::Default().CreateChannelAsync(
+        winrt::guid("cea1342d-8293-4acb-b18a-ed8b0d6f7d6c"));
 
     // Setup the inprogress event handler
     channelOperation.Progress(
         [](auto&& sender, auto&& args)
         {
-            if (args.status == PushNotificationChannelStatus::InProgress)
+            if (args.status == winrt::PushNotificationChannelStatus::InProgress)
             {
                 // This is basically a noop since it isn't really an error state
                 std::cout << "Channel request is in progress." << std::endl << std::endl;
             }
-            else if (args.status == PushNotificationChannelStatus::InProgressRetry)
+            else if (args.status == winrt::PushNotificationChannelStatus::InProgressRetry)
             {
                 LOG_HR_MSG(
                     args.extendedError,
@@ -44,7 +50,7 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
 
     auto result = co_await channelOperation;
 
-    if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
+    if (result.Status() == winrt::PushNotificationChannelStatus::CompletedSuccess)
     {
         auto channelUri = result.Channel().Uri();
 
@@ -55,7 +61,7 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
         // Caller's responsibility to keep the channel alive
         co_return result.Channel();
     }
-    else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
+    else if (result.Status() == winrt::PushNotificationChannelStatus::CompletedFailure)
     {
         LOG_HR_MSG(result.ExtendedError(), "We hit a critical non-retryable error with channel request!");
         co_return nullptr;
@@ -68,10 +74,10 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
 
 };
 
-winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestChannel()
+winrt::PushNotificationChannel RequestChannel()
 {
     auto task = RequestChannelAsync();
-    if (task.wait_for(std::chrono::seconds(300)) != AsyncStatus::Completed)
+    if (task.wait_for(std::chrono::seconds(300)) != winrt::AsyncStatus::Completed)
     {
         task.Cancel();
         return nullptr;
@@ -80,6 +86,41 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
     auto result = task.GetResults();
     return result;
 }
+
+// This function is intended to be called in the unpackaged scenario.
+void SetDisplayNameAndIcon() noexcept try
+{
+    // Not mandatory, but it's highly recommended to specify AppUserModelId
+    THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(L"TestPushAppId"));
+
+
+
+    // Icon is mandatory
+    winrt::com_ptr<IPropertyStore> propertyStore;
+    wil::unique_hwnd hWindow{ GetConsoleWindow() };
+
+
+
+    THROW_IF_FAILED(SHGetPropertyStoreForWindow(hWindow.get(), IID_PPV_ARGS(&propertyStore)));
+
+
+
+    wil::unique_prop_variant propVariantIcon;
+    wil::unique_cotaskmem_string sth = wil::make_unique_string<wil::unique_cotaskmem_string>(LR"(%SystemRoot%\system32\@WLOGO_96x96.png)");
+    propVariantIcon.pwszVal = sth.release();
+    propVariantIcon.vt = VT_LPWSTR;
+    THROW_IF_FAILED(propertyStore->SetValue(PKEY_AppUserModel_RelaunchIconResource, propVariantIcon));
+
+
+
+    // App name is not mandatory, but it's highly recommended to specify it
+    wil::unique_prop_variant propVariantAppName;
+    wil::unique_cotaskmem_string prodName = wil::make_unique_string<wil::unique_cotaskmem_string>(L"The Push Notification Demo App");
+    propVariantAppName.pwszVal = prodName.release();
+    propVariantAppName.vt = VT_LPWSTR;
+    THROW_IF_FAILED(propertyStore->SetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, propVariantAppName));
+}
+CATCH_LOG()
 
 int main()
 {
@@ -93,10 +134,12 @@ int main()
         const UINT32 c_Version_MajorMinor{ 0x00040001 };
         const PACKAGE_VERSION minVersion{};
         RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
+
+        SetDisplayNameAndIcon();
     }
 
     // Register Push Event for Foreground
-    winrt::event_token token = PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
+    winrt::event_token token = winrt::PushNotificationManager::Default().PushReceived([](const auto&, winrt::PushNotificationReceivedEventArgs const& args)
         {
             auto payload = args.Payload();
 
@@ -105,15 +148,15 @@ int main()
             std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
         });
 
-    AppNotificationManager::Default().Register();
+    winrt::AppNotificationManager::Default().Register();
 
-    PushNotificationManager::Default().Register();
+    winrt::PushNotificationManager::Default().Register();
 
-    auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
+    auto args = winrt::AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
-    if (kind == ExtendedActivationKind::Push)
+    if (kind == winrt::ExtendedActivationKind::Push)
     {
-        PushNotificationReceivedEventArgs pushArgs = args.Data().as<PushNotificationReceivedEventArgs>();
+        winrt::PushNotificationReceivedEventArgs pushArgs = args.Data().as<winrt::PushNotificationReceivedEventArgs>();
 
         // Call GetDeferral to ensure that code runs in low power
         auto deferral = pushArgs.GetDeferral();
@@ -130,24 +173,28 @@ int main()
         deferral.Complete();
         std::cin.ignore();
     }
-    else if (kind == ExtendedActivationKind::Launch)
+    else if (kind == winrt::ExtendedActivationKind::AppNotification)
     {
-        PushNotificationChannel channel = RequestChannel();
+        winrt::AppNotificationActivatedEventArgs appActivatedArgs = args.Data().as<winrt::AppNotificationActivatedEventArgs>();
+        printf("App activated from AppNotification!\n");
+        std::cin.ignore();
+    }
+    else if (kind == winrt::ExtendedActivationKind::Launch)
+    {
+        winrt::PushNotificationChannel channel = RequestChannel();
         printf("Press 'Enter' at any time to exit App.");
         std::cin.ignore();
     }
-    else if (kind == ExtendedActivationKind::ToastNotification)
+    else if (kind == winrt::ExtendedActivationKind::ToastNotification)
     {
         printf("ToastNotification received!");
         printf("Press 'Enter' at any time to exit App.");
         std::cin.ignore();
     }
 
-    PushNotificationManager::Default().Unregister();
+    winrt::PushNotificationManager::Default().Unregister();
 
-    AppNotificationManager::Default().Unregister();
-
-    AppNotificationManager::Default().Unregister();
+    winrt::AppNotificationManager::Default().Unregister();
     if (!Test::AppModel::IsPackagedProcess())
     {
         MddBootstrapShutdown();

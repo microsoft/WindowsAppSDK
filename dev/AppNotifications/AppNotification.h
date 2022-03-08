@@ -36,23 +36,16 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     private:
         winrt::hstring m_tag{};
-
         winrt::hstring m_group{};
-
         uint32_t m_notificationId{ 0 };
-
         winrt::hstring m_payload{};
-
         winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData m_progressData{ nullptr };
-
         winrt::Windows::Foundation::DateTime m_expirationTime{};
-
         bool m_expiresOnReboot{ false };
-
         winrt::Microsoft::Windows::AppNotifications::AppNotificationPriority m_priority
         { winrt::Microsoft::Windows::AppNotifications::AppNotificationPriority::Default };
-
         bool m_suppressDisplay{ false };
+        wil::srwlock m_lock;
     };
 }
 namespace winrt::Microsoft::Windows::AppNotifications::factory_implementation

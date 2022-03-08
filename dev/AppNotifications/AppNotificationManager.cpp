@@ -48,6 +48,8 @@ using namespace Microsoft::Windows::AppNotifications::Helpers;
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
+    AppNotificationManager::AppNotificationManager() : m_processName(GetCurrentProcessPath()) {}
+
     winrt::Microsoft::Windows::AppNotifications::AppNotificationManager AppNotificationManager::Default()
     {
         static auto appNotificationManager{winrt::make<AppNotificationManager>()};
@@ -77,10 +79,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                     storedComActivatorGuid = RegisterComActivatorGuidAndAssets();
                 }
 
-                wil::unique_cotaskmem_string processName;
-                THROW_IF_FAILED(GetCurrentProcessPath(processName));
                 auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
-                THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), notificationId.c_str()));
+                THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.data(), notificationId.c_str()));
             }
 
             winrt::guid registeredClsid{ GUID_NULL };
@@ -151,10 +151,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             // Remove any Registrations from the Long Running Process that are necessary for Cloud toasts
             if (!PushNotificationHelpers::IsPackagedAppScenario())
             {
-                wil::unique_cotaskmem_string processName;
-                THROW_IF_FAILED(GetCurrentProcessPath(processName));
                 auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
-                THROW_IF_FAILED(notificationPlatform->RemoveToastRegistrationMapping(processName.get()));
+                THROW_IF_FAILED(notificationPlatform->RemoveToastRegistrationMapping(m_processName.data()));
             }
 
             if (!AppModel::Identity::IsPackagedProcess())

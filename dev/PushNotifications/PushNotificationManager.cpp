@@ -74,8 +74,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     PushNotificationManager::PushNotificationManager()
     {
-        THROW_IF_FAILED(GetCurrentProcessPath(m_processName));
-
+        m_processName = GetCurrentProcessPath();
         if (AppModel::Identity::IsPackagedProcess())
         {
             // Returns ComActivator CLSID from registry. This CLSID provided in manifest is registered when a packaged app is installed
@@ -167,7 +166,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         std::wstring processName;
                         {
                             auto lock{ m_lock.lock_shared() };
-                            processName = m_processName.get();
+                            processName = m_processName;
                         }
                         THROW_IF_FAILED(notificationPlatform->RegisterFullTrustApplication(processName.c_str(), remoteId, &unpackagedAppUserModelId));
 
@@ -373,7 +372,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 std::wstring processName;
                 {
                     auto lock{ m_lock.lock_shared() };
-                    processName = m_processName.get();
+                    processName = m_processName;
                 }
                 // Apps treated as unpackaged need to call RegisterFullTrustApplication and register with the LRP
                 THROW_IF_FAILED(notificationPlatform->RegisterFullTrustApplication(processName.c_str(), GUID_NULL /* remoteId */, &unpackagedAppUserModelId));
@@ -479,7 +478,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 {
                     auto lock{ m_lock.lock_shared() };
                     THROW_HR_IF_MSG(E_UNEXPECTED, !m_singletonForegroundRegistration, "Need to call Register() before calling Unregister().");
-                    processName = m_processName.get();
+                    processName = m_processName;
                 }
 
                 auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
@@ -553,7 +552,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 {
                     auto lock{ m_lock.lock_shared() };
                     THROW_HR_IF(E_UNEXPECTED, !m_singletonLongRunningSinkRegistration);
-                    processName = m_processName.get();
+                    processName = m_processName;
                 }
 
                 auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
@@ -623,9 +622,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             if (!AppModel::Identity::IsPackagedProcess())
             {
-                wil::unique_cotaskmem_string processName;
-                THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                THROW_IF_FAILED(PushNotificationHelpers::ProtocolLaunchHelper(processName.get(), payloadLength, payload));
+                THROW_IF_FAILED(PushNotificationHelpers::ProtocolLaunchHelper(m_processName, payloadLength, payload));
             }
         }
 

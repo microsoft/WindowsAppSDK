@@ -32,6 +32,7 @@ NotificationProperties::NotificationProperties(winrt::AppNotification const& toa
     auto payloadAsSimpleString = Helpers::WideStringToUtf8String(payload.c_str());
 
     m_payload = wil::unique_cotaskmem_array_ptr<byte>(static_cast<byte*>(CoTaskMemAlloc(payloadAsSimpleString.size())), payloadAsSimpleString.size());
+    THROW_IF_NULL_ALLOC(m_payload.get());
     CopyMemory(m_payload.data(), payloadAsSimpleString.c_str(), payloadAsSimpleString.size());
 
     m_notificationId = toastNotification.Id();
