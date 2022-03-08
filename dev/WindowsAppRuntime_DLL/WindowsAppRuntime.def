@@ -18,3 +18,6 @@ EXPORTS
 
     MsixInstallLicenses
     GetSecurityDescriptorForAppContainerNames
+
+    WindowsAppRuntime_IsSelfContained
+    WindowsAppRuntime_SelfContainedTestInitialize
