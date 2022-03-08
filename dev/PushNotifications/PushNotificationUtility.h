@@ -16,9 +16,9 @@ namespace winrt
 }
 namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 {
-    const std::wstring c_serverIdCommandString = L"ServerId";
-    const std::wstring c_argumentCommandString = L"Arguments";
-    const std::wstring c_executableCommandString = L"Executable";
+    inline constexpr std::wstring_view c_serverIdCommandString = L"ServerId";
+    inline constexpr std::wstring_view c_argumentCommandString = L"Arguments";
+    inline constexpr std::wstring_view c_executableCommandString = L"Executable";
 
     inline std::string WideStringToUtf8String(_In_ std::wstring const& utf16string)
     {
@@ -212,7 +212,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
             THROW_IF_FAILED(RegGetValueW(
                 HKEY_LOCAL_MACHINE,
                 clsidPathWithKey.c_str(),
-                c_serverIdCommandString.c_str(),
+                c_serverIdCommandString.data(),
                 RRF_RT_REG_DWORD,
                 nullptr /* pdwType */,
                 &serverId,
@@ -225,7 +225,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
             THROW_IF_FAILED(RegGetValueW(
                 HKEY_LOCAL_MACHINE,
                 serverPath.c_str(),
-                c_argumentCommandString.c_str(),
+                c_argumentCommandString.data(),
                 RRF_RT_REG_SZ,
                 nullptr /* pdwType */,
                 &argumentsBuffer,
@@ -240,7 +240,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
                 THROW_IF_FAILED(RegGetValueW(
                     HKEY_LOCAL_MACHINE,
                     serverPath.c_str(),
-                    c_executableCommandString.c_str(),
+                    c_executableCommandString.data(),
                     RRF_RT_REG_SZ,
                     nullptr /* pdwType */,
                     &exeBuffer,

@@ -86,7 +86,7 @@ namespace Microsoft.Windows.PushNotifications
         void Register();
 
         // Packaged Apps: Force COM to launch a new process
-//      // Unpackaged apps: Remove the Foreground Sink to force Long Running Process Singleton to launch a new process instance.
+        // Unpackaged apps: Remove the Foreground Sink to force Long Running Process Singleton to launch a new process instance.
         void Unregister();
 
         // Disables Push completely for Packaged and Unpackaged apps. Register() needs to be called again for Push to work

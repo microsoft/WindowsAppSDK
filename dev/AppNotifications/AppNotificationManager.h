@@ -31,7 +31,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::AppNotifications::AppNotification>> GetAllAsync();
 
         // INotificationActivationCallback
-        HRESULT __stdcall Activate(
+        IFACEMETHODIMP Activate(
             LPCWSTR appUserModelId,
             LPCWSTR invokedArgs,
             [[maybe_unused]] NOTIFICATION_USER_INPUT_DATA const* data,

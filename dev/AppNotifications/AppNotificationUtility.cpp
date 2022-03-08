@@ -78,14 +78,14 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::RetrieveUnpackagedNo
 
             wil::unique_cotaskmem_string newNotificationGuidString;
             THROW_IF_FAILED(StringFromCLSID(newNotificationGuid, &newNotificationGuidString));
-
-            std::wstring guidWideStr{ newNotificationGuidString.get() };
-            RegisterValue(hKey, L"NotificationGUID", reinterpret_cast<const BYTE*>(guidWideStr.c_str()), REG_SZ, guidWideStr.size() * sizeof(wchar_t));
-            return guidWideStr;
+            RegisterValue(hKey, L"NotificationGUID", reinterpret_cast<const BYTE*>(newNotificationGuidString.get()), REG_SZ, wcslen(newNotificationGuidString.get()) * sizeof(wchar_t));
+            return newNotificationGuidString.get();
         }
-
-        THROW_IF_WIN32_ERROR(status);
-        return registeredGuidBuffer;
+        else
+        {
+            THROW_IF_WIN32_ERROR(status);
+            return registeredGuidBuffer;
+        }
     }
 }
 
@@ -99,8 +99,10 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::RetrieveNotification
         THROW_IF_FAILED(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
         return appUserModelId;
     }
-
-    return RetrieveUnpackagedNotificationAppId();
+    else
+    {
+        return RetrieveUnpackagedNotificationAppId();
+    }
 }
 
 void Microsoft::Windows::AppNotifications::Helpers::RegisterComServer(wil::unique_cotaskmem_string const& processName, wil::unique_cotaskmem_string const& clsid)

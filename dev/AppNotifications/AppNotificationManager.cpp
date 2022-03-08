@@ -143,7 +143,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         m_notificationHandlers.remove(token);
     }
 
-    HRESULT __stdcall AppNotificationManager::Activate(
+    IFACEMETHODIMP AppNotificationManager::Activate(
         LPCWSTR appUserModelId,
         LPCWSTR invokedArgs,
         [[maybe_unused]] NOTIFICATION_USER_INPUT_DATA const* data,
