@@ -63,7 +63,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         auto logTelemetry{ wil::scope_exit([&]() {
             AppNotificationTelemetry::RegisterByAPI(hr, appId);
-            THROW_IF_FAILED(hr);
         }) };
 
         try
@@ -109,6 +108,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
+            throw;
         }
     }
 
@@ -119,7 +119,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         auto logTelemetry{ wil::scope_exit([&]() {
             AppNotificationTelemetry::UnregisterByAPI(hr, appId);
-            THROW_IF_FAILED(hr);
         }) };
 
         try
@@ -131,6 +130,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
+            throw;
         }
     }
 
@@ -141,7 +141,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         auto logTelemetry{ wil::scope_exit([&]() {
             AppNotificationTelemetry::UnregisterAllByAPI(hr, appId);
-            THROW_IF_FAILED(hr);
         }) };
 
         try
@@ -169,6 +168,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
+            throw;
         }
     }
 
@@ -261,7 +261,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         auto logTelemetry{ wil::scope_exit([&]() {
             AppNotificationTelemetry::ShowByAPI(hr, appId);
-            THROW_IF_FAILED(hr);
         }) };
 
         try
@@ -283,6 +282,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
+            throw;
         }
     }
 
@@ -299,7 +299,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         auto logTelemetry{ wil::scope_exit([&]() {
             AppNotificationTelemetry::UpdateAsyncByAPI(hr, appId);
-            THROW_HR_IF(hr, !(hr == S_OK || hr == E_NOT_SET));
         }) };
 
         try
@@ -326,6 +325,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
+            throw;
         }
     }
 
@@ -336,7 +336,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         auto logTelemetry{ wil::scope_exit([&]() {
             AppNotificationTelemetry::UpdateAsyncByAPI(hr, appId);
-            THROW_IF_FAILED(hr);
         }) };
 
         try
@@ -346,6 +345,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
+            throw;
         }
     }
 
@@ -356,7 +356,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         auto logTelemetry{ wil::scope_exit([&]() {
             AppNotificationTelemetry::SettingByAPI(hr, appId);
-            THROW_IF_FAILED(hr);
         }) };
 
         try
@@ -370,6 +369,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
+            throw;
         }
     }
 
@@ -385,7 +385,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         auto logTelemetry{ wil::scope_exit([&]() {
             AppNotificationTelemetry::RemoveByIdAsyncByAPI(hr, appId);
-            THROW_IF_FAILED(hr);
         }) };
 
         try
@@ -396,6 +395,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
+            throw;
         }
     }
 
@@ -411,7 +411,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         auto logTelemetry{ wil::scope_exit([&]() {
             AppNotificationTelemetry::RemoveByTagAsyncByAPI(hr, appId);
-            THROW_IF_FAILED(hr);
         }) };
 
         try
@@ -422,6 +421,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
+            throw;
         }
     }
 
@@ -438,7 +438,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         auto logTelemetry{ wil::scope_exit([&]() {
             AppNotificationTelemetry::RemoveByTagAndGroupAsyncByAPI(hr, appId);
-            THROW_IF_FAILED(hr);
         }) };
 
         try
@@ -449,6 +448,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
+            throw;
         }
     }
 
@@ -464,7 +464,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         auto logTelemetry{ wil::scope_exit([&]() {
             AppNotificationTelemetry::RemoveByGroupAsyncByAPI(hr, appId);
-            THROW_IF_FAILED(hr);
         }) };
 
         try
@@ -475,6 +474,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
+            throw;
         }
     }
 
@@ -488,7 +488,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         auto logTelemetry{ wil::scope_exit([&]() {
             AppNotificationTelemetry::RemoveAllAsyncByAPI(hr, appId);
-            THROW_IF_FAILED(hr);
         }) };
 
         try
@@ -499,6 +498,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
+            throw;
         }
     }
 
@@ -512,7 +512,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         auto logTelemetry{ wil::scope_exit([&](){
             AppNotificationTelemetry::GetAllAsyncByAPI(hr, appId);
-            THROW_IF_FAILED(hr);
         }) };
 
         try
@@ -547,6 +546,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
+            throw;
         }
     }
 }
