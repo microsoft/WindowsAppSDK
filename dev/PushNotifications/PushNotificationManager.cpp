@@ -736,9 +736,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 THROW_HR_IF(E_UNEXPECTED, m_foregroundHandlers);
 
-                winrt::guid registeredClsid{ GUID_NULL };
-                THROW_IF_FAILED(PushNotificationHelpers::GetComRegistrationFromRegistry(c_expectedPushServerArgs.data(), registeredClsid));
-
+                auto registeredClsid{ PushNotificationHelpers::GetComRegistrationFromRegistry(c_expectedPushServerArgs.data()) };
                 auto backgroundTask{ winrt::create_instance<winrt::IBackgroundTask>(registeredClsid, CLSCTX_ALL) };
                 backgroundTask.Run(taskInstance);
                 storeBackgroundArgs = false;

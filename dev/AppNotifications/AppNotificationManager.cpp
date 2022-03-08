@@ -107,7 +107,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         }
 
         // Create event handle before COM Registration otherwise if a notification arrives will lead to race condition
-        s_waitHandleForArgs.create();
+        m_waitHandleForArgs.create();
 
         {
             auto lock{ m_lock.lock_exclusive() };
@@ -377,13 +377,5 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         }
 
         co_return toastNotifications;
-    }
-
-    winrt::Windows::Foundation::IInspectable AppNotificationManager::Deserialize(winrt::Windows::Foundation::Uri const& /* uri */)
-    {
-        const DWORD receiveArgsTimeoutInMSec{ 2000 };
-        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), s_waitHandleForArgs.wait(receiveArgsTimeoutInMSec));
-
-        return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
     }
 }
