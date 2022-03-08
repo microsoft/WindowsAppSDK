@@ -112,7 +112,6 @@ steps:
       native\MrtCore.C.props
       native\MrtCore.props
       native\MrtCore.targets
-      ProjectItemsSchema.xaml
       README.md
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\build'
     flattenFolders: false
