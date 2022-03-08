@@ -401,8 +401,7 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows:
     FILETIME expiryFileTime{};
     expiryFileTime.dwHighDateTime = expiry >> 32;
     expiryFileTime.dwLowDateTime = static_cast<DWORD>(expiry);
-    auto expiryClock{ winrt::clock::from_file_time(expiryFileTime) };
-    notification.Expiration(expiryClock);
+    notification.Expiration(winrt::clock::from_file_time(expiryFileTime));
 
     boolean expiresOnReboot{};
     THROW_IF_FAILED(properties->get_ExpiresOnReboot(&expiresOnReboot));
