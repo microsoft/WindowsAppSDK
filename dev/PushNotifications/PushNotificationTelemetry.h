@@ -4,7 +4,6 @@
 #pragma once
 
 #include <WindowsAppRuntimeInsights.h>
-#include <wrl\wrappers\corewrappers.h>
 
 DECLARE_TRACELOGGING_CLASS(PushNotificationTelemetryProvider,
     "Microsoft.WindowsAppSDK.Notifications.PushNotificationTelemetry",
@@ -85,7 +84,7 @@ public:
     CATCH_LOG()
 
 private:
-    Microsoft::WRL::Wrappers::CriticalSection m_lock;
+    wil::srwlock m_lock;
     ULONGLONG m_lastFiredTick = 0;
     UINT m_eventCount = 0;
 
@@ -96,7 +95,7 @@ private:
     {
         ULONGLONG currentTick = GetTickCount64();
 
-        auto lock = m_lock.Lock();
+        auto lock{ m_lock.lock_exclusive() };
 
         // Only fire limiting events every log period to prevent too many events from being fired
         if ((currentTick - m_lastFiredTick) > c_logPeriod)
