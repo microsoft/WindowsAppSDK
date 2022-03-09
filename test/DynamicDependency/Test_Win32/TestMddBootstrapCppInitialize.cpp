@@ -9,6 +9,8 @@
 
 #include <string>
 
+#include <winrt/base.h>
+
 #include <MddBootstrap.h>
 
 // NOTE: These are compile-time tests to verify syntax. Do not actually run them.
@@ -41,11 +43,11 @@ HRESULT TestCompile()
     auto t4 = B::Initialize(0x12345678, L"versiontag", AM::PackageVersion(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64));
     auto t5 = B::Initialize(0x12345678, L"versiontag", pv0);
 
-    RETURN_IF_FAILED(B::InitializeNoThrow());
-    RETURN_IF_FAILED(B::InitializeNoThrow(0x12345678));
-    RETURN_IF_FAILED(B::InitializeNoThrow(0x12345678, L"versiontag"));
-    RETURN_IF_FAILED(B::InitializeNoThrow(0x12345678, L"versiontag", AM::PackageVersion(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)));
-    RETURN_IF_FAILED(B::InitializeNoThrow(0x12345678, L"versiontag", pv0));
+    const auto h1{ B::InitializeNoThrow() };
+    const auto h2{ B::InitializeNoThrow(0x12345678) };
+    const auto h3{ B::InitializeNoThrow(0x12345678, L"versiontag") };
+    const auto h4{ B::InitializeNoThrow(0x12345678, L"versiontag", AM::PackageVersion(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)) };
+    const auto h5{ B::InitializeNoThrow(0x12345678, L"versiontag", pv0) };
 
     return S_OK;
 }

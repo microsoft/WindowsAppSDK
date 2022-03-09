@@ -101,7 +101,8 @@ namespace DynamicDependency::Bootstrap
     }
     using unique_mddbootstrapshutdown = std::unique_ptr<details::mddbootstrapshutdown_t, details::mddbootstrapshutdown_deleter_t>;
 
-    /// Call MddBootstrapInitialize and fail-fasts if it fails; returns an RAII object that reverts
+    /// Call MddBootstrapInitialize and aborts the process (std::abort()) if it fails;
+    /// returns an RAII object that reverts the initialization on success.
     ///
     /// Initialize the calling process to use Windows App SDK's framework package.
     ///
@@ -123,18 +124,14 @@ namespace DynamicDependency::Bootstrap
         const auto hr{ ::MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion) };
         if (FAILED(hr))
         {
-#if defined(__WIL_RESOURCE) && defined(__WIL_RESULTMACROS_INCLUDED)
-            (void) LOG_HR_MSG(hr, "MddBootstrapInitialize(0x%X, '%ls', %hu.%hu.%hu.%hu)",
-                              majorMinorVersion, versionTag ? versionTag : L"<null>",
-                              minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
-#endif // defined(__WIL_RESOURCE) && defined(__WIL_RESULTMACROS_INCLUDED)
             std::abort();
         }
         return unique_mddbootstrapshutdown(reinterpret_cast<details::mddbootstrapshutdown_t*>(1));
     }
 
-#if defined(_CPPUNWIND)
-    /// Call MddBootstrapInitialize and throws an exception if it fails; returns an RAII objecct that reverts
+#if defined(_CPPUNWIND) && defined(WINRT_BASE_H)
+    /// Call MddBootstrapInitialize and throws an exception if it fails;
+    /// returns an RAII object that reverts the initialization on success.
     ///
     /// Initialize the calling process to use Windows App SDK's framework package.
     ///
@@ -157,9 +154,9 @@ namespace DynamicDependency::Bootstrap
         winrt::check_hresult(::MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion));
         return unique_mddbootstrapshutdown(reinterpret_cast<details::mddbootstrapshutdown_t*>(1));
     }
-#endif // defined(_CPPUNWIND)
+#endif // defined(_CPPUNWIND) && defined(WINRT_BASE_H)
 
-    /// Call MddBootstrapInitialize and returns failure HRESULT if it fails.
+    /// Call MddBootstrapInitialize and returns a failure HRESULT if it fails.
     ///
     /// Initialize the calling process to use Windows App SDK's framework package.
     ///
