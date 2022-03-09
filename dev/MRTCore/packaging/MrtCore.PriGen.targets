@@ -1585,7 +1585,7 @@
     </ValidateConfiguration>
   </Target>
 
-  <!-- Ensure Fast Up To Date picks up changes to PRI related files. -->
+  <!-- Configure Fast Up To Date for PRI generation. Please see the comment in ProjectItemsSchema.xaml for more info. -->
 
   <ItemGroup>
     <PropertyPageSchema Include="$(MSBuildThisFileDirectory)ProjectItemsSchema.xaml" />
@@ -1599,19 +1599,18 @@
     </_MrtCoreUpToDateCheckInputDependsOn>
   </PropertyGroup>
 
-  <!-- Inform the fast up-to-date check of the inputs for PRI generation -->
+  <!-- Inform the fast up-to-date check of the inputs for PRI generation. -->
   <Target Name="_MrtCoreUpToDateCheckInput" DependsOnTargets="$(_MrtCoreUpToDateCheckInputDependsOn)" BeforeTargets="CollectUpToDateCheckInputDesignTime">
-    <!-- 
-        Copied from the MRT Core target _GenerateProjectPriConfigurationFiles.
-        @(_LayoutFile),  @(_EmbedFile), and @(_PRIResourceFiltered) are ultimately inputs to the MRT Core indexer, 
-        but they're populated by _GenerateProjectPriConfigurationFiles which does work (runs a tool to generate the indexer configuration files)
-        that we don't need during a design-time build, so we hoist them out to avoid calling the target.
+        <!-- 
+        Copied from the target _GenerateProjectPriConfigurationFiles. @(_LayoutFile),  @(_EmbedFile), and @(_PRIResourceFiltered) are ultimately inputs to
+        the MRT Core indexer, but they're populated by _GenerateProjectPriConfigurationFiles which does work (runs a tool to generate the indexer
+        configuration files) that we don't need during a design-time build, so we hoist them out to avoid calling the target.
         -->
     <ItemGroup>
-    <!--
-        First, build out the complete list of files we want to consider for the layout.
-        Then exclude anything that matches any pattern or filename listed in _AppxLayoutAssetPackageFiles.
-        We could do this as a 'Remove' operation, but by building an oracle we don't modify, we simplify future manipulations of this data set.
+        <!--
+        First, build out the complete list of files we want to consider for the layout. Then exclude anything that matches any pattern or filename listed in
+        _AppxLayoutAssetPackageFiles. We could do this as a 'Remove' operation, but by building an oracle we don't modify, we simplify future manipulations of
+        this data set.
         -->
       <_LayoutFileSource Include="@(PackagingOutputs)" Condition="'%(OutputGroup)' == 'ContentFilesProjectOutputGroup' and '%(ProjectName)' == '$(ProjectName)'" />
       <_LayoutFileSource Include="@(PackagingOutputs)" Condition="'%(OutputGroup)' == 'CustomOutputGroupForPackaging' and '%(ProjectName)' == '$(ProjectName)'" />
