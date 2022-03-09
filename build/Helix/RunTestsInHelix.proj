@@ -31,6 +31,6 @@
 
   <!-- Additional tests -->
   <Import Project="GeneratedWorkItems\DynamicDependencies.Win32-Tests.proj"/>
-  <Import Project="GeneratedWorkItems\DynamicDependencies.WinRT-Tests.proj"/>
+  <!-- <Import Project="GeneratedWorkItems\DynamicDependencies.WinRT-Tests.proj"/> -->
 
 </Project>
