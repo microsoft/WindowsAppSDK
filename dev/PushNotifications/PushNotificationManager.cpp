@@ -764,7 +764,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             SetEvent(m_waitHandleForArgs.get());            
         }
     }
-    CATCH_RETURN();
 
     IFACEMETHODIMP PushNotificationManager::OnToastNotificationReceived(
         ToastNotifications::INotificationProperties* notificationProperties,
