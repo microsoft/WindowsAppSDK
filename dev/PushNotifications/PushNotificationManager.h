@@ -36,7 +36,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         // INotificationListener2
         IFACEMETHODIMP OnToastNotificationReceived(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* notificationProperties,
-            ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties*) noexcept;
+                                                    ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties* notificationTransientProperties) noexcept;
     private:
         bool IsBackgroundTaskRegistered(winrt::hstring const& backgroundTaskFullName);
 

@@ -79,7 +79,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                 }
 
                 auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
-                THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.data(), notificationId.c_str()));
+                THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.c_str(), notificationId.c_str()));
             }
 
             winrt::guid registeredClsid{ GUID_NULL };
@@ -151,7 +151,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             if (!PushNotificationHelpers::IsPackagedAppScenario())
             {
                 auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
-                THROW_IF_FAILED(notificationPlatform->RemoveToastRegistrationMapping(m_processName.data()));
+                THROW_IF_FAILED(notificationPlatform->RemoveToastRegistrationMapping(m_processName.c_str()));
             }
 
             if (!AppModel::Identity::IsPackagedProcess())
