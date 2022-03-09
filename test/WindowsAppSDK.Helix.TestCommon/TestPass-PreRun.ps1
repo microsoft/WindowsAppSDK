@@ -6,7 +6,8 @@ Write-Host "TestPass-PreRun.ps1"
 # This script is called by TestPass-PreRunCore.ps1 which is a part of the WinUI.Helix package.
 
 # Output all environment variables to the console log.
-dir env:
+Write-Host "All environment variables:"
+gci env: | Format-Table -Wrap -AutoSize
 
 # Setup TTD tracing only if the path to the Internal Partner Nuget exists in the Helix work item payload.
 $ttd_path = Resolve-Path "Microsoft.Internal.TTD.Partner.*"
