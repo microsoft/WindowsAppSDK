@@ -315,11 +315,16 @@ std::string unitTestNameFromLaunchArguments(const ILaunchActivatedEventArgs& lau
 int main() try
 {
     bool testResult = false;
-    auto scope_exit = wil::scope_exit([&] {  
-        ::Test::Bootstrap::CleanupBootstrap();
-    });
 
     ::Test::Bootstrap::SetupBootstrap();
+
+    // Test hook to ensure that the app is not self-contained
+    ::WindowsAppRuntime::SelfContained::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+
+    auto scope_exit = wil::scope_exit([&] {
+        ::WindowsAppRuntime::SelfContained::TestShutdown();
+        ::Test::Bootstrap::CleanupBootstrap();
+        });
 
     PushNotificationManager::Default().Register();
     

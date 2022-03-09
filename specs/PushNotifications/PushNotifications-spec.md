@@ -102,6 +102,9 @@ The code in Main would follow the pattern below:
             seconds).
     -   It will subscribe to a In-memory Push event handler hanging off the PushNotificationManager
         component.
+-   The app in Self-Contained mode may not support Push due to API limitations. It is recommended
+    that the developer call IsSupported() and implement a custom socket if the feature is
+    unsupported.
 
 ```cpp
 int main()
@@ -147,59 +150,66 @@ int main()
     }
     else if (kind == ExtendedActivationKind::Launch) // This indicates that the app is launching in the foreground
     {
-        // Register the AAD RemoteIdentifier for the App to receive Push
-        auto channelOperation { pushNotificationManager.CreateChannelAsync(
-            winrt::guid("F80E541E-3606-48FB-xxxx-118A3C5F41F4")) };
-
-        // Setup the inprogress event handler
-        channelOperation.Progress(
-            [](
-                IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
-                PushNotificationCreateChannelStatus const& args)
-            {
-                if (args.status == PushNotificationChannelStatus::InProgress)
-                {
-                    // This is basically a noop since it isn't really an error state
-                    printf("The first channel request is still in progress! \n");
-                }
-                else if (args.status == PushNotificationChannelStatus::InProgressRetry)
-                {
-                    LOG_HR_MSG(
-                        args.extendedError,
-                        "The channel request is in back-off retry mode because of a retryable error! Expect delays in acquiring it. RetryCount = %d",
-                        args.retryCount);
-                }
-            });
-
-        winrt::event_token pushToken;
-
-        // Setup the completed event handler
-        channelOperation.Completed(
-            [&](
-                IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
-                AsyncStatus const asyncStatus)
-            {
-                auto result { sender.GetResults() };
-                if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
-                {
-                    auto channelUri { result.Channel().Uri() };
-                    auto channelExpiry { result.Channel().ExpirationTime() };
-
-                    // Persist the channelUri and Expiry in the App Service for subsequent Push operations
-                }
-                else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
-                {
-                    LOG_HR_MSG(result.ExtendedError(), "We hit a critical non-retryable error with channel request!");
-                }
-            });
-
-        // Draw window and other foreground UI stuff here
-
-        auto result { channelOperation.GetResults() };
-        if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
+        if (PushNotificationManager::IsSupported())
         {
-            // Maintain the channel object to retrieve Uri and ExpirationTime
-            auto channel { result.Channel() };
+            // Register the AAD RemoteIdentifier for the App to receive Push
+            auto channelOperation { pushNotificationManager.CreateChannelAsync(
+                winrt::guid("F80E541E-3606-48FB-xxxx-118A3C5F41F4")) };
+
+            // Setup the inprogress event handler
+            channelOperation.Progress(
+                [](
+                    IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
+                    PushNotificationCreateChannelStatus const& args)
+                {
+                    if (args.status == PushNotificationChannelStatus::InProgress)
+                    {
+                        // This is basically a noop since it isn't really an error state
+                        printf("The first channel request is still in progress! \n");
+                    }
+                    else if (args.status == PushNotificationChannelStatus::InProgressRetry)
+                    {
+                        LOG_HR_MSG(
+                            args.extendedError,
+                            "The channel request is in back-off retry mode because of a retryable error! Expect delays in acquiring it. RetryCount = %d",
+                            args.retryCount);
+                    }
+                });
+
+            winrt::event_token pushToken;
+
+            // Setup the completed event handler
+            channelOperation.Completed(
+                [&](
+                    IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
+                    AsyncStatus const asyncStatus)
+                {
+                    auto result { sender.GetResults() };
+                    if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
+                    {
+                        auto channelUri { result.Channel().Uri() };
+                        auto channelExpiry { result.Channel().ExpirationTime() };
+
+                        // Persist the channelUri and Expiry in the App Service for subsequent Push operations
+                    }
+                    else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
+                    {
+                        LOG_HR_MSG(result.ExtendedError(), "We hit a critical non-retryable error with channel request!");
+                    }
+                });
+
+            // Draw window and other foreground UI stuff here
+
+            auto result { channelOperation.GetResults() };
+            if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
+            {
+                // Maintain the channel object to retrieve Uri and ExpirationTime
+                auto channel { result.Channel() };
+            }
+        }
+        else // Push is not supported for the App, use a custom socket to receive notifications from the cloud
+        {
+            // App implements it's own custom socket here to receive messages from the cloud
         }
     }
 
@@ -207,79 +217,6 @@ int main()
     // to handle them.
     pushNotificationManager.Unregister();
     return 0;
-}
-```
-
-## In this scenario, the process that Registers the Push Trigger and the process specified as the COM server are different.
-
-This only works for packaged applications that support PushTrigger and ComActivator flags in
-RegisterActivator. Out-of-process activation is not supported for unpackaged apps.
-
-Process A (Registration of the Push Trigger only):
-
-```cpp
-int main()
-{
-    // Registers a Push Trigger with the Background Infra component
-    PushNotificationManager::Default().Register();
-
-    // Unregisters this app as the ComServer
-    PushNotificationManager::Default().Unregister();
-
-    // Some app code ....
-
-    return 0;
-}
-```
-
-Process B (Register the inproc COM server and handle the background activation):
-
-```cpp
-int main()
-{
-    // Registers the current process as an InProc COM server
-    PushNotificationManager::Default().Register();
-
-    // Check to see if the WinMain activation is due to a Push Activator
-    auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
-    auto kind = args.Kind();
-
-    if (kind == ExtendedActivationKind::Push)
-    {
-        // Do Push processing stuff
-    }
-
-    // Some code ....
-
-    // Unregisters the inproc COM Activator
-    PushNotificationManager::Default().Unregister();
-    return 0;
-}
-```
-
-## Registration of the Push Activator for LOW IL apps like UWP (Inproc)
-
-The app will simply call into the Default implementation of PushNotificationActivationInfo for the
-Registration Flow instead of the CLSID overload.
-
-```cpp
-PushNotificationActivationInfo info();
-PushNotificationChannelManager::RegisterPushNotificationActivator(info);
-```
-
-To intercept the payload, OnBackgroundActivated will have to be implemented by the app.
-
-```cpp
-sealed partial class App : Application
-{
-  ...
-
-  protected override void OnBackgroundActivated(BackgroundActivatedEventArgs args)
-  {
-      base.OnBackgroundActivated(args);
-      IBackgroundTaskInstance taskInstance = args.TaskInstance;
-      DoYourBackgroundWork(taskInstance);
-  }
 }
 ```
 
@@ -435,11 +372,6 @@ namespace Microsoft.Windows.PushNotifications
     [feature(Feature_PushNotifications)]
     runtimeclass PushNotificationCreateChannelResult
     {
-        PushNotificationCreateChannelResult(
-            PushNotificationChannel channel,
-            HRESULT extendedError,
-            PushNotificationChannelStatus status);
-
         // A PushNotificationChannel only exists Status when is CompletedSuccess.
         PushNotificationChannel Channel { get; };
 
@@ -453,6 +385,10 @@ namespace Microsoft.Windows.PushNotifications
     [feature(Feature_PushNotifications)]
     runtimeclass PushNotificationManager
     {
+        // Checks to see if the APIs are supported for the Desktop app
+        // Certain self-contained apps may not support Push Notification scenarios by design
+        static Boolean IsSupported();
+
         // Gets a Default instance of a PushNotificationManager
         static PushNotificationManager Default{ get; };
 
