@@ -45,6 +45,7 @@ namespace Microsoft.Windows.AppNotifications
     }
 
     // The Notification User Setting or Notification Group Policy Setting
+    [contract(WindowsAppNotificationsContract, 1)]
     enum AppNotificationSetting
     {
         Enabled, // Notification is not blocked by settings or group policy
@@ -55,6 +56,7 @@ namespace Microsoft.Windows.AppNotifications
     };
 
     // The Result for a Notification Progress related operation
+    [contract(WindowsAppNotificationsContract, 1)]
     enum AppNotificationProgressResult
     {
         Succeeded, // The progress operation succeeded
@@ -62,6 +64,7 @@ namespace Microsoft.Windows.AppNotifications
     };
 
     // The Priority of the Notification UI associated with it's popup in the Action Centre
+    [contract(WindowsAppNotificationsContract, 1)]
     enum AppNotificationPriority
     {
         Default, // The notification should have default behavior in terms of delivery and display priority during connected standby mode.
