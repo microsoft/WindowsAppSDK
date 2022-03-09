@@ -92,16 +92,13 @@ namespace DynamicDependency::Bootstrap
         {
             void operator()(mddbootstrapshutdown_t* b)
             {
-                if (b)
-                {
-                    MddBootstrapShutdown();
-                }
+                MddBootstrapShutdown();
             }
         };
     }
     using unique_mddbootstrapshutdown = std::unique_ptr<details::mddbootstrapshutdown_t, details::mddbootstrapshutdown_deleter_t>;
 
-    /// Call MddBootstrapInitialize and aborts the process (std::abort()) if it fails;
+    /// Call MddBootstrapInitialize and aborts the process (via std::abort()) if it fails;
     /// returns an RAII object that reverts the initialization on success.
     ///
     /// Initialize the calling process to use Windows App SDK's framework package.
@@ -116,6 +113,23 @@ namespace DynamicDependency::Bootstrap
     /// @see Initialize(uint32_t, PCWSTR, PackageVersion)
     /// @see InitializeNoThrow(uint32_t, PCWSTR, PackageVersion)
     /// @see Shutdown()
+    /// ~~~~~
+    /// #include <windows.h>
+    ///
+    /// #include <WindowsAppSDK-VersionInfo.h>
+    /// #include <MddBootstrap.h>
+    ///
+    /// #include <iostream>
+    ///
+    /// using MddBootstrap = Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap;
+    ///
+    /// int main()
+    /// {
+    ///     auto mddBootstrapShutdown = MddBootstrap::InitializeFailFast();
+    ///     std::cout << "hello world";
+    ///     return 0;
+    /// }
+    /// ~~~~~
     [[nodiscard]] inline unique_mddbootstrapshutdown InitializeFailFast(
         uint32_t majorMinorVersion = WINDOWSAPPSDK_RELEASE_MAJORMINOR,
         PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W,
@@ -146,6 +160,34 @@ namespace DynamicDependency::Bootstrap
     /// @see Initialize_nothrow(uint32_t, PCWSTR, PackageVersion)
     /// @see Shutdown()
     /// @exception winrt::hresult_error thrown if intialization fails; see code() for more details.
+    /// ~~~~~
+    /// #include <windows.h>
+    ///
+    /// #include <winrt\base.h>
+    ///
+    /// #include <WindowsAppSDK-VersionInfo.h>
+    /// #include <MddBootstrap.h>
+    ///
+    /// #include <iostream>
+    ///
+    /// using MddBootstrap = MddBootstrap;
+    ///
+    /// int main()
+    /// {
+    ///     try
+    ///     {
+    ///         auto mddBootstrapCleanup = MddBootstrap::Initialize();
+    ///         std::cout << "hello world";
+    ///     }
+    ///     catch (const winrt::hresult_error& ex)
+    ///     {
+    ///         const auto hr{ ex.code() };
+    ///         std::cout << "Error 0x" << std::hex << hr << " in Bootstrap initialization";
+    ///         return hr;
+    ///     }
+    ///     return 0;
+    /// }
+    /// ~~~~~
     [[nodiscard]] inline unique_mddbootstrapshutdown Initialize(
         uint32_t majorMinorVersion = WINDOWSAPPSDK_RELEASE_MAJORMINOR,
         PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W,
@@ -170,6 +212,29 @@ namespace DynamicDependency::Bootstrap
     /// @see InitializeFailFast(uint32_t, PCWSTR, PackageVersion)
     /// @see Initialize(uint32_t, PCWSTR, PackageVersion)
     /// @see Shutdown()
+    /// ~~~~~
+    /// #include <windows.h>
+    ///
+    /// #include <WindowsAppSDK-VersionInfo.h>
+    /// #include <MddBootstrap.h>
+    ///
+    /// #include <iostream>
+    ///
+    /// using MddBootstrap = Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap;
+    ///
+    /// int main()
+    /// {
+    ///     const auto hr{ MddBootstrap::InitializeNoThrow() };
+    ///     if (FAILED(hr))
+    ///     {
+    ///         std::cout << "Error 0x" << std::hex << hr << " in Bootstrap initialization";
+    ///         return hr;
+    ///     }
+    ///     auto mddBootstrapShutdown{ MddBootstrap::unique_mddbootstrapshutdown(reinterpret_cast<MddBootstrap::details::mddbootstrapshutdown_t*>(1)) };
+    ///     std::cout << "hello world";
+    ///     return 0;
+    /// }
+    /// ~~~~~
     inline HRESULT InitializeNoThrow(
         uint32_t majorMinorVersion = WINDOWSAPPSDK_RELEASE_MAJORMINOR,
         PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W,
