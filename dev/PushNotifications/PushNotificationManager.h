@@ -13,7 +13,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::Microsoft::Windows::PushNotifications::PushNotificationManager,
         winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> PushNotificationEventHandler;
 
-    struct PushNotificationManager : PushNotificationManagerT<PushNotificationManager, IWpnForegroundSink, ABI::Microsoft::Internal::PushNotifications::INotificationListener>
+    struct PushNotificationManager : PushNotificationManagerT<PushNotificationManager, IWpnForegroundSink, ABI::Microsoft::Internal::PushNotifications::INotificationListener,
+                                                                                                                ABI::Microsoft::Internal::PushNotifications::INotificationListener2>
     {
         PushNotificationManager();
 
@@ -28,10 +29,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         void PushReceived(winrt::event_token const& token) noexcept;
 
         // IWpnForegroundSink
-        HRESULT __stdcall InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept;
+        IFACEMETHODIMP InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept;
 
-        // INotificationHandler
-        HRESULT __stdcall OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept;
+        // INotificationListener
+        IFACEMETHODIMP OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept;
+
+        // INotificationListener2
+        IFACEMETHODIMP OnToastNotificationReceived(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* notificationProperties,
+            ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties*) noexcept;
     private:
         bool IsBackgroundTaskRegistered(winrt::hstring const& backgroundTaskFullName);
 
@@ -42,7 +47,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         bool m_singletonForegroundRegistration{ false };   // Defines if the app has registered a foreground sink with the Long running process singleton
         bool m_registering{ false };
         wil::srwlock m_lock;
-        wil::unique_cotaskmem_string m_processName;
+        std::wstring m_processName;
         winrt::guid m_registeredClsid{ GUID_NULL };
         winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel m_channel{ nullptr };
     };

@@ -45,7 +45,7 @@ namespace Microsoft::Windows::AppNotifications::Helpers
 
     std::wstring RetrieveNotificationAppId();
 
-    void RegisterComServer(wil::unique_cotaskmem_string const& processName, wil::unique_cotaskmem_string const& clsid);
+    void RegisterComServer(wil::unique_cotaskmem_string const& clsid);
 
     void UnRegisterComServer(std::wstring const& clsid);
 

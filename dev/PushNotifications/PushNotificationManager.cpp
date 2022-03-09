@@ -17,6 +17,7 @@
 #include "externs.h"
 #include <string_view>
 #include <frameworkudk/pushnotifications.h>
+#include <FrameworkUdk/ToastNotifications.h>
 #include "NotificationsLongRunningProcess_h.h"
 #include "PushNotificationUtility.h"
 #include "AppNotificationUtility.h"
@@ -38,6 +39,11 @@ namespace winrt
     using namespace Windows::ApplicationModel::Background;
     using namespace Windows::Networking::PushNotifications;
     using namespace Windows::Foundation;
+}
+
+namespace ToastNotifications
+{
+    using namespace ABI::Microsoft::Internal::ToastNotifications;
 }
 
 namespace PushNotificationHelpers
@@ -74,8 +80,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     PushNotificationManager::PushNotificationManager()
     {
-        THROW_IF_FAILED(GetCurrentProcessPath(m_processName));
-
+        m_processName = GetCurrentProcessPath();
         if (AppModel::Identity::IsPackagedProcess())
         {
             // Returns ComActivator CLSID from registry. This CLSID provided in manifest is registered when a packaged app is installed
@@ -167,7 +172,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         std::wstring processName;
                         {
                             auto lock{ m_lock.lock_shared() };
-                            processName = m_processName.get();
+                            processName = m_processName;
                         }
                         THROW_IF_FAILED(notificationPlatform->RegisterFullTrustApplication(processName.c_str(), remoteId, &unpackagedAppUserModelId));
 
@@ -373,7 +378,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 std::wstring processName;
                 {
                     auto lock{ m_lock.lock_shared() };
-                    processName = m_processName.get();
+                    processName = m_processName;
                 }
                 // Apps treated as unpackaged need to call RegisterFullTrustApplication and register with the LRP
                 THROW_IF_FAILED(notificationPlatform->RegisterFullTrustApplication(processName.c_str(), GUID_NULL /* remoteId */, &unpackagedAppUserModelId));
@@ -479,7 +484,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 {
                     auto lock{ m_lock.lock_shared() };
                     THROW_HR_IF_MSG(E_UNEXPECTED, !m_singletonForegroundRegistration, "Need to call Register() before calling Unregister().");
-                    processName = m_processName.get();
+                    processName = m_processName;
                 }
 
                 auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
@@ -553,7 +558,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 {
                     auto lock{ m_lock.lock_shared() };
                     THROW_HR_IF(E_UNEXPECTED, !m_singletonLongRunningSinkRegistration);
-                    processName = m_processName.get();
+                    processName = m_processName;
                 }
 
                 auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
@@ -595,7 +600,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         m_foregroundHandlers.remove(token);
     }
 
-    HRESULT __stdcall PushNotificationManager::InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept try
+    IFACEMETHODIMP PushNotificationManager::InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept try
     {
         auto args = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length);
 
@@ -614,7 +619,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
     CATCH_RETURN()
 
-    HRESULT __stdcall PushNotificationManager::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept try
+    IFACEMETHODIMP PushNotificationManager::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept try
     {
         BOOL foregroundHandled = true;
         THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
@@ -623,13 +628,21 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             if (!AppModel::Identity::IsPackagedProcess())
             {
-                wil::unique_cotaskmem_string processName;
-                THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                THROW_IF_FAILED(PushNotificationHelpers::ProtocolLaunchHelper(processName.get(), payloadLength, payload));
+                THROW_IF_FAILED(PushNotificationHelpers::ProtocolLaunchHelper(m_processName, payloadLength, payload));
             }
         }
 
         return S_OK;
     }
     CATCH_RETURN();
+
+    IFACEMETHODIMP PushNotificationManager::OnToastNotificationReceived(
+        ToastNotifications::INotificationProperties* notificationProperties,
+        ToastNotifications::INotificationTransientProperties* notificationTransientProperties) noexcept try
+    {
+        DWORD notificationId{ 0 };
+        ToastNotifications_PostToast(PushNotificationHelpers::GetAppUserModelId().get(), notificationProperties, notificationTransientProperties, &notificationId);
+        return S_OK;
+    }
+    CATCH_RETURN()
 }
