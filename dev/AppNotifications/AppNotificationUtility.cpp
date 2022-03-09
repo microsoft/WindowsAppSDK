@@ -245,8 +245,10 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
     wil::unique_prop_variant propVariantDisplayName;
     // Do not throw in case of failure. We can use the filepath approach below as fallback to set a DisplayName.
     LOG_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, &propVariantDisplayName));
-
-    displayName = propVariantDisplayName.vt != VT_EMPTY ? propVariantDisplayName.pwszVal : L"";
+    if (propVariantDisplayName.vt == VT_LPWSTR && propVariantDisplayName.pwszVal != nullptr)
+    {
+        displayName = propVariantDisplayName.pwszVal;
+    }
 
     if (displayName.length() == 0)
     {
@@ -263,27 +265,46 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
     std::wstring iconFilePath{};
 
     wil::unique_prop_variant propVariantIcon;
-    // Throw in case of failure, since Icon is mandatory and we don't have a fallback!
-    THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchIconResource, &propVariantIcon));
-    THROW_HR_IF_MSG(E_UNEXPECTED, propVariantIcon.vt == VT_EMPTY, "You must specify an app icon before calling Register().");
+    // In case there is no icon asset, do not throw. Set a default icon instead.
+    LOG_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchIconResource, &propVariantIcon));
 
-    iconFilePath = propVariantIcon.pwszVal;
-
-    // Icon filepaths from Shell APIs have this format: <filepath>,-<index>,
-    // since .ico files can have multiple icons in the same file.
-    // NotificationController doesn't seem to support such format, so let it take the first icon by default.
-    auto iteratorForCommaDelimiter = iconFilePath.find_first_of(L",");
-    if (iteratorForCommaDelimiter != std::wstring::npos) // It may or may not have an index, which is fine.
+    if (propVariantIcon.vt == VT_LPWSTR && propVariantIcon.pwszVal != nullptr)
     {
-        iconFilePath.erase(iteratorForCommaDelimiter);
+        iconFilePath = propVariantIcon.pwszVal;
+
+        // Most icon filepaths from Shell APIs have this format: <filepath>,-<index>,
+        // since .ico files can have multiple icons in the same file.
+        // NotificationController doesn't seem to support such format, so let it take the first icon by default.
+        auto iteratorForCommaDelimiter = iconFilePath.find_first_of(L",");
+        if (iteratorForCommaDelimiter != std::wstring::npos) // It may or may not have an index, which is fine.
+        {
+            iconFilePath.erase(iteratorForCommaDelimiter);
+        }
+
+        auto iteratorForLastBackSlash = iconFilePath.find_last_of(L"\\");
+        auto iteratorForForwardSlash = iconFilePath.find_last_of(L"/");
+        THROW_HR_IF_MSG(ERROR_BAD_PATHNAME, iteratorForLastBackSlash != std::wstring::npos && iteratorForForwardSlash != std::wstring::npos,
+            "You must provide a valid icon filepath (do not combine forward and back slashes).");
+        auto iteratorForLastSlash = min(iteratorForLastBackSlash, iteratorForForwardSlash);
+
+        std::wstring fileName{ iconFilePath };
+
+        if (iteratorForLastSlash != std::wstring::npos)
+        {
+            fileName = iconFilePath.substr(iteratorForLastSlash);
+        }
+
+        auto iteratorForFileExtension = fileName.find_first_of(L".");
+        THROW_HR_IF_MSG(E_UNEXPECTED, iteratorForFileExtension == std::wstring::npos, "You must provide a valid filepath as the app icon.");
+
+        std::wstring iconFileExtension = fileName.substr(iteratorForFileExtension);
+        THROW_HR_IF_MSG(E_UNEXPECTED, iconFileExtension != L".ico" && iconFileExtension != L".png",
+            "You must provide a supported file extension as the icon (.ico or .png).");
     }
-
-    auto iteratorForFileExtension = iconFilePath.find_first_of(L".");
-    THROW_HR_IF_MSG(E_UNEXPECTED, iteratorForFileExtension == std::wstring::npos, "You must provide a valid filepath as the app icon.");
-
-    std::wstring iconFileExtension = iconFilePath.substr(iteratorForFileExtension);
-    THROW_HR_IF_MSG(E_UNEXPECTED, iconFileExtension != L".ico" && iconFileExtension != L".png",
-        "You must provide a supported file extension as the icon (.ico or .png).");
+    else
+    {
+        iconFilePath = std::wstring(LR"(ms-resource://Windows.UI.ShellCommon/Files/Images/DefaultSystemNotification.png)");
+    }
 
     RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.c_str()), REG_EXPAND_SZ, displayName.size() * sizeof(wchar_t));
     RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(iconFilePath.c_str()), REG_EXPAND_SZ, iconFilePath.size() * sizeof(wchar_t));
@@ -401,8 +422,7 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows:
     FILETIME expiryFileTime{};
     expiryFileTime.dwHighDateTime = expiry >> 32;
     expiryFileTime.dwLowDateTime = static_cast<DWORD>(expiry);
-    auto expiryClock{ winrt::clock::from_file_time(expiryFileTime) };
-    notification.Expiration(expiryClock);
+    notification.Expiration(winrt::clock::from_file_time(expiryFileTime));
 
     boolean expiresOnReboot{};
     THROW_IF_FAILED(properties->get_ExpiresOnReboot(&expiresOnReboot));

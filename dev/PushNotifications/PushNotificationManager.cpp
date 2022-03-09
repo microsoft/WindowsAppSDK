@@ -16,6 +16,7 @@
 #include "externs.h"
 #include <string_view>
 #include <frameworkudk/pushnotifications.h>
+#include <FrameworkUdk/ToastNotifications.h>
 #include "NotificationsLongRunningProcess_h.h"
 #include "PushNotificationUtility.h"
 #include "AppNotificationUtility.h"
@@ -35,6 +36,11 @@ namespace winrt
 namespace PushNotificationsABI
 {
     using namespace ABI::Microsoft::Internal::PushNotifications;
+}
+
+namespace ToastNotifications
+{
+    using namespace ABI::Microsoft::Internal::ToastNotifications;
 }
 
 namespace PushNotificationHelpers
@@ -691,7 +697,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         m_foregroundHandlers.remove(token);
     }
 
-    HRESULT __stdcall PushNotificationManager::InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept try
+    IFACEMETHODIMP PushNotificationManager::InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept try
     {
         auto args = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length);
 
@@ -710,7 +716,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
     CATCH_RETURN()
 
-    HRESULT __stdcall PushNotificationManager::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept try
+    IFACEMETHODIMP PushNotificationManager::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept try
     {
         BOOL foregroundHandled = true;
         THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
@@ -758,4 +764,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             SetEvent(m_waitHandleForArgs.get());            
         }
     }
+    CATCH_RETURN();
+
+    IFACEMETHODIMP PushNotificationManager::OnToastNotificationReceived(
+        ToastNotifications::INotificationProperties* notificationProperties,
+        ToastNotifications::INotificationTransientProperties* notificationTransientProperties) noexcept try
+    {
+        DWORD notificationId{ 0 };
+        ToastNotifications_PostToast(PushNotificationHelpers::GetAppUserModelId().get(), notificationProperties, notificationTransientProperties, &notificationId);
+        return S_OK;
+    }
+    CATCH_RETURN()
 }
