@@ -102,31 +102,23 @@ The code in Main would follow the pattern below:
             seconds).
     -   It will subscribe to a In-memory Push event handler hanging off the PushNotificationManager
         component.
-        -   The app should ideally handle the event by setting the Handled property to true to
-            prevent Background Activation from launching a new process.
 
 ```cpp
 int main()
 {
-    if (!IsPackagedProcess())
-    {
-        const UINT32 c_Version_MajorMinor{ 0x00040001 };
-        const PACKAGE_VERSION minVersion{};
-        // Call into bootstrap APIs in unpackaged scenarios
-        RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
-    }
-
+    // See documentation on how to ensure your app has access to the Windows App SDK
     auto pushNotificationManager { PushNotificationManager::Default() };
 
     // Register Push Event for Foreground
     winrt::event_token token = pushNotificationManager.PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
     {
-        auto payload = args.Payload();
+        std::vector<byte> payload { args.Payload() };
 
-        // Do stuff to process the raw payload
+        // App logic to handle the incoming payload string. Maybe pop a toast, maybe
+        // kick your sync engine to fetch updates, maybe request an update from your
+        // service. See our full samples for building an end-to-end push notification system.
         std::string payloadString(payload.begin(), payload.end());
         std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
-        args.Handled(true);
     });
 
     // Registers the application to receive push notifications
@@ -145,7 +137,9 @@ int main()
 
         auto payload { pushArgs.Payload() };
 
-        // Do stuff to process the raw payload to be used for further app processing
+        // App logic to handle the incoming payload string. Maybe pop a toast, maybe
+        // kick your sync engine to fetch updates, maybe request an update from your
+        // service. See our full samples for building an end-to-end push notification system.
         std::string payloadString(payload.begin(), payload.end());
 
         // Call Complete on the deferral as good practise: Needed mainly for low power usage
@@ -209,13 +203,9 @@ int main()
         }
     }
 
-    // If packaged: Unregisters foreground sink and the app as the ComServer
-    // If unpackaged: Unregisters the foreground sink from the Long Running Process Singleton
+    // Unregistering this process makes sure that other incoming pushes launch a new process
+    // to handle them.
     pushNotificationManager.Unregister();
-    if (!IsPackagedProcess())
-    {
-        MddBootstrapShutdown();
-    }
     return 0;
 }
 ```
@@ -232,6 +222,7 @@ int main()
 {
     // Registers a Push Trigger with the Background Infra component
     PushNotificationManager::Default().Register();
+
     // Unregisters this app as the ComServer
     PushNotificationManager::Default().Unregister();
 
@@ -396,15 +387,12 @@ namespace Microsoft.Windows.PushNotifications
         // The Push payload
         byte[] Payload { get; };
 
-        // Gets a deferral to allow push notification processing even if the system goes into low power mode.
+        // Gets a deferral for when the app needs to continue processing after the event handler returns.
+        // Complete the deferral when the app has finished handling the notification.
         Windows.ApplicationModel.Background.BackgroundTaskDeferral GetDeferral();
 
         // Subscribe to Cancelled event handler to be signalled when resource policies are no longer true like 30s wallclock timer
         event Windows.ApplicationModel.Background.BackgroundTaskCanceledEventHandler Canceled;
-
-        // Indicates if the foreground push notification will be re-posted through background activation.
-        // Default value is false, which allows re-posting.
-        Boolean Handled;
     };
 
     [feature(Feature_PushNotifications)]
@@ -451,7 +439,7 @@ namespace Microsoft.Windows.PushNotifications
             HRESULT extendedError,
             PushNotificationChannelStatus status);
 
-        // The Push channel associated with the Result. Valid only if status is CompletedSuccess.
+        // A PushNotificationChannel only exists Status when is CompletedSuccess.
         PushNotificationChannel Channel { get; };
 
         // More detailed error code in addition to the ChannelStatus state.
@@ -467,17 +455,16 @@ namespace Microsoft.Windows.PushNotifications
         // Gets a Default instance of a PushNotificationManager
         static PushNotificationManager Default{ get; };
 
-        // Registers an application for Notifications
-        // For Unpackaged applications, registers support for protocol activations
-        // For packaged applications with Background Infrastructure support, registers Push Trigger with the Background Infrastructure
-        // For packaged applications without Background Infrastructure support, registers a COM Service
+        // Registers an application for activation. After registration completes, incoming
+        // notifications are delivered to the PushRecieved event.
         void Register();
 
-        // Packaged Apps: Force COM to launch a new process
-        // Unpackaged apps: Remove the Foreground Sink to force Long Running Process Singleton to launch a new process instance.
+        // Stops the flow of notifications to this process and manager object. Additional incoming
+        // notifications may cause a new process to be launched to handle them. To stop recieving
+        // all notifications, use UnregisterAll.
         void Unregister();
 
-        // Disables Push completely for Packaged and Unpackaged apps. Register() needs to be called again for Push to work
+        // Disables Push Notifications completely for Packaged and Unpackaged apps. Register() needs to be called again afterwards for push notifications to work.
         void UnregisterAll();
 
         // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
