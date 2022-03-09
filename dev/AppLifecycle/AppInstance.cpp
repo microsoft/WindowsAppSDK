@@ -542,6 +542,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     hstring AppInstance::Key()
     {
+        auto releaseOnExit = m_dataMutex.acquire();
+
         if (m_key.IsValid())
         {
             return winrt::hstring(m_key.Get());
@@ -566,17 +568,17 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         auto escapedKey = std::regex_replace(key, std::wregex(L"\\\\"), L"_");
         std::wstring mutexName = wil::str_printf<std::wstring>(L"%s_%s_Mutex", m_moduleName.c_str(), escapedKey.c_str());
 
+        // m_keyCreationMutex is only used to synchronize the owner of the key.  Data access
+        // is still protected by m_dataMutex.
+        // Acquire m_dataMutex before creating m_keyCreationMutex to avoid
+        // processes from seeing the mutex but not seeing the Key on the instance yet.
+        auto releaseOnExit = m_dataMutex.acquire();
+
         // We keep the mutex as a live member to ensure all other instances continue
         // to get an 'open' instead of a 'create' due to it already existing.
-        m_keyCreationMutex.create(mutexName.c_str(), 0, MUTEX_ALL_ACCESS);
-
-        bool currentIsKeyOwner = (GetLastError() != ERROR_ALREADY_EXISTS);
+        bool currentIsKeyOwner = m_keyCreationMutex.try_create(mutexName.c_str(), 0, MUTEX_ALL_ACCESS);
         if (currentIsKeyOwner)
         {
-            // m_keyCreationMutex is only used to synchronize the owner of the key.  Data access
-            // is still protected by m_dataMutex.
-            auto releaseOnExit = m_dataMutex.acquire();
-
             m_key.Resize((key.length() + 1) * sizeof(key.data()[0]));
             THROW_IF_FAILED(StringCchCopy(m_key.Get(), (m_key.Size() / sizeof(wchar_t)), key.c_str()));
         }
