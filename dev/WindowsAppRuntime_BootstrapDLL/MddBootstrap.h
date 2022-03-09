@@ -90,7 +90,7 @@ namespace DynamicDependency::Bootstrap
 
         struct mddbootstrapshutdown_deleter_t
         {
-            void operator()(mddbootstrapshutdown_t* b)
+            void operator()(mddbootstrapshutdown_t*)
             {
                 MddBootstrapShutdown();
             }
