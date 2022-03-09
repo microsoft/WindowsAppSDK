@@ -27,7 +27,7 @@ jobs:
     # This version number should be kept in sync with the value in these files:
     #   build\Helix\packages.config
     #   test\WindowsAppSDK.Helix.TestCommon\WindowsAppSDK.Helix.TestCommon.csproj
-    winUIHelixVer: 0.5.5
+    winUIHelixVer: 0.5.6-alpha1
     winUIHelixPipelineScripts: build\Helix\packages\Microsoft.Internal.WinUI.Helix.$(winUIHelixVer)\scripts\pipeline
 
     # The target queues to run the tests on.
