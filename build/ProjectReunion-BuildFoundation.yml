@@ -174,7 +174,7 @@ jobs:
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildProject-Steps.yml
     parameters:
       solutionPath: 'dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj'
-      nugetConfigPath: nuget.config
+      nugetConfigPath: internal.nuget.config
       buildOutputDir: $(buildOutputDir)
       publishDir: $(publishDir)
       channel: ${{ variables.channel }}
