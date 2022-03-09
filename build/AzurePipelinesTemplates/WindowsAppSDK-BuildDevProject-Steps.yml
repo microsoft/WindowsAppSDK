@@ -6,7 +6,7 @@ steps:
   - template: WindowsAppSDK-BuildProject-Steps.yml
     parameters:
       solutionPath: WindowsAppRuntime.sln
-      nugetConfigPath: nuget.config
+      nugetConfigPath: internal.nuget.config
       buildOutputDir: $(buildOutputDir)
       publishDir: $(publishDir)
       channel: ${{ parameters.channel }}

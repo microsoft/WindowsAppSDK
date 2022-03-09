@@ -4,7 +4,7 @@
 parameters:
   MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
   MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
-
+  ConfigFile: internal.nuget.config
 steps:
 - task: BatchScript@1
   displayName: Set up environment
@@ -27,35 +27,35 @@ steps:
   displayName: 'NuGet restore of core'
   inputs:
     command: 'custom'
-    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\core\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\core\src\packages.config -ConfigFile ${{ parameters.ConfigFile }} -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
 # NuGetCommand@2
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
   displayName: 'NuGet restore of applicationmodel'
   inputs:
     command: 'custom'
-    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config -ConfigFile ${{ parameters.ConfigFile }} -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
 # NuGetCommand@2
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
   displayName: 'NuGet restore of mrmex'
   inputs:
     command: 'custom'
-    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\mrmex\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\mrmex\packages.config -ConfigFile ${{ parameters.ConfigFile }} -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
 # NuGetCommand@2
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
   displayName: 'NuGet restore of mrmmin'
   inputs:
     command: 'custom'
-    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\mrmmin\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\mrmmin\packages.config -ConfigFile ${{ parameters.ConfigFile }} -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
 # NuGetCommand@2
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
   displayName: 'NuGet restore of mrm unittests'
   inputs:
     command: 'custom'
-    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\unittests\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\unittests\packages.config -ConfigFile ${{ parameters.ConfigFile }} -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
 #  - task: powershell@2
 #    displayName: 'Install the VS build tools'
