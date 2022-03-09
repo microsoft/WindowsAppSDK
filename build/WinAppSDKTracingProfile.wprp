@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WindowsPerformanceRecorder Version="1.0" Author="Microsoft Corporation" Copyright="Microsoft Corporation" Company="Microsoft Corporation">
+  <Profiles>
+    <!-- Collector definitions -->
+    <SystemCollector Id="Standard_SystemCollector" Name="Standard System Collector">
+      <BufferSize Value="1024"/>
+      <Buffers Value="7" PercentageOfTotalMemory="true" MaximumBufferSpace="224"/>
+    </SystemCollector>
+
+    <EventCollector Id="Standard_EventCollector" Name="Standard Event Collector">
+      <BufferSize Value="1024"/>
+      <Buffers Value="7" PercentageOfTotalMemory="true" MaximumBufferSpace="224"/>
+    </EventCollector>
+
+    <!-- System provider definitions -->
+    <SystemProvider Id="SystemProvider_Default" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="CompactCSwitch"/>
+        <Keyword Value="CSwitch"/>
+        <Keyword Value="SampledProfile"/>
+        <Keyword Value="ProcessThread" />
+        <Keyword Value="Registry"/>
+        <Keyword Value="HardFaults"/>
+        <Keyword Value="FileIO"/>
+        <Keyword Value="FileIOInit"/>
+        <Keyword Value="Filename"/>
+        <Keyword Value="DiskIO"/>
+        <Keyword Value="DiskIOInit"/>
+      </Keywords>
+      <Stacks Operation="Add">
+        <Stack Value="ThreadDelete"/>
+        <Stack Value="ThreadCreate" />
+        <Stack Value="ProcessCreate" />
+        <Stack Value="ProcessDelete" />
+        <Stack Value="SampledProfile"/>
+      </Stacks>
+    </SystemProvider>
+
+    <!-- Event provider definitions -->
+    <EventProvider Id="EventProvider-Microsoft-Windows-TestExecution" Name="Microsoft-Windows-TestExecution"/>
+    <EventProvider Id="EventProvider-Microsoft.Windows.TestExecution.WexLogger" Name="40c4df8b-00a9-5159-62bc-9bbc5ee78a29"/>
+    <EventProvider Id="EventProvider-Microsoft-Windows-WindowsErrorReporting" Name="cc79cf77-70d9-4082-9b52-23f3a3e92fe4"/>
+    <EventProvider Id="EventProvider-Microsoft.Windows.FaultReportingTracingGuid" Name="1377561D-9312-452C-AD13-C4A1C9C906E0"/>
+    <EventProvider Id="EventProvider-Microsoft.Windows.ErrorHandling.Fallback" Name="bf4c9654-66d1-5720-7b51-d2ae226735ea"/>
+    
+    <Profile Id="WinAppSDKTracingProfile.Verbose.File" Name="WinAppSDKTracingProfile" Description="WinAppSDK Tracing Profile" LoggingMode="File" DetailLevel="Verbose" Default="true">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="Standard_SystemCollector">
+          <SystemProviderId Value="SystemProvider_Default"/>
+        </SystemCollectorId>
+
+        <EventCollectorId Value="Standard_EventCollector">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider-Microsoft-Windows-TestExecution"/>
+            <EventProviderId Value="EventProvider-Microsoft.Windows.TestExecution.WexLogger"/>
+            <EventProviderId Value="EventProvider-Microsoft-Windows-WindowsErrorReporting"/>
+            <EventProviderId Value="EventProvider-Microsoft.Windows.FaultReportingTracingGuid"/>
+            <EventProviderId Value="EventProvider-Microsoft.Windows.ErrorHandling.Fallback"/>
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+    
+  </Profiles>
+</WindowsPerformanceRecorder>
