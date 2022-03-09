@@ -1587,6 +1587,10 @@
 
   <!-- Ensure Fast Up To Date picks up changes to PRI related files. -->
 
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)ProjectItemsSchema.xaml" />
+  </ItemGroup>
+
   <PropertyGroup>
     <_MrtCoreUpToDateCheckInputDependsOn>
       $(_MrtCoreUpToDateCheckInputDependsOn);
