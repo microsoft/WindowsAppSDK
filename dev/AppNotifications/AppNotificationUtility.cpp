@@ -265,46 +265,27 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
     std::wstring iconFilePath{};
 
     wil::unique_prop_variant propVariantIcon;
-    // In case there is no icon asset, do not throw. Set a default icon instead.
-    LOG_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchIconResource, &propVariantIcon));
+    // Throw in case of failure, since Icon is mandatory and we don't have a fallback!
+    THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchIconResource, &propVariantIcon));
+    THROW_HR_IF_MSG(E_UNEXPECTED, propVariantIcon.vt == VT_EMPTY, "You must specify an app icon before calling Register().");
 
-    if (propVariantIcon.vt == VT_LPWSTR && propVariantIcon.pwszVal != nullptr)
+    iconFilePath = propVariantIcon.pwszVal;
+
+    // Icon filepaths from Shell APIs have this format: <filepath>,-<index>,
+    // since .ico files can have multiple icons in the same file.
+    // NotificationController doesn't seem to support such format, so let it take the first icon by default.
+    auto iteratorForCommaDelimiter = iconFilePath.find_first_of(L",");
+    if (iteratorForCommaDelimiter != std::wstring::npos) // It may or may not have an index, which is fine.
     {
-        iconFilePath = propVariantIcon.pwszVal;
-
-        // Most icon filepaths from Shell APIs have this format: <filepath>,-<index>,
-        // since .ico files can have multiple icons in the same file.
-        // NotificationController doesn't seem to support such format, so let it take the first icon by default.
-        auto iteratorForCommaDelimiter = iconFilePath.find_first_of(L",");
-        if (iteratorForCommaDelimiter != std::wstring::npos) // It may or may not have an index, which is fine.
-        {
-            iconFilePath.erase(iteratorForCommaDelimiter);
-        }
-
-        auto iteratorForLastBackSlash = iconFilePath.find_last_of(L"\\");
-        auto iteratorForForwardSlash = iconFilePath.find_last_of(L"/");
-        THROW_HR_IF_MSG(ERROR_BAD_PATHNAME, iteratorForLastBackSlash != std::wstring::npos && iteratorForForwardSlash != std::wstring::npos,
-            "You must provide a valid icon filepath (do not combine forward and back slashes).");
-        auto iteratorForLastSlash = min(iteratorForLastBackSlash, iteratorForForwardSlash);
-
-        std::wstring fileName{ iconFilePath };
-
-        if (iteratorForLastSlash != std::wstring::npos)
-        {
-            fileName = iconFilePath.substr(iteratorForLastSlash);
-        }
-
-        auto iteratorForFileExtension = fileName.find_first_of(L".");
-        THROW_HR_IF_MSG(E_UNEXPECTED, iteratorForFileExtension == std::wstring::npos, "You must provide a valid filepath as the app icon.");
-
-        std::wstring iconFileExtension = fileName.substr(iteratorForFileExtension);
-        THROW_HR_IF_MSG(E_UNEXPECTED, iconFileExtension != L".ico" && iconFileExtension != L".png",
-            "You must provide a supported file extension as the icon (.ico or .png).");
+        iconFilePath.erase(iteratorForCommaDelimiter);
     }
-    else
-    {
-        iconFilePath = std::wstring(LR"(ms-resource://Windows.UI.ShellCommon/Files/Images/DefaultSystemNotification.png)");
-    }
+
+    auto iteratorForFileExtension = iconFilePath.find_first_of(L".");
+    THROW_HR_IF_MSG(E_UNEXPECTED, iteratorForFileExtension == std::wstring::npos, "You must provide a valid filepath as the app icon.");
+
+    std::wstring iconFileExtension = iconFilePath.substr(iteratorForFileExtension);
+    THROW_HR_IF_MSG(E_UNEXPECTED, iconFileExtension != L".ico" && iconFileExtension != L".png",
+        "You must provide a supported file extension as the icon (.ico or .png).");
 
     RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.c_str()), REG_EXPAND_SZ, displayName.size() * sizeof(wchar_t));
     RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(iconFilePath.c_str()), REG_EXPAND_SZ, iconFilePath.size() * sizeof(wchar_t));
