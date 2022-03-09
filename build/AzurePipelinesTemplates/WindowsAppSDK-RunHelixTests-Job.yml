@@ -107,6 +107,14 @@ jobs:
       downloadPath: $(testPayloadDir)
       itemPattern: 'BuildOutput/$(buildConfiguration)/$(buildPlatform)/**/*'
 
+  - task: CopyFiles@2
+    displayName: 'Copy WPR Profiles'
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)\build
+      contents: |
+        **\*.wprp
+      targetFolder: $(testPayloadDir)
+
   - ${{ if eq(parameters.BuildForHelix, 'true') }}:
     # Discover the tests to run and generate the Helix Work Items.
     - task: powershell@2
@@ -115,18 +123,18 @@ jobs:
       inputs:
         targetType: filePath
         filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-        arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\DynamicDependency_Test_Win32\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies.Win32-Tests.proj' -TaefBaseQuery @name='*FullLifecycle_ProcessLifetime_Framework_WindowsAppRuntime_Elevated' -WorkItemPrefix 'DynamicDependencies.Win32.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.Win32.$(buildPlatform).$(buildConfiguration)' -TaefExtraParameters '/EnableEtwLogging /appendEtwLogging'
+        arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\DynamicDependency_Test_Win32\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies.Win32-Tests.proj' -TaefBaseQuery @name='*FullLifecycle_ProcessLifetime_Framework_WindowsAppRuntime_Elevated' -WorkItemPrefix 'DynamicDependencies.Win32.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.Win32.$(buildPlatform).$(buildConfiguration)' -TaefExtraParameters '/EnableEtwLogging /appendEtwLogging /testmode:etwlogger /EtwLogger:WPRProfileFile=MicrosoftWindowsErrorHandlingFallback.wprp /EtwLogger:WPRProfile=MicrosoftWindowsErrorHandlingFallback'
 
-  - ${{ if eq(parameters.BuildForHelix, 'true') }}:
-    # Discover the tests to run and generate the Helix Work Items.
-    - task: powershell@2
-      displayName: 'DynamicDependencies.WinRT: Discover tests'
-      condition: ${{ parameters.conditionForDiscoverTests }}
-      inputs:
-        targetType: filePath
-        filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-        arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\DynamicDependency_Test_WinRT\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies.WinRT-Tests.proj' -WorkItemPrefix 'DynamicDependencies.WinRT.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.WinRT.$(buildPlatform).$(buildConfiguration)' -TaefExtraParameters '/EnableEtwLogging /appendEtwLogging'
-
+#  - ${{ if eq(parameters.BuildForHelix, 'true') }}:
+#    # Discover the tests to run and generate the Helix Work Items.
+#    - task: powershell@2
+#      displayName: 'DynamicDependencies.WinRT: Discover tests'
+#      condition: ${{ parameters.conditionForDiscoverTests }}
+#      inputs:
+#        targetType: filePath
+#        filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
+#        arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\DynamicDependency_Test_WinRT\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies.WinRT-Tests.proj' -WorkItemPrefix 'DynamicDependencies.WinRT.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.WinRT.$(buildPlatform).$(buildConfiguration)' -TaefExtraParameters '/EnableEtwLogging /appendEtwLogging'
+#
   # Discover the TAEF test binaries to run and generate the Helix Work Items for them.
   # Note: There are 4 test suites for MRT Core. We currently run 3 of them in Helix.
 # DEBUG: temp commenting out the MRT tests.
