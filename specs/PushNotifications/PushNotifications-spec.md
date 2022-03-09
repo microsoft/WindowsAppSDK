@@ -112,7 +112,7 @@ int main()
     // Register Push Event for Foreground
     winrt::event_token token = pushNotificationManager.PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
     {
-        std::vector<byte> payload { args.Payload() };
+        winrt::com_array<byte> payload { args.Payload() };
 
         // App logic to handle the incoming payload string. Maybe pop a toast, maybe
         // kick your sync engine to fetch updates, maybe request an update from your
@@ -135,7 +135,7 @@ int main()
         // Call GetDeferral to ensure that code runs in low power
         auto deferral { pushArgs.GetDeferral() };
 
-        auto payload { pushArgs.Payload() };
+        winrt::com_array<byte> payload { pushArgs.Payload() };
 
         // App logic to handle the incoming payload string. Maybe pop a toast, maybe
         // kick your sync engine to fetch updates, maybe request an update from your
@@ -411,7 +411,8 @@ namespace Microsoft.Windows.PushNotifications
         // Either InProgress or InProgressRetry status
         PushNotificationChannelStatus status;
 
-        // The last extended error we failed Channel requests on that caused the inprogress retry status. E_PENDING if this is just progress status.
+        // The last extended error seen when creating a channel request. This error causes InProgressRetry status. If there is no retry and just
+        // InProgress status this defaults to E_PENDING.
         HRESULT extendedError;
 
         // Total Retries so far
