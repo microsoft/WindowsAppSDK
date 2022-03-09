@@ -9,9 +9,6 @@
 
 #include <string>
 
-#include <wil/resource.h>
-#include <wil/result_macros.h>
-
 #include <MddBootstrap.h>
 
 // NOTE: These are compile-time tests to verify syntax. Do not actually run them.
@@ -32,11 +29,11 @@ HRESULT TestCompile()
     AM::PackageVersion pv7(0x0001000200030004ul);
     AM::PackageVersion pv8(0x0001000200030004ull);
 
-    auto f1 = B::Initialize_failfast();
-    auto f2 = B::Initialize_failfast(0x12345678);
-    auto f3 = B::Initialize_failfast(0x12345678, L"versiontag");
-    auto f4 = B::Initialize_failfast(0x12345678, L"versiontag", AM::PackageVersion(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64));
-    auto f5 = B::Initialize_failfast(0x12345678, L"versiontag", pv0);
+    auto f1 = B::InitializeFailFast();
+    auto f2 = B::InitializeFailFast(0x12345678);
+    auto f3 = B::InitializeFailFast(0x12345678, L"versiontag");
+    auto f4 = B::InitializeFailFast(0x12345678, L"versiontag", AM::PackageVersion(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64));
+    auto f5 = B::InitializeFailFast(0x12345678, L"versiontag", pv0);
 
     auto t1 = B::Initialize();
     auto t2 = B::Initialize(0x12345678);
@@ -44,11 +41,11 @@ HRESULT TestCompile()
     auto t4 = B::Initialize(0x12345678, L"versiontag", AM::PackageVersion(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64));
     auto t5 = B::Initialize(0x12345678, L"versiontag", pv0);
 
-    RETURN_IF_FAILED(B::Initialize_nothrow());
-    RETURN_IF_FAILED(B::Initialize_nothrow(0x12345678));
-    RETURN_IF_FAILED(B::Initialize_nothrow(0x12345678, L"versiontag"));
-    RETURN_IF_FAILED(B::Initialize_nothrow(0x12345678, L"versiontag", AM::PackageVersion(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)));
-    RETURN_IF_FAILED(B::Initialize_nothrow(0x12345678, L"versiontag", pv0));
+    RETURN_IF_FAILED(B::InitializeNoThrow());
+    RETURN_IF_FAILED(B::InitializeNoThrow(0x12345678));
+    RETURN_IF_FAILED(B::InitializeNoThrow(0x12345678, L"versiontag"));
+    RETURN_IF_FAILED(B::InitializeNoThrow(0x12345678, L"versiontag", AM::PackageVersion(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)));
+    RETURN_IF_FAILED(B::InitializeNoThrow(0x12345678, L"versiontag", pv0));
 
     return S_OK;
 }

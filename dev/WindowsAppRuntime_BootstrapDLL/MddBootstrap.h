@@ -29,6 +29,9 @@ STDAPI_(void) MddBootstrapShutdown() noexcept;
 // C++ friendly APIs
 #if defined(__cplusplus)
 #if defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
+
+#include <memory>
+
 namespace Microsoft::Windows::ApplicationModel
 {
 class PackageVersion : public PACKAGE_VERSION
@@ -77,12 +80,26 @@ public:
 #endif
 };
 
-#if defined(__WIL_RESOURCE) && defined(__WIL_RESULTMACROS_INCLUDED)
 #if defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
 namespace DynamicDependency::Bootstrap
 {
     // Automate Boostrap shutdown when leaving scope
-    using unique_mddbootstrapshutdown_call = wil::unique_call<decltype(&::MddBootstrapShutdown), ::MddBootstrapShutdown>;
+    namespace details
+    {
+        struct mddbootstrapshutdown_t;
+
+        struct mddbootstrapshutdown_deleter_t
+        {
+            void operator()(mddbootstrapshutdown_t* b)
+            {
+                if (b)
+                {
+                    MddBootstrapShutdown();
+                }
+            }
+        };
+    }
+    using unique_mddbootstrapshutdown = std::unique_ptr<details::mddbootstrapshutdown_t, details::mddbootstrapshutdown_deleter_t>;
 
     /// Call MddBootstrapInitialize and fail-fasts if it fails; returns an RAII object that reverts
     ///
@@ -96,18 +113,28 @@ namespace DynamicDependency::Bootstrap
     /// @param versionTag version tag (if any), e.g. "preview1".
     /// @param minVersion the minimum version to use
     /// @see Initialize(uint32_t, PCWSTR, PackageVersion)
-    /// @see Initialize_nothrow(uint32_t, PCWSTR, PackageVersion)
+    /// @see InitializeNoThrow(uint32_t, PCWSTR, PackageVersion)
     /// @see Shutdown()
-    WI_NODISCARD inline unique_mddbootstrapshutdown_call Initialize_failfast(uint32_t majorMinorVersion = WINDOWSAPPSDK_RELEASE_MAJORMINOR,
-                                                                             PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W,
-                                                                             PackageVersion minVersion = WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
+    [[nodiscard]] inline unique_mddbootstrapshutdown InitializeFailFast(
+        uint32_t majorMinorVersion = WINDOWSAPPSDK_RELEASE_MAJORMINOR,
+        PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W,
+        PackageVersion minVersion = WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
     {
-        FAIL_FAST_IF_FAILED(::MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion));
-        return unique_mddbootstrapshutdown_call();
+        const auto hr{ ::MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion) };
+        if (FAILED(hr))
+        {
+#if defined(__WIL_RESOURCE) && defined(__WIL_RESULTMACROS_INCLUDED)
+            (void) LOG_HR_MSG(hr, "MddBootstrapInitialize(0x%X, '%ls', %hu.%hu.%hu.%hu)",
+                              majorMinorVersion, versionTag ? versionTag : L"<null>",
+                              minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
+#endif // defined(__WIL_RESOURCE) && defined(__WIL_RESULTMACROS_INCLUDED)
+            std::abort();
+        }
+        return unique_mddbootstrapshutdown(reinterpret_cast<details::mddbootstrapshutdown_t*>(1));
     }
 
-#if defined(WIL_ENABLE_EXCEPTIONS)
-    /// Call MddBootstrapInitialize and throws an exception if it fails; returns an RAII object that reverts
+#if defined(_CPPUNWIND)
+    /// Call MddBootstrapInitialize and throws an exception if it fails; returns an RAII objecct that reverts
     ///
     /// Initialize the calling process to use Windows App SDK's framework package.
     ///
@@ -121,14 +148,16 @@ namespace DynamicDependency::Bootstrap
     /// @see Initialize_failfast(uint32_t, PCWSTR, PackageVersion)
     /// @see Initialize_nothrow(uint32_t, PCWSTR, PackageVersion)
     /// @see Shutdown()
-    WI_NODISCARD inline unique_mddbootstrapshutdown_call Initialize(uint32_t majorMinorVersion = WINDOWSAPPSDK_RELEASE_MAJORMINOR,
-                                                                    PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W,
-                                                                    PackageVersion minVersion = WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
+    /// @exception winrt::hresult_error thrown if intialization fails; see code() for more details.
+    [[nodiscard]] inline unique_mddbootstrapshutdown Initialize(
+        uint32_t majorMinorVersion = WINDOWSAPPSDK_RELEASE_MAJORMINOR,
+        PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W,
+        PackageVersion minVersion = WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
     {
-        THROW_IF_FAILED(::MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion));
-        return unique_mddbootstrapshutdown_call();
+        winrt::check_hresult(::MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion));
+        return unique_mddbootstrapshutdown(reinterpret_cast<details::mddbootstrapshutdown_t*>(1));
     }
-#endif // defined(WIL_ENABLE_EXCEPTIONS)
+#endif // defined(_CPPUNWIND)
 
     /// Call MddBootstrapInitialize and returns failure HRESULT if it fails.
     ///
@@ -141,19 +170,18 @@ namespace DynamicDependency::Bootstrap
     /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
     /// @param versionTag version tag (if any), e.g. "preview1".
     /// @param minVersion the minimum version to use
-    /// @see Initialize_failfast(uint32_t, PCWSTR, PackageVersion)
+    /// @see InitializeFailFast(uint32_t, PCWSTR, PackageVersion)
     /// @see Initialize(uint32_t, PCWSTR, PackageVersion)
     /// @see Shutdown()
-    inline HRESULT Initialize_nothrow(uint32_t majorMinorVersion = WINDOWSAPPSDK_RELEASE_MAJORMINOR,
-                                      PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W,
-                                      PackageVersion minVersion = WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
+    inline HRESULT InitializeNoThrow(
+        uint32_t majorMinorVersion = WINDOWSAPPSDK_RELEASE_MAJORMINOR,
+        PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W,
+        PackageVersion minVersion = WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
     {
-        RETURN_IF_FAILED(::MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion));
-        return S_OK;
+        return ::MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion);
     }
 }
 #endif // defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
-#endif // defined(__WIL_RESOURCE) && defined(__WIL_RESULTMACROS_INCLUDED)
 }
 #endif // defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined()WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
 #endif // defined(__cplusplus)
