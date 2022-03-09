@@ -115,7 +115,7 @@ jobs:
       inputs:
         targetType: filePath
         filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-        arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\DynamicDependency_Test_Win32\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies.Win32-Tests.proj' -TaefBaseQuery '@Name="*FullLifecycle_ProcessLifetime_Framework_WindowsAppRuntime_Elevated"' -WorkItemPrefix 'DynamicDependencies.Win32.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.Win32.$(buildPlatform).$(buildConfiguration)' -TaefExtraParameters '/EnableEtwLogging /appendEtwLogging'
+        arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\DynamicDependency_Test_Win32\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies.Win32-Tests.proj' -TaefBaseQuery '@name=*FullLifecycle_ProcessLifetime_Framework_WindowsAppRuntime_Elevated' -WorkItemPrefix 'DynamicDependencies.Win32.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.Win32.$(buildPlatform).$(buildConfiguration)' -TaefExtraParameters '/EnableEtwLogging /appendEtwLogging'
 
   - ${{ if eq(parameters.BuildForHelix, 'true') }}:
     # Discover the tests to run and generate the Helix Work Items.
