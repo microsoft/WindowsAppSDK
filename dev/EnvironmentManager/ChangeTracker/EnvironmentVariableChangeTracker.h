@@ -50,12 +50,15 @@ namespace winrt::Microsoft::Windows::System::implementation
                 topLevelKey = HKEY_LOCAL_MACHINE;
             }
 
-            auto subKey{ wil::str_printf<wil::unique_cotaskmem_string>(
-                L"Software\\ChangeTracker\\%ws\\%ws\\%ws\\", KeyName(), m_PackageFullName.c_str(), m_Key.c_str()) };
+            std::filesystem::path subKey{ L"Software\\ChangeTracker"};
+            subKey /= KeyName();
+            subKey /= m_PackageFullName;
+            subKey /= EnvironmentManager::ScopeToString(m_Scope);
+            subKey /= m_Key;
 
             wil::unique_hkey keyToTrackChanges{};
             THROW_IF_WIN32_ERROR(RegCreateKeyEx(HKEY_CURRENT_USER,
-                subKey.get(), 0, nullptr, REG_OPTION_NON_VOLATILE,
+                subKey.c_str(), 0, nullptr, REG_OPTION_NON_VOLATILE,
                 KEY_ALL_ACCESS | KEY_WOW64_64KEY, nullptr, keyToTrackChanges.put(), disposition));
 
             return keyToTrackChanges;

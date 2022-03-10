@@ -28,6 +28,26 @@ namespace winrt::Microsoft::Windows::System::implementation
         void AddExecutableFileExtension(hstring const& pathExt);
         void RemoveExecutableFileExtension(hstring const& pathExt);
 
+        static std::wstring ScopeToString(Scope scope)
+        {
+            if (scope == Scope::Process)
+            {
+                return L"process";
+            }
+            else if (scope == Scope::User)
+            {
+                return L"user";
+            }
+            else if (scope == Scope::Machine)
+            {
+                return L"machine";
+            }
+            else
+            {
+                THROW_HR_MSG(E_INVALIDARG, "Scope is not either process, user, or machine");
+            }
+        }
+
     private:
         Scope m_Scope{};
 
