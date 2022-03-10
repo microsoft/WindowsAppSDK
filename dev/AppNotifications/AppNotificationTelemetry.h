@@ -72,7 +72,10 @@ public:
 
     DEFINE_EVENT_METHOD(LogShow)(
         winrt::hresult hr,
-        std::wstring const& appId) noexcept try
+        std::wstring const& appId,
+        winrt::hstring const& payload,
+        winrt::hstring const& tag,
+        winrt::hstring const& group) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -82,6 +85,9 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
+                TraceLoggingUInt32(payload.size(), "PayloadSize"),
+                TraceLoggingUInt32(tag.size(), "TagSize"),
+                TraceLoggingUInt32(group.size(), "GroupSize"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
@@ -102,8 +108,8 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
-                TraceLoggingUInt32(tag.size(), "TagLength"),
-                TraceLoggingUInt32(group.size(), "GroupLength"),
+                TraceLoggingUInt32(tag.size(), "TagSize"),
+                TraceLoggingUInt32(group.size(), "GroupSize"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
@@ -161,7 +167,7 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
-                TraceLoggingUInt32(tag.size(), "TagLength"),
+                TraceLoggingUInt32(tag.size(), "TagSize"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
@@ -182,8 +188,8 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
-                TraceLoggingUInt32(tag.size(), "TagLength"),
-                TraceLoggingUInt32(group.size(), "GroupLength"),
+                TraceLoggingUInt32(tag.size(), "TagSize"),
+                TraceLoggingUInt32(group.size(), "GroupSize"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }

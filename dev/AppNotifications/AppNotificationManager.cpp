@@ -48,7 +48,7 @@ using namespace Microsoft::Windows::AppNotifications::Helpers;
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
-    AppNotificationManager::AppNotificationManager() : m_processName(GetCurrentProcessPath()), m_appId(RetrieveNotificationAppId()){}
+    AppNotificationManager::AppNotificationManager() : m_processName(GetCurrentProcessPath()), m_appId(RetrieveNotificationAppId()) {}
 
     winrt::Microsoft::Windows::AppNotifications::AppNotificationManager AppNotificationManager::Default()
     {
@@ -254,7 +254,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         HRESULT hr{ S_OK };
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationTelemetry::LogShow(hr, m_appId);
+            AppNotificationTelemetry::LogShow(hr, m_appId, notification.Payload(), notification.Tag(), notification.Group());
         }) };
 
         try
