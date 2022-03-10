@@ -7,8 +7,8 @@
 
 namespace WindowsAppRuntimeInstaller::Console
 {
-    void DisplayInfoHeader();
+    void DisplayHeader();
     void DisplayHelp();
     void DisplayInfo();
-    void DisplayErrorMessage(const HRESULT hr);
+    void DisplayError(const HRESULT hr);
 }

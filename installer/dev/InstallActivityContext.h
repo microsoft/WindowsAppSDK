@@ -5,7 +5,7 @@
 
 #include "pch.h"
 
-namespace WindowsAppRuntimeInstaller::InstallActivityContent
+namespace WindowsAppRuntimeInstaller::InstallActivity
 {
     enum class InstallStage
     {
@@ -27,7 +27,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivityContent
         std::wstring message;
     };
 
-    class InstallActivityContext
+    class Context
     {
         InstallStage m_installStage{ InstallStage::None };
         std::wstring m_currentResourceId;
@@ -38,7 +38,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivityContent
         WilFailure m_lastFailure{};
 
     public:
-        static InstallActivityContext& Get();
+        static WindowsAppRuntimeInstaller::InstallActivity::Context& Get();
 
         void Reset();
 
@@ -105,5 +105,5 @@ namespace WindowsAppRuntimeInstaller::InstallActivityContent
         void SetLastFailure(const wil::FailureInfo& failureInfo);
     };
 
-    static InstallActivityContext g_installActivityContext;
+    static WindowsAppRuntimeInstaller::InstallActivity::Context g_installActivityContext;
 }

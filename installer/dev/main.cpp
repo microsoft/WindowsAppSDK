@@ -9,7 +9,6 @@
 using namespace winrt;
 
 using namespace WindowsAppRuntimeInstaller::Console;
-using namespace WindowsAppRuntimeInstaller::InstallActivityContent;
 
 int wmain(int argc, wchar_t *argv[])
 {
@@ -57,7 +56,7 @@ int wmain(int argc, wchar_t *argv[])
         else if ((arg == L"-?") || (arg == L"--help"))
         {
             DisplayHelp();
-            return 0;
+            return 1;
         }
         else if ((arg == L"--info"))
         {
@@ -75,9 +74,9 @@ int wmain(int argc, wchar_t *argv[])
         args << argv[i] << " ";
     }
 
-    auto& context{ InstallActivityContext::Get() };
+    auto& installActivityContext{ WindowsAppRuntimeInstaller::InstallActivity::Context::Get() };
 
-    context.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(), static_cast<UINT32>(options)));
+    installActivityContext.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(), static_cast<UINT32>(options)));
     args.clear();
 
     const HRESULT deployPackagesResult{ WindowsAppRuntimeInstaller::Deploy(options) };
@@ -94,13 +93,13 @@ int wmain(int argc, wchar_t *argv[])
         }
         else
         {
-            context.GetActivity().StopWithResult(
+            installActivityContext.GetActivity().StopWithResult(
                 deployPackagesResult,
-                static_cast<UINT32>(context.GetInstallStage()),
-                context.GetCurrentResourceId().c_str(),
-                context.GetDeploymentErrorExtendedHResult(),
-                context.GetDeploymentErrorText().c_str(),
-                context.GetDeploymentErrorActivityId());
+                static_cast<UINT32>(installActivityContext.GetInstallStage()),
+                installActivityContext.GetCurrentResourceId().c_str(),
+                installActivityContext.GetDeploymentErrorExtendedHResult(),
+                installActivityContext.GetDeploymentErrorText().c_str(),
+                installActivityContext.GetDeploymentErrorActivityId());
 
             std::wcerr << "One or more install operations failed. Result: 0x" << std::hex << deployPackagesResult << std::endl;
         }

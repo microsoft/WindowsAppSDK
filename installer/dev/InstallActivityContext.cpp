@@ -4,14 +4,12 @@
 #include "pch.h"
 #include "InstallActivityContext.h"
 
-using namespace WindowsAppRuntimeInstaller::InstallActivityContent;
-
-InstallActivityContext& InstallActivityContext::Get()
+WindowsAppRuntimeInstaller::InstallActivity::Context& WindowsAppRuntimeInstaller::InstallActivity::Context::Get()
 {
     return g_installActivityContext;
 }
 
-void InstallActivityContext::Reset()
+void WindowsAppRuntimeInstaller::InstallActivity::Context::Reset()
 {
     m_installStage = InstallStage::None;
     m_currentResourceId.clear();
@@ -20,7 +18,7 @@ void InstallActivityContext::Reset()
     m_deploymentErrorActivityId = GUID{};
 }
 
-void InstallActivityContext::SetDeploymentErrorInfo(
+void WindowsAppRuntimeInstaller::InstallActivity::Context::SetDeploymentErrorInfo(
     const HRESULT& deploymentErrorExtendedHresult,
     const std::wstring& deploymentErrorText,
     const GUID& deploymentErrorActivityId)
@@ -30,7 +28,7 @@ void InstallActivityContext::SetDeploymentErrorInfo(
     SetDeploymentErrorActivityId(deploymentErrorActivityId);
 }
 
-void InstallActivityContext::SetLastFailure(const wil::FailureInfo& failure)
+void WindowsAppRuntimeInstaller::InstallActivity::Context::SetLastFailure(const wil::FailureInfo& failure)
 {
     m_lastFailure.type = failure.type;
     m_lastFailure.hr = failure.hr;

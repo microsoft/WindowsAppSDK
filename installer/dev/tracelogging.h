@@ -73,7 +73,7 @@ public:
 #define WindowsAppRuntimeInstaller_WriteEventWithActivity(_eventname_,...) TraceLoggingWriteActivity(\
     WindowsAppRuntimeInstaller_TraceLogger::Provider(),\
     _eventname_,\
-    InstallActivityContext::Get().GetActivity().Id(),\
+    WindowsAppRuntimeInstaller::InstallActivity::Context::Get().GetActivity().Id(),\
     nullptr,\
     TraceLoggingValue(static_cast<uint32_t>(failure.type), "Type"),\
     TraceLoggingValue(failure.hr, "HResult"),\

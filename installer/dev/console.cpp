@@ -3,9 +3,9 @@
 
 #include "pch.h"
 
-using namespace WindowsAppRuntimeInstaller::InstallActivityContent;
+using namespace WindowsAppRuntimeInstaller::InstallActivity;
 
-void WindowsAppRuntimeInstaller::Console::DisplayInfoHeader()
+void WindowsAppRuntimeInstaller::Console::DisplayHeader()
 {
     std::wcout << L"WindowsAppRuntimeInstaller -- Installs the Microsoft Windows App SDK runtime "
         << "version: " << WINDOWSAPPSDK_RELEASE_VERSION << "-" << WINDOWSAPPSDK_RELEASE_CHANNEL << std::endl;
@@ -14,9 +14,9 @@ void WindowsAppRuntimeInstaller::Console::DisplayInfoHeader()
 
 void WindowsAppRuntimeInstaller::Console::DisplayHelp()
 {
-    DisplayInfoHeader();
+    DisplayHeader();
     std::wcout << L"  " << wil::GetModuleFileNameW(nullptr).get() << std::endl << std::endl;
-    std::wcout << "Options (append - to disable e.g. --license- to not install licenses)" << std::endl;
+    std::wcout << "Options: (append - to disable e.g. --license- to not install licenses)" << std::endl;
     std::wcout << "  --dry-run    Dry run (report but don't execute install operations)" << std::endl;
     std::wcout << "  --license    Install licenses" << std::endl;
     std::wcout << "  --msix       Install MSIX packages" << std::endl;
@@ -30,48 +30,47 @@ void WindowsAppRuntimeInstaller::Console::DisplayHelp()
 
 void WindowsAppRuntimeInstaller::Console::DisplayInfo()
 {
-    DisplayInfoHeader();
+    DisplayHeader();
     std::wcout << "Privacy Statement:   https://aka.ms/windowsappsdk-privacy" << std::endl;
     std::wcout << "License Statement:   https://aka.ms/windowsappsdk-license" << std::endl;
 }
 
-void WindowsAppRuntimeInstaller::Console::DisplayErrorMessage(const HRESULT hr)
+void WindowsAppRuntimeInstaller::Console::DisplayError(const HRESULT hr)
 {
-    auto& context{ InstallActivityContext::Get() };
-
     if (SUCCEEDED(hr))
     {
         std::wcout << std::endl;
         return;
     }
 
-    wil::unique_hlocal_ptr<WCHAR[]> message{};
+    wil::unique_hlocal_ptr<WCHAR[]> message;
     if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
         nullptr, hr, 0, reinterpret_cast<PWSTR>(&message), 0, nullptr) != 0)
     {
         std::wcout << message.get();
     }
 
+    auto& installActivityContext{ WindowsAppRuntimeInstaller::InstallActivity::Context::Get() };
     // Don't log redundant Hr information
-    if (context.GetDeploymentErrorExtendedHResult() &&
-        context.GetDeploymentErrorExtendedHResult() != hr &&
-        (context.GetInstallStage() == InstallStage::AddPackage ||
-            context.GetInstallStage() == InstallStage::RegisterPackage))
+    if (installActivityContext.GetDeploymentErrorExtendedHResult() &&
+        installActivityContext.GetDeploymentErrorExtendedHResult() != hr &&
+        (installActivityContext.GetInstallStage() == InstallStage::AddPackage ||
+            installActivityContext.GetInstallStage() == InstallStage::RegisterPackage))
     {
-        std::wcout << "ExtendedError: 0x" << std::hex << context.GetDeploymentErrorExtendedHResult() << " ";
+        std::wcout << "ExtendedError: 0x" << std::hex << installActivityContext.GetDeploymentErrorExtendedHResult() << " ";
 
         if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-            nullptr, context.GetDeploymentErrorExtendedHResult(), 0, reinterpret_cast<PWSTR>(&message), 0, nullptr) != 0)
+            nullptr, installActivityContext.GetDeploymentErrorExtendedHResult(), 0, reinterpret_cast<PWSTR>(&message), 0, nullptr) != 0)
         {
             std::wcout << message.get();
         }
     }
 
-    if (context.GetDeploymentErrorText().empty() &&
-        (context.GetInstallStage() == InstallStage::AddPackage ||
-            context.GetInstallStage() == InstallStage::RegisterPackage))
+    if (installActivityContext.GetDeploymentErrorText().empty() &&
+        (installActivityContext.GetInstallStage() == InstallStage::AddPackage ||
+            installActivityContext.GetInstallStage() == InstallStage::RegisterPackage))
     {
-        std::wcout << "ErrorMessage: " << context.GetDeploymentErrorText();
+        std::wcout << "ErrorMessage: " << installActivityContext.GetDeploymentErrorText();
     }
 }
 
