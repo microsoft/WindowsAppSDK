@@ -283,7 +283,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
             THROW_HR_IF(E_UNEXPECTED, notificationId == 0);
 
-            winrt::Microsoft::Windows::AppNotifications::implementation::AppNotification* notificationImpl = get_self< winrt::Microsoft::Windows::AppNotifications::implementation::AppNotification>(notification);
+            implementation::AppNotification* notificationImpl = get_self<implementation::AppNotification>(notification);
             notificationImpl->SetNotificationId(notificationId);
         }
         catch (...)
