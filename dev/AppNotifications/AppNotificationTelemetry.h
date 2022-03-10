@@ -35,7 +35,8 @@ public:
     CATCH_LOG()
 
     DEFINE_EVENT_METHOD(LogUnregister)(
-        winrt::hresult hr) noexcept try
+        winrt::hresult hr,
+        std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -44,6 +45,7 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }

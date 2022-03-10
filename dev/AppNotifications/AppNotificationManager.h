@@ -43,6 +43,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         winrt::event<NotificationActivationEventHandler> m_notificationHandlers;
         bool m_firstNotificationReceived{ false };
         std::wstring m_processName;
+        std::wstring m_appId;
     };
 
     struct AppNotificationManagerFactory : winrt::implements<AppNotificationManagerFactory, IClassFactory>
