@@ -20,8 +20,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral();
         winrt::event_token Canceled(winrt::Windows::ApplicationModel::Background::BackgroundTaskCanceledEventHandler const& handler);
         void Canceled(winrt::event_token const& token) noexcept;
-        bool Handled();
-        void Handled(bool value);
 
     private:
         const winrt::Windows::Storage::Streams::IBuffer m_rawNotification{};
@@ -33,9 +31,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         std::vector<uint8_t> m_rawNotificationPayload;
 
         const winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance m_backgroundTaskInstance{};
-        const winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs m_args = nullptr;
 
         bool m_unpackagedAppScenario;
-        bool m_handledUnpackaged = true;
     };
 }

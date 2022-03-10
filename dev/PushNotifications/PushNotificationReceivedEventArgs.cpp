@@ -35,7 +35,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
 
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args):
-        m_args(args),
         m_rawNotificationPayload(BuildPayload(args.RawNotification().ContentBytes())),
         m_unpackagedAppScenario(false)
     {
@@ -113,34 +112,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_backgroundTaskInstance, "Foreground activation cannot call this.");
 
             m_backgroundTaskInstance.Canceled(token);
-        }
-    }
-
-    bool PushNotificationReceivedEventArgs::Handled()
-    {
-        if (!m_unpackagedAppScenario)
-        {
-            THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_args, "Background activation cannot call this.");
-
-            return m_args.Cancel();
-        }
-        else
-        {
-            return m_handledUnpackaged;
-        }
-    }
-
-    void PushNotificationReceivedEventArgs::Handled(bool value)
-    {
-        if (!m_unpackagedAppScenario)
-        {
-            THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_args, "Background activation cannot call this.");
-
-            m_args.Cancel(value);
-        }
-        else
-        {
-            m_handledUnpackaged = value;
         }
     }
 }
