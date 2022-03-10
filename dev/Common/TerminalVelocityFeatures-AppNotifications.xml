@@ -9,8 +9,8 @@
 
     <!-- Enabled variants -->
     <feature>
-        <name>Feature_PushNotifications</name>
-        <description>Push Notifications for the WindowsAppRuntime</description>
+        <name>Feature_AppNotifications</name>
+        <description>Enables Local App sourced Notifications on the device</description>
         <state>AlwaysEnabled</state>
     </feature>
 </features>
