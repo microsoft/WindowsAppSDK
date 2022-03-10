@@ -42,7 +42,14 @@
     <EventProvider Id="EventProvider-Microsoft-Windows-WindowsErrorReporting" Name="cc79cf77-70d9-4082-9b52-23f3a3e92fe4"/>
     <EventProvider Id="EventProvider-Microsoft.Windows.FaultReportingTracingGuid" Name="1377561D-9312-452C-AD13-C4A1C9C906E0"/>
     <EventProvider Id="EventProvider-Microsoft.Windows.ErrorHandling.Fallback" Name="bf4c9654-66d1-5720-7b51-d2ae226735ea"/>
-    
+
+    <!--WinAppSDK providers -->
+    <EventProvider Id="EventProvider-Microsoft.Windows.AppLifecycle" Name="129A9300-9EA3-40B1-922B-43D46349BB91"/>
+    <EventProvider Id="EventProvider-Microsoft.Windows.System.EnvironmentManager.Insights" Name="0xfbce41fa-f7bc-538e-11f2-abe1b9d2ab23"/>
+    <EventProvider Id="EventProvider-Microsoft.WindowsAppSdk.MrtCore.Runtime" Name="297d729d-7733-5616-aafc-9a3c8b0d5f22"/>
+    <EventProvider Id="EventProvider-Microsoft.WindowsAppSDK.Notifications.PushNotificationTelemetry" Name="7c1b07ef-a7c0-56d1-5456-385ebd4412b2"/>
+    <EventProvider Id="EventProvider-Microsoft.WindowsAppSDK.System.PowerNotifications" Name="a1b12e2c-12d9-564e-2ea1-2894ffcc7cc5"/>   
+
     <Profile Id="WinAppSDKTracingProfile.Verbose.File" Name="WinAppSDKTracingProfile" Description="WinAppSDK Tracing Profile" LoggingMode="File" DetailLevel="Verbose" Default="true">
       <Collectors Operation="Add">
         <SystemCollectorId Value="Standard_SystemCollector">
@@ -56,6 +63,11 @@
             <EventProviderId Value="EventProvider-Microsoft-Windows-WindowsErrorReporting"/>
             <EventProviderId Value="EventProvider-Microsoft.Windows.FaultReportingTracingGuid"/>
             <EventProviderId Value="EventProvider-Microsoft.Windows.ErrorHandling.Fallback"/>
+            <EventProviderId Value="EventProvider-Microsoft.Windows.AppLifecycle"/>
+            <EventProviderId Value="EventProvider-Microsoft.Windows.System.EnvironmentManager.Insights"/>
+            <EventProviderId Value="EventProvider-Microsoft.WindowsAppSdk.MrtCore.Runtime"/>
+            <EventProviderId Value="EventProvider-Microsoft.WindowsAppSDK.Notifications.PushNotificationTelemetry"/>
+            <EventProviderId Value="EventProvider-Microsoft.WindowsAppSDK.System.PowerNotifications"/>
           </EventProviders>
         </EventCollectorId>
       </Collectors>
