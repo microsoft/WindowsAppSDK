@@ -6,6 +6,7 @@ import "..\AppLifecycle\AppLifecycle.idl";
 
 namespace Microsoft.Windows.AppNotifications
 {
+
     [contractversion(1)]
     apicontract WindowsAppNotificationsContract {}
 
@@ -24,6 +25,7 @@ namespace Microsoft.Windows.AppNotifications
     // Notification Progress Data
     [feature(Feature_AppNotifications)]
     [contract(WindowsAppNotificationsContract, 1)]
+
     runtimeclass AppNotificationProgressData
     {
         // Initializes a new Instance of NotificationProgressData
