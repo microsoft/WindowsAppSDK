@@ -1,11 +1,14 @@
 ﻿#include "pch.h"
 #include "AppNotificationProgressData.h"
 #include "Microsoft.Windows.AppNotifications.AppNotificationProgressData.g.cpp"
+#include <TerminalVelocityFeatures-AppNotifications.h>
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
     AppNotificationProgressData::AppNotificationProgressData(uint32_t sequenceNumber)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::AppNotifications::Feature_AppNotifications::IsEnabled());
+
         THROW_HR_IF(E_INVALIDARG, sequenceNumber == 0); // The sequence number is always greater than 0
         m_sequenceNumber = sequenceNumber;
     }
