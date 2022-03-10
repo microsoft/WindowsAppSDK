@@ -102,8 +102,8 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
-                TraceLoggingWideString(tag.c_str(), "Tag"),
-                TraceLoggingWideString(group.c_str(), "Group"),
+                TraceLoggingUInt32(tag.size(), "TagLength"),
+                TraceLoggingUInt32(group.size(), "GroupLength"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
@@ -161,7 +161,7 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
-                TraceLoggingWideString(tag.c_str(), "Tag"),
+                TraceLoggingUInt32(tag.size(), "TagLength"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
@@ -182,8 +182,8 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
-                TraceLoggingWideString(tag.c_str(), "Tag"),
-                TraceLoggingWideString(group.c_str(), "Group"),
+                TraceLoggingUInt32(tag.size(), "TagLength"),
+                TraceLoggingUInt32(group.size(), "GroupLength"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
