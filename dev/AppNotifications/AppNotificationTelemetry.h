@@ -89,8 +89,10 @@ public:
     CATCH_LOG()
 
     DEFINE_EVENT_METHOD(UpdateAsyncByAPI)(
-        winrt::hresult hr,
-        std::wstring const& appId) noexcept try
+            winrt::hresult hr,
+            std::wstring const& appId,
+            winrt::hstring const& tag,
+            winrt::hstring const& group) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -100,6 +102,8 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
+                TraceLoggingWideString(tag.c_str(), "Tag"),
+                TraceLoggingWideString(group.c_str(), "Group"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
@@ -126,7 +130,8 @@ public:
 
     DEFINE_EVENT_METHOD(RemoveByIdAsyncByAPI)(
         winrt::hresult hr,
-        std::wstring const& appId) noexcept try
+        std::wstring const& appId,
+        uint32_t notificationId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -136,6 +141,7 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
+                TraceLoggingHexUInt32(notificationId, "NotificationId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
@@ -144,7 +150,8 @@ public:
 
     DEFINE_EVENT_METHOD(RemoveByTagAsyncByAPI)(
         winrt::hresult hr,
-        std::wstring const& appId) noexcept try
+        std::wstring const& appId,
+        winrt::hstring const& tag) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -154,6 +161,7 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
+                TraceLoggingWideString(tag.c_str(), "Tag"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
@@ -162,7 +170,9 @@ public:
 
     DEFINE_EVENT_METHOD(RemoveByTagAndGroupAsyncByAPI)(
         winrt::hresult hr,
-        std::wstring const& appId) noexcept try
+        std::wstring const& appId,
+        winrt::hstring const& tag,
+        winrt::hstring const& group) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -172,6 +182,8 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
+                TraceLoggingWideString(tag.c_str(), "Tag"),
+                TraceLoggingWideString(group.c_str(), "Group"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }

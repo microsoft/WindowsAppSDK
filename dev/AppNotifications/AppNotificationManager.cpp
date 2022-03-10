@@ -70,16 +70,16 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             winrt::guid storedComActivatorGuid{ GUID_NULL };
             if (!PushNotificationHelpers::IsPackagedAppScenario())
             {
-                std::wstring notificationId{ RetrieveNotificationAppId() };
+                appId = RetrieveNotificationAppId();
                 if (!AppModel::Identity::IsPackagedProcess())
                 {
-                    THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(notificationId.c_str(), GUID_NULL));
+                    THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(appId.c_str(), GUID_NULL));
 
                     storedComActivatorGuid = RegisterComActivatorGuidAndAssets();
                 }
 
                 auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
-                THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.c_str(), notificationId.c_str()));
+                THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.c_str(), appId.c_str()));
             }
 
             winrt::guid registeredClsid{ GUID_NULL };
@@ -115,9 +115,16 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     void AppNotificationManager::Unregister()
     {
         HRESULT hr{ S_OK };
-        std::wstring appId{};
 
         auto logTelemetry{ wil::scope_exit([&]() {
+            std::wstring appId{};
+
+            try
+            {
+                appId = RetrieveNotificationAppId();
+            }
+            CATCH_LOG();
+
             AppNotificationTelemetry::UnregisterByAPI(hr, appId);
         }) };
 
@@ -156,13 +163,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
             if (!AppModel::Identity::IsPackagedProcess())
             {
-                std::wstring notificationId{ RetrieveNotificationAppId() };
+                appId = RetrieveNotificationAppId();
                 std::wstring storedComActivatorString;
                 THROW_IF_FAILED(GetActivatorGuid(storedComActivatorString));
                 UnRegisterComServer(storedComActivatorString);
 
                 UnRegisterNotificationAppIdentifierFromRegistry();
-                THROW_IF_FAILED(PushNotifications_UnregisterFullTrustApplication(notificationId.c_str()));
+                THROW_IF_FAILED(PushNotifications_UnregisterFullTrustApplication(appId.c_str()));
             }
         }
         catch (...)
@@ -269,10 +276,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
             winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties> notificationTransientProperties = winrt::make_self<NotificationTransientProperties>(notification);
 
-            auto notificationAppId{ ::Microsoft::Windows::AppNotifications::Helpers::RetrieveNotificationAppId() };
+            appId = RetrieveNotificationAppId();
 
             DWORD notificationId = 0;
-            THROW_IF_FAILED(ToastNotifications_PostToast(notificationAppId.c_str(), notificationProperties.get(), notificationTransientProperties.get(), &notificationId));
+            THROW_IF_FAILED(ToastNotifications_PostToast(appId.c_str(), notificationProperties.get(), notificationTransientProperties.get(), &notificationId));
 
             THROW_HR_IF(E_UNEXPECTED, notificationId == 0);
 
@@ -298,7 +305,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         co_await resume_background();
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationTelemetry::UpdateAsyncByAPI(hr, appId);
+            AppNotificationTelemetry::UpdateAsyncByAPI(hr, appId, tag, group);
         }) };
 
         try
@@ -331,22 +338,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressResult> AppNotificationManager::UpdateAsync(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const data, hstring const tag)
     {
-        HRESULT hr{ S_OK };
-        std::wstring appId{};
-
-        auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationTelemetry::UpdateAsyncByAPI(hr, appId);
-        }) };
-
-        try
-        {
-            co_return co_await UpdateAsync(data, tag, L"");
-        }
-        catch (...)
-        {
-            hr = wil::ResultFromCaughtException();
-            throw;
-        }
+        co_return co_await UpdateAsync(data, tag, L"");
     }
 
     winrt::Microsoft::Windows::AppNotifications::AppNotificationSetting AppNotificationManager::Setting()
@@ -384,7 +376,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         co_await winrt::resume_background();
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationTelemetry::RemoveByIdAsyncByAPI(hr, appId);
+            AppNotificationTelemetry::RemoveByIdAsyncByAPI(hr, appId, notificationId);
         }) };
 
         try
@@ -410,7 +402,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         co_await winrt::resume_background();
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationTelemetry::RemoveByTagAsyncByAPI(hr, appId);
+            AppNotificationTelemetry::RemoveByTagAsyncByAPI(hr, appId, tag);
         }) };
 
         try
@@ -437,7 +429,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         co_await winrt::resume_background();
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationTelemetry::RemoveByTagAndGroupAsyncByAPI(hr, appId);
+            AppNotificationTelemetry::RemoveByTagAndGroupAsyncByAPI(hr, appId, tag, group);
         }) };
 
         try
