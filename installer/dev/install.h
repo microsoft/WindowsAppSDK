@@ -10,10 +10,10 @@ namespace WindowsAppRuntimeInstaller {
 
     enum class Options
     {
-        InstallPackages = 0x0001,
-        InstallLicenses = 0x0002,
-        Quiet           = 0x0004,
-        DryRun          = 0x0008,
+        InstallPackages     = 0x0001,
+        InstallLicenses     = 0x0002,
+        Quiet               = 0x0004,
+        DryRun              = 0x0008,
     };
     DEFINE_ENUM_FLAG_OPERATORS(Options)
 
@@ -32,5 +32,4 @@ namespace WindowsAppRuntimeInstaller {
 
     HRESULT DeployPackages(const WindowsAppRuntimeInstaller::Options options);
 
-    void ShowErrorMessage(const HRESULT hr);
 }
