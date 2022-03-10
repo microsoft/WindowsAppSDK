@@ -1,7 +1,16 @@
+# Parameters:
+#   AssetNames and AssetVersions can be separated by ';' for publishing build with multiple assets
+#   The lengths when split by ';' must match between both of these parameters
+#     Example:
+#     AssetNames: "PackageName1;PackageName2"
+#     AssetVersions: "1.1;1.2"
+#   
+#   TriggerSubscription will publish the build to the default channel. 
 parameters:
-  AssetName: ''
-  AssetVersion: ''
+  AssetNames: ''
+  AssetVersions: ''
   TriggerSubscription: false
+  BranchTag: ''
 
 steps:
   - task: PowerShell@2
@@ -22,15 +31,34 @@ steps:
         
         $jsonBase = @{}
 
+        $branchTag = ''
+        if ('${{ parameters.BranchTag }}' -ne '')
+        {
+          $branchTag = "-${{ parameters.BranchTag }}"
+        }
+        
+        $assetNames = '${{ parameters.AssetNames }}'.Split(";")
+        $assetVersions = '${{ parameters.AssetVersions }}'.Split(";")
+        
+        if ($assetNames.length -ne $assetVersions.length)
+        {
+          Write-Host "AssetNames and AssetVersions must have equal lengths"
+          Write-Host "##vso[task.complete result=Failed;]DONE"
+          exit 1
+        }
+
         $assetList = New-Object System.Collections.ArrayList
-        $assetList.Add(
-          @{
-            "name"="${{ parameters.AssetName }}";
-            "version"="${{ parameters.AssetVersion }}";
-            "nonShipping"=$false;
-            "locations"=$null
-          }
-        )
+        for ($i = 0; $i -lt ($assetNames.length); $i += 1)
+        {
+          $assetList.Add(
+            @{
+              "name"=$assetNames[$i];
+              "version"=$assetVersions[$i];
+              "nonShipping"=$false;
+              "locations"=$null
+            }
+          )
+        }
 
         # These fields below are unused but can be enabled in the future
         # $locationList = New-Object System.Collections.ArrayList
@@ -74,9 +102,9 @@ steps:
             "azureDevOpsProject"="$(System.TeamProject)";
             "azureDevOpsBuildNumber"="$(Build.BuildNumber)";
             "azureDevOpsRepository"=$azureDevOpsRepo;
-            "azureDevOpsBranch"="$(Build.SourceBranch)";
+            "azureDevOpsBranch"="$(Build.SourceBranch)$branchTag";
             "gitHubRepository"=$gitHubRepo;
-            "gitHubBranch"="$(Build.SourceBranch)";
+            "gitHubBranch"="$(Build.SourceBranch)$branchTag";
             "released"=$true;
             "stable"=$true
             "incoherencies"=$null;
@@ -101,6 +129,12 @@ steps:
         script: |
           . .\eng\common\Scripts\MaestroHelpers.ps1
 
+          $branchTag = ''
+          if ('${{ parameters.BranchTag }}' -ne '')
+          {
+            $branchTag = "-${{ parameters.BranchTag }}"
+          }
+
           $repository = '$(Build.Repository.Uri)'
           if (!(IsGitHubRepo($repository)))
           {
@@ -112,7 +146,7 @@ steps:
 
           # Get the id of the default channel of this branch
           $api = "/api/default-channels"
-          $queryParam = "&repository=" + $repository + "&branch=$(Build.SourceBranch)"
+          $queryParam = "&repository=" + $repository + "&branch=$(Build.SourceBranch)$branchTag"
           $response = &".\eng\common\Scripts\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters $queryParam
           $jsonObj = ConvertFrom-Json $response.Content
           $channelId = $jsonObj.channel.id

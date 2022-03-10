@@ -52,7 +52,10 @@ public:
     {
         auto name = m_name;
         Reset();
-        Open(name, size);
+
+        m_name = name;
+        OpenInternal(size);
+        m_view.get()->size = size;
     }
 
     const size_t Size()

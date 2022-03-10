@@ -34,11 +34,13 @@
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 
-#include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.ApplicationModel.h>
+#include <winrt/Windows.ApplicationModel.Activation.h>
+#include <winrt/Windows.ApplicationModel.Core.h>
 #include <winrt/Windows.ApplicationModel.AppExtensions.h>
 #include <winrt/Windows.Data.Json.h>
 #include <winrt/Windows.Data.Xml.Dom.h>
+#include <winrt/Windows.Management.Core.h>
 #include <winrt/Windows.Management.Deployment.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Storage.Streams.h>
@@ -47,7 +49,9 @@
 #include <MsixDynamicDependency.h>
 
 #include <appmodel.identity.h>
+#include <appmodel.packagegraph.h>
 #include <microsoft.utf8.h>
 #include <security.integritylevel.h>
+#include <windowsappruntime.selfcontained.h>
 
 #define MIDL_NS_PREFIX

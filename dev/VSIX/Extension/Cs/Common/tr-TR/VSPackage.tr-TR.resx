@@ -177,13 +177,13 @@
     <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için bir özel denetim.</value>
   </data>
   <data name="1021" xml:space="preserve">
-    <value>Kullanıcı Denetimi (WinUI 3)</value>
+    <value>Kullanıcı Kontrolü (WinUI 3)</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[Deneysel] Kullanıcı Denetimi (WinUI 3)</value>
+    <value>[Deneysel] Kullanıcı Kontrolü (WinUI 3)</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için bir kullanıcı denetimi.</value>
+    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için bir kullanıcı kontrolü.</value>
   </data>
   <data name="1025" xml:space="preserve">
     <value>Sınıf Kitaplığı (Masaüstünde WinUI 3)</value>

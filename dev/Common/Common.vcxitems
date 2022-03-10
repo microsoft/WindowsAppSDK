@@ -3,7 +3,8 @@
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <ItemsProjectGuid>{D21AEBD4-F136-424E-B7AF-F348F3868E7D}</ItemsProjectGuid>
+    <ItemsProjectGuid>{8828053C-D6EC-4744-8624-F8C676C2D4DF}</ItemsProjectGuid>
+    <ItemsProjectName>Common</ItemsProjectName>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -14,7 +15,14 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.SelfContained.cpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Identity.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Package.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.PackageGraph.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Utf8.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Security.IntegrityLevel.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.SelfContained.h" />
   </ItemGroup>
 </Project>

@@ -21,6 +21,9 @@
     <ClCompile Include="TestMddBootstrap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestMddBootstrapCppInitialize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="TestFilesystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
