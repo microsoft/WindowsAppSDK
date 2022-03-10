@@ -70,9 +70,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             winrt::guid storedComActivatorGuid{ GUID_NULL };
             if (!PushNotificationHelpers::IsPackagedAppScenario())
             {
-                appId = RetrieveNotificationAppId();
                 if (!AppModel::Identity::IsPackagedProcess())
                 {
+                    appId = RetrieveNotificationAppId();
                     THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(appId.c_str(), GUID_NULL));
 
                     storedComActivatorGuid = RegisterComActivatorGuidAndAssets();
@@ -117,15 +117,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         HRESULT hr{ S_OK };
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            std::wstring appId{};
-
-            try
-            {
-                appId = RetrieveNotificationAppId();
-            }
-            CATCH_LOG();
-
-            AppNotificationTelemetry::LogUnregister(hr, appId);
+            AppNotificationTelemetry::LogUnregister(hr);
         }) };
 
         try

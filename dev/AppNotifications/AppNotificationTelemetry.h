@@ -29,14 +29,13 @@ public:
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName(), "AppName"));
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
 
     DEFINE_EVENT_METHOD(LogUnregister)(
-        winrt::hresult hr,
-        std::wstring const& appId) noexcept try
+        winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -45,9 +44,8 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
-                TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName(), "AppName"));
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -65,7 +63,7 @@ public:
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName(), "AppName"));
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -83,7 +81,7 @@ public:
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName(), "AppName"));
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -105,7 +103,7 @@ public:
                 TraceLoggingWideString(tag.c_str(), "Tag"),
                 TraceLoggingWideString(group.c_str(), "Group"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName(), "AppName"));
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -123,7 +121,7 @@ public:
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName(), "AppName"));
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -143,7 +141,7 @@ public:
                 TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingHexUInt32(notificationId, "NotificationId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName(), "AppName"));
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -163,7 +161,7 @@ public:
                 TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingWideString(tag.c_str(), "Tag"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName(), "AppName"));
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -185,7 +183,7 @@ public:
                 TraceLoggingWideString(tag.c_str(), "Tag"),
                 TraceLoggingWideString(group.c_str(), "Group"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName(), "AppName"));
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -203,7 +201,7 @@ public:
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName(), "AppName"));
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -221,7 +219,7 @@ public:
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName(), "AppName"));
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -239,7 +237,7 @@ public:
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName(), "AppName"));
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -252,7 +250,7 @@ private:
     static constexpr ULONGLONG c_logPeriod = 1000; // One second
     static constexpr UINT c_maxEventLimit = 10;
 
-    UINT UpdateLogEventCount() noexcept
+    UINT UpdateLogEventCount()
     {
         ULONGLONG currentTick = GetTickCount64();
 
@@ -270,21 +268,21 @@ private:
         return m_eventCount;
     }
 
-    inline bool IsPackagedApp()
+    inline bool IsPackagedApp() const
     {
-        static const bool isPackagedApp = AppModel::Identity::IsPackagedProcess();
+        static const bool isPackagedApp{ AppModel::Identity::IsPackagedProcess() };
 
         return isPackagedApp;
     }
 
-    inline const wchar_t* GetAppName()
+    inline const std::wstring& GetAppName() const
     {
-        static const std::wstring appName = IsPackagedApp() ? GetAppNamePackaged() : GetAppNameUnpackaged();
+        static const std::wstring appName{ IsPackagedApp() ? GetAppNamePackaged() : GetAppNameUnpackaged() };
 
-        return appName.c_str();
+        return appName;
     }
 
-    std::wstring GetAppNamePackaged() noexcept
+    std::wstring GetAppNamePackaged() const
     {
         wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH]{};
 
@@ -299,17 +297,12 @@ private:
         return appUserModelId;
     }
 
-    PCWSTR CensorFilePath(PCWSTR path) noexcept
+    std::wstring CensorFilePath(const std::wstring& filepath) const
     {
-        if (path)
-        {
-            path = !PathIsFileSpecW(path) ? PathFindFileNameW(path) : path;
-        }
-
-        return path;
+        return { !PathIsFileSpecW(filepath.c_str()) ? PathFindFileNameW(filepath.c_str()) : filepath };
     }
 
-    std::wstring GetAppNameUnpackaged()
+    std::wstring GetAppNameUnpackaged() const
     {
         std::wstring appName;
 
