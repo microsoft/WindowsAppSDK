@@ -16,14 +16,14 @@ class AppNotificationTelemetry : public wil::TraceLoggingProvider
     IMPLEMENT_TELEMETRY_CLASS(AppNotificationTelemetry, AppNotificationTelemetryProvider);
 
 public:
-    DEFINE_EVENT_METHOD(RegisterByAPI)(
+    DEFINE_EVENT_METHOD(LogRegister)(
         winrt::hresult hr,
         std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
             TraceLoggingClassWriteMeasure(
-                "RegisterByAPI",
+                "Register",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
@@ -34,14 +34,14 @@ public:
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(UnregisterByAPI)(
+    DEFINE_EVENT_METHOD(LogUnregister)(
         winrt::hresult hr,
         std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
             TraceLoggingClassWriteMeasure(
-                "UnregisterByAPI",
+                "Unregister",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
@@ -52,14 +52,14 @@ public:
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(UnregisterAllByAPI)(
+    DEFINE_EVENT_METHOD(LogUnregisterAll)(
         winrt::hresult hr,
         std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
             TraceLoggingClassWriteMeasure(
-                "UnregisterAllByAPI",
+                "UnregisterAll",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
@@ -70,14 +70,14 @@ public:
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(ShowByAPI)(
+    DEFINE_EVENT_METHOD(LogShow)(
         winrt::hresult hr,
         std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
             TraceLoggingClassWriteMeasure(
-                "ShowByAPI",
+                "Show",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
@@ -88,7 +88,7 @@ public:
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(UpdateAsyncByAPI)(
+    DEFINE_EVENT_METHOD(LogUpdateAsync)(
             winrt::hresult hr,
             std::wstring const& appId,
             winrt::hstring const& tag,
@@ -97,7 +97,7 @@ public:
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
             TraceLoggingClassWriteMeasure(
-                "UpdateAsyncByAPI",
+                "UpdateAsync",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
@@ -110,14 +110,14 @@ public:
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(SettingByAPI)(
+    DEFINE_EVENT_METHOD(LogSetting)(
         winrt::hresult hr,
         std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
             TraceLoggingClassWriteMeasure(
-                "SettingByAPI",
+                "Setting",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
@@ -128,7 +128,7 @@ public:
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(RemoveByIdAsyncByAPI)(
+    DEFINE_EVENT_METHOD(LogRemoveByIdAsync)(
         winrt::hresult hr,
         std::wstring const& appId,
         uint32_t notificationId) noexcept try
@@ -136,7 +136,7 @@ public:
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
             TraceLoggingClassWriteMeasure(
-                "RemoveByIdAsyncByAPI",
+                "RemoveByIdAsync",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
@@ -148,7 +148,7 @@ public:
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(RemoveByTagAsyncByAPI)(
+    DEFINE_EVENT_METHOD(LogRemoveByTagAsync)(
         winrt::hresult hr,
         std::wstring const& appId,
         winrt::hstring const& tag) noexcept try
@@ -156,7 +156,7 @@ public:
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
             TraceLoggingClassWriteMeasure(
-                "RemoveByTagAsyncByAPI",
+                "RemoveByTagAsync",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
@@ -168,7 +168,7 @@ public:
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(RemoveByTagAndGroupAsyncByAPI)(
+    DEFINE_EVENT_METHOD(LogRemoveByTagAndGroupAsync)(
         winrt::hresult hr,
         std::wstring const& appId,
         winrt::hstring const& tag,
@@ -177,7 +177,7 @@ public:
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
             TraceLoggingClassWriteMeasure(
-                "RemoveByTagAndGroupAsyncByAPI",
+                "RemoveByTagAndGroupAsync",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
@@ -190,14 +190,14 @@ public:
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(RemoveByGroupAsyncByAPI)(
+    DEFINE_EVENT_METHOD(LogRemoveByGroupAsync)(
         winrt::hresult hr,
         std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
             TraceLoggingClassWriteMeasure(
-                "RemoveByGroupAsyncByAPI",
+                "RemoveByGroupAsync",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
@@ -208,14 +208,14 @@ public:
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(RemoveAllAsyncByAPI)(
+    DEFINE_EVENT_METHOD(LogRemoveAllAsync)(
         winrt::hresult hr,
         std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
             TraceLoggingClassWriteMeasure(
-                "RemoveAllAsyncByAPI",
+                "RemoveAllAsync",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
@@ -226,14 +226,14 @@ public:
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(GetAllAsyncByAPI)(
+    DEFINE_EVENT_METHOD(LogGetAllAsync)(
         winrt::hresult hr,
         std::wstring const& appId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
             TraceLoggingClassWriteMeasure(
-                "GetAllAsyncByAPI",
+                "GetAllAsync",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),

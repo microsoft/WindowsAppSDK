@@ -62,7 +62,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         std::wstring appId{};
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationTelemetry::RegisterByAPI(hr, appId);
+            AppNotificationTelemetry::LogRegister(hr, appId);
         }) };
 
         try
@@ -125,7 +125,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             }
             CATCH_LOG();
 
-            AppNotificationTelemetry::UnregisterByAPI(hr, appId);
+            AppNotificationTelemetry::LogUnregister(hr, appId);
         }) };
 
         try
@@ -147,7 +147,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         std::wstring appId{};
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationTelemetry::UnregisterAllByAPI(hr, appId);
+            AppNotificationTelemetry::LogUnregisterAll(hr, appId);
         }) };
 
         try
@@ -267,7 +267,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         std::wstring appId{};
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationTelemetry::ShowByAPI(hr, appId);
+            AppNotificationTelemetry::LogShow(hr, appId);
         }) };
 
         try
@@ -305,7 +305,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         co_await resume_background();
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationTelemetry::UpdateAsyncByAPI(hr, appId, tag, group);
+            AppNotificationTelemetry::LogUpdateAsync(hr, appId, tag, group);
         }) };
 
         try
@@ -347,7 +347,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         std::wstring appId{};
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationTelemetry::SettingByAPI(hr, appId);
+            AppNotificationTelemetry::LogSetting(hr, appId);
         }) };
 
         try
@@ -376,7 +376,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         co_await winrt::resume_background();
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationTelemetry::RemoveByIdAsyncByAPI(hr, appId, notificationId);
+            AppNotificationTelemetry::LogRemoveByIdAsync(hr, appId, notificationId);
         }) };
 
         try
@@ -402,7 +402,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         co_await winrt::resume_background();
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationTelemetry::RemoveByTagAsyncByAPI(hr, appId, tag);
+            AppNotificationTelemetry::LogRemoveByTagAsync(hr, appId, tag);
         }) };
 
         try
@@ -429,7 +429,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         co_await winrt::resume_background();
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationTelemetry::RemoveByTagAndGroupAsyncByAPI(hr, appId, tag, group);
+            AppNotificationTelemetry::LogRemoveByTagAndGroupAsync(hr, appId, tag, group);
         }) };
 
         try
@@ -455,7 +455,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         co_await winrt::resume_background();
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationTelemetry::RemoveByGroupAsyncByAPI(hr, appId);
+            AppNotificationTelemetry::LogRemoveByGroupAsync(hr, appId);
         }) };
 
         try
@@ -479,7 +479,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         co_await winrt::resume_background();
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationTelemetry::RemoveAllAsyncByAPI(hr, appId);
+            AppNotificationTelemetry::LogRemoveAllAsync(hr, appId);
         }) };
 
         try
@@ -503,7 +503,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         co_await winrt::resume_background();
 
         auto logTelemetry{ wil::scope_exit([&](){
-            AppNotificationTelemetry::GetAllAsyncByAPI(hr, appId);
+            AppNotificationTelemetry::LogGetAllAsync(hr, appId);
         }) };
 
         try
