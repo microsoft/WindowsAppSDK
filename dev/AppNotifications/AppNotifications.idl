@@ -1,12 +1,18 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
+#include <TerminalVelocityFeatures-AppNotifications.h>
 
 import "..\AppLifecycle\AppLifecycle.idl";
 
 namespace Microsoft.Windows.AppNotifications
 {
+
+    [contractversion(1)]
+    apicontract WindowsAppNotificationsContract {}
+
     // Event args for the Notification Activation
-    [experimental]
+    [feature(Feature_AppNotifications)]
+    [contract(WindowsAppNotificationsContract, 1)]
     runtimeclass AppNotificationActivatedEventArgs
     {
         // Arguments from the invoked button. Empty for Default Activation with no launch args specified in payload.
@@ -17,7 +23,8 @@ namespace Microsoft.Windows.AppNotifications
     }
 
     // Notification Progress Data
-    [experimental]
+    [feature(Feature_AppNotifications)]
+    [contract(WindowsAppNotificationsContract, 1)]
     runtimeclass AppNotificationProgressData
     {
         // Initializes a new Instance of NotificationProgressData
@@ -42,7 +49,8 @@ namespace Microsoft.Windows.AppNotifications
     }
 
     // The Notification User Setting or Notification Group Policy Setting
-    [experimental]
+    [feature(Feature_AppNotifications)]
+    [contract(WindowsAppNotificationsContract, 1)]
     enum AppNotificationSetting
     {
         Enabled, // Notification is not blocked by settings or group policy
@@ -53,7 +61,8 @@ namespace Microsoft.Windows.AppNotifications
     };
 
     // The Result for a Notification Progress related operation
-    [experimental]
+    [feature(Feature_AppNotifications)]
+    [contract(WindowsAppNotificationsContract, 1)]
     enum AppNotificationProgressResult
     {
         Succeeded, // The progress operation succeeded
@@ -61,14 +70,16 @@ namespace Microsoft.Windows.AppNotifications
     };
 
     // The Priority of the Notification UI associated with it's popup in the Action Centre
-    [experimental]
+    [feature(Feature_AppNotifications)]
+    [contract(WindowsAppNotificationsContract, 1)]
     enum AppNotificationPriority
     {
         Default, // The notification should have default behavior in terms of delivery and display priority during connected standby mode.
         High, // The notification should be treated as high priority. For desktop PCs, this means during connected standby mode the incoming notification can turn on the screen for Surface-like devices if it doesn't have a closed lid detected.
     };
 
-    [experimental]
+    [feature(Feature_AppNotifications)]
+    [contract(WindowsAppNotificationsContract, 1)]
     runtimeclass AppNotification
     {
         // The notification payload representation in xml
@@ -104,7 +115,8 @@ namespace Microsoft.Windows.AppNotifications
     }
 
     // The manager class which encompasses all App Notification API Functionality
-    [experimental]
+    [feature(Feature_AppNotifications)]
+    [contract(WindowsAppNotificationsContract, 1)]
     runtimeclass AppNotificationManager
     {
         // Gets a Default instance of a AppNotificationManager
