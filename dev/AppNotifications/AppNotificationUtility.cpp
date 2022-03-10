@@ -215,6 +215,20 @@ HRESULT Microsoft::Windows::AppNotifications::Helpers::GetActivatorGuid(std::wst
 }
 CATCH_RETURN()
 
+std::wstring Microsoft::Windows::AppNotifications::Helpers::SetDisplayName()
+{
+    std::wstring displayName{};
+    THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, displayName));
+
+    size_t lastBackslashPosition{ displayName.rfind(L"\\") };
+    THROW_HR_IF(E_UNEXPECTED, lastBackslashPosition == std::wstring::npos);
+    displayName = displayName.substr(lastBackslashPosition + 1); // One after the delimiter
+
+    displayName.erase(displayName.find_first_of(L".")); // Remove file extension
+
+    return displayName;
+}
+
 void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring const& appId, std::wstring const& clsid)
 {
     wil::unique_hkey hKey;
@@ -236,56 +250,58 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
     // - DisplayName: Retrieve from Shell. If not specified, fall back to filename.
     // - Icon: Retrieve from Shell. If it's not the case or the file extension is unsupported, then throw.
     winrt::com_ptr<IPropertyStore> propertyStore;
-    wil::unique_hwnd hWindow{ GetConsoleWindow() };
-    THROW_IF_FAILED(SHGetPropertyStoreForWindow(hWindow.get(), IID_PPV_ARGS(propertyStore.put())));
 
     // Retrieve the display name
     std::wstring displayName{};
 
-    wil::unique_prop_variant propVariantDisplayName;
-    // Do not throw in case of failure. We can use the filepath approach below as fallback to set a DisplayName.
-    LOG_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, &propVariantDisplayName));
-    if (propVariantDisplayName.vt == VT_LPWSTR && propVariantDisplayName.pwszVal != nullptr)
-    {
-        displayName = propVariantDisplayName.pwszVal;
-    }
-
-    if (displayName.length() == 0)
-    {
-        THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, displayName));
-
-        size_t lastBackslashPosition{ displayName.rfind(L"\\") };
-        THROW_HR_IF(E_UNEXPECTED, lastBackslashPosition == std::wstring::npos);
-        displayName = displayName.substr(lastBackslashPosition + 1); // One after the delimiter
-
-        displayName.erase(displayName.find_first_of(L".")); // Remove file extension
-    }
-
     // Retrieve the icon
     std::wstring iconFilePath{};
 
-    wil::unique_prop_variant propVariantIcon;
-    // Throw in case of failure, since Icon is mandatory and we don't have a fallback!
-    THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchIconResource, &propVariantIcon));
-    THROW_HR_IF_MSG(E_UNEXPECTED, propVariantIcon.vt == VT_EMPTY, "You must specify an app icon before calling Register().");
+    wil::unique_hwnd hWindow{ GetConsoleWindow() };
 
-    iconFilePath = propVariantIcon.pwszVal;
-
-    // Icon filepaths from Shell APIs have this format: <filepath>,-<index>,
-    // since .ico files can have multiple icons in the same file.
-    // NotificationController doesn't seem to support such format, so let it take the first icon by default.
-    auto iteratorForCommaDelimiter = iconFilePath.find_first_of(L",");
-    if (iteratorForCommaDelimiter != std::wstring::npos) // It may or may not have an index, which is fine.
+    if (hWindow)
     {
-        iconFilePath.erase(iteratorForCommaDelimiter);
+        THROW_IF_FAILED(SHGetPropertyStoreForWindow(hWindow.get(), IID_PPV_ARGS(propertyStore.put())));
+
+        wil::unique_prop_variant propVariantDisplayName;
+        // Do not throw in case of failure. We can use the filepath approach below as fallback to set a DisplayName.
+        LOG_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, &propVariantDisplayName));
+        if (propVariantDisplayName.vt == VT_LPWSTR && propVariantDisplayName.pwszVal != nullptr)
+        {
+            displayName = propVariantDisplayName.pwszVal;
+        }
+        else if (displayName.length() == 0)
+        {
+            displayName = SetDisplayName();
+        }
+
+        wil::unique_prop_variant propVariantIcon;
+        // Throw in case of failure, since Icon is mandatory and we don't have a fallback!
+        THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchIconResource, &propVariantIcon));
+        THROW_HR_IF_MSG(E_UNEXPECTED, propVariantIcon.vt == VT_EMPTY, "You must specify an app icon before calling Register().");
+
+        iconFilePath = propVariantIcon.pwszVal;
+
+        // Icon filepaths from Shell APIs have this format: <filepath>,-<index>,
+        // since .ico files can have multiple icons in the same file.
+        // NotificationController doesn't seem to support such format, so let it take the first icon by default.
+        auto iteratorForCommaDelimiter = iconFilePath.find_first_of(L",");
+        if (iteratorForCommaDelimiter != std::wstring::npos) // It may or may not have an index, which is fine.
+        {
+            iconFilePath.erase(iteratorForCommaDelimiter);
+        }
+
+        auto iteratorForFileExtension = iconFilePath.find_first_of(L".");
+        THROW_HR_IF_MSG(E_UNEXPECTED, iteratorForFileExtension == std::wstring::npos, "You must provide a valid filepath as the app icon.");
+
+        std::wstring iconFileExtension = iconFilePath.substr(iteratorForFileExtension);
+        THROW_HR_IF_MSG(E_UNEXPECTED, iconFileExtension != L".ico" && iconFileExtension != L".png",
+            "You must provide a supported file extension as the icon (.ico or .png).");
     }
-
-    auto iteratorForFileExtension = iconFilePath.find_first_of(L".");
-    THROW_HR_IF_MSG(E_UNEXPECTED, iteratorForFileExtension == std::wstring::npos, "You must provide a valid filepath as the app icon.");
-
-    std::wstring iconFileExtension = iconFilePath.substr(iteratorForFileExtension);
-    THROW_HR_IF_MSG(E_UNEXPECTED, iconFileExtension != L".ico" && iconFileExtension != L".png",
-        "You must provide a supported file extension as the icon (.ico or .png).");
+    else
+    {
+        displayName = SetDisplayName();
+    }
 
     RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.c_str()), REG_EXPAND_SZ, displayName.size() * sizeof(wchar_t));
     RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(iconFilePath.c_str()), REG_EXPAND_SZ, iconFilePath.size() * sizeof(wchar_t));
