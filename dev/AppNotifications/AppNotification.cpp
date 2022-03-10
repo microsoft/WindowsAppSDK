@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "AppNotification.h"
 #include "Microsoft.Windows.AppNotifications.AppNotification.g.cpp"
+#include <TerminalVelocityFeatures-AppNotifications.h>
 
 using namespace winrt::Windows::Data::Xml::Dom;
 
@@ -8,12 +9,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
     AppNotification::AppNotification()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_AppNotifications::IsEnabled());
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::AppNotifications::Feature_AppNotifications::IsEnabled());
     }
 
     AppNotification::AppNotification(hstring const& payload)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_AppNotifications::IsEnabled());
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::AppNotifications::Feature_AppNotifications::IsEnabled());
 
         XmlDocument xmlDocument{};
 

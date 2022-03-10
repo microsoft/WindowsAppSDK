@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Microsoft.Windows.AppNotifications.AppNotificationActivatedEventArgs.g.h"
+#include <TerminalVelocityFeatures-AppNotifications.h>
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
@@ -7,12 +8,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     {
         AppNotificationActivatedEventArgs()
         {
-            THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_AppNotifications::IsEnabled());
+            THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::AppNotifications::Feature_AppNotifications::IsEnabled());
         }
 
         AppNotificationActivatedEventArgs(winrt::hstring const& arguments, winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& userInput) : m_arguments(arguments), m_userInput(userInput)
         {
-            THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_AppNotifications::IsEnabled());
+            THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::AppNotifications::Feature_AppNotifications::IsEnabled());
         };
 
         winrt::hstring Argument() { return m_arguments; };
