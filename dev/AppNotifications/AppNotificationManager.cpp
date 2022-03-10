@@ -47,7 +47,10 @@ using namespace Microsoft::Windows::AppNotifications::Helpers;
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
-    AppNotificationManager::AppNotificationManager() : m_processName(GetCurrentProcessPath()) {}
+    AppNotificationManager::AppNotificationManager() : m_processName(GetCurrentProcessPath())
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_AppNotifications::IsEnabled());
+    }
 
     winrt::Microsoft::Windows::AppNotifications::AppNotificationManager AppNotificationManager::Default()
     {

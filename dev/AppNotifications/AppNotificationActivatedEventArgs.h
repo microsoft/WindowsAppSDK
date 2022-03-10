@@ -5,9 +5,16 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
     struct AppNotificationActivatedEventArgs : AppNotificationActivatedEventArgsT<AppNotificationActivatedEventArgs>
     {
-        AppNotificationActivatedEventArgs() = default;
+        AppNotificationActivatedEventArgs()
+        {
+            THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_AppNotifications::IsEnabled());
+        }
 
-        AppNotificationActivatedEventArgs(winrt::hstring const& arguments, winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& userInput) : m_arguments(arguments), m_userInput(userInput) {};
+        AppNotificationActivatedEventArgs(winrt::hstring const& arguments, winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& userInput) : m_arguments(arguments), m_userInput(userInput)
+        {
+            THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_AppNotifications::IsEnabled());
+        };
+
         winrt::hstring Argument() { return m_arguments; };
         winrt::Windows::Foundation::Collections::IMap<hstring, hstring> UserInput() { return m_userInput; };
 

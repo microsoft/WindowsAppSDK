@@ -11,7 +11,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     struct AppNotification : AppNotificationT<AppNotification, IAppNotificationInternal>
     {
-        AppNotification() = default;
+        AppNotification();
 
         AppNotification(hstring const& payload);
         hstring Tag();

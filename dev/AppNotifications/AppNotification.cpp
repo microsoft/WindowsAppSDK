@@ -6,8 +6,15 @@ using namespace winrt::Windows::Data::Xml::Dom;
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
+    AppNotification::AppNotification()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_AppNotifications::IsEnabled());
+    }
+
     AppNotification::AppNotification(hstring const& payload)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_AppNotifications::IsEnabled());
+
         XmlDocument xmlDocument{};
 
         // We call LoadXml to verify the payload is xml
