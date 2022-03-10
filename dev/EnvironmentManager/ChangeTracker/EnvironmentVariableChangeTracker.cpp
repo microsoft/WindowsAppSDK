@@ -44,13 +44,19 @@ namespace winrt::Microsoft::Windows::System::implementation
     {
         if (m_ShouldTrackChange)
         {
-            wil::unique_hkey regLocationToWriteChange{ GetKeyForTrackingChange(nullptr) };
+            DWORD disposition{};
+            wil::unique_hkey regLocationToWriteChange{ GetKeyForTrackingChange(&disposition) };
 
-            std::wstring originalValue{ GetOriginalValueOfEV() };
-            RETURN_IF_WIN32_ERROR(RegSetValueEx(regLocationToWriteChange.get(),
-                L"PreviousValue", 0, REG_SZ,
-                reinterpret_cast<const BYTE*>(originalValue.c_str()),
-                static_cast<DWORD>((originalValue.size() + 1) * sizeof(wchar_t))));
+            // Do not update previous value if this package wrote
+            // to this EV once before.
+            if (disposition == REG_CREATED_NEW_KEY)
+            {
+                std::wstring originalValue{ GetOriginalValueOfEV() };
+                RETURN_IF_WIN32_ERROR(RegSetValueEx(regLocationToWriteChange.get(),
+                    L"PreviousValue", 0, REG_SZ,
+                    reinterpret_cast<const BYTE*>(originalValue.c_str()),
+                    static_cast<DWORD>((originalValue.size() + 1) * sizeof(wchar_t))));
+            }
 
             RETURN_IF_WIN32_ERROR(RegSetValueEx(regLocationToWriteChange.get(),
                 L"CurrentValue", 0, REG_SZ,

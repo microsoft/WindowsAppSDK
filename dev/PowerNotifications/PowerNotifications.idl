@@ -3,7 +3,11 @@
 
 namespace Microsoft.Windows.System.Power
 {
+    [contractversion(2)]
+    apicontract Notifications{};
+
     // Enums duplicated from IPowerManagerStatics
+    [contract(Notifications, 1)]
     enum EnergySaverStatus
     {
         Uninitialized = 0,
@@ -12,6 +16,7 @@ namespace Microsoft.Windows.System.Power
         On
     };
 
+    [contract(Notifications, 1)]
     enum BatteryStatus
     {
         NotPresent = 0,
@@ -20,6 +25,7 @@ namespace Microsoft.Windows.System.Power
         Charging
     };
 
+    [contract(Notifications, 1)]
     enum PowerSupplyStatus
     {
         NotPresent = 0,
@@ -28,12 +34,14 @@ namespace Microsoft.Windows.System.Power
     };
 
     // Enums based on on PowerSettingRegisterNotification's state
+    [contract(Notifications, 1)]
     enum PowerSourceKind
     {
         AC = 0,
         DC
     };
 
+    [contract(Notifications, 1)]
     enum DisplayStatus
     {
         Off = 0,
@@ -41,6 +49,7 @@ namespace Microsoft.Windows.System.Power
         Dimmed
     };
 
+    [contract(Notifications, 1)]
     enum EffectivePowerMode
     {
         // EFFECTIVE_POWER_MODE_V1 values
@@ -54,12 +63,14 @@ namespace Microsoft.Windows.System.Power
         MixedReality
     };
 
+    [contract(Notifications, 1)]
     enum UserPresenceStatus
     {
         Present = 0,
         Absent
     };
 
+    [contract(Notifications, 1)]
     enum SystemSuspendStatus
     {
         Uninitialized = 0,
@@ -68,6 +79,7 @@ namespace Microsoft.Windows.System.Power
         ManualResume
     };
 
+    [contract(Notifications, 1)]
     static runtimeclass PowerManager
     {
         // Properties and events duplicated from IPowerManagerStatics.
@@ -96,8 +108,12 @@ namespace Microsoft.Windows.System.Power
         static event Windows.Foundation.EventHandler<Object> SystemIdleStatusChanged;
 
         static Windows.Foundation.IAsyncOperation<EffectivePowerMode> EffectivePowerMode{ get; };
-        static EffectivePowerMode EffectivePowerMode2{ get; };
         static event Windows.Foundation.EventHandler<Object> EffectivePowerModeChanged;
+
+        [contract(Notifications, 2)]
+        {
+            static EffectivePowerMode EffectivePowerMode2{ get; };
+        }
 
         static UserPresenceStatus UserPresenceStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> UserPresenceStatusChanged;

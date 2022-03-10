@@ -12,9 +12,5 @@
         <name>Feature_EnvironmentManager</name>
         <description>EnvironmentManager for the WindowsAppRuntime</description>
         <state>AlwaysEnabled</state>
-        <alwaysDisabledChannelTokens>
-            <channelToken>Preview</channelToken>
-            <channelToken>Stable</channelToken>
-        </alwaysDisabledChannelTokens>
     </feature>
 </features>

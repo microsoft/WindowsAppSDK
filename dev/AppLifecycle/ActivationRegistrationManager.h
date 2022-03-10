@@ -11,6 +11,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     static PCWSTR c_argumentSuffix{ L":" };
     static PCWSTR c_msProtocolArgumentString{ L"ms-protocol" };
     static PCWSTR c_pushProtocolArgumentString{ L"WindowsAppRuntimePushServer" };
+    static PCWSTR c_appNotificationProtocolArgumentString{ L"AppNotificationActivated" };
     static PCWSTR c_runKeyPath{ LR"(Software\Microsoft\Windows\CurrentVersion\Run\)" };
 
     struct ActivationRegistrationManager

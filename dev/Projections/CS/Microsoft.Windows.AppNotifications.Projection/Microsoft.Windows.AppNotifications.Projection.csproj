@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net5.0-windows10.0.17763.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <Platforms>x64;x86;arm64</Platforms>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.Common" Version="1.1.0-beta-21055-01">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.0-beta-20204-02">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <CSWinRTIncludes>Microsoft.Windows.AppNotifications</CSWinRTIncludes>
+    <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
+    <WindowsSdkPackageVersion>10.0.17763.$(CsWinRTDependencyWindowsSdkPackagePackageVersion)</WindowsSdkPackageVersion>
+  </PropertyGroup>
+
+  <!-- Configure the release build binary to be as required by internal API scanning tools. -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CsWinRTInputs Include="$(OutDir)/**/*.winmd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Windows.AppNotifications">
+      <HintPath>$(OutDir)..\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppNotifications.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+  </ItemGroup>
+
+</Project>

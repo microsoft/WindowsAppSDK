@@ -5,8 +5,11 @@
 
 #include <wil/result.h>
 #include <wil/resource.h>
+#include <wil/result_macros.h>
 #include <wil/com.h>
 #include <wil/win32_helpers.h>
+#include <wil/token_helpers.h>
+#include <wil/Tracelogging.h>
 
 #include <iostream>
 #include <filesystem>
@@ -25,4 +28,9 @@
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
 
+#include <Security.IntegrityLevel.h>
+
+#include "tracelogging.h"
+#include "InstallActivityContext.h"
+#include "console.h"
 #include "WindowsAppRuntime-License.h"
