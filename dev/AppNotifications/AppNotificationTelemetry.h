@@ -294,13 +294,8 @@ private:
     {
         wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH]{};
 
-        UINT32 appUserModelIdSize = ARRAYSIZE(appUserModelId);
-        auto result = GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId);
-        if (result != ERROR_SUCCESS)
-        {
-            wcscpy_s(appUserModelId, L"AppUserModelId not found");
-            LOG_WIN32(result);
-        }
+        UINT32 appUserModelIdSize{ ARRAYSIZE(appUserModelId) };
+        THROW_IF_WIN32_ERROR(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
 
         return appUserModelId;
     }
@@ -315,17 +310,8 @@ private:
         std::wstring appName;
 
         wil::unique_cotaskmem_string processName;
-        auto result = wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processName);
-        if (result == ERROR_SUCCESS)
-        {
-            appName = CensorFilePath(processName.get());
-        }
-        else
-        {
-            appName = L"ModuleFileName not found";
-            LOG_WIN32(result);
-        }
+        THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processName));
 
-        return appName;
+        return CensorFilePath(processName.get());
     }
 };
