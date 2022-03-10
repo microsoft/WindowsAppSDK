@@ -699,7 +699,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     IFACEMETHODIMP PushNotificationManager::InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept try
     {
-        auto args = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length);
+        auto args { winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length) };
 
         auto lock{ m_lock.lock_shared() };
         if (m_foregroundHandlers)
@@ -769,8 +769,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         ToastNotifications::INotificationProperties* notificationProperties,
         ToastNotifications::INotificationTransientProperties* notificationTransientProperties) noexcept try
     {
+        THROW_HR_IF(E_UNEXPECTED, !PushNotificationHelpers::IsPackagedAppScenario());
+
         DWORD notificationId{ 0 };
-        ToastNotifications_PostToast(PushNotificationHelpers::GetAppUserModelId().get(), notificationProperties, notificationTransientProperties, &notificationId);
+        THROW_IF_FAILED(ToastNotifications_PostToast(PushNotificationHelpers::GetAppUserModelId().get(), notificationProperties, notificationTransientProperties, &notificationId));
         return S_OK;
     }
     CATCH_RETURN()
