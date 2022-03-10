@@ -1,7 +1,6 @@
 ﻿#include "pch.h"
 #include "AppNotificationProgressData.h"
 #include "Microsoft.Windows.AppNotifications.AppNotificationProgressData.g.cpp"
-#include <TerminalVelocityFeatures-AppNotifications.h>
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {

@@ -8,7 +8,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         AppNotificationActivatedEventArgs() = default;
 
         AppNotificationActivatedEventArgs(winrt::hstring const& arguments, winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& userInput) : m_arguments(arguments), m_userInput(userInput) {};
-
         winrt::hstring Argument() { return m_arguments; };
         winrt::Windows::Foundation::Collections::IMap<hstring, hstring> UserInput() { return m_userInput; };
 
