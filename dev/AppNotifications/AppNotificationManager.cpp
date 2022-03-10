@@ -18,6 +18,7 @@
 #include <winerror.h>
 #include <string_view>
 #include <winrt/Windows.Foundation.Collections.h>
+#include <TerminalVelocityFeatures-AppNotifications.h>
 
 using namespace std::literals;
 
@@ -47,13 +48,10 @@ using namespace Microsoft::Windows::AppNotifications::Helpers;
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
-    AppNotificationManager::AppNotificationManager() : m_processName(GetCurrentProcessPath())
-    {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::AppNotifications::Feature_AppNotifications::IsEnabled());
-    }
-
     winrt::Microsoft::Windows::AppNotifications::AppNotificationManager AppNotificationManager::Default()
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::AppNotifications::Feature_AppNotifications::IsEnabled());
+
         static auto appNotificationManager{winrt::make<AppNotificationManager>()};
         return appNotificationManager;
     }

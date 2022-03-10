@@ -11,7 +11,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
     struct AppNotificationManager : AppNotificationManagerT<AppNotificationManager, INotificationActivationCallback>
     {
-        AppNotificationManager();
+        AppNotificationManager() = default;
 
         static winrt::Microsoft::Windows::AppNotifications::AppNotificationManager Default();
         void Register();

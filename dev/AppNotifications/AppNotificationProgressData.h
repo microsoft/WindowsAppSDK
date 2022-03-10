@@ -5,7 +5,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
     struct AppNotificationProgressData : AppNotificationProgressDataT<AppNotificationProgressData>
     {
-        AppNotificationProgressData();
+        AppNotificationProgressData() = default;
         AppNotificationProgressData(uint32_t sequenceNumber);
         uint32_t SequenceNumber();
         void SequenceNumber(uint32_t sequenceNumber);

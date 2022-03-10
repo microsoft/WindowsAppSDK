@@ -10,7 +10,7 @@
     <!-- Enabled variants -->
     <feature>
         <name>Feature_AppNotifications</name>
-        <description>App Notifications for the WindowsAppRuntime</description>
+        <description>Enables Local App sourced Notifications on the device</description>
         <state>AlwaysEnabled</state>
     </feature>
 </features>
