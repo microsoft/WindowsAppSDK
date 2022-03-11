@@ -75,7 +75,9 @@ to make sure
 1. All APIs have contracts
 2. Each contract is correct. This means version and name.
 3. All Contracts and dependencies work with each other.
-4 Contracts/Types in releases honor the source/binary/behavior compatibility rules e.g. contracts/types in a stable release doesn't change in future releases of the same major version (e.g. contracts/types in 1.1 don't change in 1.2, 1.3, ...)
+4. Contracts/Types in releases honor the source/binary/behavior compatibility rules e.g. 
+contracts/types in a stable release doesn't change in future releases of the same major version
+(e.g. contracts/types in 1.1 don't change in 1.2, 1.3, ...)
 
 The builds that check for contracts compatibility are:
 1. Nightly
