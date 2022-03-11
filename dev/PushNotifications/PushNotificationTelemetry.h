@@ -4,7 +4,6 @@
 #pragma once
 
 #include <WindowsAppRuntimeInsights.h>
-#include <wrl\wrappers\corewrappers.h>
 
 DECLARE_TRACELOGGING_CLASS(PushNotificationTelemetryProvider,
     "Microsoft.WindowsAppSDK.Notifications.PushNotificationTelemetry",
@@ -16,13 +15,10 @@ class PushNotificationTelemetry : public wil::TraceLoggingProvider
 {
     IMPLEMENT_TELEMETRY_CLASS(PushNotificationTelemetry, PushNotificationTelemetryProvider);
 
-    using RegistrationActivators = winrt::Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators;
-
 public:
     DEFINE_EVENT_METHOD(ChannelRequestedByApi)(
         winrt::hresult hr,
-        const winrt::guid& remoteId,
-        bool usingLegacyImplementation) noexcept try
+        const winrt::guid& remoteId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -32,7 +28,6 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingGuid(remoteId, "RemoteId"),
-                TraceLoggingBool(usingLegacyImplementation, "usingLegacyImplementation"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
@@ -56,8 +51,7 @@ public:
     CATCH_LOG()
 
     DEFINE_EVENT_METHOD(ActivatorRegisteredByApi)(
-        winrt::hresult hr,
-        RegistrationActivators activators) noexcept try
+        winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -66,8 +60,6 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
-                TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationActivators>>(activators),
-                    "RegistrationActivators"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
@@ -76,8 +68,7 @@ public:
 
 
     DEFINE_EVENT_METHOD(ActivatorUnregisteredByApi)(
-        winrt::hresult hr,
-        RegistrationActivators activators) noexcept try
+        winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -86,8 +77,6 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
-                TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationActivators>>(activators),
-                    "RegistrationActivators"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
@@ -95,7 +84,7 @@ public:
     CATCH_LOG()
 
 private:
-    Microsoft::WRL::Wrappers::CriticalSection m_lock;
+    wil::srwlock m_lock;
     ULONGLONG m_lastFiredTick = 0;
     UINT m_eventCount = 0;
 
@@ -106,7 +95,7 @@ private:
     {
         ULONGLONG currentTick = GetTickCount64();
 
-        auto lock = m_lock.Lock();
+        auto lock{ m_lock.lock_exclusive() };
 
         // Only fire limiting events every log period to prevent too many events from being fired
         if ((currentTick - m_lastFiredTick) > c_logPeriod)

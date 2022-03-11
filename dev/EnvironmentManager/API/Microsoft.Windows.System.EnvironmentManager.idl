@@ -5,7 +5,6 @@
 
 namespace Microsoft.Windows.System
 {
-    [feature(Feature_EnvironmentManager)]
     runtimeclass EnvironmentManager
     {
         static EnvironmentManager GetForProcess();
