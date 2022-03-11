@@ -86,15 +86,8 @@ namespace Test::PushNotifications
 
         TEST_METHOD(LaunchLRP_FromCoCreateInstance)
         {
-            // Poll the app status every second. It should be alive for 5 seconds.
-            for (int i = 0; i < 5; i++)
-            {
-                VerifyLRP_IsRunning(true);
-                Sleep(1000);
-            }
-
-            // Verify the LRP is not running.
-            VerifyLRP_IsRunning(false);
+            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
+            VERIFY_IS_NOT_NULL(notificationPlatform.get());
         }
 
         TEST_METHOD(LaunchLRP_FromStartupTask)
