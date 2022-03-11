@@ -114,8 +114,8 @@ again.
     if (DeploymentManager.GetStatus().Status != DeploymentStatus.Ok)
     {
         // Initialize does a status check, and if the status is not OK it will attempt to get
-        // the WindowsAppRuntime into a good state by deploying packages. Unlike a simple
-        // status check, Initialize can sometimes take several seconds to deploy the packages.
+        // the WindowsAppRuntime into a good state. Unlike a simple status check, Initialize can
+        // sometimes take several seconds to deploy the packages.
         // These should be run on a separate thread so as not to hang your app while the
         // packages deploy.
         var initializeTask = Task.Run(() => DeploymentManager.Initialize());
