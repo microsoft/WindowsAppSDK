@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
+#include <cwctype>
 #include "AppNotificationUtility.h"
 #include <winrt/Windows.ApplicationModel.Core.h>
 #include <winrt/Windows.Foundation.h>
@@ -226,6 +227,8 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::SetDisplayNameBasedO
 
     displayName.erase(displayName.find_first_of(L".")); // Remove file extension
 
+    displayName[0] = std::towupper(displayName[0]);
+
     return displayName;
 }
 
@@ -248,6 +251,7 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
 
     // Retrieve the display name
     std::wstring displayName{};
+    displayName = SetDisplayNameBasedOnProcessName();
 
     // Retrieve the icon
     std::wstring iconFilePath{};
@@ -264,14 +268,10 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
 
         wil::unique_prop_variant propVariantDisplayName;
         // Do not throw in case of failure. We can use the filepath approach below as fallback to set a DisplayName.
-        LOG_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, &propVariantDisplayName));
+        THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, &propVariantDisplayName));
         if (propVariantDisplayName.vt == VT_LPWSTR && propVariantDisplayName.pwszVal != nullptr)
         {
             displayName = propVariantDisplayName.pwszVal;
-        }
-        else if (displayName.empty())
-        {
-            displayName = SetDisplayNameBasedOnProcessName();
         }
 
         wil::unique_prop_variant propVariantIcon;
@@ -295,10 +295,6 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
         std::wstring iconFileExtension{ iconFilePath.substr(iteratorForFileExtension) };
         THROW_HR_IF_MSG(E_UNEXPECTED, iconFileExtension != L".ico" && iconFileExtension != L".png",
             "You must provide a supported file extension as the icon (.ico or .png).");
-    }
-    else
-    {
-        displayName = SetDisplayNameBasedOnProcessName();
     }
 
     RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.c_str()), REG_EXPAND_SZ, displayName.size() * sizeof(wchar_t));
