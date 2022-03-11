@@ -276,7 +276,7 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
 
         wil::unique_prop_variant propVariantIcon;
         THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchIconResource, &propVariantIcon));
-        THROW_HR_IF_MSG(E_UNEXPECTED, propVariantIcon.vt == VT_EMPTY, "You must specify a valid image filepath before calling Register().");
+        THROW_HR_IF_MSG(E_UNEXPECTED, (propVariantIcon.vt != VT_LPWSTR || propVariantIcon.pwszVal == nullptr), "You must specify a valid image filepath before calling Register().");
 
         iconFilePath = propVariantIcon.pwszVal;
 
