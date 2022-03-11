@@ -278,11 +278,11 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
         wil::unique_prop_variant propVariantIcon;
         THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchIconResource, &propVariantIcon));
 
-        THROW_HR_IF_MSG(E_UNEXPECTED, (propVariantIcon.vt == VT_EMPTY || propVariantIcon.pwszVal == nullptr), "You must specify a valid image filepath before calling Register().");
+        THROW_HR_IF_MSG(E_UNEXPECTED, (propVariantIcon.vt == VT_EMPTY || propVariantIcon.pwszVal == nullptr), "Icon is not specified");
 
-        THROW_HR_IF_MSG(E_UNEXPECTED, propVariantIcon.vt != VT_LPWSTR, "Provide a valid zero-terminated string of UNICODE characters");
+        THROW_HR_IF_MSG(E_UNEXPECTED, propVariantIcon.vt != VT_LPWSTR, "Icon should be a valid Unicode string");
 
-        THROW_HR_IF_MSG(E_UNEXPECTED, wcslen(propVariantIcon.pwszVal) == 0, "Provide a non empty icon string");
+        THROW_HR_IF_MSG(E_UNEXPECTED, wcslen(propVariantIcon.pwszVal) == 0, "Icon is an empty string");
 
         iconFilePath = propVariantIcon.pwszVal;
 
