@@ -25,7 +25,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                                                                     INotificationManagerDeserializer>
     {
         PushNotificationManager();
-
+        ~PushNotificationManager();
         static winrt::Microsoft::Windows::PushNotifications::PushNotificationManager Default();
         static winrt::Windows::Foundation::IInspectable PushDeserialize(winrt::Windows::Foundation::Uri const& uri);
         void Register();

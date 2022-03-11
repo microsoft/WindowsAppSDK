@@ -85,6 +85,22 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
+    PushNotificationManager::~PushNotificationManager()
+    {
+        bool comActivatorRegistration{ false };
+        bool singletonForegroundRegistration{ false };
+        {
+            auto lock{ m_lock.lock_shared() };
+            comActivatorRegistration = bool(m_comActivatorRegistration);
+            singletonForegroundRegistration = m_singletonForegroundRegistration;
+        }
+
+        if (comActivatorRegistration || singletonForegroundRegistration)
+        {
+            Unregister();
+        }
+    }
+
     winrt::hresult CreateChannelWithRemoteIdHelper(wil::unique_cotaskmem_string const& appId, const winrt::guid& remoteId, ChannelDetails& channelInfo) noexcept try
     {
         HRESULT operationalCode{};
