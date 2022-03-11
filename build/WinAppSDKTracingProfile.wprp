@@ -49,6 +49,7 @@
     <EventProvider Id="EventProvider-Microsoft.WindowsAppSdk.MrtCore.Runtime" Name="297d729d-7733-5616-aafc-9a3c8b0d5f22"/>
     <EventProvider Id="EventProvider-Microsoft.WindowsAppSDK.Notifications.PushNotificationTelemetry" Name="7c1b07ef-a7c0-56d1-5456-385ebd4412b2"/>
     <EventProvider Id="EventProvider-Microsoft.WindowsAppSDK.System.PowerNotifications" Name="a1b12e2c-12d9-564e-2ea1-2894ffcc7cc5"/>   
+    <EventProvider Id="EventProvider-Microsoft.WindowsAppRuntimeInstaller" Name="7028b782-2ccf-5a66-0008-9b040616d425"/>   
 
     <Profile Id="WinAppSDKTracingProfile.Verbose.File" Name="WinAppSDKTracingProfile" Description="WinAppSDK Tracing Profile" LoggingMode="File" DetailLevel="Verbose" Default="true">
       <Collectors Operation="Add">
@@ -68,6 +69,7 @@
             <EventProviderId Value="EventProvider-Microsoft.WindowsAppSdk.MrtCore.Runtime"/>
             <EventProviderId Value="EventProvider-Microsoft.WindowsAppSDK.Notifications.PushNotificationTelemetry"/>
             <EventProviderId Value="EventProvider-Microsoft.WindowsAppSDK.System.PowerNotifications"/>
+            <EventProviderId Value="EventProvider-Microsoft.WindowsAppRuntimeInstaller"/>
           </EventProviders>
         </EventCollectorId>
       </Collectors>
