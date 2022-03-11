@@ -267,16 +267,22 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
         THROW_IF_FAILED(SHGetPropertyStoreForWindow(hWindow.get(), IID_PPV_ARGS(propertyStore.put())));
 
         wil::unique_prop_variant propVariantDisplayName;
-        // Do not throw in case of failure. We can use the filepath approach below as fallback to set a DisplayName.
+        // Do not throw in case of failure, default to the filepath approach below as fallback to set a DisplayName.
         THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, &propVariantDisplayName));
-        if (propVariantDisplayName.vt == VT_LPWSTR && propVariantDisplayName.pwszVal != nullptr)
+
+        if (propVariantDisplayName.vt == VT_LPWSTR && propVariantDisplayName.pwszVal != nullptr && wcslen(propVariantDisplayName.pwszVal) > 0)
         {
             displayName = propVariantDisplayName.pwszVal;
         }
 
         wil::unique_prop_variant propVariantIcon;
         THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchIconResource, &propVariantIcon));
-        THROW_HR_IF_MSG(E_UNEXPECTED, (propVariantIcon.vt != VT_LPWSTR || propVariantIcon.pwszVal == nullptr), "You must specify a valid image filepath before calling Register().");
+
+        THROW_HR_IF_MSG(E_UNEXPECTED, (propVariantIcon.vt == VT_EMPTY || propVariantIcon.pwszVal == nullptr), "You must specify a valid image filepath before calling Register().");
+
+        THROW_HR_IF_MSG(E_UNEXPECTED, propVariantIcon.vt != VT_LPWSTR, "Provide a valid zero-terminated string of UNICODE characters");
+
+        THROW_HR_IF_MSG(E_UNEXPECTED, wcslen(propVariantIcon.pwszVal) == 0, "Provide a non empty icon string");
 
         iconFilePath = propVariantIcon.pwszVal;
 
