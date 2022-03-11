@@ -61,5 +61,5 @@ namespace Microsoft::Windows::AppNotifications::Helpers
 
     winrt::Microsoft::Windows::AppNotifications::AppNotification ToastNotificationFromToastProperties(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* properties);
 
-    std::wstring SetDisplayName();
+    std::wstring SetDisplayNameBasedOnProcessName();
 }
