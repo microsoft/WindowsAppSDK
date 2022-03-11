@@ -140,18 +140,18 @@ and if there are any currently running process(es) associated with these WinAppS
 other words, if any of the WinAppSDK packages to be updated are currently in use), then this API
 will fail installing that WinAppSDK package. But this update to the WinAppSDK packages can be forced
 by using DeploymentInitializeOptions object and setting ForceDeployment option before passing it to
-this API. This option when set will shutdown the application(s) associated with WinAppSDK packages,
+this API. This option when set will shut down the application(s) associated with WinAppSDK packages,
 update the WinAppSDK packages and restart the application(s).
 
 // OPENISSUE: If this option is set when updating main package, then whether the out of process com
-server from the main package such as push Notifications needs to be explictly restarted needs to be
+server from the main package such as push Notifications needs to be explicitly restarted needs to be
 understood. If restart it is needed, then the API will handle explicitly restarting it. This is
 under investigation.
 
 When the API is updating framework package and ForceDeployment option is set, then all dependent
 packages that are NOT currently in use will be immediately re-installed to refer to the updated
 framework package and all dependent packages that are currently in use will be re-installed, after
-they shutdown, to refer to the updated framework package.
+they shut down, to refer to the updated framework package.
 
 ```C#
     if (DeploymentManager.GetStatus().Status != DeploymentStatus.Ok)
@@ -205,13 +205,13 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         HRESULT ExtendedError{ get; };
     };
 
-    // TODO: https://task.ms/38272182 - add APIcontract once WinAppSDK's rules for them are defined [contract(name,version)]
+-   // TODO: https://task.ms/38272182 - add APIcontract once WinAppSDK's rules for them are defined [contract(name,version)]
     /// This object is used to specify deployment options to apply when using DeploymentManager's
     /// Initialize method
     runtimeClass DeploymentInitializeOptions
     {
         /// Gets or sets a value that indicates whether the processes associated with the
-        /// WindowsAppSDK main and singleton packages will be shutdown forcibly if they are
+        /// WindowsAppSDK main and singleton packages will be shut down forcibly if they are
         /// currently in use, when registering the WinAppSDK packages.
         Boolean ForceDeployment;
     };
@@ -228,7 +228,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 
         /// Checks the status of the WindowsAppRuntime of the current package and attempts to
         /// register any missing WinAppSDK packages, while applying the DeploymentInitializeOptions
-        /// passed in
+        /// passed in.
         static DeploymentResult Initialize(Microsoft.Windows.ApplicationModel.WindowsAppRuntime::DeploymentInitializeOptions deploymentInitializeOptions);
     };
 }
