@@ -184,7 +184,11 @@ they shut down, to refer to the updated framework package.
 ```C# (but really MIDL3)
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
+    [contractversion(2)]
+    apicontract Deployment{};
+
     /// Represents the current Deployment status of the WindowsAppRuntime
+    [contract(Deployment, 1)]
     enum DeploymentStatus
     {
         Unknown = 0,
@@ -194,6 +198,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     };
 
     /// Represents the result of a Deployment Manager method.
+    [contract(Deployment, 1)]
     runtimeclass DeploymentResult
     {
         DeploymentResult(DeploymentStatus status, HRESULT extendedError);
@@ -205,11 +210,13 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         HRESULT ExtendedError{ get; };
     };
 
--   // TODO: https://task.ms/38272182 - add APIcontract once WinAppSDK's rules for them are defined [contract(name,version)]
     /// This object is used to specify deployment options to apply when using DeploymentManager's
     /// Initialize method
-    runtimeClass DeploymentInitializeOptions
+    [contract(Deployment, 2)]
+    runtimeclass DeploymentInitializeOptions
     {
+        DeploymentInitializeOptions();
+
         /// Gets or sets a value that indicates whether the processes associated with the
         /// WindowsAppSDK main and singleton packages will be shut down forcibly if they are
         /// currently in use, when registering the WinAppSDK packages.
@@ -217,6 +224,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     };
 
     /// Used to query deployment information for WindowsAppRuntime
+    [contract(Deployment, 1)]
     static runtimeclass DeploymentManager
     {
         /// Returns the current deployment status of the current package's Windows App Runtime.
@@ -224,12 +232,15 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 
         /// Checks the status of the WindowsAppRuntime of the current package and attempts to
         /// register any missing WinAppSDK packages.
+        [overload("Initialize")]
         static DeploymentResult Initialize();
 
         /// Checks the status of the WindowsAppRuntime of the current package and attempts to
         /// register any missing WinAppSDK packages, while applying the DeploymentInitializeOptions
         /// passed in.
-        static DeploymentResult Initialize(Microsoft.Windows.ApplicationModel.WindowsAppRuntime::DeploymentInitializeOptions deploymentInitializeOptions);
+        [contract(Deployment, 2)]
+        [overload("Initialize")]
+        static DeploymentResult Initialize(Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions deploymentInitializeOptions);
     };
 }
 ```
