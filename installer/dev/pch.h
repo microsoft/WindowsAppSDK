@@ -12,6 +12,7 @@
 #include <wil/Tracelogging.h>
 
 #include <iostream>
+#include <sstream>
 #include <filesystem>
 #include <processenv.h>
 #include <shellapi.h>

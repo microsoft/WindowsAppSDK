@@ -60,4 +60,6 @@ namespace Microsoft::Windows::AppNotifications::Helpers
     wil::unique_cotaskmem_string ConvertUtf8StringToWideString(unsigned long length, const BYTE* utf8String);
 
     winrt::Microsoft::Windows::AppNotifications::AppNotification ToastNotificationFromToastProperties(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* properties);
+
+    std::wstring SetDisplayNameBasedOnProcessName();
 }

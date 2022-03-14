@@ -18,6 +18,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotification.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationProgressData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationActivatedEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationTelemetry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationUtility.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NotificationProperties.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NotificationTransientProperties.h" />
