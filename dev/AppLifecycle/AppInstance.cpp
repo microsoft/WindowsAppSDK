@@ -579,7 +579,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         // We keep the mutex as a live member to ensure all other instances continue
         // to get an 'open' instead of a 'create' due to it already existing.
-        bool currentIsKeyOwner = m_keyCreationMutex.try_create(mutexName.c_str(), 0, MUTEX_ALL_ACCESS);
+        // try_create returns true for a named mutex that already exists
+        // and so we can't rely on try_create and have to explicitly check GetLastError().
+        m_keyCreationMutex.create(mutexName.c_str(), 0, MUTEX_ALL_ACCESS);
+
+        bool currentIsKeyOwner = (GetLastError() != ERROR_ALREADY_EXISTS);
         if (currentIsKeyOwner)
         {
             m_key.Resize((key.length() + 1) * sizeof(key.data()[0]));
