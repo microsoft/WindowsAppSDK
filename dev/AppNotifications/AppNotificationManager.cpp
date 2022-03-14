@@ -53,10 +53,36 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Microsoft::Windows::AppNotifications::AppNotificationManager AppNotificationManager::Default()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::AppNotifications::Feature_AppNotifications::IsEnabled());
+        auto appProperties{ winrt::CoreApplication::Properties() };
 
-        static auto appNotificationManager{winrt::make<AppNotificationManager>()};
-        return appNotificationManager;
+        static wil::srwlock lock;
+
+        auto criticalSection{ lock.lock_exclusive() };
+        auto storedAppNotificationManager{ appProperties.TryLookup(STORED_APPNOTIFICATION_MANAGER_KEY) };
+        if (storedAppNotificationManager)
+        {
+            return storedAppNotificationManager.as<winrt::Microsoft::Windows::AppNotifications::AppNotificationManager>();
+        }
+        else
+        {
+            // Store the AppNotificationManager in the COM static store
+            auto appNotificationManager{ winrt::make<AppNotificationManager>() };
+            appProperties.Insert(STORED_APPNOTIFICATION_MANAGER_KEY, appNotificationManager);
+            return appNotificationManager;
+        }
+    }
+
+    winrt::Windows::Foundation::IInspectable AppNotificationManager::AppNotificationDeserialize(winrt::Windows::Foundation::Uri const& uri)
+    {
+        auto appNotificationManager{ Default() };
+        auto deserializer{ appNotificationManager.as<INotificationManagerDeserializer>() };
+        return deserializer->Deserialize(uri);
+    }
+
+    winrt::Windows::Foundation::IInspectable AppNotificationManager::Deserialize(winrt::Windows::Foundation::Uri const& /* uri */)
+    {
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec));
+        return m_activatedEventArgs;
     }
 
     void AppNotificationManager::Register()
@@ -90,7 +116,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             }
 
             // Create event handle before COM Registration otherwise if a notification arrives will lead to race condition
-            GetWaitHandleForArgs().create();
+            m_waitHandleForArgs.create();
 
             {
                 auto lock{ m_lock.lock_exclusive() };
@@ -236,9 +262,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             }
             else
             {
-                auto appProperties = winrt::CoreApplication::Properties();
-                appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
-                SetEvent(GetWaitHandleForArgs().get());
+                m_activatedEventArgs = activatedEventArgs;
+                SetEvent(m_waitHandleForArgs.get());
             }
         }
         else

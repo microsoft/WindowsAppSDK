@@ -12,7 +12,8 @@
 #include "FileActivatedEventArgs.h"
 #include "Association.h"
 #include "ExtensionContract.h"
-#include "GetNotificationEventArgs.h"
+#include "PushNotificationManager.h"
+#include "AppNotificationManager.h"
 
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
