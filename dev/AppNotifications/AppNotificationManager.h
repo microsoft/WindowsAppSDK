@@ -51,6 +51,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         std::wstring m_processName;
         wil::unique_event m_waitHandleForArgs;
         winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs m_activatedEventArgs{ nullptr };
+        std::wstring m_appId;
     };
 
     struct AppNotificationManagerFactory : winrt::implements<AppNotificationManagerFactory, IClassFactory>
