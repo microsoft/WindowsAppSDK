@@ -1628,7 +1628,7 @@
 
     <ItemGroup>
       <_UpToDateCheckInputTemp Include="@(SourceAppxManifest)" Set="PRIGeneration" />
-      <_UpToDateCheckInputTemp Include="@(_LayoutFile)" Condition="'%(Extension)'!='.xbf'" Set="PRIGeneration" />
+      <_UpToDateCheckInputTemp Include="@(_LayoutFile)" Set="PRIGeneration" />
       <_UpToDateCheckInputTemp Include="@(_EmbedFile)" Set="PRIGeneration" />
       <_UpToDateCheckInputTemp Include="@(_PRIResourceFiltered)" Set="PRIGeneration" />
       <_UpToDateCheckInputTemp Include="@(_PriFilesFromPayload)" Set="PRIGeneration" />
