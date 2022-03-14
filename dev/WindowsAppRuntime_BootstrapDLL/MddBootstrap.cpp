@@ -502,18 +502,18 @@ void FindDDLMViaEnumeration(
     // 2. Check if the package is in the <majorversion>.<minorversion> release
     // 2a. Check if the package's Description starts with "Microsoft Windows App Runtime DDLM <majorversion>.<minorversion> "
     // 3. Check if the architecture matches
-    // 4. Check if the package meets the specified minVerrsion
+    // 4. Check if the package meets the specified minVersion
 
     const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
     const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
-    WCHAR packageNamePrefix[PACKAGE_NAME_MAX_LENGTH + 1]{};
+    PCWSTR packageNamePrefix{};
     if (!g_test_ddlmPackageNamePrefix.empty())
     {
-        FAIL_FAST_IF_FAILED(StringCchCopyW(packageNamePrefix, ARRAYSIZE(packageNamePrefix), g_test_ddlmPackageNamePrefix.c_str()));
+        packageNamePrefix = g_test_ddlmPackageNamePrefix.c_str();
     }
     else
     {
-        wsprintf(packageNamePrefix, L"microsoft.winappruntime.ddlm.%hu", minorVersion);
+        packageNamePrefix = L"microsoft.winappruntime.ddlm.";
     }
     const auto packageNamePrefixLength{ wcslen(packageNamePrefix) };
 
@@ -533,11 +533,20 @@ void FindDDLMViaEnumeration(
         expectedPublisherId = g_test_ddlmPackagePublisherId.c_str();
     }
 
+    auto criteria{ wil::str_printf<wil::unique_cotaskmem_string>(L"Major.Minor=%hu.%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
+                                                                 majorVersion, minorVersion, (!versionTag ? L"" : versionTag),
+                                                                 minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision) };
+
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     winrt::hstring currentUser;
     const auto c_packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Main };
-    for (auto package : packageManager.FindPackagesForUserWithPackageTypes(currentUser, c_packageTypes))
+    auto packages{ packageManager.FindPackagesForUserWithPackageTypes(currentUser, c_packageTypes) };
+    (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_SCAN_FOR_DDLM, "Bootstrap.Intitialize: Scanning packages for %ls", criteria.get());
+    int packagesScanned{};
+    for (auto package : packages)
     {
+        ++packagesScanned;
+
         // Check the package identity against the package identity test qualifiers (if any)
         const auto packageId{ package.Id() };
         const auto packageName{ packageId.Name() };
@@ -606,7 +615,7 @@ void FindDDLMViaEnumeration(
         }
         if ((releaseMajorVersion != majorVersion) || (releaseMinorVersion != minorVersion))
         {
-            // The package's minor release version doesn't match the expected value. Skip it
+            // The package's major or minor release version doesn't match the expected value. Skip it
             continue;
         }
 
@@ -619,19 +628,29 @@ void FindDDLMViaEnumeration(
         version.Revision = packageVersion.Revision;
         if (version.Version < minVersion.Version)
         {
+            (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_NO_MATCH,
+                             "Bootstrap.Intitialize: %ls not applicable. Version doesn't match MinVersion criteria (%ls)",
+                             packageFullName.c_str(), criteria.get());
             continue;
         }
 
         // Does the architecture match?
         const auto architecture{ packageId.Architecture() };
-        if (architecture != AppModel::Identity::GetCurrentArchitecture())
+        const auto currentArchitecture{ AppModel::Identity::GetCurrentArchitecture() };
+        if (architecture != currentArchitecture)
         {
+            (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_NO_MATCH,
+                             "Bootstrap.Intitialize: %ls not applicable. Architecture doesn't match current architecture %ls (%ls)",
+                             packageFullName.c_str(), ::AppModel::Identity::GetCurrentArchitectureAsString(), criteria.get());
             continue;
         }
 
         // Do we have a package under consideration?
         if (!foundAny)
         {
+            (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_MATCH,
+                             "Bootstrap.Intitialize: %ls is applicable (%ls)",
+                             packageFullName.c_str(), criteria.get());
             bestFitVersion = version;
             bestFitPackageFamilyName = packageId.FamilyName();
             bestFitPackageFullName = packageId.FullName();
@@ -642,15 +661,19 @@ void FindDDLMViaEnumeration(
         // Do we already have a higher version under consideration?
         if (bestFitVersion.Version < version.Version)
         {
+            (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_MATCH,
+                             "Bootstrap.Intitialize: %ls is more applicable (%ls)",
+                             packageFullName.c_str(), criteria.get());
             bestFitVersion = version;
             bestFitPackageFamilyName = packageId.FamilyName();
             bestFitPackageFullName = packageId.FullName();
             continue;
         }
     }
-    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NO_MATCH), !foundAny, "Enumeration: Major=%hu, Minor=%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
-                    majorVersion, minorVersion, (!versionTag ? L"" : versionTag),
-                    minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
+    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NO_MATCH), !foundAny, "Enumeration: %ls", criteria.get());
+    (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_FOUND,
+                     "Bootstrap.Intitialize: %ls best matches the criteria (%ls) of %d packages scanned",
+                     bestFitPackageFullName.c_str(), criteria.get(), packagesScanned);
     ddlmPackageFamilyName = bestFitPackageFamilyName.c_str();
     ddlmPackageFullName = bestFitPackageFullName.c_str();
 }
