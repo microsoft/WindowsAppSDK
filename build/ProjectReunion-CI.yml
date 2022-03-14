@@ -64,6 +64,8 @@ jobs:
       channel: ${{ variables.channel }}
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
+    parameters:
+      GenerateSBOM: false
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish BuildOutput'
@@ -116,6 +118,7 @@ jobs:
   - template: build-mrt.yml
     parameters:
       buildJobName: 'BuildMRTCore'
+      GenerateSBOM: false
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish BuildOutput'
