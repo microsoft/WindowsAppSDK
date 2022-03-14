@@ -223,11 +223,11 @@ steps:
     TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu'
     flattenFolders: true
 
-  - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
-    - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-      displayName: 'SBOM Generation Task'
-      inputs:
-        BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
+- ${{ if eq(parameters.GenerateSBOM, 'true') }}:
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'SBOM Generation Task'
+    inputs:
+      BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: Binaries'
