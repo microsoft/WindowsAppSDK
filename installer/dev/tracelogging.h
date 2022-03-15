@@ -4,10 +4,9 @@
 #pragma once
 
 #include "pch.h"
-#include "MicrosoftTelemetry.h"
 
-#if __has_include(<WindowsAppSDK-VersionInfo.h>)
-#include <WindowsAppSDK-VersionInfo.h>
+#if __has_include("WindowsAppSDK-VersionInfo.h")
+#include "WindowsAppSDK-VersionInfo.h"
 #endif
 
 #if defined(__WINDOWSAPPSDK_VERSIONINFO_H__)
