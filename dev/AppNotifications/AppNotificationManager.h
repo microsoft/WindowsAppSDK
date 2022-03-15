@@ -44,6 +44,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         // INotificationManagerDeserializer
         winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri);
     private:
+
+        void UnregisterHelper();
+
         wil::unique_com_class_object_cookie m_notificationComActivatorRegistration;
         wil::srwlock m_lock;
         winrt::event<NotificationActivationEventHandler> m_notificationHandlers;
@@ -52,6 +55,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         wil::unique_event m_waitHandleForArgs;
         winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs m_activatedEventArgs{ nullptr };
         std::wstring m_appId;
+        bool m_registering{ false };
     };
 
     struct AppNotificationManagerFactory : winrt::implements<AppNotificationManagerFactory, IClassFactory>

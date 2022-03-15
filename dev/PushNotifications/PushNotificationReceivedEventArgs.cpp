@@ -48,7 +48,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
     }
 
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(std::wstring const& payload) :
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::hstring const& payload) :
         m_rawNotificationPayload(BuildPayload(payload)),
         m_unpackagedAppScenario(true)
     {
@@ -65,7 +65,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         return { payload, payload + (length * sizeof(uint8_t)) };
     }
 
-    std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(std::wstring const& payload)
+    std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(winrt::hstring const& payload)
     {
         std::string payloadToSimpleString{ ::winrt::Microsoft::Windows::PushNotifications::Helpers::WideStringToUtf8String(payload) };
         return { payloadToSimpleString.c_str(), payloadToSimpleString.c_str() + (payloadToSimpleString.length() * sizeof(uint8_t)) };

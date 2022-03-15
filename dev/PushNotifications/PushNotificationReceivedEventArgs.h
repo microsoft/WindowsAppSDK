@@ -12,7 +12,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         PushNotificationReceivedEventArgs(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const& backgroundTask);
         PushNotificationReceivedEventArgs(winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs const& args);
 
-        PushNotificationReceivedEventArgs(std::wstring const& payload);
+        PushNotificationReceivedEventArgs(winrt::hstring const& payload);
 
         PushNotificationReceivedEventArgs(byte* const& payload, ULONG const& length);
 
@@ -26,7 +26,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         std::vector<uint8_t> BuildPayload(winrt::Windows::Storage::Streams::IBuffer const& buffer);
         std::vector<uint8_t> BuildPayload(byte* const& payload, ULONG const& length);
-        std::vector<uint8_t> BuildPayload(std::wstring const& payload);
+        std::vector<uint8_t> BuildPayload(winrt::hstring const& payload);
 
         std::vector<uint8_t> m_rawNotificationPayload;
 

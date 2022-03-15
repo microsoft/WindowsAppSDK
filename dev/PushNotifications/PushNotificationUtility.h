@@ -21,13 +21,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
     inline constexpr std::wstring_view c_argumentCommandString = L"Arguments";
     inline constexpr std::wstring_view c_executableCommandString = L"Executable";
 
-    inline std::string WideStringToUtf8String(_In_ std::wstring const& utf16string)
+    inline std::string WideStringToUtf8String(_In_ winrt::hstring const& utf16string)
     {
         int size = WideCharToMultiByte(
             CP_UTF8,
             0,
-            utf16string.data(),
-            static_cast<int>(utf16string.length()),
+            utf16string.c_str(),
+            static_cast<int>(utf16string.size()),
             nullptr,
             0,
             nullptr,
@@ -41,8 +41,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
         size = WideCharToMultiByte(
             CP_UTF8,
             0,
-            utf16string.data(),
-            static_cast<int>(utf16string.length()),
+            utf16string.c_str(),
+            static_cast<int>(utf16string.size()),
             &utf8string[0],
             size,
             nullptr,

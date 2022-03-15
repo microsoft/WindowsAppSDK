@@ -20,6 +20,7 @@
 #include <string_view>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <TerminalVelocityFeatures-AppNotifications.h>
+#include <WindowsAppRuntime.SelfContained.h>
 
 using namespace std::literals;
 
@@ -95,6 +96,18 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         try
         {
+            {
+                auto lock{ m_lock.lock_exclusive() };
+                THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_OPERATION_IN_PROGRESS), m_registering, "Registration is in progress!");
+                m_registering = true;
+            }
+
+            auto registeringScopeExit{ wil::scope_exit([&]()
+            {
+                auto lock { m_lock.lock_exclusive() };
+                m_registering = false;
+            }) };
+
             winrt::guid storedComActivatorGuid{ GUID_NULL };
             if (!PushNotificationHelpers::IsPackagedAppScenario())
             {
@@ -105,8 +118,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                     storedComActivatorGuid = RegisterComActivatorGuidAndAssets();
                 }
 
-                auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
-                THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.c_str(), m_appId.c_str()));
+                if (!WindowsAppRuntime::SelfContained::IsSelfContained())
+                {
+                    auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
+                    THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.c_str(), m_appId.c_str()));
+                }
             }
 
             winrt::guid registeredClsid{ GUID_NULL };
@@ -139,6 +155,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         }
     }
 
+    // This assumes that the caller has taken an exclusive lock
+    void AppNotificationManager::UnregisterHelper()
+    {
+        m_notificationComActivatorRegistration.reset();
+    }
+
     void AppNotificationManager::Unregister()
     {
         HRESULT hr{ S_OK };
@@ -150,8 +172,15 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         try
         {
             auto lock{ m_lock.lock_exclusive() };
+            THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_OPERATION_IN_PROGRESS), m_registering, "Register or Unregister currently in progress!");
+            m_registering = true;
+            auto scope_exit = wil::scope_exit(
+                [&] {
+                    m_registering = false;
+                });
+
             THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !m_notificationComActivatorRegistration, "Not Registered for App Notifications!");
-            m_notificationComActivatorRegistration.reset();
+            UnregisterHelper();
         }
         catch (...)
         {
@@ -170,10 +199,21 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         try
         {
-            Unregister();
+            {
+                auto lock{ m_lock.lock_exclusive() };
+                UnregisterHelper();
+                THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_OPERATION_IN_PROGRESS), m_registering, "Register or Unregister currently in progress!");
+                m_registering = true;
+            }
+
+            auto scope_exit = wil::scope_exit(
+                [&] {
+                    auto lock{ m_lock.lock_exclusive() };
+                    m_registering = false;
+                });
 
             // Remove any Registrations from the Long Running Process that are necessary for Cloud toasts
-            if (!PushNotificationHelpers::IsPackagedAppScenario())
+            if (!PushNotificationHelpers::IsPackagedAppScenario() && !WindowsAppRuntime::SelfContained::IsSelfContained())
             {
                 auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
                 THROW_IF_FAILED(notificationPlatform->RemoveToastRegistrationMapping(m_processName.c_str()));
