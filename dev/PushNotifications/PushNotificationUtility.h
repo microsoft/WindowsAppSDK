@@ -158,8 +158,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
     inline std::wstring GetExeNameFromPath(std::wstring const& exePath)
     {
         size_t pos{ exePath.rfind(L"\\") };
-        THROW_HR_IF(E_UNEXPECTED, pos == std::wstring::npos);
-        return exePath.substr(pos + 1); // One after the delimiter
+        if (pos != std::wstring::npos)
+        {
+            return exePath.substr(pos + 1); // One after the delimiter
+        }
+        else
+        {
+            return exePath;
+        }
     }
 
     inline winrt::guid GetComRegistrationFromRegistry(const std::wstring argumentToCheck)
