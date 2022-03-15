@@ -9,6 +9,7 @@
 #include "wil/stl.h"
 #include "wil/win32_helpers.h"
 #include "PushBackgroundTaskInstance.h"
+#include <filesystem>
 
 namespace winrt
 {
@@ -155,13 +156,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
     }
     CATCH_RETURN()
 
-    inline std::wstring GetExeNameFromPath(std::wstring const& exePath)
-    {
-        size_t pos{ exePath.rfind(L"\\") };
-        THROW_HR_IF(E_UNEXPECTED, pos == std::wstring::npos);
-        return exePath.substr(pos + 1); // One after the delimiter
-    }
-
     inline winrt::guid GetComRegistrationFromRegistry(const std::wstring argumentToCheck)
     {
         wil::unique_cotaskmem_string packagedFullName;
@@ -247,12 +241,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
                     &exeBuffer,
                     &exeBufferLength));
 
-                std::wstring exeString{ GetExeNameFromPath(exeBuffer) };
+                std::wstring exeString{ std::filesystem::path(exeBuffer).filename() };
 
                 wil::unique_cotaskmem_string exePath;
                 THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, exePath));
 
-                std::wstring exeToCheck{ GetExeNameFromPath(exePath.get()) };
+                std::wstring exeToCheck{ std::filesystem::path(exePath.get()).filename() };
 
                 THROW_HR_IF_MSG(E_FAIL, exeString != exeToCheck, "Caller RegistrationProcess is not the same as manifest defined COM Server!");
 
