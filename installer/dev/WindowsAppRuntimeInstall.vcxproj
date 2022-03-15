@@ -125,7 +125,6 @@
   <ItemGroup>
     <ClInclude Include="console.h" />
     <ClInclude Include="InstallActivityContext.h" />
-    <ClInclude Include="telemetry\MicrosoftTelemetry.h" />
     <ClInclude Include="tracelogging.h" />
     <ClInclude Include="install.h" />
     <ClInclude Include="packages.h" />
