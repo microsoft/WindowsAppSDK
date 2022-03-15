@@ -67,8 +67,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(winrt::hstring const& payload)
     {
-        const std::wstring payloadWideString(payload);
-        std::string payloadToSimpleString{ ::winrt::Microsoft::Windows::PushNotifications::Helpers::WideStringToUtf8String(payloadWideString) };
+        std::string payloadToSimpleString{ ::winrt::Microsoft::Windows::PushNotifications::Helpers::WideStringToUtf8String(payload) };
         return { payloadToSimpleString.c_str(), payloadToSimpleString.c_str() + (payloadToSimpleString.length() * sizeof(uint8_t)) };
     }
 

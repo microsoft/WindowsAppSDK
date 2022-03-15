@@ -155,6 +155,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         }
     }
 
+    // This assumes that the caller has taken an exclusive lock
+    void AppNotificationManager::UnregisterHelper()
+    {
+        m_notificationComActivatorRegistration.reset();
+    }
+
     void AppNotificationManager::Unregister()
     {
         HRESULT hr{ S_OK };
@@ -174,7 +180,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                 });
 
             THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !m_notificationComActivatorRegistration, "Not Registered for App Notifications!");
-            m_notificationComActivatorRegistration.reset();
+            UnregisterHelper();
         }
         catch (...)
         {
@@ -193,19 +199,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         try
         {
-            bool unregistered = false;
-            {
-                auto lock{ m_lock.lock_shared() };
-                unregistered = !m_notificationComActivatorRegistration;
-            }
-
-            if (!unregistered)
-            {
-                Unregister();
-            }
-
             {
                 auto lock{ m_lock.lock_exclusive() };
+                UnregisterHelper();
                 THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_OPERATION_IN_PROGRESS), m_registering, "Register or Unregister currently in progress!");
                 m_registering = true;
             }

@@ -27,9 +27,7 @@ namespace Helpers
 NotificationProperties::NotificationProperties(winrt::AppNotification const& toastNotification)
 {
     // Extract payload and convert it from XML to a byte array
-    auto payload = toastNotification.Payload();
-
-    auto payloadAsSimpleString = Helpers::WideStringToUtf8String(payload.c_str());
+    auto payloadAsSimpleString = Helpers::WideStringToUtf8String(toastNotification.Payload());
 
     m_payload = wil::unique_cotaskmem_array_ptr<byte>(static_cast<byte*>(CoTaskMemAlloc(payloadAsSimpleString.size())), payloadAsSimpleString.size());
     THROW_IF_NULL_ALLOC(m_payload.get());
