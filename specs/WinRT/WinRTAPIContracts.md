@@ -23,10 +23,10 @@ The build system has gates that enforce contract versioning to verify that contr
 4. Contract migration  
 This spec does not deal with contract migration. A separate spec will be available for contract
 migration if, and when, it is needed.
-5. Internal Contracts  
+5. Internal contracts  
 All WinRT internal APIs have a contract, and the version is 1. The version is never updated.
 6. Contract naming  
-Contract names need to end with the word `contract`.
+Contract names need to end with the word `Contract`.
 
 ## Adding a new contract
 Contract placement is part of an API review. When adding a new API, the API team will
