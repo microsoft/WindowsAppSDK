@@ -15,15 +15,15 @@ WinRT APIs.
    1. One contract per feature/component/sub-system.
    2. Contracts will not span across a transport package/repo.
 2. Contract numbering  
-Contracts versions are one number, starting with 1 and is incremented for any interface
-change. This version does not correlate with the Windows App SDK version.
+Contracts versions are a single number with no minor version, no "x.y".  The contract version is
+frozen on a stable release.  Any changes after a stable release requires the version to be incremented.
 3. Enforcement  
 The build system has gates that enforce contract versioning to verify that contract is present,
  up to date, and there are no conflicts between APIs.
 4. Contract migration  
 This spec does not deal with contract migration. A separate spec will be available for contract
 migration if, and when, it is needed.
-5. Internal contracts  
+5. Internal Contracts  
 All WinRT internal APIs have a contract, and the version is 1. The version is never updated.
 6. Contract naming  
 Contract names need to end with the word `contract`.
