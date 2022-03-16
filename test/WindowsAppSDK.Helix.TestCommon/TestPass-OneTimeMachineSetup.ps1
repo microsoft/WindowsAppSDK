@@ -19,7 +19,7 @@ foreach($pattern in $packagesToFind)
     {
         Write-Host "Installing $package"
         Add-AppxPackage $package -ErrorVariable appxerror -ErrorAction SilentlyContinue 
-        if($appxerror)
+        if($appxerror)asdfasdfasdfsdf
         {
             foreach($error in $appxerror)
             {
