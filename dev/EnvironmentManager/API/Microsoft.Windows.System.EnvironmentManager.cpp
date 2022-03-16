@@ -22,8 +22,6 @@ namespace winrt::Microsoft::Windows::System::implementation
     {
         EnvironmentManagerInsights::LogMessage(L"Making EM for process");
 
-        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
-
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Process);
         return environmentManager;
@@ -32,8 +30,6 @@ namespace winrt::Microsoft::Windows::System::implementation
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForUser()
     {
         EnvironmentManagerInsights::LogMessage(L"Making EM for User");
-
-        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
 
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::User);
@@ -44,8 +40,6 @@ namespace winrt::Microsoft::Windows::System::implementation
     {
         EnvironmentManagerInsights::LogMessage(L"Making EM for Machine");
 
-        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
-
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Machine);
         return environmentManager;
@@ -53,11 +47,6 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     bool EnvironmentManager::IsSupported()
     {
-        if (!::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled())
-        {
-            return false;
-        }
-        
         if (s_HasCheckedIsSupported)
         {
             return s_IsSupported;

@@ -1,3 +1,8 @@
+parameters:
+  - name: "GenerateSBOM"
+    type: boolean
+    default: False
+
 steps:
   - task: powershell@2
     displayName: 'Copy files to staging dir'
@@ -5,11 +10,12 @@ steps:
       targetType: filePath
       filePath: build\CopyFilesToStagingDir.ps1
       arguments: -BuildOutputDir '$(buildOutputDir)' -OverrideDir '$(Build.SourcesDirectory)\build\override' -PublishDir '$(Build.ArtifactStagingDirectory)\windowsappsdk_binaries' -NugetDir '$(Build.ArtifactStagingDirectory)\FullNuget' -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
-
-  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-    displayName: 'SBOM Generation Task'
-    inputs:
-      BuildDropPath: '$(Build.ArtifactStagingDirectory)\windowsappsdk_binaries\$(buildConfiguration)\$(buildPlatform)'
+  
+  - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
+    - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+      displayName: 'SBOM Generation Task'
+      inputs:
+        BuildDropPath: '$(Build.ArtifactStagingDirectory)\windowsappsdk_binaries\$(buildConfiguration)\$(buildPlatform)'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: windowsappsdk_binaries'

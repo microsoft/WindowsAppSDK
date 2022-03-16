@@ -112,6 +112,7 @@ steps:
       native\MrtCore.C.props
       native\MrtCore.props
       native\MrtCore.targets
+      ProjectItemsSchema.xaml
       README.md
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\build'
     flattenFolders: false
@@ -122,6 +123,14 @@ steps:
     SourceFolder: '${{ parameters.MRTSourcesDirectory }}\mrt\core\src'
     Contents: |
       mrm.h
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
+
+- task: CopyFiles@2
+  displayName: 'copy idl'
+  inputs:
+    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\mrt\Microsoft.Windows.ApplicationModel.Resources\src'
+    Contents: |
+      Microsoft.Windows.ApplicationModel.Resources.idl
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
 
 - task: PublishBuildArtifacts@1

@@ -22,14 +22,16 @@
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
-
+#include <winrt/Windows.ApplicationModel.Activation.h>
+#include <winrt/Windows.Storage.Streams.h>
+#include <winrt/Windows.Networking.PushNotifications.h>
 #include <winrt/Windows.Storage.h>
-
 #include <wil/com.h>
 
 // UDK/ProxyStub files
 #define MIDL_NS_PREFIX
 #include <FrameworkUdk/PushNotifications.h>
+#include <FrameworkUdk/ToastNotifications.h>
 #include <NotificationsLongRunningProcess_h.h>
 
 // LRP files

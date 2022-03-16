@@ -1,18 +1,36 @@
-﻿#include "pch.h"
-#include "../PushNotificationUtility.h"
+﻿#pragma once
 
+#include "pch.h"
+#include "../PushNotificationUtility.h"
+#include <winrt/Windows.ApplicationModel.background.h>
+
+using namespace winrt::Windows::ApplicationModel::Background;
+namespace ToastNotifications
+{
+    using namespace ABI::Microsoft::Internal::ToastNotifications;
+}
+
+namespace PushNotificationHelpers
+{
+    using namespace winrt::Microsoft::Windows::PushNotifications::Helpers;
+}
 HRESULT NotificationListener::RuntimeClassInitialize(
     std::shared_ptr<ForegroundSinkManager> foregroundSinkManager,
-    std::wstring appId,
-    std::wstring processName)
+    std::shared_ptr<ToastRegistrationManager> toastRegistrationManager,
+    std::wstring const& appId,
+    std::wstring const& processName,
+    winrt::guid const& comServerClsid) noexcept try
 {
     m_foregroundSinkManager = foregroundSinkManager;
+    m_toastRegistrationManager = toastRegistrationManager;
+    m_comServerClsid = comServerClsid;
 
     m_appId = appId;
     m_processName = processName;
 
     return S_OK;
 }
+CATCH_RETURN();
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector*/) noexcept try
 {
@@ -22,9 +40,32 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
 
     if (!m_foregroundSinkManager->InvokeForegroundHandlers(m_appId, payloadArray, payloadLength))
     {
-        THROW_IF_FAILED(winrt::Microsoft::Windows::PushNotifications::Helpers::ProtocolLaunchHelper(m_processName, payloadLength, payload));
+        if (m_comServerClsid == winrt::guid())
+        {
+            THROW_IF_FAILED(PushNotificationHelpers::ProtocolLaunchHelper(m_processName, payloadLength, payload));
+        }
+        else
+        {
+            THROW_IF_FAILED(PushNotificationHelpers::PackagedAppLauncherByClsid(m_comServerClsid, payloadLength, payload));
+        }
     };
 
+    return S_OK;
+}
+CATCH_RETURN()
+
+STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnToastNotificationReceived(
+    ToastNotifications::INotificationProperties* notificationProperties,
+    ToastNotifications::INotificationTransientProperties* notificationTransientProperties) noexcept try
+{
+    std::wstring appId;
+    {
+        auto lock{ m_lock.lock_shared() };
+        appId = m_toastRegistrationManager->GetToastRegistration(m_processName);
+    }
+
+    DWORD notificationId{ 0 };
+    ToastNotifications_PostToast(appId.c_str(), notificationProperties, notificationTransientProperties, &notificationId);
     return S_OK;
 }
 CATCH_RETURN()
