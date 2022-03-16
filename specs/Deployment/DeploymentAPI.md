@@ -185,10 +185,10 @@ they shut down, to refer to the updated framework package.
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
     [contractversion(2)]
-    apicontract Deployment{};
+    apicontract DeploymentContract{};
 
     /// Represents the current Deployment status of the WindowsAppRuntime
-    [contract(Deployment, 1)]
+    [contract(DeploymentContract, 1)]
     enum DeploymentStatus
     {
         Unknown = 0,
@@ -198,7 +198,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     };
 
     /// Represents the result of a Deployment Manager method.
-    [contract(Deployment, 1)]
+    [contract(DeploymentContract, 1)]
     runtimeclass DeploymentResult
     {
         DeploymentResult(DeploymentStatus status, HRESULT extendedError);
@@ -212,7 +212,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 
     /// This object is used to specify deployment options to apply when using DeploymentManager's
     /// Initialize method
-    [contract(Deployment, 2)]
+    [contract(DeploymentContract, 2)]
     runtimeclass DeploymentInitializeOptions
     {
         DeploymentInitializeOptions();
@@ -224,7 +224,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     };
 
     /// Used to query deployment information for WindowsAppRuntime
-    [contract(Deployment, 1)]
+    [contract(DeploymentContract, 1)]
     static runtimeclass DeploymentManager
     {
         /// Returns the current deployment status of the current package's Windows App Runtime.
@@ -238,7 +238,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         /// Checks the status of the WindowsAppRuntime of the current package and attempts to
         /// register any missing WinAppSDK packages, while applying the DeploymentInitializeOptions
         /// passed in.
-        [contract(Deployment, 2)]
+        [contract(DeploymentContract, 2)]
         [overload("Initialize")]
         static DeploymentResult Initialize(Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions deploymentInitializeOptions);
     };
