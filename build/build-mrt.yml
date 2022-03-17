@@ -16,6 +16,8 @@ steps:
     filename: '${{ parameters.MRTSourcesDirectory }}\build\init.cmd'
     arguments: /envonly $(buildPlatform)fre
     modifyEnvironment: true
+    
+- template: AzurePipelinesTemplates\ProjectReunion-InstallWindowsSDK-Steps.yml    
 
 - task: NuGetToolInstaller@1
   displayName: 'Use NuGet 5.6'
