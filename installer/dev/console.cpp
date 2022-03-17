@@ -21,6 +21,7 @@ void WindowsAppRuntimeInstaller::Console::DisplayHelp()
     std::wcout << "  --license    Install licenses" << std::endl;
     std::wcout << "  --msix       Install MSIX packages" << std::endl;
     std::wcout << "  -q, --quiet  Perform no user interaction and suppress all text output" << std::endl;
+    std::wcout << "  -f, --force  Force shutdown the target applications if they are in use, to install the MSIX packages" << std::endl;
     std::wcout << "  -?, --help   Show help information" << std::endl;
     std::wcout << "  --info       Display general information and disclosures of the installer" << std::endl;
     std::wcout << std::endl;

@@ -53,6 +53,14 @@ int wmain(int argc, wchar_t *argv[])
         {
             WI_ClearFlag(options, WindowsAppRuntimeInstaller::Options::Quiet);
         }
+        else if ((arg == L"-f") || (arg == L"--force"))
+        {
+            WI_SetFlag(options, WindowsAppRuntimeInstaller::Options::ForceDeployment);
+        }
+        else if ((arg == L"-f-") || (arg == L"--force-"))
+        {
+            WI_ClearFlag(options, WindowsAppRuntimeInstaller::Options::ForceDeployment);
+        }
         else if ((arg == L"-?") || (arg == L"--help"))
         {
             DisplayHelp();
@@ -86,10 +94,7 @@ int wmain(int argc, wchar_t *argv[])
         {
             std::wcout << "All install operations successful." << std::endl;
 
-            if (!Security::IntegrityLevel::IsElevated())
-            {
-                std::wcout << "WARNING: Since WindowsAppRuntimeInstaller.exe is not run elevated, WindowsAppSDK packages are not provisioned for all users on your machine." << std::endl;
-            }
+            installActivityContext.GetActivity().Stop();
         }
         else
         {
@@ -102,6 +107,11 @@ int wmain(int argc, wchar_t *argv[])
                 installActivityContext.GetDeploymentErrorActivityId());
 
             std::wcerr << "One or more install operations failed. Result: 0x" << std::hex << deployPackagesResult << std::endl;
+        }
+
+        if (!Security::IntegrityLevel::IsElevated())
+        {
+            std::wcout << std::endl <<  "WARNING: Since WindowsAppRuntimeInstaller.exe is not run elevated, WindowsAppSDK packages are not provisioned for all users on your machine." << std::endl;
         }
     }
 

@@ -8,7 +8,11 @@
 #include <TerminalVelocityFeatures-DeploymentAPI.h>
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
 
+#include <WinBase.h>
 #include "WindowsAppRuntime-License.h"
+
+using namespace winrt;
+using namespace Windows::Foundation;
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
@@ -23,6 +27,12 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     {
         FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
         return Initialize(GetCurrentFrameworkPackageFullName());
+    }
+
+    winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions)
+    {
+        FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
+        return Initialize(GetCurrentFrameworkPackageFullName(), deploymentInitializeOptions);
     }
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus(hstring const& packageFullName)
@@ -102,6 +112,12 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(hstring const& packageFullName)
     {
+        winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions deploymentInitializeOptions{};
+        return DeploymentManager::Initialize(packageFullName, deploymentInitializeOptions);
+    }
+
+    winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(hstring const& packageFullName, winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions)
+    {
         auto getStatusResult{ DeploymentManager::GetStatus(packageFullName) };
         if (getStatusResult.Status() == DeploymentStatus::Ok)
         {
@@ -109,7 +125,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
 
         std::wstring frameworkPackageFullName{ packageFullName };
-        auto deployPackagesResult{ Deploy(frameworkPackageFullName) };
+        auto deployPackagesResult{ Deploy(frameworkPackageFullName, deploymentInitializeOptions.ForceDeployment()) };
         DeploymentStatus status{};
         if (SUCCEEDED(deployPackagesResult))
         {
@@ -206,21 +222,29 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     // Adds the package at the path using PackageManager.
     // This requires the 'packageManagement' or 'runFullTrust' capabilities.
-    HRESULT DeploymentManager::AddPackage(const std::filesystem::path& packagePath) try
+    HRESULT DeploymentManager::AddPackage(const std::filesystem::path& packagePath, bool forceDeployment) try
     {
-        auto packagePathUri = winrt::Windows::Foundation::Uri(packagePath.c_str());
+        const auto packagePathUri = winrt::Windows::Foundation::Uri(packagePath.c_str());
         winrt::Windows::Management::Deployment::PackageManager packageManager;
-        auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
-        auto deploymentResult{ packageManager.AddPackageAsync(packagePathUri, nullptr, options).get() };
+
+        auto GetDeploymentOptions = [](bool forceDeployment)
+        {
+            return (forceDeployment == true ?
+                winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
+                winrt::Windows::Management::Deployment::DeploymentOptions::None);
+        };
+
+        const auto options{ GetDeploymentOptions(forceDeployment) };
+        const auto deploymentResult{ packageManager.AddPackageAsync(packagePathUri, nullptr, options).get() };
         return deploymentResult.ExtendedErrorCode();
     }
     CATCH_RETURN()
 
     // Deploys all of the packages carried by the specified framework.
-    HRESULT DeploymentManager::Deploy(const std::wstring& frameworkPackageFullName) try
+    HRESULT DeploymentManager::Deploy(const std::wstring& frameworkPackageFullName, bool forceDeployment) try
     {
         RETURN_IF_FAILED(InstallLicenses(frameworkPackageFullName));
-        RETURN_IF_FAILED(DeployPackages(frameworkPackageFullName));
+        RETURN_IF_FAILED(DeployPackages(frameworkPackageFullName, forceDeployment));
         return S_OK;
     }
     CATCH_RETURN()
@@ -263,7 +287,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         return S_OK;
     }
 
-    HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName)
+    HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName, bool forceDeployment)
     {
         const auto frameworkPath{ std::filesystem::path(GetPackagePath(frameworkPackageFullName)) };
         for (const auto& package : c_targetPackages)
@@ -274,7 +298,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             packagePath /= package.identifier + WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FILE_EXTENSION;
 
             // Deploy package.
-            RETURN_IF_FAILED(AddPackage(packagePath));
+            RETURN_IF_FAILED(AddPackage(packagePath, forceDeployment));
         }
 
         return S_OK;

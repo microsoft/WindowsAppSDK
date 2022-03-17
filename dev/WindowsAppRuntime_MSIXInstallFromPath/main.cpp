@@ -7,11 +7,11 @@
 #include <fstream>
 
 void Help();
-HRESULT JustDoIt(PCWSTR path) noexcept;
-void AddPackageIfNecessary(PCWSTR path, const std::wstring& filename, const std::wstring& packageFullName);
+HRESULT JustDoIt(PCWSTR path, bool forceDeployment) noexcept;
+void AddPackageIfNecessary(PCWSTR path, const std::wstring& filename, const std::wstring& packageFullName, bool forceDeployment);
 bool NeedToRegisterPackage(const std::wstring& packageFullName);
 bool NeedToRegisterPackage(PCWSTR packageFullName);
-HRESULT AddPackage(PCWSTR path, const std::wstring& filename);
+HRESULT AddPackage(PCWSTR path, const std::wstring& filename, bool forceDeployment);
 
 class PackageId
 {
@@ -118,18 +118,18 @@ private:
 void Help()
 {
     wprintf(L"WindowsAppRuntime_MSIXInstallFromPath [options] <path>\n"
-            L"options:\n"
-            L"  -?, --help = Display help\n"
-            L"          -- = End of options\n"
-            L"where:\n"
-            L"  path = Path where Windows App SDK's MSIX packages can be found\n"
-            L"           => Microsoft.WindowsAppRuntime.*.msix\n"
-            L"           => Microsoft.WindowsAppRuntime.DDLM.*.msix\n"
-            L"           => Microsoft.WindowsAppRuntime.Main.*.msix\n"
-            L"           => Microsoft.WindowsAppRuntime.Singleton.*.msix\n");
+        L"options:\n"
+        L"  -f, --force = Force shutdown the target applications if they are in use, to install the MSIX packages\n"
+        L"  -?, --help  = Display help\n"
+        L"          --  = End of options\n"
+        L"where:\n"
+        L"  path = Path where Windows App SDK's MSIX packages can be found\n"
+        L"           => Microsoft.WindowsAppRuntime.*.msix\n"
+        L"           => Microsoft.WindowsAppRuntime.DDLM.*.msix\n"
+        L"           => Microsoft.WindowsAppRuntime.Main.*.msix\n"
+        L"           => Microsoft.WindowsAppRuntime.Singleton.*.msix\n");
 }
-
-HRESULT JustDoIt(PCWSTR path) noexcept try
+HRESULT JustDoIt(PCWSTR path, bool forceDeployment) noexcept try
 {
     wprintf(L"path: %s\n", path);
 
@@ -161,29 +161,30 @@ HRESULT JustDoIt(PCWSTR path) noexcept try
         auto packageFullName{ std::wstring(line.c_str() + offset + 1) };
         THROW_HR_IF_MSG(E_UNEXPECTED, packageFullName.empty(), "line:%s", lineUtf8.c_str());
 
-        AddPackageIfNecessary(path, filename, packageFullName);
+        AddPackageIfNecessary(path, filename, packageFullName, forceDeployment);
     }
 
     return 0;
 }
 CATCH_RETURN();
 
-void AddPackageIfNecessary(PCWSTR path, const std::wstring& filename, const std::wstring& packageFullName)
+void AddPackageIfNecessary(PCWSTR path, const std::wstring& filename, const std::wstring& packageFullName, bool forceDeployment)
 {
     wprintf(L"Path: %s\n", path);
     wprintf(L"Filename: %s\n", filename.c_str());
     wprintf(L"PackageFullName: %s\n", packageFullName.c_str());
+    wprintf(L"forceDeployment:%d\n", forceDeployment);
 
     if (!NeedToRegisterPackage(packageFullName))
     {
         return;
     }
 
-    auto hr{ AddPackage(path, filename) };
+    auto hr{ AddPackage(path, filename, forceDeployment) };
     if (FAILED(hr))
     {
-        wprintf(L"AddPackage(): 0x%X Path:%ls Filename:%ls PackageFullName:%ls", hr, path, filename.c_str(), packageFullName.c_str());
-        THROW_HR_MSG(hr, "Path:%ls Filename:%ls PackageFullName:%ls", path, filename.c_str(), packageFullName.c_str());
+        wprintf(L"AddPackage(): 0x%X Path:%ls Filename:%ls PackageFullName:%ls forceDeployment:%d", hr, path, filename.c_str(), packageFullName.c_str(), forceDeployment);
+        THROW_HR_MSG(hr, "Path:%ls Filename:%ls PackageFullName:%ls forceDeployment:%d", path, filename.c_str(), packageFullName.c_str(), forceDeployment);
     }
 }
 
@@ -231,12 +232,20 @@ bool NeedToRegisterPackage(PCWSTR packageFullName)
     return true;
 }
 
-HRESULT AddPackage(PCWSTR path, const std::wstring& filename)
+HRESULT AddPackage(PCWSTR path, const std::wstring& filename, bool forceDeployment)
 {
     const auto packagePath{ std::filesystem::path(path) / filename };
     const auto packagePathUri{ winrt::Windows::Foundation::Uri(packagePath.c_str()) };
     winrt::Windows::Management::Deployment::PackageManager packageManager;
-    const auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
+
+    auto GetDeploymentOptions = [](bool forceDeployment)
+    {
+        return (forceDeployment == true ?
+            winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
+            winrt::Windows::Management::Deployment::DeploymentOptions::None);
+    };
+
+    const auto options{ GetDeploymentOptions(forceDeployment) };
     auto deploymentResult{ packageManager.AddPackageAsync(packagePathUri, nullptr, options).get() };
     return deploymentResult.ExtendedErrorCode();
 }
@@ -246,6 +255,8 @@ int wmain(int argc, wchar_t *argv[])
     try
     {
         winrt::init_apartment();
+
+        bool forceDeployment{};
 
         // Parse the command line
         int index{ 1 };
@@ -257,11 +268,16 @@ int wmain(int argc, wchar_t *argv[])
                 // Options are -o (short form) or --option (long form)
                 break;
             }
-            else if (arg[1] == L'-')
+            else if ((CompareStringOrdinal(arg, -1, L"--", -1, TRUE) == CSTR_EQUAL))
             {
                 // -- = end of options
                 ++index;
                 break;
+            }
+            else if ((CompareStringOrdinal(arg, -1, L"-f", -1, TRUE) == CSTR_EQUAL) ||
+                     (CompareStringOrdinal(arg, -1, L"--force", -1, TRUE) == CSTR_EQUAL))
+            {
+                forceDeployment = true;
             }
             else if ((CompareStringOrdinal(arg, -1, L"-?", -1, FALSE) == CSTR_EQUAL) ||
                      (CompareStringOrdinal(arg, -1, L"--help", -1, FALSE) == CSTR_EQUAL))
@@ -289,7 +305,7 @@ int wmain(int argc, wchar_t *argv[])
             return ERROR_BAD_ARGUMENTS;
         }
 
-        return JustDoIt(path);
+        return JustDoIt(path, forceDeployment);
     }
     catch (...)
     {

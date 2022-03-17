@@ -37,9 +37,18 @@ namespace WindowsAppRuntimeInstaller
         return S_OK;
     }
 
-    HRESULT AddPackage(const Uri& packageUri, const std::unique_ptr<PackageProperties>& packageProperties)
+    HRESULT AddPackage(const Uri& packageUri, const std::unique_ptr<PackageProperties>& packageProperties, bool forceDeployment)
     {
         PackageManager packageManager;
+
+        auto GetDeploymentOptions = [](bool forceDeployment)
+        {
+            return (forceDeployment == true ?
+                winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
+                winrt::Windows::Management::Deployment::DeploymentOptions::None);
+        };
+
+        const auto deploymentOptions{ GetDeploymentOptions(forceDeployment) };
         const auto deploymentOperation{ packageManager.AddPackageAsync(packageUri, nullptr, DeploymentOptions::None) };
         deploymentOperation.get();
         if (deploymentOperation.Status() != AsyncStatus::Completed)
@@ -196,6 +205,7 @@ namespace WindowsAppRuntimeInstaller
     void DeployPackageFromResource(const WindowsAppRuntimeInstaller::ResourcePackageInfo& resource, const WindowsAppRuntimeInstaller::Options options)
     {
         const auto quiet{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet) };
+        const auto forceDeployment{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment) };
         auto& installActivityContext{ WindowsAppRuntimeInstaller::InstallActivity::Context::Get() };
 
         installActivityContext.SetInstallStage(InstallStage::GetPackageProperties);
@@ -248,7 +258,7 @@ namespace WindowsAppRuntimeInstaller
 
         // Add the package
         Uri packageUri{ packageFilename };
-        auto hrAddResult = AddPackage(packageUri, packageProperties);
+        auto hrAddResult = AddPackage(packageUri, packageProperties, forceDeployment);
         if (!quiet)
         {
             std::wcout << "Package deployment result : 0x" << std::hex << hrAddResult << " ";
