@@ -4,7 +4,7 @@
      Adding Sdk="Microsoft.NET.Sdk" to a project causes NuGet files to be generated very early on, so we need these defines to be here
      to ensure that all of our build output files end up in the same location. -->
 <Project InitialTargets="DirectoryBuildPropsInfo" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
+  <Import Project="eng\Versions.props" />
   <!-- Due to import ordering inconsistencies between different project types, we import this file from multiple places. -->
   <Import Project="$(MSBuildThisFileDirectory)build\EnsureOutputLayout.props" Condition="$(EnsureOutputLayoutPropsIncluded) == ''" />
 
@@ -27,6 +27,9 @@
 
   <Target Name="DirectoryBuildPropsInfo">
     <Message Condition="$(WindowsAppSDKBuildPipeline) == '1'" Importance="High" Text="Directory.Build.props detects WindowsAppSDKBuildPipeline=$(WindowsAppSDKBuildPipeline)"/>
+
+    <Error Condition="!Exists('$(RepoTestCertificatePFX)')" Text="$(RepoTestCertificatePFX) not found. Run '$(RepoRoot)\tools\DevCheck.cmd' to generate the test certificate." />
+    <Error Condition="!Exists('$(RepoTestCertificatePWD)')" Text="$(RepoTestCertificatePWD) not found. Run '$(RepoRoot)\tools\DevCheck.cmd' to generate the test certificate." />
   </Target>
 
   <!-- Conditional behavior for build pipeline vs local development -->
@@ -47,4 +50,19 @@
 
   <!-- Build with the hybrid CRT (Universal CRT + Static VS CRT (for what little the Universal CRT doesn't cover) -->
   <Import Project="$(MSBuildThisFileDirectory)HybridCRT.props" />
+
+  <!-- Build with APIscan-friendly compiler+linker options -->
+  <Import Project="$(MSBuildThisFileDirectory)ApiScan.Cpp.props" />
+
+  <!-- Load the test certificate's password (so we do it once for reuse across projects) -->
+  <PropertyGroup Condition="'$(RepoTestCertificatePFX)' == ''">
+    <RepoTestCertificatePFX>$(RepoRoot)\.user\winappsdk.certificate.test.pfx</RepoTestCertificatePFX>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(RepoTestCertificatePWD)' == ''">
+    <RepoTestCertificatePWD>$(RepoRoot)\.user\winappsdk.certificate.test.pwd</RepoTestCertificatePWD>
+  </PropertyGroup>
+  <PropertyGroup Condition="('$(RepoTestCertificatePWD)' != '') and Exists('$(RepoTestCertificatePWD)')">
+    <RepoTestCertificatePassword>$([System.IO.File]::ReadAllText('$(RepoTestCertificatePWD)').TrimEnd())</RepoTestCertificatePassword>
+    <RepoTestCertificatePasswordRedacted>...redacted...</RepoTestCertificatePasswordRedacted>
+  </PropertyGroup>
 </Project>

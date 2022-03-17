@@ -29,21 +29,9 @@ namespace Microsoft.Windows.ApplicationModel.Resources
     }
 
     [contract(MrtContract, 1.0)]
-    runtimeclass ResourceManager
-    {
-        ResourceManager();
-        ResourceManager(String fileName);
-
-        ResourceMap MainResourceMap { get; };
-        ResourceContext CreateResourceContext();
-
-        event Windows.Foundation.TypedEventHandler<ResourceManager, ResourceNotFoundEventArgs> ResourceNotFound;
-    }
-
-    [contract(MrtContract, 1.0)]
     runtimeclass ResourceMap
     {
-        UInt32 ResourceCount { get; }; 
+        UInt32 ResourceCount { get; };
 
         ResourceMap GetSubtree(String reference);
         ResourceMap TryGetSubtree(String reference);
@@ -62,9 +50,32 @@ namespace Microsoft.Windows.ApplicationModel.Resources
     }
 
     [contract(MrtContract, 1.0)]
-    runtimeclass ResourceContext
+    interface IResourceManager
     {
-        IMap<String, String> QualifierValues { get; };
+        ResourceMap MainResourceMap{ get; };
+        ResourceContext CreateResourceContext();
+
+        event Windows.Foundation.TypedEventHandler<ResourceManager, ResourceNotFoundEventArgs> ResourceNotFound;
+    }
+
+    [contract(MrtContract, 1.0)]
+    [default_interface]
+    runtimeclass ResourceManager : [default] IResourceManager
+    {
+        ResourceManager();
+        ResourceManager(String fileName);
+    }
+
+    [contract(MrtContract, 1.0)]
+    interface IResourceContext
+    {
+        IMap<String, String> QualifierValues{ get; };
+    }
+
+    [contract(MrtContract, 1.0)]
+    [default_interface]
+    runtimeclass ResourceContext : [default] IResourceContext
+    {       
     }
 
     [contract(MrtContract, 1.0)]

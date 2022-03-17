@@ -183,16 +183,16 @@
     <value>[Esperimento] Controllo utente (WinUI 3)</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Un controllo utente per le app basato sulla libreria dell'interfaccia utente di Windows (WinUI 3).</value>
+    <value>Un controllo utente per le app basato sulla Libreria dell'interfaccia utente di Windows (WinUI 3).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>App vuota, pacchetto con WAP (WinUI 3 su desktop)</value>
+    <value>App vuota, in pacchetto con Progetto di creazione pacchetti per applicazioni Windows (WinUI 3 in desktop)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Sperimentale] App vuota, in pacchetto con WAP (WinUI 3 in desktop)</value>
+    <value>[Sperimentale] App vuota, in pacchetto con Progetto di creazione pacchetti per applicazioni Windows (WinUI 3 in desktop)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Modello di progetto per la creazione di un'app desktop basata sulla libreria dell'interfaccia utente di Windows (WinUI 3). È incluso un progetto WAP (Windows Application Packaging) per la creazione di un pacchetto MSIX per il trasferimento locale o la distribuzione tramite il Microsoft Store.</value>
+    <value>Modello di progetto per la creazione di un'app desktop basata sulla libreria dell'interfaccia utente di Windows (WinUI 3). È incluso un progetto WAP (Progetto di creazione pacchetti per applicazioni Windows) per la creazione di un pacchetto MSIX per il trasferimento locale o la distribuzione tramite il Microsoft Store.</value>
   </data>
   <data name="1029" xml:space="preserve">
     <value>App vuota, pacchetto (WinUI 3 su desktop)</value>
@@ -219,6 +219,6 @@
     <value>[Esperimento] App vuota (WinUI 3 nella piattaforma UWP)</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Un progetto per la creazione di un'app Universal Windows Platform (UWP) basata sulla Windows UI Library (WinUI 3). Richiede il supporto sperimentale di SDK per app di Windows.</value>
+    <value>Un progetto per la creazione di un'app della piattaforma UWP (Universal Windows Platform) basata sulla libreria dell'interfaccia utente di Windows (WinUI 3). Richiede il supporto sperimentale di SDK per app di Windows.</value>
   </data>
 </root>

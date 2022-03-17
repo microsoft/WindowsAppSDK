@@ -1,0 +1,80 @@
+# This yml template checkouts the ProjectReunionInternal repository and builds the 
+# WindowsAppSDK based on the version.details.xml of the checkouted repository.
+# This versions provided in "TransportPackages" parameter of the yml will replace the 
+# versions in the checkouted version.details.xml based on the name.
+# 
+# Requirements:
+# - This yml template can only be called in the "microsoft" AzureDevOps 
+# - Access to ProjectReunionCerts keyvault
+# - Access to ProjectReunion Internal feed
+# - Only the ProjectReunionInternal repository is checkout in the job
+#
+# The template eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
+# will facilitate setting up the requirements to sucessfully run this template. 
+# In most cases, WindowsAppSDK-BuildSetup-Steps.yml should be called first,
+# then WindowsAppSDK-Build-Steps.yml.
+# 
+# The intended use of this yml template is for the feeder repos' pipeline to build the WinAppSDK package
+# with the latest versions from ProjectReunionInternal with the latest version of the transport package it 
+# has just built
+#
+# The WindowsAppSDK Nuget package produced will be published to WindowsAppSDKNugetPackage build artifacts 
+parameters:
+  - name: TransportPackageArtifactName
+    type: string
+    default: ''
+  - name: WindowsAppSDKPackageVersion
+    type: string
+    default: ''
+  - name: BuildType
+    displayName: "Build Type"
+    type: string
+    default: 'stable'
+    values:
+    - 'stable'
+    - 'experimental'
+  - name: "TransportPackages"
+    displayName: "TransportPackages to replace (name:version)"
+    type: object
+    default:
+      Foundation: 
+        name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
+        version: 1.0.0-stable
+
+steps:
+  - ${{ if ne(parameters.TransportPackageArtifactName, '') }}:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        artifactName: ${{ parameters.TransportPackageArtifactName }}
+        downloadPath: '$(Build.SourcesDirectory)\localpackages'
+        itemPattern: |
+          **/*.nupkg
+
+  # Replace the versions in version.details.xml in the ProjectReunionInternal repo
+  # Please note, the UpdateVersionDetailsConfig.ps1 that is used is one from the ProjectReunionInternal repo
+  - ${{ each package in parameters.TransportPackages }}:
+    - task: Powershell@2
+      inputs:
+        filePath: '$(Build.SourcesDirectory)\eng\common\Scripts\UpdateVersionDetailsConfig.ps1'
+        arguments: -dependencyName '${{ package.value.Name }}' -dependencyVersion '${{ package.value.Version }}'
+
+  - task: PowerShell@2
+    name: BuildAll
+    displayName: BuildAll
+    inputs:
+      filePath: 'BuildAll.ps1'
+      arguments: >
+        -WindowsAppSDKPackageVersion ${{ parameters.WindowsAppSDKPackageVersion }}
+        -Channel ${{ parameters.BuildType }}
+        -Checkpoint "none"
+        -Platform "x86,x64,arm64"
+        -Configuration "release,debug"
+        -AzureBuildStep "all"
+        -TransportPackages "none"
+        -AzurePipelineBuild
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Windows App SDK Packages'
+    inputs:
+      PathtoPublish: '$(Build.SourcesDirectory)\PackLocation'
+      artifactName: 'WindowsAppSDKNugetPackage'

@@ -52,7 +52,10 @@ public:
     {
         auto name = m_name;
         Reset();
-        Open(name, size);
+
+        m_name = name;
+        OpenInternal(size);
+        m_view.get()->size = size;
     }
 
     const size_t Size()
@@ -75,6 +78,11 @@ public:
         m_name.erase();
         m_view.reset();
         m_file.reset();
+    }
+
+    bool IsValid()
+    {
+        return (m_name.size() != 0);
     }
 
 protected:

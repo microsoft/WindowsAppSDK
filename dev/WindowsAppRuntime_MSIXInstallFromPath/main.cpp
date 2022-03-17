@@ -94,7 +94,7 @@ public:
         if (m_packageFamilyName.empty())
         {
             wchar_t packageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
-            uint32_t packageFamilyNameLength{ static_cast<uint32_t>(ARRAYSIZE(packageFamilyName)) };
+            uint32_t packageFamilyNameLength{ ARRAYSIZE(packageFamilyName) };
             THROW_IF_WIN32_ERROR_MSG(::PackageFamilyNameFromFullName(m_packageFullName.c_str(), &packageFamilyNameLength, packageFamilyName), "PackageFullName:%ls", m_packageFullName.c_str());
             m_packageFamilyName = packageFamilyName;
         }

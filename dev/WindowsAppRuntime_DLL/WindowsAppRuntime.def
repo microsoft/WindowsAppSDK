@@ -15,3 +15,9 @@ EXPORTS
     MddLifetimeManagementGC
     MddLifetimeManagementTestInitialize
     MddGetGenerationId
+
+    MsixInstallLicenses
+    GetSecurityDescriptorForAppContainerNames
+
+    WindowsAppRuntime_IsSelfContained
+    WindowsAppRuntime_SelfContainedTestInitialize

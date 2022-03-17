@@ -13,11 +13,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <AppxManifest Include="Package.appxmanifest">
-      <SubType>Designer</SubType>
-    </AppxManifest>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
@@ -31,5 +26,12 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="$WindowsAppSDKNupkgVersion$" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="$WindowsSDKBuildToolsNupkgVersion$" />
     <Manifest Include="$(ApplicationManifest)" />
+  </ItemGroup>
+
+  <!-- Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
+       Tools extension to be activated for this project even if the Windows App SDK Nuget
+       package has not yet been restored -->
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnablePreviewMsixTooling)'=='true'">
+    <ProjectCapability Include="Msix"/>
   </ItemGroup>
 </Project>

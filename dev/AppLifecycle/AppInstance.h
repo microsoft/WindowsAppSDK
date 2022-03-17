@@ -11,18 +11,27 @@
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
-    static const PCWSTR c_requestPacketNameFormat = L"%s_RedirectionRequest_%s";
-    static const PCWSTR c_activatedEventNameSuffix = L"_ActivatedEvent";
+    static PCWSTR c_requestPacketNameFormat = L"%s_RedirectionRequest_%s";
+    static PCWSTR c_activatedEventNameSuffix = L"_ActivatedEvent";
+    static PCWSTR c_restartAgentFilename{ L"RestartAgent.exe" };
 
     struct AppInstance : AppInstanceT<AppInstance>
     {
         // No interface public methods.
         AppInstance(uint32_t processId);
+        ~AppInstance()
+        {
+            if (m_terminationWatcherWaitHandle)
+            {
+                UnregisterWait(m_terminationWatcherWaitHandle);
+            }
+        }
 
         // IAppInstanceStatics.
         static Microsoft::Windows::AppLifecycle::AppInstance GetCurrent();
         static winrt::Windows::Foundation::Collections::IVector<Microsoft::Windows::AppLifecycle::AppInstance> GetInstances();
         static Microsoft::Windows::AppLifecycle::AppInstance FindOrRegisterForKey(hstring const& key);
+        static winrt::Windows::ApplicationModel::Core::AppRestartFailureReason Restart(hstring const& arguments);
 
         // IAppInstance.
         void UnregisterKey();
@@ -36,8 +45,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         uint32_t ProcessId() { return m_processId; }
 
     private:
+        static std::wstring GenerateRestartAgentPath();
         winrt::Windows::Foundation::IAsyncAction QueueRequest(Microsoft::Windows::AppLifecycle::AppActivationArguments args);
-        void OnInstanceTerminated();
+        void RemoveInstance(uint32_t processId);
         void ProcessRedirectionRequests();
         bool TrySetKey(std::wstring const& key);
         Microsoft::Windows::AppLifecycle::AppInstance FindForKey(std::wstring const& key);
@@ -63,7 +73,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         wil::unique_event m_innerActivated;
         wil::unique_event_watcher m_activationWatcher;
 
-        wil::unique_event_watcher m_terminationWatcher;
+        // Wait threadpool handle for cleaning up AppInstance data on termination.  This handle is invalid for use with CloseHandle().
+        HANDLE m_terminationWatcherWaitHandle{ nullptr };
         wil::unique_handle m_instanceHandle;
 
         SharedProcessList m_instances;

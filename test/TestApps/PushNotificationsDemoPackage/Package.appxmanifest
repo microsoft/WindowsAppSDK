@@ -6,6 +6,7 @@
   xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
   IgnorableNamespaces="uap uap5 rescap com">
 
 	<Identity
@@ -42,8 +43,18 @@
 				<uap:SplashScreen Image="Images\SplashScreen.png" uap5:Optional="true"/>
 			</uap:VisualElements>
 			<Extensions>
+				<desktop:Extension Category="windows.toastNotificationActivation">
+					<desktop:ToastNotificationActivation ToastActivatorCLSID="FE8C7374-A28F-4CBE-8D28-4288CBDFD431" />
+				</desktop:Extension>
+				<com:Extension Category="windows.comServer">
+					<com:ComServer>
+						<com:ExeServer Executable="PushNotificationsDemoApp\PushNotificationsDemoApp.exe" Arguments="----AppNotificationActivated:" DisplayName="Toast activator">
+							<com:Class Id="FE8C7374-A28F-4CBE-8D28-4288CBDFD431" DisplayName="Toast activator"/>
+						</com:ExeServer>
+					</com:ComServer>
+				</com:Extension>
 				<uap:Extension Category="windows.protocol" EntryPoint="Windows.FullTrustApplication">
-					<uap:Protocol Name="windowsappruntimetestprotocol-packaged">
+					<uap:Protocol Name="packagedpush-protocol">
 						<uap:DisplayName>WindowsAppRuntimeTestProtocol</uap:DisplayName>
 					</uap:Protocol>
 				</uap:Extension>

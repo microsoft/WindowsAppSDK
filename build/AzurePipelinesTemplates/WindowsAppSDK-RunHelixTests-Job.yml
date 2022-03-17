@@ -30,8 +30,8 @@ jobs:
 
     # The target queues to run the tests on.
     # Note: %3b is the escape sequence for ';' which is used as the delimiter
-    helixTargetQueuesOpen: 'Windows.10.Amd64.ClientRS5.Open.reunion%3bWindows.10.Amd64.Client19h1.Open.reunion%3bWindows.10.Amd64.Client20h2.Open.reunion'
-    helixTargetQueuesClosed: 'Windows.10.Amd64.ClientRS5.reunion%3bWindows.10.Amd64.Client19h1.reunion%3bWindows.10.Amd64.Client20h2.reunion'
+    helixTargetQueuesOpen: 'Windows.10.Amd64.ClientRS5.Open.reunion%3bWindows.10.Amd64.Client20h2.Open.reunion%3bwindows.10.amd64.client21h1.open.reunion'
+    helixTargetQueuesClosed: 'windows.10.amd64.client20h2.reunion%3bwindows.10.amd64.clientrs5.reunion%3bwindows.10.amd64.client21h1.reunion'
 
     # When a test fails, it is re-run 10 times. This variable specifies how many times out of 10 it is required to pass
     rerunPassesRequiredToAvoidFailure: 8
@@ -44,6 +44,9 @@ jobs:
 
     # This directory contains the Test payload, Helix test binaries and scripts. It is sent to the Helix machines.
     # Note: TAEF must be present in this directory, as GenerateHelixWorkItems.ps1 expects to invoke te.exe from here.
+    # We download the BuildOutput artifact from the prior build stage(s) under this path.
+    # However, the artifacts also has it's down folder structure, which makes the resulting directory structure look like this:
+    #   $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\HelixTests\BuildOutput\$(buildConfiguration)\$(buildPlatform)
     testPayloadDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\HelixTests
 
     # The generated .proj files are placed here.
@@ -62,6 +65,22 @@ jobs:
 
   - task: NuGetAuthenticate@0
 
+  - task: powershell@2
+    displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+  - task: powershell@2
+    displayName: 'Install test certificate for MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -CheckTestCert
+      workingDirectory: '$(Build.SourcesDirectory)'
+
   - template: WindowsAppSDK-BuildSolution-Steps.yml
     parameters:
       displayName: WindowsAppSDK.Helix.Test
@@ -77,21 +96,14 @@ jobs:
       nugetConfigPath: nuget.config
       restoreDirectory: packages
 
-  # Download the MRT Core test binaries
+  # Download the BuildOutput from the Build stage(s).
+  # We only bring down the relevant content for this build config (Debug/Release) & platform, to save some space and time.
   - task: DownloadBuildArtifacts@0
-    displayName: 'Download: Binaries'
+    displayName: 'Download: BuildOutput'
     inputs:
-      artifactName: 'mrtcore_test_binaries_$(buildPlatform)'
+      artifactName: 'BuildOutput'
       downloadPath: $(testPayloadDir)
-
-  # Publish the full testPayloadDir contents.
-  # This is not required, but can be useful for debugging purposes.
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish testPayloadDir'
-    condition: always()
-    inputs:
-      PathtoPublish: $(testPayloadDir)
-      artifactName: HelixTestPayloadDir_$(buildPlatform)_$(buildConfiguration)
+      itemPattern: 'BuildOutput/$(buildConfiguration)/$(buildPlatform)/**/*'
 
   # Discover the TAEF test binaries to run and generate the Helix Work Items for them.
   # Note: There are 4 test suites for MRT Core. We currently run 3 of them in Helix.
@@ -100,32 +112,32 @@ jobs:
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\MrmUnitTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrmUnitTests.proj' -WorkItemPrefix 'MrtCore.MrmUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrmUnitTests.$(buildPlatform).$(buildConfiguration)'
+      arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrmUnitTests.proj' -WorkItemPrefix 'MrtCore.MrmUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrmUnitTests.$(buildPlatform).$(buildConfiguration)'
 
   - task: powershell@2
     displayName: 'Discover MRT Core BaseUnitTests'
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\MrmBaseUnitTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrmBaseUnitTests.proj' -WorkItemPrefix 'MrtCore.MrmBaseUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrmBaseUnitTests.$(buildPlatform).$(buildConfiguration)'
+      arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrmBaseUnitTests.proj' -WorkItemPrefix 'MrtCore.MrmBaseUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrmBaseUnitTests.$(buildPlatform).$(buildConfiguration)'
 
   - task: powershell@2
     displayName: 'Discover MRT Core UnpackagedTests'
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\MrtCoreUnpackagedTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrtCoreUnpackagedTests.proj' -WorkItemPrefix 'MrtCore.MrtCoreUnpackagedTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrtCoreUnpackagedTests.$(buildPlatform).$(buildConfiguration)'
+      arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrtCoreUnpackagedTests.proj' -WorkItemPrefix 'MrtCore.MrtCoreUnpackagedTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrtCoreUnpackagedTests.$(buildPlatform).$(buildConfiguration)'
 
   # In Helix, test folders are under subfolders of TAEF. MRTCore UnpackagedTests use reg-free WinRT activation. It requires the winmd file
   # under same folder as the executable.
   - task: CopyFiles@2
     displayName: 'Copy Microsoft.Windows.ApplicationModel.Resources.winmd to test root'
     inputs:
-      sourceFolder: $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\MrtCoreUnpackagedTests
+      sourceFolder: $(testPayloadDir)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests
       contents: |
         Microsoft.Windows.ApplicationModel.Resources.winmd
       targetFolder: $(testPayloadDir)
-      
+
   # TODO: This test needs to be converted to TAEF to run in Helix.
   # - task: powershell@2
   #   displayName: 'Discover MRT Core Managed tests'
@@ -228,3 +240,11 @@ jobs:
     inputs:
       PathtoPublish: $(helixTestOutputBaseDir)
       artifactName: HelixTestOutput_$(buildPlatform)_$(buildConfiguration)
+
+  - task: powershell@2
+    displayName: 'Remove test certificate for MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -RemoveTestCert -RemoveTestPfx
+      workingDirectory: '$(Build.SourcesDirectory)'

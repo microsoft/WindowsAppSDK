@@ -118,6 +118,42 @@ namespace Test::DynamicDependency
     private:
         static wil::unique_hmodule m_bootstrapDll;
     };
+
+    class LifetimeManagementTests_Elevated : LifetimeManagementTests
+    {
+    public:
+        BEGIN_TEST_CLASS(LifetimeManagementTests_Elevated)
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(Setup_Elevated)
+        {
+            return Setup();
+        }
+
+        TEST_CLASS_CLEANUP(Cleanup_Elevated)
+        {
+            return Cleanup();
+        }
+
+        TEST_METHOD(GC_Found0_Elevated)
+        {
+            GC_Found0();
+        }
+
+        TEST_METHOD(GC_Found1_Elevated)
+        {
+            GC_Found1();
+        }
+
+        TEST_METHOD(GC_Found2_Elevated)
+        {
+            GC_Found2();
+        }
+    };
 }
 
 wil::unique_hmodule Test::DynamicDependency::LifetimeManagementTests::m_bootstrapDll;
