@@ -4,6 +4,8 @@
 #include <sstream>
 #include <wil/win32_helpers.h>
 #include <winrt/Windows.ApplicationModel.Background.h> // we need this for BackgroundTask APIs
+#include <winrt/Windows.Data.Json.h>
+#include <winrt/Windows.Web.Http.h>
 #include "WindowsAppRuntime.Test.AppModel.h"
 
 using namespace winrt;
@@ -11,9 +13,11 @@ using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::PushNotifications;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask APIs
+using namespace winrt::Windows::Data::Json;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
+using namespace winrt::Windows::Web::Http;
 
 winrt::guid remoteId1(L"cea1342d-8293-4acb-b18a-ed8b0d6f7d6c"); // Generated from ms.portal.azure.com
 winrt::guid remoteId2(L"CA1A4AB2-AC1D-4EFC-A132-E5A191CA285A"); // Dummy guid from visual studio guid tool generator
@@ -51,6 +55,42 @@ HRESULT ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateC
 
     //result.Channel().Close();
     return S_OK;
+}
+
+HRESULT RequestPushNotificationFromServer(Uri channelUri)
+{
+    HttpClient httpClient;
+    Uri serverUri(winrt::to_hstring("http://localhost:7071/api/PostPushNotificationforChannel"));
+
+    JsonObject postNotificationRequest;
+    postNotificationRequest.SetNamedValue(winrt::hstring(L"ChannelUri"), JsonValue::CreateStringValue(channelUri.ToString()));
+    postNotificationRequest.SetNamedValue(winrt::hstring(L"X_WNS_Type"), JsonValue::CreateStringValue(winrt::hstring(L"wns/raw")));
+    postNotificationRequest.SetNamedValue(winrt::hstring(L"Content_Type"), JsonValue::CreateStringValue(winrt::hstring(L"application/octet-stream")));
+    postNotificationRequest.SetNamedValue(winrt::hstring(L"Payload"), JsonValue::CreateStringValue(winrt::hstring(L"Sending from Reunion")));
+
+    IHttpContent content = HttpStringContent(postNotificationRequest.ToString(), UnicodeEncoding::Utf8, winrt::hstring(L"application/json"));
+    HttpRequestMessage httpRequestMessage;
+    httpRequestMessage.RequestUri(serverUri);
+    httpRequestMessage.Method(HttpMethod::Post());
+    httpRequestMessage.Content(content);
+
+    auto request = httpClient.SendRequestAsync(httpRequestMessage);
+    if (request.wait_for(std::chrono::seconds(5)) != AsyncStatus::Completed)
+    {
+        request.Cancel();
+        return HRESULT_FROM_WIN32(ERROR_TIMEOUT); // timed out or failed
+    }
+
+    request.GetResults().EnsureSuccessStatusCode();
+
+    auto readOperation = request.GetResults().Content().ReadAsStringAsync();
+    if (readOperation.wait_for(std::chrono::seconds(5)) != AsyncStatus::Completed)
+    {
+        readOperation.Cancel();
+        return HRESULT_FROM_WIN32(ERROR_TIMEOUT); // timed out or failed
+    }
+
+    std::wcout << readOperation.GetResults().c_str() << std::endl;
 }
 
 bool ChannelRequestUsingRemoteId()
@@ -276,6 +316,7 @@ bool VerifyPushReceivedInForeground()
         auto channelOperation = PushNotificationManager::Default().CreateChannelAsync(remoteId1);
         check_hresult(ChannelRequestHelper(channelOperation));
         std::wcout << channelOperation.GetResults().Channel().Uri().ToString().c_str() << std::endl;
+        RequestPushNotificationFromServer(channelOperation.GetResults().Channel().Uri());
 
         bool payloadReceived = false;
         if (g_pushNotificationReceived.wait(30000))
