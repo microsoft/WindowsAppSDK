@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PushNotificationsTestServer": {
+      "commandName": "Project",
+      "workingDirectory": "E:\\WindowsAppSDK\\BuildOutput\\Debug\\AnyCPU\\PushNotificationsTestServer"
+    }
+  }
+}

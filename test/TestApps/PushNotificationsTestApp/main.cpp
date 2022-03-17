@@ -15,10 +15,11 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 
-winrt::guid remoteId1(L"a2e4a323-b518-4799-9e80-0b37aeb0d225"); // Generated from ms.portal.azure.com
+winrt::guid remoteId1(L"cea1342d-8293-4acb-b18a-ed8b0d6f7d6c"); // Generated from ms.portal.azure.com
 winrt::guid remoteId2(L"CA1A4AB2-AC1D-4EFC-A132-E5A191CA285A"); // Dummy guid from visual studio guid tool generator
 
 constexpr auto timeout{ std::chrono::seconds(300) };
+wil::unique_event g_pushNotificationReceived;
 
 bool ChannelRequestUsingNullRemoteId()
 {
@@ -48,7 +49,7 @@ HRESULT ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateC
         return result.ExtendedError(); // did not produce a channel
     }
 
-    result.Channel().Close();
+    //result.Channel().Close();
     return S_OK;
 }
 
@@ -261,6 +262,38 @@ bool VerifyForegroundHandlerFails()
     return false;
 }
 
+bool VerifyPushReceivedInForeground()
+{
+    PushNotificationManager::Default().UnregisterAll();
+    try
+    {
+        g_pushNotificationReceived.create();
+        PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
+            {
+                g_pushNotificationReceived.SetEvent();
+            });
+        PushNotificationManager::Default().Register();
+        auto channelOperation = PushNotificationManager::Default().CreateChannelAsync(remoteId1);
+        check_hresult(ChannelRequestHelper(channelOperation));
+        std::wcout << channelOperation.GetResults().Channel().Uri().ToString().c_str() << std::endl;
+
+        bool payloadReceived = false;
+        if (g_pushNotificationReceived.wait(30000))
+        {
+            payloadReceived = true;
+        }
+
+        channelOperation.GetResults().Channel().Close();
+        return payloadReceived;
+    }
+    catch (...)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 
 std::map<std::string, bool(*)()> const& GetSwitchMapping()
 {
@@ -283,7 +316,9 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyUnregisterAllTwice", &VerifyUnregisterAllTwice},
 
         { "VerifyForegroundHandlerSucceeds", &VerifyForegroundHandlerSucceeds },
-        { "VerifyForegroundHandlerFails", &VerifyForegroundHandlerFails }
+        { "VerifyForegroundHandlerFails", &VerifyForegroundHandlerFails },
+
+        { "VerifyPushReceivedInForeground", &VerifyPushReceivedInForeground }
     };
     return switchMapping;
 }

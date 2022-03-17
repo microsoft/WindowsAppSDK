@@ -320,6 +320,11 @@ namespace Test::PushNotifications
             RunTest(L"VerifyForegroundHandlerFails", testWaitTime());
         }
 
+        TEST_METHOD(VerifyPushReceivedInForeground)
+        {
+            RunTest(L"VerifyPushReceivedInForeground", channelTestWaitTime());
+        }
+
         TEST_METHOD(VerifyProtocolActivation_Unpackaged)
         {
             RunTestUnpackaged(L"----WindowsAppRuntimePushServer:-Payload:\"<toast></toast>\"", testWaitTime());
