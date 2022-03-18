@@ -31,6 +31,8 @@ namespace ToastABI
     using namespace ::ABI::Microsoft::Internal::ToastNotifications;
 }
 
+constexpr PCWSTR defaultAppNotificationIcon = LR"(ms-resource://Windows.UI.ShellCommon/Files/Images/DefaultSystemNotification.png)";
+
 std::wstring Microsoft::Windows::AppNotifications::Helpers::RetrieveUnpackagedNotificationAppId()
 {
     wil::unique_cotaskmem_string appId;
@@ -232,6 +234,73 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::SetDisplayNameBasedO
     return displayName;
 }
 
+// Placeholder
+HRESULT ExtractIconFromCsAssets(_Out_ PWSTR* displayName, _Out_ PWSTR* iconFilePath)
+{
+    *displayName = nullptr;
+    *iconFilePath = nullptr;
+
+    return E_NOTIMPL;
+}
+
+// Do nothing. This is just a placeholder while the UDK is ingested with the proper API.
+HRESULT ToastNotifications_RetrieveAssets_Stub(_Out_ PWSTR* displayName, _Out_ PWSTR* iconFilePath)
+{
+    *displayName = nullptr;
+    *iconFilePath = nullptr;
+
+    return E_NOTIMPL;
+}
+
+HRESULT RetrieveAssetsFromShell(_Out_ PWSTR* displayName, _Out_ PWSTR* iconFilePath)
+{
+    *displayName = nullptr;
+    *iconFilePath = nullptr;
+
+    wil::unique_cotaskmem_string localDisplayName;
+    wil::unique_cotaskmem_string localIconFilePath;
+
+    HWND hWindow = nullptr;
+    GetWindow(hWindow, GW_HWNDFIRST);
+
+    if (hWindow)
+    {
+        winrt::com_ptr<IPropertyStore> propertyStore;
+        THROW_IF_FAILED(SHGetPropertyStoreForWindow(hWindow, IID_PPV_ARGS(propertyStore.put())));
+
+        wil::unique_prop_variant propVariantDisplayName;
+        THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, &propVariantDisplayName));
+
+        if (propVariantDisplayName.vt == VT_LPWSTR && wcslen(propVariantDisplayName.pwszVal) > 0)
+        {
+            localDisplayName = wil::make_unique_string<wil::unique_cotaskmem_string>(propVariantDisplayName.pwszVal);
+        }
+
+        wil::unique_prop_variant propVariantIcon;
+        THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchIconResource, &propVariantIcon));
+
+        THROW_HR_IF(E_UNEXPECTED, propVariantIcon.vt != VT_LPWSTR || wcslen(propVariantIcon.pwszVal) == 0);
+
+        std::wstring localIconFilePathAsWstring = propVariantIcon.pwszVal;
+
+        // Icon filepaths from Shell APIs usually follow this format: <filepath>,-<index>,
+        // since .ico or .dll files can have multiple icons in the same file.
+        // NotificationController doesn't seem to support such format, so let it take the first icon by default.
+        auto iteratorForCommaDelimiter{ localIconFilePathAsWstring.find_first_of(L",") };
+        if (iteratorForCommaDelimiter != std::wstring::npos) // It may or may not have an index, which is fine.
+        {
+            localIconFilePath = wil::make_unique_string<wil::unique_cotaskmem_string>(localIconFilePathAsWstring.erase(iteratorForCommaDelimiter).c_str());
+        }
+
+        *displayName = localDisplayName.release();
+        *iconFilePath = localIconFilePath.release();
+
+        return S_OK;
+    }
+
+    return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
+}
+
 void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring const& appId, std::wstring const& clsid)
 {
     wil::unique_hkey hKey;
@@ -249,62 +318,68 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
         &hKey,
         nullptr /* lpdwDisposition */));
 
-    // Retrieve the display name
-    std::wstring displayName{};
-    displayName = SetDisplayNameBasedOnProcessName();
+    bool isDefaultIcon{ false };
 
-    // Retrieve the icon
-    std::wstring iconFilePath{};
+    wil::unique_cotaskmem_string displayName;
+    wil::unique_cotaskmem_string iconFilePath;
 
-    wil::unique_hwnd hWindow{ GetConsoleWindow() };
-
-    if (hWindow)
+    /*
+    * Try the following techniques to retrieve display name and icon:
+    * 1. Retrieve assets from Visual Studio, in case the app is written in C#.
+    * 2. Call the FrameworkUdk to retrieve assets based on the best app shortcut.
+    * 3. Call the public Shell APIs if a window is available.
+    * 4. Set a display name from process file path.
+    *    Also, verify if we have a cached icon in the Registry. If not:
+    * 5. Set a default icon.
+    */
+    if (FAILED(ExtractIconFromCsAssets(&displayName, &iconFilePath)) &&
+        FAILED(ToastNotifications_RetrieveAssets_Stub(&displayName, &iconFilePath)) &&
+        FAILED(RetrieveAssetsFromShell(&displayName, &iconFilePath)))
     {
-        // Retrieve DisplayName and IconUri
-        // - DisplayName: Retrieve from Shell. If not specified, fall back to filename.
-        // - Icon: Retrieve from Shell. If it's not the case or the file extension is unsupported, then throw.
-        winrt::com_ptr<IPropertyStore> propertyStore;
-        THROW_IF_FAILED(SHGetPropertyStoreForWindow(hWindow.get(), IID_PPV_ARGS(propertyStore.put())));
+        // Set a Display Name based on process name.
+        displayName = wil::make_unique_string<wil::unique_cotaskmem_string>(SetDisplayNameBasedOnProcessName().c_str());
 
-        wil::unique_prop_variant propVariantDisplayName;
-        // Do not throw in case of failure, default to the filepath approach below as fallback to set a DisplayName.
-        THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, &propVariantDisplayName));
+        // Check if we have anything in the cache for the icon.
+        iconFilePath = wil::make_unique_string<wil::unique_cotaskmem_string>(L"", MAX_PATH);
+        DWORD bufferLength = sizeof(iconFilePath);
 
-        if (propVariantDisplayName.vt == VT_LPWSTR && propVariantDisplayName.pwszVal != nullptr && wcslen(propVariantDisplayName.pwszVal) > 0)
+        RegGetValueW(
+            hKey.get(),
+            nullptr /* lpValue */,
+            L"IconUri",
+            RRF_RT_REG_SZ,
+            nullptr /* pdwType */,
+            &iconFilePath,
+            &bufferLength);
+
+        if (wcslen(iconFilePath.get()) == 0)
         {
-            displayName = propVariantDisplayName.pwszVal;
+            iconFilePath = wil::make_unique_string<wil::unique_cotaskmem_string>(defaultAppNotificationIcon);
         }
 
-        wil::unique_prop_variant propVariantIcon;
-        THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchIconResource, &propVariantIcon));
-
-        THROW_HR_IF_MSG(E_UNEXPECTED, (propVariantIcon.vt == VT_EMPTY || propVariantIcon.pwszVal == nullptr), "Icon is not specified");
-
-        THROW_HR_IF_MSG(E_UNEXPECTED, propVariantIcon.vt != VT_LPWSTR, "Icon should be a valid Unicode string");
-
-        THROW_HR_IF_MSG(E_UNEXPECTED, wcslen(propVariantIcon.pwszVal) == 0, "Icon is an empty string");
-
-        iconFilePath = propVariantIcon.pwszVal;
-
-        // Icon filepaths from Shell APIs have this format: <filepath>,-<index>,
-        // since .ico files can have multiple icons in the same file.
-        // NotificationController doesn't seem to support such format, so let it take the first icon by default.
-        auto iteratorForCommaDelimiter{ iconFilePath.find_first_of(L",") };
-        if (iteratorForCommaDelimiter != std::wstring::npos) // It may or may not have an index, which is fine.
+        if (wcscmp(iconFilePath.get(), defaultAppNotificationIcon) == 0)
         {
-            iconFilePath.erase(iteratorForCommaDelimiter);
+            isDefaultIcon = true;
         }
-
-        auto iteratorForFileExtension{ iconFilePath.find_first_of(L".") };
-        THROW_HR_IF_MSG(E_UNEXPECTED, iteratorForFileExtension == std::wstring::npos, "You must provide a valid filepath as the app icon.");
-
-        std::wstring iconFileExtension{ iconFilePath.substr(iteratorForFileExtension) };
-        THROW_HR_IF_MSG(E_UNEXPECTED, iconFileExtension != L".ico" && iconFileExtension != L".png",
-            "You must provide a supported file extension as the icon (.ico or .png).");
     }
 
-    RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.c_str()), REG_EXPAND_SZ, displayName.size() * sizeof(wchar_t));
-    RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(iconFilePath.c_str()), REG_EXPAND_SZ, iconFilePath.size() * sizeof(wchar_t));
+    // Verify if we support the provided file format for the icon.
+    if (!isDefaultIcon)
+    {
+        std::wstring iconFilePathAsWstring{ iconFilePath.get() };
+        auto iteratorForFileExtension{ iconFilePathAsWstring.find_first_of(L".") };
+        THROW_HR_IF_MSG(E_UNEXPECTED, iteratorForFileExtension == std::wstring::npos, "You must provide a valid filepath as the app icon.");
+
+        std::wstring iconFileExtension = iconFilePathAsWstring.substr(iteratorForFileExtension);
+        THROW_HR_IF_MSG(E_UNEXPECTED,
+            iconFileExtension != L".ico" && iconFileExtension != L".png" &&
+            iconFileExtension != L".jpg" && iconFileExtension != L".bmp",
+            "You must provide a supported file format for the icon. Supported formats: .bmp, .ico, .jpg, .png.");
+    }
+
+    // Finally, set the assets!
+    RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.get()), REG_EXPAND_SZ, wcslen(displayName.get()) * sizeof(wchar_t));
+    RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(iconFilePath.get()), REG_EXPAND_SZ, wcslen(iconFilePath.get()) * sizeof(wchar_t));
     RegisterValue(hKey, L"CustomActivator", reinterpret_cast<const BYTE*>(clsid.c_str()), REG_SZ, clsid.size() * sizeof(wchar_t));
 }
 
