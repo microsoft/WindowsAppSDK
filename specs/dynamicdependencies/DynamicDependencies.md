@@ -1268,7 +1268,7 @@ This header contains the Bootstrap API
 /// for use by the current process. If multiple packages meet the criteria the best
 /// candidate is selected.
 ///
-/// If called multiple times the parameters must be compatible with the framework packcage
+/// If called multiple times the parameters must be compatible with the framework package
 /// resolved by the first initialization call (i.e. the framework package currently in use).
 /// If the request is not compatible with the framework package currently in use
 /// the API fails and an error is returned.
@@ -1327,7 +1327,7 @@ namespace DynamicDependency::Bootstrap
     /// for use by the current process. If multiple packages meet the criteria the best
     /// candidate is selected.
     ///
-    /// If called multiple times the parameters must be compatible with the framework packcage
+    /// If called multiple times the parameters must be compatible with the framework package
     /// resolved by the first initialization call (i.e. the framework package currently in use).
     /// If the request is not compatible with the framework package currently in use
     /// the API fails.
@@ -1352,7 +1352,7 @@ namespace DynamicDependency::Bootstrap
     /// for use by the current process. If multiple packages meet the criteria the best
     /// candidate is selected.
     ///
-    /// If called multiple times the parameters must be compatible with the framework packcage
+    /// If called multiple times the parameters must be compatible with the framework package
     /// resolved by the first initialization call (i.e. the framework package currently in use).
     /// If the request is not compatible with the framework package currently in use
     /// the API fails and an exception is thrown.
@@ -1377,7 +1377,7 @@ namespace DynamicDependency::Bootstrap
     /// for use by the current process. If multiple packages meet the criteria the best
     /// candidate is selected.
     ///
-    /// If called multiple times the parameters must be compatible with the framework packcage
+    /// If called multiple times the parameters must be compatible with the framework package
     /// resolved by the first initialization call (i.e. the framework package currently in use).
     /// If the request is not compatible with the framework package currently in use
     /// the API fails and an error is returned.

@@ -169,6 +169,53 @@ namespace Test::DynamicDependency
             MddBootstrapShutdown();
         }
 
+        TEST_METHOD(InitializeShutdownMultiple)
+        {
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+
+            // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+            const UINT32 c_Version_MajorMinor1{ Test::Packages::WindowsAppRuntimeFramework::c_Version_MajorMinor };
+            const PACKAGE_VERSION c_minVersion1{};
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor1, nullptr, c_minVersion1));
+            MddBootstrapShutdown();
+
+            // Same criteria but MinVersion=package version. Verify Initialize+Shutdown brings us back
+            // to initial state so we can initialize again with different (but successful) criteria
+            const UINT32 c_Version_MajorMinor2{ Test::Packages::WindowsAppRuntimeFramework::c_Version_MajorMinor };
+            const PACKAGE_VERSION c_minVersion2{ Test::Packages::WindowsAppRuntimeFramework::GetPackageVersion() };
+            VERIFY_ARE_NOT_EQUAL(c_minVersion2.Version, c_minVersion1.Version);
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor2, nullptr, c_minVersion2));
+            MddBootstrapShutdown();
+
+            // Incompatible criteria. Verify Initialize+Shutdown brought us
+            // back to initial state so we can fail to initialize as expected
+            const UINT32 c_Version_MajorMinor3{ Test::Packages::WindowsAppRuntimeFramework::c_Version_MajorMinor };
+            const PACKAGE_VERSION c_minVersion3{};
+            VERIFY_ARE_EQUAL(c_minVersion3.Version, c_minVersion1.Version);
+            VERIFY_ARE_NOT_EQUAL(c_minVersion3.Version, c_minVersion2.Version);
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(c_Version_MajorMinor3, L"NotTheVersionTag", c_minVersion3));
+
+            // Incompatible criteria. Verify Initialize+Shutdown brought us
+            // back to initial state so we can fail to initialize as expected
+            const UINT32 c_Version_MajorMinor4{ Test::Packages::WindowsAppRuntimeFramework::c_Version_MajorMinor };
+            const PACKAGE_VERSION c_minVersion4{ Test::Packages::WindowsAppRuntimeFramework::GetPackageVersion().Version + 1 };
+            VERIFY_ARE_NOT_EQUAL(c_minVersion4.Version, c_minVersion1.Version);
+            VERIFY_ARE_NOT_EQUAL(c_minVersion4.Version, c_minVersion2.Version);
+            VERIFY_ARE_NOT_EQUAL(c_minVersion4.Version, c_minVersion3.Version);
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(c_Version_MajorMinor4, nullptr, c_minVersion4));
+
+            // Same criteria but MinVersion<package version. Verify Initialize+Shutdown brings us back
+            // to initial state so we can initialize again with different (but successful) criteria
+            const UINT32 c_Version_MajorMinor5{ Test::Packages::WindowsAppRuntimeFramework::c_Version_MajorMinor };
+            const PACKAGE_VERSION c_minVersion5{ Test::Packages::WindowsAppRuntimeFramework::GetPackageVersion().Version - 1 };
+            VERIFY_ARE_NOT_EQUAL(c_minVersion5.Version, c_minVersion1.Version);
+            VERIFY_ARE_NOT_EQUAL(c_minVersion5.Version, c_minVersion2.Version);
+            VERIFY_ARE_NOT_EQUAL(c_minVersion5.Version, c_minVersion3.Version);
+            VERIFY_ARE_NOT_EQUAL(c_minVersion5.Version, c_minVersion4.Version);
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor5, nullptr, c_minVersion5));
+            MddBootstrapShutdown();
+        }
+
         TEST_METHOD(ShutdownWithoutInitialize)
         {
             MddBootstrapShutdown();
