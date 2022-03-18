@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <MicrosoftWindowsCsWinRTPackageVersion>1.5.0</MicrosoftWindowsCsWinRTPackageVersion>
+    <MicrosoftFrameworkUdkPackageVersion>1.0.5-CI-22551.1024.220305-1000.0</MicrosoftFrameworkUdkPackageVersion>
     <CsWinRTDependencyDotNetCoreSdkPackageVersion>5.0.404</CsWinRTDependencyDotNetCoreSdkPackageVersion>
     <CsWinRTDependencyDotNetCoreRuntimePackageVersion>5.0.13</CsWinRTDependencyDotNetCoreRuntimePackageVersion>
     <CsWinRTDependencyWindowsSdkPackagePackageVersion>23</CsWinRTDependencyWindowsSdkPackagePackageVersion>
