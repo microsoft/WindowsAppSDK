@@ -235,7 +235,7 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::SetDisplayNameBasedO
 }
 
 // Placeholder
-HRESULT ExtractIconFromCsAssets(_Out_ PWSTR* displayName, _Out_ PWSTR* iconFilePath)
+HRESULT RetrieveAssetsFromProcess(_Out_ PWSTR* displayName, _Out_ PWSTR* iconFilePath)
 {
     *displayName = nullptr;
     *iconFilePath = nullptr;
@@ -252,7 +252,7 @@ HRESULT ToastNotifications_RetrieveAssets_Stub(_Out_ PWSTR* displayName, _Out_ P
     return E_NOTIMPL;
 }
 
-HRESULT RetrieveAssetsFromShell(_Out_ PWSTR* displayName, _Out_ PWSTR* iconFilePath)
+HRESULT RetrieveAssetsFromWindow(_Out_ PWSTR* displayName, _Out_ PWSTR* iconFilePath)
 {
     *displayName = nullptr;
     *iconFilePath = nullptr;
@@ -260,8 +260,7 @@ HRESULT RetrieveAssetsFromShell(_Out_ PWSTR* displayName, _Out_ PWSTR* iconFileP
     wil::unique_cotaskmem_string localDisplayName;
     wil::unique_cotaskmem_string localIconFilePath;
 
-    HWND hWindow = nullptr;
-    GetWindow(hWindow, GW_HWNDFIRST);
+    HWND hWindow = GetForegroundWindow();
 
     if (hWindow)
     {
@@ -271,7 +270,7 @@ HRESULT RetrieveAssetsFromShell(_Out_ PWSTR* displayName, _Out_ PWSTR* iconFileP
         wil::unique_prop_variant propVariantDisplayName;
         THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, &propVariantDisplayName));
 
-        if (propVariantDisplayName.vt == VT_LPWSTR && wcslen(propVariantDisplayName.pwszVal) > 0)
+        if (propVariantDisplayName.vt == VT_LPWSTR && Microsoft::Windows::AppNotifications::Helpers::IsWideStringEmptyOrNull(propVariantDisplayName.pwszVal))
         {
             localDisplayName = wil::make_unique_string<wil::unique_cotaskmem_string>(propVariantDisplayName.pwszVal);
         }
@@ -279,7 +278,7 @@ HRESULT RetrieveAssetsFromShell(_Out_ PWSTR* displayName, _Out_ PWSTR* iconFileP
         wil::unique_prop_variant propVariantIcon;
         THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchIconResource, &propVariantIcon));
 
-        THROW_HR_IF(E_UNEXPECTED, propVariantIcon.vt != VT_LPWSTR || wcslen(propVariantIcon.pwszVal) == 0);
+        THROW_HR_IF(E_UNEXPECTED, propVariantIcon.vt != VT_LPWSTR || Microsoft::Windows::AppNotifications::Helpers::IsWideStringEmptyOrNull(propVariantIcon.pwszVal));
 
         std::wstring localIconFilePathAsWstring = propVariantIcon.pwszVal;
 
@@ -318,53 +317,27 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
         &hKey,
         nullptr /* lpdwDisposition */));
 
-    bool isDefaultIcon{ false };
+    bool useDefaultAssets{ false };
 
     wil::unique_cotaskmem_string displayName;
     wil::unique_cotaskmem_string iconFilePath;
 
-    /*
-    * Try the following techniques to retrieve display name and icon:
-    * 1. Retrieve assets from Visual Studio, in case the app is written in C#.
-    * 2. Call the FrameworkUdk to retrieve assets based on the best app shortcut.
-    * 3. Call the public Shell APIs if a window is available.
-    * 4. Set a display name from process file path.
-    *    Also, verify if we have a cached icon in the Registry. If not:
-    * 5. Set a default icon.
-    */
-    if (FAILED(ExtractIconFromCsAssets(&displayName, &iconFilePath)) &&
+    // Try the following techniques to retrieve display name and icon:
+    // 1. From the current process.
+    // 2. Based on the best app shortcut, using the FrameworkUdk.
+    // 3. From the foreground window.
+    // 4. Use the default assets.
+    if (FAILED(RetrieveAssetsFromProcess(&displayName, &iconFilePath)) &&
         FAILED(ToastNotifications_RetrieveAssets_Stub(&displayName, &iconFilePath)) &&
-        FAILED(RetrieveAssetsFromShell(&displayName, &iconFilePath)))
+        FAILED(RetrieveAssetsFromWindow(&displayName, &iconFilePath)))
     {
-        // Set a Display Name based on process name.
         displayName = wil::make_unique_string<wil::unique_cotaskmem_string>(SetDisplayNameBasedOnProcessName().c_str());
-
-        // Check if we have anything in the cache for the icon.
-        iconFilePath = wil::make_unique_string<wil::unique_cotaskmem_string>(L"", MAX_PATH);
-        DWORD bufferLength = sizeof(iconFilePath);
-
-        RegGetValueW(
-            hKey.get(),
-            nullptr /* lpValue */,
-            L"IconUri",
-            RRF_RT_REG_SZ,
-            nullptr /* pdwType */,
-            &iconFilePath,
-            &bufferLength);
-
-        if (wcslen(iconFilePath.get()) == 0)
-        {
-            iconFilePath = wil::make_unique_string<wil::unique_cotaskmem_string>(defaultAppNotificationIcon);
-        }
-
-        if (wcscmp(iconFilePath.get(), defaultAppNotificationIcon) == 0)
-        {
-            isDefaultIcon = true;
-        }
+        iconFilePath = wil::make_unique_string<wil::unique_cotaskmem_string>(defaultAppNotificationIcon);
+        useDefaultAssets = true;
     }
 
-    // Verify if we support the provided file format for the icon.
-    if (!isDefaultIcon)
+    // Verify if we support the provided file format for the icon. Do not verify for the default icon, we know it is supported.
+    if (!useDefaultAssets)
     {
         std::wstring iconFilePathAsWstring{ iconFilePath.get() };
         auto iteratorForFileExtension{ iconFilePathAsWstring.find_first_of(L".") };
@@ -377,7 +350,6 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
             "You must provide a supported file format for the icon. Supported formats: .bmp, .ico, .jpg, .png.");
     }
 
-    // Finally, set the assets!
     RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.get()), REG_EXPAND_SZ, wcslen(displayName.get()) * sizeof(wchar_t));
     RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(iconFilePath.get()), REG_EXPAND_SZ, wcslen(iconFilePath.get()) * sizeof(wchar_t));
     RegisterValue(hKey, L"CustomActivator", reinterpret_cast<const BYTE*>(clsid.c_str()), REG_SZ, clsid.size() * sizeof(wchar_t));
@@ -503,4 +475,9 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows:
     // Priority and SupressDisplay are transient values that do not exist in ToastProperties and thus, are left to their default.
 
     return notification;
+}
+
+bool Microsoft::Windows::AppNotifications::Helpers::IsWideStringEmptyOrNull(PCWSTR wideString)
+{
+    return wideString == nullptr || wcslen(wideString) > 0;
 }
