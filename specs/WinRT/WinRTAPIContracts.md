@@ -22,18 +22,22 @@ WinRT APIs.
    1. One contract per feature/component/sub-system
    2. Contracts will not span across a transport package/repo
 2. **Contract Version**<BR>
-Contracts versions are a single number with no minor version, no "x.y".  The contract version is
-frozen on a stable release.  Any changes after a stable release requires the version to be incremented.
+Contracts versions are a single number with no minor version, no "x.y". The contract version is
+frozen on a stable release. Any changes after a stable release requires the version to be incremented.
 3. **Enforcement**<BR>
 The build system has gates that enforce contract versioning to verify that contract is present,
  up to date, and there are no conflicts between APIs.
 4. **Contract Migration**<BR>
 This spec does not deal with contract migration. A separate spec will be available for contract
 migration if, and when, it is needed.
-5. **Internal contracts**<BR>
-All internal WinRT APIs have a contract, and the version is 1. The version is never updated.
-6. **Contract naming**<BR>
-Contract names must end with the word `Contract`.
+5. **Contract naming**<BR>
+Contract names must end with `Contract`.
+6. **Internal contracts**<BR>
+Internal contracts follow additional rules:
+    1. All internal WinRT APIs have an internal contract.
+    2. Internal contracts are tagged with `[internal]`.
+    3. Internal contracts are always version 1. The version is never updated.
+    4. Internal contract names must end with `InternalContract`
 
 # 3. Adding a new contract
 Contract placement is part of an API review. When adding a new API, the API team will
@@ -98,16 +102,19 @@ The list of all contracts defined across Windows App SDK
 
 TODO:Start of the list. Needs review and undoubtedly correction and additions (e.g. IXP)
 
-| Feature            | Repository    | Contract                        | NamespaceMicrosoft.Windows.System.Power              | Comment |
-|--------------------|---------------|---------------------------------|------------------------------------------------------|---------|
-| AccessControl      | windowsappsdk | AccessControlContract           | Microsoft.Windows.Security.AccessControl             |         |
-| AppLifecycle       | windowsappsdk | AppLifecycleContract            | Microsoft.Windows.AppLifecycle                       |         |
-| AppNotifications   | windowsappsdk | WindowsAppNotificationsContract | Microsoft.Windows.AppNotifications                   |         |
-| Deployment         | windowsappsdk | DeploymentManagerContract       | Microsoft.Windows.ApplicationModel.WindowsAppRuntime |         |
-| DynamicDependency  | windowsappsdk | DynamicDependencyContract       | Microsoft.Windows.ApplicationModel.DynamicDependency |         |
-| EnvironmentManager | windowsappsdk | EnvironmentManagerContracct     | Microsoft.Windows.System                             |         |
-| MRTCore            | windowsappsdk | MrtContract                     | Microsoft.Windows.ApplicationModel.Resources         |         |
-| PowerNotifications | windowsappsdk | PowerNotificationsContract      | Microsoft.Windows.System.Power                       |         |
-| PushNotifications  | windowsappsdk | PushNotificationsContract       | Microsoft.Windows.PushNotifications                  |         |
-| WinUI              | winui         | WinUIContract                   | Microsoft.UI.Xaml                                    |         |
-| WinUI              | winui         | WinUIControlsContract           | Microsoft.UI.Xaml.Controls                           |         |
+| Feature            | Repository    | Contract                        | NamespaceMicrosoft.Windows.System.Power              | Comment  |
+|--------------------|---------------|---------------------------------|------------------------------------------------------|----------|
+| AccessControl      | windowsappsdk | AccessControlContract           | Microsoft.Windows.Security.AccessControl             |          |
+| AppLifecycle       | windowsappsdk | AppLifecycleContract            | Microsoft.Windows.AppLifecycle                       |          |
+| AppNotifications   | windowsappsdk | WindowsAppNotificationsContract | Microsoft.Windows.AppNotifications                   |          |
+| Deployment         | windowsappsdk | DeploymentManagerContract       | Microsoft.Windows.ApplicationModel.WindowsAppRuntime |          |
+| DynamicDependency  | windowsappsdk | DynamicDependencyContract       | Microsoft.Windows.ApplicationModel.DynamicDependency |          |
+| EnvironmentManager | windowsappsdk | EnvironmentManagerContracct     | Microsoft.Windows.System                             |          |
+| MRTCore            | windowsappsdk | MrtContract                     | Microsoft.Windows.ApplicationModel.Resources         |          |
+| PowerNotifications | windowsappsdk | PowerNotificationsContract      | Microsoft.Windows.System.Power                       |          |
+| PushNotifications  | windowsappsdk | PushNotificationsContract       | Microsoft.Windows.PushNotifications                  |          |
+| WinUI              | winui         | HostingContract                 | Microsoft.UI.Xaml.Hosting                            |          |
+| WinUI              | winui         | WinUIContract                   | Microsoft.UI.Xaml                                    |          |
+| WinUI              | winui         | WinUIControlsContract           | Microsoft.UI.Xaml.Controls                           |          |
+| WinUI              | winui         | XamlDirectContract              | Microsoft.UI.Xaml.Core.Direct                        |          |
+| ---                | ---           | WindowsAppSDKContract           | Microsoft.Foundation                                 |Do not use|
