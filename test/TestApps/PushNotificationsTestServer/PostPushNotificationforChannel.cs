@@ -56,6 +56,7 @@ namespace PushNotificationsTestServer
                 Content_Type = Content_Type ?? data?.Content_Type;
                 NotificationPayloadString = NotificationPayloadString ?? data?.Payload;
             }
+            log.LogInformation("Payload {0}", NotificationPayloadString);
 
             // Currently always true. Once long lasting storage is in place this will not always be required.
             bool requiresAuthentication = true;

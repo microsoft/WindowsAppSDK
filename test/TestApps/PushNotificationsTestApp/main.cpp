@@ -23,6 +23,12 @@ winrt::guid remoteId1(L"cea1342d-8293-4acb-b18a-ed8b0d6f7d6c"); // Generated fro
 winrt::guid remoteId2(L"CA1A4AB2-AC1D-4EFC-A132-E5A191CA285A"); // Dummy guid from visual studio guid tool generator
 
 constexpr auto timeout{ std::chrono::seconds(300) };
+
+// Keep this in sync. Payload in both formats because hstring only accepts Wide string
+// but we are serializing it across the wire as UTF8 and receiving it back in the same format.
+std::wstring g_wideStringTestPayload = L"WindowsAppSDKTestPayload";
+std::string g_narrowStringTestPayload = "WindowsAppSDKTestPayload";
+
 wil::unique_event g_pushNotificationReceived;
 
 bool ChannelRequestUsingNullRemoteId()
@@ -57,7 +63,7 @@ HRESULT ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateC
     return S_OK;
 }
 
-HRESULT RequestPushNotificationFromServer(Uri channelUri)
+HRESULT RequestPushNotificationFromServer(Uri channelUri, winrt::hstring payloadAsString)
 {
     HttpClient httpClient;
     Uri serverUri(winrt::to_hstring("http://localhost:7071/api/PostPushNotificationforChannel"));
@@ -66,7 +72,7 @@ HRESULT RequestPushNotificationFromServer(Uri channelUri)
     postNotificationRequest.SetNamedValue(winrt::hstring(L"ChannelUri"), JsonValue::CreateStringValue(channelUri.ToString()));
     postNotificationRequest.SetNamedValue(winrt::hstring(L"X_WNS_Type"), JsonValue::CreateStringValue(winrt::hstring(L"wns/raw")));
     postNotificationRequest.SetNamedValue(winrt::hstring(L"Content_Type"), JsonValue::CreateStringValue(winrt::hstring(L"application/octet-stream")));
-    postNotificationRequest.SetNamedValue(winrt::hstring(L"Payload"), JsonValue::CreateStringValue(winrt::hstring(L"Sending from Reunion")));
+    postNotificationRequest.SetNamedValue(winrt::hstring(L"Payload"), JsonValue::CreateStringValue(payloadAsString));
 
     IHttpContent content = HttpStringContent(postNotificationRequest.ToString(), UnicodeEncoding::Utf8, winrt::hstring(L"application/json"));
     HttpRequestMessage httpRequestMessage;
@@ -310,13 +316,21 @@ bool VerifyPushReceivedInForeground()
         g_pushNotificationReceived.create();
         PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
             {
-                g_pushNotificationReceived.SetEvent();
+                std::string payloadAsString = std::string(reinterpret_cast<char*>(args.Payload().data()), args.Payload().size());
+                std::cout << g_narrowStringTestPayload << std::endl;
+                std::cout << "Payload size is: " << args.Payload().size() << std::endl;
+                std::cout << payloadAsString << std::endl;
+
+                if (g_narrowStringTestPayload == payloadAsString)
+                {
+                    g_pushNotificationReceived.SetEvent();
+                }
             });
         PushNotificationManager::Default().Register();
         auto channelOperation = PushNotificationManager::Default().CreateChannelAsync(remoteId1);
         check_hresult(ChannelRequestHelper(channelOperation));
         std::wcout << channelOperation.GetResults().Channel().Uri().ToString().c_str() << std::endl;
-        RequestPushNotificationFromServer(channelOperation.GetResults().Channel().Uri());
+        RequestPushNotificationFromServer(channelOperation.GetResults().Channel().Uri(), winrt::hstring(g_wideStringTestPayload));
 
         bool payloadReceived = false;
         if (g_pushNotificationReceived.wait(30000))
