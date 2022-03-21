@@ -1,7 +1,6 @@
 ﻿#include "pch.h"
 #include "AppNotification.h"
 #include "Microsoft.Windows.AppNotifications.AppNotification.g.cpp"
-#include <TerminalVelocityFeatures-AppNotifications.h>
 
 using namespace winrt::Windows::Data::Xml::Dom;
 

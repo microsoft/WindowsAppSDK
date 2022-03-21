@@ -6,7 +6,6 @@
 #include <winrt/Windows.ApplicationModel.background.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.Networking.PushNotifications.h>
-#include <TerminalVelocityFeatures-PushNotifications.h>
 #include "PushNotificationReceivedEventArgs.h"
 #include "Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs.g.cpp"
 #include <iostream>

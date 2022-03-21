@@ -3,7 +3,6 @@
 
 #include "pch.h"
 #include "PushNotificationCreateChannelResult.h"
-#include <TerminalVelocityFeatures-PushNotifications.h>
 #include "Microsoft.Windows.PushNotifications.PushNotificationCreateChannelResult.g.cpp"
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
