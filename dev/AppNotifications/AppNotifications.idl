@@ -11,7 +11,6 @@ namespace Microsoft.Windows.AppNotifications
     apicontract WindowsAppNotificationsContract {}
 
     // Event args for the Notification Activation
-    [feature(Feature_AppNotifications)]
     [contract(WindowsAppNotificationsContract, 1)]
     runtimeclass AppNotificationActivatedEventArgs
     {
@@ -23,7 +22,6 @@ namespace Microsoft.Windows.AppNotifications
     }
 
     // Notification Progress Data
-    [feature(Feature_AppNotifications)]
     [contract(WindowsAppNotificationsContract, 1)]
     runtimeclass AppNotificationProgressData
     {
@@ -49,7 +47,6 @@ namespace Microsoft.Windows.AppNotifications
     }
 
     // The Notification User Setting or Notification Group Policy Setting
-    [feature(Feature_AppNotifications)]
     [contract(WindowsAppNotificationsContract, 1)]
     enum AppNotificationSetting
     {
@@ -61,7 +58,6 @@ namespace Microsoft.Windows.AppNotifications
     };
 
     // The Result for a Notification Progress related operation
-    [feature(Feature_AppNotifications)]
     [contract(WindowsAppNotificationsContract, 1)]
     enum AppNotificationProgressResult
     {
@@ -70,7 +66,6 @@ namespace Microsoft.Windows.AppNotifications
     };
 
     // The Priority of the Notification UI associated with it's popup in the Action Centre
-    [feature(Feature_AppNotifications)]
     [contract(WindowsAppNotificationsContract, 1)]
     enum AppNotificationPriority
     {
@@ -78,7 +73,6 @@ namespace Microsoft.Windows.AppNotifications
         High, // The notification should be treated as high priority. For desktop PCs, this means during connected standby mode the incoming notification can turn on the screen for Surface-like devices if it doesn't have a closed lid detected.
     };
 
-    [feature(Feature_AppNotifications)]
     [contract(WindowsAppNotificationsContract, 1)]
     runtimeclass AppNotification
     {
@@ -115,7 +109,6 @@ namespace Microsoft.Windows.AppNotifications
     }
 
     // The manager class which encompasses all App Notification API Functionality
-    [feature(Feature_AppNotifications)]
     [contract(WindowsAppNotificationsContract, 1)]
     runtimeclass AppNotificationManager
     {

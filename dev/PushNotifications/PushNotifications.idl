@@ -5,7 +5,6 @@
 
 namespace Microsoft.Windows.PushNotifications
 {
-    [feature(Feature_PushNotifications)]
     // Event args for the Push payload.
     runtimeclass PushNotificationReceivedEventArgs
     {
@@ -19,7 +18,6 @@ namespace Microsoft.Windows.PushNotifications
         event Windows.ApplicationModel.Background.BackgroundTaskCanceledEventHandler Canceled;
     };
 
-    [feature(Feature_PushNotifications)]
     enum PushNotificationChannelStatus
     {
         InProgress, // The request is in progress and there is no retry operation
@@ -29,7 +27,6 @@ namespace Microsoft.Windows.PushNotifications
     };
 
     // The PushNotificationChannel Progress result
-    [feature(Feature_PushNotifications)]
     struct PushNotificationCreateChannelStatus
     {
         // Either InProgress or InProgressRetry status
@@ -42,7 +39,6 @@ namespace Microsoft.Windows.PushNotifications
         UInt32 retryCount;
     };
 
-    [feature(Feature_PushNotifications)]
     runtimeclass PushNotificationChannel
     {
         // The Channel Uri for app to Post a notification to.
@@ -55,7 +51,6 @@ namespace Microsoft.Windows.PushNotifications
         void Close();
     }
 
-    [feature(Feature_PushNotifications)]
     runtimeclass PushNotificationCreateChannelResult
     {
         // The Push channel associated with the Result. Valid only if status is CompletedSuccess.
@@ -68,7 +63,6 @@ namespace Microsoft.Windows.PushNotifications
         PushNotificationChannelStatus Status { get; };
     };
 
-    [feature(Feature_PushNotifications)]
     runtimeclass PushNotificationManager
     {
         // Checks to see if the APIs are supported for the Desktop app

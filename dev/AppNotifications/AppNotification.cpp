@@ -9,8 +9,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
     AppNotification::AppNotification(hstring const& payload)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::AppNotifications::Feature_AppNotifications::IsEnabled());
-
         XmlDocument xmlDocument{};
 
         // We call LoadXml to verify the payload is xml
