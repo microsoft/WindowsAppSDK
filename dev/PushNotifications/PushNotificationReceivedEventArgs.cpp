@@ -6,7 +6,6 @@
 #include <winrt/Windows.ApplicationModel.background.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.Networking.PushNotifications.h>
-#include <TerminalVelocityFeatures-PushNotifications.h>
 #include "PushNotificationReceivedEventArgs.h"
 #include "Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs.g.cpp"
 #include <iostream>
@@ -31,28 +30,24 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         m_rawNotificationPayload(BuildPayload(backgroundTask.TriggerDetails().as<RawNotification>().ContentBytes())),
         m_unpackagedAppScenario(false)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
     }
 
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args):
         m_rawNotificationPayload(BuildPayload(args.RawNotification().ContentBytes())),
         m_unpackagedAppScenario(false)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
     }
 
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(byte* const& payload, ULONG const& length) :
         m_rawNotificationPayload(BuildPayload(payload, length)),
         m_unpackagedAppScenario(true)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
     }
 
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(std::wstring const& payload) :
         m_rawNotificationPayload(BuildPayload(payload)),
         m_unpackagedAppScenario(true)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
     }
 
     std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(winrt::Windows::Storage::Streams::IBuffer const& buffer)

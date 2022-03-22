@@ -3,9 +3,7 @@
 
 #pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.h"
-
 #include "winrt/Windows.Networking.PushNotifications.h"
-#include <TerminalVelocityFeatures-PushNotifications.h>
 #include "externs.h"
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation

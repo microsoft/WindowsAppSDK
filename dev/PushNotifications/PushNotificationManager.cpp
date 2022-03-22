@@ -116,16 +116,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::Microsoft::Windows::PushNotifications::PushNotificationManager PushNotificationManager::Default()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
-
         static auto pushNotificationManager{ winrt::make<PushNotificationManager>() };
         return pushNotificationManager;
     }
 
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid remoteId)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
-
         auto strong = get_strong();
 
         try
