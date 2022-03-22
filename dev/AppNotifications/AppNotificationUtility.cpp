@@ -4,6 +4,7 @@
 
 #include "pch.h"
 #include <cwctype>
+#include <filesystem>
 #include "AppNotificationUtility.h"
 #include <winrt/Windows.ApplicationModel.Core.h>
 #include <winrt/Windows.Foundation.h>
@@ -12,6 +13,8 @@
 #include <frameworkudk/pushnotifications.h>
 #include "AppNotification.h"
 #include "NotificationProgressData.h"
+
+#include <Microsoft.Foundation.String.h>
 
 #include <wil/resource.h>
 #include <wil/win32_helpers.h>
@@ -235,69 +238,31 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::SetDisplayNameBasedO
 }
 
 // Placeholder
-HRESULT RetrieveAssetsFromProcess(_Out_ PWSTR* displayName, _Out_ PWSTR* iconFilePath)
+HRESULT RetrieveAssetsFromProcess(_Out_ Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets& /*assets*/)
 {
-    *displayName = nullptr;
-    *iconFilePath = nullptr;
+    // THROW_HR_IF_MSG(E_UNEXPECTED, VerifyIconFileExtension(iconFilePath));
 
     return E_NOTIMPL;
 }
 
 // Do nothing. This is just a placeholder while the UDK is ingested with the proper API.
-HRESULT ToastNotifications_RetrieveAssets_Stub(_Out_ PWSTR* displayName, _Out_ PWSTR* iconFilePath)
+HRESULT ToastNotifications_RetrieveAssets_Stub(_Out_ Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets& /*assets*/)
 {
-    *displayName = nullptr;
-    *iconFilePath = nullptr;
+    // THROW_HR_IF_MSG(E_UNEXPECTED, VerifyIconFileExtension(iconFilePath));
 
     return E_NOTIMPL;
 }
 
-HRESULT RetrieveAssetsFromWindow(_Out_ PWSTR* displayName, _Out_ PWSTR* iconFilePath)
+HRESULT VerifyIconFileExtension(std::filesystem::path& iconFilePath)
 {
-    *displayName = nullptr;
-    *iconFilePath = nullptr;
+    const auto fileExtension = iconFilePath.extension();
 
-    wil::unique_cotaskmem_string localDisplayName;
-    wil::unique_cotaskmem_string localIconFilePath;
+    const bool isFileExtensionSupported =
+        fileExtension == ".ico" || fileExtension == ".bmp" || fileExtension == ".jpg" || fileExtension == ".png" ||
+        fileExtension == ".ICO" || fileExtension == ".BMP" || fileExtension == ".JPG" || fileExtension == ".PNG";
 
-    HWND hWindow = GetForegroundWindow();
-
-    if (hWindow)
-    {
-        winrt::com_ptr<IPropertyStore> propertyStore;
-        THROW_IF_FAILED(SHGetPropertyStoreForWindow(hWindow, IID_PPV_ARGS(propertyStore.put())));
-
-        wil::unique_prop_variant propVariantDisplayName;
-        THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, &propVariantDisplayName));
-
-        if (propVariantDisplayName.vt == VT_LPWSTR && Microsoft::Windows::AppNotifications::Helpers::IsWideStringEmptyOrNull(propVariantDisplayName.pwszVal))
-        {
-            localDisplayName = wil::make_unique_string<wil::unique_cotaskmem_string>(propVariantDisplayName.pwszVal);
-        }
-
-        wil::unique_prop_variant propVariantIcon;
-        THROW_IF_FAILED(propertyStore->GetValue(PKEY_AppUserModel_RelaunchIconResource, &propVariantIcon));
-
-        THROW_HR_IF(E_UNEXPECTED, propVariantIcon.vt != VT_LPWSTR || Microsoft::Windows::AppNotifications::Helpers::IsWideStringEmptyOrNull(propVariantIcon.pwszVal));
-
-        std::wstring localIconFilePathAsWstring = propVariantIcon.pwszVal;
-
-        // Icon filepaths from Shell APIs usually follow this format: <filepath>,-<index>,
-        // since .ico or .dll files can have multiple icons in the same file.
-        // NotificationController doesn't seem to support such format, so let it take the first icon by default.
-        auto iteratorForCommaDelimiter{ localIconFilePathAsWstring.find_first_of(L",") };
-        if (iteratorForCommaDelimiter != std::wstring::npos) // It may or may not have an index, which is fine.
-        {
-            localIconFilePath = wil::make_unique_string<wil::unique_cotaskmem_string>(localIconFilePathAsWstring.erase(iteratorForCommaDelimiter).c_str());
-        }
-
-        *displayName = localDisplayName.release();
-        *iconFilePath = localIconFilePath.release();
-
-        return S_OK;
-    }
-
-    return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
+    THROW_HR_IF(E_UNEXPECTED, isFileExtensionSupported);
+    return S_OK;
 }
 
 void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring const& appId, std::wstring const& clsid)
@@ -317,42 +282,23 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
         &hKey,
         nullptr /* lpdwDisposition */));
 
-    bool useDefaultAssets{ false };
-
-    wil::unique_cotaskmem_string displayName;
-    wil::unique_cotaskmem_string iconFilePath;
-
     // Try the following techniques to retrieve display name and icon:
     // 1. From the current process.
     // 2. Based on the best app shortcut, using the FrameworkUdk.
     // 3. From the foreground window.
     // 4. Use the default assets.
-    if (FAILED(RetrieveAssetsFromProcess(&displayName, &iconFilePath)) &&
-        FAILED(ToastNotifications_RetrieveAssets_Stub(&displayName, &iconFilePath)) &&
-        FAILED(RetrieveAssetsFromWindow(&displayName, &iconFilePath)))
+    Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets assets{};
+
+    if (FAILED(RetrieveAssetsFromProcess(assets)) &&
+        FAILED(ToastNotifications_RetrieveAssets_Stub(assets)))
     {
-        displayName = wil::make_unique_string<wil::unique_cotaskmem_string>(SetDisplayNameBasedOnProcessName().c_str());
-        iconFilePath = wil::make_unique_string<wil::unique_cotaskmem_string>(defaultAppNotificationIcon);
-        useDefaultAssets = true;
+        assets.displayName = wil::make_unique_string<wil::unique_cotaskmem_string>(SetDisplayNameBasedOnProcessName().c_str());
+        assets.iconFilePath = wil::make_unique_string<wil::unique_cotaskmem_string>(defaultAppNotificationIcon);
     }
 
-    // Verify if we support the provided file format for the icon. Do not verify for the default icon, we know it is supported.
-    if (!useDefaultAssets)
-    {
-        std::wstring iconFilePathAsWstring{ iconFilePath.get() };
-        auto iteratorForFileExtension{ iconFilePathAsWstring.find_first_of(L".") };
-        THROW_HR_IF_MSG(E_UNEXPECTED, iteratorForFileExtension == std::wstring::npos, "You must provide a valid filepath as the app icon.");
-
-        std::wstring iconFileExtension = iconFilePathAsWstring.substr(iteratorForFileExtension);
-        THROW_HR_IF_MSG(E_UNEXPECTED,
-            iconFileExtension != L".ico" && iconFileExtension != L".png" &&
-            iconFileExtension != L".jpg" && iconFileExtension != L".bmp",
-            "You must provide a supported file format for the icon. Supported formats: .bmp, .ico, .jpg, .png.");
-    }
-
-    RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.get()), REG_EXPAND_SZ, wcslen(displayName.get()) * sizeof(wchar_t));
-    RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(iconFilePath.get()), REG_EXPAND_SZ, wcslen(iconFilePath.get()) * sizeof(wchar_t));
-    RegisterValue(hKey, L"CustomActivator", reinterpret_cast<const BYTE*>(clsid.c_str()), REG_SZ, clsid.size() * sizeof(wchar_t));
+    RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(assets.displayName.get()), REG_EXPAND_SZ, wcslen(assets.displayName.get()) * sizeof(wchar_t));
+    RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(assets.iconFilePath.get()), REG_EXPAND_SZ, wcslen(assets.iconFilePath.get()) * sizeof(wchar_t));
+    RegisterValue(hKey, L"CustomActivator", reinterpret_cast<const BYTE*>(clsid.c_str()), REG_SZ, wil::guid_string_length * sizeof(wchar_t));
 }
 
 winrt::guid Microsoft::Windows::AppNotifications::Helpers::RegisterComActivatorGuidAndAssets()
@@ -475,9 +421,4 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows:
     // Priority and SupressDisplay are transient values that do not exist in ToastProperties and thus, are left to their default.
 
     return notification;
-}
-
-bool Microsoft::Windows::AppNotifications::Helpers::IsWideStringEmptyOrNull(PCWSTR wideString)
-{
-    return wideString == nullptr || wcslen(wideString) > 0;
 }

@@ -16,6 +16,11 @@ namespace Microsoft::Windows::AppNotifications::Helpers
     const std::wstring c_quote{ LR"(")" };
     const std::wstring c_notificationActivatedArgument{ L" ----AppNotificationActivated:" };
 
+    struct AppNotificationAssets {
+        wil::unique_cotaskmem_string displayName;
+        wil::unique_cotaskmem_string iconFilePath;
+    };
+
     inline const int GUID_LENGTH = 39; // GUID + '{' + '}' + '/0'
 
     inline std::wstring ConvertPathToKey(std::wstring path)
@@ -63,5 +68,8 @@ namespace Microsoft::Windows::AppNotifications::Helpers
 
     std::wstring SetDisplayNameBasedOnProcessName();
 
-    bool IsWideStringEmptyOrNull(PCWSTR wideString);
+    inline bool IsNullOrEmpty(PCWSTR string)
+    {
+        return !string || (*string == '\0');
+    }
 }
