@@ -221,7 +221,7 @@ HRESULT Microsoft::Windows::AppNotifications::Helpers::GetActivatorGuid(std::wst
 }
 CATCH_RETURN()
 
-std::wstring Microsoft::Windows::AppNotifications::Helpers::SetDisplayNameBasedOnProcessName()
+std::wstring Microsoft::Windows::AppNotifications::Helpers::GetDisplayNameBasedOnProcessName()
 {
     std::wstring displayName{};
     THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, displayName));
@@ -253,13 +253,25 @@ HRESULT ToastNotifications_RetrieveAssets_Stub(_Out_ Microsoft::Windows::AppNoti
     return E_NOTIMPL;
 }
 
-HRESULT VerifyIconFileExtension(std::filesystem::path& iconFilePath)
+HRESULT RetrieveDefaultAssets(_Out_ Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets& assets)
+{
+    assets.displayName = Microsoft::Windows::AppNotifications::Helpers::GetDisplayNameBasedOnProcessName();
+    assets.iconFilePath = defaultAppNotificationIcon;
+
+    return S_OK;
+}
+
+HRESULT VerifyIconFileExtension(std::filesystem::path const& iconFilePath)
 {
     const auto fileExtension = iconFilePath.extension();
 
+    std::string lowercaseFileExtension{ fileExtension.u8string() };
+
+    std::transform(lowercaseFileExtension.begin(), lowercaseFileExtension.end(), lowercaseFileExtension.begin(),
+        [](unsigned char c) { return std::tolower(c); });
+
     const bool isFileExtensionSupported =
-        fileExtension == ".ico" || fileExtension == ".bmp" || fileExtension == ".jpg" || fileExtension == ".png" ||
-        fileExtension == ".ICO" || fileExtension == ".BMP" || fileExtension == ".JPG" || fileExtension == ".PNG";
+        lowercaseFileExtension == ".ico" || lowercaseFileExtension == ".bmp" || lowercaseFileExtension == ".jpg" || lowercaseFileExtension == ".png";
 
     THROW_HR_IF(E_UNEXPECTED, isFileExtensionSupported);
     return S_OK;
@@ -285,19 +297,17 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
     // Try the following techniques to retrieve display name and icon:
     // 1. From the current process.
     // 2. Based on the best app shortcut, using the FrameworkUdk.
-    // 3. From the foreground window.
-    // 4. Use the default assets.
+    // 3. Use the default assets.
     Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets assets{};
 
     if (FAILED(RetrieveAssetsFromProcess(assets)) &&
         FAILED(ToastNotifications_RetrieveAssets_Stub(assets)))
     {
-        assets.displayName = wil::make_unique_string<wil::unique_cotaskmem_string>(SetDisplayNameBasedOnProcessName().c_str());
-        assets.iconFilePath = wil::make_unique_string<wil::unique_cotaskmem_string>(defaultAppNotificationIcon);
+        THROW_IF_FAILED(RetrieveDefaultAssets(assets));
     }
 
-    RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(assets.displayName.get()), REG_EXPAND_SZ, wcslen(assets.displayName.get()) * sizeof(wchar_t));
-    RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(assets.iconFilePath.get()), REG_EXPAND_SZ, wcslen(assets.iconFilePath.get()) * sizeof(wchar_t));
+    RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(assets.displayName.c_str()), REG_EXPAND_SZ, assets.displayName.size() * sizeof(wchar_t));
+    RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(assets.iconFilePath.c_str()), REG_EXPAND_SZ, assets.iconFilePath.size() * sizeof(wchar_t));
     RegisterValue(hKey, L"CustomActivator", reinterpret_cast<const BYTE*>(clsid.c_str()), REG_SZ, wil::guid_string_length * sizeof(wchar_t));
 }
 

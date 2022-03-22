@@ -17,8 +17,8 @@ namespace Microsoft::Windows::AppNotifications::Helpers
     const std::wstring c_notificationActivatedArgument{ L" ----AppNotificationActivated:" };
 
     struct AppNotificationAssets {
-        wil::unique_cotaskmem_string displayName;
-        wil::unique_cotaskmem_string iconFilePath;
+        std::wstring displayName;
+        std::wstring iconFilePath;
     };
 
     inline const int GUID_LENGTH = 39; // GUID + '{' + '}' + '/0'
@@ -66,10 +66,5 @@ namespace Microsoft::Windows::AppNotifications::Helpers
 
     winrt::Microsoft::Windows::AppNotifications::AppNotification ToastNotificationFromToastProperties(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* properties);
 
-    std::wstring SetDisplayNameBasedOnProcessName();
-
-    inline bool IsNullOrEmpty(PCWSTR string)
-    {
-        return !string || (*string == '\0');
-    }
+    std::wstring GetDisplayNameBasedOnProcessName();
 }
