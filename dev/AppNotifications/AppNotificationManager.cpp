@@ -52,8 +52,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Microsoft::Windows::AppNotifications::AppNotificationManager AppNotificationManager::Default()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::AppNotifications::Feature_AppNotifications::IsEnabled());
-
         static auto appNotificationManager{winrt::make<AppNotificationManager>()};
         return appNotificationManager;
     }
