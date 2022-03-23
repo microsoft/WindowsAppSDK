@@ -12,6 +12,11 @@
 /// for use by the current process. If multiple packages meet the criteria the best
 /// candidate is selected.
 ///
+/// If called multiple times the parameters must be compatible with the framework package
+/// resolved by the first initialization call (i.e. the framework package currently in use).
+/// If the request is not compatible with the framework package currently in use
+/// the API fails and an error is returned.
+///
 /// @param majorMinorVersion the major and minor version to use, e..g 0x00010002 for Major.Minor=1.2
 /// @param versionTag the version pre-release identifier, or NULL if none.
 /// @param minVersion the minimum version to use
