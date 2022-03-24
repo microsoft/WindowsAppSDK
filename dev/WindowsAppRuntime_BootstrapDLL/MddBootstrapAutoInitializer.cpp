@@ -29,6 +29,12 @@ namespace Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap
             const HRESULT hr{ ::MddBootstrapInitialize(c_majorMinorVersion, c_versionTag, c_minVersion) };
             if (FAILED(hr))
             {
+                if (IsDebuggerPresent()) {
+                    DebugBreak();
+                }
+                else {
+                    MessageBox(NULL,L"You need to run the Windows App Runtime Installer and its MSIX components", L"MddBootstrap", 0x00000010L);
+                }
                 exit(hr);
             }
         }
