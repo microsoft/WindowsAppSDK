@@ -16,6 +16,8 @@ namespace PushNotificationsTestServer
 {
     public static class PostPushNotificationforChannel
     {
+        private static HttpClient httpClient = new HttpClient();
+
         [FunctionName("PostPushNotificationforChannel")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
@@ -64,44 +66,45 @@ namespace PushNotificationsTestServer
             string responseMessage = "";
             string token = "";
 
-            using (var httpClient = new HttpClient())
+            if (requiresAuthentication)
             {
-                if (requiresAuthentication)
+                // Authenticate with the Windows Notification Service.
+                var parms = new List<KeyValuePair<String, String>>();
+                parms.Add(new KeyValuePair<String, String>("grant_type", "client_credentials"));
+                parms.Add(new KeyValuePair<String, String>("scope", "wns.connect"));
+                parms.Add(new KeyValuePair<string, string>("resource", "https://wns.windows.com/"));
+                parms.Add(new KeyValuePair<String, String>("client_id", System.Environment.GetEnvironmentVariable("client_id")));
+                parms.Add(new KeyValuePair<String, String>("client_secret", System.Environment.GetEnvironmentVariable("client_secret")));
+
+                // Do the actual request and await the response
+                HttpResponseMessage authenticationResponse = await httpClient.PostAsync("https://login.microsoftonline.com/common/oauth2/token", new FormUrlEncodedContent(parms));
+                authenticationResponse.EnsureSuccessStatusCode();
+
+                // If the response contains content we want to read it!
+                if (authenticationResponse.Content != null)
                 {
-                    // Authenticate with the Windows Notification Service.
-                    var parms = new List<KeyValuePair<String, String>>();
-                    parms.Add(new KeyValuePair<String, String>("grant_type", "client_credentials"));
-                    parms.Add(new KeyValuePair<String, String>("scope", "wns.connect"));
-                    parms.Add(new KeyValuePair<string, string>("resource", "https://wns.windows.com/"));
-                    parms.Add(new KeyValuePair<String, String>("client_id", System.Environment.GetEnvironmentVariable("client_id")));
-                    parms.Add(new KeyValuePair<String, String>("client_secret", System.Environment.GetEnvironmentVariable("client_secret")));
-
-                    // Do the actual request and await the response
-                    HttpResponseMessage authenticationResponse = await httpClient.PostAsync("https://login.microsoftonline.com/common/oauth2/token", new FormUrlEncodedContent(parms));
-                    authenticationResponse.EnsureSuccessStatusCode();
-
-                    // If the response contains content we want to read it!
-                    if (authenticationResponse.Content != null)
-                    {
-                        String jsonContent = await authenticationResponse.Content.ReadAsStringAsync();
-                        dynamic tokenResponse = JsonConvert.DeserializeObject(jsonContent);
-                        token = tokenResponse?.access_token;
-                    }
+                    String jsonContent = await authenticationResponse.Content.ReadAsStringAsync();
+                    dynamic tokenResponse = JsonConvert.DeserializeObject(jsonContent);
+                    token = tokenResponse?.access_token;
                 }
-
-                // Post the Notification
-                StringContent notificationContent = new StringContent(NotificationPayloadString);
-                notificationContent.Headers.ContentType = new MediaTypeHeaderValue(Content_Type);
-                notificationContent.Headers.ContentLength = NotificationPayloadString.Length;
-                httpClient.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0}", token));
-                httpClient.DefaultRequestHeaders.Add("X-WNS-Type", X_WNS_Type);
-                httpClient.DefaultRequestHeaders.Add("X-WNS-RequestForStatus", "true");
-
-                HttpResponseMessage postNotificationResponse = await httpClient.PostAsync(ChannelUri, notificationContent);
-                postNotificationResponse.EnsureSuccessStatusCode();
-                responseMessage = await postNotificationResponse.Content.ReadAsStringAsync();
-
             }
+
+            StringContent notificationContent = new StringContent(NotificationPayloadString);
+            notificationContent.Headers.ContentType = new MediaTypeHeaderValue(Content_Type);
+            notificationContent.Headers.ContentLength = NotificationPayloadString.Length;
+
+            HttpRequestMessage httpRequest = new HttpRequestMessage();
+            httpRequest.RequestUri = new Uri(ChannelUri);
+            httpRequest.Method = HttpMethod.Post;
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            httpRequest.Headers.Add("X-WNS-Type", X_WNS_Type);
+            httpRequest.Headers.Add("X-WNS-RequestForStatus", "true");
+            httpRequest.Content = notificationContent;
+
+            HttpResponseMessage postNotificationResponse = await httpClient.SendAsync(httpRequest);
+            postNotificationResponse.EnsureSuccessStatusCode();
+            responseMessage = await postNotificationResponse.Content.ReadAsStringAsync();
+
             return new OkObjectResult(responseMessage);
         }
     }
