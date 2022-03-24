@@ -3,7 +3,11 @@
 
 namespace Microsoft.Windows.PushNotifications
 {
+    [contractversion(1)]
+    apicontract PushNotificationsContract {}
+
     // Event args for the Push payload.
+    [contract(PushNotificationsContract, 1)]
     runtimeclass PushNotificationReceivedEventArgs
     {
         // The Push payload
@@ -16,6 +20,7 @@ namespace Microsoft.Windows.PushNotifications
         event Windows.ApplicationModel.Background.BackgroundTaskCanceledEventHandler Canceled;
     };
 
+    [contract(PushNotificationsContract, 1)]
     enum PushNotificationChannelStatus
     {
         InProgress, // The request is in progress and there is no retry operation
@@ -25,6 +30,7 @@ namespace Microsoft.Windows.PushNotifications
     };
 
     // The PushNotificationChannel Progress result
+    [contract(PushNotificationsContract, 1)]
     struct PushNotificationCreateChannelStatus
     {
         // Either InProgress or InProgressRetry status
@@ -37,6 +43,7 @@ namespace Microsoft.Windows.PushNotifications
         UInt32 retryCount;
     };
 
+    [contract(PushNotificationsContract, 1)]
     runtimeclass PushNotificationChannel
     {
         // The Channel Uri for app to Post a notification to.
@@ -49,6 +56,7 @@ namespace Microsoft.Windows.PushNotifications
         void Close();
     }
 
+    [contract(PushNotificationsContract, 1)]
     runtimeclass PushNotificationCreateChannelResult
     {
         // The Push channel associated with the Result. Valid only if status is CompletedSuccess.
@@ -61,6 +69,7 @@ namespace Microsoft.Windows.PushNotifications
         PushNotificationChannelStatus Status { get; };
     };
 
+    [contract(PushNotificationsContract, 1)]
     runtimeclass PushNotificationManager
     {
         // Checks to see if the APIs are supported for the Desktop app
