@@ -2,11 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 namespace Microsoft.Windows.Media.Capture
 {
+    /*
     // TEMPORARY
 	struct WindowId
 	{
 		UInt64 Value;
 	};
+    */
 
 	[default_interface]
 	runtimeclass CameraCaptureUIPhotoSettings
@@ -34,8 +36,8 @@ namespace Microsoft.Windows.Media.Capture
 	[default_interface]
 	runtimeclass CameraCaptureUI
 	{
-		CameraCaptureUI(WindowId window);
-        // CameraCaptureUI(Microsoft.UI.WindowId window);
+		// CameraCaptureUI(WindowId window);
+        CameraCaptureUI(Microsoft.UI.WindowId window);
 
 		CameraCaptureUIPhotoSettings PhotoSettings{ get; };
 		CameraCaptureUIVideoSettings VideoSettings{ get; };
