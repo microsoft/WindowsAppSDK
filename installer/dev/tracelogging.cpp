@@ -21,13 +21,23 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
             {
             case wil::FailureType::Log:
             {
+                // wil Log failure type indicates intention to just log failure but continue with the installation
+
                 if (installActivityContext.GetInstallStage() == InstallStage::ProvisionPackage)
                 {
                     // Failure in Provisioning package are non-blocking and the installer will continue with installation
-                    // wil failure type of Log indicates intention to just log failure but continue with the installation
                     WindowsAppRuntimeInstaller_WriteEventWithActivity(
                         "ProvisioningFailed",
                         WindowsAppRuntimeInstaller_TraceLoggingWString(installActivityContext.GetCurrentResourceId(), "currentPackage"),
+                        _GENERIC_PARTB_FIELDS_ENABLED,
+                        TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                        TraceLoggingKeyword(MICROSOFT_KEYWORD_MEASURES));
+                }
+                else if (installActivityContext.GetInstallStage() == InstallStage::RestartPushNotificationsLRP)
+                {
+                    // Failure in restarting PushNotificationsLRP is non-blocking to the installer functionality
+                    WindowsAppRuntimeInstaller_WriteEventWithActivity(
+                        "RestartPushNotificationsLRPFailed",
                         _GENERIC_PARTB_FIELDS_ENABLED,
                         TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                         TraceLoggingKeyword(MICROSOFT_KEYWORD_MEASURES));

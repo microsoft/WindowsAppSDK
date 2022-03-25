@@ -16,6 +16,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         AddPackage = 0x4,
         RegisterPackage = 0x5,
         ProvisionPackage = 0x6,
+        RestartPushNotificationsLRP = 0x7,
     };
 
     struct WilFailure

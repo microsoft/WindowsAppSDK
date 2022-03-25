@@ -55,21 +55,13 @@ public:
     {
         SetStopResult(hresult);
 
-        if (hresult)
-        {
-            TraceLoggingClassWriteStop(Install,
-                _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingValue(installStage, "FailedInstallStage"),
-                TraceLoggingValue(currentResourceId, "CurrentResourceId"),
-                TraceLoggingValue(deploymentErrorExtendedHResult, "DeploymentErrorExtendedHResult"),
-                TraceLoggingValue(deploymentErrorText, "DeploymentErrorText"),
-                TraceLoggingValue(deploymentErrorActivityId, "DeploymentErrorActivityId"));
-        }
-        else
-        {
-            TraceLoggingClassWriteStop(Install,
-                _GENERIC_PARTB_FIELDS_ENABLED);
-        }
+        TraceLoggingClassWriteStop(Install,
+            _GENERIC_PARTB_FIELDS_ENABLED,
+            TraceLoggingValue(installStage, "FailedInstallStage"),
+            TraceLoggingValue(currentResourceId, "CurrentResourceId"),
+            TraceLoggingValue(deploymentErrorExtendedHResult, "DeploymentErrorExtendedHResult"),
+            TraceLoggingValue(deploymentErrorText, "DeploymentErrorText"),
+            TraceLoggingValue(deploymentErrorActivityId, "DeploymentErrorActivityId"));
     }
     END_ACTIVITY_CLASS();
 };

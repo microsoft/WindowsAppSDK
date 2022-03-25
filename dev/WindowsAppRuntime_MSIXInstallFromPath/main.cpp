@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <fstream>
 
-#include "NotificationsLongRunningProcess_h.h"
+#include <NotificationsLongRunningProcess_h.h>
 
 void Help();
 HRESULT JustDoIt(PCWSTR path, bool forceDeployment) noexcept;

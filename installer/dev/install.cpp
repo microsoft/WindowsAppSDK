@@ -266,7 +266,8 @@ namespace WindowsAppRuntimeInstaller
         }
         THROW_IF_FAILED(hrAddResult);
 
-        // Framework provisioning is not supported by the PackageManager APIs. Hence, skip attempting to provision framework package
+        // Framework provisioning is not supported by the PackageManager ProvisionPackageForAllUsersAsync API.
+        // Hence, skip attempting to provision framework package.
         if (!packageProperties->isFramework &&
             Security::IntegrityLevel::IsElevated())
         {
@@ -298,6 +299,40 @@ namespace WindowsAppRuntimeInstaller
         return S_OK;
     }
     CATCH_RETURN()
+
+    // RestartPushNotificationsLRP is best effort and non-blocking to Installer functionality
+    void RestartPushNotificationsLRP()
+    {
+        WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetInstallStage(WindowsAppRuntimeInstaller::InstallActivity::InstallStage::RestartPushNotificationsLRP);
+
+        IID pushNotificationsIMPL_CLSID;
+        HRESULT hClsIdFromString = CLSIDFromString(PUSHNOTIFICATIONS_IMPL_CLSID_WSTRING, &pushNotificationsIMPL_CLSID);
+
+        if (SUCCEEDED(hClsIdFromString))
+        {
+            IID pushNotificationsLRP_IID;
+            hClsIdFromString = CLSIDFromString(PUSHNOTIFICATIONS_LRP_CLSID_WSTRING, &pushNotificationsLRP_IID);
+
+            if (SUCCEEDED(hClsIdFromString))
+            {
+                wil::com_ptr<::IUnknown> pNotificationsLRP{};
+                LOG_IF_FAILED(CoCreateInstance(
+                    pushNotificationsIMPL_CLSID,
+                    NULL,
+                    CLSCTX_LOCAL_SERVER,
+                    pushNotificationsLRP_IID,
+                    reinterpret_cast<LPVOID*>(pNotificationsLRP.put())));
+            }
+            else
+            {
+                LOG_HR_MSG(hClsIdFromString, PUSHNOTIFICATIONS_LRP_CLSID_STRING);
+            }
+        }
+        else
+        {
+            LOG_HR_MSG(hClsIdFromString, PUSHNOTIFICATIONS_IMPL_CLSID_STRING);
+        }
+    }
 
     HRESULT InstallLicenses(const WindowsAppRuntimeInstaller::Options options)
     {
@@ -354,8 +389,7 @@ namespace WindowsAppRuntimeInstaller
         // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
         if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment))
         {
-            wil::com_ptr_nothrow<INotificationsLongRunningPlatform> longRunningProcessPlatform{
-                wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+            RestartPushNotificationsLRP();
         }
 
         return S_OK;
