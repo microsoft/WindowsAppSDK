@@ -6,6 +6,8 @@
 #include <filesystem>
 #include <fstream>
 
+#include "NotificationsLongRunningProcess_h.h"
+
 void Help();
 HRESULT JustDoIt(PCWSTR path, bool forceDeployment) noexcept;
 void AddPackageIfNecessary(PCWSTR path, const std::wstring& filename, const std::wstring& packageFullName, bool forceDeployment);
@@ -119,7 +121,7 @@ void Help()
 {
     wprintf(L"WindowsAppRuntime_MSIXInstallFromPath [options] <path>\n"
         L"options:\n"
-        L"  -f, --force = Force shutdown the target applications if they are in use, to install the MSIX packages\n"
+        L"  -f, --force = Force shutdown WinAppSDK's processes if necessary to update WinAppSDK's MSIX packages\n"
         L"  -?, --help  = Display help\n"
         L"          --  = End of options\n"
         L"where:\n"
@@ -138,6 +140,12 @@ HRESULT JustDoIt(PCWSTR path, bool forceDeployment) noexcept try
     auto inventory{ fpath / L"MSIX.inventory" };
     std::string lineUtf8;
     std::ifstream f{ inventory };
+
+    if (!std::filesystem::exists(inventory))
+    {
+        THROW_HR_MSG(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND), "inventory file doesn't exist: %s", inventory);
+    }
+
     while (getline(f, lineUtf8))
     {
         // Skip blank lines
@@ -164,6 +172,13 @@ HRESULT JustDoIt(PCWSTR path, bool forceDeployment) noexcept try
         AddPackageIfNecessary(path, filename, packageFullName, forceDeployment);
     }
 
+    // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
+    if (forceDeployment)
+    {
+        wil::com_ptr_nothrow<INotificationsLongRunningPlatform> longRunningProcessPlatform{
+            wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+    }
+
     return 0;
 }
 CATCH_RETURN();
@@ -173,7 +188,7 @@ void AddPackageIfNecessary(PCWSTR path, const std::wstring& filename, const std:
     wprintf(L"Path: %s\n", path);
     wprintf(L"Filename: %s\n", filename.c_str());
     wprintf(L"PackageFullName: %s\n", packageFullName.c_str());
-    wprintf(L"forceDeployment:%d\n", forceDeployment);
+    wprintf(L"forceDeployment:%s\n", forceDeployment ?  "true" : "false");
 
     if (!NeedToRegisterPackage(packageFullName))
     {
@@ -183,8 +198,8 @@ void AddPackageIfNecessary(PCWSTR path, const std::wstring& filename, const std:
     auto hr{ AddPackage(path, filename, forceDeployment) };
     if (FAILED(hr))
     {
-        wprintf(L"AddPackage(): 0x%X Path:%ls Filename:%ls PackageFullName:%ls forceDeployment:%d", hr, path, filename.c_str(), packageFullName.c_str(), forceDeployment);
-        THROW_HR_MSG(hr, "Path:%ls Filename:%ls PackageFullName:%ls forceDeployment:%d", path, filename.c_str(), packageFullName.c_str(), forceDeployment);
+        wprintf(L"AddPackage(): 0x%X Path:%ls Filename:%ls PackageFullName:%ls forceDeployment:%s", hr, path, filename.c_str(), packageFullName.c_str(), forceDeployment ? "true" : "false");
+        THROW_HR_MSG(hr, "Path:%ls Filename:%ls PackageFullName:%ls forceDeployment:%s", path, filename.c_str(), packageFullName.c_str(), forceDeployment ? "true" : "false");
     }
 }
 

@@ -30,6 +30,7 @@
 #include <winrt/Windows.System.h>
 
 #include <Security.IntegrityLevel.h>
+#include <NotificationsLongRunningProcess_h.h>
 
 #include "tracelogging.h"
 #include "InstallActivityContext.h"

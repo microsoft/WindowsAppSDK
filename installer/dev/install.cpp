@@ -266,7 +266,7 @@ namespace WindowsAppRuntimeInstaller
         }
         THROW_IF_FAILED(hrAddResult);
 
-        // Framework provisioning is not supported by the API.
+        // Framework provisioning is not supported by the PackageManager APIs. Hence, skip attempting to provision framework package
         if (!packageProperties->isFramework &&
             Security::IntegrityLevel::IsElevated())
         {
@@ -350,6 +350,14 @@ namespace WindowsAppRuntimeInstaller
                 DeployPackageFromResource(package, options);
             }
         }
+
+        // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
+        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment))
+        {
+            wil::com_ptr_nothrow<INotificationsLongRunningPlatform> longRunningProcessPlatform{
+                wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+        }
+
         return S_OK;
     }
 }

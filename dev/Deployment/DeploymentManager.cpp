@@ -7,12 +7,9 @@
 #include <PackageId.h>
 #include <TerminalVelocityFeatures-DeploymentAPI.h>
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
+#include <NotificationsLongRunningProcess_h.h>
 
-#include <WinBase.h>
 #include "WindowsAppRuntime-License.h"
-
-using namespace winrt;
-using namespace Windows::Foundation;
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
@@ -299,6 +296,13 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
             // Deploy package.
             RETURN_IF_FAILED(AddPackage(packagePath, forceDeployment));
+        }
+
+        // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
+        if (forceDeployment)
+        {
+            wil::com_ptr_nothrow<INotificationsLongRunningPlatform> longRunningProcessPlatform{
+                wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
         }
 
         return S_OK;

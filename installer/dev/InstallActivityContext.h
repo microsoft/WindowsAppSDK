@@ -25,6 +25,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         std::wstring file;
         unsigned int lineNumer;
         std::wstring message;
+        std::wstring code;
     };
 
     class Context

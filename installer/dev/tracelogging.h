@@ -54,18 +54,30 @@ public:
         GUID deploymentErrorActivityId)
     {
         SetStopResult(hresult);
-        TraceLoggingClassWriteStop(Install,
-            _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingValue(installStage, "FailedInstallStage"),
-            TraceLoggingValue(currentResourceId, "CurrentResourceId"),
-            TraceLoggingValue(deploymentErrorExtendedHResult, "DeploymentErrorExtendedHResult"),
-            TraceLoggingValue(deploymentErrorText, "DeploymentErrorText"),
-            TraceLoggingValue(deploymentErrorActivityId, "DeploymentErrorActivityId"));
+
+        if (hresult)
+        {
+            TraceLoggingClassWriteStop(Install,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingValue(installStage, "FailedInstallStage"),
+                TraceLoggingValue(currentResourceId, "CurrentResourceId"),
+                TraceLoggingValue(deploymentErrorExtendedHResult, "DeploymentErrorExtendedHResult"),
+                TraceLoggingValue(deploymentErrorText, "DeploymentErrorText"),
+                TraceLoggingValue(deploymentErrorActivityId, "DeploymentErrorActivityId"));
+        }
+        else
+        {
+            TraceLoggingClassWriteStop(Install,
+                _GENERIC_PARTB_FIELDS_ENABLED);
+        }
     }
     END_ACTIVITY_CLASS();
 };
 
-#define WindowsAppRuntimeInstaller_TraceLoggingWString(_wstring_, _name_) TraceLoggingCountedWideString(_wstring_.c_str(),static_cast<ULONG>(_wstring_.size()), _name_)
+#define WindowsAppRuntimeInstaller_TraceLoggingWString(_wstring_, _name_) \
+    TraceLoggingCountedWideString(\
+    _wstring_.c_str(),\
+    static_cast<ULONG>(_wstring_.size()), _name_)
 
 // In the future, if the project includes multiple modules and threads, we could log that data as well from FailureInfo
 // In the future and on need basis, we could log call stack as well
@@ -79,4 +91,5 @@ public:
     TraceLoggingValue(failure.pszFile, "File"),\
     TraceLoggingValue(failure.uLineNumber,"Line"),\
     TraceLoggingValue(failure.pszMessage,"Message"),\
+    TraceLoggingValue(failure.pszCode,"pszCode"),\
     __VA_ARGS__)
