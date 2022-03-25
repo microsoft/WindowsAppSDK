@@ -931,6 +931,8 @@ HRESULT MddBootstrapInitialize_ShowUI(
     PCWSTR versionTag,
     PACKAGE_VERSION minVersion)
 {
+    //TODO: Show this if ERROR_NO_MATCH vs simpler MessageBox("ERROR 0xN in Bootstrapper initialize", MB_OK) ?
+
     // Get the message caption
     PCWSTR caption{};
     wil::unique_cotaskmem_string captionString;
