@@ -25,6 +25,48 @@ STDAPI MddBootstrapInitialize(
     PCWSTR versionTag,
     PACKAGE_VERSION minVersion) noexcept;
 
+/// Options for MddBootstrapInitialize()
+typedef enum MddBootstrapInitializeOptions
+{
+    /// Default behavior
+    MddBootstrapInitializeOptions_None                 = 0,
+
+    /// If not successful call DebugBreak()
+    MddBootstrapInitializeOptions_OnError_DebugBreak = 0x0001,
+
+    /// If not successful call DebugBreak() if a debugger is attached to the process
+    MddBootstrapInitializeOptions_OnError_DebugBreak_IfDebuggerAttached = 0x0002,
+
+    /// If not successful perform a fail-fast
+    MddBootstrapInitializeOptions_OnError_FailFast = 0x0002,
+
+    /// If a compatible Windows App Runtime framework package is not found show UI
+    MddBootstrapInitializeOptions_OnNoMatch_ShowUI = 0x0004,
+} MddBootstrapInitializeOptions;
+#if defined(__cplusplus)
+DEFINE_ENUM_FLAG_OPERATORS(MddBootstrapInitializeOptions)
+#endif // defined(__cplusplus)
+
+/// Initialize the calling process to use Windows App Runtime framework package.
+///
+/// Find a Windows App Runtime framework package meeting the criteria and make it available
+/// for use by the current process. If multiple packages meet the criteria the best
+/// candidate is selected.
+///
+/// If called multiple times the parameters must be compatible with the framework package
+/// resolved by the first initialization call (i.e. the framework package currently in use).
+/// If the request is not compatible with the framework package currently in use
+/// the API fails and an error is returned.
+///
+/// @param majorMinorVersion the major and minor version to use, e..g 0x00010002 for Major.Minor=1.2
+/// @param versionTag the version pre-release identifier, or NULL if none.
+/// @param minVersion the minimum version to use
+STDAPI MddBootstrapInitialize2(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion,
+    MddBootstrapInitializeOptions options) noexcept;
+
 /// Undo the changes made by MddBoostrapInitialize().
 ///
 /// @warning Packages made available via MddBootstrapInitialize() and

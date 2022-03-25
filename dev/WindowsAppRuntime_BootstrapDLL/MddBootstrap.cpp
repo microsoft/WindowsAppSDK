@@ -12,6 +12,10 @@
 
 #include <filesystem>
 
+HRESULT _MddBootstrapInitialize(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion) noexcept;
 void VerifyInitializationIsCompatible(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
@@ -54,6 +58,16 @@ void FindDDLMViaEnumeration(
     std::wstring& ddlmPackageFamilyName,
     std::wstring& ddlmPackageFullName);
 CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension& appExtension);
+bool IsOptionEnabled(PCWSTR name);
+HRESULT MddBootstrapInitialize_Log(
+    HRESULT hrInitialize,
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion) noexcept;
+HRESULT MddBootstrapInitialize_ShowUI(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion);
 
 static std::mutex g_initializationLock;
 static std::atomic<uint32_t> g_initializationCount{};
@@ -74,11 +88,61 @@ static std::wstring g_test_ddlmPackagePublisherId;
 STDAPI MddBootstrapInitialize(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
-    PACKAGE_VERSION minVersion) noexcept try
+    PACKAGE_VERSION minVersion) noexcept
+{
+    return MddBootstrapInitialize2(majorMinorVersion, versionTag, minVersion, MddBootstrapInitializeOptions_None);
+}
+
+STDAPI MddBootstrapInitialize2(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion,
+    MddBootstrapInitializeOptions options) noexcept try
 {
     // Dynamic Dependencies Bootstrap API requires a non-packaged process
     LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), AppModel::Identity::IsPackagedProcess());
 
+    // Are we already initialized?
+    const auto hr{ _MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion) };
+    if (FAILED(hr))
+    {
+        LOG_IF_FAILED(MddBootstrapInitialize_Log(hr, majorMinorVersion, versionTag, minVersion));
+
+        if (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnError_DebugBreak) ||
+            (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnError_DebugBreak_IfDebuggerAttached) && IsDebuggerPresent()) ||
+            IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_BOOTSTRAP_INITIALIZE_DEBUGBREAK"))
+        {
+            DebugBreak();
+        }
+
+        if (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnNoMatch_ShowUI) ||
+            IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_BOOTSTRAP_INITIALIZE_SHOWUI"))
+        {
+            LOG_IF_FAILED(MddBootstrapInitialize_ShowUI(majorMinorVersion, versionTag, minVersion));
+        }
+
+        if (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnError_FailFast) ||
+            IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_BOOTSTRAP_INITIALIZE_FAILFAST"))
+        {
+            FAIL_FAST_HR_MSG(hr,
+                             "Bootstrap initialize(0x%08X, '%ls', %hu.%hu.%hu.%hu)",
+                             majorMinorVersion, (!versionTag ? L"" : versionTag),
+                             minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
+        }
+        RETURN_HR(hr);
+    }
+
+    // Success!
+    ++g_initializationCount;
+    return S_OK;
+}
+CATCH_RETURN();
+
+HRESULT _MddBootstrapInitialize(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion) noexcept try
+{
     // Are we already initialized?
     auto lock{ std::lock_guard(g_initializationLock) };
     if (g_initializationCount > 0)
@@ -91,9 +155,6 @@ STDAPI MddBootstrapInitialize(
         // First to the key! Do the initialization
         FirstTimeInitialization(majorMinorVersion, versionTag, minVersion);
     }
-
-    // Success!
-    ++g_initializationCount;
     return S_OK;
 }
 CATCH_RETURN();
@@ -814,4 +875,128 @@ CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtensi
     UUID clsid{};
     THROW_IF_WIN32_ERROR(UuidFromStringW(textRpcString, &clsid));
     return clsid;
+}
+
+bool IsOptionEnabled(PCWSTR name)
+{
+    WCHAR value[1 + 1]{};
+    if (GetEnvironmentVariableW(name, value, ARRAYSIZE(value)) == 1)
+    {
+        if (*value == L'0')
+        {
+            return false;
+        }
+        else if (*value == L'1')
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+HRESULT MddBootstrapInitialize_Log(
+    HRESULT hrInitialize,
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion) noexcept try
+{
+    HANDLE hEventLog{ RegisterEventSourceW(nullptr, L"Windows App Runtime") };
+    RETURN_LAST_ERROR_IF_NULL(hEventLog);
+
+    const DWORD c_eventId{ static_cast<DWORD>(hrInitialize) };
+    PCWSTR message1{ L"Windows App Runtime" };
+    WCHAR message2[1024]{};
+    PCWSTR message2Format{ L"ERROR 0x%08X: Bootstrapper initialization failed while looking for version %hu.%hu%s (MSIX packages version >= %hu.%hu.%hu.%hu)" };
+    const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
+    const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
+    WCHAR formattedVersionTag[64]{};
+    if (versionTag && (versionTag[0] != L'\0'))
+    {
+        FAIL_FAST_IF_FAILED(StringCchPrintfW(formattedVersionTag, ARRAYSIZE(formattedVersionTag), L"-%s", versionTag));
+    }
+    FAIL_FAST_IF_FAILED(StringCchPrintfW(message2, ARRAYSIZE(message2), message2Format,
+                                         hrInitialize, majorVersion, minorVersion, formattedVersionTag,
+                                         minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision));
+    PCWSTR strings[2]{ message1, message2 };
+    LOG_IF_WIN32_BOOL_FALSE(ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, 0, c_eventId, nullptr, ARRAYSIZE(strings), 0, strings, nullptr));
+
+    DeregisterEventSource(hEventLog);
+
+    return S_OK;
+}
+CATCH_RETURN()
+
+HRESULT MddBootstrapInitialize_ShowUI(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion)
+{
+    // Get the message caption
+    PCWSTR caption{};
+    wil::unique_cotaskmem_string captionString;
+    WCHAR captionOnError[100]{};
+    try
+    {
+        PCWSTR executable{};
+        wil::unique_cotaskmem_string module;
+        auto hr{ LOG_IF_FAILED(wil::GetModuleFileNameW(nullptr, module)) };
+        if (SUCCEEDED(hr))
+        {
+            auto delimiter{ wcsrchr(module.get(), L'\\') };
+            if (delimiter)
+            {
+                executable = delimiter + 1;
+            }
+            else
+            {
+                executable = module.get();
+            }
+            PCWSTR captionSuffix{ L"This application could not be started" };
+            captionString = wil::str_printf<wil::unique_cotaskmem_string>(L"%s - %s", executable, captionSuffix);
+            caption = captionString.get();
+        }
+    }
+    catch (...)
+    {
+    }
+    if (!caption)
+    {
+        LOG_IF_FAILED(StringCchPrintfW(captionOnError, ARRAYSIZE(captionOnError),
+                                       L"<Process %d> - This application could not be started",
+                                       GetCurrentProcessId()));
+        caption = captionOnError;
+    }
+
+    // Get the message body
+    WCHAR text[1024]{};
+    PCWSTR textFormat{ L"This application requires the Windows App Runtime\n"
+                       L"    Version %hu.%hu%s\n"
+                       L"    (MSIX packages version >= %hu.%hu.%hu.%hu)\n"
+                       L"\n"
+                       L"Do you want to install a compatible Windows App Runtime now?"
+                     };
+    const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
+    const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
+    WCHAR formattedVersionTag[64]{};
+    if (versionTag && (versionTag[0] != L'\0'))
+    {
+        FAIL_FAST_IF_FAILED(StringCchPrintfW(formattedVersionTag, ARRAYSIZE(formattedVersionTag), L"-%s", versionTag));
+    }
+    FAIL_FAST_IF_FAILED(StringCchPrintfW(text, ARRAYSIZE(text), textFormat,
+                                         majorVersion, minorVersion, formattedVersionTag,
+                                         minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision));
+
+    // Show the prompt
+    const auto yesno{ MessageBoxW(nullptr, text, caption, MB_YESNO | MB_ICONERROR) };
+    if (yesno == IDYES)
+    {
+        SHELLEXECUTEINFOW sei{};
+        sei.cbSize = sizeof(sei);
+        sei.lpVerb = L"open";
+        sei.lpFile = L"https://docs.microsoft.com/en-us/windows/apps/windows-app-sdk/downloads";
+        //TODO:Replace with https://aka.ms/windowsappsdk/<major>.<minor>/latest/windowsappruntimeinstall-<architecture>.exe
+        sei.nShow = SW_SHOWNORMAL;
+        LOG_IF_WIN32_BOOL_FALSE(ShellExecuteExW(&sei));
+    }
+    return S_OK;
 }

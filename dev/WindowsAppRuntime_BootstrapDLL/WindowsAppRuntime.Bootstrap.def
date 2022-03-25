@@ -3,5 +3,6 @@
 
 EXPORTS
     MddBootstrapInitialize
+    MddBootstrapInitialize2
     MddBootstrapShutdown
     MddBootstrapTestInitialize
