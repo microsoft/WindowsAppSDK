@@ -995,7 +995,7 @@ HRESULT MddBootstrapInitialize_ShowUI(
         SHELLEXECUTEINFOW sei{};
         sei.cbSize = sizeof(sei);
         sei.lpVerb = L"open";
-        sei.lpFile = L"https://docs.microsoft.com/en-us/windows/apps/windows-app-sdk/downloads";
+        sei.lpFile = L"https://docs.microsoft.com/windows/apps/windows-app-sdk/downloads";
         //TODO:Replace with https://aka.ms/windowsappsdk/<major>.<minor>/latest/windowsappruntimeinstall-<architecture>.exe
         sei.nShow = SW_SHOWNORMAL;
         LOG_IF_WIN32_BOOL_FALSE(ShellExecuteExW(&sei));
