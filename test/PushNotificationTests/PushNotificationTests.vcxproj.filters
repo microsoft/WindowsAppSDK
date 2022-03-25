@@ -54,5 +54,6 @@
     <CopyFileToFolders Include="$(TargetDir)..\PushNotificationsTestApp\PushNotificationsTestApp.exe">
       <Filter>CopyFiles</Filter>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
   </ItemGroup>
 </Project>

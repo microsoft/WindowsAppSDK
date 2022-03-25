@@ -32,7 +32,7 @@ winrt::IAsyncOperation<winrt::PushNotificationChannel> RequestChannelAsync()
     // To obtain an AAD RemoteIdentifier for your app,
     // follow the instructions on https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app
     auto channelOperation = winrt::PushNotificationManager::Default().CreateChannelAsync(
-        winrt::guid("cea1342d-8293-4acb-b18a-ed8b0d6f7d6c"));
+        winrt::guid("0160ee84-0c53-4851-9ff2-d7f5a87ed914"));
 
     // Setup the inprogress event handler
     channelOperation.Progress(
@@ -133,33 +133,6 @@ bool PostToastHelper(std::wstring const& tag, std::wstring const& group)
     return true;
 }
 
-// This function is intended to be called in the unpackaged scenario.
-void SetDisplayNameAndIcon() noexcept try
-{
-    // Not mandatory, but it's highly recommended to specify AppUserModelId
-    THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(L"TestAppId"));
-
-    // Icon is mandatory
-    winrt::com_ptr<IPropertyStore> propertyStore;
-    wil::unique_hwnd hWindow{ GetConsoleWindow() };
-
-    THROW_IF_FAILED(SHGetPropertyStoreForWindow(hWindow.get(), IID_PPV_ARGS(&propertyStore)));
-
-    wil::unique_prop_variant propVariantIcon;
-    wil::unique_cotaskmem_string sth = wil::make_unique_string<wil::unique_cotaskmem_string>(LR"(%SystemRoot%\system32\@WLOGO_96x96.png)");
-    propVariantIcon.pwszVal = sth.release();
-    propVariantIcon.vt = VT_LPWSTR;
-    THROW_IF_FAILED(propertyStore->SetValue(PKEY_AppUserModel_RelaunchIconResource, propVariantIcon));
-
-    // App name is not mandatory, but it's highly recommended to specify it
-    wil::unique_prop_variant propVariantAppName;
-    wil::unique_cotaskmem_string prodName = wil::make_unique_string<wil::unique_cotaskmem_string>(L"The Toast Demo App");
-    propVariantAppName.pwszVal = prodName.release();
-    propVariantAppName.vt = VT_LPWSTR;
-    THROW_IF_FAILED(propertyStore->SetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, propVariantAppName));
-}
-CATCH_LOG()
-
 int main()
 {
     // Retrieve the app scenario.
@@ -175,7 +148,8 @@ int main()
         const PACKAGE_VERSION minVersion{};
         RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
 
-        SetDisplayNameAndIcon();
+        // Not mandatory, but it's highly recommended to specify AppUserModelId
+        THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(L"TestAppIdWorking"));
     }
 
     std::wcout << L"--------------------------------\n";
