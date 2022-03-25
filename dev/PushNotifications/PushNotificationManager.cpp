@@ -137,8 +137,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::Microsoft::Windows::PushNotifications::PushNotificationManager PushNotificationManager::Default()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
-
         static wil::srwlock lock;
 
         auto criticalSection{ lock.lock_exclusive() };
@@ -196,8 +194,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid remoteId)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
-
         if (!IsSupported())
         {
             co_return winrt::make<PushNotificationCreateChannelResult>(

@@ -19,7 +19,6 @@
 #include <winerror.h>
 #include <string_view>
 #include <winrt/Windows.Foundation.Collections.h>
-#include <TerminalVelocityFeatures-AppNotifications.h>
 #include <WindowsAppRuntime.SelfContained.h>
 
 using namespace std::literals;
