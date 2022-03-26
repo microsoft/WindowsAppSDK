@@ -139,8 +139,8 @@ HRESULT JustDoIt(PCWSTR path, bool forceDeployment) noexcept try
     auto inventory{ fpath / L"MSIX.inventory" };
     std::string lineUtf8;
     std::ifstream f{ inventory };
-
-    THROW_HR_MSG(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND), "%ls", inventory.c_str());
+    
+    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND), std::filesystem::exists(inventory), "%ls", inventory.c_str());
 
     while (getline(f, lineUtf8))
     {
