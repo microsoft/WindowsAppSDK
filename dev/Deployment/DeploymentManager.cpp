@@ -7,8 +7,7 @@
 #include <PackageId.h>
 #include <TerminalVelocityFeatures-DeploymentAPI.h>
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
-#include <NotificationsLongRunningProcess_h.h>
-
+#include <PushNotificationsLongRunningPlatform-Startup.h>
 #include "WindowsAppRuntime-License.h"
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
@@ -221,17 +220,17 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     // This requires the 'packageManagement' or 'runFullTrust' capabilities.
     HRESULT DeploymentManager::AddPackage(const std::filesystem::path& packagePath, bool forceDeployment) try
     {
-        const auto packagePathUri = winrt::Windows::Foundation::Uri(packagePath.c_str());
         winrt::Windows::Management::Deployment::PackageManager packageManager;
 
         auto GetDeploymentOptions = [](bool forceDeployment)
         {
-            return (forceDeployment == true ?
+            return (forceDeployment ?
                 winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
                 winrt::Windows::Management::Deployment::DeploymentOptions::None);
         };
 
         const auto options{ GetDeploymentOptions(forceDeployment) };
+        const auto packagePathUri = winrt::Windows::Foundation::Uri(packagePath.c_str());
         const auto deploymentResult{ packageManager.AddPackageAsync(packagePathUri, nullptr, options).get() };
         return deploymentResult.ExtendedErrorCode();
     }
@@ -301,8 +300,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
         if (forceDeployment)
         {
-            wil::com_ptr_nothrow<INotificationsLongRunningPlatform> longRunningProcessPlatform{
-                wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+            // wil callback will be set up to log telemetry events for LRP.
+            THROW_IF_FAILED_MSG(StartupNotificationsLongRunningPlatform(), "Restarting Notifications LRP failed after 3 attempts.");
         }
 
         return S_OK;

@@ -6,8 +6,7 @@
 #include <filesystem>
 #include <fstream>
 
-#include <NotificationsLongRunningProcess_h.h>
-
+#include <PushNotificationsLongRunningPlatform-Startup.h>
 void Help();
 HRESULT JustDoIt(PCWSTR path, bool forceDeployment) noexcept;
 void AddPackageIfNecessary(PCWSTR path, const std::wstring& filename, const std::wstring& packageFullName, bool forceDeployment);
@@ -141,10 +140,7 @@ HRESULT JustDoIt(PCWSTR path, bool forceDeployment) noexcept try
     std::string lineUtf8;
     std::ifstream f{ inventory };
 
-    if (!std::filesystem::exists(inventory))
-    {
-        THROW_HR_MSG(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND), "inventory file doesn't exist: %s", inventory);
-    }
+    THROW_HR_MSG(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND), "%ls", inventory.c_str());
 
     while (getline(f, lineUtf8))
     {
@@ -175,8 +171,8 @@ HRESULT JustDoIt(PCWSTR path, bool forceDeployment) noexcept try
     // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
     if (forceDeployment)
     {
-        wil::com_ptr_nothrow<INotificationsLongRunningPlatform> longRunningProcessPlatform{
-            wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+        // wil callback will be set up to log telemetry events for LRP.
+        THROW_IF_FAILED_MSG(StartupNotificationsLongRunningPlatform(), "Restarting Push Notifications LRP failed after 3 attempts.");
     }
 
     return 0;
@@ -255,7 +251,7 @@ HRESULT AddPackage(PCWSTR path, const std::wstring& filename, bool forceDeployme
 
     auto GetDeploymentOptions = [](bool forceDeployment)
     {
-        return (forceDeployment == true ?
+        return (forceDeployment ?
             winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
             winrt::Windows::Management::Deployment::DeploymentOptions::None);
     };

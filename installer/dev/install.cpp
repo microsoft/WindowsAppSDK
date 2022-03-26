@@ -43,7 +43,7 @@ namespace WindowsAppRuntimeInstaller
 
         auto GetDeploymentOptions = [](bool forceDeployment)
         {
-            return (forceDeployment == true ?
+            return (forceDeployment ?
                 winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
                 winrt::Windows::Management::Deployment::DeploymentOptions::None);
         };
@@ -306,32 +306,31 @@ namespace WindowsAppRuntimeInstaller
         WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetInstallStage(WindowsAppRuntimeInstaller::InstallActivity::InstallStage::RestartPushNotificationsLRP);
 
         IID pushNotificationsIMPL_CLSID;
-        HRESULT hClsIdFromString = CLSIDFromString(PUSHNOTIFICATIONS_IMPL_CLSID_WSTRING, &pushNotificationsIMPL_CLSID);
+        THROW_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_IMPL_CLSID_WSTRING, &pushNotificationsIMPL_CLSID));
 
-        if (SUCCEEDED(hClsIdFromString))
-        {
-            IID pushNotificationsLRP_IID;
-            hClsIdFromString = CLSIDFromString(PUSHNOTIFICATIONS_LRP_CLSID_WSTRING, &pushNotificationsLRP_IID);
+        IID pushNotificationsLRP_IID;
+        THROW_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_LRP_CLSID_WSTRING, &pushNotificationsLRP_IID));
 
-            if (SUCCEEDED(hClsIdFromString))
-            {
-                wil::com_ptr<::IUnknown> pNotificationsLRP{};
-                LOG_IF_FAILED(CoCreateInstance(
-                    pushNotificationsIMPL_CLSID,
-                    NULL,
-                    CLSCTX_LOCAL_SERVER,
-                    pushNotificationsLRP_IID,
-                    reinterpret_cast<LPVOID*>(pNotificationsLRP.put())));
-            }
-            else
-            {
-                LOG_HR_MSG(hClsIdFromString, PUSHNOTIFICATIONS_LRP_CLSID_STRING);
-            }
-        }
-        else
+        wil::com_ptr<::IUnknown> pNotificationsLRP{};
+
+        unsigned int retries = 0;
+        HRESULT hr = S_OK;
+        while (retries < 3)
         {
-            LOG_HR_MSG(hClsIdFromString, PUSHNOTIFICATIONS_IMPL_CLSID_STRING);
+             hr = CoCreateInstance(pushNotificationsIMPL_CLSID,
+                NULL,
+                CLSCTX_LOCAL_SERVER,
+                pushNotificationsLRP_IID,
+                reinterpret_cast<LPVOID*>(pNotificationsLRP.put()));
+
+            if (SUCCEEDED(hr))
+            {
+                break;
+            }
+            retries++;
         }
+        // wil call back is setup to log telemetry event for any failure in restartign Notifications LRP
+        LOG_IF_FAILED_MSG(hr, "Restarting Push Notifications LRP failed after 3 attempts.");
     }
 
     HRESULT InstallLicenses(const WindowsAppRuntimeInstaller::Options options)
