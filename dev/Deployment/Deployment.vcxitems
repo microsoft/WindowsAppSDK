@@ -6,9 +6,12 @@
     <ItemsProjectGuid>{DB38FB4D-D04F-4C1D-93E0-F8AE259C5FD6}</ItemsProjectGuid>
     <ItemsProjectName>Deployment</ItemsProjectName>
   </PropertyGroup>
+  <PropertyGroup>
+    <RepoRoot>$(MSBuildThisFileDirectory)..\..\</RepoRoot>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(RepoRoot)dev\PushNotifications\PushNotificationsLongRunningTask.StartupTask</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -18,11 +21,13 @@
     <Midl Include="$(MSBuildThisFileDirectory)Deployment.idl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)DeploymentInitializeOptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeploymentManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeploymentResult.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageDefinitions.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentInitializeOptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentResult.cpp" />
   </ItemGroup>
