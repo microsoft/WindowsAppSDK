@@ -906,7 +906,7 @@ HRESULT MddBootstrapInitialize_Log(
     const DWORD c_eventId{ static_cast<DWORD>(hrInitialize) };
     PCWSTR message1{ L"Windows App Runtime" };
     WCHAR message2[1024]{};
-    PCWSTR message2Format{ L"ERROR 0x%08X: Bootstrapper initialization failed while looking for version %hu.%hu%s (MSIX packages version >= %hu.%hu.%hu.%hu)" };
+    PCWSTR message2Format{ L"ERROR 0x%08X: Bootstrapper initialization failed while looking for version %hu.%hu%s (MSIX package version >= %hu.%hu.%hu.%hu)" };
     const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
     const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
     WCHAR formattedVersionTag[64]{};
@@ -973,7 +973,7 @@ HRESULT MddBootstrapInitialize_ShowUI(
     WCHAR text[1024]{};
     PCWSTR textFormat{ L"This application requires the Windows App Runtime\n"
                        L"    Version %hu.%hu%s\n"
-                       L"    (MSIX packages version >= %hu.%hu.%hu.%hu)\n"
+                       L"    (MSIX package version >= %hu.%hu.%hu.%hu)\n"
                        L"\n"
                        L"Do you want to install a compatible Windows App Runtime now?"
                      };
