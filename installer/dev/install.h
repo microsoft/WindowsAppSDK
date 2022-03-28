@@ -14,6 +14,7 @@ namespace WindowsAppRuntimeInstaller {
         InstallLicenses     = 0x0002,
         Quiet               = 0x0004,
         DryRun              = 0x0008,
+        ForceDeployment     = 0x0010,
     };
     DEFINE_ENUM_FLAG_OPERATORS(Options)
 

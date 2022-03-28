@@ -14,6 +14,7 @@ int wmain(int argc, wchar_t *argv[])
 {
     init_apartment();
 
+    // Set a process-wide callback function for WIL to call each time it logs a failure.
     wil::SetResultLoggingCallback(wilResultLoggingCallback);
 
     auto options{ WindowsAppRuntimeInstaller::Options::InstallPackages |
@@ -53,6 +54,14 @@ int wmain(int argc, wchar_t *argv[])
         {
             WI_ClearFlag(options, WindowsAppRuntimeInstaller::Options::Quiet);
         }
+        else if ((arg == L"-f") || (arg == L"--force"))
+        {
+            WI_SetFlag(options, WindowsAppRuntimeInstaller::Options::ForceDeployment);
+        }
+        else if ((arg == L"-f-") || (arg == L"--force-"))
+        {
+            WI_ClearFlag(options, WindowsAppRuntimeInstaller::Options::ForceDeployment);
+        }
         else if ((arg == L"-?") || (arg == L"--help"))
         {
             DisplayHelp();
@@ -79,6 +88,11 @@ int wmain(int argc, wchar_t *argv[])
     installActivityContext.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(), static_cast<UINT32>(options)));
     args.clear();
 
+    if (!Security::IntegrityLevel::IsElevated())
+    {
+        std::wcout << std::endl << "INFO: Provisioning of WindowsAppSDK packages will be skipped as it requires elevation." << std::endl;
+    }
+
     const HRESULT deployPackagesResult{ WindowsAppRuntimeInstaller::Deploy(options) };
     if (WI_IsFlagClear(options, WindowsAppRuntimeInstaller::Options::Quiet))
     {
@@ -86,13 +100,18 @@ int wmain(int argc, wchar_t *argv[])
         {
             std::wcout << "All install operations successful." << std::endl;
 
-            if (!Security::IntegrityLevel::IsElevated())
-            {
-                std::wcout << "WARNING: Since WindowsAppRuntimeInstaller.exe is not run elevated, WindowsAppSDK packages are not provisioned for all users on your machine." << std::endl;
-            }
+            installActivityContext.GetActivity().StopWithResult(
+                deployPackagesResult,
+                static_cast<UINT32>(WindowsAppRuntimeInstaller::InstallActivity::InstallStage::None),
+                static_cast<PCWSTR>(nullptr),
+                S_OK,
+                static_cast<PCWSTR>(nullptr),
+                GUID_NULL);
         }
         else
         {
+            std::wcerr << "One or more install operations failed. Result: 0x" << std::hex << deployPackagesResult << std::endl;
+
             installActivityContext.GetActivity().StopWithResult(
                 deployPackagesResult,
                 static_cast<UINT32>(installActivityContext.GetInstallStage()),
@@ -100,8 +119,6 @@ int wmain(int argc, wchar_t *argv[])
                 installActivityContext.GetDeploymentErrorExtendedHResult(),
                 installActivityContext.GetDeploymentErrorText().c_str(),
                 installActivityContext.GetDeploymentErrorActivityId());
-
-            std::wcerr << "One or more install operations failed. Result: 0x" << std::hex << deployPackagesResult << std::endl;
         }
     }
 
