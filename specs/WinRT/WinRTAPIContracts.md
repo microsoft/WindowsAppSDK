@@ -100,8 +100,6 @@ additional information compared to the Windows App SDK version.
 # 6. All Contracts in Windows App SDK
 The list of all contracts defined across Windows App SDK
 
-TODO:Start of the list. Needs review and undoubtedly correction and additions (e.g. IXP)
-
 | Feature            | Repository    | Contract                        | Namespace                                            | Comment |
 |--------------------|---------------|---------------------------------|------------------------------------------------------|---------|
 | AccessControl      | windowsappsdk | AccessControlContract           | Microsoft.Windows.Security.AccessControl             |         |
