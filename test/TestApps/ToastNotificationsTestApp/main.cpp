@@ -652,6 +652,7 @@ bool VerifyToastUpdateZeroSequenceFail_Unpackaged()
     {
         return winrt::to_hresult() == E_INVALIDARG;
     }
+    return false;
 }
 
 bool VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup()
