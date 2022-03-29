@@ -103,7 +103,7 @@ STDAPI MddBootstrapInitialize2(
     HRESULT hr{};
     if (AppModel::Identity::IsPackagedProcess())
     {
-        if (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnPackageIdentity_NOP))
+        if (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnPackageIdentity_NOOP))
         {
             // The process has package identity but that's OK. Do nothing
             return S_OK;
