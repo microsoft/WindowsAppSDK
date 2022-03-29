@@ -117,4 +117,4 @@ TODO:Start of the list. Needs review and undoubtedly correction and additions (e
 | WinUI              | winui         | WinUIContract                   | Microsoft.UI.Xaml                                    |          |
 | WinUI              | winui         | WinUIControlsContract           | Microsoft.UI.Xaml.Controls                           |          |
 | WinUI              | winui         | XamlDirectContract              | Microsoft.UI.Xaml.Core.Direct                        |          |
-| ---                | ---           | WindowsAppSDKContract           | Microsoft.Foundation                                 |Do not use|
+| ---                | ---           | WindowsAppSDKContract           | Microsoft.Foundation                                 |Misnomer. Should be called InteractiveExperiences in the Windows.UI.Composition namespace. Only for use by IXP.|
