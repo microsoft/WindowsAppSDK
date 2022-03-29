@@ -99,15 +99,27 @@ STDAPI MddBootstrapInitialize2(
     PACKAGE_VERSION minVersion,
     MddBootstrapInitializeOptions options) noexcept try
 {
-    // Dynamic Dependencies Bootstrap API requires a non-packaged process
-    LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), AppModel::Identity::IsPackagedProcess());
-
-    // Are we already initialized?
-    const auto hr{ _MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion) };
+    // Dynamic Dependencies Bootstrap API requires an unpackaged process?
+    HRESULT hr{};
+    if (AppModel::Identity::IsPackagedProcess())
+    {
+        if (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnPackageIdentity_NOP))
+        {
+            // The process has package identity but that's OK. Do nothing
+            return S_OK;
+        }
+        hr = LOG_HR_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), "MddBootstrapInitialize called in a process with package identity");
+    }
+    else
+    {
+        hr = _MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion);
+    }
     if (FAILED(hr))
     {
         LOG_IF_FAILED(MddBootstrapInitialize_Log(hr, majorMinorVersion, versionTag, minVersion));
 
+        // NOTE: IsDebuggerPresent()=TRUE if running under a debugger context.
+        //       IsDebuggerPresent()=FALSE if not running under a debugger context, even if AEDebug is set.
         if (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnError_DebugBreak) ||
             (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnError_DebugBreak_IfDebuggerAttached) && IsDebuggerPresent()) ||
             IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_BOOTSTRAP_INITIALIZE_DEBUGBREAK"))
@@ -995,7 +1007,7 @@ HRESULT MddBootstrapInitialize_ShowUI(
         SHELLEXECUTEINFOW sei{};
         sei.cbSize = sizeof(sei);
         sei.lpVerb = L"open";
-        sei.lpFile = L"https://docs.microsoft.com/en-us/windows/apps/windows-app-sdk/downloads";
+        sei.lpFile = L"https://docs.microsoft.com/windows/apps/windows-app-sdk/downloads";
         //TODO:Replace with https://aka.ms/windowsappsdk/<major>.<minor>/latest/windowsappruntimeinstall-<architecture>.exe
         sei.nShow = SW_SHOWNORMAL;
         LOG_IF_WIN32_BOOL_FALSE(ShellExecuteExW(&sei));

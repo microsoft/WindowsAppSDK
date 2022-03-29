@@ -372,4 +372,70 @@ namespace Test::DynamicDependency
         }
 #endif
     };
+
+    class BootstrapPackagedTests
+    {
+    public:
+        BEGIN_TEST_CLASS(BootstrapPackagedTests)
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
+            TEST_CLASS_PROPERTY(L"UAP:NoSplashScreen", L"true")
+            TEST_CLASS_PROPERTY(L"UAP:RuntimeBehavior", L"PackagedClassicApp")
+            TEST_CLASS_PROPERTY(L"UAP:TrustLevel", L"MediumIL")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(Setup)
+        {
+            return BootstrapFixtures::Setup();
+        }
+
+        TEST_CLASS_CLEANUP(Cleanup)
+        {
+            return BootstrapFixtures::Cleanup();
+        }
+
+        TEST_METHOD(Initialize_Packaged_NotSupported)
+        {
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+
+            // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+            const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
+            const PACKAGE_VERSION c_minVersion{};
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddBootstrapInitialize(c_Version_MajorMinor, nullptr, c_minVersion));
+        }
+
+        TEST_METHOD(Initialize_Packaged_NOP)
+        {
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+
+            // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+            const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
+            const PACKAGE_VERSION c_minVersion{};
+            const auto c_options{ MddBootstrapInitializeOptions_OnPackageIdentity_NOP };
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize2(c_Version_MajorMinor, nullptr, c_minVersion, c_options));
+
+            MddBootstrapShutdown();
+        }
+
+        TEST_METHOD(Initialize_Packaged_NOP_Multiple)
+        {
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+
+            // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+            const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
+            const PACKAGE_VERSION c_minVersion{};
+            const auto c_options{ MddBootstrapInitializeOptions_OnPackageIdentity_NOP };
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize2(c_Version_MajorMinor, nullptr, c_minVersion, c_options));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize2(c_Version_MajorMinor, nullptr, c_minVersion, c_options));
+
+            MddBootstrapShutdown();
+            MddBootstrapShutdown();
+
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize2(c_Version_MajorMinor, nullptr, c_minVersion, c_options));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize2(c_Version_MajorMinor, nullptr, c_minVersion, c_options));
+
+            MddBootstrapShutdown();
+        }
+    };
 }

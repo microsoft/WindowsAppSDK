@@ -38,10 +38,13 @@ typedef enum MddBootstrapInitializeOptions
     MddBootstrapInitializeOptions_OnError_DebugBreak_IfDebuggerAttached = 0x0002,
 
     /// If not successful perform a fail-fast
-    MddBootstrapInitializeOptions_OnError_FailFast = 0x0002,
+    MddBootstrapInitializeOptions_OnError_FailFast = 0x0004,
 
     /// If a compatible Windows App Runtime framework package is not found show UI
-    MddBootstrapInitializeOptions_OnNoMatch_ShowUI = 0x0004,
+    MddBootstrapInitializeOptions_OnNoMatch_ShowUI = 0x0008,
+
+    /// Do nothing if the process has package identity
+    MddBootstrapInitializeOptions_OnPackageIdentity_NOP = 0x0010,
 } MddBootstrapInitializeOptions;
 #if defined(__cplusplus)
 DEFINE_ENUM_FLAG_OPERATORS(MddBootstrapInitializeOptions)
