@@ -102,19 +102,23 @@ The list of all contracts defined across Windows App SDK
 
 TODO:Start of the list. Needs review and undoubtedly correction and additions (e.g. IXP)
 
-| Feature            | Repository    | Contract                        | Namespace                                            | Comment  |
-|--------------------|---------------|---------------------------------|------------------------------------------------------|----------|
-| AccessControl      | windowsappsdk | AccessControlContract           | Microsoft.Windows.Security.AccessControl             |          |
-| AppLifecycle       | windowsappsdk | AppLifecycleContract            | Microsoft.Windows.AppLifecycle                       |          |
-| AppNotifications   | windowsappsdk | WindowsAppNotificationsContract | Microsoft.Windows.AppNotifications                   |          |
-| Deployment         | windowsappsdk | DeploymentManagerContract       | Microsoft.Windows.ApplicationModel.WindowsAppRuntime |          |
-| DynamicDependency  | windowsappsdk | DynamicDependencyContract       | Microsoft.Windows.ApplicationModel.DynamicDependency |          |
-| EnvironmentManager | windowsappsdk | EnvironmentManagerContracct     | Microsoft.Windows.System                             |          |
-| MRTCore            | windowsappsdk | MrtContract                     | Microsoft.Windows.ApplicationModel.Resources         |          |
-| PowerNotifications | windowsappsdk | PowerNotificationsContract      | Microsoft.Windows.System.Power                       |          |
-| PushNotifications  | windowsappsdk | PushNotificationsContract       | Microsoft.Windows.PushNotifications                  |          |
-| WinUI              | winui         | HostingContract                 | Microsoft.UI.Xaml.Hosting                            |          |
-| WinUI              | winui         | WinUIContract                   | Microsoft.UI.Xaml                                    |          |
-| WinUI              | winui         | WinUIControlsContract           | Microsoft.UI.Xaml.Controls                           |          |
-| WinUI              | winui         | XamlDirectContract              | Microsoft.UI.Xaml.Core.Direct                        |          |
-| ---                | ---           | WindowsAppSDKContract           | Microsoft.Foundation                                 |Only for use by IXP.<P>Misnomer. Should be called InteractiveExperiences in the Windows.UI.Composition namespace.|
+| Feature            | Repository    | Contract                        | Namespace                                            | Comment |
+|--------------------|---------------|---------------------------------|------------------------------------------------------|---------|
+| AccessControl      | windowsappsdk | AccessControlContract           | Microsoft.Windows.Security.AccessControl             |         |
+| AppLifecycle       | windowsappsdk | AppLifecycleContract            | Microsoft.Windows.AppLifecycle                       |         |
+| AppNotifications   | windowsappsdk | WindowsAppNotificationsContract | Microsoft.Windows.AppNotifications                   |         |
+| Deployment         | windowsappsdk | DeploymentManagerContract       | Microsoft.Windows.ApplicationModel.WindowsAppRuntime |         |
+| DynamicDependency  | windowsappsdk | DynamicDependencyContract       | Microsoft.Windows.ApplicationModel.DynamicDependency |         |
+| EnvironmentManager | windowsappsdk | EnvironmentManagerContracct     | Microsoft.Windows.System                             |         |
+| MRTCore            | windowsappsdk | MrtContract                     | Microsoft.Windows.ApplicationModel.Resources         |         |
+| PowerNotifications | windowsappsdk | PowerNotificationsContract      | Microsoft.Windows.System.Power                       |         |
+| PushNotifications  | windowsappsdk | PushNotificationsContract       | Microsoft.Windows.PushNotifications                  |         |
+| WinUI              | winui         | HostingContract                 | Microsoft.UI.Xaml.Hosting                            |         |
+| WinUI              | winui         | WinUIContract                   | Microsoft.UI.Xaml                                    |         |
+| WinUI              | winui         | WinUIControlsContract           | Microsoft.UI.Xaml.Controls                           |         |
+| WinUI              | winui         | XamlDirectContract              | Microsoft.UI.Xaml.Core.Direct                        |         |
+| ---                | ---           | WindowsAppSDKContract           | Microsoft.Foundation                                 |1,2,3    |
+
+<sup>1</sup> Only for use by IXP.
+<sup>2</sup> This contract is misnamed. It should be called `InteractiveExperiencesContract` in the `Windows.UI.Composition` namespace.
+<sup>3</sup> This contract is misversioned. It should have been `[contract(...,1)]` instead of `[contract(...,1.1)]`. The next contract version will be `[contract(...,2)]`.
