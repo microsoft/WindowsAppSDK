@@ -241,6 +241,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -267,6 +268,12 @@
       <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ToastNotificationsDemoApp.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210930.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210930.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
@@ -285,4 +292,4 @@
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
     <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
   </Target>
-</Project> 
+</Project>

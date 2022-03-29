@@ -4,7 +4,7 @@
 
 #include "pch.h"
 #include <cwctype>
-#include <filesystem>
+
 #include "AppNotificationUtility.h"
 #include <winrt/Windows.ApplicationModel.Core.h>
 #include <winrt/Windows.Foundation.h>
@@ -15,12 +15,15 @@
 #include "NotificationProgressData.h"
 
 #include <Microsoft.Foundation.String.h>
-
-#include <wil/resource.h>
-#include <wil/win32_helpers.h>
-#include <propkey.h> // PKEY properties
-#include <propsys.h> // IPropertyStore
 #include <ShObjIdl_core.h>
+#include <WICUtility.h>
+#include <shlobj_core.h>
+#include <filesystem>
+
+namespace std
+{
+    using namespace std::filesystem;
+}
 
 namespace winrt
 {
@@ -237,13 +240,103 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::GetDisplayNameBasedO
     return displayName;
 }
 
-// Placeholder
-HRESULT RetrieveAssetsFromProcess(_Out_ Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets& /*assets*/)
+#define GIL_EXACTSIZEONLY       0x0100
+// Looks at the passed in icon and tries loading a better sized icon from the resource file.
+// If there is a larger icon available, use that icon instead. This is because the HICON passed
+// in to the legacy tray item is either a SM_CXSMICON x SM_CYSMICON (16x16) icon, or if NIIF_LARGE_ICON
+// is specified in the dwInfoFlags then it should be a SM_CXICON x SM_CYICON (32x32) icon. For toast messages,
+// an image of 150x150 is expected. To allow a larger icon to be used we will check the icon sizes which are available.
+// When we take DPI into account, we always want to pick the next larger icon size and scale down. For example,
+// if we are running 200%, we are trying to load an image of 300x300 px. The next largest snap icon size is 512px,
+// but icon file format requires this to be available. So the largest possible size in an icon is 256px, which means
+// we should just load that image file size and ignore DPI.
+inline HICON LoadBetterIconFromResource(_In_ HICON hIcon, int cx, int cy, UINT uFlags /*= 0*/)
 {
-    // THROW_HR_IF_MSG(E_UNEXPECTED, VerifyIconFileExtension(iconFilePath));
+    // TODO: Use wil handle
+    HICON hIconNew = nullptr;
 
-    return E_NOTIMPL;
+    // TODO: Wil wrapper for this?
+    ICONINFOEX iconInfoEx = {};
+    iconInfoEx.cbSize = sizeof(iconInfoEx);
+    if (GetIconInfoEx(hIcon, &iconInfoEx))
+    {
+        if (S_OK != SHDefExtractIcon(iconInfoEx.szModName, -iconInfoEx.wResID, uFlags, &hIconNew, nullptr, MAKELONG(cx, cy)))
+        {
+            DestroyIcon(hIconNew);
+            hIconNew = nullptr;
+        }
+
+        THROW_IF_WIN32_BOOL_FALSE(DeleteObject(iconInfoEx.hbmColor));
+        THROW_IF_WIN32_BOOL_FALSE(DeleteObject(iconInfoEx.hbmMask));
+    }
+    return hIconNew;
 }
+
+inline HICON RetrieveIconFromProcess()
+{
+    std::wstring processPath{};
+    THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processPath));
+
+    HICON hIcons[1];
+    // TODO: Add a check for HICON here.
+    ExtractIconExW(processPath.c_str(), 0, hIcons, nullptr, 1);
+
+    int iconSizes{ 0 };
+    HICON hIconNew{ nullptr };
+    int const rgSnapSize[] = { 256, 196, 128, 64, 48, 32, 24, 16 };
+    do
+    {
+        // Load a better image, looking for an exact match above 256x256, or something that is close once we get below 48px (unscaled).
+        hIconNew = LoadBetterIconFromResource(hIcons[0], rgSnapSize[iconSizes], rgSnapSize[iconSizes], (rgSnapSize[iconSizes] > 48) ? GIL_EXACTSIZEONLY : 0);
+        iconSizes++;
+    } while ((hIconNew == nullptr) && (iconSizes < ARRAYSIZE(rgSnapSize)));
+
+    if (hIconNew != nullptr)
+    {
+        // TODO: Clear the NIIF_USER flag since we need to now destroy the newly loaded icon.
+        //WI_ClearFlag(dwInfoFlags, NIIF_USER);
+        hIcons[0] = hIconNew;
+    }
+
+    return hIcons[0];
+}
+
+inline std::wstring RetrieveLocalFolderPath()
+{
+    wil::unique_cotaskmem_string localAppDataPath;
+    THROW_IF_FAILED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0 /* flags */, nullptr /* access token handle */, &localAppDataPath));
+
+    // path: C:\Users\<currentUser>\AppData\Local\Microsoft
+    std::path localFolderPath{ std::wstring(localAppDataPath.get()) + Microsoft::Windows::AppNotifications::Helpers::c_localMicrosoftFolder };
+    THROW_HR_IF(ERROR_FILE_NOT_FOUND, !std::exists(localFolderPath));
+
+    // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK
+    localFolderPath.append(Microsoft::Windows::AppNotifications::Helpers::c_localWindowsAppSDKFolder);
+    if (!std::exists(localFolderPath))
+    {
+        std::create_directory(localFolderPath);
+    }
+
+    return std::wstring(localFolderPath.c_str());
+}
+
+HRESULT Microsoft::Windows::AppNotifications::Helpers::RetrieveAssetsFromProcess(_Out_ Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets& assets) noexcept try
+{
+    wil::unique_hicon hIcon{ RetrieveIconFromProcess() };
+    THROW_HR_IF(E_UNEXPECTED, hIcon == nullptr);
+
+    std::wstring notificationAppId{ RetrieveNotificationAppId() };
+
+    // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK\{AppGUID}.png
+    std::wstring writeToFile{ RetrieveLocalFolderPath().c_str() + c_backSlash + notificationAppId + c_pngExtension };
+    Microsoft::Windows::AppNotifications::WICHelpers::WriteHIconToPngFile(hIcon, writeToFile.c_str());
+
+    assets.displayName = Microsoft::Windows::AppNotifications::Helpers::GetDisplayNameBasedOnProcessName();
+    assets.iconFilePath = writeToFile;
+
+    return S_OK;
+}
+CATCH_RETURN()
 
 // Do nothing. This is just a placeholder while the UDK is ingested with the proper API.
 HRESULT ToastNotifications_RetrieveAssets_Stub(_Out_ Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets& /*assets*/)
