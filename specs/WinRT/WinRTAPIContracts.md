@@ -120,5 +120,5 @@ TODO:Start of the list. Needs review and undoubtedly correction and additions (e
 | ---                | ---           | WindowsAppSDKContract           | Microsoft.Foundation                                 |1,2,3    |
 
 <sup>1</sup> Only for use by IXP.<BR>
-<sup>2</sup> This contract is misnamed. It should be called `InteractiveExperiencesContract` in the `Windows.UI.Composition` namespace.<BR>
+<sup>2</sup> This contract is misnamed. It should have been named `InteractiveExperiencesContract` in the `Windows.UI.Composition` namespace.<BR>
 <sup>3</sup> This contract is misversioned. It should have been `[contract(...,1)]` instead of `[contract(...,1.1)]`. The next contract version will be `[contract(...,2)]`.<BR>
