@@ -408,7 +408,7 @@
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BootstrapActivity.h" />
+    <ClInclude Include="MddBootstrapActivity.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MddBootstrap.h" />
     <ClInclude Include="MddBootstrapTest.h" />
@@ -417,6 +417,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MddBootstrapActivity.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="MddBootstrap.cpp" />
     <ClCompile Include="tracelogging.cpp" />

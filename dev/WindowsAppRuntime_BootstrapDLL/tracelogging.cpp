@@ -4,58 +4,58 @@
 #pragma once
 
 #include "pch.h"
-#include "tracelogging.h"
-#include "BootstrapActivity.h"
 
-extern PACKAGE_VERSION g_initializationFrameworkPackageVersion{};
 extern std::atomic<uint32_t> g_initializationCount{};
-extern UINT32 g_initializationMajorMinorVersion{};
-std::wstring g_initializationVersionTag;
+static wil::unique_cotaskmem_string g_initializationFrameworkPackageFullName{};
 
+
+void initializeActivityWilLoggingCallback_LogActivityStopEvent(const std::string failureType, const wil::FailureInfo& failure)
+{
+
+    WindowsAppRuntimeBootstrapInitialize_WriteEventWithActivity(*failureType.c_str(),
+        _GENERIC_PARTB_FIELDS_ENABLED,
+        TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+        TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
+
+    WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeActivity().StopWithResult(
+        failure.hr,
+        static_cast<UINT32>(g_initializationCount),
+        static_cast<UINT16>(WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetDDLMFindMethodUsed()),
+        static_cast<PCWSTR>(g_initializationFrameworkPackageFullName.get()));
+}
+
+// Set a process-wide callback for wil error handlers. This callback is specific to MddBootstrap initialize
 void __stdcall initialize_wilResultLoggingCallback(const wil::FailureInfo& failure) noexcept
 {
-    if (WindowsAppRuntimeBootStrap_TraceLogger::IsEnabled())
+    if (WindowsAppRuntimeBootstrap_TraceLogger::IsEnabled())
     {
-        auto initializeActivity{ WindowsAppRuntime::Bootstrap::Activity::Context::Get().GetInitializeActivity() };
+        auto initializeActivity{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeActivity() };
         if (initializeActivity.IsRunning())
         {
             if (failure.type == wil::FailureType::Log)
             {
-                WindowsAppRuntimeBootStrapInitialize_WriteEventWithActivity("Log");
+                WindowsAppRuntimeBootstrapInitialize_WriteEventWithActivity("Log");
             }
             else if (failure.type == wil::FailureType::Exception)
             {
-                WindowsAppRuntimeBootStrapInitialize_WriteEventWithActivity("Exception",
-                    _GENERIC_PARTB_FIELDS_ENABLED,
-                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
-                    TraceLoggingKeyword(MICROSOFT_KEYWORD_MEASURES));
-
-                initializeActivity.StopWithResult(
-                    failure.hr,
-                    g_initializationMajorMinorVersion,
-                    g_initializationVersionTag.c_str(),
-                    g_initializationFrameworkPackageVersion,
-                    static_cast<UINT32>(g_initializationCount));
+                initializeActivityWilLoggingCallback_LogActivityStopEvent("Exception", failure);
             }
             else if (failure.type == wil::FailureType::FailFast)
             {
-                WindowsAppRuntimeBootStrapInitialize_WriteEventWithActivity("FailFast",
-                    _GENERIC_PARTB_FIELDS_ENABLED,
-                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
-                    TraceLoggingKeyword(MICROSOFT_KEYWORD_MEASURES));
-
-                initializeActivity.StopWithResult(
-                    failure.hr,
-                    g_initializationMajorMinorVersion,
-                    g_initializationVersionTag.c_str(),
-                    g_initializationFrameworkPackageVersion,
-                    static_cast<UINT32>(g_initializationCount));
-            }
-            else
-            {
-                // BootStrap uses CATCH_RETURN and hence, there is no need to log anything for wil::FailureType::Return to avoid redundanct logging.
+                initializeActivityWilLoggingCallback_LogActivityStopEvent("FailFast", failure);
             }
         }
     }
-    return;
+}
+
+GUID& GetLifetimeActivityId() noexcept
+{
+    static GUID lifetimeActivityId{};
+
+    if (IsEqualGUID(lifetimeActivityId, GUID_NULL))
+    {
+        std::ignore = CoCreateGuid(&lifetimeActivityId);
+    }
+
+    return lifetimeActivityId;
 }

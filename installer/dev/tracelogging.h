@@ -45,6 +45,7 @@ public:
             TraceLoggingValue(args, "cmdLineArgs"),
             TraceLoggingValue(options, "options"));
     }
+    
     void StopWithResult(
         HRESULT hresult,
         UINT32 installStage,
@@ -65,10 +66,9 @@ public:
     END_ACTIVITY_CLASS();
 };
 
-#define WindowsAppRuntimeInstaller_TraceLoggingWString(_wstring_, _name_) TraceLoggingCountedWideString(_wstring_.c_str(),static_cast<ULONG>(_wstring_.size()), _name_)
+#define WindowsAppRuntimeInstaller_TraceLoggingWString(_wstring_, _name_) TraceLoggingCountedWideString(_wstring_.c_str(),\
+     static_cast<ULONG>(_wstring_.size()), _name_)
 
-// In the future, if the project includes multiple modules and threads, we could log that data as well from FailureInfo
-// In the future and on need basis, we could log call stack as well
 #define WindowsAppRuntimeInstaller_WriteEventWithActivity(_eventname_,...) TraceLoggingWriteActivity(\
     WindowsAppRuntimeInstaller_TraceLogger::Provider(),\
     _eventname_,\

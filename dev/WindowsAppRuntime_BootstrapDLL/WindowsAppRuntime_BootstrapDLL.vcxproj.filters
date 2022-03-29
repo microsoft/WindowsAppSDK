@@ -33,7 +33,7 @@
     <ClInclude Include="tracelogging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BootstrapActivity.h">
+    <ClInclude Include="MddBootstrapActivity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -51,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tracelogging.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MddBootstrapActivity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

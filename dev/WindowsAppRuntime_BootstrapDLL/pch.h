@@ -10,7 +10,11 @@
 #ifndef PCH_H
 #define PCH_H
 
+#include <WindowsAppRuntimeInsights.h>
+
 // add headers that you want to pre-compile here
 #include "framework.h"
+#include "MddBootstrapActivity.h"
+#include "tracelogging.h"
 
 #endif //PCH_H
