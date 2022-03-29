@@ -16,6 +16,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         AddPackage = 0x4,
         RegisterPackage = 0x5,
         ProvisionPackage = 0x6,
+        RestartPushNotificationsLRP = 0x7,
     };
 
     struct WilFailure
@@ -25,6 +26,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         std::wstring file;
         unsigned int lineNumer;
         std::wstring message;
+        std::wstring code;
     };
 
     class Context

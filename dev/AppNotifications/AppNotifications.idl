@@ -4,7 +4,6 @@ import "..\AppLifecycle\AppLifecycle.idl";
 
 namespace Microsoft.Windows.AppNotifications
 {
-
     [contractversion(1)]
     apicontract WindowsAppNotificationsContract {}
 

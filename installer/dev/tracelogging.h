@@ -55,6 +55,7 @@ public:
         GUID deploymentErrorActivityId)
     {
         SetStopResult(hresult);
+
         TraceLoggingClassWriteStop(Install,
             _GENERIC_PARTB_FIELDS_ENABLED,
             TraceLoggingValue(installStage, "FailedInstallStage"),
@@ -66,8 +67,10 @@ public:
     END_ACTIVITY_CLASS();
 };
 
-#define WindowsAppRuntimeInstaller_TraceLoggingWString(_wstring_, _name_) TraceLoggingCountedWideString(_wstring_.c_str(),\
-     static_cast<ULONG>(_wstring_.size()), _name_)
+#define WindowsAppRuntimeInstaller_TraceLoggingWString(_wstring_, _name_) \
+    TraceLoggingCountedWideString(\
+    _wstring_.c_str(),\
+    static_cast<ULONG>(_wstring_.size()), _name_)
 
 #define WindowsAppRuntimeInstaller_WriteEventWithActivity(_eventname_,...) TraceLoggingWriteActivity(\
     WindowsAppRuntimeInstaller_TraceLogger::Provider(),\

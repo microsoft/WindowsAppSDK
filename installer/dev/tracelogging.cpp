@@ -8,6 +8,7 @@
 
 using namespace WindowsAppRuntimeInstaller::InstallActivity;
 
+// A process-wide callback function for WIL to call each time it logs a failure.
 void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcept
 {
     if (WindowsAppRuntimeInstaller_TraceLogger::IsEnabled())
@@ -16,27 +17,56 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
 
         if (installActivityContext.GetActivity().IsRunning())
         {
-            if (failure.type == wil::FailureType::Log &&
-                installActivityContext.GetInstallStage() == InstallStage::ProvisionPackage)
+            switch (failure.type)
             {
-                // Failure in Provisioning package are non-blocking and the installer will continue with installation
-                // wil failure type of Log indicates intention to just log failure but continue with the installation
-                WindowsAppRuntimeInstaller_WriteEventWithActivity(
-                    "ProvisioningFailed",
-                    WindowsAppRuntimeInstaller_TraceLoggingWString(installActivityContext.GetCurrentResourceId(), "currentPackage"),
-                    _GENERIC_PARTB_FIELDS_ENABLED, 
-                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
-                    TraceLoggingKeyword(MICROSOFT_KEYWORD_MEASURES));
+            case wil::FailureType::Log:
+            {
+                // wil Log failure type indicates intention to just log failure but continue with the installation
+
+                if (installActivityContext.GetInstallStage() == InstallStage::ProvisionPackage)
+                {
+                    // Failure in Provisioning package are non-blocking and the installer will continue with installation
+                    WindowsAppRuntimeInstaller_WriteEventWithActivity(
+                        "ProvisioningFailed",
+                        WindowsAppRuntimeInstaller_TraceLoggingWString(installActivityContext.GetCurrentResourceId(), "currentPackage"),
+                        _GENERIC_PARTB_FIELDS_ENABLED,
+                        TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                        TraceLoggingKeyword(MICROSOFT_KEYWORD_MEASURES));
+                }
+                else if (installActivityContext.GetInstallStage() == InstallStage::RestartPushNotificationsLRP)
+                {
+                    // Failure in restarting PushNotificationsLRP is non-blocking to the installer functionality
+                    WindowsAppRuntimeInstaller_WriteEventWithActivity(
+                        "RestartPushNotificationsLRPFailed",
+                        _GENERIC_PARTB_FIELDS_ENABLED,
+                        TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                        TraceLoggingKeyword(MICROSOFT_KEYWORD_MEASURES));
+                }
+                break;
             }
-            // Exceptions will be followed by Returns due to try...CATCH_RETURN() usage. Hence, avoid logging twice.
-            else if (failure.type != wil::FailureType::Exception)
+            case wil::FailureType::Exception:
             {
-                installActivityContext.SetLastFailure(failure);
                 WindowsAppRuntimeInstaller_WriteEventWithActivity(
-                    "FailureInfo",
-                    TraceLoggingCountedWideString(installActivityContext.GetCurrentResourceId().c_str(), static_cast<ULONG>(installActivityContext.GetCurrentResourceId().size()), "currentPackage"));
+                    "Exception",
+                    TraceLoggingCountedWideString(
+                        installActivityContext.GetCurrentResourceId().c_str(),
+                        static_cast<ULONG>(installActivityContext.GetCurrentResourceId().size()), "currentResource"));
+                break;
+            }
+            case wil::FailureType::FailFast:
+            {
+                WindowsAppRuntimeInstaller_WriteEventWithActivity(
+                    "FailFast",
+                    TraceLoggingCountedWideString(
+                        installActivityContext.GetCurrentResourceId().c_str(),
+                        static_cast<ULONG>(installActivityContext.GetCurrentResourceId().size()), "currentResource"));
+                break;
+            }
+            default:
+                // Exceptions will be followed by Returns due to try...CATCH_RETURN() usage. Hence, avoid logging twice by ignoring wil::FailureType::Return
+                break;
             }
         }
+        return;
     }
-    return;
 }
