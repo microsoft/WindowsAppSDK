@@ -99,7 +99,7 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
 
             /// Do nothing (do not error) if the process has package identity
             OnPackageIdentity_NOOP = 0x0010,
-        };
+        }
 
         /// Initialize the calling process to use Windows App SDK's framework package.
         ///
@@ -272,9 +272,11 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         /// @see Initialize(uint)
         /// @see Initialize(uint, string)
         /// @see Initialize(uint, string, PackageVersion)
+        /// @see Initialize(uint, string, PackageVersion, InitializeOptions options)
         /// @see TryInitialize(uint, out int)
         /// @see TryInitialize(uint, string, out int)
         /// @see TryInitialize(uint, string, PackageVersion, out int)
+        /// @see TryInitialize(uint, string, PackageVersion, InitializeOptions options, out int)
         public static void Shutdown()
         {
             NativeMethods.MddBootstrapShutdown();
