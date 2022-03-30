@@ -22,6 +22,17 @@
     <DefaultLanguage Condition="'$(DefaultLanguage)' == ''">en-US</DefaultLanguage>
   </PropertyGroup>
 
+  <!--
+    PRIResource is not by default in the list of Build Actions for WPF apps. So add it!
+    If we don't add it, our attempt to by default include RESW files in PRIResource will
+    fail (VS will inject MSBuild code in the project file to undo that include). We don't
+    restrict this to WPF projects because there is no harm in including the item in other
+    project types.
+  -->
+  <ItemGroup>
+    <AvailableItemName Include="PRIResource"/>
+  </ItemGroup>
+
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
   </PropertyGroup>
