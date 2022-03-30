@@ -104,7 +104,7 @@ The list of all contracts defined across Windows App SDK
 |--------------------|---------------|---------------------------------|------------------------------------------------------|---------|
 | AccessControl      | windowsappsdk | AccessControlContract           | Microsoft.Windows.Security.AccessControl             |         |
 | AppLifecycle       | windowsappsdk | AppLifecycleContract            | Microsoft.Windows.AppLifecycle                       |         |
-| AppNotifications   | windowsappsdk | WindowsAppNotificationsContract | Microsoft.Windows.AppNotifications                   |         |
+| AppNotifications   | windowsappsdk | AppNotificationsContract        | Microsoft.Windows.AppNotifications                   |         |
 | Deployment         | windowsappsdk | DeploymentManagerContract       | Microsoft.Windows.ApplicationModel.WindowsAppRuntime |         |
 | DynamicDependency  | windowsappsdk | DynamicDependencyContract       | Microsoft.Windows.ApplicationModel.DynamicDependency |         |
 | EnvironmentManager | windowsappsdk | EnvironmentManagerContracct     | Microsoft.Windows.System                             |         |
