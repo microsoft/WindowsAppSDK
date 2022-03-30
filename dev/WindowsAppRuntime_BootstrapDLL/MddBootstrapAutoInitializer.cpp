@@ -7,6 +7,18 @@
 #include <MddBootstrap.h>
 #include <WindowsAppSDK-VersionInfo.h>
 
+// If any options are defined use them, else use the default
+#if !defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_DEFAULT) && \
+    !defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_NONE) && \
+    !defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK) && \
+    !defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK_IFDEBUGGERATTACHED) && \
+    !defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_FAILFAST) && \
+    !defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONNOMATCH_SHOWUI) && \
+    !defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONPACKAGEIDENTITY_NOOP)
+// No options specified! Use the default
+#define MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_DEFAULT
+#endif
+
 namespace Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap
 {
     struct AutoInitialize
@@ -23,13 +35,31 @@ namespace Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap
 
         constexpr static MddBootstrapInitializeOptions Options()
         {
-#if defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_INITIALIZE_OPTIONS)
-            // #define MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_INITIALIZE_OPTIONS=options (e.g. =0x0012 or =18)
-            return static_cast<MddBootstrapInitializeOptions>(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_INITIALIZE_OPTIONS);
-#else
-            // Default options for the auto-initializer
+#if defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_DEFAULT)
+            // Use the default options
             return MddBootstrapInitializeOptions_OnNoMatch_ShowUI;
+#elif defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_NONE)
+            // No options!
+            return MddBootstrapInitializeOptions_None;
+#else
+            // Use the specified options
+            return MddBootstrapInitializeOptions_None
+#if defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK)
+                 | MddBootstrapInitializeOptions_OnError_DebugBreak
 #endif
+#if defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK_IFDEBUGGERATTACHED)
+                 | MddBootstrapInitializeOptions_OnError_DebugBreak_IfDebuggerAttached
+#endif
+#if defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_FAILFAST)
+                 | MddBootstrapInitializeOptions_OnError_FailFast
+#endif
+#if defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONNOMATCH_SHOWUI)
+                 | MddBootstrapInitializeOptions_OnNoMatch_ShowUI
+#endif
+#if defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONPACKAGEIDENTITY_NOOP)
+                 | MddBootstrapInitializeOptions_OnPackageIdentity_NOOP
+#endif
+            ;
         }
 
         static void Initialize()
