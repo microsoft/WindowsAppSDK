@@ -12,13 +12,10 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency.BootstrapCS
             string versionTag = global::Microsoft.WindowsAppSDK.Release.VersionTag;
             var minVersion = new PackageVersion(global::Microsoft.WindowsAppSDK.Runtime.Version.UInt64);
             var options = Options;
-            try
+            int hresult = 0;
+            if (!global::Microsoft.Windows.ApplicationModel.DynamicDependency.Bootstrap.TryInitialize(majorMinorVersion, versionTag, minVersion, options, out hresult))
             {
-                global::Microsoft.Windows.ApplicationModel.DynamicDependency.Bootstrap.Initialize(majorMinorVersion, versionTag, minVersion, options);
-            }
-            catch (global::System.Exception e)
-            {
-                global::System.Environment.FailFast(e.Message);
+                global::System.Environment.Exit(hr);
             }
         }
 
