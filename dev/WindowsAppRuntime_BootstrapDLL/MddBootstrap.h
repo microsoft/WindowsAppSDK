@@ -6,25 +6,6 @@
 
 #include <appmodel.h>
 
-/// Initialize the calling process to use Windows App Runtime framework package.
-///
-/// Find a Windows App Runtime framework package meeting the criteria and make it available
-/// for use by the current process. If multiple packages meet the criteria the best
-/// candidate is selected.
-///
-/// If called multiple times the parameters must be compatible with the framework package
-/// resolved by the first initialization call (i.e. the framework package currently in use).
-/// If the request is not compatible with the framework package currently in use
-/// the API fails and an error is returned.
-///
-/// @param majorMinorVersion the major and minor version to use, e..g 0x00010002 for Major.Minor=1.2
-/// @param versionTag the version pre-release identifier, or NULL if none.
-/// @param minVersion the minimum version to use
-STDAPI MddBootstrapInitialize(
-    UINT32 majorMinorVersion,
-    PCWSTR versionTag,
-    PACKAGE_VERSION minVersion) noexcept;
-
 /// Options for Bootstrap initialization
 typedef enum MddBootstrapInitializeOptions
 {
@@ -49,6 +30,25 @@ typedef enum MddBootstrapInitializeOptions
 #if defined(__cplusplus)
 DEFINE_ENUM_FLAG_OPERATORS(MddBootstrapInitializeOptions)
 #endif // defined(__cplusplus)
+
+/// Initialize the calling process to use Windows App Runtime framework package.
+///
+/// Find a Windows App Runtime framework package meeting the criteria and make it available
+/// for use by the current process. If multiple packages meet the criteria the best
+/// candidate is selected.
+///
+/// If called multiple times the parameters must be compatible with the framework package
+/// resolved by the first initialization call (i.e. the framework package currently in use).
+/// If the request is not compatible with the framework package currently in use
+/// the API fails and an error is returned.
+///
+/// @param majorMinorVersion the major and minor version to use, e..g 0x00010002 for Major.Minor=1.2
+/// @param versionTag the version pre-release identifier, or NULL if none.
+/// @param minVersion the minimum version to use
+STDAPI MddBootstrapInitialize(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion) noexcept;
 
 /// Initialize the calling process to use Windows App Runtime framework package.
 ///
@@ -130,7 +130,6 @@ public:
 #endif
 };
 
-#if defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
 namespace DynamicDependency::Bootstrap
 {
     // Automate Boostrap shutdown when leaving scope
@@ -325,9 +324,8 @@ namespace DynamicDependency::Bootstrap
         return ::MddBootstrapInitialize2(majorMinorVersion, versionTag, minVersion, static_cast<MddBootstrapInitializeOptions>(options));
     }
 }
-#endif // defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
 }
-#endif // defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined()WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
+#endif // defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
 #endif // defined(__cplusplus)
 
 #endif // MDDBOOTSTRAP_H
