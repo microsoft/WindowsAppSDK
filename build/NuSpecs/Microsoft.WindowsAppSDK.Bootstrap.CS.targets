@@ -1,10 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <PropertyGroup Condition="'$(WindowsAppSDKBootstrapInitialize)'==''">
-        <WindowsAppSDKBootstrapInitialize>true</WindowsAppSDKBootstrapInitialize>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(WindowsAppSDKBootstrapInitialize)'=='true'">
+    <PropertyGroup>
         <DefineConstants
         <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_Default)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_DEFAULT</DefineConstants>
         <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_None)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_NONE</DefineConstants>
@@ -15,9 +11,7 @@
         <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnPackageIdentity_NoOp)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONPACKAGEIDENTITY_NOOP</DefineConstants>
     </PropertyGroup>
 
-    <Target Name="GenerateBootstrapCS"
-            BeforeTargets="BeforeCompile"
-            Condition="'$(WindowsAppSDKBootstrapInitialize)'=='true'">
+    <Target Name="GenerateBootstrapCS" BeforeTargets="BeforeCompile">
         <ItemGroup>
             <Compile Include="$(MSBuildThisFileDirectory)..\include\MddBootstrapAutoInitializer.cs" />
             <Compile Include="$(MSBuildThisFileDirectory)..\include\WindowsAppSDK-VersionInfo.cs" />

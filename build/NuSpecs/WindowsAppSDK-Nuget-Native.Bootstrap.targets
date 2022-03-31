@@ -1,12 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <PropertyGroup Condition="'$(WindowsAppSDKBootstrapInitialize)'==''">
-        <WindowsAppSDKBootstrapInitialize>true</WindowsAppSDKBootstrapInitialize>
-    </PropertyGroup>
-
-    <Target Name="GenerateBootstrapCpp"
-            BeforeTargets="ClCompile"
-            Condition="'$(WindowsAppSDKBootstrapInitialize)'=='true'">
+    <Target Name="GenerateBootstrapCpp" BeforeTargets="ClCompile">
         <ItemGroup>
             <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\MddBootstrapAutoInitializer.cpp">
                 <PrecompiledHeader>NotUsing</PrecompiledHeader>
