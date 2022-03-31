@@ -94,7 +94,7 @@ winrt::com_ptr<IStream> GetStreamOfWICBitmapSource(
     _In_ BITMAP_VERSION bmpv)
 {
     winrt::com_ptr<IStream> spImageStream;
-    THROW_IF_FAILED(CreateStreamOnHGlobal(nullptr, true, spImageStream.put()));
+    THROW_IF_FAILED(CreateStreamOnHGlobal(nullptr /* handle */, true /* delete on release */, spImageStream.put()));
 
     // Create encoder and initialize it
     winrt::com_ptr<IWICBitmapEncoder> wicEncoder;
@@ -109,7 +109,7 @@ winrt::com_ptr<IStream> GetStreamOfWICBitmapSource(
 
     // Seek the stream to the beginning and transfer
     static const LARGE_INTEGER lnBeginning = {};
-    THROW_IF_FAILED(spImageStream->Seek(lnBeginning, STREAM_SEEK_SET, nullptr));
+    THROW_IF_FAILED(spImageStream->Seek(lnBeginning, STREAM_SEEK_SET, nullptr /* new seek pointer */));
 
     return spImageStream;
 }
@@ -125,10 +125,10 @@ void SaveImageWithWIC(
 
     // Seek the stream to the beginning and transfer
     static LARGE_INTEGER const lnBeginning{ 0 };
-    THROW_IF_FAILED(spImageStream->Seek(lnBeginning, STREAM_SEEK_SET, nullptr));
+    THROW_IF_FAILED(spImageStream->Seek(lnBeginning, STREAM_SEEK_SET, nullptr /* new seek pointer */));
 
     static ULARGE_INTEGER lnbuffer{ INT_MAX };
-    THROW_IF_FAILED(spImageStream->CopyTo(pStream.get(), lnbuffer, nullptr, nullptr));
+    THROW_IF_FAILED(spImageStream->CopyTo(pStream.get(), lnbuffer, nullptr /* pointer to number of bytes read */, nullptr /* pointer to number of bytes written */));
 }
 
 void Microsoft::Windows::AppNotifications::WICHelpers::WriteHIconToPngFile(wil::unique_hicon const& hIcon, _In_ PCWSTR pszFileName)
@@ -140,7 +140,7 @@ void Microsoft::Windows::AppNotifications::WICHelpers::WriteHIconToPngFile(wil::
 
     // Create stream to save the HICON to.
     winrt::com_ptr<IStream> spStream;
-    THROW_IF_FAILED(CreateStreamOnHGlobal(nullptr, TRUE, spStream.put()));
+    THROW_IF_FAILED(CreateStreamOnHGlobal(nullptr /* handle */, TRUE, spStream.put()));
 
     winrt::com_ptr<IWICBitmapSource> wicBitmapSource;
     wicBitmapSource = wicBitmap;
@@ -159,7 +159,7 @@ void Microsoft::Windows::AppNotifications::WICHelpers::WriteHIconToPngFile(wil::
     THROW_IF_FAILED(spStreamOut->SetSize(statstg.cbSize));
 
     // TODO: Comments need to be added
-    THROW_IF_FAILED(spStream->CopyTo(spStreamOut.get(), statstg.cbSize, nullptr, nullptr));
+    THROW_IF_FAILED(spStream->CopyTo(spStreamOut.get(), statstg.cbSize, nullptr /* pointer to number of bytes read */, nullptr /* pointer to number of bytes written */));
 
     THROW_IF_FAILED(spStreamOut->Commit(STGC_DANGEROUSLYCOMMITMERELYTODISKCACHE));
 }

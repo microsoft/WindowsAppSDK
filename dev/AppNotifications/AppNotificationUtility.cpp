@@ -240,65 +240,19 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::GetDisplayNameBasedO
     return displayName;
 }
 
-#define GIL_EXACTSIZEONLY       0x0100
-// Looks at the passed in icon and tries loading a better sized icon from the resource file.
-// If there is a larger icon available, use that icon instead. This is because the HICON passed
-// in to the legacy tray item is either a SM_CXSMICON x SM_CYSMICON (16x16) icon, or if NIIF_LARGE_ICON
-// is specified in the dwInfoFlags then it should be a SM_CXICON x SM_CYICON (32x32) icon. For toast messages,
-// an image of 150x150 is expected. To allow a larger icon to be used we will check the icon sizes which are available.
-// When we take DPI into account, we always want to pick the next larger icon size and scale down. For example,
-// if we are running 200%, we are trying to load an image of 300x300 px. The next largest snap icon size is 512px,
-// but icon file format requires this to be available. So the largest possible size in an icon is 256px, which means
-// we should just load that image file size and ignore DPI.
-inline HICON LoadBetterIconFromResource(_In_ HICON hIcon, int cx, int cy, UINT uFlags /*= 0*/)
-{
-    // TODO: Use wil handle
-    HICON hIconNew = nullptr;
-
-    // TODO: Wil wrapper for this?
-    ICONINFOEX iconInfoEx = {};
-    iconInfoEx.cbSize = sizeof(iconInfoEx);
-    if (GetIconInfoEx(hIcon, &iconInfoEx))
-    {
-        if (S_OK != SHDefExtractIcon(iconInfoEx.szModName, -iconInfoEx.wResID, uFlags, &hIconNew, nullptr, MAKELONG(cx, cy)))
-        {
-            DestroyIcon(hIconNew);
-            hIconNew = nullptr;
-        }
-
-        THROW_IF_WIN32_BOOL_FALSE(DeleteObject(iconInfoEx.hbmColor));
-        THROW_IF_WIN32_BOOL_FALSE(DeleteObject(iconInfoEx.hbmMask));
-    }
-    return hIconNew;
-}
-
-inline HICON RetrieveIconFromProcess()
+inline wil::unique_hicon RetrieveIconFromProcess()
 {
     std::wstring processPath{};
     THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processPath));
 
-    HICON hIcons[1];
-    // TODO: Add a check for HICON here.
-    ExtractIconExW(processPath.c_str(), 0, hIcons, nullptr, 1);
-
-    int iconSizes{ 0 };
-    HICON hIconNew{ nullptr };
-    int const rgSnapSize[] = { 256, 196, 128, 64, 48, 32, 24, 16 };
-    do
+    // Extract the small icon from the first .ico, if failed extract the large icon.
+    wil::unique_hicon hIcon{};
+    if (!ExtractIconExW(processPath.c_str(), 0 /* index */, nullptr /* Large icon */, &hIcon, 1))
     {
-        // Load a better image, looking for an exact match above 256x256, or something that is close once we get below 48px (unscaled).
-        hIconNew = LoadBetterIconFromResource(hIcons[0], rgSnapSize[iconSizes], rgSnapSize[iconSizes], (rgSnapSize[iconSizes] > 48) ? GIL_EXACTSIZEONLY : 0);
-        iconSizes++;
-    } while ((hIconNew == nullptr) && (iconSizes < ARRAYSIZE(rgSnapSize)));
-
-    if (hIconNew != nullptr)
-    {
-        // TODO: Clear the NIIF_USER flag since we need to now destroy the newly loaded icon.
-        //WI_ClearFlag(dwInfoFlags, NIIF_USER);
-        hIcons[0] = hIconNew;
+        THROW_HR_IF(E_FAIL, ExtractIconExW(processPath.c_str(), 0, &hIcon, nullptr /* Small Icon */, 1) == 0);
     }
 
-    return hIcons[0];
+    return hIcon;
 }
 
 inline std::wstring RetrieveLocalFolderPath()
@@ -323,7 +277,6 @@ inline std::wstring RetrieveLocalFolderPath()
 HRESULT Microsoft::Windows::AppNotifications::Helpers::RetrieveAssetsFromProcess(_Out_ Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets& assets) noexcept try
 {
     wil::unique_hicon hIcon{ RetrieveIconFromProcess() };
-    THROW_HR_IF(E_UNEXPECTED, hIcon == nullptr);
 
     std::wstring notificationAppId{ RetrieveNotificationAppId() };
 
@@ -393,8 +346,8 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
     // 3. Use the default assets.
     Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets assets{};
 
-    if (FAILED(RetrieveAssetsFromProcess(assets)) &&
-        FAILED(ToastNotifications_RetrieveAssets_Stub(assets)))
+    if (FAILED(ToastNotifications_RetrieveAssets_Stub(assets)) &&
+        FAILED(RetrieveAssetsFromProcess(assets)))
     {
         THROW_IF_FAILED(RetrieveDefaultAssets(assets));
     }
