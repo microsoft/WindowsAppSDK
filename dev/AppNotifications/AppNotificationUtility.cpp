@@ -4,7 +4,7 @@
 
 #include "pch.h"
 #include <cwctype>
-#include <filesystem>
+
 #include "AppNotificationUtility.h"
 #include <winrt/Windows.ApplicationModel.Core.h>
 #include <winrt/Windows.Foundation.h>
@@ -15,12 +15,15 @@
 #include "NotificationProgressData.h"
 
 #include <Microsoft.Foundation.String.h>
-
-#include <wil/resource.h>
-#include <wil/win32_helpers.h>
-#include <propkey.h> // PKEY properties
-#include <propsys.h> // IPropertyStore
 #include <ShObjIdl_core.h>
+#include <WICUtility.h>
+#include <shlobj_core.h>
+#include <filesystem>
+
+namespace std
+{
+    using namespace std::filesystem;
+}
 
 namespace winrt
 {
@@ -237,13 +240,56 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::GetDisplayNameBasedO
     return displayName;
 }
 
-// Placeholder
-HRESULT RetrieveAssetsFromProcess(_Out_ Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets& /*assets*/)
+inline wil::unique_hicon RetrieveIconFromProcess()
 {
-    // THROW_HR_IF_MSG(E_UNEXPECTED, VerifyIconFileExtension(iconFilePath));
+    std::wstring processPath{};
+    THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processPath));
 
-    return E_NOTIMPL;
+    // Extract the small icon from the first .ico, if failed extract the large icon.
+    wil::unique_hicon hIcon{};
+    if (!ExtractIconExW(processPath.c_str(), 0 /* index */, nullptr /* Large icon */, &hIcon, 1))
+    {
+        THROW_HR_IF(E_FAIL, ExtractIconExW(processPath.c_str(), 0, &hIcon, nullptr /* Small Icon */, 1) == 0);
+    }
+
+    return hIcon;
 }
+
+inline std::wstring RetrieveLocalFolderPath()
+{
+    wil::unique_cotaskmem_string localAppDataPath;
+    THROW_IF_FAILED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0 /* flags */, nullptr /* access token handle */, &localAppDataPath));
+
+    // path: C:\Users\<currentUser>\AppData\Local\Microsoft
+    std::path localFolderPath{ std::wstring(localAppDataPath.get()) + Microsoft::Windows::AppNotifications::Helpers::c_localMicrosoftFolder };
+    THROW_HR_IF(ERROR_FILE_NOT_FOUND, !std::exists(localFolderPath));
+
+    // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK
+    localFolderPath.append(Microsoft::Windows::AppNotifications::Helpers::c_localWindowsAppSDKFolder);
+    if (!std::exists(localFolderPath))
+    {
+        std::create_directory(localFolderPath);
+    }
+
+    return std::wstring(localFolderPath.c_str());
+}
+
+HRESULT Microsoft::Windows::AppNotifications::Helpers::RetrieveAssetsFromProcess(_Out_ Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets& assets) noexcept try
+{
+    wil::unique_hicon hIcon{ RetrieveIconFromProcess() };
+
+    std::wstring notificationAppId{ RetrieveNotificationAppId() };
+
+    // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK\{AppGUID}.png
+    std::wstring writeToFile{ RetrieveLocalFolderPath().c_str() + c_backSlash + notificationAppId + c_pngExtension };
+    Microsoft::Windows::AppNotifications::WICHelpers::WriteHIconToPngFile(hIcon, writeToFile.c_str());
+
+    assets.displayName = Microsoft::Windows::AppNotifications::Helpers::GetDisplayNameBasedOnProcessName();
+    assets.iconFilePath = writeToFile;
+
+    return S_OK;
+}
+CATCH_RETURN()
 
 // Do nothing. This is just a placeholder while the UDK is ingested with the proper API.
 HRESULT ToastNotifications_RetrieveAssets_Stub(_Out_ Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets& /*assets*/)
@@ -300,8 +346,8 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
     // 3. Use the default assets.
     Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets assets{};
 
-    if (FAILED(RetrieveAssetsFromProcess(assets)) &&
-        FAILED(ToastNotifications_RetrieveAssets_Stub(assets)))
+    if (FAILED(ToastNotifications_RetrieveAssets_Stub(assets)) &&
+        FAILED(RetrieveAssetsFromProcess(assets)))
     {
         THROW_IF_FAILED(RetrieveDefaultAssets(assets));
     }

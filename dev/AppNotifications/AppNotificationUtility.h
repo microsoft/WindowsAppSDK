@@ -14,7 +14,11 @@ namespace Microsoft::Windows::AppNotifications::Helpers
     const std::wstring c_appIdentifierPath{ LR"(Software\Classes\AppUserModelId\)" };
     const std::wstring c_clsIdPath{ LR"(Software\Classes\CLSID\)" };
     const std::wstring c_quote{ LR"(")" };
+    const std::wstring c_backSlash{ LR"(\)" };
     const std::wstring c_notificationActivatedArgument{ L" ----AppNotificationActivated:" };
+    const std::wstring c_localMicrosoftFolder{ LR"(\Microsoft\)" };
+    const std::wstring c_localWindowsAppSDKFolder{ LR"(WindowsAppSDK)" };
+    const std::wstring c_pngExtension{ LR"(.png)" };
 
     struct AppNotificationAssets {
         std::wstring displayName;
@@ -67,4 +71,6 @@ namespace Microsoft::Windows::AppNotifications::Helpers
     winrt::Microsoft::Windows::AppNotifications::AppNotification ToastNotificationFromToastProperties(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* properties);
 
     std::wstring GetDisplayNameBasedOnProcessName();
+
+    HRESULT RetrieveAssetsFromProcess(_Out_ Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets& assets) noexcept;
 }
