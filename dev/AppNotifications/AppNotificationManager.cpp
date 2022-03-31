@@ -20,6 +20,7 @@
 #include <string_view>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <WindowsAppRuntime.SelfContained.h>
+#include <ShellLocalization.h>
 
 using namespace std::literals;
 
@@ -46,6 +47,7 @@ namespace PushNotificationHelpers
 }
 
 using namespace Microsoft::Windows::AppNotifications::Helpers;
+using namespace Microsoft::Windows::AppNotifications::ShellLocalization;
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
@@ -226,6 +228,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
                 UnRegisterNotificationAppIdentifierFromRegistry();
                 THROW_IF_FAILED(PushNotifications_UnregisterFullTrustApplication(m_appId.c_str()));
+
+                // If the app icon was inferred from process, then we should clean it up.
+                DeleteIconFromCache();
             }
         }
         catch (...)

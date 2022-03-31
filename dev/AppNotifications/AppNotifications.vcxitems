@@ -23,7 +23,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NotificationProperties.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NotificationTransientProperties.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NotificationProgressData.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)WICUtility.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ShellLocalization.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationManager.cpp" />
@@ -33,7 +33,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NotificationProperties.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NotificationTransientProperties.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NotificationProgressData.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)WICUtility.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ShellLocalization.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)AppNotifications.idl" />

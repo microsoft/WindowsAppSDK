@@ -16,9 +16,10 @@
 
 #include <Microsoft.Foundation.String.h>
 #include <ShObjIdl_core.h>
-#include <WICUtility.h>
 #include <shlobj_core.h>
 #include <filesystem>
+
+#include <ShellLocalization.h>
 
 namespace std
 {
@@ -36,8 +37,6 @@ namespace ToastABI
 {
     using namespace ::ABI::Microsoft::Internal::ToastNotifications;
 }
-
-constexpr PCWSTR defaultAppNotificationIcon = LR"(ms-resource://Windows.UI.ShellCommon/Files/Images/DefaultSystemNotification.png)";
 
 std::wstring Microsoft::Windows::AppNotifications::Helpers::RetrieveUnpackagedNotificationAppId()
 {
@@ -240,87 +239,35 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::GetDisplayNameBasedO
     return displayName;
 }
 
-inline wil::unique_hicon RetrieveIconFromProcess()
+winrt::guid Microsoft::Windows::AppNotifications::Helpers::RegisterComActivatorGuidAndAssets()
 {
-    std::wstring processPath{};
-    THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processPath));
+    std::wstring registeredGuid;
+    auto hr = GetActivatorGuid(registeredGuid);
 
-    // Extract the small icon from the first .ico, if failed extract the large icon.
     wil::unique_hicon hIcon{};
-    if (!ExtractIconExW(processPath.c_str(), 0 /* index */, nullptr /* Large icon */, &hIcon, 1))
+    if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
     {
-        THROW_HR_IF(E_FAIL, ExtractIconExW(processPath.c_str(), 0, &hIcon, nullptr /* Small Icon */, 1) == 0);
+        // Create a GUID for the COM Activator
+        GUID comActivatorGuid = GUID_NULL;
+        THROW_IF_FAILED(CoCreateGuid(&comActivatorGuid));
+
+        // StringFromCLSID returns GUID String with braces
+        wil::unique_cotaskmem_string comActivatorGuidString;
+        THROW_IF_FAILED(StringFromCLSID(comActivatorGuid, &comActivatorGuidString));
+        RegisterComServer(comActivatorGuidString);
+
+        registeredGuid = comActivatorGuidString.get();
+    }
+    else
+    {
+        THROW_IF_FAILED(hr);
     }
 
-    return hIcon;
-}
+    std::wstring notificationAppId{ Microsoft::Windows::AppNotifications::Helpers::RetrieveNotificationAppId() };
+    RegisterAssets(notificationAppId, registeredGuid);
 
-inline std::wstring RetrieveLocalFolderPath()
-{
-    wil::unique_cotaskmem_string localAppDataPath;
-    THROW_IF_FAILED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0 /* flags */, nullptr /* access token handle */, &localAppDataPath));
-
-    // path: C:\Users\<currentUser>\AppData\Local\Microsoft
-    std::path localFolderPath{ std::wstring(localAppDataPath.get()) + Microsoft::Windows::AppNotifications::Helpers::c_localMicrosoftFolder };
-    THROW_HR_IF(ERROR_FILE_NOT_FOUND, !std::exists(localFolderPath));
-
-    // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK
-    localFolderPath.append(Microsoft::Windows::AppNotifications::Helpers::c_localWindowsAppSDKFolder);
-    if (!std::exists(localFolderPath))
-    {
-        std::create_directory(localFolderPath);
-    }
-
-    return std::wstring(localFolderPath.c_str());
-}
-
-HRESULT Microsoft::Windows::AppNotifications::Helpers::RetrieveAssetsFromProcess(_Out_ Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets& assets) noexcept try
-{
-    wil::unique_hicon hIcon{ RetrieveIconFromProcess() };
-
-    std::wstring notificationAppId{ RetrieveNotificationAppId() };
-
-    // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK\{AppGUID}.png
-    std::wstring writeToFile{ RetrieveLocalFolderPath().c_str() + c_backSlash + notificationAppId + c_pngExtension };
-    Microsoft::Windows::AppNotifications::WICHelpers::WriteHIconToPngFile(hIcon, writeToFile.c_str());
-
-    assets.displayName = Microsoft::Windows::AppNotifications::Helpers::GetDisplayNameBasedOnProcessName();
-    assets.iconFilePath = writeToFile;
-
-    return S_OK;
-}
-CATCH_RETURN()
-
-// Do nothing. This is just a placeholder while the UDK is ingested with the proper API.
-HRESULT ToastNotifications_RetrieveAssets_Stub(_Out_ Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets& /*assets*/)
-{
-    // THROW_HR_IF_MSG(E_UNEXPECTED, VerifyIconFileExtension(iconFilePath));
-
-    return E_NOTIMPL;
-}
-
-HRESULT RetrieveDefaultAssets(_Out_ Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets& assets)
-{
-    assets.displayName = Microsoft::Windows::AppNotifications::Helpers::GetDisplayNameBasedOnProcessName();
-    assets.iconFilePath = defaultAppNotificationIcon;
-
-    return S_OK;
-}
-
-HRESULT VerifyIconFileExtension(std::filesystem::path const& iconFilePath)
-{
-    const auto fileExtension = iconFilePath.extension();
-
-    std::string lowercaseFileExtension{ fileExtension.u8string() };
-
-    std::transform(lowercaseFileExtension.begin(), lowercaseFileExtension.end(), lowercaseFileExtension.begin(),
-        [](unsigned char c) { return std::tolower(c); });
-
-    const bool isFileExtensionSupported =
-        lowercaseFileExtension == ".ico" || lowercaseFileExtension == ".bmp" || lowercaseFileExtension == ".jpg" || lowercaseFileExtension == ".png";
-
-    THROW_HR_IF(E_UNEXPECTED, isFileExtensionSupported);
-    return S_OK;
+    // Remove braces around the guid string
+    return winrt::guid(registeredGuid.substr(1, registeredGuid.size() - 2));
 }
 
 void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring const& appId, std::wstring const& clsid)
@@ -344,48 +291,17 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
     // 1. From the current process.
     // 2. Based on the best app shortcut, using the FrameworkUdk.
     // 3. Use the default assets.
-    Microsoft::Windows::AppNotifications::Helpers::AppNotificationAssets assets{};
+    Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets assets{};
 
-    if (FAILED(ToastNotifications_RetrieveAssets_Stub(assets)) &&
-        FAILED(RetrieveAssetsFromProcess(assets)))
+    if (FAILED(Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromShortcut(assets)) &&
+        FAILED(Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromProcess(assets)))
     {
-        THROW_IF_FAILED(RetrieveDefaultAssets(assets));
+        THROW_IF_FAILED(Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveDefaultAssets(assets));
     }
 
     RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(assets.displayName.c_str()), REG_EXPAND_SZ, assets.displayName.size() * sizeof(wchar_t));
     RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(assets.iconFilePath.c_str()), REG_EXPAND_SZ, assets.iconFilePath.size() * sizeof(wchar_t));
     RegisterValue(hKey, L"CustomActivator", reinterpret_cast<const BYTE*>(clsid.c_str()), REG_SZ, wil::guid_string_length * sizeof(wchar_t));
-}
-
-winrt::guid Microsoft::Windows::AppNotifications::Helpers::RegisterComActivatorGuidAndAssets()
-{
-    std::wstring registeredGuid;
-    auto hr = GetActivatorGuid(registeredGuid);
-
-    if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
-    {
-        // Create a GUID for the COM Activator
-        GUID comActivatorGuid = GUID_NULL;
-        THROW_IF_FAILED(CoCreateGuid(&comActivatorGuid));
-
-        // StringFromCLSID returns GUID String with braces
-        wil::unique_cotaskmem_string comActivatorGuidString;
-        THROW_IF_FAILED(StringFromCLSID(comActivatorGuid, &comActivatorGuidString));
-        RegisterComServer(comActivatorGuidString);
-
-        registeredGuid = comActivatorGuidString.get();
-    }
-    else
-    {
-        THROW_IF_FAILED(hr);
-    }
-
-    std::wstring notificationAppId{ RetrieveNotificationAppId() };
-    RegisterAssets(notificationAppId, registeredGuid);
-
-    // Remove braces around the guid string
-    return winrt::guid(registeredGuid.substr(1, registeredGuid.size() - 2));
-    
 }
 
 wil::unique_cotaskmem_string Microsoft::Windows::AppNotifications::Helpers::ConvertUtf8StringToWideString(unsigned long length, const byte* utf8String)

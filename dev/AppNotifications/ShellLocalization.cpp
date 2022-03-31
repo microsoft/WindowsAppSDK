@@ -1,10 +1,13 @@
-﻿
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
-#include "WICUtility.h"
+
+#include <ShellLocalization.h>
+#include <AppNotificationUtility.h>
+
 #include <cwctype>
+#include <filesystem>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/base.h>
 #include <externs.h>
@@ -14,10 +17,15 @@
 #include <Ocidl.h>
 #include <windows.h>
 
+namespace std
+{
+    using namespace std::filesystem;
+}
+
 typedef enum
 {
-    BMPV_1,
-    BMPV_5,
+    VERSION1,
+    VERSION5,
 } BITMAP_VERSION;
 
 winrt::com_ptr<IWICBitmapSource> ConvertWICBitmapPixelFormat(
@@ -42,7 +50,7 @@ void AddFrameToWICBitmap(
     winrt::com_ptr<IWICImagingFactory> const& wicImagingFactory,
     winrt::com_ptr<IWICBitmapEncoder> const& wicEncoder,
     winrt::com_ptr<IWICBitmapSource> const& wicBitmapSource,
-    BITMAP_VERSION bmpv)
+    BITMAP_VERSION bitmapVersion)
 {
     winrt::com_ptr<IWICBitmapFrameEncode> wicFrameEncoder;
     winrt::com_ptr<IPropertyBag2> wicEncoderOptions;
@@ -52,7 +60,7 @@ void AddFrameToWICBitmap(
     GUID containerGuid;
     THROW_IF_FAILED(wicEncoder->GetContainerFormat(&containerGuid));
 
-    if ((containerGuid == GUID_ContainerFormatBmp) && (bmpv == BMPV_5))
+    if ((containerGuid == GUID_ContainerFormatBmp) && (bitmapVersion == BITMAP_VERSION::VERSION5))
     {
         // Write the encoder option to the property bag instance.
         VARIANT varValue{};
@@ -76,10 +84,9 @@ void AddFrameToWICBitmap(
 
     THROW_IF_FAILED(wicFrameEncoder->SetSize(uWidth, uHeight));
 
-    winrt::com_ptr<IWICBitmapSource> wicbitmapSourceConverted;
-    wicbitmapSourceConverted = ConvertWICBitmapPixelFormat(wicImagingFactory, wicBitmapSource, GUID_WICPixelFormat32bppBGRA, WICBitmapDitherTypeNone);
+    winrt::com_ptr<IWICBitmapSource> wicbitmapSourceConverted = ConvertWICBitmapPixelFormat(wicImagingFactory, wicBitmapSource, GUID_WICPixelFormat32bppBGRA, WICBitmapDitherTypeNone);
 
-    WICRect rect { 0, 0, static_cast<INT>(uWidth), static_cast<INT>(uHeight) };
+    WICRect rect{ 0 /* x-coordinate */, 0 /* y-coordinate */, static_cast<INT>(uWidth), static_cast<INT>(uHeight) };
 
     // Write the image data and commit
     THROW_IF_FAILED(wicFrameEncoder->WriteSource(wicbitmapSourceConverted.get(), &rect));
@@ -90,8 +97,8 @@ void AddFrameToWICBitmap(
 winrt::com_ptr<IStream> GetStreamOfWICBitmapSource(
     winrt::com_ptr<IWICImagingFactory> const& wicImagingFactory,
     winrt::com_ptr<IWICBitmapSource> const& wicBitmapSource,
-    _In_ REFGUID guidContainerFormat,
-    _In_ BITMAP_VERSION bmpv)
+    REFGUID guidContainerFormat,
+    BITMAP_VERSION bitmapVersion)
 {
     winrt::com_ptr<IStream> spImageStream;
     THROW_IF_FAILED(CreateStreamOnHGlobal(nullptr /* handle */, true /* delete on release */, spImageStream.put()));
@@ -103,7 +110,7 @@ winrt::com_ptr<IStream> GetStreamOfWICBitmapSource(
     THROW_IF_FAILED(wicEncoder->Initialize(spImageStream.get(), WICBitmapEncoderCacheOption::WICBitmapEncoderNoCache));
 
     // Add a single frame to the encoder with the Bitmap
-    AddFrameToWICBitmap(wicImagingFactory, wicEncoder, wicBitmapSource, bmpv);
+    AddFrameToWICBitmap(wicImagingFactory, wicEncoder, wicBitmapSource, bitmapVersion);
 
     THROW_IF_FAILED(wicEncoder->Commit());
 
@@ -120,21 +127,20 @@ void SaveImageWithWIC(
     _In_ REFGUID guidContainerFormat,
     winrt::com_ptr<IStream>& pStream)
 {
-    winrt::com_ptr<IStream> spImageStream;
-    spImageStream = GetStreamOfWICBitmapSource(wicImagingFactory, wicBitmapSource, guidContainerFormat, BMPV_1);
+    winrt::com_ptr<IStream> spImageStream = GetStreamOfWICBitmapSource(wicImagingFactory, wicBitmapSource, guidContainerFormat, BITMAP_VERSION::VERSION1);
 
     // Seek the stream to the beginning and transfer
-    static LARGE_INTEGER const lnBeginning{ 0 };
+    LARGE_INTEGER const lnBeginning{ 0 };
     THROW_IF_FAILED(spImageStream->Seek(lnBeginning, STREAM_SEEK_SET, nullptr /* new seek pointer */));
 
-    static ULARGE_INTEGER lnbuffer{ INT_MAX };
+    ULARGE_INTEGER lnbuffer{ INT_MAX };
     THROW_IF_FAILED(spImageStream->CopyTo(pStream.get(), lnbuffer, nullptr /* pointer to number of bytes read */, nullptr /* pointer to number of bytes written */));
 }
 
-void Microsoft::Windows::AppNotifications::WICHelpers::WriteHIconToPngFile(wil::unique_hicon const& hIcon, _In_ PCWSTR pszFileName)
+void WriteHIconToPngFile(wil::unique_hicon const& hIcon, _In_ PCWSTR pszFileName)
 {
     auto wicImagingFactory{ winrt::create_instance<IWICImagingFactory>(CLSID_WICImagingFactory, CLSCTX_INPROC_SERVER) };
-   
+
     winrt::com_ptr<IWICBitmap> wicBitmap;
     THROW_IF_FAILED(wicImagingFactory->CreateBitmapFromHICON(hIcon.get(), wicBitmap.put()));
 
@@ -158,8 +164,104 @@ void Microsoft::Windows::AppNotifications::WICHelpers::WriteHIconToPngFile(wil::
 
     THROW_IF_FAILED(spStreamOut->SetSize(statstg.cbSize));
 
-    // TODO: Comments need to be added
     THROW_IF_FAILED(spStream->CopyTo(spStreamOut.get(), statstg.cbSize, nullptr /* pointer to number of bytes read */, nullptr /* pointer to number of bytes written */));
 
     THROW_IF_FAILED(spStreamOut->Commit(STGC_DANGEROUSLYCOMMITMERELYTODISKCACHE));
 }
+
+HRESULT IsIconFileExtensionSupported(std::filesystem::path const& iconFilePath)
+{
+    const auto fileExtension = iconFilePath.extension();
+
+    std::string lowercaseFileExtension{ fileExtension.u8string() };
+
+    std::transform(lowercaseFileExtension.begin(), lowercaseFileExtension.end(), lowercaseFileExtension.begin(),
+        [](unsigned char c) { return std::tolower(c); });
+
+    const bool isFileExtensionSupported =
+        lowercaseFileExtension == ".ico" || lowercaseFileExtension == ".bmp" || lowercaseFileExtension == ".jpg" || lowercaseFileExtension == ".png";
+
+    THROW_HR_IF(E_UNEXPECTED, isFileExtensionSupported);
+    return S_OK;
+}
+
+inline std::wstring RetrieveLocalFolderPath()
+{
+    wil::unique_cotaskmem_string localAppDataPath;
+    THROW_IF_FAILED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0 /* flags */, nullptr /* access token handle */, &localAppDataPath));
+
+    // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK
+    std::path localFolderPath{ std::wstring(localAppDataPath.get()) +
+        Microsoft::Windows::AppNotifications::Helpers::c_localMicrosoftFolder +
+        Microsoft::Windows::AppNotifications::Helpers::c_localWindowsAppSDKFolder };
+
+    if (!std::exists(localFolderPath))
+    {
+        std::create_directory(localFolderPath);
+    }
+
+    return std::wstring(localFolderPath.c_str());
+}
+
+inline wil::unique_hicon RetrieveIconFromProcess()
+{
+    std::wstring processPath{};
+    THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processPath));
+
+    // Extract the small icon from the first .ico, if failed extract the large icon.
+    // Small icon is good enough for an App Notification icon since higher quality doesn't really impact in a substantial way.
+    wil::unique_hicon hIcon{};
+    if (!ExtractIconExW(processPath.c_str(), 0 /* index */, nullptr /* Large icon */, &hIcon, 1))
+    {
+        THROW_HR_IF(E_FAIL, ExtractIconExW(processPath.c_str(), 0, &hIcon, nullptr /* Small Icon */, 1) == 0);
+    }
+
+    return hIcon;
+}
+
+HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromProcess(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& assets) noexcept try
+{
+    wil::unique_hicon hIcon{ RetrieveIconFromProcess() };
+
+    std::wstring notificationAppId{ Microsoft::Windows::AppNotifications::Helpers::RetrieveNotificationAppId() };
+
+    // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK\{AppGUID}.png
+    std::wstring iconFilePath{ RetrieveLocalFolderPath().c_str() + c_backSlash + notificationAppId + c_pngExtension };
+    WriteHIconToPngFile(hIcon, iconFilePath.c_str());
+
+    assets.displayName = Microsoft::Windows::AppNotifications::Helpers::GetDisplayNameBasedOnProcessName();
+    assets.iconFilePath = iconFilePath;
+
+    // TODO: Clean up the icon file in case UnregisterAll wasn't called.
+
+    return S_OK;
+}
+CATCH_RETURN()
+
+// Do nothing. This is just a placeholder while the UDK is ingested with the proper API.
+HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromShortcut(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& /*assets*/)
+{
+    // THROW_HR_IF_MSG(E_UNEXPECTED, IsIconFileExtensionSupported(iconFilePath));
+
+    return E_NOTIMPL;
+}
+
+HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveDefaultAssets(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& assets) noexcept try
+{
+    assets.displayName = Microsoft::Windows::AppNotifications::Helpers::GetDisplayNameBasedOnProcessName();
+    assets.iconFilePath = L""; // No icon filepath for now. This is coming in a future FrameworkUdk ingestion.
+
+    return S_OK;
+}
+CATCH_RETURN()
+
+void Microsoft::Windows::AppNotifications::ShellLocalization::DeleteIconFromCache() noexcept try
+{
+    std::wstring notificationAppId{ Microsoft::Windows::AppNotifications::Helpers::RetrieveNotificationAppId() };
+
+    // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK\{AppGUID}.png
+    std::wstring iconFilePath{ RetrieveLocalFolderPath().c_str() + c_backSlash + notificationAppId + c_pngExtension };
+
+    THROW_IF_WIN32_BOOL_FALSE(DeleteFile(iconFilePath.c_str()));
+}
+CATCH_LOG()
