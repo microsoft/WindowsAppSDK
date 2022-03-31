@@ -64,7 +64,7 @@ HRESULT MddBootstrapInitialize_Log(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
     PACKAGE_VERSION minVersion) noexcept;
-HRESULT MddBootstrapInitialize_ShowUI(
+HRESULT MddBootstrapInitialize_ShowUI_OnNoMatch(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
     PACKAGE_VERSION minVersion);
@@ -127,10 +127,13 @@ STDAPI MddBootstrapInitialize2(
             DebugBreak();
         }
 
-        if (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnNoMatch_ShowUI) ||
-            IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_BOOTSTRAP_INITIALIZE_SHOWUI"))
+        if (hr == HRESULT_FROM_WIN32(ERROR_NO_MATCH))
         {
-            LOG_IF_FAILED(MddBootstrapInitialize_ShowUI(majorMinorVersion, versionTag, minVersion));
+            if (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnNoMatch_ShowUI) ||
+                IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_BOOTSTRAP_INITIALIZE_SHOWUI"))
+            {
+                LOG_IF_FAILED(MddBootstrapInitialize_ShowUI_OnNoMatch(majorMinorVersion, versionTag, minVersion));
+            }
         }
 
         if (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnError_FailFast) ||
@@ -938,13 +941,11 @@ HRESULT MddBootstrapInitialize_Log(
 }
 CATCH_RETURN()
 
-HRESULT MddBootstrapInitialize_ShowUI(
+HRESULT MddBootstrapInitialize_ShowUI_OnNoMatch(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
     PACKAGE_VERSION minVersion)
 {
-    //TODO: Show this if ERROR_NO_MATCH vs simpler MessageBox("ERROR 0xN in Bootstrapper initialize", MB_OK) ?
-
     // Get the message caption
     PCWSTR caption{};
     wil::unique_cotaskmem_string captionString;
@@ -1008,7 +1009,6 @@ HRESULT MddBootstrapInitialize_ShowUI(
         sei.cbSize = sizeof(sei);
         sei.lpVerb = L"open";
         sei.lpFile = L"https://docs.microsoft.com/windows/apps/windows-app-sdk/downloads";
-        //TODO:Replace with https://aka.ms/windowsappsdk/<major>.<minor>/latest/windowsappruntimeinstall-<architecture>.exe
         sei.nShow = SW_SHOWNORMAL;
         LOG_IF_WIN32_BOOL_FALSE(ShellExecuteExW(&sei));
     }
