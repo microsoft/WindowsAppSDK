@@ -51,7 +51,7 @@ namespace Microsoft.Windows.System
     [contractversion(1)]
     apicontract EnvironmentManagerContract {}
 
-    [Contract(EnvironmentManagerContract, 1)]
+    [contract(EnvironmentManagerContract, 1)]
     runtimeclass EnvironmentManager
     {
         static EnvironmentManager GetForProcess();
@@ -108,7 +108,7 @@ The list of all contracts defined across Windows App SDK
 | Deployment         | windowsappsdk | DeploymentManagerContract       | Microsoft.Windows.ApplicationModel.WindowsAppRuntime |         |
 | DynamicDependency  | windowsappsdk | DynamicDependencyContract       | Microsoft.Windows.ApplicationModel.DynamicDependency |         |
 | EnvironmentManager | windowsappsdk | EnvironmentManagerContracct     | Microsoft.Windows.System                             |         |
-| MRTCore            | windowsappsdk | MrtContract                     | Microsoft.Windows.ApplicationModel.Resources         |         |
+| MRTCore            | windowsappsdk | MrtCoreContract                 | Microsoft.Windows.ApplicationModel.Resources         |         |
 | PowerNotifications | windowsappsdk | PowerNotificationsContract      | Microsoft.Windows.System.Power                       |         |
 | PushNotifications  | windowsappsdk | PushNotificationsContract       | Microsoft.Windows.PushNotifications                  |         |
 | WinUI              | winui         | HostingContract                 | Microsoft.UI.Xaml.Hosting                            |         |
@@ -117,6 +117,6 @@ The list of all contracts defined across Windows App SDK
 | WinUI              | winui         | XamlDirectContract              | Microsoft.UI.Xaml.Core.Direct                        |         |
 | ---                | ---           | WindowsAppSDKContract           | Microsoft.Foundation                                 |1,2,3    |
 
-<sup>1</sup> Only for use by IXP.<BR>
+<sup>1</sup> Only for use by InteractiveExperiences.<BR>
 <sup>2</sup> This contract is misnamed. It should have been `InteractiveExperiencesContract` in the `Windows.UI.Composition` namespace.<BR>
 <sup>3</sup> This contract is misversioned. It should have been `[contract(...,1)]` instead of `[contract(...,1.1)]`. The next contract version will be `[contract(...,2)]`.<BR>
