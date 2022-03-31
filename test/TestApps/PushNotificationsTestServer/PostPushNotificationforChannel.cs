@@ -7,10 +7,10 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Diagnostics;
-using System.Net.Http;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 
 namespace PushNotificationsTestServer
 {
@@ -18,6 +18,8 @@ namespace PushNotificationsTestServer
     {
         private static HttpClient s_httpClient = new HttpClient();
         private static string s_accessToken;
+        private static DateTime s_tokenExpirationTime;
+        private static ReaderWriterLockSlim s_tokenSharedLock = new ReaderWriterLockSlim();
 
         [FunctionName("PostPushNotificationforChannel")]
         public static async Task<IActionResult> Run(
@@ -35,9 +37,18 @@ namespace PushNotificationsTestServer
 
             log.LogInformation("Payload {0}", NotificationPayloadString);
 
-            if (s_accessToken == null)
+            bool needsTokenRefresh = false;
+
+            s_tokenSharedLock.EnterReadLock();
+            if (s_accessToken == null || s_tokenExpirationTime <= DateTime.UtcNow)
             {
-                await Authenticate();
+                needsTokenRefresh = true;  
+            }
+            s_tokenSharedLock.ExitReadLock();
+
+            if (needsTokenRefresh)
+            {
+                await RefreshAccessToken();
             }
 
             StringContent notificationContent = new StringContent(NotificationPayloadString);
@@ -53,21 +64,13 @@ namespace PushNotificationsTestServer
             httpRequest.Content = notificationContent;
 
             HttpResponseMessage postNotificationResponse = await s_httpClient.SendAsync(httpRequest);
-
-            if (postNotificationResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-            {
-                await Authenticate();
-                httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", s_accessToken);
-                postNotificationResponse = await s_httpClient.SendAsync(httpRequest);
-            }
-
             postNotificationResponse.EnsureSuccessStatusCode();
             string responseMessage = await postNotificationResponse.Content.ReadAsStringAsync();
 
             return new OkObjectResult(responseMessage);
         }
 
-        static async Task Authenticate()
+        static async Task RefreshAccessToken()
         {
             // Authenticate with the Windows Notification Service.
             var parms = new List<KeyValuePair<String, String>>();
@@ -86,7 +89,24 @@ namespace PushNotificationsTestServer
             {
                 String jsonContent = await authenticationResponse.Content.ReadAsStringAsync();
                 dynamic tokenResponse = JsonConvert.DeserializeObject(jsonContent);
-                s_accessToken = tokenResponse?.access_token;
+                string accessToken = tokenResponse?.access_token;
+
+                // "expires_in" is in seconds. We substract 30 seconds to refresh the token if the cached one is 30 seconds or less
+                // near expiration.
+                string expires_in = tokenResponse?.expires_in;
+                double tokenExpiresInNSeconds = Double.Parse(expires_in) - 30.0;
+                DateTime tokenExpirationTime = DateTime.UtcNow.AddSeconds(tokenExpiresInNSeconds);
+
+                s_tokenSharedLock.EnterWriteLock();
+                try
+                {
+                    s_accessToken = accessToken;
+                    s_tokenExpirationTime = tokenExpirationTime;
+                }
+                finally
+                {
+                    s_tokenSharedLock.ExitWriteLock();
+                }
             }
         }
     }
