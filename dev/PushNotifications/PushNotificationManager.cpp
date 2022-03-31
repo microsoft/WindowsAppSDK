@@ -468,12 +468,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 {
                     auto lock{ m_lock.lock_exclusive() };
                     // Register a PushNotificationBackgroundTask to handle background activation scenarios
+
                     m_waitHandleForArgs.create();
+
+                    auto activationFlags{ m_foregroundHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE };
                     THROW_IF_FAILED(::CoRegisterClassObject(
                         m_registeredClsid,
                         winrt::make<PushNotificationManagerFactory>().get(),
                         CLSCTX_LOCAL_SERVER,
-                        m_foregroundHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE,
+                        activationFlags | REGCLS_AGILE,
                         &m_comActivatorRegistration));
                 }
 
@@ -552,11 +555,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     auto lock{ m_lock.lock_exclusive() };
 
                     m_waitHandleForArgs.create();
+
+                    auto activationFlags{ m_foregroundHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE };
                     THROW_IF_FAILED(::CoRegisterClassObject(
                         m_registeredClsid,
                         winrt::make<PushNotificationManagerFactory>().get(),
                         CLSCTX_LOCAL_SERVER,
-                        m_foregroundHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE,
+                        activationFlags | REGCLS_AGILE,
                         &m_comActivatorRegistration));
                 }
 

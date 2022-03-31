@@ -139,11 +139,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
                 // Check if the caller has registered event handlers, if so the REGCLS_MULTIPLEUSE flag will cause COM to ensure that all activators
                 // are routed inproc, otherwise with REGCLS_MULTIPLEUSE COM will launch a new process of the Win32 app for each invocation.
+                auto activationFlag{ m_notificationHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE };
                 THROW_IF_FAILED(::CoRegisterClassObject(
                     AppModel::Identity::IsPackagedProcess() ? registeredClsid : storedComActivatorGuid,
                     winrt::make<AppNotificationManagerFactory>().get(),
                     CLSCTX_LOCAL_SERVER,
-                    m_notificationHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE,
+                    activationFlag | REGCLS_AGILE,
                     &m_notificationComActivatorRegistration));
             }
         }
