@@ -1,23 +1,23 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <PropertyGroup Condition="'$(WindowsAppSDKBootstrapAutoInitialize)'==''">
-        <WindowsAppSDKBootstrapAutoInitialize>true</WindowsAppSDKBootstrapAutoInitialize>
+    <PropertyGroup Condition="'$(WindowsAppSDKBootstrapInitialize)'==''">
+        <WindowsAppSDKBootstrapInitialize>true</WindowsAppSDKBootstrapInitialize>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(WindowsAppSDKBootstrapAutoInitialize)'=='true'">
+    <PropertyGroup Condition="'$(WindowsAppSDKBootstrapInitialize)'=='true'">
         <DefineConstants
-        <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_Default)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_DEFAULT</DefineConstants>
-        <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_None)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_DEFAULT</DefineConstants>
-        <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnError_DebugBreak)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK</DefineConstants>
-        <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnError_DebugBreak_IfDebuggerAttached)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK_IFDEBUGGERATTACHED</DefineConstants>
-        <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnError_FailFast)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_FAILFAST</DefineConstants>
-        <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnNoMatch_ShowUI)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONNOMATCH_SHOWUI</DefineConstants>
-        <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnPackageIdentity_NoOp)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONPACKAGEIDENTITY_NOOP</DefineConstants>
+        <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_Default)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_DEFAULT</DefineConstants>
+        <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_None)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_NONE</DefineConstants>
+        <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnError_DebugBreak)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK</DefineConstants>
+        <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnError_DebugBreak_IfDebuggerAttached)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK_IFDEBUGGERATTACHED</DefineConstants>
+        <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnError_FailFast)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_FAILFAST</DefineConstants>
+        <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnNoMatch_ShowUI)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONNOMATCH_SHOWUI</DefineConstants>
+        <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnPackageIdentity_NoOp)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONPACKAGEIDENTITY_NOOP</DefineConstants>
     </PropertyGroup>
 
     <Target Name="GenerateBootstrapCS"
             BeforeTargets="BeforeCompile"
-            Condition="'$(WindowsAppSDKBootstrapAutoInitialize)'=='true'">
+            Condition="'$(WindowsAppSDKBootstrapInitialize)'=='true'">
         <ItemGroup>
             <Compile Include="$(MSBuildThisFileDirectory)..\include\MddBootstrapAutoInitializer.cs" />
             <Compile Include="$(MSBuildThisFileDirectory)..\include\WindowsAppSDK-VersionInfo.cs" />
