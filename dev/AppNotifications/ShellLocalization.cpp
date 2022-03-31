@@ -64,33 +64,31 @@ void AddFrameToWICBitmap(
     {
         // Write the encoder option to the property bag instance.
         VARIANT varValue{};
-
         varValue.vt = VT_BOOL;
         varValue.boolVal = VARIANT_TRUE;
 
         // Options to enable the v5 header support for 32bppBGRA.
         PROPBAG2 v5HeaderOption{};
-
-        std::wstring str = L"EnableV5Header32bppBGRA";
-        v5HeaderOption.pstrName = (LPOLESTR)str.c_str();
+        v5HeaderOption.pstrName = (LPOLESTR) L"EnableV5Header32bppBGRA";
 
         THROW_IF_FAILED(wicEncoderOptions->Write(1, &v5HeaderOption, &varValue));
     }
 
     THROW_IF_FAILED(wicFrameEncoder->Initialize(wicEncoderOptions.get()));
 
-    UINT uWidth, uHeight;
-    THROW_IF_FAILED(wicBitmapSource->GetSize(&uWidth, &uHeight));
+    UINT width{};
+    UINT height{};
+    THROW_IF_FAILED(wicBitmapSource->GetSize(&width, &height));
 
-    THROW_IF_FAILED(wicFrameEncoder->SetSize(uWidth, uHeight));
+    THROW_IF_FAILED(wicFrameEncoder->SetSize(width, height));
 
-    winrt::com_ptr<IWICBitmapSource> wicbitmapSourceConverted = ConvertWICBitmapPixelFormat(wicImagingFactory, wicBitmapSource, GUID_WICPixelFormat32bppBGRA, WICBitmapDitherTypeNone);
+    winrt::com_ptr<IWICBitmapSource> wicbitmapSourceConverted
+        { ConvertWICBitmapPixelFormat(wicImagingFactory, wicBitmapSource, GUID_WICPixelFormat32bppBGRA, WICBitmapDitherTypeNone) };
 
-    WICRect rect{ 0 /* x-coordinate */, 0 /* y-coordinate */, static_cast<INT>(uWidth), static_cast<INT>(uHeight) };
+    WICRect rect{ 0 /* x-coordinate */, 0 /* y-coordinate */, static_cast<INT>(width), static_cast<INT>(height) };
 
     // Write the image data and commit
     THROW_IF_FAILED(wicFrameEncoder->WriteSource(wicbitmapSourceConverted.get(), &rect));
-
     THROW_IF_FAILED(wicFrameEncoder->Commit());
 }
 
@@ -124,7 +122,7 @@ winrt::com_ptr<IStream> GetStreamOfWICBitmapSource(
 void SaveImageWithWIC(
     winrt::com_ptr<IWICImagingFactory> const& wicImagingFactory,
     winrt::com_ptr<IWICBitmapSource> const& wicBitmapSource,
-    _In_ REFGUID guidContainerFormat,
+    GUID const& guidContainerFormat,
     winrt::com_ptr<IStream>& pStream)
 {
     winrt::com_ptr<IStream> spImageStream = GetStreamOfWICBitmapSource(wicImagingFactory, wicBitmapSource, guidContainerFormat, BITMAP_VERSION::VERSION1);
@@ -157,7 +155,7 @@ void WriteHIconToPngFile(wil::unique_hicon const& hIcon, _In_ PCWSTR pszFileName
     winrt::com_ptr<IStream> spStreamOut;
     THROW_IF_FAILED(SHCreateStreamOnFileEx(pszFileName, STGM_CREATE | STGM_WRITE | STGM_SHARE_DENY_WRITE, FILE_ATTRIBUTE_NORMAL, TRUE, nullptr, spStreamOut.put()));
 
-    STATSTG statstg;
+    STATSTG statstg{};
     THROW_IF_FAILED(spStream->Stat(&statstg, STATFLAG_NONAME));
 
     THROW_IF_FAILED(IStream_Reset(spStream.get()));

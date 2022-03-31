@@ -244,7 +244,6 @@ winrt::guid Microsoft::Windows::AppNotifications::Helpers::RegisterComActivatorG
     std::wstring registeredGuid;
     auto hr = GetActivatorGuid(registeredGuid);
 
-    wil::unique_hicon hIcon{};
     if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
     {
         // Create a GUID for the COM Activator
