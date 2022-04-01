@@ -11,10 +11,10 @@
 
 namespace Microsoft::Windows::AppNotifications::Helpers
 {
-    const std::wstring c_appIdentifierPath{ LR"(Software\Classes\AppUserModelId\)" };
-    const std::wstring c_clsIdPath{ LR"(Software\Classes\CLSID\)" };
-    const std::wstring c_quote{ LR"(")" };
-    const std::wstring c_notificationActivatedArgument{ L" ----AppNotificationActivated:" };
+    const PCWSTR c_appIdentifierPath{ LR"(Software\Classes\AppUserModelId\)" };
+    const PCWSTR c_clsIdPath{ LR"(Software\Classes\CLSID\)" };
+    const PCWSTR c_quote{ LR"(")" };
+    const PCWSTR c_notificationActivatedArgument{ L" ----AppNotificationActivated:" };
 
     inline const int GUID_LENGTH = 39; // GUID + '{' + '}' + '/0'
 
@@ -61,5 +61,5 @@ namespace Microsoft::Windows::AppNotifications::Helpers
 
     winrt::Microsoft::Windows::AppNotifications::AppNotification ToastNotificationFromToastProperties(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* properties);
 
-    std::wstring SetDisplayNameBasedOnProcessName();
+    std::wstring GetDisplayNameBasedOnProcessName();
 }
