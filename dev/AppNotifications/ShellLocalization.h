@@ -9,12 +9,9 @@
 
 namespace Microsoft::Windows::AppNotifications::ShellLocalization
 {
-    const std::wstring c_appIdentifierPath{ LR"(Software\Classes\AppUserModelId\)" };
-    const std::wstring c_quote{ LR"(")" };
-    const std::wstring c_backSlash{ LR"(\)" };
-    const std::wstring c_localMicrosoftFolder{ LR"(\Microsoft)" };
-    const std::wstring c_localWindowsAppSDKFolder{ LR"(\WindowsAppSDK)" };
-    const std::wstring c_pngExtension{ LR"(.png)" };
+    const PCWSTR c_localMicrosoftFolder{ LR"(Microsoft)" };
+    const PCWSTR c_localWindowsAppSDKFolder{ LR"(WindowsAppSDK)" };
+    const PCWSTR c_pngExtension{ LR"(.png)" };
 
     struct AppNotificationAssets {
         std::wstring displayName;
@@ -24,8 +21,6 @@ namespace Microsoft::Windows::AppNotifications::ShellLocalization
     HRESULT RetrieveAssetsFromProcess(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& assets) noexcept;
 
     HRESULT RetrieveAssetsFromShortcut(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& assets) noexcept;
-
-    HRESULT RetrieveDefaultAssets(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& assets) noexcept;
 
     HRESULT DeleteIconFromCache() noexcept;
 }

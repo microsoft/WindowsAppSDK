@@ -113,7 +113,9 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterComServer(wil::uniqu
 {
     wil::unique_hkey hKey;
     //subKey: Software\Classes\CLSID\{comActivatorGuidString}\LocalServer32
-    std::wstring subKey{ c_clsIdPath + clsid.get() + LR"(\LocalServer32)" };
+    std::wstring subKey{ c_clsIdPath };
+    subKey.append(clsid.get());
+    subKey.append(LR"(\LocalServer32)");
 
     THROW_IF_WIN32_ERROR(RegCreateKeyEx(
         HKEY_CURRENT_USER,
@@ -287,19 +289,25 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
         nullptr /* lpdwDisposition */));
 
     // Try the following techniques to retrieve display name and icon:
-    // 1. From the current process.
-    // 2. Based on the best app shortcut, using the FrameworkUdk.
-    // 3. Use the default assets.
+    // 1. Based on the best app shortcut, using the FrameworkUdk.
+    // 2. From the current process.
+    // 3. Set a default DisplayName, but leave empty the icon file path so Shell can set a default icon.
     Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets assets{};
 
     if (FAILED(Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromShortcut(assets)) &&
         FAILED(Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromProcess(assets)))
     {
-        THROW_IF_FAILED(Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveDefaultAssets(assets));
+        assets.displayName = GetDisplayNameBasedOnProcessName();
     }
 
     RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(assets.displayName.c_str()), REG_EXPAND_SZ, assets.displayName.size() * sizeof(wchar_t));
-    RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(assets.iconFilePath.c_str()), REG_EXPAND_SZ, assets.iconFilePath.size() * sizeof(wchar_t));
+
+    // If IconUri is empty, then Shell will render a default icon in AppNotifications.
+    if (!assets.iconFilePath.empty())
+    {
+        RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(assets.iconFilePath.c_str()), REG_EXPAND_SZ, assets.iconFilePath.size() * sizeof(wchar_t));
+    }
+
     RegisterValue(hKey, L"CustomActivator", reinterpret_cast<const BYTE*>(clsid.c_str()), REG_SZ, wil::guid_string_length * sizeof(wchar_t));
 }
 

@@ -223,7 +223,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             if (!AppModel::Identity::IsPackagedProcess())
             {
                 // If the app icon was inferred from process, then we should clean it up.
-                // Do not fail this function if such a file doesn't exist.
+                // Do not fail this function if such a file doesn't exist,
+                // which is the case if the icon was retrieved from shortcut or there is no IconUri in registry.
                 winrt::hresult deleteIconResult{ DeleteIconFromCache() };
                 THROW_HR_IF(deleteIconResult, FAILED(deleteIconResult) && deleteIconResult != HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
 

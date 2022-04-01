@@ -104,12 +104,10 @@ winrt::com_ptr<IStream> GetStreamOfWICBitmapSource(
     // Create encoder and initialize it
     winrt::com_ptr<IWICBitmapEncoder> wicEncoder;
     THROW_IF_FAILED(wicImagingFactory->CreateEncoder(guidContainerFormat, nullptr, wicEncoder.put()));
-
     THROW_IF_FAILED(wicEncoder->Initialize(spImageStream.get(), WICBitmapEncoderCacheOption::WICBitmapEncoderNoCache));
 
     // Add a single frame to the encoder with the Bitmap
     AddFrameToWICBitmap(wicImagingFactory, wicEncoder, wicBitmapSource, bitmapVersion);
-
     THROW_IF_FAILED(wicEncoder->Commit());
 
     // Seek the stream to the beginning and transfer
@@ -167,38 +165,39 @@ void WriteHIconToPngFile(wil::unique_hicon const& hIcon, _In_ PCWSTR pszFileName
     THROW_IF_FAILED(spStreamOut->Commit(STGC_DANGEROUSLYCOMMITMERELYTODISKCACHE));
 }
 
-HRESULT IsIconFileExtensionSupported(std::filesystem::path const& iconFilePath)
+bool IsIconFileExtensionSupported(std::filesystem::path const& iconFilePath)
 {
-    const auto fileExtension = iconFilePath.extension();
+    static PCWSTR c_supportedExtensions[]{ L".bmp", L".ico", L".jpg", L".png" };
 
-    std::string lowercaseFileExtension{ fileExtension.u8string() };
+    const auto fileExtension{ iconFilePath.extension() };
+    const auto extension{ fileExtension.c_str() };
+    for (auto supportedExtension : c_supportedExtensions)
+    {
+        if (CompareStringOrdinal(extension, -1, supportedExtension, -1, TRUE) == CSTR_EQUAL)
+        {
+            return true;
+        }
+    }
 
-    std::transform(lowercaseFileExtension.begin(), lowercaseFileExtension.end(), lowercaseFileExtension.begin(),
-        [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-
-    const bool isFileExtensionSupported =
-        lowercaseFileExtension == ".ico" || lowercaseFileExtension == ".bmp" || lowercaseFileExtension == ".jpg" || lowercaseFileExtension == ".png";
-
-    THROW_HR_IF(E_UNEXPECTED, isFileExtensionSupported);
-    return S_OK;
+    return false;
 }
 
-inline std::wstring RetrieveLocalFolderPath()
+inline std::path RetrieveLocalFolderPath()
 {
     wil::unique_cotaskmem_string localAppDataPath;
     THROW_IF_FAILED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0 /* flags */, nullptr /* access token handle */, &localAppDataPath));
 
     // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK
     std::path localFolderPath{ std::wstring(localAppDataPath.get()) +
-        Microsoft::Windows::AppNotifications::Helpers::c_localMicrosoftFolder +
-        Microsoft::Windows::AppNotifications::Helpers::c_localWindowsAppSDKFolder };
+        Microsoft::Windows::AppNotifications::ShellLocalization::c_localMicrosoftFolder +
+        Microsoft::Windows::AppNotifications::ShellLocalization::c_localWindowsAppSDKFolder };
 
     if (!std::exists(localFolderPath))
     {
         std::create_directory(localFolderPath);
     }
 
-    return std::wstring(localFolderPath.c_str());
+    return localFolderPath;
 }
 
 inline wil::unique_hicon RetrieveIconFromProcess()
@@ -220,7 +219,7 @@ HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsF
     std::wstring notificationAppId{ Microsoft::Windows::AppNotifications::Helpers::RetrieveNotificationAppId() };
 
     // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK\{AppGUID}.png
-    std::wstring iconFilePath{ RetrieveLocalFolderPath().c_str() + c_backSlash + notificationAppId + c_pngExtension };
+    auto iconFilePath{ RetrieveLocalFolderPath() / (notificationAppId + c_pngExtension) };
     WriteHIconToPngFile(hIcon, iconFilePath.c_str());
 
     assets.displayName = Microsoft::Windows::AppNotifications::Helpers::GetDisplayNameBasedOnProcessName();
@@ -233,29 +232,21 @@ HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsF
 }
 CATCH_RETURN()
 
-// Do nothing. This is just a placeholder while the UDK is ingested with the proper API.
 HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromShortcut(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& /*assets*/) noexcept
 {
+    // Do nothing for now. This is just a placeholder while we wait for the FrameworkUdk API
+    // to get icon file path from shortcut. This API is already implemented but not ready for consumption.
     // THROW_HR_IF_MSG(E_UNEXPECTED, IsIconFileExtensionSupported(iconFilePath));
 
     return E_NOTIMPL;
 }
-
-HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveDefaultAssets(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& assets) noexcept try
-{
-    assets.displayName = Microsoft::Windows::AppNotifications::Helpers::GetDisplayNameBasedOnProcessName();
-    assets.iconFilePath = L""; // No icon filepath for now. This is coming in a future FrameworkUdk ingestion.
-
-    return S_OK;
-}
-CATCH_RETURN()
 
 HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::DeleteIconFromCache() noexcept try
 {
     std::wstring notificationAppId{ Microsoft::Windows::AppNotifications::Helpers::RetrieveNotificationAppId() };
 
     // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK\{AppGUID}.png
-    std::wstring iconFilePath{ RetrieveLocalFolderPath().c_str() + c_backSlash + notificationAppId + c_pngExtension };
+    std::path iconFilePath{ RetrieveLocalFolderPath() / (notificationAppId + c_pngExtension) };
 
     // If DeleteFile returned FALSE, then deletion failed and we should return the corresponding error code.
     if (DeleteFile(iconFilePath.c_str()) == FALSE)
