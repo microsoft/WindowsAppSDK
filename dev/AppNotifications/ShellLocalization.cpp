@@ -113,7 +113,7 @@ winrt::com_ptr<IStream> GetStreamOfWICBitmapSource(
     THROW_IF_FAILED(wicEncoder->Commit());
 
     // Seek the stream to the beginning and transfer
-    static const LARGE_INTEGER lnBeginning = {};
+    const LARGE_INTEGER lnBeginning{};
     THROW_IF_FAILED(spImageStream->Seek(lnBeginning, STREAM_SEEK_SET, nullptr /* new seek pointer */));
 
     return spImageStream;
@@ -206,13 +206,9 @@ inline wil::unique_hicon RetrieveIconFromProcess()
     std::wstring processPath{};
     THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processPath));
 
-    // Extract the small icon from the first .ico, if failed extract the large icon.
-    // Small icon is good enough for an App Notification icon since higher quality doesn't really impact in a substantial way.
+    // Extract the Small icon as it is good enough for an App Notification icon since higher quality doesn't really impact in a substantial way.
     wil::unique_hicon hIcon{};
-    if (!ExtractIconExW(processPath.c_str(), 0 /* index */, nullptr /* Large icon */, &hIcon, 1))
-    {
-        THROW_HR_IF(E_FAIL, ExtractIconExW(processPath.c_str(), 0, &hIcon, nullptr /* Small Icon */, 1) == 0);
-    }
+    THROW_HR_IF(E_FAIL, ExtractIconExW(processPath.c_str(), 0 /* index for first resource */, nullptr /* Large Icon */, &hIcon, 1) == 0);
 
     return hIcon;
 }

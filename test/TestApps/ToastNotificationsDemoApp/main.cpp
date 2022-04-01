@@ -219,7 +219,7 @@ int main()
     std::cin.ignore();
 
     // Call Unregister so that COM can launch a new process for ToastInvokes after we terminate this process.
-    appNotificationManager.Unregister();
+    appNotificationManager.UnregisterAll();
     if (!isPackaged)
     {
         MddBootstrapShutdown();
