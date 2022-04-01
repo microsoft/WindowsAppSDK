@@ -23,9 +23,9 @@ namespace Microsoft::Windows::AppNotifications::ShellLocalization
 
     HRESULT RetrieveAssetsFromProcess(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& assets) noexcept;
 
-    HRESULT RetrieveAssetsFromShortcut(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& /*assets*/);
+    HRESULT RetrieveAssetsFromShortcut(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& assets) noexcept;
 
     HRESULT RetrieveDefaultAssets(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& assets) noexcept;
 
-    void DeleteIconFromCache() noexcept;
+    HRESULT DeleteIconFromCache() noexcept;
 }

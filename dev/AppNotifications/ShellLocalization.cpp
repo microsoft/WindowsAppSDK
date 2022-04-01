@@ -174,7 +174,7 @@ HRESULT IsIconFileExtensionSupported(std::filesystem::path const& iconFilePath)
     std::string lowercaseFileExtension{ fileExtension.u8string() };
 
     std::transform(lowercaseFileExtension.begin(), lowercaseFileExtension.end(), lowercaseFileExtension.begin(),
-        [](unsigned char c) { return std::tolower(c); });
+        [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
     const bool isFileExtensionSupported =
         lowercaseFileExtension == ".ico" || lowercaseFileExtension == ".bmp" || lowercaseFileExtension == ".jpg" || lowercaseFileExtension == ".png";
@@ -230,14 +230,15 @@ HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsF
     assets.displayName = Microsoft::Windows::AppNotifications::Helpers::GetDisplayNameBasedOnProcessName();
     assets.iconFilePath = iconFilePath;
 
-    // TODO: Clean up the icon file in case UnregisterAll wasn't called.
+    // TODO: In case we are caching icons from uninstalled apps who didn't call UnregisterAll,
+    // we should make an effort to clean them up in an opportunistic way.
 
     return S_OK;
 }
 CATCH_RETURN()
 
 // Do nothing. This is just a placeholder while the UDK is ingested with the proper API.
-HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromShortcut(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& /*assets*/)
+HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromShortcut(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& /*assets*/) noexcept
 {
     // THROW_HR_IF_MSG(E_UNEXPECTED, IsIconFileExtensionSupported(iconFilePath));
 
@@ -253,13 +254,19 @@ HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveDefault
 }
 CATCH_RETURN()
 
-void Microsoft::Windows::AppNotifications::ShellLocalization::DeleteIconFromCache() noexcept try
+HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::DeleteIconFromCache() noexcept try
 {
     std::wstring notificationAppId{ Microsoft::Windows::AppNotifications::Helpers::RetrieveNotificationAppId() };
 
     // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK\{AppGUID}.png
     std::wstring iconFilePath{ RetrieveLocalFolderPath().c_str() + c_backSlash + notificationAppId + c_pngExtension };
 
-    THROW_IF_WIN32_BOOL_FALSE(DeleteFile(iconFilePath.c_str()));
+    // If DeleteFile returned FALSE, then deletion failed and we should return the corresponding error code.
+    if (DeleteFile(iconFilePath.c_str()) == FALSE)
+    {
+        THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
+    }
+
+    return S_OK;
 }
-CATCH_LOG()
+CATCH_RETURN()
