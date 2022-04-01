@@ -81,6 +81,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IInspectable AppNotificationManager::Deserialize(winrt::Windows::Foundation::Uri const& /* uri */)
     {
+        // Return the args if they are available.
+        if (m_activatedEventArgs)
+        {
+            return m_activatedEventArgs;
+        }
+
         THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec));
         return m_activatedEventArgs;
     }
