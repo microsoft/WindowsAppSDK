@@ -302,10 +302,14 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
 
     RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(assets.displayName.c_str()), REG_EXPAND_SZ, assets.displayName.size() * sizeof(wchar_t));
 
-    // If IconUri is empty, then Shell will render a default icon in AppNotifications.
+    // If no icon is specified in the Registry, the OS will render a default icon for App Notifications.
     if (!assets.iconFilePath.empty())
     {
         RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(assets.iconFilePath.c_str()), REG_EXPAND_SZ, assets.iconFilePath.size() * sizeof(wchar_t));
+    }
+    else // clean any Icon URI from previous registrations
+    {
+        LOG_IF_WIN32_ERROR(RegDeleteValue(hKey.get(), L"IconUri")); // Do not throw, since this is a best effort action.
     }
 
     RegisterValue(hKey, L"CustomActivator", reinterpret_cast<const BYTE*>(clsid.c_str()), REG_SZ, wil::guid_string_length * sizeof(wchar_t));
