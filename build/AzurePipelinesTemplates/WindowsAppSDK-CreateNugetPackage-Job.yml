@@ -62,7 +62,7 @@ jobs:
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.Foundation.props" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.Foundation.props"
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.Bootstrap.CS.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.Bootstrap.CS.targets"
         Copy-Item -Path "$targetsFilePath\WindowsAppSDK-Nuget-Native.Bootstrap.targets" -Destination "$fullpackagePath\build\native\WindowsAppSDK-Nuget-Native.Bootstrap.targets"
-        Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.MddCommon.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.MddCommon.targets"
+        Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.BootstrapCommon.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.BootstrapCommon.targets"
 
         Copy-Item -Path "$targetsFilePath\AppxManifest.xml" -Destination "$fullpackagePath\AppxManifest.xml"
         $manifestPath = $fullpackagePath+'\manifests';
@@ -70,7 +70,7 @@ jobs:
         $xslt = New-Object System.Xml.Xsl.XslCompiledTransform;
         $xslt.Load('build\TransformAppxManifest.xslt');
         $xslt.Transform($fullpackagePath+'\AppxManifest.xml', $manifestPath+'\Microsoft.WindowsAppSdk.Foundation.manifest');
-  
+
   # - script: |
   #     dir /s $(Build.SourcesDirectory)
 
