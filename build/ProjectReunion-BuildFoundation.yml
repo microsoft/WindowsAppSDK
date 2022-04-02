@@ -81,7 +81,7 @@ jobs:
       nuGetServiceConnections: 'TelemetryInternal'
 
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'NuGet restore of packages'
+    displayName: 'NuGet restore of package'
     inputs:
       command: 'custom'
       arguments: 'restore ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages'
