@@ -95,7 +95,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implem
     {
         const auto rank{ MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT };
         const auto mddOptions{ MddAddPackageDependencyOptions::None };
-        wil::unique_package_dependency_context packageDependencyContext;
+        wil::unique_mdd_package_dependency_context packageDependencyContext;
         winrt::check_hresult(MddAddPackageDependency(m_id.c_str(), rank, mddOptions, &packageDependencyContext, nullptr));
         auto context{ winrt::make<implementation::PackageDependencyContext>(packageDependencyContext.get()) };
         packageDependencyContext.release();
@@ -106,7 +106,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implem
     {
         const auto rank{ options.Rank() };
         const auto mddOptions{ ::Microsoft::Windows::ApplicationModel::DynamicDependency::ToAddOptions(options) };
-        wil::unique_package_dependency_context packageDependencyContext;
+        wil::unique_mdd_package_dependency_context packageDependencyContext;
         winrt::check_hresult(MddAddPackageDependency(m_id.c_str(), rank, mddOptions, &packageDependencyContext, nullptr));
         auto context{ winrt::make<implementation::PackageDependencyContext>(packageDependencyContext.get()) };
         packageDependencyContext.release();

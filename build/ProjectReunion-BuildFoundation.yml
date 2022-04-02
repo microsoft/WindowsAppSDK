@@ -16,7 +16,9 @@ parameters:
   - name: "WindowsAppRuntimeInsightsSourceDirectory"
     type: string
     default: $(Build.SourcesDirectory)\dev\WindowsAppRuntime_Insights
-
+  - name: "GenerateSBOM"
+    type: boolean
+    default: False
 jobs:
 - job: CredScan
   pool: $(ProjectReunionBuildPool)
@@ -111,6 +113,8 @@ jobs:
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
+    parameters:
+      GenerateSBOM: true
 
   - task: BinSkim@3
     inputs:
@@ -199,10 +203,11 @@ jobs:
       TargetFolder: '$(Build.ArtifactStagingDirectory)\windowsappsdk_binaries\$(buildPlatform)\$(buildConfiguration)'
       flattenFolders: false
 
-  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-    displayName: 'SBOM Generation Task'
-    inputs:
-      BuildDropPath: '$(Build.ArtifactStagingDirectory)\windowsappsdk_binaries\$(buildPlatform)\$(buildConfiguration)'
+  - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
+    - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+      displayName: 'SBOM Generation Task'
+      inputs:
+        BuildDropPath: '$(Build.ArtifactStagingDirectory)\windowsappsdk_binaries\$(buildPlatform)\$(buildConfiguration)'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: windowsappsdk_binaries'
@@ -244,6 +249,7 @@ jobs:
   - template: build-mrt.yml
     parameters:
       buildJobName: 'BuildMRTCore'
+      GenerateSBOM: true
 
   - task: BinSkim@3
     inputs:

@@ -12,9 +12,5 @@
         <name>Feature_PushNotifications</name>
         <description>Push Notifications for the WindowsAppRuntime</description>
         <state>AlwaysEnabled</state>
-        <alwaysDisabledChannelTokens>
-            <channelToken>Preview</channelToken>
-            <channelToken>Stable</channelToken>
-        </alwaysDisabledChannelTokens>
     </feature>
 </features>

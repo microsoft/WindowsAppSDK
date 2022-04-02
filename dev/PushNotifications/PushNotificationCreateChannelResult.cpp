@@ -3,7 +3,6 @@
 
 #include "pch.h"
 #include "PushNotificationCreateChannelResult.h"
-#include <TerminalVelocityFeatures-PushNotifications.h>
 #include "Microsoft.Windows.PushNotifications.PushNotificationCreateChannelResult.g.cpp"
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
@@ -13,7 +12,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         m_extendedError(extendedError),
         m_status(status)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
     }
 
     PushNotificationChannel PushNotificationCreateChannelResult::Channel()

@@ -11,6 +11,21 @@
 /// MSIX Dynamic Dependency HRESULT: Windows App Runtime is not in the package graph.
 #define MDD_E_WINDOWSAPPRUNTIME_NOT_IN_PACKAGE_GRAPH    _HRESULT_TYPEDEF_(0x80040001L)
 
+/// MSIX Dynamic Dependency: Bootstrap initialization is scanning for an applicable DynamicDependencyLifetimeManager (DDLM) package
+#define MDD_E_BOOTSTRAP_INITIALIZE_SCAN_FOR_DDLM        _HRESULT_TYPEDEF_(0x80040010L)
+
+/// MSIX Dynamic Dependency: Bootstrap initialization found a DynamicDependencyLifetimeManager (DDLM) but doesn't match the criteria
+#define MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_NO_MATCH   _HRESULT_TYPEDEF_(0x80040011L)
+
+/// MSIX Dynamic Dependency: Bootstrap initialization found a DynamicDependencyLifetimeManager (DDLM) that does match the criteria
+#define MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_MATCH      _HRESULT_TYPEDEF_(0x80040012L)
+
+/// MSIX Dynamic Dependency: Bootstrap initialization found an applicable DynamicDependencyLifetimeManager (DDLM) best matching the criteria
+#define MDD_E_BOOTSTRAP_INITIALIZE_DDLM_FOUND           _HRESULT_TYPEDEF_(0x80040013L)
+
+/// MSIX Dynamic Dependency: Bootstrap initialization request is incompatible with current Bootstrap initialization state.
+#define MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE         _HRESULT_TYPEDEF_(0x80040014L)
+
 enum class MddCreatePackageDependencyOptions : uint32_t
 {
     None = 0,

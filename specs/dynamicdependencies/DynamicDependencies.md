@@ -1268,6 +1268,11 @@ This header contains the Bootstrap API
 /// for use by the current process. If multiple packages meet the criteria the best
 /// candidate is selected.
 ///
+/// If called multiple times the parameters must be compatible with the framework package
+/// resolved by the first initialization call (i.e. the framework package currently in use).
+/// If the request is not compatible with the framework package currently in use
+/// the API fails and an error is returned.
+///
 /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
 /// @param versionTag version tag (if any), e.g. "prerelease".
 /// @param minVersion the minimum version to use
@@ -1322,6 +1327,11 @@ namespace DynamicDependency::Bootstrap
     /// for use by the current process. If multiple packages meet the criteria the best
     /// candidate is selected.
     ///
+    /// If called multiple times the parameters must be compatible with the framework package
+    /// resolved by the first initialization call (i.e. the framework package currently in use).
+    /// If the request is not compatible with the framework package currently in use
+    /// the API fails.
+    ///
     /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
     /// @param versionTag version tag (if any), e.g. "preview1".
     /// @param minVersion the minimum version to use
@@ -1342,6 +1352,11 @@ namespace DynamicDependency::Bootstrap
     /// for use by the current process. If multiple packages meet the criteria the best
     /// candidate is selected.
     ///
+    /// If called multiple times the parameters must be compatible with the framework package
+    /// resolved by the first initialization call (i.e. the framework package currently in use).
+    /// If the request is not compatible with the framework package currently in use
+    /// the API fails and an exception is thrown.
+    ///
     /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
     /// @param versionTag version tag (if any), e.g. "preview1".
     /// @param minVersion the minimum version to use
@@ -1361,6 +1376,11 @@ namespace DynamicDependency::Bootstrap
     /// Find a Windows App SDK framework package meeting the criteria and make it available
     /// for use by the current process. If multiple packages meet the criteria the best
     /// candidate is selected.
+    ///
+    /// If called multiple times the parameters must be compatible with the framework package
+    /// resolved by the first initialization call (i.e. the framework package currently in use).
+    /// If the request is not compatible with the framework package currently in use
+    /// the API fails and an error is returned.
     ///
     /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
     /// @param versionTag version tag (if any), e.g. "preview1".

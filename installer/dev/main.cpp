@@ -8,16 +8,24 @@
 
 using namespace winrt;
 
+using namespace WindowsAppRuntimeInstaller::Console;
+
 int wmain(int argc, wchar_t *argv[])
 {
     init_apartment();
 
+    // Set a process-wide callback function for WIL to call each time it logs a failure.
+    wil::SetResultLoggingCallback(wilResultLoggingCallback);
+
     auto options{ WindowsAppRuntimeInstaller::Options::InstallPackages |
                   WindowsAppRuntimeInstaller::Options::InstallLicenses };
+
+    std::wstringstream args{};
 
     for (int i = 1; i < argc; ++i)
     {
         auto arg = std::wstring_view(argv[i]);
+
         if (arg == L"--dry-run")
         {
             WI_SetFlag(options, WindowsAppRuntimeInstaller::Options::DryRun);
@@ -46,17 +54,43 @@ int wmain(int argc, wchar_t *argv[])
         {
             WI_ClearFlag(options, WindowsAppRuntimeInstaller::Options::Quiet);
         }
+        else if ((arg == L"-f") || (arg == L"--force"))
+        {
+            WI_SetFlag(options, WindowsAppRuntimeInstaller::Options::ForceDeployment);
+        }
+        else if ((arg == L"-f-") || (arg == L"--force-"))
+        {
+            WI_ClearFlag(options, WindowsAppRuntimeInstaller::Options::ForceDeployment);
+        }
         else if ((arg == L"-?") || (arg == L"--help"))
         {
-            ShowHelp();
+            DisplayHelp();
+            return 1;
+        }
+        else if ((arg == L"--info"))
+        {
+            DisplayInfo();
             return 0;
         }
         else
         {
             std::wcerr << "Unknown argument: " << arg.data() << std::endl;
-            ShowHelp();
+            DisplayHelp();
             return ERROR_BAD_ARGUMENTS;
         }
+
+        // Capture valid arguments only
+        args << argv[i] << " ";
+    }
+
+    auto& installActivityContext{ WindowsAppRuntimeInstaller::InstallActivity::Context::Get() };
+
+    installActivityContext.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(), static_cast<UINT32>(options)));
+    args.clear();
+
+    if (!Security::IntegrityLevel::IsElevated())
+    {
+        std::wcout << std::endl << "INFO: Provisioning of WindowsAppSDK packages will be skipped as it requires elevation." << std::endl;
     }
 
     const HRESULT deployPackagesResult{ WindowsAppRuntimeInstaller::Deploy(options) };
@@ -65,13 +99,28 @@ int wmain(int argc, wchar_t *argv[])
         if (SUCCEEDED(deployPackagesResult))
         {
             std::wcout << "All install operations successful." << std::endl;
+
+            installActivityContext.GetActivity().StopWithResult(
+                deployPackagesResult,
+                static_cast<UINT32>(WindowsAppRuntimeInstaller::InstallActivity::InstallStage::None),
+                static_cast<PCWSTR>(nullptr),
+                S_OK,
+                static_cast<PCWSTR>(nullptr),
+                GUID_NULL);
         }
         else
         {
             std::wcerr << "One or more install operations failed. Result: 0x" << std::hex << deployPackagesResult << std::endl;
+
+            installActivityContext.GetActivity().StopWithResult(
+                deployPackagesResult,
+                static_cast<UINT32>(installActivityContext.GetInstallStage()),
+                installActivityContext.GetCurrentResourceId().c_str(),
+                installActivityContext.GetDeploymentErrorExtendedHResult(),
+                installActivityContext.GetDeploymentErrorText().c_str(),
+                installActivityContext.GetDeploymentErrorActivityId());
         }
     }
 
     return deployPackagesResult;
 }
-
