@@ -1,9 +1,14 @@
 # Hybrid CRT
 
-Windows App SDK runs in diverse environments and contexts (i.e. all of them ;-) Much of the runtime
-is implemented in C++ and thus dependent on the Standard C/C++ Runtime aka the CRT. To ensure a
-highly reliable and friction-less experience (for developers as well as users) all DLLs and EXEs
-containing C/C++ code are built using the 'hybrid CRT' technique.
+The Windows App SDK runs in diverse environments and contexts. Much of the Windows App Runtime
+is implemented in C++ and is thus dependent on the Standard C/C++ Runtime (the CRT). 
+As of versions 1.0.2+ and 1.1+, all Windows App SDK DLLs and EXEs containing C/C++ code are built 
+using the 'Hybrid CRT' technique. This frees developers from the burden of installing the CRT 
+redistributables on end user devices - whether 
+[Microsoft.VCLibs framework packages](https://docs.microsoft.com/en-us/troubleshoot/developer/visualstudio/cpp/libraries/c-runtime-packages-desktop-bridge) 
+for packaged apps, or the 
+[VCRedist](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170) 
+for unpackaged apps. 
 
 ## What is the 'Hybrid CRT'?
 
@@ -126,6 +131,16 @@ all projects in the repository via this statement:
 ```
 
 This applies to all projects in the repository (product, test, ...).
+
+### Hybrid CRT C/C++ Apps
+
+For their own CRT usage, most C/C++ app developers will continue to link either statically, 
+with no redistribution requirements, or dynamically, requiring either a Microsoft.VCLibs 
+dependency (for packaged apps) or a VCRedist dependency (for unpackaged apps). 
+For unpackaged self-contained C/C++ Windows App SDK apps, some developers may also find 
+Hybrid CRT linkage useful for enabling xcopy deployment. For these apps, the Directory.Build.*
+files described above can be included in the project. For apps that also include C++/CX code,
+additional considerations are described below.
 
 ## C++/CX Special Considerations
 
