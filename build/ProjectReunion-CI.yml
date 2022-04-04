@@ -7,10 +7,21 @@ variables:
   value: $(Build.SourcesDirectory)\BuildOutput
 
 jobs:
-- job: CredScan
+- job: PreChecks
   pool:
     vmImage: 'windows-2019'
   steps:
+  - task: PowerShell@2
+    displayName: 'Smoke test props and targets'
+    inputs:
+      targetType: 'inline'
+      script: |
+        $targetPaths = $(Build.SourcesDirectory)\build\NuSpecs\*.targets
+        $propPaths = $(Build.SourcesDirectory)\build\NuSpecs\*.props
+        Get-ChildItem $targetPaths | ForEach-Object { $_.Name; [xml](Get-Content $_) | Out-Null }
+        Get-ChildItem $propPaths | ForEach-Object { $_.Name; [xml](Get-Content $_) | Out-Null }
+      failOnStderr: true
+
   # Scans the root source folder for security vulnerability
   - task: CredScan@2
     inputs:
