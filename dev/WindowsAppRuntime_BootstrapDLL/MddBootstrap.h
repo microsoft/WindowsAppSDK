@@ -197,7 +197,7 @@ namespace DynamicDependency::Bootstrap
     ///
     /// #include <iostream>
     ///
-    /// using MddBootstrap = Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap;
+    /// namespace MddBootstrap { using namespace ::Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap; }
     ///
     /// int main()
     /// {
@@ -248,7 +248,7 @@ namespace DynamicDependency::Bootstrap
     ///
     /// #include <iostream>
     ///
-    /// using MddBootstrap = MddBootstrap;
+    /// namespace MddBootstrap { using namespace ::Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap; }
     ///
     /// int main()
     /// {
@@ -300,7 +300,7 @@ namespace DynamicDependency::Bootstrap
     ///
     /// #include <iostream>
     ///
-    /// using MddBootstrap = Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap;
+    /// namespace MddBootstrap { using namespace ::Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap; }
     ///
     /// int main()
     /// {
