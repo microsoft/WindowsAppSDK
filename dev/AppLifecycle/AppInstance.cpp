@@ -582,11 +582,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         // to get an 'open' instead of a 'create' due to it already existing.
         // try_create returns true for a named mutex that already exists
         // and so we can't rely on try_create and have to explicitly check GetLastError().
-        m_keyCreationMutex.create(mutexName.c_str(), 0, MUTEX_ALL_ACCESS);
+        wil::unique_mutex keyCreationMutex;
+        keyCreationMutex.create(mutexName.c_str(), 0, MUTEX_ALL_ACCESS);
 
         bool currentIsKeyOwner = (GetLastError() != ERROR_ALREADY_EXISTS);
         if (currentIsKeyOwner)
         {
+            m_keyCreationMutex = std::move(keyCreationMutex);
             m_key.Resize((key.length() + 1) * sizeof(key.data()[0]));
             THROW_IF_FAILED(StringCchCopy(m_key.Get(), (m_key.Size() / sizeof(wchar_t)), key.c_str()));
         }
