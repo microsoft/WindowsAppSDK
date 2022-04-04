@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <PropertyGroup>
-        <DefineConstants
+        <DefineConstants>
         <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_Default)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_DEFAULT</DefineConstants>
         <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_None)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_NONE</DefineConstants>
         <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnError_DebugBreak)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK</DefineConstants>
