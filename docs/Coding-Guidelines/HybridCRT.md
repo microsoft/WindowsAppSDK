@@ -5,21 +5,21 @@ is implemented in C++ and is thus dependent on the Standard C/C++ Runtime (the C
 As of versions 1.0.2+ and 1.1+, all Windows App SDK DLLs and EXEs containing C/C++ code are built 
 using the 'Hybrid CRT' technique. This frees developers from the burden of installing the CRT 
 redistributables on end user devices - whether 
-[Microsoft.VCLibs framework packages](https://docs.microsoft.com/en-us/troubleshoot/developer/visualstudio/cpp/libraries/c-runtime-packages-desktop-bridge) 
+[Microsoft.VCLibs framework packages](https://docs.microsoft.com/troubleshoot/developer/visualstudio/cpp/libraries/c-runtime-packages-desktop-bridge) 
 for packaged apps, or the 
-[VCRedist](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170) 
+[VCRedist](https://docs.microsoft.com/cpp/windows/latest-supported-vc-redist?view=msvc-170) 
 for unpackaged apps. 
 
 ## What is the 'Hybrid CRT'?
 
 The 'Hybrid CRT' is a technique using the
-[Universal CRT](https://docs.microsoft.com/en-us/cpp/windows/universal-crt-deployment?view=msvc-160)
+[Universal CRT](https://docs.microsoft.com/cpp/windows/universal-crt-deployment?view=msvc-160)
 AND the static CRT to get functional coverage without the overhead of the static CRT or the external
 dependency of the dynamic CRT.
 
 Visual Studio offers the CRT in 2 forms: DLLs needed at runtime (dynamic) and static
 libraries linked into PE files (static). These are controlled via
-[compiler options](https://docs.microsoft.com/en-us/cpp/build/reference/md-mt-ld-use-run-time-library?view=msvc-160)
+[compiler options](https://docs.microsoft.com/cpp/build/reference/md-mt-ld-use-run-time-library?view=msvc-160)
 
 * /MD - Dynamic, non-debug
 * /MDd - Dynamic, debug
@@ -36,7 +36,7 @@ runtime at the cost of increased size of every PE file in Windows App SDK. The c
 on the symbols needed but 1M+ is common.
 
 Windows includes the
-[Universal CRT](https://docs.microsoft.com/en-us/cpp/windows/universal-crt-deployment?view=msvc-160)
+[Universal CRT](https://docs.microsoft.com/cpp/windows/universal-crt-deployment?view=msvc-160)
 (aka UCRT) as system binaries. The UCRT is available on all platforms supported by Windows App SDK
 (and older too). However the UCRT only provides a subset of the CRT (`malloc`, `fopen`, etc what's
 generally thought of as the Standard C Library, provided via a stable ABI). Visual Studio's
@@ -59,10 +59,9 @@ Windows App SDK uses the hybrid CRT for all PE files.
 
 TL;DR Do nothing and all projects use it. If you create a new *.vcxproj delete any `<RuntimeLibrary>` tags.
 
-Windows App SDK defines the rules for Visual Studio in
-[https://github.com/microsoft/WindowsAppSDK/HybridCRT.props](https://github.com/microsoft/WindowsAppSDK/blob/main/HybridCRT.props).
+Windows App SDK defines the rules for Visual Studio in [HybridCRT.props](https://github.com/microsoft/WindowsAppSDK/blob/main/HybridCRT.props).
 This is imported by
-[Directory.Build.props](https://github.com/microsoft/WindowsAppSDK/Directory.Build.props) so all
+[Directory.Build.props](https://github.com/microsoft/WindowsAppSDK/blob/main/Directory.Build.props) so all
 projects in the directory tree get this support.
 
 If new projects are created DO NOT specify `<RuntimeLibrary>` in *.vcxproj as that's unnecessary and
@@ -120,7 +119,7 @@ The steps involved:
 
 ### Directory.Build.props
 
-[Directory.Build.props](https://github.com/microsoft/WindowsAppSDK/Directory.Build.props) in the
+[Directory.Build.props](https://github.com/microsoft/WindowsAppSDK/blob/main/Directory.Build.props) in the
 repository root imports
 [HybridCRT.props](https://github.com/microsoft/WindowsAppSDK/blob/main/HybridCRT.props) to apply to
 all projects in the repository via this statement:
