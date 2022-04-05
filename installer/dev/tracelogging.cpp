@@ -8,7 +8,20 @@
 
 using namespace WindowsAppRuntimeInstaller::InstallActivity;
 
-// A process-wide callback function for WIL to call each time it logs a failure.
+#define InstallActivity_ExceptionFailFast_StopWithResult() \
+installActivityContext.GetActivity().StopWithResult( \
+    failure.hr,\
+    static_cast<UINT32>(failure.type),\
+    failure.pszFile,\
+    failure.uLineNumber,\
+    failure.pszMessage,\
+    static_cast<UINT32>(installActivityContext.GetInstallStage()),\
+    installActivityContext.GetCurrentResourceId().c_str(),\
+    installActivityContext.GetDeploymentErrorExtendedHResult(),\
+    installActivityContext.GetDeploymentErrorText().c_str(),\
+    installActivityContext.GetDeploymentErrorActivityId())
+
+// A process-wide callback function for WIL Error Handlers
 void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcept
 {
     if (WindowsAppRuntimeInstaller_TraceLogger::IsEnabled())
@@ -31,7 +44,7 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                         WindowsAppRuntimeInstaller_TraceLoggingWString(installActivityContext.GetCurrentResourceId(), "currentPackage"),
                         _GENERIC_PARTB_FIELDS_ENABLED,
                         TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
-                        TraceLoggingKeyword(MICROSOFT_KEYWORD_MEASURES));
+                        TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
                 }
                 else if (installActivityContext.GetInstallStage() == InstallStage::RestartPushNotificationsLRP)
                 {
@@ -40,7 +53,11 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                         "RestartPushNotificationsLRPFailed",
                         _GENERIC_PARTB_FIELDS_ENABLED,
                         TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
-                        TraceLoggingKeyword(MICROSOFT_KEYWORD_MEASURES));
+                        TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA));
+                }
+                else
+                {
+                    WindowsAppRuntimeInstaller_WriteEventWithActivity("FailureLog");
                 }
                 break;
             }
@@ -51,6 +68,9 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                     TraceLoggingCountedWideString(
                         installActivityContext.GetCurrentResourceId().c_str(),
                         static_cast<ULONG>(installActivityContext.GetCurrentResourceId().size()), "currentResource"));
+
+                InstallActivity_ExceptionFailFast_StopWithResult();
+
                 break;
             }
             case wil::FailureType::FailFast:
@@ -60,10 +80,23 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                     TraceLoggingCountedWideString(
                         installActivityContext.GetCurrentResourceId().c_str(),
                         static_cast<ULONG>(installActivityContext.GetCurrentResourceId().size()), "currentResource"));
+
+                InstallActivity_ExceptionFailFast_StopWithResult();
+
+                break;
+            }
+            case wil::FailureType::Return:
+            {
+                // THROW_*** error handling combined with CATCH_RETURN in the code may log the same failure twice.
+                // That's ok and we can live with that redundancy but don't want to lose failure info from RETURN_*** wil macros.
+                WindowsAppRuntimeInstaller_WriteEventWithActivity("FailureReturn");
+
+                // Don't stop the Install activity here. Instead, give the Installer main a chance to Stop the Activity before returning error to the caller.
+                // Hence, save the wil failure info here for later use.
+                installActivityContext.SetLastFailure(failure);
                 break;
             }
             default:
-                // Exceptions will be followed by Returns due to try...CATCH_RETURN() usage. Hence, avoid logging twice by ignoring wil::FailureType::Return
                 break;
             }
         }

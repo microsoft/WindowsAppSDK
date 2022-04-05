@@ -21,15 +21,19 @@
     <Midl Include="$(MSBuildThisFileDirectory)Deployment.idl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)DeploymentTraceLogging.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeploymentInitializeOptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeploymentManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeploymentResult.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DeploymentActivityContext.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageDefinitions.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentTraceLogging.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentInitializeOptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentResult.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentActivityContext.cpp" />
   </ItemGroup>
   <ItemGroup>
     <PublicHeaders Include="$(MSBuildThisFileDirectory)..\common\TerminalVelocityFeatures-DeploymentAPI.h" />

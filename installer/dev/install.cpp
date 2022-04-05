@@ -300,16 +300,17 @@ namespace WindowsAppRuntimeInstaller
     }
     CATCH_RETURN()
 
-    // RestartPushNotificationsLRP is best effort and non-blocking to Installer functionality
+    // RestartPushNotificationsLRP is best effort and non-blocking to Installer functionality.
+    // Any failures in this helper method will be logged in Telemetry but will not return error to the caller.
     void RestartPushNotificationsLRP()
     {
         WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetInstallStage(WindowsAppRuntimeInstaller::InstallActivity::InstallStage::RestartPushNotificationsLRP);
 
         IID pushNotificationsIMPL_CLSID;
-        THROW_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_IMPL_CLSID_WSTRING, &pushNotificationsIMPL_CLSID));
+        LOG_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_IMPL_CLSID_WSTRING, &pushNotificationsIMPL_CLSID));
 
         IID pushNotificationsLRP_IID;
-        THROW_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_LRP_CLSID_WSTRING, &pushNotificationsLRP_IID));
+        LOG_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_LRP_CLSID_WSTRING, &pushNotificationsLRP_IID));
 
         wil::com_ptr<::IUnknown> pNotificationsLRP{};
 
@@ -329,7 +330,7 @@ namespace WindowsAppRuntimeInstaller
             }
             retries++;
         }
-        // wil call back is setup to log telemetry event for any failure in restartign Notifications LRP
+        // wil call back is setup to log telemetry event for any failure in restarting Notifications LRP
         LOG_IF_FAILED_MSG(hr, "Restarting Push Notifications LRP failed after 3 attempts.");
     }
 
@@ -382,13 +383,14 @@ namespace WindowsAppRuntimeInstaller
             {
                 WindowsAppRuntimeInstaller::InstallActivity::Context::Get().Reset();
                 DeployPackageFromResource(package, options);
-            }
-        }
 
-        // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
-        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment))
-        {
-            RestartPushNotificationsLRP();
+                // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
+                if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment) &&
+                    CompareStringOrdinal(package.id.c_str(), package.id.size() - 3, WAR_SINGLETON_X86_ID, package.id.size() - 3, TRUE) == CSTR_EQUAL)
+                {
+                    RestartPushNotificationsLRP();
+                }
+            }
         }
 
         return S_OK;

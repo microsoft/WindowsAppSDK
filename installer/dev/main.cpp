@@ -85,10 +85,11 @@ int wmain(int argc, wchar_t *argv[])
 
     auto& installActivityContext{ WindowsAppRuntimeInstaller::InstallActivity::Context::Get() };
 
-    installActivityContext.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(), static_cast<UINT32>(options)));
+    bool isElevated = Security::IntegrityLevel::IsElevated();
+    installActivityContext.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(), static_cast<UINT32>(options), isElevated));
     args.clear();
 
-    if (!Security::IntegrityLevel::IsElevated())
+    if (!isElevated)
     {
         std::wcout << std::endl << "INFO: Provisioning of WindowsAppSDK packages will be skipped as it requires elevation." << std::endl;
     }
@@ -102,6 +103,10 @@ int wmain(int argc, wchar_t *argv[])
 
             installActivityContext.GetActivity().StopWithResult(
                 deployPackagesResult,
+                static_cast <UINT32>(0),
+                static_cast<PCSTR>(nullptr),
+                static_cast <unsigned int>(0),
+                static_cast<PCWSTR>(nullptr),
                 static_cast<UINT32>(WindowsAppRuntimeInstaller::InstallActivity::InstallStage::None),
                 static_cast<PCWSTR>(nullptr),
                 S_OK,
@@ -114,6 +119,10 @@ int wmain(int argc, wchar_t *argv[])
 
             installActivityContext.GetActivity().StopWithResult(
                 deployPackagesResult,
+                static_cast<UINT32>(installActivityContext.GetLastFailure().type),
+                installActivityContext.GetLastFailure().file.c_str(),
+                installActivityContext.GetLastFailure().lineNumer,
+                installActivityContext.GetLastFailure().message.c_str(),
                 static_cast<UINT32>(installActivityContext.GetInstallStage()),
                 installActivityContext.GetCurrentResourceId().c_str(),
                 installActivityContext.GetDeploymentErrorExtendedHResult(),
