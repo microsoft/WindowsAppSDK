@@ -81,8 +81,7 @@
       <ConformanceMode>true</ConformanceMode>
       <UseFullPaths>true</UseFullPaths>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="$(WindowsAppSDKBuildPipeline) == '1'">$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="$(WindowsAppSDKBuildPipeline) != '1'">$(RepoRoot)\test\DynamicDependency\Test_BootstrapAutoInitialize\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RepoRoot)\test\DynamicDependency\Test_BootstrapAutoInitialize\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

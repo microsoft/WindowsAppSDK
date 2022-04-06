@@ -86,8 +86,7 @@
       <PreprocessorDefinitions>MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONNOMATCH_SHOWUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions>MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONPACKAGEIDENTITY_NOOP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="$(WindowsAppSDKBuildPipeline) == '1'">$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="$(WindowsAppSDKBuildPipeline) != '1'">$(RepoRoot)\test\DynamicDependency\Test_BootstrapAutoInitialize\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RepoRoot)\test\DynamicDependency\Test_BootstrapAutoInitialize\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
