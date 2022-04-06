@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+// NOTE: This is a representative copy as shipped by the final product. Actual values are gibberish not relevant
+
 #ifndef __WINDOWSAPPSDK_VERSIONINFO_H__
 #define __WINDOWSAPPSDK_VERSIONINFO_H__
 

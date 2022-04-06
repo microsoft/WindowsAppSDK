@@ -319,7 +319,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "dev\Common\Common
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test_BootstrapAutoInitialize", "Test_BootstrapAutoInitialize", "{33609C47-60F4-48ED-AB2C-83A89C17255F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test_BootstrapAutoInitialize_CPP_Default", "test\DynamicDependency\Test_BootstrapAutoInitialize\Test_BootstrapAutoInitialize_CPP_Default\Test_BootstrapAutoInitialize_CPP_Default.vcxproj", "{53E3E9A7-11BE-4BBC-981F-AF98A1B00617}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test_BootstrapAutoInitialize_CPP_Default", "test\DynamicDependency\Test_BootstrapAutoInitialize\CPP\Test_BootstrapAutoInitialize_CPP_Default\Test_BootstrapAutoInitialize_CPP_Default.vcxproj", "{53E3E9A7-11BE-4BBC-981F-AF98A1B00617}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CPP", "CPP", "{A05C260F-877D-49C2-968A-164E5A904422}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -1311,7 +1313,8 @@ Global
 		{0419CA2B-5ED1-49F0-B70B-5F470A15D3D0} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{8828053C-D6EC-4744-8624-F8C676C2D4DF} = {0419CA2B-5ED1-49F0-B70B-5F470A15D3D0}
 		{33609C47-60F4-48ED-AB2C-83A89C17255F} = {17B1F036-8FC3-49E6-9464-0C1F96CEAEB9}
-		{53E3E9A7-11BE-4BBC-981F-AF98A1B00617} = {33609C47-60F4-48ED-AB2C-83A89C17255F}
+		{53E3E9A7-11BE-4BBC-981F-AF98A1B00617} = {A05C260F-877D-49C2-968A-164E5A904422}
+		{A05C260F-877D-49C2-968A-164E5A904422} = {33609C47-60F4-48ED-AB2C-83A89C17255F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}

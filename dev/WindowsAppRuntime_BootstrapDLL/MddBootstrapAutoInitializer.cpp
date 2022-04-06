@@ -72,7 +72,7 @@ namespace Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap
             PCWSTR c_versionTag{ WINDOWSAPPSDK_RELEASE_VERSION_TAG_W };
             const PACKAGE_VERSION c_minVersion{ WINDOWSAPPSDK_RUNTIME_VERSION_UINT64 };
             const auto c_options{ Options() };
-            const HRESULT hr{ ::MddBootstrapInitialize2(c_majorMinorVersion, c_versionTag, c_minVersion, c_options); };
+            const HRESULT hr{ ::MddBootstrapInitialize2(c_majorMinorVersion, c_versionTag, c_minVersion, c_options) };
             if (FAILED(hr))
             {
                 exit(hr);
