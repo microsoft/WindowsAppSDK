@@ -17,7 +17,7 @@ For more details see:
     corresponding client.
 
 The below diagram is an illustration of the overall Push Flow that we have today:
-![Legacy Flow For Windows App SDK](Legacy.png)
+![Legacy Flow For Windows App SDK](Legacy.PNG)
 
 ## The problems today
 
