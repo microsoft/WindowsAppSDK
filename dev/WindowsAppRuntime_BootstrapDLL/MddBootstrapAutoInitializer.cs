@@ -27,8 +27,8 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency.BootstrapCS
             string versionTag = global::Microsoft.WindowsAppSDK.Release.VersionTag;
             var minVersion = new PackageVersion(global::Microsoft.WindowsAppSDK.Runtime.Version.UInt64);
             var options = Options;
-            int hresult = 0;
-            if (!global::Microsoft.Windows.ApplicationModel.DynamicDependency.Bootstrap.TryInitialize(majorMinorVersion, versionTag, minVersion, options, out hresult))
+            int hr = 0;
+            if (!global::Microsoft.Windows.ApplicationModel.DynamicDependency.Bootstrap.TryInitialize(majorMinorVersion, versionTag, minVersion, options, out hr))
             {
                 global::System.Environment.Exit(hr);
             }
