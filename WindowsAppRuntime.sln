@@ -292,7 +292,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AccessControlTestApp", "tes
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "AccessControlTestAppPackage", "test\TestApps\AccessControlTestAppPackage\AccessControlTestAppPackage.wapproj", "{03EBF097-66C6-4996-95A3-28F6F5999E27}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ToastNotificationsDemoApp", "test\TestApps\ToastNotificationsDemoApp\ToastNotificationsDemoApp.vcxproj", "{412D023E-8635-4AD2-A0EA-E19E08D36915}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppNotificationsDemoApp", "test\TestApps\AppNotificationsDemoApp\AppNotificationsDemoApp.vcxproj", "{412D023E-8635-4AD2-A0EA-E19E08D36915}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
 		{A7391725-4EF5-438F-8DE1-645423E46955} = {A7391725-4EF5-438F-8DE1-645423E46955}
@@ -301,7 +301,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ToastNotificationsDemoApp",
 		{C422B090-F501-4204-8068-1084B0799405} = {C422B090-F501-4204-8068-1084B0799405}
 	EndProjectSection
 EndProject
-Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "ToastNotificationsDemoAppPackage", "test\TestApps\ToastNotificationsDemoAppPackage\ToastNotificationsDemoAppPackage.wapproj", "{E695A08E-8735-41CD-AE55-A5B589BA297F}"
+Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "AppNotificationsDemoAppPackage", "test\TestApps\AppNotificationsDemoAppPackage\AppNotificationsDemoAppPackage.wapproj", "{E695A08E-8735-41CD-AE55-A5B589BA297F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppNotifications", "AppNotifications", "{1C9A0791-2BAA-420B-84B6-C0721F22A6E8}"
 EndProject

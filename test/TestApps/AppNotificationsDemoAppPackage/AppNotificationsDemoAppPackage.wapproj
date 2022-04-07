@@ -39,7 +39,6 @@
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
-    <EntryPointProjectUniqueName>..\ToastNotificationsDemoApp\ToastNotificationsDemoApp.vcxproj</EntryPointProjectUniqueName>
     <GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
@@ -50,6 +49,7 @@
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundlePlatforms>$(Platform)</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+    <EntryPointProjectUniqueName>..\AppNotificationsDemoApp\AppNotificationsDemoApp.vcxproj</EntryPointProjectUniqueName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <AppxBundle>Always</AppxBundle>
@@ -83,8 +83,8 @@
     <Content Include="Images\StoreLogo.png" />
     <Content Include="Images\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
-  <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\ToastNotificationsDemoApp\ToastNotificationsDemoApp.vcxproj" />
+    <ProjectReference Include="..\AppNotificationsDemoApp\AppNotificationsDemoApp.vcxproj" />
   </ItemGroup>
+  <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
 </Project>

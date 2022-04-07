@@ -31,8 +31,9 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{412d023e-8635-4ad2-a0ea-e19e08d36915}</ProjectGuid>
-    <RootNamespace>ToastNotificationsDemoApp</RootNamespace>
+    <RootNamespace>AppNotificationsDemoApp</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>AppNotificationsDemoApp</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -269,7 +270,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="ToastNotificationsDemoApp.rc" />
+    <ResourceCompile Include="AppNotificationsDemoApp.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon1.ico" />
