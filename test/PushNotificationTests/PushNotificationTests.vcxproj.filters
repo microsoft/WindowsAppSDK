@@ -27,12 +27,15 @@
     <ClInclude Include="MockRawNotification.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="TestFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="APITests.cpp">
+    <ClCompile Include="UnpackagedTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MockBackgroundTaskInstance.cpp">
@@ -42,6 +45,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LRPTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PackagedTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -54,5 +63,12 @@
     <CopyFileToFolders Include="$(TargetDir)..\PushNotificationsTestApp\PushNotificationsTestApp.exe">
       <Filter>CopyFiles</Filter>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
+    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="PushNotifications-AppxManifest.xml">
+      <Filter>Source Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

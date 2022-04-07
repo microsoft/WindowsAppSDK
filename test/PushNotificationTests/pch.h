@@ -6,6 +6,11 @@
 
 #include <unknwn.h>
 
+#ifndef INLINE_TEST_METHOD_MARKUP
+#define INLINE_TEST_METHOD_MARKUP
+#endif
+
+#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 #include <sddl.h>
 #include <appmodel.h>
@@ -39,6 +44,7 @@
 #include <ShObjIdl_core.h>
 
 #include <winrt/Microsoft.Windows.PushNotifications.h>
+#include <WindowsAppRuntime.SelfContained.h>
 
 namespace TP = ::Test::Packages;
 namespace TAEF = ::Test::TAEF;
