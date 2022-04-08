@@ -8,15 +8,18 @@
 #include <WindowsAppSDK-VersionInfo.h>
 
 // If any options are defined use them, else use the default
-#if !defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_DEFAULT) && \
-    !defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_NONE) && \
-    !defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK) && \
-    !defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK_IFDEBUGGERATTACHED) && \
-    !defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_FAILFAST) && \
-    !defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONNOMATCH_SHOWUI) && \
-    !defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONPACKAGEIDENTITY_NOOP)
+#if !defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_DEFAULT)
+// Default isn't defined. Define it if no options are defined
+#if defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_NONE)
+#elif defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK)
+#elif defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK_IFDEBUGGERATTACHED)
+#elif defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_FAILFAST)
+#elif defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONNOMATCH_SHOWUI)
+#elif defined(MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONPACKAGEIDENTITY_NOOP)
+#else
 // No options specified! Use the default
 #define MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_DEFAULT
+#endif
 #endif
 
 namespace Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap
@@ -60,6 +63,7 @@ namespace Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap
                  | MddBootstrapInitializeOptions_OnPackageIdentity_NOOP
 #endif
             ;
+#endif
         }
 
         static void Initialize()
@@ -68,7 +72,7 @@ namespace Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap
             PCWSTR c_versionTag{ WINDOWSAPPSDK_RELEASE_VERSION_TAG_W };
             const PACKAGE_VERSION c_minVersion{ WINDOWSAPPSDK_RUNTIME_VERSION_UINT64 };
             const auto c_options{ Options() };
-            const HRESULT hr{ ::MddBootstrapInitialize2(c_majorMinorVersion, c_versionTag, c_minVersion, c_options };
+            const HRESULT hr{ ::MddBootstrapInitialize2(c_majorMinorVersion, c_versionTag, c_minVersion, c_options) };
             if (FAILED(hr))
             {
                 exit(hr);
