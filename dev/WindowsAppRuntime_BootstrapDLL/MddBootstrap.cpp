@@ -77,6 +77,8 @@ STDAPI MddBootstrapInitialize(
     PCWSTR versionTag,
     PACKAGE_VERSION minVersion) noexcept try
 {
+    WindowsAppRuntime::MddBootstrap::Activity::Context::Get().SetMddBootStrapAPI(WindowsAppRuntime::MddBootstrap::Activity::MddBootStrapAPI::Initialize);
+    auto threadCallback = wil::ThreadFailureCallback(wilResultLoggingThreadCallback);
     auto initializeActivity{
         WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeActivity().Start(
             majorMinorVersion,
@@ -107,7 +109,12 @@ STDAPI MddBootstrapInitialize(
         S_OK,
         static_cast<UINT32>(g_initializationCount),
         static_cast<UINT16>(WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetDDLMFindMethodUsed()),
-        static_cast<PCWSTR>(g_initializationFrameworkPackageFullName.get()));
+        static_cast<PCWSTR>(g_initializationFrameworkPackageFullName.get()),
+        static_cast <UINT32>(0),
+        static_cast<PCSTR>(nullptr),
+        static_cast <unsigned int>(0),
+        static_cast<PCWSTR>(nullptr),
+        static_cast<PCSTR>(nullptr));
 
     WindowsAppRuntime::MddBootstrap::Activity::Context::Get().Reset();
 
@@ -117,6 +124,8 @@ CATCH_RETURN();
 
 STDAPI_(void) MddBootstrapShutdown() noexcept
 {
+    WindowsAppRuntime::MddBootstrap::Activity::Context::Get().SetMddBootStrapAPI(WindowsAppRuntime::MddBootstrap::Activity::MddBootStrapAPI::Shutdown);
+    auto threadCallback = wil::ThreadFailureCallback(wilResultLoggingThreadCallback);
     auto shutdownActivity{
         WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetShutdownActivity().Start(
             static_cast<UINT32>(g_initializationCount),
@@ -165,7 +174,12 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
 
     shutdownActivity.StopWithResult(
         S_OK,
-        g_initializationCount-1);
+        g_initializationCount - 1,
+        static_cast <UINT32>(0),
+        static_cast<PCSTR>(nullptr),
+        static_cast <unsigned int>(0),
+        static_cast<PCWSTR>(nullptr),
+        static_cast<PCSTR>(nullptr));
 
     g_initializationMajorMinorVersion = {};
     g_initializationVersionTag.clear();

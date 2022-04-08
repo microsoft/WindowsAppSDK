@@ -7,6 +7,13 @@
 
 namespace WindowsAppRuntime::MddBootstrap::Activity
 {
+    enum class MddBootStrapAPI
+    {
+        None = 0,
+        Initialize = 1,
+        Shutdown = 2,
+    };
+
     enum class DDLMFindMethod
     {
         None                = 0,
@@ -14,12 +21,24 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
         ViaAppEnumeration   = 2,
     };
 
+    struct WilFailure
+    {
+        wil::FailureType type;
+        HRESULT hr;
+        std::string file;
+        unsigned int lineNumer;
+        std::wstring message;
+        std::string module;
+    };
+
     class Context
     {
-        DDLMFindMethod m_ddlmFindMethodUsed{ WindowsAppRuntime::MddBootstrap::Activity::DDLMFindMethod::None };
+        MddBootStrapAPI m_mddBootStrapAPI{ MddBootStrapAPI::None };
+        DDLMFindMethod m_ddlmFindMethodUsed{ DDLMFindMethod::None };
 
         WindowsAppRuntimeBootstrap_TraceLogger::Initialize m_bootstrapInitializeActivity;
         WindowsAppRuntimeBootstrap_TraceLogger::Shutdown m_bootstrapShutdownActivity;
+        WilFailure m_lastFailure;
 
     public:
         static WindowsAppRuntime::MddBootstrap::Activity::Context& Get();
@@ -29,12 +48,12 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
             m_ddlmFindMethodUsed = WindowsAppRuntime::MddBootstrap::Activity::DDLMFindMethod::None;
         }
 
-        void SetDDLMFindMethodUsed(DDLMFindMethod ddlmFindMethodUsed)
+        const MddBootStrapAPI& GetMddBootStrapAPI() const
         {
-            m_ddlmFindMethodUsed = ddlmFindMethodUsed;
+            return m_mddBootStrapAPI;
         }
 
-        DDLMFindMethod& GetDDLMFindMethodUsed()
+        const DDLMFindMethod& GetDDLMFindMethodUsed() const
         {
             return m_ddlmFindMethodUsed;
         }
@@ -48,6 +67,23 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
         {
             return m_bootstrapShutdownActivity;
         }
+
+        const WilFailure& GetLastFailure() const
+        {
+            return m_lastFailure;
+        }
+
+        void SetMddBootStrapAPI(MddBootStrapAPI mddBootStrapAPI)
+        {
+            m_mddBootStrapAPI = mddBootStrapAPI;
+        }
+
+        void SetDDLMFindMethodUsed(DDLMFindMethod ddlmFindMethodUsed)
+        {
+            m_ddlmFindMethodUsed = ddlmFindMethodUsed;
+        }
+
+        void SetLastFailure(const wil::FailureInfo& failure);
     };
 
     static WindowsAppRuntime::MddBootstrap::Activity::Context g_bootstrapActivityContext;

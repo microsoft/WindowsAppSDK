@@ -19,7 +19,7 @@ static std::wstring ConvertPackagVersionToString(PACKAGE_VERSION packageVersion)
 }
 #endif
 
-void __stdcall initialize_wilResultLoggingCallback(const wil::FailureInfo& failure) noexcept;
+bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) noexcept;
 
 GUID& GetLifetimeActivityId() noexcept;
 
@@ -39,13 +39,6 @@ public:
         PACKAGE_VERSION &minFrameworkPackageVersion,
         UINT32 initializationCount)
     {
-        // First, clear any previously set process-wide callback, because changing the callback pointer
-        // from one non-null value directly to another is not allowed.
-        wil::SetResultLoggingCallback(nullptr);
-
-        // Set a process-wide callback function for WIL to call each time it logs a failure.
-        wil::SetResultLoggingCallback(initialize_wilResultLoggingCallback);
-
         // Set lifetime activity Id that helps in corelating all sub-activities/telemetry from a single Mdd Bootstrap lifetime
         SetRelatedActivityId(GetLifetimeActivityId());
 
@@ -62,18 +55,36 @@ public:
         const HRESULT hresult,
         UINT32 initializationCount,
         UINT16 ddlmFindMethodUsed,
-        PCWSTR resolvedFrameworkPackageFullName)
+        PCWSTR resolvedFrameworkPackageFullName,
+        UINT32 failureType,
+        PCSTR failureFile,
+        unsigned int failureLineNumber,
+        PCWSTR failureMessage,
+        PCSTR failureModule)
     {
-        // Clear the process-wide callback set in Start
-        wil::SetResultLoggingCallback(nullptr);
-
         SetStopResult(hresult);
 
-        TraceLoggingClassWriteStop(Initialize,
-            _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingValue(initializationCount, "initializationCount"),
-            TraceLoggingValue(ddlmFindMethodUsed, "ddlmFindMethodUsed"),
-            TraceLoggingValue(resolvedFrameworkPackageFullName, "resolvedFrameworkPackageFullName"));
+        if (hresult)
+        {
+            TraceLoggingClassWriteStop(Initialize,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingValue(initializationCount, "initializationCount"),
+                TraceLoggingValue(ddlmFindMethodUsed, "ddlmFindMethodUsed"),
+                TraceLoggingValue(resolvedFrameworkPackageFullName, "resolvedFrameworkPackageFullName"),
+                TraceLoggingValue(failureType, "wilFailureType"),
+                TraceLoggingValue(failureFile, "failureFile"),
+                TraceLoggingValue(failureLineNumber, "failureLineNumber"),
+                TraceLoggingValue(failureMessage, "failureMessage"),
+                TraceLoggingValue(failureModule, "failureModule"));
+        }
+        else
+        {
+            TraceLoggingClassWriteStop(Initialize,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingValue(initializationCount, "initializationCount"),
+                TraceLoggingValue(ddlmFindMethodUsed, "ddlmFindMethodUsed"),
+                TraceLoggingValue(resolvedFrameworkPackageFullName, "resolvedFrameworkPackageFullName"));
+        }
     }
     END_ACTIVITY_CLASS();
 
@@ -92,35 +103,49 @@ public:
             TraceLoggingValue(resolvedFrameworkPackageFullName, "resolvedFrameworkPackageFullName"));
     }
     void StopWithResult(
-        HRESULT hr,
-        UINT32 majorMinorVersion,
-        PCWSTR versionTag,
-        //PACKAGE_VERSION& frameworkPackageVersion,
-        UINT32 initializationCount)
+        HRESULT hresult,
+        UINT32 initializationCount,
+        UINT32 failureType,
+        PCSTR failureFile,
+        unsigned int failureLineNumber,
+        PCWSTR failureMessage,
+        PCSTR failureModule)
     {
-        SetStopResult(hr);
+        SetStopResult(hresult);
 
-        TraceLoggingClassWriteStop(Shutdown,
-            _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingValue(majorMinorVersion, "majorMinorVersion"),
-            TraceLoggingValue(versionTag, "versionTag"),
-            //TraceLoggingValue(
-               // ConvertPackagVersionToString(frameworkPackageVersion).c_str(),
-               // "frameworkPackageVersion"),
-            TraceLoggingValue(initializationCount, "initializationCount"));
+        if (hresult)
+        {
+            TraceLoggingClassWriteStop(Shutdown,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingValue(initializationCount, "initializationCount"),
+                TraceLoggingValue(failureType, "WilFailureType"),
+                TraceLoggingValue(failureFile, "FailureFile"),
+                TraceLoggingValue(failureLineNumber, "FailureLineNumber"),
+                TraceLoggingValue(failureMessage, "FailureMessage"),
+                TraceLoggingValue(failureModule, "FailureModule"));
+        }
+        else
+        {
+            TraceLoggingClassWriteStop(Shutdown,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                //TraceLoggingValue(
+                   // ConvertPackagVersionToString(frameworkPackageVersion).c_str(),
+                   // "frameworkPackageVersion"),
+                TraceLoggingValue(initializationCount, "initializationCount"));
+        }
     }
     END_ACTIVITY_CLASS();
 };
 
-#define WindowsAppRuntimeBootstrap_TraceLoggingWString(_wstring_, _name_) TraceLoggingCountedWideString(_wstring_.c_str(),\
+#define MddBootstrap_TraceLoggingWString(_wstring_, _name_) TraceLoggingCountedWideString(_wstring_.c_str(),\
      static_cast<ULONG>(_wstring_.size()), _name_)
 
 // In the future, if the project includes multiple modules and threads, we could log that data as well from FailureInfo
 // In the future and on need basis, we could log call stack as well
-#define WindowsAppRuntimeBootstrapInitialize_WriteEventWithActivity(_eventname_,...) TraceLoggingWriteActivity(\
+#define MddBootstrap_WriteEventWithActivity(_eventname_,_activityId_,...) TraceLoggingWriteActivity(\
         WindowsAppRuntimeBootstrap_TraceLogger::Provider(),\
         _eventname_,\
-        WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeActivity().Id(),\
+        _activityId_,\
         nullptr,\
         _WRITE_FAILURE_INFO,\
         __VA_ARGS__)
