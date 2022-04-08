@@ -3,12 +3,17 @@
 
 namespace Microsoft.Windows.Security.AccessControl
 {
+    [contractversion(1)]
+    apicontract AccessControlContract {};
+
+    [contract(AccessControlContract, 1)]
     struct AppContainerNameAndAccess
     {
         String appContainerName;
         UInt32 accessMask;
     };
 
+    [contract(AccessControlContract, 1)]
     static runtimeclass SecurityDescriptorHelpers
     {
         static String GetSddlForAppContainerNames(
