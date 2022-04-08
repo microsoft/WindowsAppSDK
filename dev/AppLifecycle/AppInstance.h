@@ -68,6 +68,10 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         wil::unique_mutex m_dataMutex;
         wil::unique_mutex m_keyCreationMutex;
+        // Listing this after the mutex it locks, guarantees that
+        // the lock gets released first before releasing the mutex itself.
+        // Destruction order is reverse of declaration order, see C++ std: 12.6.2
+        wil::mutex_release_scope_exit m_keyCreationMutexLock;
         SharedMemory<wchar_t> m_key;
 
         wil::unique_event m_innerActivated;
