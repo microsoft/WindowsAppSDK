@@ -34,4 +34,4 @@ in `main` it references the public feed and in `develop` it references the inter
 Package references might be different too if `develop` branch is consuming a package that's
 not yet on the public feed.
 
-![Example of main and develop branching](images\develop-branch-example.jpg)
+![Example of main and develop branching](images/develop-branch-example.jpg)
