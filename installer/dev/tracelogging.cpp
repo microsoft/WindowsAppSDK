@@ -8,19 +8,6 @@
 
 using namespace WindowsAppRuntimeInstaller::InstallActivity;
 
-#define InstallActivity_ExceptionFailFast_StopWithResult() \
-installActivityContext.GetActivity().StopWithResult( \
-    failure.hr,\
-    static_cast<UINT32>(failure.type),\
-    failure.pszFile,\
-    failure.uLineNumber,\
-    failure.pszMessage,\
-    static_cast<UINT32>(installActivityContext.GetInstallStage()),\
-    installActivityContext.GetCurrentResourceId().c_str(),\
-    installActivityContext.GetDeploymentErrorExtendedHResult(),\
-    installActivityContext.GetDeploymentErrorText().c_str(),\
-    installActivityContext.GetDeploymentErrorActivityId())
-
 // A process-wide callback function for WIL Error Handlers
 void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcept
 {
@@ -35,7 +22,6 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
             case wil::FailureType::Log:
             {
                 // wil Log failure type indicates intention to just log failure but continue with the installation
-
                 if (installActivityContext.GetInstallStage() == InstallStage::ProvisionPackage)
                 {
                     // Failure in Provisioning package are non-blocking and the installer will continue with installation
@@ -69,8 +55,9 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                         installActivityContext.GetCurrentResourceId().c_str(),
                         static_cast<ULONG>(installActivityContext.GetCurrentResourceId().size()), "currentResource"));
 
-                InstallActivity_ExceptionFailFast_StopWithResult();
-
+                // Don't stop the Install activity here. Instead, give the Installer main a chance to Stop the Activity before returning error to the caller.
+                // Hence, save the wil failure info here for later use.
+                installActivityContext.SetLastFailure(failure);
                 break;
             }
             case wil::FailureType::FailFast:
@@ -81,19 +68,35 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                         installActivityContext.GetCurrentResourceId().c_str(),
                         static_cast<ULONG>(installActivityContext.GetCurrentResourceId().size()), "currentResource"));
 
-                InstallActivity_ExceptionFailFast_StopWithResult();
-
+                installActivityContext.GetActivity().StopWithResult(
+                    failure.hr,
+                    static_cast<UINT32>(failure.type),
+                    failure.pszFile,
+                    failure.uLineNumber,
+                    failure.pszMessage,
+                    static_cast<UINT32>(installActivityContext.GetInstallStage()),
+                    installActivityContext.GetCurrentResourceId().c_str(),
+                    installActivityContext.GetDeploymentErrorExtendedHResult(),
+                    installActivityContext.GetDeploymentErrorText().c_str(),
+                    installActivityContext.GetDeploymentErrorActivityId());
                 break;
             }
             case wil::FailureType::Return:
             {
-                // THROW_*** error handling combined with CATCH_RETURN in the code may log the same failure twice.
-                // That's ok and we can live with that redundancy but don't want to lose failure info from RETURN_*** wil macros.
-                WindowsAppRuntimeInstaller_WriteEventWithActivity("FailureReturn");
+                WindowsAppRuntimeInstaller_WriteEventWithActivity(
+                    "FailureReturn",
+                    TraceLoggingCountedWideString(
+                        installActivityContext.GetCurrentResourceId().c_str(),
+                        static_cast<ULONG>(installActivityContext.GetCurrentResourceId().size()), "currentResource"));
 
-                // Don't stop the Install activity here. Instead, give the Installer main a chance to Stop the Activity before returning error to the caller.
-                // Hence, save the wil failure info here for later use.
-                installActivityContext.SetLastFailure(failure);
+                // If this is due to CATCH_RETURN(), we want to keep the failure info from THROW* and not overwrite that from RETURN*
+                if (!(installActivityContext.GetLastFailure().type == wil::FailureType::Exception &&
+                    FAILED(installActivityContext.GetLastFailure().hr)))
+                {
+                    // Don't stop the Install activity here. Instead, give the Installer main a chance to Stop the Activity before returning error to the caller.
+                    // Hence, save the wil failure info here for later use.
+                    installActivityContext.SetLastFailure(failure);
+                }
                 break;
             }
             default:

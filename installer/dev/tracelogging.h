@@ -60,7 +60,7 @@ public:
     {
         SetStopResult(hresult);
 
-        if (!hresult)
+        if (hresult)
         {
             TraceLoggingClassWriteStop(Install,
                 _GENERIC_PARTB_FIELDS_ENABLED,

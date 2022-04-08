@@ -29,7 +29,7 @@ namespace WindowsAppRuntime::Deployment::Activity
 
     class Context
     {
-        DeploymentStage m_installStage{ DeploymentStage::None };
+        DeploymentStage m_installStage{};
         std::wstring m_currentResourceId;
         HRESULT m_deploymentErrorExtendedHresult{};
         std::wstring m_deploymentErrorText;

@@ -85,10 +85,9 @@ int wmain(int argc, wchar_t *argv[])
 
     auto& installActivityContext{ WindowsAppRuntimeInstaller::InstallActivity::Context::Get() };
 
-    bool isElevated = Security::IntegrityLevel::IsElevated();
+    const bool isElevated{ Security::IntegrityLevel::IsElevated() };
     installActivityContext.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(), static_cast<UINT32>(options), isElevated));
     args.clear();
-
     if (!isElevated)
     {
         std::wcout << std::endl << "INFO: Provisioning of WindowsAppSDK packages will be skipped as it requires elevation." << std::endl;

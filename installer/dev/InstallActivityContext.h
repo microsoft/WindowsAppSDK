@@ -30,7 +30,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
 
     class Context
     {
-        InstallStage m_installStage{ InstallStage::None };
+        InstallStage m_installStage{};
         std::wstring m_currentResourceId;
         HRESULT m_deploymentErrorExtendedHresult{};
         std::wstring m_deploymentErrorText;
