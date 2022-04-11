@@ -22,22 +22,16 @@ using namespace winrt::Microsoft::Windows::PushNotifications;
 
 namespace Test::PushNotifications
 {
-#define VERIFY_THROWS_HR(expression, hr)        \
-        VERIFY_THROWS_SPECIFIC(expression,          \
-            winrt::hresult_error,                   \
-            [&](winrt::hresult_error e) -> bool     \
-            {                                       \
-                return (e.code() == hr);    \
-            })
-
     class PackagedTests
     {
+
     public:
         BEGIN_TEST_CLASS(PackagedTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
             TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
             TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"PushNotifications-AppxManifest.xml")
+            TEST_CLASS_PROPERTY(L"UAP:Host", L"PackagedCWA")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassInit)
@@ -54,90 +48,93 @@ namespace Test::PushNotifications
 
         TEST_METHOD_SETUP(MethodInit)
         {
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
+            ::WindowsAppRuntime::SelfContained::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
             return true;
         }
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
+            // Need to keep each TEST_METHOD in clean state.
+            try
+            {
+                PushNotificationManager::Default().UnregisterAll();
+            }
+            catch (...)
+            {
+                // We want to unregister regardless of pass/fail to clean the state.
+            }
             return true;
         }
 
         TEST_METHOD(ChannelRequestUsingNullRemoteId)
         {
-            // Need to use SelfContained test hook to setup tests.
-            ::WindowsAppRuntime::SelfContained::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
-
-            TestFunctions::ChannelRequestUsingNullRemoteId();
+            PushNotificationTestFunctions::ChannelRequestUsingNullRemoteId();
         }
 
         TEST_METHOD(ChannelRequestUsingRemoteId)
         {
-            TestFunctions::ChannelRequestUsingRemoteId();
+            PushNotificationTestFunctions::ChannelRequestUsingRemoteId();
         }
 
         // Currently failing.
         TEST_METHOD(MultipleChannelClose)
         {
-            TestFunctions::MultipleChannelClose();
+            PushNotificationTestFunctions::MultipleChannelClose();
         }
 
         TEST_METHOD(VerifyRegisterAndUnregister)
         {
-            TestFunctions::VerifyRegisterAndUnregister();
+            PushNotificationTestFunctions::VerifyRegisterAndUnregister();
         }
 
         TEST_METHOD(VerifyRegisterAndUnregisterAll)
         {
-            TestFunctions::VerifyRegisterAndUnregisterAll();
+            PushNotificationTestFunctions::VerifyRegisterAndUnregisterAll();
         }
 
         TEST_METHOD(MultipleRegister)
         {
-            TestFunctions::MultipleRegister();
+            PushNotificationTestFunctions::MultipleRegister();
         }
 
         TEST_METHOD(VerifyMultipleRegisterAndUnregister)
         {
-            TestFunctions::VerifyMultipleRegisterAndUnregister();
+            PushNotificationTestFunctions::VerifyMultipleRegisterAndUnregister();
         }
 
         TEST_METHOD(VerifyMultipleRegisterAndUnregisterAll)
         {
-            TestFunctions::VerifyMultipleRegisterAndUnregisterAll();
+            PushNotificationTestFunctions::VerifyMultipleRegisterAndUnregisterAll();
         }
 
         TEST_METHOD(VerifyUnregisterTwice)
         {
-            TestFunctions::VerifyUnregisterTwice();
+            PushNotificationTestFunctions::VerifyUnregisterTwice();
         }
 
         TEST_METHOD(VerifyUnregisterAll)
         {
-            TestFunctions::VerifyUnregisterAll();
+            PushNotificationTestFunctions::VerifyUnregisterAll();
         }
 
         TEST_METHOD(VerifyUnregisterAllTwice)
         {
-            TestFunctions::VerifyUnregisterAllTwice();
+            PushNotificationTestFunctions::VerifyUnregisterAllTwice();
         }
 
         TEST_METHOD(VerifyUnregisterAndUnregisterAll)
         {
-            TestFunctions::VerifyUnregisterAndUnregisterAll();
+            PushNotificationTestFunctions::VerifyUnregisterAndUnregisterAll();
         }
 
         TEST_METHOD(VerifyForegroundHandlerSucceeds)
         {
-            TestFunctions::VerifyForegroundHandlerSucceeds();
+            PushNotificationTestFunctions::VerifyForegroundHandlerSucceeds();
         }
 
         TEST_METHOD(VerifyForegroundHandlerFails)
         {
-            TestFunctions::VerifyForegroundHandlerFails();
+            PushNotificationTestFunctions::VerifyForegroundHandlerFails();
         }
     };
 }

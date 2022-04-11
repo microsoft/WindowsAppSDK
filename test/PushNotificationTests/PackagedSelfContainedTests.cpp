@@ -22,58 +22,43 @@ using namespace winrt::Microsoft::Windows::PushNotifications;
 
 namespace Test::PushNotifications
 {
-    class UnpackagedTests
+    class PackagedSelfContainedTests
     {
 
     public:
-        BEGIN_TEST_CLASS(UnpackagedTests)
-            TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK Push Notifications test")
+        BEGIN_TEST_CLASS(PackagedSelfContainedTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
-        END_TEST_CLASS()
+            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
+            TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"PushNotifications-AppxManifest.xml")
+            TEST_CLASS_PROPERTY(L"UAP:Host", L"PackagedCWA")
+            END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassInit)
         {
-            try
-            {
-                // Cleanup previous installations. Need this to remove any manual installations outside of running this tests.
-                TP::RemovePackage_PushNotificationsLongRunningTask();
-
-                ::Test::Bootstrap::Setup();
-                TP::AddPackage_PushNotificationsLongRunningTask(); // Installs the PushNotifications long running task.
-            }
-            catch (...)
-            {
-                return false;
-            }
+            ::Test::Bootstrap::SetupPackages();
             return true;
         }
-        
+
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            try
-            {
-                // Remove in reverse order to avoid conflicts between inter-dependent packages.
-                ::Test::Bootstrap::Cleanup();
-                TP::RemovePackage_PushNotificationsLongRunningTask();
-            }
-            catch (...)
-            {
-                return false;
-            }
+            ::Test::Bootstrap::CleanupPackages();
             return true;
         }
 
         TEST_METHOD_SETUP(MethodInit)
         {
-            // Need to use SelfContained test hook to setup tests.
-            ::WindowsAppRuntime::SelfContained::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             return true;
         }
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
-            // Need to keep each TEST_METHOD in a clean state in the LRP.
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
+
+            // Need to keep each TEST_METHOD in clean state.
             try
             {
                 PushNotificationManager::Default().UnregisterAll();

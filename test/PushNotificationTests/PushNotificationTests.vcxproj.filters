@@ -21,12 +21,6 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MockBackgroundTaskInstance.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MockRawNotification.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="TestFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -38,19 +32,16 @@
     <ClCompile Include="UnpackagedTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MockBackgroundTaskInstance.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MockRawNotification.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LRPTests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TestFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PackagedTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PackagedSelfContainedTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UnpackagedSelfContained.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,10 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
-    <CopyFileToFolders Include="$(TestPkgOutputPath)\Dependencies\$(PlatformTarget)\Microsoft.VCLibs.$(PlatformTarget)$(VCLibsDebugConfigName).14.00.appx" />
-    <CopyFileToFolders Include="$(TargetDir)..\PushNotificationsTestApp\PushNotificationsTestApp.exe">
-      <Filter>CopyFiles</Filter>
-    </CopyFileToFolders>
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
   </ItemGroup>
