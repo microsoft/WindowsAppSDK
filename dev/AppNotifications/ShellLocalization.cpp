@@ -17,6 +17,8 @@
 #include <Ocidl.h>
 #include <windows.h>
 
+#include <frameworkudk/toastnotifications.h>
+
 namespace std
 {
     using namespace std::filesystem;
@@ -232,14 +234,22 @@ HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsF
 }
 CATCH_RETURN()
 
-HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromShortcut(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& /*assets*/) noexcept
+HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromShortcut(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& assets) noexcept try
 {
-    // Do nothing for now. This is just a placeholder while we wait for the FrameworkUdk API
-    // to get icon file path from shortcut. This API is already implemented but not ready for consumption.
-    // THROW_HR_IF_MSG(E_UNEXPECTED, IsIconFileExtensionSupported(iconFilePath));
+    wil::unique_cotaskmem_string displayName;
+    wil::unique_cotaskmem_string iconFilePath;
 
-    return E_NOTIMPL;
+    THROW_IF_FAILED(ToastNotifications_RetrieveAssets(&displayName, &iconFilePath));
+
+    std::path iconFilePathAsSystemPath{ iconFilePath.get() };
+    THROW_HR_IF(E_UNEXPECTED, !IsIconFileExtensionSupported(iconFilePathAsSystemPath));
+
+    assets.displayName = displayName.get();
+    assets.iconFilePath = iconFilePath.get();
+
+    return S_OK;
 }
+CATCH_RETURN()
 
 HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::DeleteIconFromCache() noexcept try
 {
