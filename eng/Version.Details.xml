@@ -7,17 +7,17 @@
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.Windows.CsWinRT" Version="1.6.1">
+    <Dependency Name="Microsoft.Windows.CsWinRT" Version="1.6.2">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
-      <Sha>9b4a4df6144ac1f1642307046cc2468ce4664b0a</Sha>
+      <Sha>0df367bd665e9394a8f6bab6908b31e806544afc</Sha>
     </Dependency>
     <Dependency Name="CsWinRT.Dependency.DotNetCoreSdk" Version="5.0.404">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
-      <Sha>9b4a4df6144ac1f1642307046cc2468ce4664b0a</Sha>
+      <Sha>0df367bd665e9394a8f6bab6908b31e806544afc</Sha>
     </Dependency>
     <Dependency Name="CsWinRT.Dependency.DotNetCoreRuntime" Version="5.0.13">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
-      <Sha>9b4a4df6144ac1f1642307046cc2468ce4664b0a</Sha>
+      <Sha>0df367bd665e9394a8f6bab6908b31e806544afc</Sha>
     </Dependency>
     <Dependency Name="CsWinRT.Dependency.WindowsSdkPackage" Version="24">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
