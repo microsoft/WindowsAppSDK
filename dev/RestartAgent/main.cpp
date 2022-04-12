@@ -33,7 +33,7 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
     THROW_HR_IF(E_INVALIDARG, startOfHandleArg == std::wstring::npos);
     startOfHandleArg += wcslen(handleArg);
     std::wstring arguments{ cmdLine.substr(startOfHandleArg) };
-    auto newCmdLine = wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" %s", callerPath.get(), arguments.c_str());
+    auto newCmdLine = wil::str_printf<wil::unique_cotaskmem_string>(L"%s", arguments.c_str());
 
     SIZE_T attributeListSize{ 0 };
     auto attributeCount{ 1 };
