@@ -13,7 +13,6 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
     // that CreateProcess was called in a manner that inherited this handle to 
     // the current process.
 
-    MessageBoxEx(NULL, L"In here", L"In here", 0, 0);
     int argc{};
     std::wstring cmdLine{ GetCommandLineW() };
     wil::unique_hlocal_ptr<PWSTR[]> argv{ CommandLineToArgvW(cmdLine.c_str(), &argc) };
@@ -33,7 +32,7 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
     THROW_HR_IF(E_INVALIDARG, startOfHandleArg == std::wstring::npos);
     startOfHandleArg += wcslen(handleArg);
     std::wstring arguments{ cmdLine.substr(startOfHandleArg) };
-    auto newCmdLine = wil::str_printf<wil::unique_cotaskmem_string>(L"%s", arguments.c_str());
+    auto newCmdLine = wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" %s", callerPath.get(), arguments.c_str());
 
     SIZE_T attributeListSize{ 0 };
     auto attributeCount{ 1 };
@@ -58,10 +57,8 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
         info.lpAttributeList = attributeList.get();
     }
 
-    auto yolo{newCmdLine.get()};
-    MessageBoxEx(NULL, yolo, L"arguments", 0, 0);
     wil::unique_process_information processInfo{};
-    THROW_IF_WIN32_BOOL_FALSE(CreateProcess(callerPath.get(), yolo, nullptr, nullptr, FALSE, CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr,
+    THROW_IF_WIN32_BOOL_FALSE(CreateProcess(callerPath.get(), newCmdLine.get(), nullptr, nullptr, FALSE, CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr,
         &info.StartupInfo, &processInfo));
 
     // Transfer foreground rights to the new process before resuming it.
