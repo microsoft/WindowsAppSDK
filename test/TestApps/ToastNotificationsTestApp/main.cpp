@@ -1312,10 +1312,13 @@ bool VerifyIconPathExists_Unpackaged()
         winrt::check_bool(std::exists(iconFilePath));
 
         winrt::AppNotificationManager::Default().UnregisterAll();
+
+        // After unregister this file should not exist
+        winrt::check_bool(!std::exists(iconFilePath));
     }
     catch (...)
     {
-        return winrt::to_hresult() != S_OK;
+        return false;
     }
 
     return true;
