@@ -10,7 +10,7 @@
   <!--
     For .NET projects, we use the default file inclusion support that's built into the .NET SDK for the Windows App SDK. For that, we need to set these properties.
   -->
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(UsingMicrosoftNETSdk)' == 'true'">
     <EnableDefaultContentItems Condition="'$(EnableDefaultContentItems)' == ''">true</EnableDefaultContentItems>
     <EnableDefaultPRIResourceItems Condition="'$(EnableDefaultPRIResourceItems)' == ''">true</EnableDefaultPRIResourceItems>
     <EnableDefaultWindowsAppSdkContentItems Condition="'$(EnableDefaultWindowsAppSdkContentItems)' == ''">true</EnableDefaultWindowsAppSdkContentItems>
