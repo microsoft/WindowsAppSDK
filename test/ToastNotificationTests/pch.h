@@ -38,6 +38,9 @@
 #include <windows.applicationmodel.background.h>
 #include <ShObjIdl_core.h>
 
+#include <winrt/Microsoft.Windows.AppNotifications.h>
+#include <WindowsAppRuntime.SelfContained.h>
+
 namespace TP = ::Test::Packages;
 namespace TAEF = ::Test::TAEF;
 #endif //PCH_H
