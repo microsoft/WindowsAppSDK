@@ -13,6 +13,7 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
     // that CreateProcess was called in a manner that inherited this handle to 
     // the current process.
 
+    MessageBoxEx(NULL, L"In here", L"In here", 0, 0);
     int argc{};
     std::wstring cmdLine{ GetCommandLineW() };
     wil::unique_hlocal_ptr<PWSTR[]> argv{ CommandLineToArgvW(cmdLine.c_str(), &argc) };
