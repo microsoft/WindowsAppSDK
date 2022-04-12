@@ -59,6 +59,7 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
     }
 
     auto yolo{newCmdLine.get()};
+    MessageBoxEx(NULL, yolo, L"arguments", 0, 0);
     wil::unique_process_information processInfo{};
     THROW_IF_WIN32_BOOL_FALSE(CreateProcess(callerPath.get(), yolo, nullptr, nullptr, FALSE, CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr,
         &info.StartupInfo, &processInfo));
