@@ -58,8 +58,9 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
         info.lpAttributeList = attributeList.get();
     }
 
+    auto yolo{newCmdLine.get()};
     wil::unique_process_information processInfo{};
-    THROW_IF_WIN32_BOOL_FALSE(CreateProcess(callerPath.get(), newCmdLine.get(), nullptr, nullptr, FALSE, CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr,
+    THROW_IF_WIN32_BOOL_FALSE(CreateProcess(callerPath.get(), yolo, nullptr, nullptr, FALSE, CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr,
         &info.StartupInfo, &processInfo));
 
     // Transfer foreground rights to the new process before resuming it.
