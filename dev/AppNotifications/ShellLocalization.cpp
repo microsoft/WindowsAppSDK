@@ -188,8 +188,8 @@ inline std::path RetrieveLocalFolderPath()
     THROW_IF_FAILED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0 /* flags */, nullptr /* access token handle */, &localAppDataPath));
 
     // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK
-    std::path localFolderPath{ std::wstring(localAppDataPath.get()) +
-        Microsoft::Windows::AppNotifications::ShellLocalization::c_localWindowsAppSDKFolder };
+    std::path localFolderPath{ localAppDataPath.get() };
+    localFolderPath /= Microsoft::Windows::AppNotifications::ShellLocalization::c_localWindowsAppSDKFolder;
 
     if (!std::exists(localFolderPath))
     {
@@ -245,7 +245,9 @@ HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::DeleteIconFromC
     std::wstring notificationAppId{ Microsoft::Windows::AppNotifications::Helpers::RetrieveNotificationAppId() };
 
     // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK\{AppGUID}.png
-    std::path iconFilePath{ RetrieveLocalFolderPath() / (notificationAppId + c_pngExtension) };
+    std::path iconFilePath{ RetrieveLocalFolderPath() };
+    iconFilePath /= notificationAppId;
+    iconFilePath += c_pngExtension;
 
     // If DeleteFile returned FALSE, then deletion failed and we should return the corresponding error code.
     if (DeleteFile(iconFilePath.c_str()) == FALSE)
