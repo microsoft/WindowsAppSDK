@@ -74,7 +74,6 @@ namespace Test::PushNotifications
         auto pushNotificationManager{ PushNotificationManager::Default() };
         pushNotificationManager.Register();
         m_registered = true;
-
         pushNotificationManager.Unregister();
     }
 

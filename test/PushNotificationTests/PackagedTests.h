@@ -29,15 +29,24 @@ namespace Test::PushNotifications
         BEGIN_TEST_CLASS(PackagedTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")
             TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
-            TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"PushNotifications-AppxManifest.xml")
             TEST_CLASS_PROPERTY(L"UAP:Host", L"PackagedCWA")
-            END_TEST_CLASS()
+            TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"PushNotifications-AppxManifest.xml")
+            TEST_CLASS_PROPERTY(L"Data:SelfContained", L"{true, false}")
+        END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassInit)
         {
             ::Test::Bootstrap::Setup();
-            ::WindowsAppRuntime::SelfContained::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+            bool isSelfContained{ false };
+            if (SUCCEEDED(TestData::TryGetValue(L"SelfContained", isSelfContained)))
+            {
+                if (!isSelfContained)
+                {
+                    ::WindowsAppRuntime::SelfContained::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+                }
+            }
             return true;
         }
 

@@ -21,13 +21,7 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PackagedSelfContainedTests.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PackagedTests.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UnpackagedSelfContainedTests.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UnpackagedTests.h">
@@ -42,12 +36,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PackagedTests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PackagedSelfContainedTests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UnpackagedSelfContained.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
