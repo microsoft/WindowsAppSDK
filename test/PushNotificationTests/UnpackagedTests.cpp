@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
+
 #include <TestDef.h>
-#include "MockBackgroundTaskInstance.h"
-#include <TlHelp32.h>
-#include "TestFunctions.h"
+#include "UnpackagedTests.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -20,140 +19,162 @@ using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 using namespace winrt::Microsoft::Windows::PushNotifications;
 
+
 namespace Test::PushNotifications
 {
-    class UnpackagedTests
+    HRESULT UnpackagedTests::ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& channelOperation)
     {
-
-    public:
-        BEGIN_TEST_CLASS(UnpackagedTests)
-            TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK Push Notifications test")
-            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
-        END_TEST_CLASS()
-
-        TEST_CLASS_SETUP(ClassInit)
+        if (channelOperation.wait_for(c_timeout) != winrt::Windows::Foundation::AsyncStatus::Completed)
         {
-            try
-            {
-                // Cleanup previous installations. Need this to remove any manual installations outside of running this tests.
-                TP::RemovePackage_PushNotificationsLongRunningTask();
-
-                ::Test::Bootstrap::Setup();
-                TP::AddPackage_PushNotificationsLongRunningTask(); // Installs the PushNotifications long running task.
-            }
-            catch (...)
-            {
-                return false;
-            }
-            return true;
-        }
-        
-        TEST_CLASS_CLEANUP(ClassUninit)
-        {
-            try
-            {
-                // Remove in reverse order to avoid conflicts between inter-dependent packages.
-                ::Test::Bootstrap::Cleanup();
-                TP::RemovePackage_PushNotificationsLongRunningTask();
-            }
-            catch (...)
-            {
-                return false;
-            }
-            return true;
+            channelOperation.Cancel();
+            return HRESULT_FROM_WIN32(ERROR_TIMEOUT); // timed out or failed
         }
 
-        TEST_METHOD_SETUP(MethodInit)
+        auto result{ channelOperation.GetResults() };
+        auto status{ result.Status() };
+        if (status != PushNotificationChannelStatus::CompletedSuccess)
         {
-            // Need to use SelfContained test hook to setup tests.
-            ::WindowsAppRuntime::SelfContained::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
-            return true;
+            return result.ExtendedError(); // did not produce a channel
         }
 
-        TEST_METHOD_CLEANUP(MethodUninit)
+        result.Channel().Close();
+        return S_OK;
+    }
+
+    void UnpackagedTests::ChannelRequestUsingNullRemoteId()
+    {
+        VERIFY_THROWS_HR(PushNotificationManager::Default().CreateChannelAsync(winrt::guid()).get(), E_INVALIDARG);
+    }
+
+    void UnpackagedTests::ChannelRequestUsingRemoteId()
+    {
+        auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
+        VERIFY_SUCCEEDED(ChannelRequestHelper(channelOperation));
+    }
+
+    // Currently failing - https://github.com/microsoft/WindowsAppSDK/issues/2392
+    void UnpackagedTests::MultipleChannelClose()
+    {
+        auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
+        if (channelOperation.wait_for(c_timeout) != winrt::Windows::Foundation::AsyncStatus::Completed)
         {
-            // Need to keep each TEST_METHOD in a clean state in the LRP.
-            try
-            {
-                PushNotificationManager::Default().UnregisterAll();
-            }
-            catch (...)
-            {
-                // We want to unregister regardless of pass/fail to clean the state.
-            }
-            return true;
+            channelOperation.Cancel();
+            VERIFY_FAIL(L"Channel request hit timeout.");
         }
 
-        TEST_METHOD(ChannelRequestUsingNullRemoteId)
-        {
-            PushNotificationTestFunctions::ChannelRequestUsingNullRemoteId();
-        }
+        auto result{ channelOperation.GetResults() };
+        VERIFY_ARE_EQUAL(result.Status(), PushNotificationChannelStatus::CompletedSuccess);
 
-        TEST_METHOD(ChannelRequestUsingRemoteId)
-        {
-            PushNotificationTestFunctions::ChannelRequestUsingRemoteId();
-        }
+        result.Channel().Close();
+        VERIFY_THROWS_HR(result.Channel().Close(), WPN_E_CHANNEL_CLOSED);
+    }
 
-        // Currently failing.
-        TEST_METHOD(MultipleChannelClose)
-        {
-            PushNotificationTestFunctions::MultipleChannelClose();
-        }
+    void UnpackagedTests::VerifyRegisterAndUnregister()
+    {
+        auto pushNotificationManager{ PushNotificationManager::Default() };
+        pushNotificationManager.Register();
+        m_registered = true;
 
-        TEST_METHOD(VerifyRegisterAndUnregister)
-        {
-            PushNotificationTestFunctions::VerifyRegisterAndUnregister();
-        }
+        pushNotificationManager.Unregister();
+    }
 
-        TEST_METHOD(VerifyRegisterAndUnregisterAll)
-        {
-            PushNotificationTestFunctions::VerifyRegisterAndUnregisterAll();
-        }
+    void UnpackagedTests::VerifyUnregisterFails()
+    {
+        auto pushNotificationManager{ PushNotificationManager::Default() };
+        VERIFY_THROWS_HR(pushNotificationManager.Unregister(), E_UNEXPECTED);
+    }
 
-        TEST_METHOD(MultipleRegister)
-        {
-            PushNotificationTestFunctions::MultipleRegister();
-        }
+    void UnpackagedTests::VerifyUnregisterAllFails()
+    {
+        auto pushNotificationManager{ PushNotificationManager::Default() };
+        VERIFY_THROWS_HR(pushNotificationManager.UnregisterAll(), E_UNEXPECTED);
+    }
 
-        TEST_METHOD(VerifyMultipleRegisterAndUnregister)
-        {
-            PushNotificationTestFunctions::VerifyMultipleRegisterAndUnregister();
-        }
+    void UnpackagedTests::VerifyRegisterAndUnregisterAll()
+    {
+        auto pushNotificationManager{ PushNotificationManager::Default() };
+        pushNotificationManager.Register();
+        m_registered = true;
 
-        TEST_METHOD(VerifyMultipleRegisterAndUnregisterAll)
-        {
-            PushNotificationTestFunctions::VerifyMultipleRegisterAndUnregisterAll();
-        }
+        pushNotificationManager.UnregisterAll();
+        m_registered = false;
+    }
 
-        TEST_METHOD(VerifyUnregisterTwice)
-        {
-            PushNotificationTestFunctions::VerifyUnregisterTwice();
-        }
+    void UnpackagedTests::MultipleRegister()
+    {
+        auto pushNotificationManager{ PushNotificationManager::Default() };
+        pushNotificationManager.Register();
+        m_registered = true;
 
-        TEST_METHOD(VerifyUnregisterAll)
-        {
-            PushNotificationTestFunctions::VerifyUnregisterAll();
-        }
+        VERIFY_THROWS_HR(pushNotificationManager.Register(), HRESULT_FROM_WIN32(ERROR_ALREADY_REGISTERED));
+    }
 
-        TEST_METHOD(VerifyUnregisterAllTwice)
-        {
-            PushNotificationTestFunctions::VerifyUnregisterAllTwice();
-        }
+    void UnpackagedTests::VerifyMultipleRegisterAndUnregister()
+    {
+        PushNotificationManager::Default().Register();
+        m_registered = true;
 
-        TEST_METHOD(VerifyUnregisterAndUnregisterAll)
-        {
-            PushNotificationTestFunctions::VerifyUnregisterAndUnregisterAll();
-        }
+        PushNotificationManager::Default().Unregister();
+        VERIFY_THROWS_HR(PushNotificationManager::Default().Register(), HRESULT_FROM_WIN32(ERROR_ALREADY_REGISTERED));
+    }
 
-        TEST_METHOD(VerifyForegroundHandlerSucceeds)
-        {
-            PushNotificationTestFunctions::VerifyForegroundHandlerSucceeds();
-        }
+    void UnpackagedTests::VerifyMultipleRegisterAndUnregisterAll()
+    {
+        PushNotificationManager::Default().Register();
+        m_registered = true;
 
-        TEST_METHOD(VerifyForegroundHandlerFails)
-        {
-            PushNotificationTestFunctions::VerifyForegroundHandlerFails();
-        }
-    };
+        PushNotificationManager::Default().UnregisterAll();
+        m_registered = false;
+
+        PushNotificationManager::Default().Register();
+        m_registered = true;
+
+        PushNotificationManager::Default().UnregisterAll();
+        m_registered = false;
+    }
+
+    void UnpackagedTests::VerifyUnregisterTwice()
+    {
+        PushNotificationManager::Default().Register();
+        m_registered = true;
+
+        PushNotificationManager::Default().Unregister();
+        VERIFY_THROWS_HR(PushNotificationManager::Default().Unregister(), E_UNEXPECTED);
+    }
+
+    void UnpackagedTests::VerifyUnregisterAllTwice()
+    {
+        PushNotificationManager::Default().Register();
+        m_registered = true;
+
+        PushNotificationManager::Default().UnregisterAll();
+        m_registered = false;
+
+        VERIFY_THROWS_HR(PushNotificationManager::Default().UnregisterAll(), E_UNEXPECTED);
+    }
+
+    void UnpackagedTests::VerifyUnregisterAndUnregisterAll()
+    {
+        PushNotificationManager::Default().Register();
+        m_registered = true;
+
+        PushNotificationManager::Default().Unregister();
+        PushNotificationManager::Default().UnregisterAll();
+        m_registered = false;
+    }
+
+    void UnpackagedTests::VerifyForegroundHandlerSucceeds()
+    {
+        PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& /* args */) {});
+        PushNotificationManager::Default().Register();
+        m_registered = true;
+    }
+
+    void UnpackagedTests::VerifyForegroundHandlerFails()
+    {
+        PushNotificationManager::Default().Register();
+        m_registered = true;
+
+        VERIFY_THROWS_HR(PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& /* args */) {}), HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+    }
 }

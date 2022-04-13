@@ -172,15 +172,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="PackagedSelfContainedTests.h" />
+    <ClInclude Include="PackagedTests.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="TestFunctions.h" />
+    <ClInclude Include="UnpackagedSelfContainedTests.h" />
+    <ClInclude Include="UnpackagedTests.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PackagedSelfContainedTests.cpp" />
     <ClCompile Include="PackagedTests.cpp" />
     <ClCompile Include="UnpackagedSelfContained.cpp" />
     <ClCompile Include="UnpackagedTests.cpp" />
-    <ClCompile Include="TestFunctions.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

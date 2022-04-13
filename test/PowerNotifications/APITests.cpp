@@ -3,11 +3,9 @@
 
 #include "pch.h"
 #include "winrt/Microsoft.Windows.System.Power.h"
-#include "winrt/Microsoft.Windows.PushNotifications.h"
 
 using namespace std::chrono_literals;
 using namespace winrt::Microsoft::Windows::System::Power;
-using namespace winrt::Microsoft::Windows::PushNotifications;
 
 namespace Test::PowerNotifications
 {
@@ -53,10 +51,8 @@ namespace Test::PowerNotifications
 
         TEST_METHOD(GetBatteryStatus)
         {
-            /*auto value = PowerManager::BatteryStatus();
-            VERIFY_ARE_EQUAL(value, BatteryStatus::NotPresent);*/
-
-            PushNotificationManager::Default().Register();
+            auto value = PowerManager::BatteryStatus();
+            VERIFY_ARE_EQUAL(value, BatteryStatus::NotPresent);
         }
 
         TEST_METHOD(GetPowerSupplyStatus)

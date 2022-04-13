@@ -173,10 +173,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Windows.PushNotifications">
-      <HintPath>..\..\BuildOutput\Debug\x64\WindowsAppRuntime_DLL\Microsoft.Windows.PushNotifications.winmd</HintPath>
-      <IsWinMDFile>true</IsWinMDFile>
-    </Reference>
     <Reference Include="Microsoft.Windows.System.Power">
       <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.System.Power.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
