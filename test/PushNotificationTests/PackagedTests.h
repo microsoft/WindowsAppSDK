@@ -3,6 +3,7 @@
 
 #include "pch.h"
 #include <TestDef.h>
+#include "Base.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -17,42 +18,31 @@ using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 using namespace winrt::Microsoft::Windows::PushNotifications;
 
-namespace Test::PushNotifications
+class PackagedTests : public WEX::TestClass<PackagedTests>
 {
-    class PackagedTests
-    {
     private:
-        HRESULT ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& channelOperation);
+        Base m_base{};
 
-        bool m_registered{ false };
     public:
         BEGIN_TEST_CLASS(PackagedTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
             TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")
+            TEST_CLASS_PROPERTY(L"Data:SelfContained", L"{true, false}")
             TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
             TEST_CLASS_PROPERTY(L"UAP:Host", L"PackagedCWA")
             TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"PushNotifications-AppxManifest.xml")
-            TEST_CLASS_PROPERTY(L"Data:SelfContained", L"{true, false}")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassInit)
         {
-            ::Test::Bootstrap::Setup();
-            bool isSelfContained{ false };
-            if (SUCCEEDED(TestData::TryGetValue(L"SelfContained", isSelfContained)))
-            {
-                if (!isSelfContained)
-                {
-                    ::WindowsAppRuntime::SelfContained::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
-                }
-            }
+            m_base.ClassSetup();
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            ::Test::Bootstrap::Cleanup();
+            m_base.ClassCleanup();
             return true;
         }
 
@@ -63,29 +53,18 @@ namespace Test::PushNotifications
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
-            if (m_registered)
-            {
-                PushNotificationManager::Default().UnregisterAll();
-                m_registered = false;
-            }
-
+            m_base.MethodCleanup();
             return true;
         }
 
-        TEST_METHOD(ChannelRequestUsingNullRemoteId);
-        TEST_METHOD(ChannelRequestUsingRemoteId);
-        TEST_METHOD(MultipleChannelClose); // Currently failing
-        TEST_METHOD(VerifyRegisterAndUnregister);
-        TEST_METHOD(VerifyRegisterAndUnregisterAll);
-        TEST_METHOD(VerifyUnregisterFails);
-        TEST_METHOD(VerifyUnregisterAllFails);
-        TEST_METHOD(MultipleRegister);
-        TEST_METHOD(VerifyMultipleRegisterAndUnregister);
-        TEST_METHOD(VerifyMultipleRegisterAndUnregisterAll);
-        TEST_METHOD(VerifyUnregisterTwice);
-        TEST_METHOD(VerifyUnregisterAllTwice);
-        TEST_METHOD(VerifyUnregisterAndUnregisterAll);
-        TEST_METHOD(VerifyForegroundHandlerSucceeds);
-        TEST_METHOD(VerifyForegroundHandlerFails);
-    };
-}
+        TEST_METHOD(ChannelRequestUsingNullRemoteId)
+        {
+            m_base.ChannelRequestUsingNullRemoteId();
+        }
+
+        TEST_METHOD(ChannelRequestUsingNullRemoteId2)
+        {
+            VERIFY_IS_TRUE(true);
+        }
+};
+
