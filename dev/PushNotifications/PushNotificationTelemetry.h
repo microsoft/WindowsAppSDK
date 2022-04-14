@@ -16,69 +16,68 @@ class PushNotificationTelemetry : public wil::TraceLoggingProvider
     IMPLEMENT_TELEMETRY_CLASS(PushNotificationTelemetry, PushNotificationTelemetryProvider);
 
 public:
-    DEFINE_EVENT_METHOD(ChannelRequestedByApi)(
+    DEFINE_EVENT_METHOD(LogCreateChannelAsync)(
         winrt::hresult hr,
         const winrt::guid& remoteId) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
             TraceLoggingClassWriteMeasure(
-                "ChannelRequestedByApi",
+                "CreateChannelAsync",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingGuid(remoteId, "RemoteId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName(), "AppName"));
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(ChannelClosedByApi)(
+    DEFINE_EVENT_METHOD(LogCloseChannel)(
         winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
             TraceLoggingClassWriteMeasure(
-                "ChannelClosedByApi",
+                "CloseChannel",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName(), "AppName"));
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(ActivatorRegisteredByApi)(
+    DEFINE_EVENT_METHOD(LogRegister)(
         winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
             TraceLoggingClassWriteMeasure(
-                "ActivatorRegisteredByApi",
-                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                "Register",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance), 
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName(), "AppName"));
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
 
-
-    DEFINE_EVENT_METHOD(ActivatorUnregisteredByApi)(
+    DEFINE_EVENT_METHOD(LogUnregister)(
         winrt::hresult hr) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
             TraceLoggingClassWriteMeasure(
-                "ActivatorUnregisteredByApi",
+                "Unregister",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName(), "AppName"));
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -91,7 +90,7 @@ private:
     static constexpr ULONGLONG c_logPeriod = 1000; // One second
     static constexpr UINT c_maxEventLimit = 10;
 
-    UINT UpdateLogEventCount() noexcept
+    UINT UpdateLogEventCount()
     {
         ULONGLONG currentTick = GetTickCount64();
 
@@ -109,61 +108,42 @@ private:
         return m_eventCount;
     }
 
-    inline bool IsPackagedApp()
+    inline bool IsPackagedApp() const
     {
-        static const bool isPackagedApp = AppModel::Identity::IsPackagedProcess();
+        static const bool isPackagedApp{ AppModel::Identity::IsPackagedProcess() };
 
         return isPackagedApp;
     }
 
-    inline const wchar_t* GetAppName()
+    inline const std::wstring& GetAppName() const
     {
-        static const std::wstring appName = IsPackagedApp() ? GetAppNamePackaged() : GetAppNameUnpackaged();
+        static const std::wstring appName{ IsPackagedApp() ? GetAppNamePackaged() : GetAppNameUnpackaged() };
 
-        return appName.c_str();
+        return appName;
     }
 
-    std::wstring GetAppNamePackaged() noexcept
+    std::wstring GetAppNamePackaged() const
     {
         wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH]{};
 
-        UINT32 appUserModelIdSize = ARRAYSIZE(appUserModelId);
-        auto result = GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId);
-        if (result != ERROR_SUCCESS)
-        {
-            wcscpy_s(appUserModelId, L"AppUserModelId not found");
-            LOG_WIN32(result);
-        }
+        UINT32 appUserModelIdSize{ ARRAYSIZE(appUserModelId) };
+        THROW_IF_WIN32_ERROR(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
 
         return appUserModelId;
     }
 
-    PCWSTR CensorFilePath(PCWSTR path) noexcept
+    std::wstring CensorFilePath(const std::wstring& filepath) const
     {
-        if (path)
-        {
-            path = !PathIsFileSpecW(path) ? PathFindFileNameW(path) : path;
-        }
-
-        return path;
+        return { !PathIsFileSpecW(filepath.c_str()) ? PathFindFileNameW(filepath.c_str()) : filepath };
     }
 
-    std::wstring GetAppNameUnpackaged()
+    std::wstring GetAppNameUnpackaged() const
     {
         std::wstring appName;
 
         wil::unique_cotaskmem_string processName;
-        auto result = wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processName);
-        if (result == ERROR_SUCCESS)
-        {
-            appName = CensorFilePath(processName.get());
-        }
-        else
-        {
-            appName = L"ModuleFileName not found";
-            LOG_WIN32(result);
-        }
+        THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processName));
 
-        return appName;
+        return CensorFilePath(processName.get());
     }
 };
