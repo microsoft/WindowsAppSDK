@@ -24,9 +24,9 @@ namespace winrt
     using namespace winrt::Windows::Foundation;
 }
 
-const PCWSTR c_localWindowsAppSDKFolder{ LR"(Microsoft\WindowsAppSDK)" };
-const PCWSTR c_pngExtension{ LR"(.png)" };
-const PCWSTR c_appUserModelId{ LR"(TaefTestAppId)" };
+const std::wstring c_localWindowsAppSDKFolder{ LR"(\Microsoft\WindowsAppSDK\)" };
+const std::wstring c_pngExtension{ LR"(.png)" };
+const std::wstring c_appUserModelId{ LR"(TaefTestAppId)" };
 
 bool BackgroundActivationTest() // Activating application for background test.
 {
@@ -1306,11 +1306,8 @@ bool VerifyIconPathExists_Unpackaged()
         wil::unique_cotaskmem_string localAppDataPath;
         THROW_IF_FAILED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0 /* flags */, nullptr /* access token handle */, &localAppDataPath));
 
-        std::path iconFilePath{ localAppDataPath.get() };
-        iconFilePath /= c_localWindowsAppSDKFolder;
-        iconFilePath /= c_appUserModelId;
-        iconFilePath += c_pngExtension;
-
+        // Evaluated path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK\<AUMID>.png
+        std::path iconFilePath{ std::wstring(localAppDataPath.get()) + c_localWindowsAppSDKFolder + c_appUserModelId + c_pngExtension };
         winrt::check_bool(std::exists(iconFilePath));
 
         winrt::AppNotificationManager::Default().UnregisterAll();
@@ -1325,7 +1322,6 @@ bool VerifyIconPathExists_Unpackaged()
 
     return true;
 }
-
 
 std::map<std::string, bool(*)()> const& GetSwitchMapping()
 {
@@ -1426,7 +1422,7 @@ int main() try
     if (!Test::AppModel::IsPackagedProcess())
     {
         // Not mandatory, but it's highly recommended to specify AppUserModelId
-        THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(c_appUserModelId));
+        THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(c_appUserModelId.c_str()));
     }
 
     winrt::AppNotificationManager::Default().Register();

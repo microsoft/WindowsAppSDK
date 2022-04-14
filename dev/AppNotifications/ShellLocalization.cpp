@@ -218,9 +218,7 @@ HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsF
     std::wstring notificationAppId{ Microsoft::Windows::AppNotifications::Helpers::RetrieveNotificationAppId() };
 
     // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK\{AppGUID}.png
-    auto iconFilePath{ RetrieveLocalFolderPath() };
-    iconFilePath /= notificationAppId;
-    iconFilePath += c_pngExtension;
+    auto iconFilePath{ RetrieveLocalFolderPath() / (notificationAppId + c_pngExtension) };
     WriteHIconToPngFile(hIcon, iconFilePath.c_str());
 
     assets.displayName = Microsoft::Windows::AppNotifications::Helpers::GetDisplayNameBasedOnProcessName();
@@ -247,9 +245,7 @@ HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::DeleteIconFromC
     std::wstring notificationAppId{ Microsoft::Windows::AppNotifications::Helpers::RetrieveNotificationAppId() };
 
     // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK\{AppGUID}.png
-    std::path iconFilePath{ RetrieveLocalFolderPath() };
-    iconFilePath /= notificationAppId;
-    iconFilePath += c_pngExtension;
+    std::path iconFilePath{ RetrieveLocalFolderPath() / (notificationAppId + c_pngExtension) };
 
     // If DeleteFile returned FALSE, then deletion failed and we should return the corresponding error code.
     if (DeleteFile(iconFilePath.c_str()) == FALSE)

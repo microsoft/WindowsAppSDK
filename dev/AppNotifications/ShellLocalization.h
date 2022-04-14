@@ -9,7 +9,7 @@
 
 namespace Microsoft::Windows::AppNotifications::ShellLocalization
 {
-    const PCWSTR c_localWindowsAppSDKFolder{ LR"(Microsoft\WindowsAppSDK)" };
+    const PCWSTR c_localWindowsAppSDKFolder{ LR"(Microsoft\WindowsAppSDK\)" };
     const PCWSTR c_pngExtension{ LR"(.png)" };
 
     struct AppNotificationAssets {
