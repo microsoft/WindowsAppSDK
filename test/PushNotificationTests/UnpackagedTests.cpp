@@ -43,7 +43,7 @@ namespace Test::PushNotifications
 
     void UnpackagedTests::ChannelRequestUsingNullRemoteId()
     {
-        if (!m_isSelfContained)
+        if (PushNotificationManager::Default().IsSupported())
         {
             VERIFY_THROWS_HR(PushNotificationManager::Default().CreateChannelAsync(winrt::guid()).get(), E_INVALIDARG);
         }
@@ -56,7 +56,7 @@ namespace Test::PushNotifications
 
     void UnpackagedTests::ChannelRequestUsingRemoteId()
     {
-        if (!m_isSelfContained)
+        if (PushNotificationManager::Default().IsSupported())
         {
             auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
             VERIFY_SUCCEEDED(ChannelRequestHelper(channelOperation));
@@ -95,7 +95,7 @@ namespace Test::PushNotifications
 
     void UnpackagedTests::VerifyUnregisterFails()
     {
-        if (!m_isSelfContained)
+        if (PushNotificationManager::Default().IsSupported())
         {
             VERIFY_THROWS_HR(PushNotificationManager::Default().Unregister(), E_UNEXPECTED);
         }
@@ -107,7 +107,7 @@ namespace Test::PushNotifications
 
     void UnpackagedTests::VerifyUnregisterAllFails()
     {
-        if (!m_isSelfContained)
+        if (PushNotificationManager::Default().IsSupported())
         {
             VERIFY_THROWS_HR(PushNotificationManager::Default().UnregisterAll(), E_UNEXPECTED);
         }
@@ -131,7 +131,7 @@ namespace Test::PushNotifications
         PushNotificationManager::Default().Register();
         m_registered = true;
 
-        if (!m_isSelfContained)
+        if (PushNotificationManager::Default().IsSupported())
         {
             VERIFY_THROWS_HR(PushNotificationManager::Default().Register(), HRESULT_FROM_WIN32(ERROR_ALREADY_REGISTERED));
         }
@@ -148,7 +148,7 @@ namespace Test::PushNotifications
 
         PushNotificationManager::Default().Unregister();
 
-        if (!m_isSelfContained)
+        if (PushNotificationManager::Default().IsSupported())
         {
             VERIFY_THROWS_HR(PushNotificationManager::Default().Register(), HRESULT_FROM_WIN32(ERROR_ALREADY_REGISTERED));
         }
@@ -179,7 +179,7 @@ namespace Test::PushNotifications
         m_registered = true;
 
         PushNotificationManager::Default().Unregister();
-        if (!m_isSelfContained)
+        if (PushNotificationManager::Default().IsSupported())
         {
             VERIFY_THROWS_HR(PushNotificationManager::Default().Unregister(), E_UNEXPECTED);
         }
@@ -197,7 +197,7 @@ namespace Test::PushNotifications
         PushNotificationManager::Default().UnregisterAll();
         m_registered = false;
 
-        if (!m_isSelfContained)
+        if (PushNotificationManager::Default().IsSupported())
         {
             VERIFY_THROWS_HR(PushNotificationManager::Default().UnregisterAll(), E_UNEXPECTED);
         }
@@ -229,7 +229,7 @@ namespace Test::PushNotifications
         PushNotificationManager::Default().Register();
         m_registered = true;
 
-        if (!m_isSelfContained)
+        if (PushNotificationManager::Default().IsSupported())
         {
             VERIFY_THROWS_HR(PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& /* args */) {}), HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
         }

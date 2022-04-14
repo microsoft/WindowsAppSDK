@@ -25,7 +25,6 @@ namespace Test::PushNotifications
         HRESULT ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& channelOperation);
 
         bool m_registered{ false };
-        bool m_isSelfContained{ false };
     public:
         BEGIN_TEST_CLASS(UnpackagedTests)
             TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK Push Notifications test")
@@ -38,9 +37,10 @@ namespace Test::PushNotifications
         TEST_CLASS_SETUP(ClassInit)
         {
             ::Test::Bootstrap::Setup();
-            if (SUCCEEDED(TestData::TryGetValue(L"SelfContained", m_isSelfContained)))
+            bool isSelfContained{ false };
+            if (SUCCEEDED(TestData::TryGetValue(L"SelfContained", isSelfContained)))
             {
-                if (!m_isSelfContained)
+                if (!isSelfContained)
                 {
                     ::WindowsAppRuntime::SelfContained::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
                 }
