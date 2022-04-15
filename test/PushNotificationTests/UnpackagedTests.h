@@ -2,88 +2,59 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
-#include <TestDef.h>
+#include "BaseTestSuite.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
-using namespace winrt::Windows::ApplicationModel::Activation;
-using namespace winrt::Windows::ApplicationModel::Background;
-using namespace winrt::Windows::Foundation;
-using namespace winrt::Windows::Foundation::Collections;
-using namespace winrt::Windows::Management::Deployment;
-using namespace winrt::Windows::Storage;
-using namespace winrt::Windows::System;
-using namespace winrt::Microsoft::Windows::PushNotifications;
-
-namespace Test::PushNotifications
+class UnpackagedTests : BaseTestSuite
 {
-    class UnpackagedTests
+    BEGIN_TEST_CLASS(UnpackagedTests)
+        TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK Push Notifications test")
+        TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+        TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
+        TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")
+        TEST_CLASS_PROPERTY(L"Data:SelfContained", L"{true, false}")
+    END_TEST_CLASS()
+
+    TEST_CLASS_SETUP(ClassInit)
     {
-    private:
-        HRESULT ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& channelOperation);
+        BaseTestSuite::ClassSetup();
+        return true;
+    }
 
-        bool m_registered{ false };
-    public:
-        BEGIN_TEST_CLASS(UnpackagedTests)
-            TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK Push Notifications test")
-            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
-            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")
-            TEST_CLASS_PROPERTY(L"Data:SelfContained", L"{true, false}")
-        END_TEST_CLASS()
+    TEST_CLASS_CLEANUP(ClassUninit)
+    {
+        BaseTestSuite::ClassCleanup();
+        return true;
+    }
 
-        TEST_CLASS_SETUP(ClassInit)
-        {
-            ::Test::Bootstrap::Setup();
-            bool isSelfContained{ false };
-            if (SUCCEEDED(TestData::TryGetValue(L"SelfContained", isSelfContained)))
-            {
-                if (!isSelfContained)
-                {
-                    ::WindowsAppRuntime::SelfContained::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
-                }
-            }
-            return true;
-        }
+    TEST_METHOD_SETUP(MethodInit)
+    {
+        return true;
+    }
 
-        TEST_CLASS_CLEANUP(ClassUninit)
-        {
-            ::Test::Bootstrap::Cleanup();
-            return true;
-        }
+    TEST_METHOD_CLEANUP(MethodUninit)
+    {
+        BaseTestSuite::MethodCleanup();
+        return true;
+    }
 
-        TEST_METHOD_SETUP(MethodInit)
-        {
-            return true;
-        }
+    TEST_METHOD(ChannelRequestUsingNullRemoteId);
+    TEST_METHOD(ChannelRequestUsingRemoteId);
+    TEST_METHOD(MultipleChannelClose); // Currently failing
+    TEST_METHOD(VerifyRegisterAndUnregister);
+    TEST_METHOD(VerifyRegisterAndUnregisterAll);
+    TEST_METHOD(VerifyUnregisterFails);
+    TEST_METHOD(VerifyUnregisterAllFails);
+    TEST_METHOD(MultipleRegister);
+    TEST_METHOD(VerifyMultipleRegisterAndUnregister);
+    TEST_METHOD(VerifyMultipleRegisterAndUnregisterAll);
+    TEST_METHOD(VerifyUnregisterTwice);
+    TEST_METHOD(VerifyUnregisterAllTwice);
+    TEST_METHOD(VerifyUnregisterAndUnregisterAll);
+    TEST_METHOD(VerifyForegroundHandlerSucceeds);
+    TEST_METHOD(VerifyForegroundHandlerFails);
+};
 
-        TEST_METHOD_CLEANUP(MethodUninit)
-        {
-            if (m_registered)
-            {
-                PushNotificationManager::Default().UnregisterAll();
-                m_registered = false;
-            }
-
-            return true;
-        }
-
-        TEST_METHOD(ChannelRequestUsingNullRemoteId);
-        TEST_METHOD(ChannelRequestUsingRemoteId);
-        TEST_METHOD(MultipleChannelClose); // Currently failing
-        TEST_METHOD(VerifyRegisterAndUnregister);
-        TEST_METHOD(VerifyRegisterAndUnregisterAll);
-        TEST_METHOD(VerifyUnregisterFails);
-        TEST_METHOD(VerifyUnregisterAllFails);
-        TEST_METHOD(MultipleRegister);
-        TEST_METHOD(VerifyMultipleRegisterAndUnregister);
-        TEST_METHOD(VerifyMultipleRegisterAndUnregisterAll);
-        TEST_METHOD(VerifyUnregisterTwice);
-        TEST_METHOD(VerifyUnregisterAllTwice);
-        TEST_METHOD(VerifyUnregisterAndUnregisterAll);
-        TEST_METHOD(VerifyForegroundHandlerSucceeds);
-        TEST_METHOD(VerifyForegroundHandlerFails);
-    };
-}

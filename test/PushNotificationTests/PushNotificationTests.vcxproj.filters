@@ -27,7 +27,7 @@
     <ClInclude Include="UnpackagedTests.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Base.h">
+    <ClInclude Include="BaseTestSuite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -35,7 +35,13 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Base.cpp">
+    <ClCompile Include="BaseTestSuite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PackagedTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UnpackagedTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

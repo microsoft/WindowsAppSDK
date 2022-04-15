@@ -4,7 +4,7 @@
 #include "pch.h"
 
 #include <TestDef.h>
-#include "Base.h"
+#include "BaseTestSuite.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -19,7 +19,7 @@ using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 using namespace winrt::Microsoft::Windows::PushNotifications;
 
-void Base::ClassSetup()
+void BaseTestSuite::ClassSetup()
 {
     ::Test::Bootstrap::Setup();
     bool isSelfContained{ false };
@@ -32,12 +32,12 @@ void Base::ClassSetup()
     }
 }
 
-void Base::ClassCleanup()
+void BaseTestSuite::ClassCleanup()
 {
     ::Test::Bootstrap::Cleanup();
 }
 
-void Base::MethodCleanup()
+void BaseTestSuite::MethodCleanup()
 {
     if (m_registered)
     {
@@ -46,7 +46,7 @@ void Base::MethodCleanup()
     }
 }
 
-HRESULT Base::ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& channelOperation)
+HRESULT BaseTestSuite::ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& channelOperation)
 {
     if (channelOperation.wait_for(c_timeout) != winrt::Windows::Foundation::AsyncStatus::Completed)
     {
@@ -65,7 +65,7 @@ HRESULT Base::ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationC
     return S_OK;
 }
 
-void Base::ChannelRequestUsingNullRemoteId()
+void BaseTestSuite::ChannelRequestUsingNullRemoteId()
 {
     if (PushNotificationManager::Default().IsSupported())
     {
@@ -78,7 +78,7 @@ void Base::ChannelRequestUsingNullRemoteId()
     }
 }
 
-void Base::ChannelRequestUsingRemoteId()
+void BaseTestSuite::ChannelRequestUsingRemoteId()
 {
     if (PushNotificationManager::Default().IsSupported())
     {
@@ -93,7 +93,7 @@ void Base::ChannelRequestUsingRemoteId()
 }
 
 // Currently failing - https://github.com/microsoft/WindowsAppSDK/issues/2392
-void Base::MultipleChannelClose()
+void BaseTestSuite::MultipleChannelClose()
 {
     auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
     if (channelOperation.wait_for(c_timeout) != winrt::Windows::Foundation::AsyncStatus::Completed)
@@ -109,7 +109,7 @@ void Base::MultipleChannelClose()
     VERIFY_THROWS_HR(result.Channel().Close(), WPN_E_CHANNEL_CLOSED);
 }
 
-void Base::VerifyRegisterAndUnregister()
+void BaseTestSuite::VerifyRegisterAndUnregister()
 {
     PushNotificationManager::Default().Register();
     m_registered = true;
@@ -117,7 +117,7 @@ void Base::VerifyRegisterAndUnregister()
     PushNotificationManager::Default().Unregister();
 }
 
-void Base::VerifyUnregisterFails()
+void BaseTestSuite::VerifyUnregisterFails()
 {
     if (PushNotificationManager::Default().IsSupported())
     {
@@ -129,7 +129,7 @@ void Base::VerifyUnregisterFails()
     }
 }
 
-void Base::VerifyUnregisterAllFails()
+void BaseTestSuite::VerifyUnregisterAllFails()
 {
     if (PushNotificationManager::Default().IsSupported())
     {
@@ -141,7 +141,7 @@ void Base::VerifyUnregisterAllFails()
     }
 }
 
-void Base::VerifyRegisterAndUnregisterAll()
+void BaseTestSuite::VerifyRegisterAndUnregisterAll()
 {
     PushNotificationManager::Default().Register();
     m_registered = true;
@@ -150,7 +150,7 @@ void Base::VerifyRegisterAndUnregisterAll()
     m_registered = false;
 }
 
-void Base::MultipleRegister()
+void BaseTestSuite::MultipleRegister()
 {
     PushNotificationManager::Default().Register();
     m_registered = true;
@@ -165,7 +165,7 @@ void Base::MultipleRegister()
     }
 }
 
-void Base::VerifyMultipleRegisterAndUnregister()
+void BaseTestSuite::VerifyMultipleRegisterAndUnregister()
 {
     PushNotificationManager::Default().Register();
     m_registered = true;
@@ -182,7 +182,7 @@ void Base::VerifyMultipleRegisterAndUnregister()
     }
 }
 
-void Base::VerifyMultipleRegisterAndUnregisterAll()
+void BaseTestSuite::VerifyMultipleRegisterAndUnregisterAll()
 {
     PushNotificationManager::Default().Register();
     m_registered = true;
@@ -197,7 +197,7 @@ void Base::VerifyMultipleRegisterAndUnregisterAll()
     m_registered = false;
 }
 
-void Base::VerifyUnregisterTwice()
+void BaseTestSuite::VerifyUnregisterTwice()
 {
     PushNotificationManager::Default().Register();
     m_registered = true;
@@ -213,7 +213,7 @@ void Base::VerifyUnregisterTwice()
     }
 }
 
-void Base::VerifyUnregisterAllTwice()
+void BaseTestSuite::VerifyUnregisterAllTwice()
 {
     PushNotificationManager::Default().Register();
     m_registered = true;
@@ -231,7 +231,7 @@ void Base::VerifyUnregisterAllTwice()
     }
 }
 
-void Base::VerifyUnregisterAndUnregisterAll()
+void BaseTestSuite::VerifyUnregisterAndUnregisterAll()
 {
     PushNotificationManager::Default().Register();
     m_registered = true;
@@ -241,14 +241,14 @@ void Base::VerifyUnregisterAndUnregisterAll()
     m_registered = false;
 }
 
-void Base::VerifyForegroundHandlerSucceeds()
+void BaseTestSuite::VerifyForegroundHandlerSucceeds()
 {
     PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& /* args */) {});
     PushNotificationManager::Default().Register();
     m_registered = true;
 }
 
-void Base::VerifyForegroundHandlerFails()
+void BaseTestSuite::VerifyForegroundHandlerFails()
 {
     PushNotificationManager::Default().Register();
     m_registered = true;

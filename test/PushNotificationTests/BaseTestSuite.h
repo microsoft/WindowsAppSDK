@@ -17,11 +17,9 @@ using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 using namespace winrt::Microsoft::Windows::PushNotifications;
 
-class Base
+class BaseTestSuite
 {
     public:
-        Base() = default;
-
         // Unit test environment functions
         void ClassSetup();
         void ClassCleanup();
