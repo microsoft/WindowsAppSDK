@@ -3,12 +3,30 @@
 #include <pch.h>
 #include <DeploymentManager.h>
 #include <DeploymentResult.h>
+#include <DeploymentActivityContext.h>
 #include <PackageInfo.h>
 #include <PackageId.h>
 #include <TerminalVelocityFeatures-DeploymentAPI.h>
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
 #include <PushNotificationsLongRunningPlatform-Startup.h>
 #include "WindowsAppRuntime-License.h"
+
+using namespace winrt;
+using namespace Windows::Foundation;
+
+#define Initialize_StopSuccessActivity() initializeActivityContext.GetActivity().StopWithResult(\
+    S_OK,\
+    static_cast <UINT32>(0),\
+    static_cast<PCSTR>(nullptr),\
+    static_cast <unsigned int>(0),\
+    static_cast<PCWSTR>(nullptr),\
+    static_cast<PCSTR>(nullptr),\
+    static_cast <UINT32>(getStatusResult.Status()),\
+    static_cast<UINT32>(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::None),\
+    static_cast<PCWSTR>(nullptr),\
+    S_OK,\
+    static_cast<PCWSTR>(nullptr),\
+    GUID_NULL);
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
@@ -21,12 +39,16 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize()
     {
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Start(false, Security::IntegrityLevel::IsElevated());
+
         FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
         return Initialize(GetCurrentFrameworkPackageFullName());
     }
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions)
     {
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Start(deploymentInitializeOptions.ForceDeployment(), Security::IntegrityLevel::IsElevated());
+
         FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
         return Initialize(GetCurrentFrameworkPackageFullName(), deploymentInitializeOptions);
     }
@@ -114,9 +136,12 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(hstring const& packageFullName, winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions)
     {
+        auto& initializeActivityContext{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
+
         auto getStatusResult{ DeploymentManager::GetStatus(packageFullName) };
         if (getStatusResult.Status() == DeploymentStatus::Ok)
         {
+            Initialize_StopSuccessActivity();
             return getStatusResult;
         }
 
@@ -126,10 +151,25 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         if (SUCCEEDED(deployPackagesResult))
         {
             status = DeploymentStatus::Ok;
+            Initialize_StopSuccessActivity();
         }
         else
         {
             status = DeploymentStatus::PackageInstallFailed;
+
+            initializeActivityContext.GetActivity().StopWithResult(
+                deployPackagesResult,
+                static_cast<UINT32>(initializeActivityContext.GetLastFailure().type),
+                initializeActivityContext.GetLastFailure().file.c_str(),
+                initializeActivityContext.GetLastFailure().lineNumer,
+                initializeActivityContext.GetLastFailure().message.c_str(),
+                initializeActivityContext.GetLastFailure().module.c_str(),
+                static_cast<UINT32>(status),
+                static_cast<UINT32>(initializeActivityContext.GetInstallStage()),
+                initializeActivityContext.GetCurrentResourceId().c_str(),
+                initializeActivityContext.GetDeploymentErrorExtendedHResult(),
+                initializeActivityContext.GetDeploymentErrorText().c_str(),
+                initializeActivityContext.GetDeploymentErrorActivityId());
         }
 
         return winrt::make<implementation::DeploymentResult>(status, deployPackagesResult);
@@ -197,7 +237,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     CATCH_RETURN()
 
     // Gets the package path, which is a fast and reliable way to check if the package is
-    // registered for the user, even without package query capabilities.
+    // at least staged on the device, even without package query capabilities.
     std::wstring DeploymentManager::GetPackagePath(std::wstring const& packageFullName)
     {
         UINT32 pathLength{};
@@ -231,8 +271,21 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
         const auto options{ GetDeploymentOptions(forceDeployment) };
         const auto packagePathUri = winrt::Windows::Foundation::Uri(packagePath.c_str());
-        const auto deploymentResult{ packageManager.AddPackageAsync(packagePathUri, nullptr, options).get() };
-        return deploymentResult.ExtendedErrorCode();
+        const auto deploymentOperation{ packageManager.AddPackageAsync(packagePathUri, nullptr, options) };
+        deploymentOperation.get();
+        const auto deploymentResult{ deploymentOperation.GetResults() };
+        HRESULT hrAddPackage{};
+        if (deploymentOperation.Status() != AsyncStatus::Completed)
+        {
+            hrAddPackage = static_cast<HRESULT>(deploymentOperation.ErrorCode());
+
+            ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetDeploymentErrorInfo(
+                deploymentResult.ExtendedErrorCode(),
+                deploymentResult.ErrorText().c_str(),
+                deploymentResult.ActivityId());
+        }
+
+        return hrAddPackage;
     }
     CATCH_RETURN()
 
@@ -247,11 +300,15 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     HRESULT DeploymentManager::InstallLicenses(const std::wstring& frameworkPackageFullName)
     {
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetLicensePath);
+
         // Build path for licenses
         auto licensePath{ std::filesystem::path(GetPackagePath(frameworkPackageFullName)) };
         licensePath /= WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER;
         auto licenseFilespec{ licensePath };
         licenseFilespec /= L"*_license.xml";
+
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::InstallLicense);
 
         // Deploy the licenses (if any)
         ::Microsoft::Windows::ApplicationModel::Licensing::Installer licenseInstaller;
@@ -269,6 +326,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             // Install the license file
             auto licenseFilename{ licensePath };
             licenseFilename /= findFileData.cFileName;
+
+            ::WindowsAppRuntime::Deployment::Activity::Context::Get().Reset();
+            ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetCurrentResourceId(licenseFilename);
+
             RETURN_IF_FAILED_MSG(licenseInstaller.InstallLicenseFile(licenseFilename.c_str()),
                                  "LicenseFile:%ls", licenseFilename.c_str());
 
@@ -285,9 +346,14 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName, bool forceDeployment)
     {
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetPackagePath);
         const auto frameworkPath{ std::filesystem::path(GetPackagePath(frameworkPackageFullName)) };
+
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
         for (const auto& package : c_targetPackages)
         {
+            ::WindowsAppRuntime::Deployment::Activity::Context::Get().Reset();
+            ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetCurrentResourceId(package.identifier);
             // Build path for the packages.
             auto packagePath{ frameworkPath };
             packagePath /= WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER;
@@ -295,13 +361,14 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
             // Deploy package.
             RETURN_IF_FAILED(AddPackage(packagePath, forceDeployment));
-        }
 
-        // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
-        if (forceDeployment)
-        {
-            // wil callback will be set up to log telemetry events for LRP.
-            THROW_IF_FAILED_MSG(StartupNotificationsLongRunningPlatform(), "Restarting Notifications LRP failed after 3 attempts.");
+            // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
+            if (forceDeployment &&
+                CompareStringOrdinal(package.identifier.c_str(), -1, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, -1, TRUE) == CSTR_EQUAL)
+            {
+                // wil callback is set up to log telemetry events for Push Notifications LRP.
+                LOG_IF_FAILED_MSG(StartupNotificationsLongRunningPlatform(), "Restarting Notifications LRP failed in all 3 attempts.");
+            }
         }
 
         return S_OK;

@@ -52,13 +52,4 @@ void WindowsAppRuntimeInstaller::InstallActivity::Context::SetLastFailure(const 
     {
         m_lastFailure.message.clear();
     }
-
-    if (failure.pszCode)
-    {
-        m_lastFailure.code = *failure.pszCode;
-    }
-    else
-    {
-        m_lastFailure.code.clear();
-    }
 }

@@ -3,10 +3,10 @@
 
 namespace Microsoft.Windows.ApplicationModel.Resources
 {
-    [contractversion(1.0)]
-    apicontract MrtContract{};
+    [contractversion(1)]
+    apicontract MrtCoreContract{};
 
-    [contract(MrtContract, 1.0)]
+    [contract(MrtCoreContract, 1)]
     [default_interface]
     runtimeclass ResourceLoader
     {
@@ -20,7 +20,7 @@ namespace Microsoft.Windows.ApplicationModel.Resources
         String GetStringForUri(Windows.Foundation.Uri resourceUri);
     }
 
-    [contract(MrtContract, 1.0)]
+    [contract(MrtCoreContract, 1)]
     runtimeclass ResourceNotFoundEventArgs
     {
         ResourceContext Context { get; };
@@ -28,7 +28,7 @@ namespace Microsoft.Windows.ApplicationModel.Resources
         void SetResolvedCandidate(ResourceCandidate candidate);
     }
 
-    [contract(MrtContract, 1.0)]
+    [contract(MrtCoreContract, 1)]
     runtimeclass ResourceMap
     {
         UInt32 ResourceCount { get; };
@@ -49,7 +49,7 @@ namespace Microsoft.Windows.ApplicationModel.Resources
         ResourceCandidate TryGetValue(String resource, ResourceContext context);
     }
 
-    [contract(MrtContract, 1.0)]
+    [contract(MrtCoreContract, 1)]
     interface IResourceManager
     {
         ResourceMap MainResourceMap{ get; };
@@ -58,7 +58,7 @@ namespace Microsoft.Windows.ApplicationModel.Resources
         event Windows.Foundation.TypedEventHandler<ResourceManager, ResourceNotFoundEventArgs> ResourceNotFound;
     }
 
-    [contract(MrtContract, 1.0)]
+    [contract(MrtCoreContract, 1)]
     [default_interface]
     runtimeclass ResourceManager : [default] IResourceManager
     {
@@ -66,19 +66,19 @@ namespace Microsoft.Windows.ApplicationModel.Resources
         ResourceManager(String fileName);
     }
 
-    [contract(MrtContract, 1.0)]
+    [contract(MrtCoreContract, 1)]
     interface IResourceContext
     {
         IMap<String, String> QualifierValues{ get; };
     }
 
-    [contract(MrtContract, 1.0)]
+    [contract(MrtCoreContract, 1)]
     [default_interface]
     runtimeclass ResourceContext : [default] IResourceContext
-    {       
+    {
     }
 
-    [contract(MrtContract, 1.0)]
+    [contract(MrtCoreContract, 1)]
     enum ResourceCandidateKind
     {
         Unknown = 0,
@@ -87,7 +87,7 @@ namespace Microsoft.Windows.ApplicationModel.Resources
         EmbeddedData,
     };
 
-    [contract(MrtContract, 1.0)]
+    [contract(MrtCoreContract, 1)]
     runtimeclass ResourceCandidate
     {
         ResourceCandidate(ResourceCandidateKind kind, String data);
@@ -100,7 +100,7 @@ namespace Microsoft.Windows.ApplicationModel.Resources
         IMapView<String, String> QualifierValues { get; };
     }
 
-    [contract(MrtContract, 1.0)]
+    [contract(MrtCoreContract, 1)]
     runtimeclass KnownResourceQualifierName
     {
         static String Contrast { get; };

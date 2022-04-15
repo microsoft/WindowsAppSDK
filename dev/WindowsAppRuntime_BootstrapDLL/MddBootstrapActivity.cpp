@@ -46,6 +46,23 @@ void WindowsAppRuntime::MddBootstrap::Activity::Context::SetLastFailure(const wi
     }
 }
 
+uint32_t WindowsAppRuntime::MddBootstrap::Activity::Context::DecrementInitializationCount()
+{
+    const auto initializationCount{ m_initializationCount.load() };
+
+    if (initializationCount > 1)
+    {
+        // Multiply initialized. Just decrement our count
+        return --m_initializationCount;
+    }
+    else if (initializationCount == 0)
+    {
+        // Not initialized.
+        SetInitializationPackageFullName(PWSTR{});
+    }
+    return m_initializationCount;
+}
+
 const WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags& WindowsAppRuntime::MddBootstrap::Activity::Context::GetIntegrityFlags(HANDLE token)
 {
     WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags flags{};
@@ -61,7 +78,7 @@ const WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags& WindowsAppRunti
     else if (integrityLevel == SECURITY_MANDATORY_LOW_RID)
     {
         flags |= WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags::IsLowIL;
-        bool isAppContainer;
+        bool isAppContainer{};
         if (SUCCEEDED(LOG_IF_FAILED(wil::get_token_is_app_container_nothrow(token, isAppContainer))))
         {
             flags |= WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags::IsAppContainer;

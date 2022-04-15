@@ -23,6 +23,7 @@ public:
         UINT32 majorMinorVersion,
         PCWSTR versionTag,
         PACKAGE_VERSION minVersion,
+        UINT32 mddInitializeOptions,
         UINT32 initializationCount)
     {
         // Set lifetime activity Id that helps in corelating all sub-activities/telemetry from a single Mdd Bootstrap lifetime
@@ -33,6 +34,7 @@ public:
             TraceLoggingValue(majorMinorVersion, "majorMinorVersion"),
             TraceLoggingValue(!versionTag ? L"": versionTag, "versionTag"),
             TraceLoggingValue(minVersion.Version, "minVersion"),
+            TraceLoggingValue(mddInitializeOptions, "mddInitializeOptions"),
             TraceLoggingValue(initializationCount, "initializationCount"));
     }
     void StopWithResult(

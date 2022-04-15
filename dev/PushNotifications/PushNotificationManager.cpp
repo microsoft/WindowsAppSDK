@@ -164,6 +164,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::Windows::Foundation::IInspectable PushNotificationManager::Deserialize(winrt::Windows::Foundation::Uri const& uri)
     {
+        // Return the args if they are available.
+        if (m_backgroundTaskArgs)
+        {
+            return m_backgroundTaskArgs;
+        }
+
         winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs eventArgs{ nullptr };
 
         // All packaged processes are triggered through COM via Long Running Process or the Background Infra OS component
@@ -183,6 +189,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     // Convert escaped components to its normal content from the conversion done in the Long Running Process (see NotificationListener.cpp)
                     auto payloadAsWstring = winrt::Windows::Foundation::Uri::UnescapeComponent(pair.Value());
                     eventArgs = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payloadAsWstring);
+                    m_backgroundTaskArgs = eventArgs;
                 }
             }
 
@@ -467,13 +474,20 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 {
                     auto lock{ m_lock.lock_exclusive() };
-                    // Register a PushNotificationBackgroundTask to handle background activation scenarios
                     m_waitHandleForArgs.create();
+
+                    // Check if the caller has registered event handlers, if so the REGCLS_MULTIPLEUSE flag will cause COM to ensure that all activators
+                    // are routed inproc, otherwise with REGCLS_SINGLEUSE COM will launch a new process of the Win32 app for each invocation.
+                    auto activationFlags{ m_foregroundHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE };
+
+                    // Register a PushNotificationBackgroundTask to handle background activation.
+                    // STA threads that call CoRegisterClassObject need to use the REGCLS_AGILE flag so that the object is
+                    // associated with the neutral apartment. This allows other threads to activate the STA registered thread.
                     THROW_IF_FAILED(::CoRegisterClassObject(
                         m_registeredClsid,
                         winrt::make<PushNotificationManagerFactory>().get(),
                         CLSCTX_LOCAL_SERVER,
-                        m_foregroundHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE,
+                        activationFlags | REGCLS_AGILE,
                         &m_comActivatorRegistration));
                 }
 
@@ -550,13 +564,20 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 if (AppModel::Identity::IsPackagedProcess())
                 {
                     auto lock{ m_lock.lock_exclusive() };
-
                     m_waitHandleForArgs.create();
+
+                    // Check if the caller has registered event handlers, if so the REGCLS_MULTIPLEUSE flag will cause COM to ensure that all activators
+                    // are routed inproc, otherwise with REGCLS_SINGLEUSE COM will launch a new process of the Win32 app for each invocation.
+                    auto activationFlags{ m_foregroundHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE };
+
+                    // Register a PushNotificationBackgroundTask to handle background activation.
+                    // Also, STA threads that call CoRegisterClassObject need to use the REGCLS_AGILE flag so that the object is
+                    // associated with the neutral apartment. This allows other threads to activate the STA registered thread.
                     THROW_IF_FAILED(::CoRegisterClassObject(
                         m_registeredClsid,
                         winrt::make<PushNotificationManagerFactory>().get(),
                         CLSCTX_LOCAL_SERVER,
-                        m_foregroundHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE,
+                        activationFlags | REGCLS_AGILE,
                         &m_comActivatorRegistration));
                 }
 

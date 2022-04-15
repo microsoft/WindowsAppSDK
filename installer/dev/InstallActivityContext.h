@@ -23,15 +23,14 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
     {
         wil::FailureType type;
         HRESULT hr;
-        std::wstring file;
+        std::string file;
         unsigned int lineNumer;
         std::wstring message;
-        std::wstring code;
     };
 
     class Context
     {
-        InstallStage m_installStage{ InstallStage::None };
+        InstallStage m_installStage{};
         std::wstring m_currentResourceId;
         HRESULT m_deploymentErrorExtendedHresult{};
         std::wstring m_deploymentErrorText;

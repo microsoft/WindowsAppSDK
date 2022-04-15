@@ -453,6 +453,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         if (m_isCurrent)
         {
             m_key.Reset();
+            m_keyCreationMutexLock.reset();
             m_keyCreationMutex.reset();
         }
     }
@@ -578,19 +579,31 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         // processes from seeing the mutex but not seeing the Key on the instance yet.
         auto releaseOnExit = m_dataMutex.acquire();
 
-        // We keep the mutex as a live member to ensure all other instances continue
+        // First caller creates the named mutex. All other instances continue
         // to get an 'open' instead of a 'create' due to it already existing.
-        // try_create returns true for a named mutex that already exists
-        // and so we can't rely on try_create and have to explicitly check GetLastError().
-        m_keyCreationMutex.create(mutexName.c_str(), 0, MUTEX_ALL_ACCESS);
+        wil::unique_mutex keyCreationMutex;
+        keyCreationMutex.create(mutexName.c_str(), 0, MUTEX_ALL_ACCESS);
 
-        bool currentIsKeyOwner = (GetLastError() != ERROR_ALREADY_EXISTS);
-        if (currentIsKeyOwner)
+        DWORD waitResult = 0;
+        // Wait for 0 seconds. If the mutex is taken we don't own the mutex
+        auto lock = keyCreationMutex.acquire(&waitResult, 0);
+
+        if (waitResult != WAIT_TIMEOUT)
         {
+            // We acquired the named mutex, store the mutex itself and the lock as a member.
+            // We keep the mutex and lock as a live member to ensure it stays alive for
+            // as long as we own the mutex
+            // NOTE: Assigning the new mutex will release the old one if it exists.
+            // Therefore make sure to release the lock first.
+            m_keyCreationMutexLock = std::move(lock);
+            m_keyCreationMutex = std::move(keyCreationMutex);
+
             m_key.Resize((key.length() + 1) * sizeof(key.data()[0]));
             THROW_IF_FAILED(StringCchCopy(m_key.Get(), (m_key.Size() / sizeof(wchar_t)), key.c_str()));
+
+            return true;
         }
-        return currentIsKeyOwner;
+        return false;
     }
 
     Microsoft::Windows::AppLifecycle::AppInstance AppInstance::FindForKey(std::wstring const& key)

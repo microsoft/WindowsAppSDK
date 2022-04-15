@@ -60,6 +60,7 @@ bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) n
             {
                 return WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetShutdownActivity().IsRunning();
             }
+            return false;
         };
 
         if (activityIsRunning())
@@ -76,6 +77,7 @@ bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) n
                 {
                     return WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetShutdownActivity().Id();
                 }
+                return static_cast<const GUID*>(nullptr);
             };
 
             auto activityId = GetActivityId();
@@ -94,9 +96,16 @@ bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) n
             }
             else if (failure.type == wil::FailureType::Return)
             {
-                MddBootstrap_WriteEventWithActivity("Return", activityId);
-
-                WindowsAppRuntime::MddBootstrap::Activity::Context::Get().SetLastFailure(failure);
+                if (WindowsAppRuntime::MddBootstrap::Activity::Context::Get().ShouldStopActivityForWilReturnHR())
+                {
+                    MddBootstrap_StopActivity("Return", activityId, WindowsAppRuntime::MddBootstrap::Activity::Context::Get(), failure);
+                    WindowsAppRuntime::MddBootstrap::Activity::Context::Get().StopActivityForWilReturnHR(false);
+                }
+                else
+                {
+                    MddBootstrap_WriteEventWithActivity("Return", activityId);
+                    WindowsAppRuntime::MddBootstrap::Activity::Context::Get().SetLastFailure(failure);
+                }
             }
         }
     }

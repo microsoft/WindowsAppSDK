@@ -38,10 +38,11 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
     {
         MddBootstrapAPI m_mddBootstrapAPI{};
         WindowsAppRuntimeBootstrap_TraceLogger::Initialize m_bootstrapInitializeActivity;
-        std::atomic<uint32_t> g_initializationCount;
-        wil::unique_cotaskmem_string g_initializationPackageFullName;
+        std::atomic<uint32_t> m_initializationCount;
+        wil::unique_cotaskmem_string m_initializationPackageFullName;
         WindowsAppRuntimeBootstrap_TraceLogger::Shutdown m_bootstrapShutdownActivity;
         WilFailure m_lastFailure;
+        bool m_stopActivityForWilReturnHR{};
 
     public:
         static WindowsAppRuntime::MddBootstrap::Activity::Context& Get();
@@ -55,13 +56,13 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
 
         const uint32_t GetInitializeData(PWSTR& initializationPackageFullName) const
         {
-            initializationPackageFullName = g_initializationPackageFullName.get();
-            return g_initializationCount;
+            initializationPackageFullName = m_initializationPackageFullName.get();
+            return m_initializationCount;
         }
 
         wil::unique_cotaskmem_string& GetInitializationPackageFullName()
         {
-            return g_initializationPackageFullName;
+            return m_initializationPackageFullName;
         }
 
         WindowsAppRuntimeBootstrap_TraceLogger::Initialize GetInitializeActivity()
@@ -79,44 +80,33 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
             return m_lastFailure;
         }
 
+        const bool& ShouldStopActivityForWilReturnHR() const
+        {
+            return m_stopActivityForWilReturnHR;
+        }
+
         void SetMddBootstrapAPI(MddBootstrapAPI mddBootstrapAPI)
         {
             m_mddBootstrapAPI = mddBootstrapAPI;
         }
 
-        void SetInitializeData()
+        uint32_t IncrementInitializationCount()
         {
-            ++g_initializationCount;
+            return ++m_initializationCount;
         }
 
-        // Returns a boolean to indicate to the caller if MddBootstrap should be shutdown
-        bool ShouldShutdownNow()
-        {
-            if (g_initializationCount > 1)
-            {
-                // Multiply initialized. Just decrement our count
-                --g_initializationCount;
-                return false;
-            }
-            else if (g_initializationCount == 0)
-            {
-                // Not initialized. Nothing to do
-                return false;
-            }
-            return true;
-        }
+        uint32_t DecrementInitializationCount();
 
         void SetLastFailure(const wil::FailureInfo& failure);
 
-        void SetShutdownData()
-        {
-            g_initializationPackageFullName = {};
-            --g_initializationCount;
-        }
-
         void SetInitializationPackageFullName(PWSTR initializationPackageFullName)
         {
-            g_initializationPackageFullName.reset(initializationPackageFullName);
+            m_initializationPackageFullName.reset(initializationPackageFullName);
+        }
+
+        void StopActivityForWilReturnHR(bool stopActivityForWilReturnHR)
+        {
+            m_stopActivityForWilReturnHR = stopActivityForWilReturnHR;
         }
     };
 

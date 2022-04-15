@@ -37,18 +37,22 @@ class WindowsAppRuntimeInstaller_TraceLogger final : public wil::TraceLoggingPro
 
 public:
 
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(Install, PDT_ProductAndServicePerformance);
-    void StartActivity(PCWSTR args, UINT32 options)
+    BEGIN_COMPLIANT_CRITICAL_DATA_ACTIVITY_CLASS(Install, PDT_ProductAndServicePerformance);
+    void StartActivity(PCWSTR args, UINT32 options, bool isElevated)
     {
         TraceLoggingClassWriteStart(Install,
             _GENERIC_PARTB_FIELDS_ENABLED,
             TraceLoggingValue(args, "cmdLineArgs"),
-            TraceLoggingValue(options, "options"));
+            TraceLoggingValue(options, "options"),
+            TraceLoggingValue(isElevated, "isElevated"));
     }
-    
     void StopWithResult(
         HRESULT hresult,
-        UINT32 installStage,
+        UINT32 failureType,
+        PCSTR failureFile,
+        UINT32 failureLineNumber,
+        PCWSTR failureMessage,
+        UINT32 failedInstallStage,
         PCWSTR currentResourceId,
         HRESULT deploymentErrorExtendedHResult,
         PCWSTR deploymentErrorText,
@@ -56,13 +60,25 @@ public:
     {
         SetStopResult(hresult);
 
-        TraceLoggingClassWriteStop(Install,
-            _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingValue(installStage, "FailedInstallStage"),
-            TraceLoggingValue(currentResourceId, "CurrentResourceId"),
-            TraceLoggingValue(deploymentErrorExtendedHResult, "DeploymentErrorExtendedHResult"),
-            TraceLoggingValue(deploymentErrorText, "DeploymentErrorText"),
-            TraceLoggingValue(deploymentErrorActivityId, "DeploymentErrorActivityId"));
+        if (hresult)
+        {
+            TraceLoggingClassWriteStop(Install,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingValue(failureType, "WilFailureType"),
+                TraceLoggingValue(failureFile, "FailureFile"),
+                TraceLoggingValue(failureLineNumber, "FailureLineNumber"),
+                TraceLoggingValue(failureMessage, "FailureMessage"),
+                TraceLoggingValue(failedInstallStage, "FailedInstallStage"),
+                TraceLoggingValue(currentResourceId, "CurrentResourceId"),
+                TraceLoggingValue(deploymentErrorExtendedHResult, "DeploymentErrorExtendedHResult"),
+                TraceLoggingValue(deploymentErrorText, "DeploymentErrorText"),
+                TraceLoggingValue(deploymentErrorActivityId, "DeploymentErrorActivityId"));
+        }
+        else
+        {
+            TraceLoggingClassWriteStop(Install,
+                _GENERIC_PARTB_FIELDS_ENABLED);
+        }
     }
     END_ACTIVITY_CLASS();
 };
@@ -72,12 +88,14 @@ public:
     _wstring_.c_str(),\
     static_cast<ULONG>(_wstring_.size()), _name_)
 
+// In the future, if the project includes multiple modules and threads, we could log that data as well from FailureInfo
+// In the future and on need basis, we could log call stack as well
 #define WindowsAppRuntimeInstaller_WriteEventWithActivity(_eventname_,...) TraceLoggingWriteActivity(\
     WindowsAppRuntimeInstaller_TraceLogger::Provider(),\
     _eventname_,\
     WindowsAppRuntimeInstaller::InstallActivity::Context::Get().GetActivity().Id(),\
     nullptr,\
-    TraceLoggingValue(static_cast<uint32_t>(failure.type), "Type"),\
+    TraceLoggingValue(static_cast<UINT32>(failure.type), "Type"),\
     TraceLoggingValue(failure.hr, "HResult"),\
     TraceLoggingValue(failure.pszFile, "File"),\
     TraceLoggingValue(failure.uLineNumber,"Line"),\

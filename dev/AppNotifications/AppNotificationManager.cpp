@@ -20,6 +20,7 @@
 #include <string_view>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <WindowsAppRuntime.SelfContained.h>
+#include <ShellLocalization.h>
 
 using namespace std::literals;
 
@@ -46,6 +47,7 @@ namespace PushNotificationHelpers
 }
 
 using namespace Microsoft::Windows::AppNotifications::Helpers;
+using namespace Microsoft::Windows::AppNotifications::ShellLocalization;
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
@@ -81,6 +83,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IInspectable AppNotificationManager::Deserialize(winrt::Windows::Foundation::Uri const& /* uri */)
     {
+        // Return the args if they are available.
+        if (m_activatedEventArgs)
+        {
+            return m_activatedEventArgs;
+        }
+
         THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec));
         return m_activatedEventArgs;
     }
@@ -138,12 +146,17 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                 THROW_HR_IF_MSG(E_INVALIDARG, m_notificationComActivatorRegistration, "Already Registered for App Notifications!");
 
                 // Check if the caller has registered event handlers, if so the REGCLS_MULTIPLEUSE flag will cause COM to ensure that all activators
-                // are routed inproc, otherwise with REGCLS_MULTIPLEUSE COM will launch a new process of the Win32 app for each invocation.
+                // are routed inproc, otherwise with REGCLS_SINGLEUSE COM will launch a new process of the Win32 app for each invocation.
+                auto activationFlag{ m_notificationHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE };
+
+                // Register an INotificationActivationCallback to receive background activations from AppNotification.
+                // Also, STA threads that call CoRegisterClassObject need to use the REGCLS_AGILE flag so that the object is
+                // associated with the neutral apartment. This allows other threads to activate the STA registered thread.
                 THROW_IF_FAILED(::CoRegisterClassObject(
                     AppModel::Identity::IsPackagedProcess() ? registeredClsid : storedComActivatorGuid,
                     winrt::make<AppNotificationManagerFactory>().get(),
                     CLSCTX_LOCAL_SERVER,
-                    m_notificationHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE,
+                    activationFlag | REGCLS_AGILE,
                     &m_notificationComActivatorRegistration));
             }
         }
@@ -220,6 +233,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
             if (!AppModel::Identity::IsPackagedProcess())
             {
+                // If the app icon was inferred from process, then we should clean it up.
+                // Do not fail this function if such a file doesn't exist,
+                // which is the case if the icon was retrieved from shortcut or there is no IconUri in registry.
+                winrt::hresult deleteIconResult{ DeleteIconFromCache() };
+                THROW_HR_IF(deleteIconResult, FAILED(deleteIconResult) && deleteIconResult != HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
+
                 std::wstring storedComActivatorString;
                 THROW_IF_FAILED(GetActivatorGuid(storedComActivatorString));
                 UnRegisterComServer(storedComActivatorString);
