@@ -201,12 +201,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid remoteId)
     {
-        HRESULT hr{ S_OK };
-
-        auto logTelemetry{ wil::scope_exit([&]() {
-            PushNotificationTelemetry::LogCreateChannelAsync(hr, remoteId);
-        }) };
-
         if (!IsSupported())
         {
             co_return winrt::make<PushNotificationCreateChannelResult>(
@@ -214,6 +208,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 E_FAIL,
                 PushNotificationChannelStatus::CompletedFailure);
         }
+
+        HRESULT hr{ S_OK };
+
+        auto logTelemetry{ wil::scope_exit([&]() {
+            PushNotificationTelemetry::LogCreateChannelAsync(hr, remoteId);
+        }) };
 
         auto strong = get_strong();
 
@@ -692,6 +692,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             return;
         }
 
+        hresult hr = S_OK;
+
+        auto logTelemetry{ wil::scope_exit([&]() {
+            PushNotificationTelemetry::LogUnregisterAll(hr);
+        }) };
+
         bool comActivatorRegistration{ false };
         bool singletonForegroundRegistration{ false };
         {
@@ -705,7 +711,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             Unregister();
         }
 
-        hresult hr = S_OK;
         try
         {
             {

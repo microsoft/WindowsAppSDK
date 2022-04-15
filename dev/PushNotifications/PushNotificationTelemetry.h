@@ -82,6 +82,22 @@ public:
     }
     CATCH_LOG()
 
+    DEFINE_EVENT_METHOD(LogUnregisterAll)(
+        winrt::hresult hr) noexcept try
+    {
+        if (c_maxEventLimit >= UpdateLogEventCount())
+        {
+            TraceLoggingClassWriteMeasure(
+                "UnregisterAll",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
+        }
+    }
+    CATCH_LOG()
+
 private:
     wil::srwlock m_lock;
     ULONGLONG m_lastFiredTick = 0;
