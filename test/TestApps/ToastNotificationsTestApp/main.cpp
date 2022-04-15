@@ -5,8 +5,15 @@
 #include "WindowsAppRuntime.Test.AppModel.h"
 #include <chrono>
 #include <ShObjIdl_core.h>
+#include <shlobj_core.h>
 #include <propkey.h> //PKEY properties
 #include <propsys.h>
+#include <filesystem>
+
+namespace std
+{
+    using namespace std::filesystem;
+}
 
 namespace winrt
 {
@@ -16,6 +23,10 @@ namespace winrt
     using namespace winrt::Microsoft::Windows::AppNotifications;
     using namespace winrt::Windows::Foundation;
 }
+
+const std::wstring c_localWindowsAppSDKFolder{ LR"(\Microsoft\WindowsAppSDK\)" };
+const std::wstring c_pngExtension{ LR"(.png)" };
+const std::wstring c_appUserModelId{ LR"(TaefTestAppId)" };
 
 bool BackgroundActivationTest() // Activating application for background test.
 {
@@ -1287,6 +1298,31 @@ bool VerifyRemoveAllAsync()
     return true;
 }
 
+bool VerifyIconPathExists_Unpackaged()
+{
+    try
+    {
+        // Register is already called in main with an explicit appusermodelId
+        wil::unique_cotaskmem_string localAppDataPath;
+        THROW_IF_FAILED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0 /* flags */, nullptr /* access token handle */, &localAppDataPath));
+
+        // Evaluated path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK\<AUMID>.png
+        std::path iconFilePath{ std::wstring(localAppDataPath.get()) + c_localWindowsAppSDKFolder + c_appUserModelId + c_pngExtension };
+        winrt::check_bool(std::exists(iconFilePath));
+
+        winrt::AppNotificationManager::Default().UnregisterAll();
+
+        // After unregister this file should not exist
+        winrt::check_bool(!std::exists(iconFilePath));
+    }
+    catch (...)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 std::map<std::string, bool(*)()> const& GetSwitchMapping()
 {
     static std::map<std::string, bool(*)()> switchMapping = {
@@ -1344,6 +1380,7 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyUnregisterTwice_Unpackaged", &VerifyUnregisterTwice_Unpackaged },
         { "VerifyToastProgressDataSequence0Fail", &VerifyToastProgressDataSequence0Fail },
         { "VerifyToastUpdateZeroSequenceFail_Unpackaged", &VerifyToastUpdateZeroSequenceFail_Unpackaged },
+        { "VerifyIconPathExists_Unpackaged", &VerifyIconPathExists_Unpackaged},
       };
 
     return switchMapping;
@@ -1385,7 +1422,7 @@ int main() try
     if (!Test::AppModel::IsPackagedProcess())
     {
         // Not mandatory, but it's highly recommended to specify AppUserModelId
-        THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(L"TaefTestAppId"));
+        THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(c_appUserModelId.c_str()));
     }
 
     winrt::AppNotificationManager::Default().Register();

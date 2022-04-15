@@ -190,9 +190,8 @@ inline std::path RetrieveLocalFolderPath()
     THROW_IF_FAILED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0 /* flags */, nullptr /* access token handle */, &localAppDataPath));
 
     // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK
-    std::path localFolderPath{ std::wstring(localAppDataPath.get()) +
-        Microsoft::Windows::AppNotifications::ShellLocalization::c_localMicrosoftFolder +
-        Microsoft::Windows::AppNotifications::ShellLocalization::c_localWindowsAppSDKFolder };
+    std::path localFolderPath{ localAppDataPath.get() };
+    localFolderPath /= Microsoft::Windows::AppNotifications::ShellLocalization::c_localWindowsAppSDKFolder;
 
     if (!std::exists(localFolderPath))
     {
