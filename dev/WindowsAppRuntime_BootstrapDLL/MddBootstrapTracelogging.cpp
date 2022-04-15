@@ -5,10 +5,6 @@
 
 #include "pch.h"
 
-extern std::atomic<uint32_t> g_initializationCount{};
-static wil::unique_cotaskmem_string g_initializationFrameworkPackageFullName{};
-
-
 void MddBootstrap_StopActivity(
     const std::string failureType,
     const GUID *activityId,
@@ -17,13 +13,15 @@ void MddBootstrap_StopActivity(
 {
     MddBootstrap_WriteEventWithActivity(*failureType.c_str(), activityId);
 
-    if (activityContext.GetMddBootStrapAPI() == WindowsAppRuntime::MddBootstrap::Activity::MddBootStrapAPI::Initialize)
+    PWSTR initializationFrameworkPackageFullName{};
+    auto initializationCount{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeData(initializationFrameworkPackageFullName) };
+    if (activityContext.GetMddBootstrapAPI() == WindowsAppRuntime::MddBootstrap::Activity::MddBootstrapAPI::Initialize)
     {
         WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeActivity().StopWithResult(
             failure.hr,
-            static_cast<UINT32>(g_initializationCount),
-            static_cast<UINT16>(WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetDDLMFindMethodUsed()),
-            static_cast<PCWSTR>(g_initializationFrameworkPackageFullName.get()),
+            static_cast<UINT32>(initializationCount),
+            static_cast<UINT32>(WindowsAppRuntime::MddBootstrap::Activity::Context::GetIntegrityFlags()),
+            initializationFrameworkPackageFullName,
             static_cast<UINT32>(activityContext.GetLastFailure().type),
             activityContext.GetLastFailure().file.c_str(),
             activityContext.GetLastFailure().lineNumer,
@@ -31,11 +29,11 @@ void MddBootstrap_StopActivity(
             activityContext.GetLastFailure().module.c_str());
 
     }
-    else if (activityContext.GetMddBootStrapAPI() == WindowsAppRuntime::MddBootstrap::Activity::MddBootStrapAPI::Shutdown)
+    else if (activityContext.GetMddBootstrapAPI() == WindowsAppRuntime::MddBootstrap::Activity::MddBootstrapAPI::Shutdown)
     {
         WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetShutdownActivity().StopWithResult(
             failure.hr,
-            static_cast<UINT32>(g_initializationCount),
+            static_cast<UINT32>(initializationCount),
             static_cast<UINT32>(activityContext.GetLastFailure().type),
             activityContext.GetLastFailure().file.c_str(),
             activityContext.GetLastFailure().lineNumer,
@@ -44,40 +42,43 @@ void MddBootstrap_StopActivity(
     }
 }
 
-// Set a process-wide callback for wil error handlers. This callback is specific to MddBootstrap initialize
+// Set thread callback for wil error handlers.
+// If a process-wide callback is set, then that will also be called after thread callback is called.
 bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) noexcept
 {
     if (WindowsAppRuntimeBootstrap_TraceLogger::IsEnabled())
     {
-        auto activityContext { WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
-
-        auto activityIsRunning = [](WindowsAppRuntime::MddBootstrap::Activity::Context& activityContext)
+        auto activityIsRunning = []()
         {
-            if (activityContext.GetMddBootStrapAPI() == WindowsAppRuntime::MddBootstrap::Activity::MddBootStrapAPI::Initialize)
+            if (WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetMddBootstrapAPI() ==
+                WindowsAppRuntime::MddBootstrap::Activity::MddBootstrapAPI::Initialize)
             {
                 return WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeActivity().IsRunning();
             }
-            else if (activityContext.GetMddBootStrapAPI() == WindowsAppRuntime::MddBootstrap::Activity::MddBootStrapAPI::Shutdown)
+            else if (WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetMddBootstrapAPI() ==
+                WindowsAppRuntime::MddBootstrap::Activity::MddBootstrapAPI::Shutdown)
             {
                 return WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetShutdownActivity().IsRunning();
             }
         };
 
-        if (activityIsRunning(activityContext))
+        if (activityIsRunning())
         {
-            auto GetActivityId = [](WindowsAppRuntime::MddBootstrap::Activity::Context& activityContext)
+            auto GetActivityId = []()
             {
-                if (activityContext.GetMddBootStrapAPI() == WindowsAppRuntime::MddBootstrap::Activity::MddBootStrapAPI::Initialize)
+                if (WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetMddBootstrapAPI() ==
+                    WindowsAppRuntime::MddBootstrap::Activity::MddBootstrapAPI::Initialize)
                 {
                     return WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeActivity().Id();
                 }
-                else if (activityContext.GetMddBootStrapAPI() == WindowsAppRuntime::MddBootstrap::Activity::MddBootStrapAPI::Shutdown)
+                else if (WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetMddBootstrapAPI() ==
+                    WindowsAppRuntime::MddBootstrap::Activity::MddBootstrapAPI::Shutdown)
                 {
                     return WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetShutdownActivity().Id();
                 }
             };
 
-            auto activityId = GetActivityId(activityContext);
+            auto activityId = GetActivityId();
 
             if (failure.type == wil::FailureType::Log)
             {
@@ -99,6 +100,7 @@ bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) n
             }
         }
     }
+    // Returning true indicates to wil that the error is reported in Telemetry by this callback.
     return true;
 }
 

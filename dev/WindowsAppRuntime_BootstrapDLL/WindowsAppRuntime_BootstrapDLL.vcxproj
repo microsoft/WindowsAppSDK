@@ -412,7 +412,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="MddBootstrap.h" />
     <ClInclude Include="MddBootstrapTest.h" />
-    <ClInclude Include="tracelogging.h" />
+    <ClInclude Include="MddBootstrapTracelogging.h" />
     <ClInclude Include="WindowsAppRuntime-Licensing.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
@@ -420,7 +420,7 @@
     <ClCompile Include="MddBootstrapActivity.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="MddBootstrap.cpp" />
-    <ClCompile Include="tracelogging.cpp" />
+    <ClCompile Include="MddBootstrapTracelogging.cpp" />
     <ClCompile Include="WindowsAppRuntime-Licensing.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

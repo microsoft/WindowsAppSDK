@@ -30,7 +30,7 @@
     <ClInclude Include="WindowsAppRuntime-Licensing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tracelogging.h">
+    <ClInclude Include="MddBootstrapTracelogging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MddBootstrapActivity.h">
@@ -50,7 +50,7 @@
     <ClCompile Include="WindowsAppRuntime-Licensing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tracelogging.cpp">
+    <ClCompile Include="MddBootstrapTracelogging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MddBootstrapActivity.cpp">

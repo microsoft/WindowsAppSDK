@@ -3,23 +3,26 @@
 
 #pragma once
 
-#include "tracelogging.h"
+#include "MddBootstrapTracelogging.h"
 
 namespace WindowsAppRuntime::MddBootstrap::Activity
 {
-    enum class MddBootStrapAPI
+    enum class MddBootstrapAPI
     {
         None = 0,
         Initialize = 1,
         Shutdown = 2,
     };
 
-    enum class DDLMFindMethod
+    enum class IntegrityFlags : uint32_t
     {
-        None                = 0,
-        ViaAppExtension     = 1,
-        ViaAppEnumeration   = 2,
+        None = 0,
+        IsHighIL = 0x0001,
+        IsMediumIL = 0x0002,
+        IsLowIL = 0x0003,
+        IsAppContainer = 0x0004,
     };
+    DEFINE_ENUM_FLAG_OPERATORS(IntegrityFlags)
 
     struct WilFailure
     {
@@ -33,29 +36,32 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
 
     class Context
     {
-        MddBootStrapAPI m_mddBootStrapAPI{ MddBootStrapAPI::None };
-        DDLMFindMethod m_ddlmFindMethodUsed{ DDLMFindMethod::None };
-
+        MddBootstrapAPI m_mddBootstrapAPI{};
         WindowsAppRuntimeBootstrap_TraceLogger::Initialize m_bootstrapInitializeActivity;
+        std::atomic<uint32_t> g_initializationCount;
+        wil::unique_cotaskmem_string g_initializationPackageFullName;
         WindowsAppRuntimeBootstrap_TraceLogger::Shutdown m_bootstrapShutdownActivity;
         WilFailure m_lastFailure;
 
     public:
         static WindowsAppRuntime::MddBootstrap::Activity::Context& Get();
 
-        void Reset()
+        static const WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags& GetIntegrityFlags(HANDLE token = nullptr);
+
+        const MddBootstrapAPI& GetMddBootstrapAPI() const
         {
-            m_ddlmFindMethodUsed = WindowsAppRuntime::MddBootstrap::Activity::DDLMFindMethod::None;
+            return m_mddBootstrapAPI;
         }
 
-        const MddBootStrapAPI& GetMddBootStrapAPI() const
+        const uint32_t GetInitializeData(PWSTR& initializationPackageFullName) const
         {
-            return m_mddBootStrapAPI;
+            initializationPackageFullName = g_initializationPackageFullName.get();
+            return g_initializationCount;
         }
 
-        const DDLMFindMethod& GetDDLMFindMethodUsed() const
+        wil::unique_cotaskmem_string& GetInitializationPackageFullName()
         {
-            return m_ddlmFindMethodUsed;
+            return g_initializationPackageFullName;
         }
 
         WindowsAppRuntimeBootstrap_TraceLogger::Initialize GetInitializeActivity()
@@ -73,17 +79,45 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
             return m_lastFailure;
         }
 
-        void SetMddBootStrapAPI(MddBootStrapAPI mddBootStrapAPI)
+        void SetMddBootstrapAPI(MddBootstrapAPI mddBootstrapAPI)
         {
-            m_mddBootStrapAPI = mddBootStrapAPI;
+            m_mddBootstrapAPI = mddBootstrapAPI;
         }
 
-        void SetDDLMFindMethodUsed(DDLMFindMethod ddlmFindMethodUsed)
+        void SetInitializeData()
         {
-            m_ddlmFindMethodUsed = ddlmFindMethodUsed;
+            ++g_initializationCount;
+        }
+
+        // Returns a boolean to indicate to the caller if MddBootstrap should be shutdown
+        bool ShouldShutdownNow()
+        {
+            if (g_initializationCount > 1)
+            {
+                // Multiply initialized. Just decrement our count
+                --g_initializationCount;
+                return false;
+            }
+            else if (g_initializationCount == 0)
+            {
+                // Not initialized. Nothing to do
+                return false;
+            }
+            return true;
         }
 
         void SetLastFailure(const wil::FailureInfo& failure);
+
+        void SetShutdownData()
+        {
+            g_initializationPackageFullName = {};
+            --g_initializationCount;
+        }
+
+        void SetInitializationPackageFullName(PWSTR initializationPackageFullName)
+        {
+            g_initializationPackageFullName.reset(initializationPackageFullName);
+        }
     };
 
     static WindowsAppRuntime::MddBootstrap::Activity::Context g_bootstrapActivityContext;

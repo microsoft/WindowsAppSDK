@@ -45,3 +45,27 @@ void WindowsAppRuntime::MddBootstrap::Activity::Context::SetLastFailure(const wi
         m_lastFailure.module.clear();
     }
 }
+
+const WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags& WindowsAppRuntime::MddBootstrap::Activity::Context::GetIntegrityFlags(HANDLE token)
+{
+    WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags flags{};
+    const auto integrityLevel{ Security::IntegrityLevel::GetIntegrityLevel(token) };
+    if (integrityLevel >= SECURITY_MANDATORY_HIGH_RID)
+    {
+        flags |= WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags::IsHighIL;
+    }
+    else if (integrityLevel == SECURITY_MANDATORY_MEDIUM_RID)
+    {
+        flags |= WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags::IsMediumIL;
+    }
+    else if (integrityLevel == SECURITY_MANDATORY_LOW_RID)
+    {
+        flags |= WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags::IsLowIL;
+        bool isAppContainer;
+        if (SUCCEEDED(LOG_IF_FAILED(wil::get_token_is_app_container_nothrow(token, isAppContainer))))
+        {
+            flags |= WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags::IsAppContainer;
+        }
+    }
+    return flags;
+}

@@ -5,20 +5,6 @@
 
 #include "pch.h"
 
-#if defined(_XSTRING_) && defined(_STRSAFE_H_INCLUDED_) && defined(WI_VERIFY)
-static std::wstring ConvertPackagVersionToString(PACKAGE_VERSION packageVersion) //uint16_t major, uint16_t minor, uint16_t build, uint16_t revision)
-{
-    wchar_t formattedVersion[5 + 1 + 5 + 1 + 5 + 1 + 5 + 1]{};  // "12345.12345.12345.12345" + null-terminator
-    WI_VERIFY(SUCCEEDED(StringCchPrintfW(formattedVersion, ARRAYSIZE(formattedVersion), L"%hu.%hu.%hu.%hu", packageVersion.Major, packageVersion.Minor, packageVersion.Build, packageVersion.Revision)));
-    return std::wstring(formattedVersion);
-}
-#else
-static std::wstring ConvertPackagVersionToString(PACKAGE_VERSION packageVersion) //uint16_t major, uint16_t minor, uint16_t build, uint16_t revision)
-{
-    std::wstring dummy{ L"0.0.0.0" }; return dummy;
-}
-#endif
-
 bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) noexcept;
 
 GUID& GetLifetimeActivityId() noexcept;
@@ -36,7 +22,7 @@ public:
     void StartActivity(
         UINT32 majorMinorVersion,
         PCWSTR versionTag,
-        PACKAGE_VERSION &minFrameworkPackageVersion,
+        PACKAGE_VERSION minVersion,
         UINT32 initializationCount)
     {
         // Set lifetime activity Id that helps in corelating all sub-activities/telemetry from a single Mdd Bootstrap lifetime
@@ -46,16 +32,14 @@ public:
             _GENERIC_PARTB_FIELDS_ENABLED,
             TraceLoggingValue(majorMinorVersion, "majorMinorVersion"),
             TraceLoggingValue(!versionTag ? L"": versionTag, "versionTag"),
-            TraceLoggingValue(
-                ConvertPackagVersionToString(minFrameworkPackageVersion).c_str(),
-                "minFrameworkPackageVersion"),
+            TraceLoggingValue(minVersion.Version, "minVersion"),
             TraceLoggingValue(initializationCount, "initializationCount"));
     }
     void StopWithResult(
         const HRESULT hresult,
         UINT32 initializationCount,
-        UINT16 ddlmFindMethodUsed,
-        PCWSTR resolvedFrameworkPackageFullName,
+        UINT32 IntegrityFlags,
+        PWSTR resolvedFrameworkPackageFullName,
         UINT32 failureType,
         PCSTR failureFile,
         unsigned int failureLineNumber,
@@ -69,7 +53,7 @@ public:
             TraceLoggingClassWriteStop(Initialize,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingValue(initializationCount, "initializationCount"),
-                TraceLoggingValue(ddlmFindMethodUsed, "ddlmFindMethodUsed"),
+                TraceLoggingValue(IntegrityFlags, "IntegrityFlags"),
                 TraceLoggingValue(resolvedFrameworkPackageFullName, "resolvedFrameworkPackageFullName"),
                 TraceLoggingValue(failureType, "wilFailureType"),
                 TraceLoggingValue(failureFile, "failureFile"),
@@ -82,7 +66,7 @@ public:
             TraceLoggingClassWriteStop(Initialize,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingValue(initializationCount, "initializationCount"),
-                TraceLoggingValue(ddlmFindMethodUsed, "ddlmFindMethodUsed"),
+                TraceLoggingValue(IntegrityFlags, "IntegrityFlags"),
                 TraceLoggingValue(resolvedFrameworkPackageFullName, "resolvedFrameworkPackageFullName"));
         }
     }
@@ -92,7 +76,7 @@ public:
     BEGIN_COMPLIANT_CRITICAL_DATA_ACTIVITY_CLASS(Shutdown, PDT_ProductAndServicePerformance);
     void StartActivity(
         UINT32 initializationCount,
-        PCWSTR resolvedFrameworkPackageFullName)
+        PWSTR resolvedFrameworkPackageFullName)
     {
         // Set lifetime activity Id that helps in corelating all sub-activities/telemetry from a single Mdd Bootstrap lifetime
         SetRelatedActivityId(GetLifetimeActivityId());
@@ -128,9 +112,6 @@ public:
         {
             TraceLoggingClassWriteStop(Shutdown,
                 _GENERIC_PARTB_FIELDS_ENABLED,
-                //TraceLoggingValue(
-                   // ConvertPackagVersionToString(frameworkPackageVersion).c_str(),
-                   // "frameworkPackageVersion"),
                 TraceLoggingValue(initializationCount, "initializationCount"));
         }
     }

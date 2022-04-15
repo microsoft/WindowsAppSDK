@@ -56,7 +56,6 @@ void FindDDLMViaEnumeration(
 CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension& appExtension);
 
 static std::mutex g_initializationLock;
-static std::atomic<uint32_t> g_initializationCount{};
 
 static IDynamicDependencyLifetimeManager* g_lifetimeManager{};
 static wil::unique_event g_endTheLifetimeManagerEvent;
@@ -67,7 +66,6 @@ static MDD_PACKAGEDEPENDENCY_CONTEXT g_packageDependencyContext{};
 static UINT32 g_initializationMajorMinorVersion{};
 static std::wstring g_initializationVersionTag;
 static PACKAGE_VERSION g_initializationFrameworkPackageVersion{};
-static wil::unique_cotaskmem_string g_initializationFrameworkPackageFullName{};
 
 static std::wstring g_test_ddlmPackageNamePrefix;
 static std::wstring g_test_ddlmPackagePublisherId;
@@ -77,21 +75,23 @@ STDAPI MddBootstrapInitialize(
     PCWSTR versionTag,
     PACKAGE_VERSION minVersion) noexcept try
 {
-    WindowsAppRuntime::MddBootstrap::Activity::Context::Get().SetMddBootStrapAPI(WindowsAppRuntime::MddBootstrap::Activity::MddBootStrapAPI::Initialize);
+    PWSTR initializationFrameworkPackageFullName{};
+    auto initializationCount{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeData(initializationFrameworkPackageFullName) };
+    WindowsAppRuntime::MddBootstrap::Activity::Context::Get().SetMddBootstrapAPI(WindowsAppRuntime::MddBootstrap::Activity::MddBootstrapAPI::Initialize);
     auto threadCallback = wil::ThreadFailureCallback(wilResultLoggingThreadCallback);
     auto initializeActivity{
         WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeActivity().Start(
             majorMinorVersion,
             versionTag,
             minVersion,
-            static_cast<UINT32>(g_initializationCount)) };
+            initializationCount)};
 
     // Dynamic Dependencies Bootstrap API requires a non-packaged process
     LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), AppModel::Identity::IsPackagedProcess());
 
     // Are we already initialized?
     auto lock{ std::lock_guard(g_initializationLock) };
-    if (g_initializationCount > 0)
+    if (initializationCount > 0)
     {
         // Verify the request is compatible with our already initialized state
         VerifyInitializationIsCompatible(majorMinorVersion, versionTag, minVersion);
@@ -103,20 +103,19 @@ STDAPI MddBootstrapInitialize(
     }
 
     // Success!
-    ++g_initializationCount;
+    WindowsAppRuntime::MddBootstrap::Activity::Context::Get().SetInitializeData();
 
+    initializationCount = WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeData(initializationFrameworkPackageFullName);
     initializeActivity.StopWithResult(
         S_OK,
-        static_cast<UINT32>(g_initializationCount),
-        static_cast<UINT16>(WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetDDLMFindMethodUsed()),
-        static_cast<PCWSTR>(g_initializationFrameworkPackageFullName.get()),
+        static_cast<UINT32>(initializationCount),
+        static_cast<UINT32>(WindowsAppRuntime::MddBootstrap::Activity::Context::GetIntegrityFlags()),
+        initializationFrameworkPackageFullName,
         static_cast <UINT32>(0),
         static_cast<PCSTR>(nullptr),
         static_cast <unsigned int>(0),
         static_cast<PCWSTR>(nullptr),
         static_cast<PCSTR>(nullptr));
-
-    WindowsAppRuntime::MddBootstrap::Activity::Context::Get().Reset();
 
     return S_OK;
 }
@@ -124,24 +123,18 @@ CATCH_RETURN();
 
 STDAPI_(void) MddBootstrapShutdown() noexcept
 {
-    WindowsAppRuntime::MddBootstrap::Activity::Context::Get().SetMddBootStrapAPI(WindowsAppRuntime::MddBootstrap::Activity::MddBootStrapAPI::Shutdown);
+    PWSTR initializationFrameworkPackageFullName{};
+    auto initializationCount{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeData(initializationFrameworkPackageFullName) };
+    WindowsAppRuntime::MddBootstrap::Activity::Context::Get().SetMddBootstrapAPI(WindowsAppRuntime::MddBootstrap::Activity::MddBootstrapAPI::Shutdown);
     auto threadCallback = wil::ThreadFailureCallback(wilResultLoggingThreadCallback);
     auto shutdownActivity{
         WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetShutdownActivity().Start(
-            static_cast<UINT32>(g_initializationCount),
-            g_initializationFrameworkPackageFullName.get()) };
+            static_cast<UINT32>(initializationCount),
+            initializationFrameworkPackageFullName) };
 
     auto lock{ std::lock_guard(g_initializationLock) };
-    const auto initializationCount{ g_initializationCount.load() };
-    if (initializationCount > 1)
+    if (!WindowsAppRuntime::MddBootstrap::Activity::Context::Get().ShouldShutdownNow())
     {
-        // Multiply initialized. Just decrement our count
-        --g_initializationCount;
-        return;
-    }
-    else if (initializationCount == 0)
-    {
-        // Not initialized. Nothing to do
         return;
     }
 
@@ -174,7 +167,7 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
 
     shutdownActivity.StopWithResult(
         S_OK,
-        g_initializationCount - 1,
+        initializationCount - 1,
         static_cast <UINT32>(0),
         static_cast<PCSTR>(nullptr),
         static_cast <unsigned int>(0),
@@ -184,9 +177,7 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
     g_initializationMajorMinorVersion = {};
     g_initializationVersionTag.clear();
     g_initializationFrameworkPackageVersion = {};
-    g_initializationFrameworkPackageFullName.reset();
-
-    --g_initializationCount;
+    WindowsAppRuntime::MddBootstrap::Activity::Context::Get().SetShutdownData();
 }
 
 STDAPI MddBootstrapTestInitialize(
@@ -211,9 +202,9 @@ void VerifyInitializationIsCompatible(
     // Sanity check we're already initialized
     // g_lifetimeManager is optional. Don't check it
     // g_endTheLifetimeManagerEvent is optional. Don't check it
-    FAIL_FAST_HR_IF_MSG(E_UNEXPECTED, g_windowsAppRuntimeDll == nullptr, "g_windowsAppRuntimeDll is null");
-    FAIL_FAST_HR_IF_MSG(E_UNEXPECTED, g_packageDependencyId == nullptr, "g_packageDependencyId is null");
-    FAIL_FAST_HR_IF_MSG(E_UNEXPECTED, g_packageDependencyContext == nullptr, "g_packageDependencyContext is null");
+    FAIL_FAST_HR_IF(E_UNEXPECTED, g_windowsAppRuntimeDll == nullptr);
+    FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyId == nullptr);
+    FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyContext == nullptr);
 
     // Is the initialization request compatible with the current initialization state?
     THROW_HR_IF_MSG(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE,
@@ -260,10 +251,10 @@ void FirstTimeInitialization(
     // Create the lifetime manager
     wil::com_ptr_nothrow<IDynamicDependencyLifetimeManager> lifetimeManager;
     wil::unique_event endTheLifetimeManagerEvent;
-    CreateLifetimeManager(majorMinorVersion, versionTag, minVersion, lifetimeManager, endTheLifetimeManagerEvent, g_initializationFrameworkPackageFullName);
+    CreateLifetimeManager(majorMinorVersion, versionTag, minVersion, lifetimeManager, endTheLifetimeManagerEvent, WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializationPackageFullName());
 
     const PACKAGE_INFO* frameworkPackageInfo{};
-    auto packageInfoBuffer{ GetFrameworkPackageInfoForPackage(g_initializationFrameworkPackageFullName.get(), frameworkPackageInfo) };
+    auto packageInfoBuffer{ GetFrameworkPackageInfoForPackage(WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializationPackageFullName().get(), frameworkPackageInfo) };
 
     // Temporarily add the framework's package directory to PATH so LoadLibrary can find it and any colocated imports
     wil::unique_dll_directory_cookie dllDirectoryCookie{ AddFrameworkToPath(frameworkPackageInfo->path) };
@@ -472,16 +463,10 @@ void CreateLifetimeManager(
 {
     if (IsLifetimeManagerViaEnumeration())
     {
-        WindowsAppRuntime::MddBootstrap::Activity::Context::Get().SetDDLMFindMethodUsed(
-            WindowsAppRuntime::MddBootstrap::Activity::DDLMFindMethod::ViaAppEnumeration);
-
         CreateLifetimeManagerViaEnumeration(majorMinorVersion, versionTag, minVersion, endTheLifetimeManagerEvent, ddlmPackageFullName);
     }
     else
     {
-        WindowsAppRuntime::MddBootstrap::Activity::Context::Get().SetDDLMFindMethodUsed(
-            WindowsAppRuntime::MddBootstrap::Activity::DDLMFindMethod::ViaAppExtension);
-
         CreateLifetimeManagerViaAppExtension(majorMinorVersion, versionTag, minVersion, lifetimeManager, ddlmPackageFullName);
     }
 }

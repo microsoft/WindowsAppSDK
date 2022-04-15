@@ -15,6 +15,6 @@
 // add headers that you want to pre-compile here
 #include "framework.h"
 #include "MddBootstrapActivity.h"
-#include "tracelogging.h"
+#include "MddBootstrapTracelogging.h"
 
 #endif //PCH_H
