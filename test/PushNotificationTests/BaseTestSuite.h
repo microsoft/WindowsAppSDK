@@ -7,14 +7,7 @@
 using namespace WEX::Common;
 using namespace WEX::Logging;
 using namespace WEX::TestExecution;
-
-using namespace winrt::Windows::ApplicationModel::Activation;
-using namespace winrt::Windows::ApplicationModel::Background;
 using namespace winrt::Windows::Foundation;
-using namespace winrt::Windows::Foundation::Collections;
-using namespace winrt::Windows::Management::Deployment;
-using namespace winrt::Windows::Storage;
-using namespace winrt::Windows::System;
 using namespace winrt::Microsoft::Windows::PushNotifications;
 
 class BaseTestSuite
