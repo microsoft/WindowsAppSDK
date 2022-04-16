@@ -5,4 +5,10 @@
 
 #include "pch.h"
 
-void ShowHelp();
+namespace WindowsAppRuntimeInstaller::Console
+{
+    void DisplayHeader();
+    void DisplayHelp();
+    void DisplayInfo();
+    void DisplayError(const HRESULT hr);
+}

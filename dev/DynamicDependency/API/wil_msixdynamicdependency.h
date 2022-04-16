@@ -10,7 +10,7 @@ typedef unique_any<DLL_DIRECTORY_COOKIE, decltype(&::RemoveDllDirectory), ::Remo
 
 #if defined(MSIXDYNAMICDEPENDENCY_H) && !defined(__WIL_MSIXDYNAMICDEPENDENCY_H)
 #define __WIL_MSIXDYNAMICDEPENDENCY_H
-typedef unique_any<MDD_PACKAGEDEPENDENCY_CONTEXT, decltype(&::MddRemovePackageDependency), ::MddRemovePackageDependency> unique_package_dependency_context;
+typedef unique_any<MDD_PACKAGEDEPENDENCY_CONTEXT, decltype(&::MddRemovePackageDependency), ::MddRemovePackageDependency> unique_mdd_package_dependency_context;
 #endif // __WIL_MSIXDYNAMICDEPENDENCY_H
 
 #if defined(_APPMODEL_H_) && !defined(__WIL_APPMODEL_H_) && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)

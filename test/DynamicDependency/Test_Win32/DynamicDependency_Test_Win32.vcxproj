@@ -320,6 +320,9 @@
     </ClCompile>
     <ClCompile Include="TestFilesystem.cpp" />
     <ClCompile Include="TestMddBootstrap.cpp" />
+    <ClCompile Include="TestMddBootstrapCppInitialize.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="TestPackages.cpp" />
     <ClCompile Include="Test_GetCurrentPackageInfo.cpp" />
     <ClCompile Include="Test_Win32_Add_Rank_A0_B10.cpp" />

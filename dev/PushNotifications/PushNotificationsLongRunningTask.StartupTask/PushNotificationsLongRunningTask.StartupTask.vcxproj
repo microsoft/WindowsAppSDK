@@ -223,6 +223,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PushNotificationsLongRunningPlatform-Startup.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -12,7 +12,8 @@
 #include "FileActivatedEventArgs.h"
 #include "Association.h"
 #include "ExtensionContract.h"
-#include "GetRawNotificationEventArgs.h"
+#include "PushNotificationManager.h"
+#include "AppNotificationManager.h"
 
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
@@ -68,7 +69,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         wil::unique_hlocal_ptr<PWSTR[]> argv{ CommandLineToArgvW(commandLine.c_str(), &argc) };
 
-        PCWSTR activationKinds[] = { c_msProtocolArgumentString, c_pushProtocolArgumentString };
+        PCWSTR activationKinds[] = { c_msProtocolArgumentString, c_pushProtocolArgumentString, c_appNotificationProtocolArgumentString };
+
         for (auto activationKind : activationKinds)
         {
             auto [ kind, data ] = GetActivationArguments(argv.get(), argc, activationKind);
@@ -451,6 +453,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         if (m_isCurrent)
         {
             m_key.Reset();
+            m_keyCreationMutexLock.reset();
             m_keyCreationMutex.reset();
         }
     }
@@ -488,10 +491,12 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             // protocol, except the catch-all LaunchActivatedEventArgs case.
             if (!contractArgument.empty())
             {
-                if (contractArgument == c_pushProtocolArgumentString)
+                if (contractArgument == c_pushProtocolArgumentString || contractArgument == c_appNotificationProtocolArgumentString)
                 {
-                    // Generate a basic encoded launch Uri for all Push activations.
-                    std::wstring tempContractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
+                    // Generate a basic encoded launch Uri for Push/Toast activations
+                    PCWSTR contractId = (contractArgument == c_pushProtocolArgumentString) ? c_pushContractId : c_appNotificationContractId;
+                    std::wstring tempContractData = GenerateEncodedLaunchUri(L"App", contractId);
+
                     contractArgument = c_msProtocolArgumentString;
 
                     // A non-empty contractData means we have a payload.
@@ -542,6 +547,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     hstring AppInstance::Key()
     {
+        auto releaseOnExit = m_dataMutex.acquire();
+
         if (m_key.IsValid())
         {
             return winrt::hstring(m_key.Get());
@@ -566,21 +573,37 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         auto escapedKey = std::regex_replace(key, std::wregex(L"\\\\"), L"_");
         std::wstring mutexName = wil::str_printf<std::wstring>(L"%s_%s_Mutex", m_moduleName.c_str(), escapedKey.c_str());
 
-        // We keep the mutex as a live member to ensure all other instances continue
-        // to get an 'open' instead of a 'create' due to it already existing.
-        m_keyCreationMutex.create(mutexName.c_str(), 0, MUTEX_ALL_ACCESS);
+        // m_keyCreationMutex is only used to synchronize the owner of the key.  Data access
+        // is still protected by m_dataMutex.
+        // Acquire m_dataMutex before creating m_keyCreationMutex to avoid
+        // processes from seeing the mutex but not seeing the Key on the instance yet.
+        auto releaseOnExit = m_dataMutex.acquire();
 
-        bool currentIsKeyOwner = (GetLastError() != ERROR_ALREADY_EXISTS);
-        if (currentIsKeyOwner)
+        // First caller creates the named mutex. All other instances continue
+        // to get an 'open' instead of a 'create' due to it already existing.
+        wil::unique_mutex keyCreationMutex;
+        keyCreationMutex.create(mutexName.c_str(), 0, MUTEX_ALL_ACCESS);
+
+        DWORD waitResult = 0;
+        // Wait for 0 seconds. If the mutex is taken we don't own the mutex
+        auto lock = keyCreationMutex.acquire(&waitResult, 0);
+
+        if (waitResult != WAIT_TIMEOUT)
         {
-            // m_keyCreationMutex is only used to synchronize the owner of the key.  Data access
-            // is still protected by m_dataMutex.
-            auto releaseOnExit = m_dataMutex.acquire();
+            // We acquired the named mutex, store the mutex itself and the lock as a member.
+            // We keep the mutex and lock as a live member to ensure it stays alive for
+            // as long as we own the mutex
+            // NOTE: Assigning the new mutex will release the old one if it exists.
+            // Therefore make sure to release the lock first.
+            m_keyCreationMutexLock = std::move(lock);
+            m_keyCreationMutex = std::move(keyCreationMutex);
 
             m_key.Resize((key.length() + 1) * sizeof(key.data()[0]));
             THROW_IF_FAILED(StringCchCopy(m_key.Get(), (m_key.Size() / sizeof(wchar_t)), key.c_str()));
+
+            return true;
         }
-        return currentIsKeyOwner;
+        return false;
     }
 
     Microsoft::Windows::AppLifecycle::AppInstance AppInstance::FindForKey(std::wstring const& key)

@@ -7,26 +7,25 @@
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.Windows.CsWinRT" Version="1.5.0-prerelease.220124.4">
+    <Dependency Name="Microsoft.Windows.CsWinRT" Version="1.6.1">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
-      <Sha>c90d2e33c650b65377a3eb046f1f449d56e2ab7d</Sha>
+      <Sha>9b4a4df6144ac1f1642307046cc2468ce4664b0a</Sha>
     </Dependency>
     <Dependency Name="CsWinRT.Dependency.DotNetCoreSdk" Version="5.0.404">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
-      <Sha>
-      </Sha>
+      <Sha>9b4a4df6144ac1f1642307046cc2468ce4664b0a</Sha>
     </Dependency>
     <Dependency Name="CsWinRT.Dependency.DotNetCoreRuntime" Version="5.0.13">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
-      <Sha>c90d2e33c650b65377a3eb046f1f449d56e2ab7d</Sha>
+      <Sha>9b4a4df6144ac1f1642307046cc2468ce4664b0a</Sha>
     </Dependency>
-    <Dependency Name="CsWinRT.Dependency.WindowsSdkPackage" Version="23-preview">
+    <Dependency Name="CsWinRT.Dependency.WindowsSdkPackage" Version="24">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
-      <Sha>c90d2e33c650b65377a3eb046f1f449d56e2ab7d</Sha>
+      <Sha>9b4a4df6144ac1f1642307046cc2468ce4664b0a</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.1.0-20220210.0-CI">
+    <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.1.0-20220307.0-CI">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionInternal</Uri>
-      <Sha>aa64d7091a9b0e146703ba311adb93c0ebb2cd11</Sha>
+      <Sha>7dac813fd238fdbf0eef1b1e7b20616810854e2b</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>

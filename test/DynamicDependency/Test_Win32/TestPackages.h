@@ -128,6 +128,22 @@ namespace Test::Packages::WindowsAppRuntimeFramework
     constexpr PCWSTR c_PackageDirName = L"Microsoft.WindowsAppRuntime.Framework";
     constexpr PCWSTR c_PackageFamilyName = L"Microsoft.WindowsAppRuntime.Framework_8wekyb3d8bbwe";
     constexpr PCWSTR c_PackageFullName = L"Microsoft.WindowsAppRuntime.Framework_4.1.1967.333_neutral__8wekyb3d8bbwe";
+    constexpr const PACKAGE_VERSION GetPackageVersion()
+    {
+        PACKAGE_VERSION version{};
+        version.Major = 4;
+        version.Minor = 1;
+        version.Build = 1967;
+        version.Revision = 333;
+        return version;
+    }
+    constexpr const PACKAGE_VERSION c_Version = GetPackageVersion();
+
+    constexpr const UINT32 GetPackageVersionMajorMinor()
+    {
+        return static_cast<UINT32>((GetPackageVersion().Major << 16) | GetPackageVersion().Minor);
+    }
+    constexpr const UINT32 c_Version_MajorMinor = GetPackageVersionMajorMinor();
 }
 
 namespace Test::Packages::DynamicDependencyDataStore

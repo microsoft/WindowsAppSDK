@@ -55,5 +55,6 @@
 #include <appmodel.packagegraph.h>
 #include <microsoft.utf8.h>
 #include <security.integritylevel.h>
+#include <windowsappruntime.selfcontained.h>
 
 #define MIDL_NS_PREFIX

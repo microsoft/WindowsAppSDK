@@ -7,6 +7,16 @@
     <TargetPlatformIdentifierAdjusted>UAP</TargetPlatformIdentifierAdjusted>
   </PropertyGroup>
 
+  <!--
+    For .NET projects, we use the default file inclusion support that's built into the .NET SDK for the Windows App SDK. For that, we need to set these properties.
+  -->
+  <PropertyGroup>
+    <EnableDefaultContentItems Condition="'$(EnableDefaultContentItems)' == ''">true</EnableDefaultContentItems>
+    <EnableDefaultPRIResourceItems Condition="'$(EnableDefaultPRIResourceItems)' == ''">true</EnableDefaultPRIResourceItems>
+    <EnableDefaultWindowsAppSdkContentItems Condition="'$(EnableDefaultWindowsAppSdkContentItems)' == ''">true</EnableDefaultWindowsAppSdkContentItems>
+    <EnableDefaultWindowsAppSdkPRIResourceItems Condition="'$(EnableDefaultWindowsAppSdkPRIResourceItems)' == ''">true</EnableDefaultWindowsAppSdkPRIResourceItems>
+  </PropertyGroup>
+
   <!-- The win32 project system adds all images in the project to the Image array in the project file.
        This MSBuild project file though (created originally for UWPs) requires images to be in the Content array. -->
   <ItemGroup>
@@ -21,6 +31,17 @@
     <SDKVersion Condition="'$(SDKVersion)' == ''">10.0</SDKVersion>
     <DefaultLanguage Condition="'$(DefaultLanguage)' == ''">en-US</DefaultLanguage>
   </PropertyGroup>
+
+  <!--
+    PRIResource is not by default in the list of Build Actions for WPF apps. So add it!
+    If we don't add it, our attempt to by default include RESW files in PRIResource will
+    fail (VS will inject MSBuild code in the project file to undo that include). We don't
+    restrict this to WPF projects because there is no harm in including the item in other
+    project types.
+  -->
+  <ItemGroup>
+    <AvailableItemName Include="PRIResource"/>
+  </ItemGroup>
 
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -1583,5 +1604,70 @@
       TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
       Platform="$(Platform)">
     </ValidateConfiguration>
+  </Target>
+
+  <!-- Configure Fast Up To Date for PRI generation. Please see the comment in ProjectItemsSchema.xaml for more info. -->
+
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)ProjectItemsSchema.xaml" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <_MrtCoreUpToDateCheckInputDependsOn>
+      $(_MrtCoreUpToDateCheckInputDependsOn);
+      GetMrtPackagingOutputs;
+      _GetPriFilesFromPayload;
+    </_MrtCoreUpToDateCheckInputDependsOn>
+  </PropertyGroup>
+
+  <!-- Inform the fast up-to-date check of the inputs for PRI generation. -->
+  <Target Name="_MrtCoreUpToDateCheckInput" DependsOnTargets="$(_MrtCoreUpToDateCheckInputDependsOn)" BeforeTargets="CollectUpToDateCheckInputDesignTime">
+        <!-- 
+        Copied from the target _GenerateProjectPriConfigurationFiles. @(_LayoutFile),  @(_EmbedFile), and @(_PRIResourceFiltered) are ultimately inputs to
+        the MRT Core indexer, but they're populated by _GenerateProjectPriConfigurationFiles which does work (runs a tool to generate the indexer
+        configuration files) that we don't need during a design-time build, so we hoist them out to avoid calling the target.
+        -->
+    <ItemGroup>
+        <!--
+        First, build out the complete list of files we want to consider for the layout. Then exclude anything that matches any pattern or filename listed in
+        _AppxLayoutAssetPackageFiles. We could do this as a 'Remove' operation, but by building an oracle we don't modify, we simplify future manipulations of
+        this data set.
+        -->
+      <_LayoutFileSource Include="@(PackagingOutputs)" Condition="'%(OutputGroup)' == 'ContentFilesProjectOutputGroup' and '%(ProjectName)' == '$(ProjectName)'" />
+      <_LayoutFileSource Include="@(PackagingOutputs)" Condition="'%(OutputGroup)' == 'CustomOutputGroupForPackaging' and '%(ProjectName)' == '$(ProjectName)'" />
+      <_LayoutFile Include="@(_LayoutFileSource)" Exclude="@(_AppxLayoutAssetPackageFiles)" />
+
+      <_EmbedFile Include="@(PackagingOutputs)" Condition="'%(OutputGroup)' == 'EmbedOutputGroupForPackaging' and '%(ProjectName)' == '$(ProjectName)'"/>
+
+      <!-- If we have the .xbf, we don't need the .xaml file. -->
+      <_LayoutFileXbfXaml Include="$([System.IO.Path]::ChangeExtension('%(_LayoutFile.Identity)','.xaml'))" Condition="'%(Extension)' == '.xbf'" />
+      <_LayoutFile Remove="@(_LayoutFileXbfXaml)" />
+
+      <!-- Filter out PRIResource files which are marked by C++ project system as ExcludedFromBuild. -->
+      <_PRIResourceFiltered Include="@(PRIResource)" Condition="'%(PRIResource.ExcludedFromBuild)' != 'true'" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_UpToDateCheckInputTemp Include="@(SourceAppxManifest)" Set="PRIGeneration" />
+      <_UpToDateCheckInputTemp Include="@(_LayoutFile)" Set="PRIGeneration" />
+      <_UpToDateCheckInputTemp Include="@(_EmbedFile)" Set="PRIGeneration" />
+      <_UpToDateCheckInputTemp Include="@(_PRIResourceFiltered)" Set="PRIGeneration" />
+      <_UpToDateCheckInputTemp Include="@(_PriFilesFromPayload)" Set="PRIGeneration" />
+    </ItemGroup>
+
+    <RemoveDuplicates Inputs="@(_UpToDateCheckInputTemp)">
+      <Output TaskParameter="Filtered" ItemName="_UpToDateCheckInputDeduplicated" />
+    </RemoveDuplicates>
+
+    <ItemGroup>
+      <UpToDateCheckInput Include="@(_UpToDateCheckInputDeduplicated)" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Inform the fast up-to-date check of the outputs from PRI generation. -->
+  <Target Name="_MrtCoreUpToDateCheckBuilt" BeforeTargets="CollectUpToDateCheckBuiltDesignTime">
+    <ItemGroup>
+      <UpToDateCheckBuilt Include="$(ProjectPriFullPath)" Set="PRIGeneration" />
+    </ItemGroup>
   </Target>
 </Project>
