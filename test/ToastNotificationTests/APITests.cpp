@@ -578,5 +578,10 @@ namespace Test::ToastNotifications
         {
             RunTestUnpackaged(L"VerifyToastUpdateZeroSequenceFail_Unpackaged", testWaitTime());
         }
+
+        TEST_METHOD(VerifyIconPathExists_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyIconPathExists_Unpackaged", testWaitTime());
+        }
     };
 }

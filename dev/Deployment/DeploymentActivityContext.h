@@ -3,20 +3,18 @@
 
 #pragma once
 
-#include "pch.h"
+#include "DeploymentTracelogging.h"
 
-namespace WindowsAppRuntimeInstaller::InstallActivity
+namespace WindowsAppRuntime::Deployment::Activity
 {
-    enum class InstallStage
+    enum class DeploymentStage
     {
         None = 0x0,
-        InstallLicense = 0x1,
-        GetPackageProperties = 0x2,
-        CreatePackageURI = 0x3,
+        GetLicensePath = 0x1,
+        InstallLicense = 0x2,
+        GetPackagePath = 0x3,
         AddPackage = 0x4,
-        RegisterPackage = 0x5,
-        ProvisionPackage = 0x6,
-        RestartPushNotificationsLRP = 0x7,
+        RestartPushNotificationsLRP = 0x5,
     };
 
     struct WilFailure
@@ -26,24 +24,25 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         std::string file;
         unsigned int lineNumer;
         std::wstring message;
+        std::string module;
     };
 
     class Context
     {
-        InstallStage m_installStage{};
+        DeploymentStage m_installStage{};
         std::wstring m_currentResourceId;
         HRESULT m_deploymentErrorExtendedHresult{};
         std::wstring m_deploymentErrorText;
         GUID m_deploymentErrorActivityId{};
-        WindowsAppRuntimeInstaller_TraceLogger::Install m_activity;
-        WilFailure m_lastFailure{};
+        WindowsAppRuntimeDeployment_TraceLogger::Initialize m_activity;
+        WilFailure m_lastFailure;
 
     public:
-        static WindowsAppRuntimeInstaller::InstallActivity::Context& Get();
+        static WindowsAppRuntime::Deployment::Activity::Context& Get();
 
         void Reset();
 
-        const InstallStage& GetInstallStage() const
+        const DeploymentStage& GetInstallStage() const
         {
             return m_installStage;
         }
@@ -68,7 +67,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
             return m_deploymentErrorActivityId;
         }
 
-        WindowsAppRuntimeInstaller_TraceLogger::Install GetActivity() const
+        WindowsAppRuntimeDeployment_TraceLogger::Initialize GetActivity() const
         {
             return m_activity;
         }
@@ -78,7 +77,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
             return m_lastFailure;
         }
 
-        void SetInstallStage(const InstallStage& installStage)
+        void SetInstallStage(const DeploymentStage& installStage)
         {
             m_installStage = installStage;
         }
@@ -98,13 +97,13 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
             m_deploymentErrorActivityId = deploymentErrorActivityId;
         }
 
-        void SetActivity(const WindowsAppRuntimeInstaller_TraceLogger::Install& activity)
+        void SetActivity(const WindowsAppRuntimeDeployment_TraceLogger::Initialize& activity)
         {
             m_activity = activity;
         }
 
-        void SetLastFailure(const wil::FailureInfo& failureInfo);
+        void SetLastFailure(const wil::FailureInfo& failure);
     };
 
-    static WindowsAppRuntimeInstaller::InstallActivity::Context g_installActivityContext;
+    static WindowsAppRuntime::Deployment::Activity::Context g_DeploymentActivityContext;
 }
