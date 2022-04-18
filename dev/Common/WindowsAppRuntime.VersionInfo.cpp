@@ -16,23 +16,14 @@ class RuntimeInformation
 public:
     static const std::wstring& GetFrameworkPackageFamilyName()
     {
+        if (!g_test_frameworkPackageFamilyName.empty())
+        {
+            return g_test_frameworkPackageFamilyName;
+        }
+
         const uint32_t c_frameworkPackageFamilyNameResourceId{ 10002 };
         static std::wstring frameworkPackageFamilyName{ LoadStringWFromResource(c_frameworkPackageFamilyNameResourceId) };
         return frameworkPackageFamilyName;
-    }
-
-    static const std::wstring& GetMainPackageFamilyName()
-    {
-        const uint32_t c_mainPackageFamilyNameResourceId{ 10003 };
-        static std::wstring mainPackageFamilyName{ LoadStringWFromResource(c_mainPackageFamilyNameResourceId) };
-        return mainPackageFamilyName;
-    }
-
-    static const std::wstring& GetSingletonPackageFamilyName()
-    {
-        const uint32_t c_singletonPackageFamilyNameResourceId{ 10004 };
-        static std::wstring singletonPackageFamilyName{ LoadStringWFromResource(c_singletonPackageFamilyNameResourceId) };
-        return singletonPackageFamilyName;
     }
 
 private:
@@ -69,7 +60,24 @@ STDAPI WindowsAppRuntime_VersionInfo_MSIX_Framework_PackageFamilyName_Get(
     *packageFamilyName = nullptr;
     const auto& frameworkPackageFamilyName{ ::Microsoft::WindowsAppRuntime::VersionInfo::RuntimeInformation::GetFrameworkPackageFamilyName() };
     *packageFamilyName = frameworkPackageFamilyName.c_str();
+    RETURN_HR_IF_MSG(E_UNEXPECTED, frameworkPackageFamilyName.empty(), "WindowsAppSDK framework PackageFamilyName resource not valid (\"\")");
     return S_OK;
 }
 CATCH_RETURN();
 
+STDAPI WindowsAppRuntime_VersionInfo_TestInitialize(
+    PCWSTR frameworkPackageFamilyName) noexcept try
+{
+    if (!frameworkPackageFamilyName || (*frameworkPackageFamilyName == L'0'))
+    {
+        // Shutdown test support
+        g_test_frameworkPackageFamilyName.clear();
+    }
+    else
+    {
+        // Initialize test support
+        g_test_frameworkPackageFamilyName = frameworkPackageFamilyName;
+    }
+    return S_OK;
+}
+CATCH_RETURN();

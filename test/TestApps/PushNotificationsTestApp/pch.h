@@ -18,3 +18,4 @@
 
 #include <WindowsAppRuntime.Test.Bootstrap.h>
 #include <WindowsAppRuntime.SelfContained.h>
+#include <WindowsAppRuntime.VersionInfo.h>

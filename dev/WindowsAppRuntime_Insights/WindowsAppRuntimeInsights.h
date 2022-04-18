@@ -40,8 +40,8 @@
             static wil::unique_hmodule module{ LoadResourceModule() };
             if (module)
             {
-                const auto rc{ ::LoadStringA(module.get(), id, resourceValue, ARRAYSIZE(resourceValue)) };
-                LOG_LAST_ERROR_IF_MSG(rc == 0, "Failed to load resource string. id: %u", id);
+                const auto resourceValueLength{ ::LoadStringA(module.get(), id, resourceValue, ARRAYSIZE(resourceValue)) };
+                LOG_LAST_ERROR_IF_MSG(resourceValueLength == 0, "Failed to load resource string. id: %u", id);
             }
             return resourceValue;
         }
@@ -55,7 +55,6 @@
         }
     };
     }
-
 
     #define _GENERIC_PARTB_FIELDS_ENABLED \
             TraceLoggingStruct(4, "COMMON_WINDOWSAPPSDK_PARAMS"), \
