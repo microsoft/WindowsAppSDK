@@ -107,7 +107,7 @@ The list of all contracts defined across Windows App SDK
 | AppNotifications   | windowsappsdk | AppNotificationsContract        | Microsoft.Windows.AppNotifications                   |         |
 | Deployment         | windowsappsdk | DeploymentManagerContract       | Microsoft.Windows.ApplicationModel.WindowsAppRuntime |         |
 | DynamicDependency  | windowsappsdk | DynamicDependencyContract       | Microsoft.Windows.ApplicationModel.DynamicDependency |         |
-| EnvironmentManager | windowsappsdk | EnvironmentManagerContracct     | Microsoft.Windows.System                             |         |
+| EnvironmentManager | windowsappsdk | EnvironmentManagerContract      | Microsoft.Windows.System                             |         |
 | MRTCore            | windowsappsdk | MrtCoreContract                 | Microsoft.Windows.ApplicationModel.Resources         |         |
 | PowerNotifications | windowsappsdk | PowerNotificationsContract      | Microsoft.Windows.System.Power                       |         |
 | PushNotifications  | windowsappsdk | PushNotificationsContract       | Microsoft.Windows.PushNotifications                  |         |
