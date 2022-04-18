@@ -301,7 +301,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         m_channel = channel;
                     }
 
-                    PushNotificationTelemetry::LogCreateChannelAsync(S_OK, remoteId);
                     co_return winrt::make<PushNotificationCreateChannelResult>(
                         channel,
                         S_OK,
