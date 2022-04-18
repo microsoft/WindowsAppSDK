@@ -3,12 +3,6 @@
 
 #include "pch.h"
 
-#if __has_include(<WindowsAppRuntime-VersionInfo.h>)
-#   include <WindowsAppRuntime-VersionInfo.h>
-#   define WINDOWSAPPRUNTIME_SELFCONTAINED_EXPECTED_PACKAGEFAMILYNAME   WINDOWSAPPSDK_RUNTIME_PACKAGE_FRAMEWORK_PACKAGEFAMILYNAME_W
-#else
-#   define WINDOWSAPPRUNTIME_SELFCONTAINED_EXPECTED_PACKAGEFAMILYNAME   nullptr
-#endif
 #include <AppModel.PackageGraph.h>
 
 #include "WindowsAppRuntime.VersionInfo.h"
