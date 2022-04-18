@@ -21,3 +21,5 @@ EXPORTS
 
     WindowsAppRuntime_IsSelfContained
     WindowsAppRuntime_SelfContainedTestInitialize
+
+    WindowsAppRuntime_VersionInfo_MSIX_Framework_PackageFamilyName_Get

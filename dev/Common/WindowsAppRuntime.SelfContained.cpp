@@ -11,6 +11,7 @@
 #endif
 #include <AppModel.PackageGraph.h>
 
+#include "WindowsAppRuntime.VersionInfo.h"
 #include "WindowsAppRuntime.SelfContained.h"
 
 static std::wstring g_test_frameworkPackageFamilyName;
@@ -25,12 +26,12 @@ STDAPI WindowsAppRuntime_IsSelfContained(
     const PACKAGE_INFO* packageInfo{};
     wil::unique_cotaskmem_ptr<BYTE[]> buffer;
     RETURN_IF_FAILED(::AppModel::PackageGraph::GetCurrentPackageGraph(flags, packageInfoCount, packageInfo, buffer));
-    PCWSTR c_frameworkPackageFamilyName{ !g_test_frameworkPackageFamilyName.empty() ?
-                                            g_test_frameworkPackageFamilyName.c_str() :
-                                            WINDOWSAPPRUNTIME_SELFCONTAINED_EXPECTED_PACKAGEFAMILYNAME };
+    const auto frameworkPackageFamilyName{ !g_test_frameworkPackageFamilyName.empty() ?
+                                           g_test_frameworkPackageFamilyName :
+                                           ::WindowsAppRuntime::VersionInfo::GetPackageFamilyName() };
     for (uint32_t index=0; index < packageInfoCount; ++index)
     {
-        if (CompareStringOrdinal(packageInfo[index].packageFamilyName, -1, c_frameworkPackageFamilyName, -1, TRUE) == CSTR_EQUAL)
+        if (CompareStringOrdinal(packageInfo[index].packageFamilyName, -1, frameworkPackageFamilyName.c_str(), -1, TRUE) == CSTR_EQUAL)
         {
             // Found the Windows App SDK framework package in the package graph. Not self-contained!
             return S_OK;
