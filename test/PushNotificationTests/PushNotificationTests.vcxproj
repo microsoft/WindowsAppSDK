@@ -175,6 +175,7 @@
     <ClInclude Include="BaseTestSuite.h" />
     <ClInclude Include="PackagedTests.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PushNotification-Test-Constants.h" />
     <ClInclude Include="UnpackagedTests.h" />
   </ItemGroup>
   <ItemGroup>

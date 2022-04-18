@@ -1,5 +1,4 @@
 ﻿#include "pch.h"
-#include <testdef.h>
 #include <iostream>
 #include <wil/win32_helpers.h>
 #include "WindowsAppRuntime.Test.AppModel.h"

@@ -3,7 +3,7 @@
 
 #include "pch.h"
 
-#include <TestDef.h>
+#include "PushNotification-Test-Constants.h"
 #include "BaseTestSuite.h"
 
 using namespace WEX::Common;
@@ -22,13 +22,12 @@ using namespace winrt::Microsoft::Windows::PushNotifications;
 void BaseTestSuite::ClassSetup()
 {
     ::Test::Bootstrap::Setup();
-    bool isSelfContained{ false };
-    if (SUCCEEDED(TestData::TryGetValue(L"SelfContained", isSelfContained)))
+    bool isSelfContained{};
+    THROW_IF_FAILED(TestData::TryGetValue(L"SelfContained", isSelfContained));
+
+    if (!isSelfContained)
     {
-        if (!isSelfContained)
-        {
-            ::WindowsAppRuntime::SelfContained::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
-        }
+        ::WindowsAppRuntime::SelfContained::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
     }
 }
 
@@ -51,15 +50,12 @@ HRESULT BaseTestSuite::ChannelRequestHelper(IAsyncOperationWithProgress<PushNoti
     if (channelOperation.wait_for(c_timeout) != winrt::Windows::Foundation::AsyncStatus::Completed)
     {
         channelOperation.Cancel();
-        return HRESULT_FROM_WIN32(ERROR_TIMEOUT); // timed out or failed
+        RETURN_WIN32(ERROR_TIMEOUT); // timed out or failed
     }
 
     auto result{ channelOperation.GetResults() };
     auto status{ result.Status() };
-    if (status != PushNotificationChannelStatus::CompletedSuccess)
-    {
-        return result.ExtendedError(); // did not produce a channel
-    }
+    RETURN_HR_IF(result.ExtendedError(), status != PushNotificationChannelStatus::CompletedSuccess);
 
     result.Channel().Close();
     return S_OK;

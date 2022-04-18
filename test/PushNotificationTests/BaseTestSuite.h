@@ -38,5 +38,5 @@ class BaseTestSuite
     private:
         HRESULT ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& channelOperation);
 
-        bool m_registered{ false };
+        bool m_registered{};
 };

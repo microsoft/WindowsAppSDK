@@ -125,13 +125,13 @@
     <Xml Include="appxmanifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\dev\PushNotifications\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.vcxproj">
+    <ProjectReference Include="$(RepoRoot)\dev\PushNotifications\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.vcxproj">
       <Project>{bf3fced0-cadb-490a-93a7-4d90e1f45ab0}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\dev\PushNotifications\PushNotificationsLongRunningTask.StartupTask\PushNotificationsLongRunningTask.StartupTask.vcxproj">
+    <ProjectReference Include="$(RepoRoot)\dev\PushNotifications\PushNotificationsLongRunningTask.StartupTask\PushNotificationsLongRunningTask.StartupTask.vcxproj">
       <Project>{1debbff6-ee6e-4944-9de2-35b7a686af42}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\dev\PushNotifications\PushNotificationsLongRunningTask\PushNotificationsLongRunningTask.vcxproj">
+    <ProjectReference Include="$(RepoRoot)\dev\PushNotifications\PushNotificationsLongRunningTask\PushNotificationsLongRunningTask.vcxproj">
       <Project>{1307dd1b-bbe8-4cd0-b1a0-0db6d61eeaa0}</Project>
     </ProjectReference>
   </ItemGroup>
