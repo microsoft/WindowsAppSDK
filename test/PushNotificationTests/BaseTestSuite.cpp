@@ -23,7 +23,7 @@ void BaseTestSuite::ClassSetup()
 {
     ::Test::Bootstrap::Setup();
     bool isSelfContained{};
-    THROW_IF_FAILED(TestData::TryGetValue(L"SelfContained", isSelfContained));
+    VERIFY_SUCCEEDED(TestData::TryGetValue(L"SelfContained", isSelfContained));
 
     if (!isSelfContained)
     {
