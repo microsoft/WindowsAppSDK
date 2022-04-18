@@ -38,10 +38,10 @@ void BaseTestSuite::ClassCleanup()
 
 void BaseTestSuite::MethodCleanup()
 {
-    if (m_registered)
+    if (!m_unregisteredFully)
     {
         PushNotificationManager::Default().UnregisterAll();
-        m_registered = false;
+        m_unregisteredFully = true;
     }
 }
 
@@ -59,6 +59,18 @@ HRESULT BaseTestSuite::ChannelRequestHelper(IAsyncOperationWithProgress<PushNoti
 
     result.Channel().Close();
     return S_OK;
+}
+
+void BaseTestSuite::RegisterWithPushNotificationManager()
+{
+    PushNotificationManager::Default().Register();
+    m_unregisteredFully = false;
+}
+
+void BaseTestSuite::UnregisterAllWithPushNotificationManager()
+{
+    PushNotificationManager::Default().UnregisterAll();
+    m_unregisteredFully = true;
 }
 
 void BaseTestSuite::ChannelRequestUsingNullRemoteId()
@@ -107,8 +119,7 @@ void BaseTestSuite::MultipleChannelClose()
 
 void BaseTestSuite::VerifyRegisterAndUnregister()
 {
-    PushNotificationManager::Default().Register();
-    m_registered = true;
+    RegisterWithPushNotificationManager();
 
     PushNotificationManager::Default().Unregister();
 }
@@ -139,18 +150,13 @@ void BaseTestSuite::VerifyUnregisterAllFails()
 
 void BaseTestSuite::VerifyRegisterAndUnregisterAll()
 {
-    PushNotificationManager::Default().Register();
-    m_registered = true;
-
-    PushNotificationManager::Default().UnregisterAll();
-    m_registered = false;
+    RegisterWithPushNotificationManager();
+    UnregisterAllWithPushNotificationManager();
 }
 
 void BaseTestSuite::MultipleRegister()
 {
-    PushNotificationManager::Default().Register();
-    m_registered = true;
-
+    RegisterWithPushNotificationManager();
     if (PushNotificationManager::Default().IsSupported())
     {
         VERIFY_THROWS_HR(PushNotificationManager::Default().Register(), HRESULT_FROM_WIN32(ERROR_ALREADY_REGISTERED));
@@ -163,8 +169,7 @@ void BaseTestSuite::MultipleRegister()
 
 void BaseTestSuite::VerifyMultipleRegisterAndUnregister()
 {
-    PushNotificationManager::Default().Register();
-    m_registered = true;
+    RegisterWithPushNotificationManager();
 
     PushNotificationManager::Default().Unregister();
 
@@ -180,23 +185,16 @@ void BaseTestSuite::VerifyMultipleRegisterAndUnregister()
 
 void BaseTestSuite::VerifyMultipleRegisterAndUnregisterAll()
 {
-    PushNotificationManager::Default().Register();
-    m_registered = true;
+    RegisterWithPushNotificationManager();
+    UnregisterAllWithPushNotificationManager();
 
-    PushNotificationManager::Default().UnregisterAll();
-    m_registered = false;
-
-    PushNotificationManager::Default().Register();
-    m_registered = true;
-
-    PushNotificationManager::Default().UnregisterAll();
-    m_registered = false;
+    RegisterWithPushNotificationManager();
+    UnregisterAllWithPushNotificationManager();
 }
 
 void BaseTestSuite::VerifyUnregisterTwice()
 {
-    PushNotificationManager::Default().Register();
-    m_registered = true;
+    RegisterWithPushNotificationManager();
 
     PushNotificationManager::Default().Unregister();
     if (PushNotificationManager::Default().IsSupported())
@@ -211,11 +209,8 @@ void BaseTestSuite::VerifyUnregisterTwice()
 
 void BaseTestSuite::VerifyUnregisterAllTwice()
 {
-    PushNotificationManager::Default().Register();
-    m_registered = true;
-
-    PushNotificationManager::Default().UnregisterAll();
-    m_registered = false;
+    RegisterWithPushNotificationManager();
+    UnregisterAllWithPushNotificationManager();
 
     if (PushNotificationManager::Default().IsSupported())
     {
@@ -229,26 +224,20 @@ void BaseTestSuite::VerifyUnregisterAllTwice()
 
 void BaseTestSuite::VerifyUnregisterAndUnregisterAll()
 {
-    PushNotificationManager::Default().Register();
-    m_registered = true;
-
+    RegisterWithPushNotificationManager();
     PushNotificationManager::Default().Unregister();
-    PushNotificationManager::Default().UnregisterAll();
-    m_registered = false;
+    UnregisterAllWithPushNotificationManager();
 }
 
 void BaseTestSuite::VerifyForegroundHandlerSucceeds()
 {
     PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& /* args */) {});
-    PushNotificationManager::Default().Register();
-    m_registered = true;
+    RegisterWithPushNotificationManager();
 }
 
 void BaseTestSuite::VerifyForegroundHandlerFails()
 {
-    PushNotificationManager::Default().Register();
-    m_registered = true;
-
+    RegisterWithPushNotificationManager();
     if (PushNotificationManager::Default().IsSupported())
     {
         VERIFY_THROWS_HR(PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& /* args */) {}), HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
