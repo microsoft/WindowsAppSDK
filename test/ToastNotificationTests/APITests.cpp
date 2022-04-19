@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 #include "NotificationActivationCallback.h"
-#include <TestDef.h>
+#include "AppNotification-Test-Constants.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
