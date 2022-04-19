@@ -105,6 +105,7 @@ steps:
   inputs:
     SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging'
     Contents: |
+      MrtCore.props      
       MrtCore.PriGen.targets
       MrtCore.References.targets
       MrtCore.targets
