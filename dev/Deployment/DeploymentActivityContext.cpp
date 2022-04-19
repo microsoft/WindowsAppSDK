@@ -1,24 +1,25 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#include "pch.h"
-#include "InstallActivityContext.h"
+#include <pch.h>
 
-WindowsAppRuntimeInstaller::InstallActivity::Context& WindowsAppRuntimeInstaller::InstallActivity::Context::Get()
+#include "DeploymentActivityContext.h"
+
+WindowsAppRuntime::Deployment::Activity::Context& WindowsAppRuntime::Deployment::Activity::Context::Get()
 {
-    return g_installActivityContext;
+    return g_DeploymentActivityContext;
 }
 
-void WindowsAppRuntimeInstaller::InstallActivity::Context::Reset()
+void WindowsAppRuntime::Deployment::Activity::Context::Reset()
 {
-    m_installStage = InstallStage::None;
+    m_installStage = DeploymentStage::None;
     m_currentResourceId.clear();
     m_deploymentErrorExtendedHresult = S_OK;
     m_deploymentErrorText.clear();
     m_deploymentErrorActivityId = GUID{};
 }
 
-void WindowsAppRuntimeInstaller::InstallActivity::Context::SetDeploymentErrorInfo(
+void WindowsAppRuntime::Deployment::Activity::Context::SetDeploymentErrorInfo(
     const HRESULT& deploymentErrorExtendedHresult,
     const std::wstring& deploymentErrorText,
     const GUID& deploymentErrorActivityId)
@@ -28,7 +29,7 @@ void WindowsAppRuntimeInstaller::InstallActivity::Context::SetDeploymentErrorInf
     SetDeploymentErrorActivityId(deploymentErrorActivityId);
 }
 
-void WindowsAppRuntimeInstaller::InstallActivity::Context::SetLastFailure(const wil::FailureInfo& failure)
+void WindowsAppRuntime::Deployment::Activity::Context::SetLastFailure(const wil::FailureInfo& failure)
 {
     m_lastFailure.type = failure.type;
     m_lastFailure.hr = failure.hr;
@@ -51,5 +52,14 @@ void WindowsAppRuntimeInstaller::InstallActivity::Context::SetLastFailure(const 
     else
     {
         m_lastFailure.message.clear();
+    }
+
+    if (failure.pszModule)
+    {
+        m_lastFailure.module = *failure.pszModule;
+    }
+    else
+    {
+        m_lastFailure.module.clear();
     }
 }
