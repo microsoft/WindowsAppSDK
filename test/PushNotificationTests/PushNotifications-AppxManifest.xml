@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
+  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap uap5 com rescap">
+    <!-- TAEF's default manifest uses an Identity Name of "TAEF.TailoredApplication.HostProcess". If you want to
+       customize this manifest, change the Identity Name attribute on the following line to make sure TAEF can
+       detect that the manifest has been customized. If you don't, TAEF might overwrite your manifest with a new
+       default manifest or delete the manifest in some cases. -->
+    <Identity
+      Name="WindowsAppRuntime.Test.PushNotifications"
+      Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+      Version="4.1.1967.333" />
+    
+    <Properties>
+        <DisplayName>WindowsAppRuntime.Test.PushNotifications for tests</DisplayName>
+        <PublisherDisplayName>Windows APP SDK</PublisherDisplayName>
+        <Logo>taef.png</Logo>
+    </Properties>
+    
+    <Dependencies>
+        <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.0.0" MaxVersionTested="12.0.0.0" />
+        <PackageDependency Name="Microsoft.WindowsAppRuntime.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
+    </Dependencies>
+    
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+  <Applications>
+    <Application Id="TE.ProcessHost" Executable="TE.ProcessHost.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="WindowsAppRuntime.Test.PushNotifications" Square150x150Logo="taef.png" Square44x44Logo="taef.png" Description="TAEF Packaged Cwa Application Host Process" BackgroundColor="#222222">
+        <uap:SplashScreen Image="taef.png" />
+      </uap:VisualElements>
+        <Extensions>
+            <com:Extension Category="windows.comServer">
+                <com:ComServer>
+                    <com:ExeServer Executable="TE.ProcessHost.exe" DisplayName="SampleBackgroundApp" Arguments="----WindowsAppRuntimePushServer:">
+                        <com:Class Id="ccd2ae3f-764f-4ae3-be45-9804761b28b2" DisplayName="Windows App SDK Push" />
+                    </com:ExeServer>
+                </com:ComServer>
+            </com:Extension>
+        </Extensions>
+    </Application>
+  </Applications>
+  <Capabilities>
+      <Capability Name="internetClient" />
+      <rescap:Capability Name="runFullTrust" />
+      <rescap:Capability Name="packageManagement" />
+      <rescap:Capability Name="packageQuery" />
+  </Capabilities> 
+</Package>
