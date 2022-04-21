@@ -1,0 +1,31 @@
+<!--
+  Copyright (c) Microsoft Corporation. Licensed under the MIT License
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <_MrtCoreImageGlobs>**/*.png;**/*.bmp;**/*.jpg;**/*.dds;**/*.tif;**/*.tga;**/*.gif</_MrtCoreImageGlobs>
+  </PropertyGroup>
+
+  <!--
+    For .NET apps, by default, add the .RESW files in the project to PRIResource and the image files in the project to Content.
+    That's needed for the strings in the .RESW files and the image files to be indexed during PRI generation.
+    The app dev can opt out a file by changing the Build Action file property to None in Visual Studio, which
+    will automatically modify the project file accordingly, or by manually modifying the CSPROJ file.
+
+    Yes, the properties used here, including EnableCoreMrtTooling, are defined in MSBuild files imported after
+    this file. This is correct though because ItemGroup definitions are evaluated in a later pass. See
+    https://docs.microsoft.com/en-us/visualstudio/msbuild/build-process-overview?view=vs-2019#evaluation-phase.
+
+    NOTE:
+    This solution is broken. See issue https://github.com/microsoft/WindowsAppSDK/issues/1674. A correct solution
+    now exists in the .NET SDK but is available only in version 6.0.300 or higher. So, continue to use this broken
+    solution if we're using an older version. For the .NET SDK feature request with info on why this is
+    insufficient, see https://github.com/dotnet/sdk/issues/24093.
+  -->
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETCoreApp' and $([MSBuild]::VersionLessThan($(NETCoreSdkVersion), '6.0.300')) and '$(EnableDefaultItems)'=='true' and '$(EnableCoreMrtTooling)'=='true'">
+    <Content Include="$(_MrtCoreImageGlobs)" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" Condition="'$(EnableDefaultContentItems)'!='false'" />
+    <PRIResource Include="**/*.resw" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" Condition="'$(EnableDefaultPRIResourceItems)'!='false'"/>
+  </ItemGroup>
+
+</Project>
