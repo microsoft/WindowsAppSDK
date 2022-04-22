@@ -10,45 +10,15 @@
 STDAPI WindowsAppRuntime_IsSelfContained(
     BOOL* isSelfContained) noexcept;
 
-/// Initialize SelfContained's test support. This will constrain package enumeration
-/// and matching for test purposes.
-///
-/// @param frameworkPackageFamilyName only match framework packages with this family name.
-///                                   If nullptr test support is disabled.
-///
-/// @note Not for product use. This is for test purposes only to verify the implementation.
-STDAPI WindowsAppRuntime_SelfContainedTestInitialize(
-    PCWSTR frameworkPackageFamilyName) noexcept;
-
 #if defined(__cplusplus)
-/// Return true if Windows App SDK in use by the current process is deployed Self-Contained.
 namespace WindowsAppRuntime::SelfContained
 {
+/// Return true if Windows App SDK in use by the current process is deployed Self-Contained.
 inline bool IsSelfContained()
 {
     BOOL isSelfContained{};
     THROW_IF_FAILED(WindowsAppRuntime_IsSelfContained(&isSelfContained));
     return !!isSelfContained;
-}
-
-/// Initialize SelfContained's test support. This will constrain package enumeration
-/// and matching for test purposes.
-///
-/// @param frameworkPackageFamilyName only match framework packages with this family name
-///
-/// @note Not for product use. This is for test purposes only to verify the implementation.
-inline void TestInitialize(
-    _In_ PCWSTR frameworkPackageFamilyName)
-{
-    THROW_IF_FAILED(WindowsAppRuntime_SelfContainedTestInitialize(frameworkPackageFamilyName));
-}
-
-/// Shutdown SelfContained's test support.
-///
-/// @note Not for product use. This is for test purposes only to verify the implementation.
-inline void TestShutdown()
-{
-    WindowsAppRuntime_SelfContainedTestInitialize(nullptr);
 }
 }
 #endif // defined(__cplusplus)
