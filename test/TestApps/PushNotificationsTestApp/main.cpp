@@ -1,5 +1,4 @@
 ﻿#include "pch.h"
-#include <testdef.h>
 #include <iostream>
 #include <sstream>
 #include <wil/win32_helpers.h>
@@ -17,8 +16,9 @@ using namespace winrt::Windows::Storage::Streams;
 
 winrt::guid remoteId1(L"a2e4a323-b518-4799-9e80-0b37aeb0d225"); // Generated from ms.portal.azure.com
 winrt::guid remoteId2(L"CA1A4AB2-AC1D-4EFC-A132-E5A191CA285A"); // Dummy guid from visual studio guid tool generator
-
 constexpr auto timeout{ std::chrono::seconds(300) };
+inline const winrt::hstring c_rawNotificationPayload = L"<toast></toast>";
+
 
 bool ChannelRequestUsingNullRemoteId()
 {
