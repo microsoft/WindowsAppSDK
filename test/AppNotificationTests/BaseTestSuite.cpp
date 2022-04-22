@@ -45,7 +45,14 @@ void BaseTestSuite::MethodCleanup()
     }
 }
 
-void BaseTestSuite::Test1()
+void BaseTestSuite::VerifyRegisterActivatorandUnregisterActivator()
 {
-    VERIFY_IS_TRUE(true);
+    AppNotificationManager::Default().Register();
+    AppNotificationManager::Default().Unregister();
+}
+
+void BaseTestSuite::VerifyFailedMultipleRegister()
+{
+    AppNotificationManager::Default().Register();
+    VERIFY_THROWS_HR(AppNotificationManager::Default().Register(), E_INVALIDARG);
 }

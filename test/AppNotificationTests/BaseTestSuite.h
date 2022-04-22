@@ -12,7 +12,8 @@ class BaseTestSuite
         void MethodCleanup();
 
         // Base unit tests
-        void Test1();
+        void VerifyRegisterActivatorandUnregisterActivator();
+        void VerifyFailedMultipleRegister();
     private:
         bool m_unregisteredFully{ true };
 };
