@@ -336,7 +336,7 @@ namespace WindowsAppRuntimeInstaller
 
     HRESULT InstallLicenses(const WindowsAppRuntimeInstaller::Options options)
     {
-#if defined(WAR_PROCESS_LICENSES)
+#if defined(WINDOWSAPPRUNTIME_PROCESS_LICENSES)
         const auto quiet{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet) };
 
         if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallLicenses))
@@ -386,7 +386,7 @@ namespace WindowsAppRuntimeInstaller
 
                 // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
                 if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment) &&
-                    CompareStringOrdinal(package.id.c_str(), package.id.size() - 3, WAR_SINGLETON_X86_ID, package.id.size() - 3, TRUE) == CSTR_EQUAL)
+                    CompareStringOrdinal(package.id.c_str(), package.id.size() - 3, WINDOWSAPPRUNTIME_SINGLETON_X86_ID, package.id.size() - 3, TRUE) == CSTR_EQUAL)
                 {
                     RestartPushNotificationsLRP();
                 }
