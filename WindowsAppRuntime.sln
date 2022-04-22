@@ -339,6 +339,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_BootstrapAutoInitializ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_BootstrapAutoInitialize_CS_Options_None", "test\DynamicDependency\Test_BootstrapAutoInitialize\CS\Test_BootstrapAutoInitialize_CS_Options_None\Test_BootstrapAutoInitialize_CS_Options_None.csproj", "{4A74BBED-3B20-44A7-B6FF-3373160DE741}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppNotificationTests", "test\AppNotificationTests\AppNotificationTests.vcxproj", "{1C9477D2-7330-4992-B06C-F7E2193CF379}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{08bc78e0-63c6-49a7-81b3-6afc3deac4de}*SharedItemsImports = 4
@@ -1332,6 +1334,18 @@ Global
 		{4A74BBED-3B20-44A7-B6FF-3373160DE741}.Release|x64.Build.0 = Release|x64
 		{4A74BBED-3B20-44A7-B6FF-3373160DE741}.Release|x86.ActiveCfg = Release|x86
 		{4A74BBED-3B20-44A7-B6FF-3373160DE741}.Release|x86.Build.0 = Release|x86
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Debug|x64.ActiveCfg = Debug|x64
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Debug|x64.Build.0 = Debug|x64
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Debug|x86.ActiveCfg = Debug|Win32
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Debug|x86.Build.0 = Debug|Win32
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Release|Any CPU.ActiveCfg = Release|Win32
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Release|ARM64.ActiveCfg = Release|Win32
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Release|x64.ActiveCfg = Release|x64
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Release|x64.Build.0 = Release|x64
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Release|x86.ActiveCfg = Release|Win32
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1445,6 +1459,7 @@ Global
 		{0EF1080B-15C6-42E7-A0E2-D624D85C3EBF} = {99C514E4-A6B3-4B09-B870-5511EF9D93AC}
 		{D9139E3C-8D21-4BD9-84E3-30A03A54D610} = {99C514E4-A6B3-4B09-B870-5511EF9D93AC}
 		{4A74BBED-3B20-44A7-B6FF-3373160DE741} = {99C514E4-A6B3-4B09-B870-5511EF9D93AC}
+		{1C9477D2-7330-4992-B06C-F7E2193CF379} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
