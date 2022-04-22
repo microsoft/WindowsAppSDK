@@ -1,14 +1,16 @@
 # Hybrid CRT
 
 The Windows App SDK runs in diverse environments and contexts. Much of the Windows App Runtime
-is implemented in C++ and is thus dependent on the Standard C/C++ Runtime (the CRT). 
-As of versions 1.0.2+ and 1.1+, all Windows App SDK DLLs and EXEs containing C/C++ code are built 
-using the 'Hybrid CRT' technique. This frees developers from the burden of installing the CRT 
-redistributables on end user devices - whether 
-[Microsoft.VCLibs framework packages](https://docs.microsoft.com/troubleshoot/developer/visualstudio/cpp/libraries/c-runtime-packages-desktop-bridge) 
-for packaged apps, or the 
-[VCRedist](https://docs.microsoft.com/cpp/windows/latest-supported-vc-redist?view=msvc-170) 
-for unpackaged apps. 
+is implemented in C++ and is thus dependent on the Standard C/C++ Runtime (the CRT).
+As of versions 1.0.3 and 1.1 Preview 2, all Windows App SDK DLLs and EXEs containing C/C++ code are built
+using the 'Hybrid CRT' technique. This frees developers from the burden of installing the CRT
+redistributables on end user devices - whether
+the [VCLibs UWPDesktop framework package](https://docs.microsoft.com/troubleshoot/developer/visualstudio/cpp/libraries/c-runtime-packages-desktop-bridge)
+for packaged apps, or the
+[vc_redist](https://docs.microsoft.com/cpp/windows/latest-supported-vc-redist?view=msvc-170)
+for unpackaged apps.
+
+For additional information on Hybrid CRT, see the [WinUI Community Call – April 20, 2022](https://www.youtube.com/watch?v=bNHGU6xmUzE&t=16m17s)
 
 ## What is the 'Hybrid CRT'?
 
@@ -49,23 +51,19 @@ worst-case static linkage size of ~200KB, but that assumes every symbol in the S
 Library is needed. In practice it's a smaller slice.
 
 For example, Microsoft.ProjectReunion.dll in 0.8-preview grew from 516,096 bytes using the dynamic
-CRT to 554,496 using the hybrid CRT (+37KB or ~+7%). See pull request
+CRT to 554,496 using the Hybrid CRT (+37KB or ~+7%). See pull request
 [Use the Universal C Runtime #888](https://github.com/microsoft/WindowsAppSDK/pull/888) for more
 details.
 
-Windows App SDK uses the hybrid CRT for all PE files.
-
-## How to use the 'Hybrid CRT'
-
-TL;DR Do nothing and all projects use it. If you create a new *.vcxproj delete any `<RuntimeLibrary>` tags.
+## Hybrid CRT for the Windows App SDK
 
 Windows App SDK defines the rules for Visual Studio in [HybridCRT.props](https://github.com/microsoft/WindowsAppSDK/blob/main/HybridCRT.props).
 This is imported by
 [Directory.Build.props](https://github.com/microsoft/WindowsAppSDK/blob/main/Directory.Build.props) so all
-projects in the directory tree get this support.
+projects in the directory tree (product and test) get this support.
 
 If new projects are created DO NOT specify `<RuntimeLibrary>` in *.vcxproj as that's unnecessary and
-potentially contradictory with proper use of the hybrid CRT. Delete any `<RuntimeLibrary>` tags in
+potentially contradictory with proper use of the Hybrid CRT. Delete any `<RuntimeLibrary>` tags in
 *.vcxproj and the right values will be inherited from
 [HybridCRT.props](https://github.com/microsoft/WindowsAppSDK/blob/main/HybridCRT.props).
 
@@ -92,7 +90,7 @@ The steps involved:
     </ClCompile>
     <Link>
       <!-- Link statically against the runtime and STL, but link dynamically against the CRT by ignoring the static CRT
-           lib and instead linking against the Universal CRT DLL import library. This "hybrid" linking mechanism is
+           lib and instead linking against the Universal CRT DLL import library. This "Hybrid" linking mechanism is
            supported according to the CRT maintainer. Dynamic linking against the CRT makes the binaries a bit smaller
            than they would otherwise be if the CRT, runtime, and STL were all statically linked in. -->
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries);libucrtd.lib</IgnoreSpecificDefaultLibraries>
@@ -106,7 +104,7 @@ The steps involved:
     </ClCompile>
     <Link>
       <!-- Link statically against the runtime and STL, but link dynamically against the CRT by ignoring the static CRT
-           lib and instead linking against the Universal CRT DLL import library. This "hybrid" linking mechanism is
+           lib and instead linking against the Universal CRT DLL import library. This "Hybrid" linking mechanism is
            supported according to the CRT maintainer. Dynamic linking against the CRT makes the binaries a bit smaller
            than they would otherwise be if the CRT, runtime, and STL were all statically linked in. -->
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries);libucrt.lib</IgnoreSpecificDefaultLibraries>
@@ -125,21 +123,57 @@ repository root imports
 all projects in the repository via this statement:
 
 ```xml
-  <!-- Build with the hybrid CRT (Universal CRT + Static VS CRT (for what little the Universal CRT doesn't cover) -->
+  <!-- Build with the Hybrid CRT (Universal CRT + Static VS CRT (for what little the Universal CRT doesn't cover) -->
   <Import Project="$(MSBuildThisFileDirectory)HybridCRT.props" />
 ```
 
-This applies to all projects in the repository (product, test, ...).
+## Hybrid CRT for End Developers
 
 ### Hybrid CRT C/C++ Apps
 
-For their own CRT usage, most C/C++ app developers will continue to link either statically, 
-with no redistribution requirements, or dynamically, requiring either a Microsoft.VCLibs 
-dependency (for packaged apps) or a VCRedist dependency (for unpackaged apps). 
-For unpackaged self-contained C/C++ Windows App SDK apps, some developers may also find 
+For their own CRT usage, C/C++ Windows App SDK app developers may continue to link statically,
+with no redistribution requirements, or dynamically, requiring either a VCLibs*
+dependency (for packaged apps) or a vc_redist.*.exe dependency (for unpackaged apps).
+
+For unpackaged self-contained C/C++ Windows App SDK apps, developers may find
 Hybrid CRT linkage useful for enabling xcopy deployment. For these apps, the Directory.Build.*
 files described above can be included in the project. For apps that also include C++/CX code,
 additional considerations are described below.
+
+### Hybrid CRT C/C++ Libs
+
+Existing libraries targeting Universal Windows (UWP) may be consumed by a Windows App SDK app,
+provided:
+
+* The app references [VCRT Forwarders](https://github.com/microsoft/vcrt-forwarders),
+to map App CRT linkage to Desktop CRT (vcruntime140_app.dll -> vcruntime140.dll ...), or
+* The library project includes this property, to force Desktop CRT linkage (vcruntime140.dll ...):
+
+  ```xml
+  <DesktopCompatible>true</DesktopCompatible>
+  ```
+
+In either case, dynamic CRT linkage is used.
+Converting the UWP library to Hybrid CRT will trigger this build warning:
+
+```xml
+Using static version of the C++ runtime library is not supported
+```
+
+This can be resolved by one of two methods:
+
+* Converting the library project to target Windows Desktop by removing these properties:
+
+  ```xml
+  <AppContainerApplication>true</AppContainerApplication>
+  <ApplicationType>Windows Store</ApplicationType>
+  ```
+
+* Suppressing the warning by adding this property:
+
+  ```xml
+  <UseCrtSDKReferenceStaticWarning>false</UseCrtSDKReferenceStaticWarning>
+  ```
 
 ## C++/CX Special Considerations
 
