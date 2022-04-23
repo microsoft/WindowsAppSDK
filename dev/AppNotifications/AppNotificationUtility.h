@@ -20,7 +20,7 @@ namespace Microsoft::Windows::AppNotifications::Helpers
 
     inline std::wstring ConvertPathToKey(std::wstring path)
     {
-        for (int i = 0; i < path.length(); i++)
+        for (size_t i = 0; i < path.length(); i++)
         {
             if (path[i] == '\\')
             {
