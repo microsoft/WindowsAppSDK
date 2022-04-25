@@ -1756,9 +1756,9 @@ struct DWRITE_PAINT_COLOR
 
     /// <summary>
     /// Specifies the palette entry index if the color value comes from the font's color palette.
-    /// Otherwise, this member is UINT32_MAX.
+    /// Otherwise, this member is UINT16_MAX.
     /// </summary>
-    UINT32 paletteIndex;
+    UINT16 paletteEntryIndex;
 
     /// <summary>
     /// Specifies an alpha value multiplier in the range 0 to 1 that was used to compute the color
