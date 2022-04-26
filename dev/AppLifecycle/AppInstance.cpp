@@ -352,6 +352,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     AppRestartFailureReason AppInstance::Restart(hstring const& arguments)
     {
+        __debugbreak();
         // Report feature usage.
         static bool featureUsageReported{ false };
         if (!featureUsageReported)
@@ -460,6 +461,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     AppLifecycle::AppActivationArguments AppInstance::GetActivatedEventArgs()
     {
+        __debugbreak();
         ExtendedActivationKind kind = ExtendedActivationKind::Launch;
         IInspectable data;
 
