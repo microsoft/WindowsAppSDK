@@ -222,7 +222,7 @@ namespace WindowsAppRuntimeInstaller
             return;
         }
 
-        PCWSTR c_windowsAppRuntimeTempDirectoryPrefix{ L"WAR" };
+        PCWSTR c_windowsAppRuntimeTempDirectoryPrefix{ L"MSIX" };
         wchar_t packageFilename[MAX_PATH];
         THROW_LAST_ERROR_IF(0 == GetTempFileName(std::filesystem::temp_directory_path().c_str(), c_windowsAppRuntimeTempDirectoryPrefix, 0u, packageFilename));
 
@@ -336,7 +336,7 @@ namespace WindowsAppRuntimeInstaller
 
     HRESULT InstallLicenses(const WindowsAppRuntimeInstaller::Options options)
     {
-#if defined(WINDOWSAPPRUNTIME_PROCESS_LICENSES)
+#if defined(MSIX_PROCESS_LICENSES)
         const auto quiet{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet) };
 
         if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallLicenses))
@@ -386,7 +386,7 @@ namespace WindowsAppRuntimeInstaller
 
                 // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
                 if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment) &&
-                    CompareStringOrdinal(package.id.c_str(), static_cast<int>(package.id.size() - 3), WINDOWSAPPRUNTIME_SINGLETON_X86_ID, static_cast<int>(package.id.size() - 3), TRUE) == CSTR_EQUAL)
+                    CompareStringOrdinal(package.id.c_str(), static_cast<int>(package.id.size() - 3), MSIX_SINGLETON_X86_ID, static_cast<int>(package.id.size() - 3), TRUE) == CSTR_EQUAL)
                 {
                     RestartPushNotificationsLRP();
                 }
