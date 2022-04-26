@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 #include "NotificationActivationCallback.h"
-#include <TestDef.h>
+#include "AppNotification-Test-Constants.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -577,6 +577,11 @@ namespace Test::ToastNotifications
         TEST_METHOD(VerifyToastUpdateZeroSequenceFail_Unpackaged)
         {
             RunTestUnpackaged(L"VerifyToastUpdateZeroSequenceFail_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyIconPathExists_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyIconPathExists_Unpackaged", testWaitTime());
         }
     };
 }

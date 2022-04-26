@@ -7,6 +7,16 @@
     <TargetPlatformIdentifierAdjusted>UAP</TargetPlatformIdentifierAdjusted>
   </PropertyGroup>
 
+  <!--
+    For .NET projects, we use the default file inclusion support that's built into the .NET SDK for the Windows App SDK. For that, we need to set these properties.
+  -->
+  <PropertyGroup Condition="'$(UsingMicrosoftNETSdk)' == 'true'">
+    <EnableDefaultContentItems Condition="'$(EnableDefaultContentItems)' == ''">true</EnableDefaultContentItems>
+    <EnableDefaultPRIResourceItems Condition="'$(EnableDefaultPRIResourceItems)' == ''">true</EnableDefaultPRIResourceItems>
+    <EnableDefaultWindowsAppSdkContentItems Condition="'$(EnableDefaultWindowsAppSdkContentItems)' == ''">true</EnableDefaultWindowsAppSdkContentItems>
+    <EnableDefaultWindowsAppSdkPRIResourceItems Condition="'$(EnableDefaultWindowsAppSdkPRIResourceItems)' == ''">true</EnableDefaultWindowsAppSdkPRIResourceItems>
+  </PropertyGroup>
+
   <!-- The win32 project system adds all images in the project to the Image array in the project file.
        This MSBuild project file though (created originally for UWPs) requires images to be in the Content array. -->
   <ItemGroup>

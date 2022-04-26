@@ -5,10 +5,10 @@ import "..\AppLifecycle\AppLifecycle.idl";
 namespace Microsoft.Windows.AppNotifications
 {
     [contractversion(1)]
-    apicontract WindowsAppNotificationsContract {}
+    apicontract AppNotificationsContract {}
 
     // Event args for the Notification Activation
-    [contract(WindowsAppNotificationsContract, 1)]
+    [contract(AppNotificationsContract, 1)]
     runtimeclass AppNotificationActivatedEventArgs
     {
         // Arguments from the invoked button. Empty for Default Activation with no launch args specified in payload.
@@ -19,7 +19,7 @@ namespace Microsoft.Windows.AppNotifications
     }
 
     // Notification Progress Data
-    [contract(WindowsAppNotificationsContract, 1)]
+    [contract(AppNotificationsContract, 1)]
     runtimeclass AppNotificationProgressData
     {
         // Initializes a new Instance of NotificationProgressData
@@ -27,7 +27,7 @@ namespace Microsoft.Windows.AppNotifications
         AppNotificationProgressData(UInt32 sequenceNumber);
 
         // Gets or sets a non-zero sequence number of this notification data.
-        // When multiple NotificationProgressData objects are received, the system displays the data with the greatest non-zero number. 
+        // When multiple NotificationProgressData objects are received, the system displays the data with the greatest non-zero number.
         UInt32 SequenceNumber;
 
         // Gets/Sets the value for the title. Binds to {progressTitle} in progress xml tag.
@@ -44,7 +44,7 @@ namespace Microsoft.Windows.AppNotifications
     }
 
     // The Notification User Setting or Notification Group Policy Setting
-    [contract(WindowsAppNotificationsContract, 1)]
+    [contract(AppNotificationsContract, 1)]
     enum AppNotificationSetting
     {
         Enabled, // Notification is not blocked by settings or group policy
@@ -55,7 +55,7 @@ namespace Microsoft.Windows.AppNotifications
     };
 
     // The Result for a Notification Progress related operation
-    [contract(WindowsAppNotificationsContract, 1)]
+    [contract(AppNotificationsContract, 1)]
     enum AppNotificationProgressResult
     {
         Succeeded, // The progress operation succeeded
@@ -63,14 +63,14 @@ namespace Microsoft.Windows.AppNotifications
     };
 
     // The Priority of the Notification UI associated with it's popup in the Action Centre
-    [contract(WindowsAppNotificationsContract, 1)]
+    [contract(AppNotificationsContract, 1)]
     enum AppNotificationPriority
     {
         Default, // The notification should have default behavior in terms of delivery and display priority during connected standby mode.
         High, // The notification should be treated as high priority. For desktop PCs, this means during connected standby mode the incoming notification can turn on the screen for Surface-like devices if it doesn't have a closed lid detected.
     };
 
-    [contract(WindowsAppNotificationsContract, 1)]
+    [contract(AppNotificationsContract, 1)]
     runtimeclass AppNotification
     {
         // The notification payload representation in xml
@@ -106,7 +106,7 @@ namespace Microsoft.Windows.AppNotifications
     }
 
     // The manager class which encompasses all App Notification API Functionality
-    [contract(WindowsAppNotificationsContract, 1)]
+    [contract(AppNotificationsContract, 1)]
     runtimeclass AppNotificationManager
     {
         // Gets a Default instance of a AppNotificationManager
