@@ -1,9 +1,19 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include "pch.h"
 #include "UnpackagedTests.h"
 
-void UnpackagedTests::Test1()
+void UnpackagedTests::VerifyRegisterActivatorandUnregisterActivator()
 {
-    BaseTestSuite::Test1();
+    BaseTestSuite::VerifyRegisterActivatorandUnregisterActivator();
+}
+
+void UnpackagedTests::VerifyFailedMultipleRegister()
+{
+    BaseTestSuite::VerifyFailedMultipleRegister();
+}
+
+void UnpackagedTests::VerifyToastSettingEnabled()
+{
+    BaseTestSuite::VerifyToastSettingEnabled();
 }

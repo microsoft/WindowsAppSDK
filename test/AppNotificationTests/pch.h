@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #ifndef PCH_H
@@ -41,6 +41,7 @@
 
 #include <winrt/Microsoft.Windows.AppNotifications.h>
 #include <WindowsAppRuntime.SelfContained.h>
+#include <WindowsAppRuntime.VersionInfo.h>
 
 #define VERIFY_THROWS_HR(expression, hr)        \
             VERIFY_THROWS_SPECIFIC(expression,          \

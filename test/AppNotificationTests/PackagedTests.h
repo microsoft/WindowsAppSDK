@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -34,6 +34,7 @@ class PackagedTests : BaseTestSuite
 
     TEST_METHOD_SETUP(MethodInit)
     {
+        BaseTestSuite::MethodSetup();
         return true;
     }
 
@@ -43,6 +44,43 @@ class PackagedTests : BaseTestSuite
         return true;
     }
 
-    TEST_METHOD(Test1);
+    TEST_METHOD(VerifyRegisterActivatorandUnregisterActivator);
+    TEST_METHOD(VerifyFailedMultipleRegister);
+    TEST_METHOD(VerifyUnregisterAll);
+    TEST_METHOD(VerifyUnregisterTwice);
+    TEST_METHOD(VerifyToastSettingEnabled);
+    TEST_METHOD(VerifyToastPayload);
+    TEST_METHOD(VerifyToastTag);
+    TEST_METHOD(VerifyToastGroup);
+    TEST_METHOD(VerifyToastProgressDataFromToast);
+    TEST_METHOD(VerifyToastExpirationTime);
+    TEST_METHOD(VerifyToastPriority);
+    TEST_METHOD(VerifyToastSuppressDisplay);
+    TEST_METHOD(VerifyToastExpiresOnReboot);
+    TEST_METHOD(VerifyToastProgressDataSequence0Fail);
+    TEST_METHOD(VerifyShowToast);
+    TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndValidGroup);
+    TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup);
+    TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup);
+    TEST_METHOD(VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup);
+    TEST_METHOD(VerifyFailedUpdateNotificationDataWithoutPostToast);
+    TEST_METHOD(VerifyGetAllAsyncWithZeroActiveToast);
+    TEST_METHOD(VerifyGetAllAsyncWithOneActiveToast);
+    TEST_METHOD(VerifyGetAllAsyncWithMultipleActiveToasts);
+    TEST_METHOD(VerifyGetAllAsyncIgnoresUpdatesToProgressData);
+    TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier);
+    TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifierDoesNotThrow);
+    TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier);
+    TEST_METHOD(VerifyRemoveWithTagAsyncUsingEmptyTagThrows);
+    TEST_METHOD(VerifyRemoveWithTagAsyncUsingNonExistentTagDoesNotThrow);
+    TEST_METHOD(VerifyRemoveWithTagAsync);
+    TEST_METHOD(VerifyRemoveWithTagGroupAsyncUsingEmptyTagThrows);
+    TEST_METHOD(VerifyRemoveWithTagGroupAsyncUsingEmptyGroupThrows);
+    TEST_METHOD(VerifyRemoveWithTagGroupAsync);
+    TEST_METHOD(VerifyRemoveGroupAsyncUsingEmptyGroupThrows);
+    TEST_METHOD(VerifyRemoveGroupAsyncUsingNonExistentGroupDoesNotThrow);
+    TEST_METHOD(VerifyRemoveGroupAsync);
+    TEST_METHOD(VerifyRemoveAllAsyncWithNoActiveToastDoesNotThrow);
+    TEST_METHOD(VerifyRemoveAllAsync);
 };
 

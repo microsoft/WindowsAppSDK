@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -32,6 +32,7 @@ class UnpackagedTests : BaseTestSuite
 
     TEST_METHOD_SETUP(MethodInit)
     {
+        BaseTestSuite::MethodSetup();
         return true;
     }
 
@@ -41,6 +42,8 @@ class UnpackagedTests : BaseTestSuite
         return true;
     }
 
-    TEST_METHOD(Test1);
+    TEST_METHOD(VerifyRegisterActivatorandUnregisterActivator);
+    TEST_METHOD(VerifyFailedMultipleRegister);
+    TEST_METHOD(VerifyToastSettingEnabled);
 };
 
