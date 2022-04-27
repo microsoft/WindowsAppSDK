@@ -109,6 +109,7 @@ STDAPI MddBootstrapInitialize2(
             minVersion,
             static_cast<UINT32>(options),
             initializationCount) };
+    WindowsAppRuntime::MddBootstrap::Activity::Context::Get().SaveInitializeActivityId(*initializeActivity.Id());
 
     // Dynamic Dependencies Bootstrap API requires an unpackaged process?
     HRESULT hr{};
@@ -162,17 +163,21 @@ STDAPI MddBootstrapInitialize2(
     // Success!
     WindowsAppRuntime::MddBootstrap::Activity::Context::Get().IncrementInitializationCount();
 
-    initializationCount = WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeData(initializationFrameworkPackageFullName);
-    initializeActivity.StopWithResult(
-        hr,
-        static_cast<UINT32>(initializationCount),
-        static_cast<UINT32>(WindowsAppRuntime::MddBootstrap::Activity::Context::GetIntegrityFlags()),
-        initializationFrameworkPackageFullName,
-        static_cast <UINT32>(0),
-        static_cast<PCSTR>(nullptr),
-        static_cast <unsigned int>(0),
-        static_cast<PCWSTR>(nullptr),
-        static_cast<PCSTR>(nullptr));
+    if (WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeActivity().IsRunning())
+    {
+        initializationCount = WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeData(initializationFrameworkPackageFullName);
+        initializeActivity.StopWithResult(
+            hr,
+            static_cast<UINT32>(initializationCount),
+            static_cast<UINT32>(WindowsAppRuntime::MddBootstrap::Activity::Context::GetIntegrityFlags()),
+            initializationFrameworkPackageFullName,
+            static_cast <UINT32>(0),
+            static_cast<PCSTR>(nullptr),
+            static_cast <unsigned int>(0),
+            static_cast<PCWSTR>(nullptr),
+            static_cast<PCSTR>(nullptr));
+    }
+    WindowsAppRuntime::MddBootstrap::Activity::Context::Get().SaveInitializeActivityId(GUID_NULL);
 
     return S_OK;
 }
@@ -245,18 +250,23 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
         }
     }
 
-    shutdownActivity.StopWithResult(
-        S_OK,
-        initializationCount - 1,
-        static_cast <UINT32>(0),
-        static_cast<PCSTR>(nullptr),
-        static_cast <unsigned int>(0),
-        static_cast<PCWSTR>(nullptr),
-        static_cast<PCSTR>(nullptr));
+    if (WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetShutdownActivity().IsRunning())
+    {
+        shutdownActivity.StopWithResult(
+            S_OK,
+            initializationCount - 1,
+            static_cast <UINT32>(0),
+            static_cast<PCSTR>(nullptr),
+            static_cast <unsigned int>(0),
+            static_cast<PCWSTR>(nullptr),
+            static_cast<PCSTR>(nullptr));
+    }
 
     g_initializationMajorMinorVersion = {};
     g_initializationVersionTag.clear();
     g_initializationFrameworkPackageVersion = {};
+
+    WindowsAppRuntime::MddBootstrap::Activity::Context::Get().SaveShutdownActivityId(GUID_NULL);
 }
 
 STDAPI MddBootstrapTestInitialize(

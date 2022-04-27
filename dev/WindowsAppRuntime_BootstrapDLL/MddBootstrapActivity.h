@@ -38,9 +38,11 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
     {
         MddBootstrapAPI m_mddBootstrapAPI{};
         WindowsAppRuntimeBootstrap_TraceLogger::Initialize m_bootstrapInitializeActivity;
+        GUID m_bootstrapInitializeActivityId{};
         std::atomic<uint32_t> m_initializationCount;
         wil::unique_cotaskmem_string m_initializationPackageFullName;
         WindowsAppRuntimeBootstrap_TraceLogger::Shutdown m_bootstrapShutdownActivity;
+        GUID m_bootstrapShutdownActivityId{};
         WilFailure m_lastFailure;
         bool m_stopActivityForWilReturnHR{};
 
@@ -85,6 +87,16 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
             return m_stopActivityForWilReturnHR;
         }
 
+        const GUID* GetSavedInitializeActivityId() const
+        {
+            return &m_bootstrapInitializeActivityId;
+        }
+
+        const GUID* GetSavedShutdownActivityId() const
+        {
+            return &m_bootstrapShutdownActivityId;
+        }
+
         void SetMddBootstrapAPI(MddBootstrapAPI mddBootstrapAPI)
         {
             m_mddBootstrapAPI = mddBootstrapAPI;
@@ -104,9 +116,19 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
             m_initializationPackageFullName.reset(initializationPackageFullName);
         }
 
-        void StopActivityForWilReturnHR(bool stopActivityForWilReturnHR)
+        void StopActivityForWilReturnHR(const bool stopActivityForWilReturnHR)
         {
             m_stopActivityForWilReturnHR = stopActivityForWilReturnHR;
+        }
+
+        void SaveInitializeActivityId(const GUID bootstrapInitializeActivityId)
+        {
+            m_bootstrapInitializeActivityId = bootstrapInitializeActivityId;
+        }
+
+        void SaveShutdownActivityId(const GUID bootstrapShutdownActivityId)
+        {
+            m_bootstrapShutdownActivityId = bootstrapShutdownActivityId;
         }
     };
 
