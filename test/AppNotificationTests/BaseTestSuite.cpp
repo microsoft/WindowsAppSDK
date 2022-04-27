@@ -48,11 +48,15 @@ void BaseTestSuite::MethodSetup()
         ::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!");
         VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
     }
-    EnsureNoActiveToasts();
 }
 
 void BaseTestSuite::MethodCleanup()
 {
+    if (Test::AppModel::IsPackagedProcess() || (!Test::AppModel::IsPackagedProcess() && !m_unregisteredFully))
+    {
+        EnsureNoActiveToasts();
+    }
+
     if (!m_unregisteredFully)
     {
         UnregisterAllWithAppNotificationManager();
@@ -193,6 +197,8 @@ void BaseTestSuite::VerifyToastProgressDataSequence0Fail()
 
 void BaseTestSuite::VerifyShowToast()
 {
+    RegisterWithAppNotificationManager();
+
     AppNotification toast{ CreateToastNotification() };
     AppNotificationManager::Default().Show(toast);
     VERIFY_ARE_NOT_EQUAL(toast.Id(), (uint32_t) 0);
@@ -202,6 +208,7 @@ void BaseTestSuite::VerifyShowToast()
 
 void BaseTestSuite::VerifyUpdateToastProgressDataUsingValidTagAndValidGroup()
 {
+    RegisterWithAppNotificationManager();
     PostToastHelper(L"Tag", L"Group");
     AppNotificationProgressData progressData{ GetToastProgressData(L"Status", L"Title", 0.10, L"10%", 1) };
 
@@ -221,7 +228,6 @@ void BaseTestSuite::VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup()
 
 void BaseTestSuite::VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup()
 {
-    RegisterWithAppNotificationManager();
     AppNotificationProgressData progressData{ GetToastProgressData(L"Status", L"Title", 0.14, L"14%", 1) };
 
     VERIFY_THROWS_HR(AppNotificationManager::Default().UpdateAsync(progressData, L"", L"Group").get(), E_INVALIDARG);
@@ -229,7 +235,6 @@ void BaseTestSuite::VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup()
 
 void BaseTestSuite::VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup()
 {
-    RegisterWithAppNotificationManager();
     AppNotificationProgressData progressData{ GetToastProgressData(L"Status", L"Title", 0.14, L"14%", 1) };
 
     VERIFY_THROWS_HR(AppNotificationManager::Default().UpdateAsync(progressData, L"", L"").get(), E_INVALIDARG);
@@ -247,7 +252,6 @@ void BaseTestSuite::VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup
 
 void BaseTestSuite::VerifyFailedUpdateNotificationDataWithoutPostToast()
 {
-    RegisterWithAppNotificationManager();
     AppNotificationProgressData progressData{ GetToastProgressData(L"Status", L"Title", 0.14, L"14%", 1) };
 
     auto progressResultOperation{ AppNotificationManager::Default().UpdateAsync(progressData, L"NonExistentTag", L"NonExistentGroup") };
@@ -303,6 +307,7 @@ void BaseTestSuite::VerifyGetAllAsyncWithOneActiveToast()
 
 void BaseTestSuite::VerifyGetAllAsyncWithMultipleActiveToasts()
 {
+    RegisterWithAppNotificationManager();
     AppNotification toast1{ CreateToastNotification() };
     AppNotificationManager::Default().Show(toast1);
 
@@ -328,6 +333,7 @@ void BaseTestSuite::VerifyGetAllAsyncWithMultipleActiveToasts()
 
 void BaseTestSuite::VerifyGetAllAsyncIgnoresUpdatesToProgressData()
 {
+    RegisterWithAppNotificationManager();
     AppNotification toast{ CreateToastNotification() };
     toast.Tag(L"Tag");
     toast.Group(L"Group");
@@ -365,6 +371,7 @@ void BaseTestSuite::VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier()
 
 void BaseTestSuite::VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifierDoesNotThrow()
 {
+    RegisterWithAppNotificationManager();
     AppNotification toast{ CreateToastNotification() };
     AppNotificationManager::Default().Show(toast);
     auto id{ toast.Id() };
@@ -385,6 +392,7 @@ void BaseTestSuite::VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier
 
 void BaseTestSuite::VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier()
 {
+    RegisterWithAppNotificationManager();
     winrt::AppNotification toast1{ CreateToastNotification(L"Toast1") };
     AppNotificationManager::Default().Show(toast1);
 
@@ -412,6 +420,7 @@ void BaseTestSuite::VerifyRemoveWithTagAsyncUsingEmptyTagThrows()
 
 void BaseTestSuite::VerifyRemoveWithTagAsyncUsingNonExistentTagDoesNotThrow()
 {
+    RegisterWithAppNotificationManager();
     auto removeNotificationAsync{ AppNotificationManager::Default().RemoveByTagAsync(L"NonExistentTag") };
     auto scope_exit = wil::scope_exit(
         [&] {
@@ -424,6 +433,7 @@ void BaseTestSuite::VerifyRemoveWithTagAsyncUsingNonExistentTagDoesNotThrow()
 
 void BaseTestSuite::VerifyRemoveWithTagAsync()
 {
+    RegisterWithAppNotificationManager();
     winrt::AppNotification toast{ CreateToastNotification() };
     toast.Tag(L"Unique tag");
     AppNotificationManager::Default().Show(toast);
@@ -454,6 +464,7 @@ void BaseTestSuite::VerifyRemoveWithTagGroupAsyncUsingEmptyGroupThrows()
 
 void BaseTestSuite::VerifyRemoveWithTagGroupAsync()
 {
+    RegisterWithAppNotificationManager();
     AppNotification toast1{ CreateToastNotification() };
     toast1.Tag(L"tag1");
     toast1.Group(L"Shared group");
@@ -494,6 +505,7 @@ void BaseTestSuite::VerifyRemoveGroupAsyncUsingEmptyGroupThrows()
 
 void BaseTestSuite::VerifyRemoveGroupAsyncUsingNonExistentGroupDoesNotThrow()
 {
+    RegisterWithAppNotificationManager();
     auto removeNotificationAsync{ AppNotificationManager::Default().RemoveByGroupAsync(L"group") };
     auto scope_exit = wil::scope_exit(
         [&] {
@@ -506,6 +518,7 @@ void BaseTestSuite::VerifyRemoveGroupAsyncUsingNonExistentGroupDoesNotThrow()
 
 void BaseTestSuite::VerifyRemoveGroupAsync()
 {
+    RegisterWithAppNotificationManager();
     winrt::AppNotification toast1{ CreateToastNotification() };
     toast1.Tag(L"tag1");
     toast1.Group(L"Shared group");
@@ -541,6 +554,7 @@ void BaseTestSuite::VerifyRemoveGroupAsync()
 
 void BaseTestSuite::VerifyRemoveAllAsyncWithNoActiveToastDoesNotThrow()
 {
+    RegisterWithAppNotificationManager();
     auto removeNotificationAsync{ AppNotificationManager::Default().RemoveAllAsync() };
     auto scope_exit = wil::scope_exit(
         [&] {
@@ -553,6 +567,7 @@ void BaseTestSuite::VerifyRemoveAllAsyncWithNoActiveToastDoesNotThrow()
 
 void BaseTestSuite::VerifyRemoveAllAsync()
 {
+    RegisterWithAppNotificationManager();
     AppNotification toast1{ CreateToastNotification() };
     AppNotificationManager::Default().Show(toast1);
 
@@ -626,15 +641,7 @@ void BaseTestSuite::VerifyExplicitAppId()
         // Not mandatory, but it's highly recommended to specify AppUserModelId
         THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(c_appUserModelId.c_str()));
     }
-   /* winrt::AppNotificationManager::Default().Unregister();
-    try
-    {
-        winrt::AppNotificationManager::Default().Register();
-        winrt::AppNotificationManager::Default().Unregister();
-    }
-    catch (...)
-    {
-        return false;
-    }
-    return true;*/
+
+    RegisterWithAppNotificationManager();
+    AppNotificationManager::Default().Unregister();
 }
