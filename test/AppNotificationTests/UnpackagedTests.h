@@ -80,6 +80,9 @@ class UnpackagedTests : BaseTestSuite
     TEST_METHOD(VerifyRemoveGroupAsync);
     TEST_METHOD(VerifyRemoveAllAsyncWithNoActiveToastDoesNotThrow);
     TEST_METHOD(VerifyRemoveAllAsync);
+    BEGIN_TEST_METHOD(VerifyIconPathExists) // Currently failing 
+        TEST_METHOD_PROPERTY(L"Ignore", L"true")
+    END_TEST_METHOD()
     TEST_METHOD(VerifyExplicitAppId);
 };
 

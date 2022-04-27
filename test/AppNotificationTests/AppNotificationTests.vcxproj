@@ -145,6 +145,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="AppNotificationTests.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
+  </ItemGroup>
+  <ItemGroup>
     <Xml Include="AppNotifications-AppxManifest.xml">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>

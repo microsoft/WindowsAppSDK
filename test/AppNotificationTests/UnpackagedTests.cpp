@@ -193,6 +193,10 @@ void UnpackagedTests::VerifyRemoveAllAsync()
     BaseTestSuite::VerifyRemoveAllAsync();
 }
 
+void UnpackagedTests::VerifyIconPathExists()
+{
+    BaseTestSuite::VerifyIconPathExists();
+}
 
 void UnpackagedTests::VerifyExplicitAppId()
 {

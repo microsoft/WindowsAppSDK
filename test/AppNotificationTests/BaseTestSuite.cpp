@@ -611,27 +611,18 @@ void BaseTestSuite::VerifyRemoveAllAsync()
 
 void BaseTestSuite::VerifyIconPathExists()
 {
-    //try
-    //{
-    //    // Register is already called in main with an explicit appusermodelId
-    //    wil::unique_cotaskmem_string localAppDataPath;
-    //    THROW_IF_FAILED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0 /* flags */, nullptr /* access token handle */, &localAppDataPath));
+    RegisterWithAppNotificationManager();
+    wil::unique_cotaskmem_string localAppDataPath;
 
-    //    // Evaluated path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK\<AUMID>.png
-    //    std::path iconFilePath{ std::wstring(localAppDataPath.get()) + c_localWindowsAppSDKFolder + c_appUserModelId + c_pngExtension };
-    //    winrt::check_bool(std::exists(iconFilePath));
+    // TODO: Verify icon from shortcut. If there is no shortcut, verify the process
+    // has the icon.
+    VERIFY_SUCCEEDED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0 /* flags */, nullptr /* access token handle */, &localAppDataPath));
 
-    //    winrt::AppNotificationManager::Default().UnregisterAll();
+    std::filesystem::path iconFilePath{ std::wstring(localAppDataPath.get()) + c_localWindowsAppSDKFolder + c_appUserModelId + c_pngExtension };
+    VERIFY_IS_TRUE(std::filesystem::exists(iconFilePath));
 
-    //    // After unregister this file should not exist
-    //    winrt::check_bool(!std::exists(iconFilePath));
-    //}
-    //catch (...)
-    //{
-    //    return false;
-    //}
-
-    //return true;
+    winrt::AppNotificationManager::Default().UnregisterAll();
+    VERIFY_IS_FALSE(std::filesystem::exists(iconFilePath));
 }
 
 void BaseTestSuite::VerifyExplicitAppId()

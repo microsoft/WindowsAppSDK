@@ -38,7 +38,7 @@
 #include <windows.applicationmodel.h>
 #include <windows.applicationmodel.background.h>
 #include <ShObjIdl_core.h>
-
+#include <Shlobj_core.h>
 #include <winrt/Microsoft.Windows.AppNotifications.h>
 #include <WindowsAppRuntime.SelfContained.h>
 #include <WindowsAppRuntime.VersionInfo.h>
