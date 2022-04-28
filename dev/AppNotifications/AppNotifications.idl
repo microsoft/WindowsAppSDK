@@ -117,7 +117,7 @@ namespace Microsoft.Windows.AppNotifications
         // For Unpackaged apps, the caller process will be registered as the COM server. And assets like displayname and icon will be gleaned from Shell and registered as well.
         void Register();
 
-        // For Unpackaged apps only, the caller process will be registered as the COM server and assets registered.
+        // For Unpackaged apps only, the caller process will be registered as the COM server.
         void Register(String displayName, Windows.Foundation.Uri iconUri);
 
         // Unregisters the COM Service so that a subsequent activation will launch a new process

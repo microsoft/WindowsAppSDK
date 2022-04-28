@@ -1347,7 +1347,7 @@ bool VerifyRegisterWithNullIconFail_Unpackaged()
     winrt::AppNotificationManager::Default().UnregisterAll();
     try
     {
-        winrt::AppNotificationManager::Default().Register(L"ToastNotificationApp", nullptr);
+        winrt::AppNotificationManager::Default().Register(L"AppNotificationApp", nullptr);
 
         winrt::AppNotificationManager::Default().UnregisterAll();
     }
@@ -1384,7 +1384,7 @@ bool VerifyRegisterWithDisplayNameAndIcon_Unpackaged()
     winrt::AppNotificationManager::Default().UnregisterAll();
     try
     {
-        winrt::AppNotificationManager::Default().Register(L"ToastNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
+        winrt::AppNotificationManager::Default().Register(L"AppNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
 
         winrt::AppNotificationManager::Default().UnregisterAll();
     }
@@ -1402,7 +1402,7 @@ bool VerifyRegisterWithDisplayNameAndInvalidIconPathFail_Unpackaged()
     winrt::AppNotificationManager::Default().UnregisterAll();
     try
     {
-        winrt::AppNotificationManager::Default().Register(L"ToastNotificationApp", winrt::Uri{ LR"(C:\InvalidPath\)" });
+        winrt::AppNotificationManager::Default().Register(L"AppNotificationApp", winrt::Uri{ LR"(C:\InvalidPath\)" });
 
         winrt::AppNotificationManager::Default().UnregisterAll();
     }
@@ -1439,7 +1439,7 @@ bool VerifyRegisterWithEmptyIconFail_Unpackaged()
     winrt::AppNotificationManager::Default().UnregisterAll();
     try
     {
-        winrt::AppNotificationManager::Default().Register(L"ToastNotifications", winrt::Uri{ L"" });
+        winrt::AppNotificationManager::Default().Register(L"AppNotificationApp", winrt::Uri{ L"" });
 
         winrt::AppNotificationManager::Default().UnregisterAll();
     }
@@ -1475,7 +1475,7 @@ bool VerifyRegisterWithAssetsFail()
     winrt::AppNotificationManager::Default().UnregisterAll();
     try
     {
-        winrt::AppNotificationManager::Default().Register(L"ToastNotificationApp", winrt::Uri{ LR"(C:\InvalidPath\)" });
+        winrt::AppNotificationManager::Default().Register(L"AppNotificationApp", winrt::Uri{ LR"(C:\InvalidPath\)" });
 
         winrt::AppNotificationManager::Default().UnregisterAll();
     }
