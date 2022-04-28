@@ -583,5 +583,50 @@ namespace Test::ToastNotifications
         {
             RunTestUnpackaged(L"VerifyIconPathExists_Unpackaged", testWaitTime());
         }
+
+        TEST_METHOD(VerifyRegisterWithNullDisplayNameFail_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRegisterWithNullDisplayNameFail_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRegisterWithNullIconFail_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRegisterWithNullIconFail_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRegisterWithNullDisplayNameAndNullIconFail_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRegisterWithNullDisplayNameAndNullIconFail_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRegisterWithDisplayNameAndIcon_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRegisterWithDisplayNameAndIcon_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRegisterWithDisplayNameAndInvalidIconPathFail_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRegisterWithDisplayNameAndInvalidIconPathFail_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRegisterWithEmptyDisplayNameFail_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRegisterWithEmptyDisplayNameFail_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRegisterWithEmptyIconFail_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRegisterWithEmptyIconFail_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRegisterWithEmptyDisplayNameAndEmptyIconFail_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRegisterWithEmptyDisplayNameAndEmptyIconFail_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRegisterWithAssetsFail)
+        {
+            RunTest(L"VerifyRegisterWithAssetsFail", testWaitTime());
+        }
     };
 }

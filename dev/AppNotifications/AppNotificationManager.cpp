@@ -21,6 +21,7 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include <WindowsAppRuntime.SelfContained.h>
 #include <ShellLocalization.h>
+#include <filesystem>
 
 using namespace std::literals;
 
@@ -93,7 +94,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         return m_activatedEventArgs;
     }
 
-    void AppNotificationManager::Register()
+    void AppNotificationManager::RegisterHelper(hstring const& displayName, std::wstring const& iconFilePath)
     {
         HRESULT hr{ S_OK };
 
@@ -122,7 +123,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                 {
                     THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(m_appId.c_str(), GUID_NULL));
 
-                    storedComActivatorGuid = RegisterComActivatorGuidAndAssets();
+                    storedComActivatorGuid = RegisterComActivatorGuidAndAssets(displayName, iconFilePath);
                 }
 
                 if (!WindowsAppRuntime::SelfContained::IsSelfContained())
@@ -165,6 +166,28 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             hr = wil::ResultFromCaughtException();
             throw;
         }
+    }
+
+    void AppNotificationManager::Register()
+    {
+        RegisterHelper(winrt::hstring{} /* displayName */, std::wstring{} /* iconFilePath */);
+    }
+
+    void AppNotificationManager::Register(hstring const& displayName, winrt::Uri const& iconUri)
+    {
+        THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, AppModel::Identity::IsPackagedProcess(), "Not applicable for packaged applications");
+
+        THROW_HR_IF(E_INVALIDARG, (displayName != winrt::hstring{}) xor (iconUri != nullptr));
+
+        std::wstring iconFilePath{};
+        if (iconUri != nullptr)
+        {
+            iconFilePath = iconUri.Path();
+            iconFilePath = iconFilePath.substr(1, iconFilePath.size() - 1);
+            winrt::check_bool(std::filesystem::exists(std::filesystem::path{ iconFilePath }));
+        }
+
+        RegisterHelper(displayName, iconFilePath);
     }
 
     // This assumes that the caller has taken an exclusive lock
@@ -307,7 +330,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                     }
                     else
                     { 
-                        registeredClsid = RegisterComActivatorGuidAndAssets();
+                        registeredClsid = RegisterComActivatorGuidAndAssets(winrt::hstring{} /* displayName */, std::wstring{} /* iconUri */);
                     }
 
                     auto notificationCallback{ winrt::create_instance<INotificationActivationCallback>(registeredClsid, CLSCTX_ALL) };
