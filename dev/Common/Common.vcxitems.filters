@@ -26,6 +26,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.SelfContained.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.VersionInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Security.IntegrityLevel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -35,6 +38,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.SelfContained.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.VersionInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

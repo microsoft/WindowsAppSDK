@@ -41,6 +41,7 @@
 
 #include <winrt/Microsoft.Windows.PushNotifications.h>
 #include <WindowsAppRuntime.SelfContained.h>
+#include <WindowsAppRuntime.VersionInfo.h>
 
 #define VERIFY_THROWS_HR(expression, hr)        \
             VERIFY_THROWS_SPECIFIC(expression,          \
