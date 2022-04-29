@@ -177,15 +177,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     {
         THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, AppModel::Identity::IsPackagedProcess(), "Not applicable for packaged applications");
 
-        THROW_HR_IF(E_INVALIDARG, (displayName != winrt::hstring{}) xor (iconUri != nullptr));
+        THROW_HR_IF(E_INVALIDARG, (displayName == winrt::hstring{}) || (iconUri == nullptr));
 
-        std::wstring iconFilePath{};
-        if (iconUri != nullptr)
-        {
-            iconFilePath = iconUri.Path();
-            iconFilePath = iconFilePath.substr(1, iconFilePath.size() - 1);
-            winrt::check_bool(std::filesystem::exists(std::filesystem::path{ iconFilePath }));
-        }
+        std::wstring iconFilePath{ iconUri.Path() };
+        iconFilePath = iconFilePath.substr(1, iconFilePath.size() - 1);
+        // Uri converts backward slashes to forward slashes
+        std::replace(iconFilePath.begin(), iconFilePath.end(), '/', '\\');
+
+        THROW_HR_IF_MSG(E_INVALIDARG, !IsIconFileExtensionSupported(std::filesystem::path{ iconFilePath }), "Icon not supported");
 
         RegisterHelper(displayName, iconFilePath);
     }

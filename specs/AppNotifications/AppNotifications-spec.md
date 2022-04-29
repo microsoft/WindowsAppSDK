@@ -141,12 +141,12 @@ int main()
 
 ## Registering for App Notifications using assets
 
-For Unpackaged applications, the developer calls into Register API with DisplayName and Icon.
-WinAppSDK will register and display them when an App Notification is received. The developer
-should provide both the assets or not provide them at all. If assets are not provided WinAppSDK
-will determine appropriate DisplayName and Icon. Icon provided by the developer should
-be valid and reside on the local machine only. For Packaged applications, this API is not
-applicable and will throw an exception.
+For Unpackaged applications, the developer can opt to call into Register API with DisplayName and Icon.
+WinAppSDK will register the application and display these assets when an App Notification is received.
+The developer should provide both the assets or not provide them at all. If assets are not provided WinAppSDK
+will determine appropriate DisplayName and Icon. Icon provided by the developer should be a valid supported
+format like png, bmp, ico or jpg and should reside on the local machine only. For Packaged applications,
+this API is not applicable and will throw an exception.
 
 ```cpp
 int main()

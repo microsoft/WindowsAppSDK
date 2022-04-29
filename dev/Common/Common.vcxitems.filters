@@ -26,13 +26,13 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.SelfContained.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+	<ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.VersionInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Security.IntegrityLevel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Foundation.String.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.VersionInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

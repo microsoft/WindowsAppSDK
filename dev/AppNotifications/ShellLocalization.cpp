@@ -167,9 +167,11 @@ void WriteHIconToPngFile(wil::unique_hicon const& hIcon, _In_ PCWSTR pszFileName
     THROW_IF_FAILED(spStreamOut->Commit(STGC_DANGEROUSLYCOMMITMERELYTODISKCACHE));
 }
 
-bool IsIconFileExtensionSupported(std::filesystem::path const& iconFilePath)
+bool Microsoft::Windows::AppNotifications::ShellLocalization::IsIconFileExtensionSupported(std::filesystem::path const& iconFilePath)
 {
     static PCWSTR c_supportedExtensions[]{ L".bmp", L".ico", L".jpg", L".png" };
+
+    winrt::check_bool(std::filesystem::exists(iconFilePath));
 
     const auto fileExtension{ iconFilePath.extension() };
     const auto extension{ fileExtension.c_str() };

@@ -275,7 +275,7 @@ winrt::guid Microsoft::Windows::AppNotifications::Helpers::RegisterComActivatorG
 // 2. Based on the best app shortcut, using the FrameworkUdk.
 // 3. From the current process.
 // 4. Set a default DisplayName, but leave empty the icon file path so Shell can set a default icon.
-Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets Microsoft::Windows::AppNotifications::Helpers::RegisterAssetsHelper(winrt::hstring const& displayName, std::wstring const& iconFilePath)
+Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets Microsoft::Windows::AppNotifications::Helpers::GetAssetsHelper(winrt::hstring const& displayName, std::wstring const& iconFilePath)
 {
     Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets assets{};
 
@@ -310,7 +310,7 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
         &hKey,
         nullptr /* lpdwDisposition */));
 
-    Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets assets{ RegisterAssetsHelper(displayName, iconFilePath) };
+    Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets assets{ GetAssetsHelper(displayName, iconFilePath) };
 
     RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(assets.displayName.c_str()), REG_EXPAND_SZ, assets.displayName.size() * sizeof(wchar_t));
 

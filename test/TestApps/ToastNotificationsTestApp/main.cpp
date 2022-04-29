@@ -550,10 +550,10 @@ bool VerifyShowToast_Unpackaged()
 	// Registration happens in main()
     auto toastNotificationManager = winrt::AppNotificationManager::Default();
 
-    /*auto scope_exit = wil::scope_exit(
+    auto scope_exit = wil::scope_exit(
         [&] {
             toastNotificationManager.UnregisterAll();
-        }); */
+        });
 
     EnsureNoActiveToasts();
 
@@ -1372,7 +1372,7 @@ bool VerifyRegisterWithNullDisplayNameAndNullIconFail_Unpackaged()
     }
     catch (...)
     {
-        return false;
+        return winrt::to_hresult() == E_INVALIDARG;
     }
 
     return true;
