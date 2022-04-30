@@ -184,7 +184,7 @@ void AddPackageIfNecessary(PCWSTR path, const std::wstring& filename, const std:
     wprintf(L"Path: %s\n", path);
     wprintf(L"Filename: %s\n", filename.c_str());
     wprintf(L"PackageFullName: %s\n", packageFullName.c_str());
-    wprintf(L"forceDeployment:%s\n", forceDeployment ?  "true" : "false");
+    wprintf(L"forceDeployment:%s\n", forceDeployment ?  L"true" : L"false");
 
     if (!NeedToRegisterPackage(packageFullName))
     {
@@ -194,8 +194,8 @@ void AddPackageIfNecessary(PCWSTR path, const std::wstring& filename, const std:
     auto hr{ AddPackage(path, filename, forceDeployment) };
     if (FAILED(hr))
     {
-        wprintf(L"AddPackage(): 0x%X Path:%ls Filename:%ls PackageFullName:%ls forceDeployment:%s", hr, path, filename.c_str(), packageFullName.c_str(), forceDeployment ? "true" : "false");
-        THROW_HR_MSG(hr, "Path:%ls Filename:%ls PackageFullName:%ls forceDeployment:%s", path, filename.c_str(), packageFullName.c_str(), forceDeployment ? "true" : "false");
+        wprintf(L"AddPackage(): 0x%X Path:%s Filename:%s PackageFullName:%s forceDeployment:%s", hr, path, filename.c_str(), packageFullName.c_str(), forceDeployment ? L"true" : L"false");
+        THROW_HR_MSG(hr, "Path:%ls Filename:%ls PackageFullName:%ls forceDeployment:%ls", path, filename.c_str(), packageFullName.c_str(), forceDeployment ? L"true" : L"false");
     }
 }
 
