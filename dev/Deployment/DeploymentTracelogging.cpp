@@ -73,7 +73,8 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                     deploymentActivityContext.GetCurrentResourceId().c_str(),
                     deploymentActivityContext.GetDeploymentErrorExtendedHResult(),
                     deploymentActivityContext.GetDeploymentErrorText().c_str(),
-                    deploymentActivityContext.GetDeploymentErrorActivityId());
+                    deploymentActivityContext.GetDeploymentErrorActivityId(),
+                    deploymentActivityContext.GetIsFullTrustMicrosoftPublisherPackage());
                 break;
             }
             case wil::FailureType::Return:

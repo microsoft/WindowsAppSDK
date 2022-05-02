@@ -36,6 +36,8 @@ namespace WindowsAppRuntime::Deployment::Activity
         GUID m_deploymentErrorActivityId{};
         WindowsAppRuntimeDeployment_TraceLogger::Initialize m_activity;
         WilFailure m_lastFailure;
+        bool m_isMicroosftPublisherPackage{};
+        bool m_isFullTrustMicroosftPublisherPackage{};
 
     public:
         static WindowsAppRuntime::Deployment::Activity::Context& Get();
@@ -77,6 +79,16 @@ namespace WindowsAppRuntime::Deployment::Activity
             return m_lastFailure;
         }
 
+        const bool& GetIsMicrosoftPublisherPackage()
+        {
+            return m_isMicroosftPublisherPackage;
+        }
+
+        const bool& GetIsFullTrustMicrosoftPublisherPackage()
+        {
+            return m_isFullTrustMicroosftPublisherPackage;
+        }
+
         void SetInstallStage(const DeploymentStage& installStage)
         {
             m_installStage = installStage;
@@ -103,6 +115,16 @@ namespace WindowsAppRuntime::Deployment::Activity
         }
 
         void SetLastFailure(const wil::FailureInfo& failure);
+
+        void SetIsMicroosftPublisherPackage()
+        {
+            m_isFullTrustMicroosftPublisherPackage = true;
+        }
+
+        void SetIsFullTrustMicrosoftPublisherPackage()
+        {
+            m_isFullTrustMicroosftPublisherPackage = true;
+        }
     };
 
     static WindowsAppRuntime::Deployment::Activity::Context g_DeploymentActivityContext;

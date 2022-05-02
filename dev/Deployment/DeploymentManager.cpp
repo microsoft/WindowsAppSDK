@@ -26,7 +26,8 @@ using namespace Windows::Foundation;
     static_cast<PCWSTR>(nullptr),\
     S_OK,\
     static_cast<PCWSTR>(nullptr),\
-    GUID_NULL);
+    GUID_NULL,\
+    ::WindowsAppRuntime::Deployment::Activity::Context::Get().GetIsFullTrustMicrosoftPublisherPackage());
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
@@ -169,7 +170,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                 initializeActivityContext.GetCurrentResourceId().c_str(),
                 initializeActivityContext.GetDeploymentErrorExtendedHResult(),
                 initializeActivityContext.GetDeploymentErrorText().c_str(),
-                initializeActivityContext.GetDeploymentErrorActivityId());
+                initializeActivityContext.GetDeploymentErrorActivityId(),
+                initializeActivityContext.GetIsFullTrustMicrosoftPublisherPackage());
         }
 
         return winrt::make<implementation::DeploymentResult>(status, deployPackagesResult);
@@ -258,7 +260,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     // Adds the package at the path using PackageManager.
     // This requires the 'packageManagement' or 'runFullTrust' capabilities.
-    HRESULT DeploymentManager::AddPackage(const std::filesystem::path& packagePath, bool forceDeployment) try
+    HRESULT DeploymentManager::AddPackage(const std::filesystem::path& packagePath, const bool forceDeployment) try
     {
         winrt::Windows::Management::Deployment::PackageManager packageManager;
 
@@ -289,8 +291,81 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
     CATCH_RETURN()
 
+
+    std::wstring DeploymentManager::GenerateDeploymentAgentPath() 
+    {
+        // Calculate the path to the restart agent as being in the same directory as the current module.
+        wil::unique_hmodule module;
+        THROW_IF_WIN32_BOOL_FALSE(GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<PCWSTR>(DeploymentManager::GenerateDeploymentAgentPath), &module));
+
+        std::filesystem::path modulePath = wil::GetModuleFileNameW<std::wstring>(module.get());
+        return modulePath.parent_path() / c_deploymentAgentFilename;
+    }
+
+    HRESULT DeploymentManager::AddPackageInBreakAwayProcess(const std::filesystem::path& packagePath, const bool forceDeployment) try 
+    {
+        auto exePath = GenerateDeploymentAgentPath();
+        WCHAR szActivityId[64]{0};
+        StringFromGUID2(*::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Id(), szActivityId, 64);
+
+        // <currentdirectory>\deploymentagent.exe <custom arguments passed by caller>
+        auto cmdLine = wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" %s %s %s", exePath.c_str(), packagePath.c_str(), forceDeployment, szActivityId);
+
+        SIZE_T attributeListSize{ 0 };
+        auto attributeCount{ 1 };
+
+        if (AppModel::Identity::IsPackagedProcess())
+        {
+            // Packaged scenarios have an additional attribute.
+            attributeCount++;
+        }
+
+        THROW_HR_IF(E_UNEXPECTED, InitializeProcThreadAttributeList(nullptr, attributeCount, 0, &attributeListSize));
+        THROW_LAST_ERROR_IF(GetLastError() != ERROR_INSUFFICIENT_BUFFER);
+
+        wil::unique_process_heap_ptr<_PROC_THREAD_ATTRIBUTE_LIST> attributeList(reinterpret_cast<PPROC_THREAD_ATTRIBUTE_LIST> (HeapAlloc(GetProcessHeap(), 0, attributeListSize)));
+        THROW_IF_NULL_ALLOC(attributeList);
+
+        THROW_IF_WIN32_BOOL_FALSE(InitializeProcThreadAttributeList(attributeList.get(), attributeCount, 0, &attributeListSize));
+        auto freeAttributeList = wil::scope_exit([&] { DeleteProcThreadAttributeList(attributeList.get()); });
+
+        // Launch the deployment agent
+        THROW_IF_WIN32_BOOL_FALSE(UpdateProcThreadAttribute(attributeList.get(), 0, PROC_THREAD_ATTRIBUTE_HANDLE_LIST, nullptr, 0, nullptr, nullptr));
+
+        if (AppModel::Identity::IsPackagedProcess())
+        {
+            // Desktop Bridge applications by default have their child processes break away from the parent process.  In order to recreate the calling process'
+            // environment correctly, this code must prevent child breakaway semantics when calling the agent.  Additionally the agent must do the same when
+            // restarting the caller.
+            DWORD policy = PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_OVERRIDE;
+            THROW_IF_WIN32_BOOL_FALSE(UpdateProcThreadAttribute(attributeList.get(), 0, PROC_THREAD_ATTRIBUTE_DESKTOP_APP_POLICY, &policy, sizeof(policy), nullptr, nullptr));
+        }
+
+        STARTUPINFOEX info{};
+        info.StartupInfo.cb = sizeof(info);
+        info.lpAttributeList = attributeList.get();
+
+        wil::unique_process_information processInfo;
+        THROW_IF_WIN32_BOOL_FALSE(CreateProcess(exePath.c_str(), cmdLine.get(), nullptr, nullptr, TRUE, CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr,
+            &info.StartupInfo, &processInfo));
+
+        // Transfer foreground rights to the new process before resuming it.
+        AllowSetForegroundWindow(processInfo.dwProcessId);
+        ResumeThread(processInfo.hThread);
+
+        // This API is designed to only return to the caller on failure, otherwise block until process termination.
+        // Wait for the agent to exit.  If the agent succeeds, it will terminate this process.  If the agent fails,
+        // it can exit or crash.  This API will be able to detect the failure and return.
+        wil::handle_wait(processInfo.hProcess);
+
+        DWORD processExitCode;
+        GetExitCodeProcess(processInfo.hProcess, &processExitCode);
+        return HRESULT_FROM_WIN32(processExitCode);
+    }
+    CATCH_RETURN()
+
     // Deploys all of the packages carried by the specified framework.
-    HRESULT DeploymentManager::Deploy(const std::wstring& frameworkPackageFullName, bool forceDeployment) try
+    HRESULT DeploymentManager::Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment) try
     {
         RETURN_IF_FAILED(InstallLicenses(frameworkPackageFullName));
         RETURN_IF_FAILED(DeployPackages(frameworkPackageFullName, forceDeployment));
@@ -344,7 +419,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         return S_OK;
     }
 
-    HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName, bool forceDeployment)
+    HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName, const bool forceDeployment)
     {
         ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetPackagePath);
         const auto frameworkPath{ std::filesystem::path(GetPackagePath(frameworkPackageFullName)) };
@@ -359,8 +434,18 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             packagePath /= WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER;
             packagePath /= package.identifier + WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FILE_EXTENSION;
 
-            // Deploy package.
-            RETURN_IF_FAILED(AddPackage(packagePath, forceDeployment));
+            if (AppModel::Identity::IsPackagedProcess() &&
+                Security::IntegrityLevel::GetIntegrityLevel() >= SECURITY_MANDATORY_MEDIUM_RID &&
+                !::WindowsAppRuntime::Deployment::Activity::Context::Get().GetIsMicrosoftPublisherPackage())
+            {
+                ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsFullTrustMicrosoftPublisherPackage();
+                RETURN_IF_FAILED(AddPackageInBreakAwayProcess(packagePath, forceDeployment));
+            }
+            else
+            {
+                // Deploy package.
+                RETURN_IF_FAILED(AddPackage(packagePath, forceDeployment));
+            }
 
             // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
             if (forceDeployment &&
@@ -388,6 +473,12 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         // Get package info for this package.
         std::wstring currentPackageFullName{ packageFullName };
         auto currentPackageInfo{ GetPackageInfoForPackage(currentPackageFullName) };
+
+        // Save whether the current package is of same publisher as framework package's Microsoft pulbisher
+        if (CompareStringOrdinal(currentPackageInfo.Package(0).packageId.publisherId, -1, WINDOWSAPPRUNTIME_PACKAGE_PUBLISHERID, -1, TRUE) == CSTR_EQUAL)
+        {
+            ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsMicroosftPublisherPackage();
+        }
 
         // Index starts at 1 since the first package is the current page and we are interested in
         // dependency packages only.
