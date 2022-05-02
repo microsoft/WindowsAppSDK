@@ -49,7 +49,7 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
     public:
         static WindowsAppRuntime::MddBootstrap::Activity::Context& Get();
 
-        static const WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags& GetIntegrityFlags(HANDLE token = nullptr);
+        static const WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags GetIntegrityFlags(HANDLE token = nullptr);
 
         const MddBootstrapAPI& GetMddBootstrapAPI() const
         {
