@@ -63,7 +63,7 @@ uint32_t WindowsAppRuntime::MddBootstrap::Activity::Context::DecrementInitializa
     return m_initializationCount;
 }
 
-const WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags& WindowsAppRuntime::MddBootstrap::Activity::Context::GetIntegrityFlags(HANDLE token)
+const WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags WindowsAppRuntime::MddBootstrap::Activity::Context::GetIntegrityFlags(HANDLE token)
 {
     WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags flags{};
     const auto integrityLevel{ Security::IntegrityLevel::GetIntegrityLevel(token) };
