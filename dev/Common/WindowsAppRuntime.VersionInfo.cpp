@@ -7,7 +7,7 @@
 
 #include "WindowsAppRuntime.VersionInfo.h"
 
-static std::wstring g_test_frameworkPackageFamilyName;
+static std::wstring g_test_frameworkPackageFamilyName{ L"Microsoft.WindowsAppRuntime.Framework_8wekyb3d8bbwe" };
 
 namespace Microsoft::WindowsAppRuntime::VersionInfo
 {

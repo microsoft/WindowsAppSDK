@@ -29,7 +29,7 @@ STDAPI WindowsAppRuntime_IsSelfContained(
     }
 
     // Didn't find the Windows App SDK framework package in the package graph. We're self-contained!
-    *isSelfContained = TRUE;
+    *isSelfContained = FALSE;
     return S_OK;
 }
 CATCH_RETURN();
