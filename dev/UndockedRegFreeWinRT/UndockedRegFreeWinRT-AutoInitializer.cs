@@ -16,11 +16,11 @@ namespace Microsoft.Windows.Foundation.UndockedRegFreeWinRTCS
         [global::System.Runtime.CompilerServices.ModuleInitializer]
         internal static void AccessWindowsAppSDK()
         {
-            int hr = NativeMethods.UndockedRegFreeWinRT_EnsureIsLoaded();
-            if (hr < 0)
-            {
-                global::System.Environment.Exit(hr);
-            }
+            // No error handling needed as the target function does nothing (just {return S_OK}).
+            // It's the act of calling the function causing the DllImport to load the DLL that
+            // matters. This provides the moral equivalent of a native DLL's Import Address
+            // Table (IAT) have an entry that's resolved when this module is loaded.
+            NativeMethods.UndockedRegFreeWinRT_EnsureIsLoaded();
         }
     }
 }
