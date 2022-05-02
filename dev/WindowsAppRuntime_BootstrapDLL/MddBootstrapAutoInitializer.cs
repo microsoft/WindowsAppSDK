@@ -16,6 +16,9 @@
 #endif
 #endif
 
+using System.Reflection;
+using System.Runtime.InteropServices;
+
 namespace Microsoft.Windows.ApplicationModel.DynamicDependency.BootstrapCS
 {
     class AutoInitialize
