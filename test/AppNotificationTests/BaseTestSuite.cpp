@@ -54,7 +54,7 @@ void BaseTestSuite::MethodCleanup()
 {
     if (Test::AppModel::IsPackagedProcess() || (!Test::AppModel::IsPackagedProcess() && !m_unregisteredFully))
     {
-        EnsureNoActiveToasts();
+        VERIFY_IS_TRUE(EnsureNoActiveToasts());
     }
 
     if (!m_unregisteredFully)
@@ -201,9 +201,9 @@ void BaseTestSuite::VerifyShowToast()
 
     AppNotification toast{ CreateToastNotification() };
     AppNotificationManager::Default().Show(toast);
-    VERIFY_ARE_NOT_EQUAL(toast.Id(), (uint32_t) 0);
 
-    VerifyToastIsActive(toast.Id());
+    std::vector<AppNotification> toastVector{ toast };
+    VERIFY_IS_TRUE(VerifyToastsPosted(toastVector));
 }
 
 void BaseTestSuite::VerifyUpdateToastProgressDataUsingValidTagAndValidGroup()
@@ -266,7 +266,7 @@ void BaseTestSuite::VerifyGetAllAsyncWithZeroActiveToast()
         retrieveNotificationsAsync.Cancel();
     });
 
-    VERIFY_ARE_EQUAL(retrieveNotificationsAsync.wait_for(std::chrono::seconds(300)), winrt::Windows::Foundation::AsyncStatus::Completed);
+    VERIFY_ARE_EQUAL(retrieveNotificationsAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
     scope_exit.release();
 
     VERIFY_ARE_EQUAL(retrieveNotificationsAsync.GetResults().Size(), (uint32_t) 0);
@@ -289,6 +289,8 @@ void BaseTestSuite::VerifyGetAllAsyncWithOneActiveToast()
     toast.Progress(progressData);
 
     AppNotificationManager::Default().Show(toast);
+    std::vector<AppNotification> toastVector{ toast };
+    VERIFY_IS_TRUE(VerifyToastsPosted(toastVector));
 
     auto retrieveNotificationsAsync{ AppNotificationManager::Default().GetAllAsync() };
     auto scope_exit = wil::scope_exit(
@@ -296,7 +298,7 @@ void BaseTestSuite::VerifyGetAllAsyncWithOneActiveToast()
             retrieveNotificationsAsync.Cancel();
         });
 
-    VERIFY_ARE_EQUAL(retrieveNotificationsAsync.wait_for(std::chrono::seconds(300)), winrt::Windows::Foundation::AsyncStatus::Completed);
+    VERIFY_ARE_EQUAL(retrieveNotificationsAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
     scope_exit.release();
 
     auto notifications{ retrieveNotificationsAsync.GetResults() };
@@ -309,27 +311,17 @@ void BaseTestSuite::VerifyGetAllAsyncWithOneActiveToast()
 void BaseTestSuite::VerifyGetAllAsyncWithMultipleActiveToasts()
 {
     RegisterWithAppNotificationManager();
-    AppNotification toast1{ CreateToastNotification() };
+    AppNotification toast1{ CreateToastNotification(L"Toast1")};
     AppNotificationManager::Default().Show(toast1);
 
-    AppNotification toast2{ CreateToastNotification() };
+    AppNotification toast2{ CreateToastNotification(L"Toast2")};
     AppNotificationManager::Default().Show(toast2);
 
-    AppNotification toast3{ CreateToastNotification() };
+    AppNotification toast3{ CreateToastNotification(L"Toast3")};
     AppNotificationManager::Default().Show(toast3);
 
-    auto retrieveNotificationsAsync{ AppNotificationManager::Default().GetAllAsync() };
-    auto scope_exit = wil::scope_exit(
-        [&] {
-            retrieveNotificationsAsync.Cancel();
-        });
-
-    VERIFY_ARE_EQUAL(retrieveNotificationsAsync.wait_for(std::chrono::seconds(300)), winrt::Windows::Foundation::AsyncStatus::Completed);
-    scope_exit.release();
-
-    auto notifications{ retrieveNotificationsAsync.GetResults() };
-    VERIFY_ARE_EQUAL(notifications.Size(), (uint32_t) 3);
-    VERIFY_ARE_EQUAL(L"<toast>intrepidToast</toast>", notifications.GetAt(0).Payload());
+    std::vector<AppNotification> toastVector{ toast1, toast2, toast3 };
+    VERIFY_IS_TRUE(VerifyToastsPosted(toastVector));
 }
 
 void BaseTestSuite::VerifyGetAllAsyncIgnoresUpdatesToProgressData()
@@ -353,7 +345,7 @@ void BaseTestSuite::VerifyGetAllAsyncIgnoresUpdatesToProgressData()
         retrieveNotificationsAsync.Cancel();
     });
 
-    VERIFY_ARE_EQUAL(retrieveNotificationsAsync.wait_for(std::chrono::seconds(300)), winrt::Windows::Foundation::AsyncStatus::Completed);
+    VERIFY_ARE_EQUAL(retrieveNotificationsAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
     scope_exit.release();
 
     auto notifications{ retrieveNotificationsAsync.GetResults() };
@@ -365,7 +357,7 @@ void BaseTestSuite::VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier()
 {
     auto removeNotificationAsync{ AppNotificationManager::Default().RemoveByIdAsync(0) };
 
-    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(std::chrono::seconds(300)), winrt::Windows::Foundation::AsyncStatus::Error);
+    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Error);
     VERIFY_THROWS_HR(removeNotificationAsync.GetResults(), E_INVALIDARG);
     removeNotificationAsync.Cancel();
 }
@@ -373,22 +365,14 @@ void BaseTestSuite::VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier()
 void BaseTestSuite::VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifierDoesNotThrow()
 {
     RegisterWithAppNotificationManager();
-    AppNotification toast{ CreateToastNotification() };
-    AppNotificationManager::Default().Show(toast);
-    auto id{ toast.Id() };
-
-    AppNotificationManager::Default().RemoveAllAsync().get();
-
-    auto removeNotificationAsync{ AppNotificationManager::Default().RemoveByIdAsync(id) };
+    auto removeNotificationAsync{ AppNotificationManager::Default().RemoveByIdAsync(1) };
     auto scope_exit = wil::scope_exit(
     [&] {
         removeNotificationAsync.Cancel();
     });
 
-    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(std::chrono::seconds(300)), winrt::Windows::Foundation::AsyncStatus::Completed);
+    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
     scope_exit.release();
-
-    removeNotificationAsync.GetResults();
 }
 
 void BaseTestSuite::VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier()
@@ -403,15 +387,14 @@ void BaseTestSuite::VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier()
     winrt::AppNotification toast3{ CreateToastNotification(L"Toast3") };
     AppNotificationManager::Default().Show(toast3);
 
-    VerifyToastIsActive(toast1.Id());
-    VerifyToastIsActive(toast2.Id());
-    VerifyToastIsActive(toast3.Id());
+    std::vector<AppNotification> toastVector{ toast1, toast3, toast2 };
+    VERIFY_IS_TRUE(VerifyToastsPosted(toastVector));
 
     AppNotificationManager::Default().RemoveByIdAsync(toast2.Id()).get();
 
-    VerifyToastIsActive(toast1.Id());
-    VerifyToastIsActive(toast3.Id());
-    VerifyToastIsInactive(toast2.Id());
+    // Remove last toast from actual vector
+    toastVector.pop_back();
+    VERIFY_IS_TRUE(VerifyToastsPosted(toastVector));
 }
 
 void BaseTestSuite::VerifyRemoveWithTagAsyncUsingEmptyTagThrows()
@@ -428,7 +411,7 @@ void BaseTestSuite::VerifyRemoveWithTagAsyncUsingNonExistentTagDoesNotThrow()
             removeNotificationAsync.Cancel();
         });
 
-    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(std::chrono::seconds(300)), winrt::Windows::Foundation::AsyncStatus::Completed);
+    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
     scope_exit.release();
 }
 
@@ -439,7 +422,8 @@ void BaseTestSuite::VerifyRemoveWithTagAsync()
     toast.Tag(L"Unique tag");
     AppNotificationManager::Default().Show(toast);
 
-    VerifyToastIsActive(toast.Id());
+    std::vector<AppNotification> toastVector{ toast };
+    VERIFY_IS_TRUE(VerifyToastsPosted(toastVector));
 
     auto removeNotificationAsync{ AppNotificationManager::Default().RemoveByTagAsync(L"Unique tag") };
     auto scope_exit = wil::scope_exit(
@@ -447,10 +431,10 @@ void BaseTestSuite::VerifyRemoveWithTagAsync()
         removeNotificationAsync.Cancel();
     });
 
-    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(std::chrono::seconds(300)), winrt::Windows::Foundation::AsyncStatus::Completed);
+    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
     scope_exit.release();
 
-    VerifyToastIsInactive(toast.Id());
+    VERIFY_IS_TRUE(VerifyToastsCleared());
 }
 
 void BaseTestSuite::VerifyRemoveWithTagGroupAsyncUsingEmptyTagThrows()
@@ -466,24 +450,23 @@ void BaseTestSuite::VerifyRemoveWithTagGroupAsyncUsingEmptyGroupThrows()
 void BaseTestSuite::VerifyRemoveWithTagGroupAsync()
 {
     RegisterWithAppNotificationManager();
-    AppNotification toast1{ CreateToastNotification() };
+    AppNotification toast1{ CreateToastNotification(L"Toast1")};
     toast1.Tag(L"tag1");
     toast1.Group(L"Shared group");
     AppNotificationManager::Default().Show(toast1);
 
-    winrt::AppNotification toast2{ CreateToastNotification() };
+    winrt::AppNotification toast2{ CreateToastNotification(L"Toast2")};
     toast2.Tag(L"tag2");
     toast2.Group(L"Shared group");
     AppNotificationManager::Default().Show(toast2);
 
-    winrt::AppNotification toast3{ CreateToastNotification() };
+    winrt::AppNotification toast3{ CreateToastNotification(L"Toast3")};
     toast3.Tag(L"tag3");
     toast3.Group(L"Shared group");
     AppNotificationManager::Default().Show(toast3);
 
-    VerifyToastIsActive(toast1.Id());
-    VerifyToastIsActive(toast2.Id());
-    VerifyToastIsActive(toast3.Id());
+    std::vector<AppNotification> toastVector{ toast1, toast3, toast2 };
+    VERIFY_IS_TRUE(VerifyToastsPosted(toastVector));
 
     auto removeNotificationAsync{ AppNotificationManager::Default().RemoveByTagAndGroupAsync(L"tag2", L"Shared group") };
     auto scope_exit = wil::scope_exit(
@@ -491,12 +474,12 @@ void BaseTestSuite::VerifyRemoveWithTagGroupAsync()
             removeNotificationAsync.Cancel();
         });
 
-    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(std::chrono::seconds(300)), winrt::Windows::Foundation::AsyncStatus::Completed);
+    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
     scope_exit.release();
 
-    VerifyToastIsActive(toast1.Id());
-    VerifyToastIsInactive(toast2.Id());
-    VerifyToastIsActive(toast3.Id());
+    // Remove last toast from actual vector
+    toastVector.pop_back();
+    VERIFY_IS_TRUE(VerifyToastsPosted(toastVector));
 }
 
 void BaseTestSuite::VerifyRemoveGroupAsyncUsingEmptyGroupThrows()
@@ -513,7 +496,7 @@ void BaseTestSuite::VerifyRemoveGroupAsyncUsingNonExistentGroupDoesNotThrow()
             removeNotificationAsync.Cancel();
         });
 
-    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(std::chrono::seconds(300)), winrt::Windows::Foundation::AsyncStatus::Completed);
+    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
     scope_exit.release();
 }
 
@@ -535,9 +518,8 @@ void BaseTestSuite::VerifyRemoveGroupAsync()
     toast3.Group(L"Shared group");
     AppNotificationManager::Default().Show(toast3);
 
-    VerifyToastIsActive(toast1.Id());
-    VerifyToastIsActive(toast2.Id());
-    VerifyToastIsActive(toast3.Id());
+    std::vector<AppNotification> toastVector{ toast1, toast2, toast3 };
+    VERIFY_IS_TRUE(VerifyToastsPosted(toastVector));
 
     auto removeNotificationAsync{ AppNotificationManager::Default().RemoveByGroupAsync(L"Shared group") };
     auto scope_exit = wil::scope_exit(
@@ -545,12 +527,10 @@ void BaseTestSuite::VerifyRemoveGroupAsync()
             removeNotificationAsync.Cancel();
         });
 
-    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(std::chrono::seconds(300)), winrt::Windows::Foundation::AsyncStatus::Completed);
+    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
     scope_exit.release();
 
-    VerifyToastIsInactive(toast1.Id());
-    VerifyToastIsInactive(toast2.Id());
-    VerifyToastIsInactive(toast3.Id());
+    VERIFY_IS_TRUE(VerifyToastsCleared());
 }
 
 void BaseTestSuite::VerifyRemoveAllAsyncWithNoActiveToastDoesNotThrow()
@@ -562,64 +542,35 @@ void BaseTestSuite::VerifyRemoveAllAsyncWithNoActiveToastDoesNotThrow()
             removeNotificationAsync.Cancel();
         });
 
-    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(std::chrono::seconds(300)), winrt::Windows::Foundation::AsyncStatus::Completed);
+    VERIFY_ARE_EQUAL(removeNotificationAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
     scope_exit.release();
 }
 
 void BaseTestSuite::VerifyRemoveAllAsync()
 {
     RegisterWithAppNotificationManager();
-    AppNotification toast1{ CreateToastNotification() };
+    AppNotification toast1{ CreateToastNotification(L"Toast1")};
     AppNotificationManager::Default().Show(toast1);
 
-    AppNotification toast2{ CreateToastNotification() };
+    AppNotification toast2{ CreateToastNotification(L"Toast2") };
     AppNotificationManager::Default().Show(toast2);
 
-    AppNotification toast3{ CreateToastNotification() };
+    AppNotification toast3{ CreateToastNotification(L"Toast3") };
     AppNotificationManager::Default().Show(toast3);
 
-    // Poll every second for 5 seconds.
-    int toastCount{ 0 };
-    for (int i = 0; i < 5; i++)
-    {
-        auto getAllAsync{ AppNotificationManager::Default().GetAllAsync() };
-        auto scopeExitGetAll = wil::scope_exit(
-            [&] {
-                getAllAsync.Cancel();
-            });
+    std::vector<AppNotification> toastVector{ toast1, toast2, toast3 };
+    VERIFY_IS_TRUE(VerifyToastsPosted(toastVector));
 
-        VERIFY_ARE_NOT_EQUAL(getAllAsync.wait_for(std::chrono::milliseconds(500)), winrt::Windows::Foundation::AsyncStatus::Error);
-
-        scopeExitGetAll.release();
-        toastCount = getAllAsync.GetResults().Size();
-        if (toastCount == (uint32_t) 3)
-        {
-            break;
-        }
-
-        Sleep(500);
-    }
-    VERIFY_ARE_EQUAL(toastCount, 3);
-
-    /*auto removeAllAsync{ AppNotificationManager::Default().RemoveAllAsync() };
+    auto removeAllAsync{ AppNotificationManager::Default().RemoveAllAsync() };
     auto scopeExitRemoveAll = wil::scope_exit(
         [&] {
             removeAllAsync.Cancel();
         });
 
-    VERIFY_ARE_EQUAL(removeAllAsync.wait_for(std::chrono::seconds(300)), winrt::Windows::Foundation::AsyncStatus::Completed);
+    VERIFY_ARE_EQUAL(removeAllAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
     scopeExitRemoveAll.release();
 
-    auto getAllAsync2{ AppNotificationManager::Default().GetAllAsync() };
-    auto scopeExitGetAll2 = wil::scope_exit(
-        [&] {
-            getAllAsync2.Cancel();
-        });
-
-    VERIFY_ARE_EQUAL(getAllAsync2.wait_for(std::chrono::seconds(300)), winrt::Windows::Foundation::AsyncStatus::Completed);
-    scopeExitGetAll2.release();
-
-    VERIFY_ARE_EQUAL(getAllAsync2.GetResults().Size(), (uint32_t) 0);*/
+    VERIFY_IS_TRUE(VerifyToastsCleared());
 }
 
 void BaseTestSuite::VerifyIconPathExists()

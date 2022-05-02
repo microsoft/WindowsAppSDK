@@ -23,16 +23,6 @@ namespace AppNotificationHelpers {
         return CreateToastNotification(L"intrepidToast");
     }
 
-    void EnsureNoActiveToasts()
-    {
-        auto removeAllAsync = winrt::AppNotificationManager::Default().RemoveAllAsync();
-        if (removeAllAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
-        {
-            removeAllAsync.Cancel();
-            THROW_HR_MSG(E_FAIL, "Failed to remove all active toasts");
-        }
-    }
-
     void VerifyToastStatus(UINT32 expectedToastId, bool expected)
     {
         auto retrieveNotificationsAsync{ winrt::AppNotificationManager::Default().GetAllAsync() };
@@ -68,17 +58,6 @@ namespace AppNotificationHelpers {
         VerifyToastStatus(expectedToastId, false);
     }
 
-    void PostToastHelper(std::wstring const& tag, std::wstring const& group)
-    {
-        winrt::AppNotification toast{ CreateToastNotification() };
-
-        toast.Tag(tag.c_str());
-        toast.Group(group.c_str());
-
-        winrt::AppNotificationManager::Default().Show(toast);
-        VERIFY_ARE_NOT_EQUAL(toast.Id(), (uint32_t) 0);
-    }
-
     winrt::AppNotificationProgressData GetToastProgressData(
         std::wstring const& status,
         std::wstring const& title,
@@ -101,7 +80,7 @@ namespace AppNotificationHelpers {
             progressResultOperation.Cancel();
         });
 
-        VERIFY_ARE_EQUAL(progressResultOperation.wait_for(std::chrono::seconds(2)), winrt::AsyncStatus::Completed);
+        VERIFY_ARE_EQUAL(progressResultOperation.wait_for(c_timeout), winrt::AsyncStatus::Completed);
         scope_exit.release();
 
         VERIFY_ARE_EQUAL(progressResultOperation.GetResults(), progressResult);
@@ -164,5 +143,93 @@ namespace AppNotificationHelpers {
             // Unexpected selection
             VERIFY_FAIL();
         }
+    }
+
+    bool VerifyToastsPosted(std::vector<winrt::Microsoft::Windows::AppNotifications::AppNotification> const& expectedToastVector)
+    {
+        bool result{ false };
+        for (int i { 0 }; i < 5; i++)
+        {
+            auto getAllAsync{ winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::Default().GetAllAsync() };
+            auto scopeExitGetAll = wil::scope_exit(
+                [&] {
+                    getAllAsync.Cancel();
+                });
+
+            VERIFY_ARE_EQUAL(getAllAsync.wait_for(std::chrono::milliseconds(500)), winrt::Windows::Foundation::AsyncStatus::Completed);
+            scopeExitGetAll.release();
+
+            auto actualToastVector{ getAllAsync.GetResults() };
+            if (actualToastVector.Size() == expectedToastVector.size())
+            {
+                for (int actualToastIndex{ 0 }; (uint32_t)actualToastIndex < actualToastVector.Size(); actualToastIndex++)
+                {
+                    for (int expectedToastIndex{ 0 }; expectedToastIndex < expectedToastVector.size(); expectedToastIndex++)
+                    {
+                        if (actualToastVector.GetAt(actualToastIndex).Id() == expectedToastVector[expectedToastIndex].Id())
+                        {
+                            VERIFY_ARE_EQUAL(actualToastVector.GetAt(actualToastIndex).Payload(), expectedToastVector[expectedToastIndex].Payload());
+                            break;
+                        }
+                    }
+                }
+
+                result = true;
+                break;
+            }
+
+            Sleep(500);
+        }
+        return true;
+    }
+
+    void PostToastHelper(std::wstring const& tag, std::wstring const& group)
+    {
+        winrt::AppNotification toast{ CreateToastNotification() };
+
+        toast.Tag(tag.c_str());
+        toast.Group(group.c_str());
+
+        winrt::AppNotificationManager::Default().Show(toast);
+
+        std::vector<winrt::AppNotification> toastVector{ toast };
+        VERIFY_IS_TRUE(VerifyToastsPosted(toastVector));
+    }
+
+    bool VerifyToastsCleared()
+    {
+        for (int i{ 0 }; i < 5; i++)
+        {
+            auto getAllAsync{ winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::Default().GetAllAsync() };
+            auto scopeExitGetAll = wil::scope_exit(
+                [&] {
+                    getAllAsync.Cancel();
+                });
+
+            VERIFY_ARE_EQUAL(getAllAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
+            scopeExitGetAll.release();
+
+            auto actualToastVector{ getAllAsync.GetResults() };
+            if (actualToastVector.Size() == (uint32_t) 0)
+            {
+                break;
+            }
+
+            Sleep(500);
+        }
+        return true;
+    }
+
+    bool EnsureNoActiveToasts()
+    {
+        auto removeAllAsync = winrt::AppNotificationManager::Default().RemoveAllAsync();
+        if (removeAllAsync.wait_for(c_timeout) != winrt::Windows::Foundation::AsyncStatus::Completed)
+        {
+            removeAllAsync.Cancel();
+            THROW_HR_MSG(E_FAIL, "Failed to remove all active toasts");
+        }
+
+        VERIFY_IS_TRUE(VerifyToastsCleared());
+        return true;
     }
 }
