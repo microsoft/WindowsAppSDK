@@ -83,6 +83,7 @@ namespace WindowsAppRuntimeInstaller
             const auto deploymentResult{ deploymentOperation.GetResults() };
             WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetDeploymentErrorActivityId(deploymentResult.ActivityId());
 
+            WindowsAppRuntimeInstaller::InstallActivity::Context::Get().LogInstallerProvisioningFailureEvent(deploymentOperation.ErrorCode(), packageFamilyName.c_str());
             return static_cast<HRESULT>(deploymentOperation.ErrorCode());
         }
         return S_OK;

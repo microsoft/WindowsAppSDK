@@ -385,11 +385,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             THROW_WIN32(rc);
         }
 
-        // Get package info for this package.
+        // Get the PackageInfo of current package and it's dependency packages
         std::wstring currentPackageFullName{ packageFullName };
         auto currentPackageInfo{ GetPackageInfoForPackage(currentPackageFullName) };
 
-        // Index starts at 1 since the first package is the current page and we are interested in
+        // Index starts at 1 since the first package is the current package and we are interested in
         // dependency packages only.
         for (size_t i = 0; i < currentPackageInfo.Count(); ++i)
         {

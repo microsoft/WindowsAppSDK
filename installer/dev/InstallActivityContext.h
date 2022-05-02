@@ -37,6 +37,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         GUID m_deploymentErrorActivityId{};
         WindowsAppRuntimeInstaller_TraceLogger::Install m_activity;
         WilFailure m_lastFailure{};
+        HANDLE m_hEventLog;
 
     public:
         static WindowsAppRuntimeInstaller::InstallActivity::Context& Get();
@@ -104,6 +105,42 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         }
 
         void SetLastFailure(const wil::FailureInfo& failureInfo);
+
+        const HANDLE& RegisterInstallerEventSourceW()
+        {
+            m_hEventLog = RegisterEventSourceW(nullptr, L"WindowsAppRuntime Installer");
+            return m_hEventLog;
+        }
+
+        const BOOL& DeregisterInstallerEventSourceW()
+        {
+            return DeregisterEventSource(m_hEventLog);
+        }
+
+        // SetActivity API should be called prior to any LogInstaller* methods.
+        BOOL LogInstallerCommandLineArgs(PCWSTR cmdlineArgs);
+
+        BOOL LogInstallerSuccess()
+        {
+            return ReportEventW(m_hEventLog, EVENTLOG_SUCCESS, 0, 0, nullptr, 0, 0, nullptr, nullptr);
+        }
+
+        BOOL LogInstallerFailureEvent(const HRESULT& hresult);
+
+        BOOL LogInstallerFailureEvent(HRESULT hresult,
+            UINT32 failureType,
+            PCSTR failureFile,
+            UINT32 failureLineNumber,
+            PCWSTR failureMessage,
+            UINT32 failedInstallStage,
+            PCWSTR currentResourceId,
+            HRESULT deploymentErrorExtendedHResult,
+            PCWSTR deploymentErrorText,
+            GUID deploymentErrorActivityId);
+
+    BOOL LogInstallerRestartPushNotificationsLRPFailureEvent(const HRESULT& hresult);
+
+    BOOL LogInstallerProvisioningFailureEvent(const HRESULT& hresult, PCWSTR currentResourceId);
     };
 
     static WindowsAppRuntimeInstaller::InstallActivity::Context g_installActivityContext;
