@@ -66,10 +66,7 @@
     <RepoTestCertificatePasswordRedacted>...redacted...</RepoTestCertificatePasswordRedacted>
   </PropertyGroup>
 
-  <!-- 'Clean As We Go' to prevent build agents from running out of disk space -->
-  <PropertyGroup Condition="('$(WindowsAppSDKCleanIntermediateFiles)' == '') and ('$(WindowsAppSDKBuildPipeline)' == '1')">
-    <WindowsAppSDKCleanIntermediateFiles>true</WindowsAppSDKCleanIntermediateFiles>
-  </PropertyGroup>
+  <!-- 'Clean As We Go' if necessary (specified). Prevents build agents from running out of disk space -->
   <Target Name="CleanIntermediateFiles" AfterTargets="Build" Condition="'$(WindowsAppSDKCleanIntermediateFiles)' == 'true'">
     <RemoveDir Directories="$(IntermediateOutputPath)" />
   </Target>
