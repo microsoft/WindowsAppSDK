@@ -180,7 +180,7 @@ namespace AppNotificationHelpers {
 
             Sleep(500);
         }
-        return true;
+        return result;
     }
 
     void PostToastHelper(std::wstring const& tag, std::wstring const& group)
@@ -198,6 +198,7 @@ namespace AppNotificationHelpers {
 
     bool VerifyToastsCleared()
     {
+        bool result{ false };
         for (int i{ 0 }; i < 5; i++)
         {
             auto getAllAsync{ winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::Default().GetAllAsync() };
@@ -212,12 +213,13 @@ namespace AppNotificationHelpers {
             auto actualToastVector{ getAllAsync.GetResults() };
             if (actualToastVector.Size() == (uint32_t) 0)
             {
+                result = true;
                 break;
             }
 
             Sleep(500);
         }
-        return true;
+        return result;
     }
 
     bool EnsureNoActiveToasts()
