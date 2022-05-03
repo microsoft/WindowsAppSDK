@@ -1784,6 +1784,7 @@ struct DWRITE_PAINT_COLOR
 /// </summary>
 enum DWRITE_PAINT_COMPOSITE_MODE
 {
+    // Porter-Duff modes.
     DWRITE_COLOR_COMPOSITE_CLEAR,
     DWRITE_COLOR_COMPOSITE_SRC,
     DWRITE_COLOR_COMPOSITE_DEST,
@@ -1798,6 +1799,7 @@ enum DWRITE_PAINT_COMPOSITE_MODE
     DWRITE_COLOR_COMPOSITE_XOR,
     DWRITE_COLOR_COMPOSITE_PLUS,
 
+    // Separable color blend modes.
     DWRITE_COLOR_COMPOSITE_SCREEN,
     DWRITE_COLOR_COMPOSITE_OVERLAY,
     DWRITE_COLOR_COMPOSITE_DARKEN,
@@ -1810,6 +1812,7 @@ enum DWRITE_PAINT_COMPOSITE_MODE
     DWRITE_COLOR_COMPOSITE_EXCLUSION,
     DWRITE_COLOR_COMPOSITE_MULTIPLY,
 
+    // Non-separable color blend modes.
     DWRITE_COLOR_COMPOSITE_HSL_HUE,
     DWRITE_COLOR_COMPOSITE_HSL_SATURATION,
     DWRITE_COLOR_COMPOSITE_HSL_COLOR,
@@ -2065,12 +2068,14 @@ struct DWRITE_PAINT_ELEMENT
             float centerY;
 
             /// <summary>
-            /// Start of the angular range of the gradient, 180 degrees in counter-clockwise degrees per 1.0 of value.
+            /// Start of the angular range of the gradient, measured in counter-clockwise degrees
+            /// from the direction of the positive x axis.
             /// </summary>
             float startAngle;
 
             /// <summary>
-            /// End of the angular range of the gradient, 180 degrees in counter-clockwise degrees per 1.0 of value.
+            /// End of the angular range of the gradient, measured in counter-clockwise degrees
+            /// from the direction of the positive x axis.
             /// </summary>
             float endAngle;
         } sweepGradient;
