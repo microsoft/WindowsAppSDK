@@ -46,7 +46,7 @@ public:
         HRESULT deploymentErrorExtendedHResult,
         PCWSTR deploymentErrorText,
         GUID deploymentErrorActivityId,
-        bool isFullTrustMicrosoftPublisherPackage)
+        bool isFullTrustPackage)
     {
         // Set a process-wide callback function for WIL to call each time it logs a failure.
         wil::SetResultLoggingCallback(nullptr);
@@ -67,14 +67,14 @@ public:
                 TraceLoggingValue(deploymentErrorExtendedHResult, "DeploymentErrorExtendedHResult"),
                 TraceLoggingValue(deploymentErrorText, "DeploymentErrorText"),
                 TraceLoggingValue(deploymentErrorActivityId, "DeploymentErrorActivityId"),
-                TraceLoggingValue(isFullTrustMicrosoftPublisherPackage, "isFullTrustMicrosoftPublisherPackage"));
+                TraceLoggingValue(isFullTrustPackage, "isFullTrustPackage"));
         }
         else
         {
             TraceLoggingClassWriteStop(Install,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingValue(preInitializeStatus, "preInitializeStatus"),
-                TraceLoggingValue(isFullTrustMicrosoftPublisherPackage, "isFullTrustMicrosoftPublisherPackage"));
+                TraceLoggingValue(isFullTrustPackage, "isFullTrustPackage"));
         }
     }
     END_ACTIVITY_CLASS();
