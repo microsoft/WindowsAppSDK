@@ -76,6 +76,16 @@ Please ignore or replace those values with our own such as for the build_asset_r
 This will open up a notepad where you'll be able to set build_asset_registry_base_uri and provide
 three different PATs (BAR, Github, AzureDevOps). 
 Each respective PAT is required to make configuration changes to AzureDevOps or Github repo
+
+For GitHub:
+The PAT can be retrived from "Personal access tokens" section on the Developer settings in GitHUB
+There is an extra step where you must configure SSO especially for the "Microsoft" organization so that you can make maestro config changes for the Foundation repositories. This will prevent 403 (Forbidden) errors when. 
+
+For AzureDevOps
+The PAT can be retrived from "Personal access tokens" section on the settings dropdown menu. 
+NOTE: To make maestro config changes on azure devops repositories, you'll need the corresponding
+PAT from the correct organization that the repositories are under. 
+
 For BAR:
 Create a new tokens at https://reunion-maestro-prod.westus2.cloudapp.azure.com/Account/Tokens
 Copy the new token and paste it to bar_password
@@ -83,9 +93,6 @@ Copy the new token and paste it to bar_password
 build_asset_registry_base_uri will be pointed at the dotnet's maestro uri. We want this to point to 
 WindowsAppSDK's Maestro Uri.
 build_asset_registry_base_uri=https://reunion-maestro-prod.westus2.cloudapp.azure.com/
-
-NOTE: To make maestro changes to configure azure devops repositories, you'll need the corresponding
-PAT from the correct organization that the repositories are under. 
 
 Once these steps are done and you are ready to use the darc client to configure your branches, 
 channels, and subscriptions.
