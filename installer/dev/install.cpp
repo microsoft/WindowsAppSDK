@@ -186,7 +186,7 @@ namespace WindowsAppRuntimeInstaller
         // Populate framework from the manifest properties.
         wil::com_ptr<IAppxManifestProperties> manifestProperties;
         THROW_IF_FAILED(manifest->GetProperties(wil::out_param(manifestProperties)));
-        BOOL isFramework{ FALSE };
+        BOOL isFramework{};
         THROW_IF_FAILED(manifestProperties->GetBoolValue(L"Framework", &isFramework));
         properties->isFramework = isFramework == TRUE;
 
