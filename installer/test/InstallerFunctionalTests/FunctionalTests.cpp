@@ -49,36 +49,36 @@ namespace WindowsAppRuntimeInstallerTests
 
         TEST_METHOD(VerifyInstallerRuns)
         {
-            auto result = RunInstaller();
+            auto result{ RunInstaller() };
             VERIFY_ARE_EQUAL(S_OK, result);
         }
 
         TEST_METHOD(VerifyArgsQuiet)
         {
-            auto result = RunInstaller(L"--quiet");
+            auto result{ RunInstaller(L"--quiet") };
             VERIFY_ARE_EQUAL(S_OK, result);
         }
 
         TEST_METHOD(VerifyArgsHelp)
         {
-            auto result = RunInstaller(L"--help");
+            auto result{ RunInstaller(L"--help") };
             VERIFY_ARE_EQUAL(S_OK, result);
         }
         TEST_METHOD(VerifyArgsInvalid)
         {
             // Installer should fail with bad arguments error code.
-            auto result = RunInstaller(L"--kittens");
+            auto result{ RunInstaller(L"--kittens") };
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_BAD_ARGUMENTS), result);
         }
 
         TEST_METHOD(RunInstallerAndVerifyPackages)
         {
             // Run and verify installer
-            auto result = RunInstaller();
+            auto result{ RunInstaller() };
             VERIFY_ARE_EQUAL(S_OK, result);
 
             // Verify frameworks based on system architecture
-            auto systemArch = GetSystemArchitecture();
+            auto systemArch{ GetSystemArchitecture() };
 
             if (systemArch == ProcessorArchitecture::X86)
             {

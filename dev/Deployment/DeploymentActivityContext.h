@@ -78,7 +78,7 @@ namespace WindowsAppRuntime::Deployment::Activity
             return m_lastFailure;
         }
 
-        const bool& GetIsFullTrustPackage()
+        const bool& GetIsFullTrustPackage() const
         {
             return isFullTrustPackage;
         }
