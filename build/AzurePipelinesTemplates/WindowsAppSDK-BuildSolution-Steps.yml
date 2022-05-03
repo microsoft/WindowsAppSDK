@@ -2,6 +2,7 @@ parameters:
   solutionPath: ''
   displayName: ''
   additionalMsBuildArgs: ''
+  WindowsAppSDKCleanIntermediateFiles: 'true'
 
 # Note, this template depends on these variables from parent yml:
 # $(buildConfiguration), $(buildPlatform)
@@ -22,7 +23,7 @@ steps:
     solution: ${{ parameters.solutionPath }}
     platform: $(buildPlatform)
     configuration: $(buildConfiguration)
-    msbuildArgs: /binaryLogger:$(Build.SourcesDirectory)\${{ parameters.displayName }}.$(buildConfiguration).$(buildPlatform).binlog /restore ${{ parameters.additionalMsBuildArgs }}
+    msbuildArgs: /binaryLogger:$(Build.SourcesDirectory)\${{ parameters.displayName }}.$(buildConfiguration).$(buildPlatform).binlog /restore ${{ parameters.additionalMsBuildArgs }} /p:WindowsAppSDKCleanIntermediateFiles=${{ parameters.WindowsAppSDKCleanIntermediateFiles }}
     logProjectEvents: false
 
 - task: PublishBuildArtifacts@1
