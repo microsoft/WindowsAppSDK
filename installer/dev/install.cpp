@@ -49,7 +49,7 @@ namespace WindowsAppRuntimeInstaller
         deploymentOperation.get();
         if (deploymentOperation.Status() != AsyncStatus::Completed)
         {
-            auto hrAddPackage = static_cast<HRESULT>(deploymentOperation.ErrorCode());
+            auto hrAddPackage{ static_cast<HRESULT>(deploymentOperation.ErrorCode()) };
             if (hrAddPackage == ERROR_PACKAGE_ALREADY_EXISTS)
             {
                 WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetInstallStage(InstallStage::RegisterPackage);
@@ -152,12 +152,12 @@ namespace WindowsAppRuntimeInstaller
 
     wil::com_ptr<IStream> GetResourceStream(const std::wstring& resourceName, const std::wstring& resourceType)
     {
-        HMODULE const hModule = GetModuleHandle(NULL);
-        HRSRC hResourceSource = ::FindResource(hModule, resourceName.c_str(), resourceType.c_str());
+        HMODULE const hModule{ GetModuleHandle(NULL) };
+        HRSRC hResourceSource{ ::FindResource(hModule, resourceName.c_str(), resourceType.c_str()) };
         THROW_LAST_ERROR_IF_NULL(hResourceSource);
-        HGLOBAL hResource = LoadResource(hModule, hResourceSource);
+        HGLOBAL hResource{ LoadResource(hModule, hResourceSource) };
         THROW_LAST_ERROR_IF_NULL(hResource);
-        const BYTE* data = reinterpret_cast<BYTE*>(::LockResource(hResource));
+        const BYTE* data{ reinterpret_cast<BYTE*>(::LockResource(hResource)) };
         THROW_LAST_ERROR_IF_NULL(data);
         const DWORD size{ ::SizeofResource(hModule, hResourceSource) };
         return CreateMemoryStream(data, size);
@@ -166,7 +166,7 @@ namespace WindowsAppRuntimeInstaller
     std::unique_ptr<PackageProperties> GetPackagePropertiesFromStream(wil::com_ptr<IStream>& stream)
     {
         // Get PackageId from the manifest.
-        auto factory = wil::CoCreateInstance<AppxFactory, IAppxFactory>();
+        auto factory{ wil::CoCreateInstance<AppxFactory, IAppxFactory>() };
         wil::com_ptr<IAppxPackageReader> reader;
         THROW_IF_FAILED(factory->CreatePackageReader(stream.get(), wil::out_param(reader)));
         wil::com_ptr<IAppxManifestReader> manifest;
@@ -175,7 +175,7 @@ namespace WindowsAppRuntimeInstaller
         THROW_IF_FAILED(manifest->GetPackageId(&id));
 
         // Populate properties from the manifest PackageId
-        auto properties = std::make_unique<PackageProperties>();
+        auto properties{ std::make_unique<PackageProperties>() };
         THROW_IF_FAILED(id->GetPackageFullName(&properties->fullName));
         THROW_IF_FAILED(id->GetPackageFamilyName(&properties->familyName));
         APPX_PACKAGE_ARCHITECTURE arch{};
@@ -186,7 +186,7 @@ namespace WindowsAppRuntimeInstaller
         // Populate framework from the manifest properties.
         wil::com_ptr<IAppxManifestProperties> manifestProperties;
         THROW_IF_FAILED(manifest->GetProperties(wil::out_param(manifestProperties)));
-        BOOL isFramework = FALSE;
+        BOOL isFramework{ FALSE };
         THROW_IF_FAILED(manifestProperties->GetBoolValue(L"Framework", &isFramework));
         properties->isFramework = isFramework == TRUE;
 
@@ -209,8 +209,8 @@ namespace WindowsAppRuntimeInstaller
         installActivityContext.SetInstallStage(InstallStage::GetPackageProperties);
 
         // Get package properties by loading the resource as a stream and reading the manifest.
-        auto packageStream = GetResourceStream(resource.id, resource.resourceType);
-        auto packageProperties = GetPackagePropertiesFromStream(packageStream);
+        auto packageStream{ GetResourceStream(resource.id, resource.resourceType) };
+        auto packageProperties{ GetPackagePropertiesFromStream(packageStream) };
 
         installActivityContext.SetCurrentResourceId(packageProperties->fullName.get());
 
@@ -226,10 +226,10 @@ namespace WindowsAppRuntimeInstaller
 
         // GetTempFileName will create the temp file by that name due to the unique parameter being specified.
         // From here on out if we leave scope for any reason we will attempt to delete that file.
-        auto removeTempFileOnScopeExit = wil::scope_exit([&]
+        auto removeTempFileOnScopeExit{ wil::scope_exit([&]
             {
                 LOG_IF_WIN32_BOOL_FALSE(::DeleteFile(packageFilename));
-            });
+            }) };
 
         if (!quiet)
         {
@@ -256,7 +256,7 @@ namespace WindowsAppRuntimeInstaller
 
         // Add the package
         Uri packageUri{ packageFilename };
-        auto hrAddResult = AddPackage(packageUri, packageProperties, forceDeployment);
+        auto hrAddResult{ AddPackage(packageUri, packageProperties, forceDeployment) };
         if (!quiet)
         {
             std::wcout << "Package deployment result : 0x" << std::hex << hrAddResult << " ";
@@ -272,7 +272,7 @@ namespace WindowsAppRuntimeInstaller
             installActivityContext.SetInstallStage(InstallStage::ProvisionPackage);
 
             // Provisioning is expected to fail if the program is not run elevated or the user is not admin.
-            auto hrProvisionResult = ProvisionPackage(packageProperties->familyName.get());
+            auto hrProvisionResult{ ProvisionPackage(packageProperties->familyName.get()) };
             if (!quiet)
             {
                 std::wcout << "Provisioning result : 0x" << std::hex << hrProvisionResult << " ";
@@ -312,8 +312,8 @@ namespace WindowsAppRuntimeInstaller
 
         wil::com_ptr<::IUnknown> pNotificationsLRP{};
 
-        unsigned int retries = 0;
-        HRESULT hr = S_OK;
+        unsigned int retries{ 0 };
+        HRESULT hr{ S_OK };
         while (retries < 3)
         {
              hr = CoCreateInstance(pushNotificationsIMPL_CLSID,

@@ -62,7 +62,7 @@ BOOL WindowsAppRuntimeInstaller::InstallActivity::Context::LogInstallerCommandLi
     {
         WCHAR message[1024]{};
         PCWSTR messageFormat{ L"Windows App Runtime Installer (ActivityId: %s) is called with Command Line Args: %s" };
-        auto installerActivityId = winrt::to_hstring(*m_activity.Id());
+        auto installerActivityId{ winrt::to_hstring(*m_activity.Id()) };
         FAIL_FAST_IF_FAILED(StringCchPrintfW(message, ARRAYSIZE(message), messageFormat, installerActivityId, cmdlineArgs));
         PCWSTR messageStrings[1]{ message };
         return ReportEventW(m_hEventLog, EVENTLOG_INFORMATION_TYPE, 0, eventId, nullptr, ARRAYSIZE(messageStrings), 0, messageStrings, nullptr);
@@ -98,8 +98,8 @@ BOOL WindowsAppRuntimeInstaller::InstallActivity::Context::LogInstallerFailureEv
             case InstallStage::AddPackage:
             {
                 WCHAR customMessage[1024]{};
-                auto deploymentActivityId = winrt::to_hstring(*m_activity.Id());
-                auto customMessageFormat = L"Installing Package %s with DeploymentExtendedError: 0x%08X, DeploymentExtendedText:%s, DeploymentActivityId: %s";
+                auto deploymentActivityId{ winrt::to_hstring(*m_activity.Id()) };
+                auto customMessageFormat{ L"Installing Package %s with DeploymentExtendedError: 0x%08X, DeploymentExtendedText:%s, DeploymentActivityId: %s" };
                 FAIL_FAST_IF_FAILED(StringCchPrintfW(customMessage,
                                                      ARRAYSIZE(customMessage),
                                                      customMessageFormat,
@@ -150,7 +150,7 @@ BOOL WindowsAppRuntimeInstaller::InstallActivity::Context::LogInstallerFailureEv
 
         WCHAR message[1024]{};
         PCWSTR messageFormat{ L"Error 0x%08X: Windows App Runtime Installer (Activity ID: %s) failed in %s" };
-        auto installerActivityId = winrt::to_hstring(*m_activity.Id());
+        auto installerActivityId{ winrt::to_hstring(*m_activity.Id()) };
         FAIL_FAST_IF_FAILED(StringCchPrintfW(message, ARRAYSIZE(message), messageFormat, hresult, installerActivityId, (resourceId ? failedComponentMessage : failedComponentMessageFormat)));
 
         PCWSTR messageStrings[1]{ message };

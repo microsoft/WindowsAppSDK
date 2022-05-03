@@ -30,7 +30,7 @@ int wmain(int argc, wchar_t *argv[])
 
     for (int i = 1; i < argc; ++i)
     {
-        auto arg = std::wstring_view(argv[i]);
+        auto arg{ std::wstring_view(argv[i]) };
 
         if (arg == L"--dry-run")
         {
