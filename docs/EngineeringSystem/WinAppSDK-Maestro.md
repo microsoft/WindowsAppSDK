@@ -69,6 +69,9 @@ After your darc client is installed, you should be able to launch darc by simply
 in your command line.
 If not, you may need to restart.
 
+NOTE: many of the default values you see next when using the darc commands are dotnet related. 
+Please ignore or replace those values with our own such as for the build_asset_registry_base_uri
+
 3) Call 'darc authenticate' with your darc client
 This will open up a notepad where you'll be able to set build_asset_registry_base_uri and provide
 three different PATs (BAR, Github, AzureDevOps). 
