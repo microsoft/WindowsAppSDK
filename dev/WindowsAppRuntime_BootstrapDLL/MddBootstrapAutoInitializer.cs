@@ -16,6 +16,9 @@
 #endif
 #endif
 
+using System.Reflection;
+using System.Runtime.InteropServices;
+
 namespace Microsoft.Windows.ApplicationModel.DynamicDependency.BootstrapCS
 {
     class AutoInitialize
@@ -23,6 +26,12 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency.BootstrapCS
         [global::System.Runtime.CompilerServices.ModuleInitializer]
         internal static void AccessWindowsAppSDK()
         {
+            // Do nothing if we're being loaded for reflection (rather than execcution)
+            if (Assembly.GetEntryAssembly() != Assembly.GetExecutingAssembly())
+            {
+                return;
+            }
+
             uint majorMinorVersion = global::Microsoft.WindowsAppSDK.Release.MajorMinor;
             string versionTag = global::Microsoft.WindowsAppSDK.Release.VersionTag;
             var minVersion = new PackageVersion(global::Microsoft.WindowsAppSDK.Runtime.Version.UInt64);
