@@ -9,6 +9,8 @@
 #include <wil/resource.h>
 #include <wil/win32_helpers.h>
 #include <wil/result.h>
+#include <wil/result_macros.h>
+#include <wil/Tracelogging.h>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>

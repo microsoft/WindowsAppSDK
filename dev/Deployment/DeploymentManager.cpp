@@ -46,7 +46,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize()
     {
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Start(false, Security::IntegrityLevel::IsElevated());
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Start(false,
+                                                                                      Security::IntegrityLevel::IsElevated(),
+                                                                                      AppModel::Identity::IsPackagedProcess(),
+                                                                                      Security::IntegrityLevel::GetIntegrityLevel());
 
         FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
         return Initialize(GetCurrentFrameworkPackageFullName());
@@ -54,7 +57,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions)
     {
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Start(deploymentInitializeOptions.ForceDeployment(), Security::IntegrityLevel::IsElevated());
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Start(deploymentInitializeOptions.ForceDeployment(),
+                                                                                      Security::IntegrityLevel::IsElevated(),
+                                                                                      AppModel::Identity::IsPackagedProcess(),
+                                                                                      Security::IntegrityLevel::GetIntegrityLevel());
 
         FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
         return Initialize(GetCurrentFrameworkPackageFullName(), deploymentInitializeOptions);
@@ -261,7 +267,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
         auto path{ wil::make_process_heap_string(nullptr, pathLength) };
         THROW_IF_WIN32_ERROR(GetPackagePathByFullName(packageFullName.c_str(), &pathLength, path.get()));
-        return std::wstring(path.get());
+        return std::wstring{ path.get() };
     }
 
     // Adds the package at the path using PackageManager.
@@ -307,10 +313,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     HRESULT DeploymentManager::AddPackageInBreakAwayProcess(const std::filesystem::path& packagePath, const bool forceDeployment) try 
     {
         auto exePath{ GenerateDeploymentAgentPath() };
-        auto szActivityId{ winrt::to_hstring(*::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Id()) };
+        auto activityId{ winrt::to_hstring(*::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Id()) };
 
         // <currentdirectory>\deploymentagent.exe <custom arguments passed by caller>
-        auto cmdLine{ wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" \"%s\" % s % s", exePath.c_str(), packagePath.c_str(), forceDeployment, szActivityId.c_str()) };
+        auto cmdLine{ wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" \"%s\" % s % s", exePath.c_str(), packagePath.c_str(), forceDeployment, activityId.c_str()) };
 
         SIZE_T attributeListSize{};
         auto attributeCount{ 1 };
@@ -343,8 +349,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         info.lpAttributeList = attributeList;
 
         wil::unique_process_information processInfo;
-        THROW_IF_WIN32_BOOL_FALSE(CreateProcess(exePath.c_str(), cmdLine.get(), nullptr, nullptr, TRUE, CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr,
-            &info.StartupInfo, &processInfo));
+        THROW_IF_WIN32_BOOL_FALSE(CreateProcess(nullptr, cmdLine.get(), nullptr, nullptr, TRUE, CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr,
+                                                &info.StartupInfo, &processInfo));
 
         // Transfer foreground rights to the new process before resuming it.
         AllowSetForegroundWindow(processInfo.dwProcessId);
@@ -356,7 +362,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         wil::handle_wait(processInfo.hProcess);
 
         DWORD processExitCode{};
-        THROW_IF_WIN32_BOOL_FALSE(GetExitCodeProcess(processInfo.hProcess, &processExitCode));
+        THROW_IF_WIN32_BOOL_FALSE_MSG(GetExitCodeProcess(processInfo.hProcess, &processExitCode), "CmdLine: %ls, processExitCode: %lu", cmdLine.get(), processExitCode);
         return S_OK;
     }
     CATCH_RETURN()

@@ -20,7 +20,7 @@ class WindowsAppRuntimeDeployment_TraceLogger final : public wil::TraceLoggingPr
 public:
 
     BEGIN_COMPLIANT_CRITICAL_DATA_ACTIVITY_CLASS(Initialize, PDT_ProductAndServicePerformance);
-    void StartActivity(bool forceDeployment, bool isElevated)
+    void StartActivity(bool forceDeployment, bool isElevated, bool isPackagedProcess, DWORD integrityLevel)
     {
         // Clear the process-wide callback set in Start
         wil::SetResultLoggingCallback(nullptr);
@@ -31,7 +31,9 @@ public:
         TraceLoggingClassWriteStart(Initialize,
             _GENERIC_PARTB_FIELDS_ENABLED,
             TraceLoggingValue(forceDeployment, "forceDeployment"),
-            TraceLoggingValue(isElevated, "isElevated"));
+            TraceLoggingValue(isElevated, "isElevated"),
+            TraceLoggingValue(isPackagedProcess, "isPackagedProcess"),
+            TraceLoggingValue(integrityLevel, "integrityLevel"));
     }
     void StopWithResult(
         HRESULT hresult,

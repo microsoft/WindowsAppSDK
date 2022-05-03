@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
+#include "tracelogging.h"
 
 using namespace winrt::Windows::Foundation;
 
@@ -13,6 +14,7 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
 
     if (argc <= 1)
     {
+        WindowsAppRuntimeDeploymentAgent_TraceLogger::FailedDueToBadArguments(argc);
         return HRESULT_FROM_WIN32(ERROR_BAD_ARGUMENTS);
     }
     std::filesystem::path packagePath{ argv[1] };
@@ -45,8 +47,24 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
     const auto deploymentResult{ deploymentOperation.GetResults() };
     if (deploymentOperation.Status() != AsyncStatus::Completed)
     {
-        RETURN_IF_FAILED_MSG(static_cast<HRESULT>(deploymentOperation.ErrorCode()), "%ls", packagePath.c_str());
+        HRESULT hr = static_cast<HRESULT>(deploymentOperation.ErrorCode());
+        if (FAILED(hr))
+        {
+            WindowsAppRuntimeDeploymentAgent_TraceLogger::FailedInDeployment(
+                hr,
+                packagePath.wstring().c_str(),
+                forceDeployment,
+                callerActivityId,
+                deploymentResult.ExtendedErrorCode(),
+                deploymentResult.ErrorText().c_str(),
+                deploymentResult.ActivityId());
+        }
+        return deploymentResult.ExtendedErrorCode();
     }
 
+    WindowsAppRuntimeDeploymentAgent_TraceLogger::Success(
+        packagePath.wstring().c_str(),
+        forceDeployment,
+        callerActivityId);
     return S_OK;
 }

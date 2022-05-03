@@ -108,6 +108,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="tracelogging.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
