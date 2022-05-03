@@ -117,7 +117,6 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
             return DeregisterEventSource(m_hEventLog);
         }
 
-        // SetActivity API should be called prior to any LogInstaller* methods.
         BOOL LogInstallerCommandLineArgs(PCWSTR cmdlineArgs);
 
         BOOL LogInstallerSuccess()
@@ -125,22 +124,10 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
             return ReportEventW(m_hEventLog, EVENTLOG_SUCCESS, 0, 0, nullptr, 0, 0, nullptr, nullptr);
         }
 
-        BOOL LogInstallerFailureEvent(const HRESULT& hresult);
+        BOOL LogInstallerFailureEvent(HRESULT hresult);
 
-        BOOL LogInstallerFailureEvent(HRESULT hresult,
-            UINT32 failureType,
-            PCSTR failureFile,
-            UINT32 failureLineNumber,
-            PCWSTR failureMessage,
-            UINT32 failedInstallStage,
-            PCWSTR currentResourceId,
-            HRESULT deploymentErrorExtendedHResult,
-            PCWSTR deploymentErrorText,
-            GUID deploymentErrorActivityId);
+        BOOL LogInstallerFailureEventWithResourceId(const WORD eventLogType, const HRESULT& hresult, PCWSTR failedComponentMessageFormat, const PCWSTR resourceId = nullptr);
 
-    BOOL LogInstallerRestartPushNotificationsLRPFailureEvent(const HRESULT& hresult);
-
-    BOOL LogInstallerProvisioningFailureEvent(const HRESULT& hresult, PCWSTR currentResourceId);
     };
 
     static WindowsAppRuntimeInstaller::InstallActivity::Context g_installActivityContext;

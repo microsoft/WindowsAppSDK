@@ -63,6 +63,9 @@ jobs:
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.Bootstrap.CS.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.Bootstrap.CS.targets"
         Copy-Item -Path "$targetsFilePath\WindowsAppSDK-Nuget-Native.Bootstrap.targets" -Destination "$fullpackagePath\build\native\WindowsAppSDK-Nuget-Native.Bootstrap.targets"
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.BootstrapCommon.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.BootstrapCommon.targets"
+        Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.targets"
+        Copy-Item -Path "$targetsFilePath\WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.targets" -Destination "$fullpackagePath\build\native\WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.targets"
+        Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets"
 
         Copy-Item -Path "$targetsFilePath\AppxManifest.xml" -Destination "$fullpackagePath\AppxManifest.xml"
         $manifestPath = $fullpackagePath+'\manifests';

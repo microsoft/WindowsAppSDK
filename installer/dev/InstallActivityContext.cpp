@@ -62,139 +62,99 @@ BOOL WindowsAppRuntimeInstaller::InstallActivity::Context::LogInstallerCommandLi
     {
         WCHAR message[1024]{};
         PCWSTR messageFormat{ L"Windows App Runtime Installer (ActivityId: %s) is called with Command Line Args: %s" };
-        wchar_t szInstallerActivityId[64] = { 0 };
-        std::ignore = StringFromGUID2(*m_activity.Id(), szInstallerActivityId, 64);
-        FAIL_FAST_IF_FAILED(StringCchPrintfW(message, ARRAYSIZE(message), messageFormat, szInstallerActivityId, cmdlineArgs));
+        auto installerActivityId = winrt::to_hstring(*m_activity.Id());
+        FAIL_FAST_IF_FAILED(StringCchPrintfW(message, ARRAYSIZE(message), messageFormat, installerActivityId, cmdlineArgs));
         PCWSTR messageStrings[1]{ message };
         return ReportEventW(m_hEventLog, EVENTLOG_INFORMATION_TYPE, 0, eventId, nullptr, ARRAYSIZE(messageStrings), 0, messageStrings, nullptr);
     }
     return false;
 }
 
-// This is Error Log
-BOOL WindowsAppRuntimeInstaller::InstallActivity::Context::LogInstallerFailureEvent(const HRESULT& hresult)
+BOOL WindowsAppRuntimeInstaller::InstallActivity::Context::LogInstallerFailureEvent(HRESULT hresult)
 {
     DWORD eventId{ static_cast<DWORD>(hresult) };
     if (m_hEventLog)
     {
         WCHAR message[1024]{};
-        PCWSTR messageFormat{ L"Error 0x%08X: Windows App Runtime Installer (Activity ID: %s) failed" };
-        wchar_t szGUID[64] = { 0 };
-        std::ignore = StringFromGUID2(*m_activity.Id(), szGUID, 64);
-        FAIL_FAST_IF_FAILED(StringCchPrintfW(message, ARRAYSIZE(message), messageFormat, hresult, szGUID));
-        PCWSTR messageStrings[1]{ message };
-        return ReportEventW(m_hEventLog, EVENTLOG_ERROR_TYPE, 0, eventId, nullptr, ARRAYSIZE(messageStrings), 0, messageStrings, nullptr);
-    }
-    return false;
-}
+        std::wstring customMessage{};
 
-// This is Error Log
-BOOL WindowsAppRuntimeInstaller::InstallActivity::Context::LogInstallerFailureEvent(
-    HRESULT hresult,
-    UINT32 failureType,
-    PCSTR failureFile,
-    UINT32 failureLineNumber,
-    PCWSTR failureMessage,
-    UINT32 failedInstallStage,
-    PCWSTR currentResourceId,
-    HRESULT deploymentErrorExtendedHResult,
-    PCWSTR deploymentErrorText,
-    GUID deploymentErrorActivityId)
-{
-    DWORD eventId{ static_cast<DWORD>(hresult) };
-    if (m_hEventLog)
-    {
-        WCHAR message[1024]{};
-        std::wstring szCustomMessage{};
-
-        switch (failedInstallStage)
+        switch (m_installStage)
         {
-            case static_cast<UINT32>(InstallStage::CreatePackageURI):
+            case InstallStage::None:
             {
-                szCustomMessage = L"Creating Package URI for Package: %s";
-                FAIL_FAST_IF_FAILED(StringCchPrintfW(message, ARRAYSIZE(message), szCustomMessage.c_str(), currentResourceId));
+                THROW_IF_WIN32_BOOL_FALSE(LogInstallerFailureEventWithResourceId(EVENTLOG_ERROR_TYPE, hresult, L"Bad arguments"));
                 break;
             }
-            case static_cast<UINT32>(InstallStage::GetPackageProperties):
+            case InstallStage::CreatePackageURI:
             {
-                szCustomMessage = L"Getting Package Properties for Package: %s";
-                FAIL_FAST_IF_FAILED(StringCchPrintfW(message,
-                    ARRAYSIZE(message),
-                    szCustomMessage.c_str(),
-                    currentResourceId));
+                THROW_IF_WIN32_BOOL_FALSE(LogInstallerFailureEventWithResourceId(EVENTLOG_ERROR_TYPE, hresult, L"Creating Package URI for Package: %s", m_currentResourceId.c_str()));
                 break;
             }
-            case static_cast<UINT32>(InstallStage::AddPackage):
-            case static_cast<UINT32>(InstallStage::RegisterPackage):
+            case InstallStage::GetPackageProperties:
             {
-                wchar_t szDeploymentActivityId[64] = { 0 };
-                std::ignore = StringFromGUID2(*m_activity.Id(), szDeploymentActivityId, 64);
-                szCustomMessage = L"Deploying Package %s with DeploymentExtendedError: 0x%08X, DeploymentExtendedText:%s, DeploymentActivityId: %s";
-                FAIL_FAST_IF_FAILED(StringCchPrintfW(message,
-                                                     ARRAYSIZE(message),
-                                                     szCustomMessage.c_str(),
-                                                     currentResourceId,
-                                                     deploymentErrorExtendedHResult,
-                                                     deploymentErrorText,
-                                                     szDeploymentActivityId));
+                THROW_IF_WIN32_BOOL_FALSE(LogInstallerFailureEventWithResourceId(EVENTLOG_ERROR_TYPE, hresult, L"Getting Package Properties for Package: %s", m_currentResourceId.c_str()));
                 break;
             }
-            case static_cast<UINT32>(InstallStage::InstallLicense):
+            case InstallStage::AddPackage:
             {
-                szCustomMessage = L"Installing License: %s";
-                FAIL_FAST_IF_FAILED(StringCchPrintfW(message, ARRAYSIZE(message), szCustomMessage.c_str(), currentResourceId));
+                WCHAR customMessage[1024]{};
+                auto deploymentActivityId = winrt::to_hstring(*m_activity.Id());
+                auto customMessageFormat = L"Installing Package %s with DeploymentExtendedError: 0x%08X, DeploymentExtendedText:%s, DeploymentActivityId: %s";
+                FAIL_FAST_IF_FAILED(StringCchPrintfW(customMessage,
+                                                     ARRAYSIZE(customMessage),
+                                                     customMessageFormat,
+                                                     m_currentResourceId,
+                                                     m_deploymentErrorExtendedHresult,
+                                                     m_deploymentErrorText,
+                                                     m_deploymentErrorActivityId));
+                THROW_IF_WIN32_BOOL_FALSE(LogInstallerFailureEventWithResourceId(EVENTLOG_ERROR_TYPE, hresult, customMessage));
                 break;
             }
-            case static_cast<UINT32>(InstallStage::RestartPushNotificationsLRP):
+            case InstallStage::InstallLicense:
             {
-                szCustomMessage = L"Restarting Push Notifications' Long Running Process";
+                THROW_IF_WIN32_BOOL_FALSE(LogInstallerFailureEventWithResourceId(EVENTLOG_ERROR_TYPE, hresult, L"Installing License: %s", m_currentResourceId.c_str()));
+                break;
+            }
+            case InstallStage::RestartPushNotificationsLRP:
+            {
+                THROW_IF_WIN32_BOOL_FALSE(LogInstallerFailureEventWithResourceId(EVENTLOG_WARNING_TYPE, hresult, L"Restarting Push Notifications Long Running Process"));
+                break;
+            }
+            case InstallStage::ProvisionPackage:
+            {
+                WCHAR customProvisionMessage[1024]{};
+                auto provisionActivityId{ winrt::to_hstring(*m_activity.Id()) };
+                auto customProvisionMessageFormat{ L"Provisioning Package %s (Activity Id:%s)" };
+                FAIL_FAST_IF_FAILED(StringCchPrintfW(customProvisionMessage, ARRAYSIZE(customProvisionMessage), customProvisionMessageFormat, provisionActivityId));
+                THROW_IF_WIN32_BOOL_FALSE(LogInstallerFailureEventWithResourceId(EVENTLOG_WARNING_TYPE, hresult, customProvisionMessage));
                 break;
             }
             default:
                 break;
         }
+    }
+    return false;
+}
+
+// This is Log with eventLog type and custom message provided by the caller and that will include resourceId.
+BOOL WindowsAppRuntimeInstaller::InstallActivity::Context::LogInstallerFailureEventWithResourceId(const WORD eventLogType, const HRESULT& hresult, PCWSTR failedComponentMessageFormat, const PCWSTR resourceId)
+{
+    DWORD eventId{ static_cast<DWORD>(hresult) };
+    if (m_hEventLog)
+    {
+        WCHAR failedComponentMessage[512]{};
+        if (resourceId)
+        {
+            FAIL_FAST_IF_FAILED(StringCchPrintfW(failedComponentMessage, ARRAYSIZE(failedComponentMessage), failedComponentMessageFormat, resourceId));
+        }
+
+        WCHAR message[1024]{};
         PCWSTR messageFormat{ L"Error 0x%08X: Windows App Runtime Installer (Activity ID: %s) failed in %s" };
-        wchar_t szInstallerActivityId[64] = { 0 };
-        std::ignore = StringFromGUID2(*m_activity.Id(), szInstallerActivityId, 64);
-        FAIL_FAST_IF_FAILED(StringCchPrintfW(message, ARRAYSIZE(message), messageFormat, hresult, szInstallerActivityId, message));
-        PCWSTR messageStrings[1]{ message };
-        return ReportEventW(m_hEventLog, EVENTLOG_ERROR_TYPE, 0, eventId, nullptr, ARRAYSIZE(messageStrings), 0, messageStrings, nullptr);
-    }
-    return false;
-}
+        auto installerActivityId = winrt::to_hstring(*m_activity.Id());
+        FAIL_FAST_IF_FAILED(StringCchPrintfW(message, ARRAYSIZE(message), messageFormat, hresult, installerActivityId, (resourceId ? failedComponentMessage : failedComponentMessageFormat)));
 
-// This is Warning Log
-BOOL WindowsAppRuntimeInstaller::InstallActivity::Context::LogInstallerRestartPushNotificationsLRPFailureEvent(const HRESULT& hresult)
-{
-    DWORD eventId{ static_cast<DWORD>(hresult) };
-    if (m_hEventLog)
-    {
-        WCHAR message[1024]{};
-        PCWSTR messageFormat{ L"Error 0x%08X: Windows App Runtime Installer (Activity ID: %s) failed in restarting Push Notificiations Long Running Process" };
-        wchar_t szInstallerActivityId[64] = { 0 };
-        std::ignore = StringFromGUID2(*m_activity.Id(), szInstallerActivityId, 64);
-        FAIL_FAST_IF_FAILED(StringCchPrintfW(message, ARRAYSIZE(message), messageFormat, hresult, szInstallerActivityId));
         PCWSTR messageStrings[1]{ message };
-        return ReportEventW(m_hEventLog, EVENTLOG_WARNING_TYPE, 0, eventId, nullptr, ARRAYSIZE(messageStrings), 0, messageStrings, nullptr);
-    }
-    return false;
-}
-
-// This is Warning Log
-BOOL WindowsAppRuntimeInstaller::InstallActivity::Context::LogInstallerProvisioningFailureEvent(const HRESULT& hresult, PCWSTR currentResourceId)
-{
-    DWORD eventId{ static_cast<DWORD>(hresult) };
-    if (m_hEventLog)
-    {
-        WCHAR message[1024]{};
-        PCWSTR messageFormat{ L"Error 0x%08X: Windows App Runtime Installer (Activity ID: %s) failed in Provisioning Package (Activity Id:%s) for Package: %s" };
-        wchar_t szInstallerActivityId[64] = { 0 };
-        std::ignore = StringFromGUID2(*m_activity.Id(), szInstallerActivityId, 64);
-        wchar_t szDeploymentActivityId[64] = { 0 };
-        std::ignore = StringFromGUID2(m_deploymentErrorActivityId, szDeploymentActivityId, 64);
-        FAIL_FAST_IF_FAILED(StringCchPrintfW(message, ARRAYSIZE(message), messageFormat, hresult, szInstallerActivityId, szDeploymentActivityId, currentResourceId));
-        PCWSTR messageStrings[1]{ message };
-        return ReportEventW(m_hEventLog, EVENTLOG_WARNING_TYPE, 0, eventId, nullptr, ARRAYSIZE(messageStrings), 0, messageStrings, nullptr);
+        return ReportEventW(m_hEventLog, eventLogType, 0, eventId, nullptr, ARRAYSIZE(messageStrings), 0, messageStrings, nullptr);
     }
     return false;
 }

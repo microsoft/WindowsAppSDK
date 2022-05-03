@@ -126,17 +126,7 @@ int wmain(int argc, wchar_t *argv[])
         {
             std::wcerr << "One or more install operations failed. Result: 0x" << std::hex << deployPackagesResult << std::endl;
 
-            LOG_IF_WIN32_BOOL_FALSE(installActivityContext.LogInstallerFailureEvent(
-                deployPackagesResult,
-                static_cast<UINT32>(installActivityContext.GetLastFailure().type),
-                installActivityContext.GetLastFailure().file.c_str(),
-                installActivityContext.GetLastFailure().lineNumer,
-                installActivityContext.GetLastFailure().message.c_str(),
-                static_cast<UINT32>(installActivityContext.GetInstallStage()),
-                installActivityContext.GetCurrentResourceId().c_str(),
-                installActivityContext.GetDeploymentErrorExtendedHResult(),
-                installActivityContext.GetDeploymentErrorText().c_str(),
-                installActivityContext.GetDeploymentErrorActivityId()));
+            LOG_IF_WIN32_BOOL_FALSE(installActivityContext.LogInstallerFailureEvent(deployPackagesResult));
 
             installActivityContext.GetActivity().StopWithResult(
                 deployPackagesResult,

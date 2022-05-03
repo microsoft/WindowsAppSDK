@@ -41,14 +41,10 @@ namespace WindowsAppRuntimeInstaller
     {
         PackageManager packageManager;
 
-        auto GetDeploymentOptions = [](bool forceDeployment)
-        {
-            return (forceDeployment ?
+        const auto deploymentOptions{ forceDeployment ?
                 winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
-                winrt::Windows::Management::Deployment::DeploymentOptions::None);
-        };
+                winrt::Windows::Management::Deployment::DeploymentOptions::None };
 
-        const auto deploymentOptions{ GetDeploymentOptions(forceDeployment) };
         const auto deploymentOperation{ packageManager.AddPackageAsync(packageUri, nullptr, DeploymentOptions::None) };
         deploymentOperation.get();
         if (deploymentOperation.Status() != AsyncStatus::Completed)
@@ -83,8 +79,9 @@ namespace WindowsAppRuntimeInstaller
             const auto deploymentResult{ deploymentOperation.GetResults() };
             WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetDeploymentErrorActivityId(deploymentResult.ActivityId());
 
-            WindowsAppRuntimeInstaller::InstallActivity::Context::Get().LogInstallerProvisioningFailureEvent(deploymentOperation.ErrorCode(), packageFamilyName.c_str());
-            return static_cast<HRESULT>(deploymentOperation.ErrorCode());
+            HRESULT errorCode{ static_cast<HRESULT>(deploymentOperation.ErrorCode()) };
+            WindowsAppRuntimeInstaller::InstallActivity::Context::Get().LogInstallerFailureEvent(errorCode);
+            return errorCode;
         }
         return S_OK;
     }
