@@ -84,6 +84,9 @@ build_asset_registry_base_uri will be pointed at the dotnet's maestro uri. We wa
 WindowsAppSDK's Maestro Uri.
 build_asset_registry_base_uri=https://reunion-maestro-prod.westus2.cloudapp.azure.com/
 
+NOTE: To make maestro changes to configure azure devops repositories, you'll need the corresponding
+PAT from the correct organization that the repositories are under. 
+
 Once these steps are done and you are ready to use the darc client to configure your branches, 
 channels, and subscriptions.
 You may refer https://github.com/dotnet/arcade/blob/main/Documentation/Darc.md for more in-depth 
