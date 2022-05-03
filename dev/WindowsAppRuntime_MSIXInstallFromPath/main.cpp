@@ -249,14 +249,9 @@ HRESULT AddPackage(PCWSTR path, const std::wstring& filename, bool forceDeployme
     const auto packagePathUri{ winrt::Windows::Foundation::Uri(packagePath.c_str()) };
     winrt::Windows::Management::Deployment::PackageManager packageManager;
 
-    auto GetDeploymentOptions = [](bool forceDeployment)
-    {
-        return (forceDeployment ?
+    const auto options{ forceDeployment ?
             winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
-            winrt::Windows::Management::Deployment::DeploymentOptions::None);
-    };
-
-    const auto options{ GetDeploymentOptions(forceDeployment) };
+            winrt::Windows::Management::Deployment::DeploymentOptions::None };
     auto deploymentResult{ packageManager.AddPackageAsync(packagePathUri, nullptr, options).get() };
     return deploymentResult.ExtendedErrorCode();
 }

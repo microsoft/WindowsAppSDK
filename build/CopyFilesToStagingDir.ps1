@@ -48,6 +48,7 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windo
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\MsixDynamicDependency.h $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\wil_msixdynamicdependency.h $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\RestartAgent\RestartAgent.exe $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\DeploymentAgent\DeploymentAgent.exe $FullPublishDir\Microsoft.WindowsAppRuntime\
 
 #
 PublishFile $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.exe $FullPublishDir\DynamicDependency.DataStore\
@@ -76,6 +77,7 @@ PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager\DynamicDependencyL
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManagerShadow\DynamicDependencyLifetimeManagerShadow.pdb $symbolsOutputDir
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.pdb $symbolsOutputDir
 PublishFile $FullBuildOutput\RestartAgent\RestartAgent.pdb $symbolsOutputDir
+PublishFile $FullBuildOutput\DeploymentAgent\DeploymentAgent.pdb $symbolsOutputDir
 
 # Copy files to Full Nuget package (alphabetical by category)
 #

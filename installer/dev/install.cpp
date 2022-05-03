@@ -41,14 +41,10 @@ namespace WindowsAppRuntimeInstaller
     {
         PackageManager packageManager;
 
-        auto GetDeploymentOptions = [](bool forceDeployment)
-        {
-            return (forceDeployment ?
+        const auto deploymentOptions{ forceDeployment ?
                 winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
-                winrt::Windows::Management::Deployment::DeploymentOptions::None);
-        };
+                winrt::Windows::Management::Deployment::DeploymentOptions::None };
 
-        const auto deploymentOptions{ GetDeploymentOptions(forceDeployment) };
         const auto deploymentOperation{ packageManager.AddPackageAsync(packageUri, nullptr, DeploymentOptions::None) };
         deploymentOperation.get();
         if (deploymentOperation.Status() != AsyncStatus::Completed)
