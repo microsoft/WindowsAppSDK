@@ -403,7 +403,7 @@ and release 1.x...
 
 * WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
 * WARmain: `MicrosoftCorporationII.WinAppRuntime.Main.<rmajor>.<rminor>[-shorttag]`
-* WARmain: `MicrosoftCorporationII.WinAppRuntime.Singleton[-shorttag]`
+* WARsingleton: `MicrosoftCorporationII.WinAppRuntime.Singleton[-shorttag]`
 * WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
 
 where
@@ -435,21 +435,21 @@ This leads to package Name length issues even for common cases:
 | --- | :--- | :---: |
 |WARfwk |Microsoft.WindowsAppRuntime.1.15-preview1|41|
 |WARmain|Microsoft.WindowsAppRuntime.Main.1.15-preview1|46|
-|WARmain|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
+|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
 |WARddlm|Microsoft.WinAppRuntime.DDLM.1.15.12345.24680-arm64-preview1|**<span style="color:red">64</span>**|
 
 |Package|Min|MinLength|
 | --- | :--- | :---: |
 |WARfwk |Microsoft.WindowsAppRuntime.1.0-preview1|40|
 |WARmain|Microsoft.WindowsAppRuntime.Main.1.0-preview1|45|
-|WARmain|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
+|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
 |WARddlm|Microsoft.WinAppRuntime.DDLM.1.0.0.0-arm64-preview1|**<span style="color:red">52</span>**|
 
 |Package|Max|MaxLength|
 | --- | :--- | :---: |
 |WARfwk |Microsoft.WindowsAppRuntime.65535.65535-preview1|48|
 |WARmain|Microsoft.WindowsAppRuntime.Main.65535.65535-preview1|53|
-|WARmain|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
+|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
 |WARddlm|Microsoft.WinAppRuntime.DDLM.65535.65535.65535.65535-arm64-preview1|**<span style="color:red">71</span>**|
 
 Possible options we can use to shorten package Name:
@@ -516,7 +516,7 @@ length constraints. The specific packages Names in Windows App SDK 1.0:
 
 * WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
 * WARmain: `MicrosoftCorporationII.WinAppRuntime.Main.<rmajor>.<rminor>[-shorttag]`
-* WARmain: `MicrosoftCorporationII.WinAppRuntime.Singleton[-shorttag]`
+* WARsingleton: `MicrosoftCorporationII.WinAppRuntime.Singleton[-shorttag]`
 * WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
 
 See [2.5. Decision 5: Package Names](#25-decision-5-package-names) for more details.
