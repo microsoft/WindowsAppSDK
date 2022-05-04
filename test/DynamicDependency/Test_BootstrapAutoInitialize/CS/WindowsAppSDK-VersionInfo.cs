@@ -49,7 +49,7 @@ namespace Microsoft.WindowsAppSDK
             }
             public class Singleton
             {
-                public const string PackageFamilyName = "Microsoft.WindowsAppRuntime.Singleton-preview1_8wekyb3d8bbwe";
+                public const string PackageFamilyName = "MicrosoftCorporationII.WinAppRuntime.Singleton-p1_8wekyb3d8bbwe";
             }
         }
     }
