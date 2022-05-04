@@ -82,7 +82,7 @@ Windows App SDK 1.0 has 4 MSIX packages
 
 * `Microsoft.WindowsAppRuntime` aka **WARfwk**
 * `MicrosoftCorporationII.WinAppRuntime.Main` aka **WARmain**
-* `Microsoft.WindowsAppRuntime.Singleton` aka **WARsingleton**
+* `MicrosoftCorporationII.WinAppRuntime.Singleton` aka **WARsingleton**
 * `Microsoft.WinAppRuntime.DDLM` aka **WARddlm**
 
 WARsingleton supplements WARmain to provide a mechanism for features needing singular global
@@ -403,6 +403,7 @@ and release 1.x...
 
 * WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
 * WARmain: `MicrosoftCorporationII.WinAppRuntime.Main.<rmajor>.<rminor>[-shorttag]`
+* WARmain: `MicrosoftCorporationII.WinAppRuntime.Singleton[-shorttag]`
 * WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
 
 where
@@ -515,7 +516,7 @@ length constraints. The specific packages Names in Windows App SDK 1.0:
 
 * WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
 * WARmain: `MicrosoftCorporationII.WinAppRuntime.Main.<rmajor>.<rminor>[-shorttag]`
-* WARmain: `Microsoft.WindowsAppRuntime.Singleton[-tag]`
+* WARmain: `MicrosoftCorporationII.WinAppRuntime.Singleton[-shorttag]`
 * WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
 
 See [2.5. Decision 5: Package Names](#25-decision-5-package-names) for more details.
