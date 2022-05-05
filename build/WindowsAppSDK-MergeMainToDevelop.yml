@@ -11,12 +11,11 @@ jobs:
   pool: $(ProjectReunionBuildPool)
   steps:
   - task: CmdLine@2
-    displayName: 'Run DMS'
     inputs:
       script: |
         git checkout develop
-        git config user.name ${{ parameters.UserName }}
-        git config user.email ${{ parameters.UserEmail }}
+        git config user.name "reunion-maestro-bot"
+        git config user.email "reunion-maestro-bot@microsoft.com"
         git config pull.rebase false
         git pull origin main
         git push
