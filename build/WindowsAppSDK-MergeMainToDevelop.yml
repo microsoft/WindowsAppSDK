@@ -1,7 +1,11 @@
 name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 parameters:
-  UserName: "reunion-maestro-bot"
-  UserEmail: "reunion-maestro-bot@microsoft.com"
+  - name: "UserName"
+    type: string
+    default: "reunion-maestro-bot"
+  - name: "UserEmail"
+    type: string
+    default: "reunion-maestro-bot@microsoft.com"
 jobs:
 - job: Merge
   pool: $(ProjectReunionBuildPool)
