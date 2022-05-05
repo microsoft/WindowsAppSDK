@@ -1,0 +1,14 @@
+name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+jobs:
+- job: Merge
+  pool: $(ProjectReunionBuildPool)
+  steps:
+  - task: CmdLine@2
+    displayName: 'Run DMS'
+    inputs:
+      script: |
+        git checkout develop
+        git config user.name "Automerge Bot"
+        git config user.email "bot@example.com"
+        git config pull.rebase false
+        git pull origin main
