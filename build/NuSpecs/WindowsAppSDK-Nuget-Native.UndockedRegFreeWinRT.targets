@@ -2,7 +2,9 @@
 
     <Target Name="GenerateUndockedRegFreeWinRTCpp" BeforeTargets="ClCompile">
         <ItemGroup>
-            <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\UndockedRegFreeWinRT-AutoInitializer.cpp" />
+            <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\UndockedRegFreeWinRT-AutoInitializer.cpp">
+                <PrecompiledHeader>NotUsing</PrecompiledHeader>
+            </ClCompile>
         </ItemGroup>
     </Target>
 
