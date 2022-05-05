@@ -1,4 +1,7 @@
 name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+parameters:
+  UserName: "reunion-maestro-bot"
+  UserEmail: "reunion-maestro-bot@microsoft.com"
 jobs:
 - job: Merge
   pool: $(ProjectReunionBuildPool)
@@ -8,7 +11,8 @@ jobs:
     inputs:
       script: |
         git checkout develop
-        git config user.name "Automerge Bot"
-        git config user.email "bot@example.com"
+        git config user.name ${{ parameters.UserName }}
+        git config user.email ${{ parameters.UserEmail }}
         git config pull.rebase false
         git pull origin main
+        git push
