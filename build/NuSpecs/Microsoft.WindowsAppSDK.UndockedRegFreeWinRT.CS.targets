@@ -2,7 +2,7 @@
 
     <Target Name="GenerateUndockedRegFreeWinRTCS" BeforeTargets="BeforeCompile">
         <ItemGroup>
-            <Compile Include="$(MSBuildThisFileDirectory)..\include\MddUndockedRegFreeWinRT-AutoInitializer.cs" />
+            <Compile Include="$(MSBuildThisFileDirectory)..\include\UndockedRegFreeWinRT-AutoInitializer.cs" />
         </ItemGroup>
     </Target>
 
