@@ -22,18 +22,18 @@ public:
         bool, forceDeployment,
         GUID, callerActivityId);
 
-	DEFINE_COMPLIANT_CRITICAL_DATA_EVENT_PARAM1(
-		FailedDueToBadArguments,
-		PDT_ProductAndServicePerformance,
-		UINT32, argsCount);
-
-	DEFINE_COMPLIANT_CRITICAL_DATA_EVENT_PARAM7(
-		FailedInDeployment,
+    DEFINE_COMPLIANT_CRITICAL_DATA_EVENT_PARAM1(
+        FailedDueToBadArguments,
         PDT_ProductAndServicePerformance,
-		HRESULT, hresult,
-		PCWSTR, packagePath,
-		bool, forceDeployment,
-		GUID, callerActivityId,
+        UINT32, argsCount);
+
+    DEFINE_COMPLIANT_CRITICAL_DATA_EVENT_PARAM7(
+        FailedInDeployment,
+        PDT_ProductAndServicePerformance,
+        HRESULT, hresult,
+        PCWSTR, packagePath,
+        bool, forceDeployment,
+        GUID, callerActivityId,
         HRESULT, deploymentExtendedError,
         PCWSTR, deploymentErrorMessage,
         GUID, deploymentActivityId);

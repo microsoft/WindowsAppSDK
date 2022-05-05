@@ -114,7 +114,7 @@ SDK 1.0, 1.1 and 2.0 (Stable) are installed on an x86 system, the user will have
 * MicrosoftCorporationII.WinAppRuntime.Main.1.0
 * MicrosoftCorporationII.WinAppRuntime.Main.1.1
 * MicrosoftCorporationII.WinAppRuntime.Main.2.0
-* Microsoft.WindowsAppRuntime.Singleton (version 2.0)
+* MicrosoftCorporationII.WinAppRuntime.Singleton (version 2.0)
 * Microsoft.WinAppRuntime.DDLM.0.146.711.0-x8
 * Microsoft.WinAppRuntime.DDLM.1000.328.1510.0-x8
 * Microsoft.WinAppRuntime.DDLM.0.510.333.0-x8
@@ -161,7 +161,7 @@ The following SubName values are used:
 |-|-|-|
 | | Framework | Microsoft.WindowsAppRuntime.1.0-experimental1 |
 | Main | Main | MicrosoftCorporationII.WinAppRuntime.Main.1.0-e1 |
-| Singleton | Singleton | Microsoft.WindowsAppRuntime.Singleton-experimental1 |
+| Singleton | Singleton | MicrosoftCorporationII.WinAppRuntime.Singleton-e1 |
 | DDLM | Dynamic Dependency Lifetime Manager (DDLM) | Microsoft.WinAppRuntime.DDLM.0.146.711.0-x6-e1 |
 
 ## 3.2. Package Naming - Main
@@ -179,9 +179,9 @@ ShortVersionTag is derived from a VersionTag by combining the 1st letter and the
 
 ## 3.3. Package Naming - Singleton
 
-The Singleton package follows a different naming scheme
+The Singleton package follows a naming scheme similar to the Main package:
 
-* Name = Microsoft.WindowsAppRuntime.Singleton[-versiontag]
+* Name = MicrosoftCorporationII.WinAppRuntime.Singleton[-ShortVersionTag]
 
 The package family is the same across all versions of Windows App SDK. As a main package, only one
 Singleton package can be registered at a time for a user and by its nature it's meant to be used
