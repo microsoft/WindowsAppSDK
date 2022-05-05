@@ -99,5 +99,17 @@
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers" ThreadingModel="both" />
         </InProcessServer>
     </Extension>
+    <Extension Category="windows.activatableClass.proxyStub">
+        <ProxyStub ClassId="60FC21B2-B396-4D49-94F0-7555869FB93C">
+          <Path>PushNotificationsLongRunningTask.ProxyStub.dll</Path>
+          <Interface Name="IWpnLrpPlatform" InterfaceId="60FC21B2-B396-4D49-94F0-7555869FB93C"/>
+        </ProxyStub>
+    </Extension>
+    <Extension Category="windows.activatableClass.proxyStub">
+        <ProxyStub ClassId="25604D55-9B17-426F-9D67-2B11B3A65598">
+          <Path>PushNotificationsLongRunningTask.ProxyStub.dll</Path>
+          <Interface Name="IWpnForegroundSink" InterfaceId="25604D55-9B17-426F-9D67-2B11B3A65598"/>
+        </ProxyStub>
+    </Extension>
   </Extensions>
 </Package>
