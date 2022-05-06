@@ -129,9 +129,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 
     inline wil::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
     {
-        wil::com_ptr<INotificationsLongRunningPlatform> platform;
-        THROW_IF_FAILED(CoCreateInstance(CLSID_NotificationsLongRunningPlatform, nullptr, (CLSCTX_LOCAL_SERVER | CLSCTX_ALLOW_LOWER_TRUST_REGISTRATION), IID_PPV_ARGS(&platform)));
-        return platform;
+        winrt::guid clsid{ L"71201C0F-21E1-4B80-945F-7B0A10F90883" };
+        return wil::CoCreateInstance<INotificationsLongRunningPlatform>(clsid, (CLSCTX_LOCAL_SERVER | CLSCTX_ALLOW_LOWER_TRUST_REGISTRATION));
     }
 
     inline bool IsBackgroundTaskBuilderAvailable()
