@@ -30,6 +30,12 @@
     <ClInclude Include="WindowsAppRuntime-Licensing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MddBootstrapTracelogging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MddBootstrapActivity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -42,6 +48,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WindowsAppRuntime-Licensing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MddBootstrapTracelogging.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MddBootstrapActivity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

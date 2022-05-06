@@ -77,8 +77,14 @@
     <MakeMsixInputsWithLocations Include="$(OutDir)..\RestartAgent\RestartAgent.exe">
       <TargetFile>RestartAgent.exe</TargetFile>
     </MakeMsixInputsWithLocations>
-    <MakeMsixInputsWithLocations Include="$(OutDir)..\RestartAgent\RestartAgent.exe">
+    <MakeMsixInputsWithLocations Include="$(OutDir)..\RestartAgent\RestartAgent.pdb">
       <TargetFile>RestartAgent.pdb</TargetFile>
+    </MakeMsixInputsWithLocations>
+    <MakeMsixInputsWithLocations Include="$(OutDir)..\DeploymentAgent\DeploymentAgent.exe">
+      <TargetFile>DeploymentAgent.exe</TargetFile>
+    </MakeMsixInputsWithLocations>
+    <MakeMsixInputsWithLocations Include="$(OutDir)..\DeploymentAgent\DeploymentAgent.pdb">
+      <TargetFile>DeploymentAgent.pdb</TargetFile>
     </MakeMsixInputsWithLocations>
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb" />

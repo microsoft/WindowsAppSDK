@@ -209,6 +209,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 PushNotificationChannelStatus::CompletedFailure);
         }
 
+        HRESULT hr{ S_OK };
+
+        auto logTelemetry{ wil::scope_exit([&]() {
+            PushNotificationTelemetry::LogCreateChannelAsync(hr, remoteId);
+        }) };
+
         auto strong = get_strong();
 
         try
@@ -295,7 +301,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         m_channel = channel;
                     }
 
-                    PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId);
                     co_return winrt::make<PushNotificationCreateChannelResult>(
                         channel,
                         S_OK,
@@ -315,7 +320,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     }
                     else
                     {
-                        PushNotificationTelemetry::ChannelRequestedByApi(channelRequestException.code(), remoteId);
+                        hr = channelRequestException.code();
 
                         co_return winrt::make<PushNotificationCreateChannelResult>(
                             nullptr,
@@ -328,7 +333,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch (...)
         {
-            PushNotificationTelemetry::ChannelRequestedByApi(wil::ResultFromCaughtException(), remoteId);
+            hr = wil::ResultFromCaughtException();
             throw;
         }
     }
@@ -365,6 +370,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
 
         winrt::hresult hr{ S_OK };
+
+        auto logTelemetry{ wil::scope_exit([&]() {
+            PushNotificationTelemetry::LogRegister(hr);
+        }) };
+
         try
         {
             {
@@ -592,7 +602,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             hr = wil::ResultFromCaughtException();
         }
 
-        PushNotificationTelemetry::ActivatorRegisteredByApi(hr);
         THROW_IF_FAILED(hr);
     }
 
@@ -604,6 +613,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
 
         winrt::hresult hr{ S_OK };
+
+        auto logTelemetry{ wil::scope_exit([&]() {
+            PushNotificationTelemetry::LogUnregister(hr);
+        }) };
+
         try
         {
             {
@@ -667,7 +681,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             hr = wil::ResultFromCaughtException();
         }
 
-        PushNotificationTelemetry::ActivatorUnregisteredByApi(hr);
         THROW_IF_FAILED(hr);
     }
 
@@ -677,6 +690,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             return;
         }
+
+        hresult hr = S_OK;
+
+        auto logTelemetry{ wil::scope_exit([&]() {
+            PushNotificationTelemetry::LogUnregisterAll(hr);
+        }) };
 
         bool comActivatorRegistration{ false };
         bool singletonForegroundRegistration{ false };
@@ -691,7 +710,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             Unregister();
         }
 
-        hresult hr = S_OK;
         try
         {
             {
@@ -748,7 +766,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             hr = wil::ResultFromCaughtException();
         }
 
-        PushNotificationTelemetry::ActivatorUnregisteredByApi(hr);
         THROW_IF_FAILED(hr);
     }
 

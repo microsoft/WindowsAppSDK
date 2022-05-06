@@ -94,10 +94,27 @@
     <NMakeCleanCommandLine>REM TODO Clean</NMakeCleanCommandLine>
 
     <MakeMsixOutputFilename>WindowsAppRuntime.Test.Singleton.msix</MakeMsixOutputFilename>
+    <TargetBasename>PushNotificationsLongRunningTask</TargetBasename>
+
+    <StartupExe>$(TargetBasename).StartupTask</StartupExe>
+    <StartupExeDir>$(OutDir)$(StartupExe)</StartupExeDir>
+    <StartupExeFile>$(StartupExeDir)\$(StartupExe).exe</StartupExeFile>
+
+    <TargetExe>$(TargetBasename)</TargetExe>
+    <TargetExeDir>$(OutDir)$(TargetExe)</TargetExeDir>
+    <TargetExeFile>$(TargetExeDir)\$(TargetExe).exe</TargetExeFile>
+
+    <TargetExeProxyStub>$(TargetBasename).ProxyStub</TargetExeProxyStub>
+    <TargetExeProxyStubDir>$(OutDir)$(TargetExeProxyStub)</TargetExeProxyStubDir>
+    <TargetExeProxyStubFile>$(TargetExeProxyStubDir)\$(TargetExeProxyStub).dll</TargetExeProxyStubFile>
   </PropertyGroup>
-  <ItemGroup>
+    <ItemGroup>
     <MakeMsixInputAssets Include="$(MSBuildThisFileDirectory)\Assets\*" />
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)appxmanifest.xml" />
+    <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" />
+    <MakeMsixInputs Include="$(StartupExeFile)" />
+    <MakeMsixInputs Include="$(TargetExeFile)" />
+    <MakeMsixInputs Include="$(TargetExeProxyStubFile)" />
   </ItemGroup>
   <PropertyGroup>
     <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
@@ -106,6 +123,17 @@
   <Import Project="$(RepoRoot)\MakeMsix.targets" />
   <ItemGroup>
     <Xml Include="appxmanifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(RepoRoot)\dev\PushNotifications\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.vcxproj">
+      <Project>{bf3fced0-cadb-490a-93a7-4d90e1f45ab0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(RepoRoot)\dev\PushNotifications\PushNotificationsLongRunningTask.StartupTask\PushNotificationsLongRunningTask.StartupTask.vcxproj">
+      <Project>{1debbff6-ee6e-4944-9de2-35b7a686af42}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(RepoRoot)\dev\PushNotifications\PushNotificationsLongRunningTask\PushNotificationsLongRunningTask.vcxproj">
+      <Project>{1307dd1b-bbe8-4cd0-b1a0-0db6d61eeaa0}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

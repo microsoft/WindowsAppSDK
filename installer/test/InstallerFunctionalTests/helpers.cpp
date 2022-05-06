@@ -23,7 +23,7 @@ namespace WindowsAppRuntimeInstallerTests
 
         if (!ShellExecuteEx(&ei))
         {
-            auto lastError = GetLastError();
+            auto lastError{ GetLastError() };
             VERIFY_ARE_EQUAL(S_OK, HRESULT_FROM_WIN32(lastError));
         }
 
@@ -36,12 +36,12 @@ namespace WindowsAppRuntimeInstallerTests
         const std::wstring installerPath{ GetInstallerPath().c_str() };
         Log::Comment(WEX::Common::String().Format(L"Running installer at: %ws", installerPath.c_str()));
         Log::Comment(WEX::Common::String().Format(L"Arguments: %ws", args.c_str()));
-        auto process = Execute(installerPath, args);
+        auto process{ Execute(installerPath, args) };
 
-        auto waitResult = WaitForSingleObject(process.get(), c_phaseTimeout);
+        auto waitResult{ WaitForSingleObject(process.get(), c_phaseTimeout) };
         if (waitResult != WAIT_OBJECT_0)
         {
-            auto lastError = GetLastError();
+            auto lastError{ GetLastError() };
             VERIFY_ARE_NOT_EQUAL(S_OK, HRESULT_FROM_WIN32(lastError));
         }
 
@@ -55,7 +55,7 @@ namespace WindowsAppRuntimeInstallerTests
     {
         Log::Comment(WEX::Common::String().Format(L"Removing package: %ws", packageName.c_str()));
         PackageManager manager;
-        auto result = manager.RemovePackageAsync(packageName).get();
+        auto result{ manager.RemovePackageAsync(packageName).get() };
         Log::Comment(WEX::Common::String().Format(L"Removal result: 0x%0X", result.ExtendedErrorCode().value));
         if (!ignoreFailures)
         {
@@ -70,7 +70,7 @@ namespace WindowsAppRuntimeInstallerTests
     {
         Log::Comment(WEX::Common::String().Format(L"Trying to remove provisioned package: %ws", packageFamilyName.c_str()));
         PackageManager manager;
-        auto result = manager.DeprovisionPackageForAllUsersAsync(packageFamilyName).get();
+        auto result{ manager.DeprovisionPackageForAllUsersAsync(packageFamilyName).get() };
         Log::Comment(WEX::Common::String().Format(L"Provision removal result: 0x%0X", result.ExtendedErrorCode().value));
     }
 
@@ -90,7 +90,7 @@ namespace WindowsAppRuntimeInstallerTests
     bool IsPackageRegistered(const std::wstring& packageFullName)
     {
         PackageManager manager;
-        auto result = manager.FindPackageForUser(L"", packageFullName);
+        auto result{ manager.FindPackageForUser(L"", packageFullName) };
         Log::Comment(WEX::Common::String().Format(L"Package %ws is %wsregistered", packageFullName.c_str(), result?L"":L"not "));
         return result != nullptr;
     }
@@ -115,13 +115,13 @@ namespace WindowsAppRuntimeInstallerTests
 
     std::filesystem::path GetModulePath(HMODULE hmodule)
     {
-        auto path = GetModuleFileName(hmodule);
+        auto path{ GetModuleFileName(hmodule) };
         return path.remove_filename();
     }
 
     std::filesystem::path GetModuleFileName(HMODULE hmodule)
     {
-        auto moduleFileName = wil::GetModuleFileNameW(hmodule);
+        auto moduleFileName{ wil::GetModuleFileNameW(hmodule) };
         return std::filesystem::path(moduleFileName.get());
     }
 
@@ -136,7 +136,7 @@ namespace WindowsAppRuntimeInstallerTests
 
     std::filesystem::path GetInstallerPath()
     {
-        auto path = GetCommonRootPath();
+        auto path{ GetCommonRootPath() };
         return path /= INSTALLER_EXE_PATH;
     }
 }
