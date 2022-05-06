@@ -24,9 +24,8 @@ inline HRESULT StartupNotificationsLongRunningPlatform()
     {
         try
         {
-            wil::com_ptr<INotificationsLongRunningPlatform> longRunningProcessPlatform
-            { wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
-
+            auto platform{ wil::CoCreateInstance<INotificationsLongRunningPlatform>
+                            (CLSID_NotificationsLongRunningPlatform, (CLSCTX_LOCAL_SERVER | CLSCTX_ALLOW_LOWER_TRUST_REGISTRATION)) };
             break;
         }
         catch (...)
