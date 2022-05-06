@@ -16,14 +16,7 @@ class RuntimeInformation
 public:
     static const std::wstring& GetFrameworkPackageFamilyName()
     {
-        if (!g_test_frameworkPackageFamilyName.empty())
-        {
-            return g_test_frameworkPackageFamilyName;
-        }
-
-        const uint32_t c_frameworkPackageFamilyNameResourceId{ 10002 };
-        static std::wstring frameworkPackageFamilyName{ LoadStringWFromResource(c_frameworkPackageFamilyNameResourceId) };
-        return frameworkPackageFamilyName;
+        return L"TestPackage";
     }
 
 private:
