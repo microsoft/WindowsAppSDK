@@ -1690,7 +1690,7 @@ void DumpPaintElement(std::ostream& out, Indent indent, IDWritePaintReader* read
     {
         DWRITE_MATRIX const& paint = element.paint.transform;
         out << indent << "DWRITE_PAINT_TYPE_TRANSFORM:\n"
-            << indent << PropName{ "transform" } << paint
+            << indent << PropName{ "transform" } << paint << '\n'
             << indent << PropName{ "child" } << '\n';
         WriteChildren(1);
         break;
