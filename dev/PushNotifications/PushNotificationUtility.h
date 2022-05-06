@@ -129,7 +129,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 
     inline wil::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
     {
-        return wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER);
+        wil::com_ptr<INotificationsLongRunningPlatform> platform;
+        THROW_IF_FAILED(CoCreateInstance(CLSID_NotificationsLongRunningPlatform, nullptr, (CLSCTX_LOCAL_SERVER | CLSCTX_ALLOW_LOWER_TRUST_REGISTRATION), IID_PPV_ARGS(&platform)));
+        return platform;
     }
 
     inline bool IsBackgroundTaskBuilderAvailable()
