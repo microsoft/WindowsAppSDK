@@ -2197,13 +2197,15 @@ DEFINE_ENUM_FLAG_OPERATORS(DWRITE_PAINT_ATTRIBUTES)
 struct DWRITE_PAINT_COLOR
 {
     /// <summary>
-    /// Color value.
+    /// Color value (not premultiplied). See the colorAttributes member for information about how
+    /// the color is determined.
     /// </summary>
     DWRITE_COLOR_F value;
 
     /// <summary>
-    /// Specifies the palette entry index if the color value comes from the font's color palette.
-    /// Otherwise, this member is DWRITE_NO_PALETTE_INDEX (0xFFFF).
+    /// If the colorAttributes member is DWRITE_PAINT_ATTRIBUTES_USES_PALETTE, this member is
+    /// the index of a palette entry in the selected color palette. Otherwise, this member is
+    /// DWRITE_NO_PALETTE_INDEX (0xFFFF).
     /// </summary>
     UINT16 paletteEntryIndex;
 
@@ -2215,8 +2217,14 @@ struct DWRITE_PAINT_COLOR
     float alphaMultiplier;
 
     /// <summary>
-    /// Flags specifying whether the color value comes from the font's color palette or from the
-    /// client-specified text color.
+    /// Specifies how the color value is determined. If this member is 
+    /// DWRITE_PAINT_ATTRIBUTES_USES_PALETTE, the color value is determined by getting the color at
+    /// paletteEntryIndex in the current color palette. The color's alpha value is then multiplied
+    /// by alphaMultiplier. If a font has multiple color palettes, a client can set the current color
+    /// palette using the IDWritePaintReader::SetColorPaletteIndex method. A client that uses a custom
+    /// palette can use the paletteEntryIndex and alphaMultiplier methods to compute the color. If this
+    /// member is DWRITE_PAINT_ATTRIBUTES_USES_TEXT_COLOR, the color value is equal to the text 
+    /// foreground color, which can be set using the IDWritePaintReader::SetTextColor method.
     /// </summary>
     DWRITE_PAINT_ATTRIBUTES colorAttributes;
 };
