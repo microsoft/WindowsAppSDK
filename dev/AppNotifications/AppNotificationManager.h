@@ -45,6 +45,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri);
     private:
 
+        void RegisterUnpackagedHelper();
+        void RegisterPackagedHelper();
+        void RegisterNotificationCallback(winrt::guid const& comActivatorGuid);
+
         void UnregisterHelper();
 
         wil::unique_com_class_object_cookie m_notificationComActivatorRegistration;
