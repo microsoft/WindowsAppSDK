@@ -93,12 +93,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         return m_activatedEventArgs;
     }
 
-    void AppNotificationManager::RegisterUnpackagedHelper()
+    void AppNotificationManager::RegisterUnpackagedHelper(std::wstring const& displayName, std::wstring const& iconFilePath)
     {
         THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(m_appId.c_str(), GUID_NULL));
 
-        // Future work: glean off the assets from process/shortcuts/default and pass it to the below API
-        winrt::guid storedComActivatorGuid{ RegisterComActivatorGuidAndAssets() };
+        winrt::guid storedComActivatorGuid{ RegisterComActivatorGuidAndAssets(displayName, iconFilePath) };
 
         if (!WindowsAppRuntime::SelfContained::IsSelfContained())
         {
@@ -168,7 +167,15 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                 m_registering = false;
             }) };
 
-            AppModel::Identity::IsPackagedProcess() ? RegisterPackagedHelper() : RegisterUnpackagedHelper();
+            if (AppModel::Identity::IsPackagedProcess())
+            {
+                RegisterPackagedHelper();
+            }
+            else
+            {
+                AppNotificationAssets assets{ GetAssetsHelper() };
+                RegisterUnpackagedHelper(assets.displayName, assets.iconFilePath);
+            }
         }
         catch (...)
         {
@@ -317,7 +324,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                     }
                     else
                     { 
-                        registeredClsid = RegisterComActivatorGuidAndAssets();
+                        //registeredClsid = RegisterComActivatorGuidAndAssets();
+                        std::wstring registeredClsidString;
+                        THROW_IF_FAILED(GetActivatorGuid(registeredClsidString));
+
+                        // Remove braces around the guid string
+                        registeredClsid = winrt::guid(registeredClsidString.substr(1, registeredClsidString.size() - 2));
                     }
 
                     auto notificationCallback{ winrt::create_instance<INotificationActivationCallback>(registeredClsid, CLSCTX_ALL) };

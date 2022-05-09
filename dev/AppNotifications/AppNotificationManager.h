@@ -45,7 +45,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri);
     private:
 
-        void RegisterUnpackagedHelper();
+        void RegisterUnpackagedHelper(std::wstring const& displayName, std::wstring const& iconFilePath);
         void RegisterPackagedHelper();
         void RegisterNotificationCallback(winrt::guid const& comActivatorGuid);
 
