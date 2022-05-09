@@ -1394,7 +1394,7 @@ HRESULT STDMETHODCALLTYPE TextRenderer::DrawGlyphRun(
 
         // Determine the brush to use for this color glyph run.
         ID2D1Brush* runBrush;
-        if (colorGlyphRun->paletteIndex == 0xFFFF)
+        if (colorGlyphRun->paletteIndex == DWRITE_NO_PALETTE_INDEX)
         {
             // Special palette index meaning use the text foreground brush.
             runBrush = foregroundBrush;
@@ -1518,7 +1518,7 @@ textual representation of its paint tree. Following is an example of the output:
                           - color: { 1, 0, 0, 1 }
 ```
 
-For convenience, the sample defines `Indent` and `PropName` helper types with assocaited stream
+For convenience, the sample defines `Indent` and `PropName` helper types with associated stream
 output opreators. It also defines stream output operators for various API types. These helper types
 and operators are shown at the end of this section.
 
@@ -1559,26 +1559,15 @@ void DumpPaintElement(std::ostream& out, Indent indent, IDWritePaintReader* read
     // Helper to write gradient information, for gradient paint types.
     auto WriteGradient = [&](D2D1_EXTEND_MODE extendMode, uint32_t gradientStopCount)
     {
-        std::vector<D2D1_GRADIENT_STOP> stops;
-        stops.resize(gradientStopCount);
-        THROW_IF_FAILED(reader->GetGradientStops(0, gradientStopCount, /*out*/ stops.data()));
-
         out << indent << PropName{ "extendMode" } << extendMode << '\n';
         out << indent << PropName{ "gradientStops" } << '\n';
-        indent.value++;
-        for (auto& stop : stops)
-        {
-            out << indent << "D2D1_GRADIENT_STOP:\n"
-                << indent << PropName{ "position" } << stop.position << '\n'
-                << indent << PropName{ "color" } << stop.color << '\n';
-        }
-        indent.value--;
+        DumpGradientStops(out, indent + 1, reader, gradientStopCount);
     };
 
     // Helper to recursively call DumpPaintElement for a child paint element.
     auto Recurse = [&]()
     {
-        DumpPaintElement(out, Indent{ indent.value + 1 }, reader, element);
+        DumpPaintElement(out, indent + 1, reader, element);
     };
 
     // Helper to write the specified number of children.
@@ -1586,16 +1575,16 @@ void DumpPaintElement(std::ostream& out, Indent indent, IDWritePaintReader* read
     {
         if (childCount != 0)
         {
-            THROW_IF_FAILED(reader->MoveToFirstChild(&element));
+            HR(reader->MoveToFirstChild(&element));
             Recurse();
 
             for (uint32_t i = 1; i < childCount; i++)
             {
-                THROW_IF_FAILED(reader->MoveToNextSibling(&element));
+                HR(reader->MoveToNextSibling(&element));
                 Recurse();
             }
 
-            THROW_IF_FAILED(reader->MoveToParent());
+            HR(reader->MoveToParent());
         }
     };
 
@@ -1713,6 +1702,26 @@ void DumpPaintElement(std::ostream& out, Indent indent, IDWritePaintReader* read
 }
 ```
 
+The `DumpPaintElement` function calls the following `DumpGradientStops` function to output the array
+of gradient stops for a paint element:
+
+```c++
+void DumpGradientStops(std::ostream& out, Indent indent, IDWritePaintReader* reader, uint32_t gradientStopCount)
+{
+    std::vector<D2D1_GRADIENT_STOP> stops;
+    stops.resize(gradientStopCount);
+    HR(reader->GetGradientStops(0, gradientStopCount, /*out*/ stops.data()));
+
+    for (auto& stop : stops)
+    {
+        out << indent << "D2D1_GRADIENT_STOP:\n"
+            << indent << PropName{ "position" } << stop.position << '\n'
+            << indent << PropName{ "color" } << stop.color << '\n';
+    }
+}
+
+```
+
 The `Indent` helper type represents the indent level. Its associated stream operator outputs four
 spaces for each level of indent:
 
@@ -1725,6 +1734,10 @@ std::ostream& operator<<(std::ostream& out, Indent const& indent)
         out << "    ";
     }
     return out;
+}
+Indent operator+(Indent lhs, int rhs)
+{
+    return Indent{ lhs.value + rhs };
 }
 ```
 
@@ -2123,7 +2136,7 @@ defined in the included version of `dcommon.h`. This is accomplished as follows 
 /// determines what DWRITE_PAINT_TYPE values might be returned.
 /// </summary>
 /// <remarks>
-/// See the DWRITE_PAINT_TYPE enumration for which paint types are required for each
+/// See the DWRITE_PAINT_TYPE enumeration for which paint types are required for each
 /// feature level.
 /// </remarks>
 enum DWRITE_PAINT_FEATURE_LEVEL
@@ -2360,8 +2373,7 @@ struct DWRITE_PAINT_ELEMENT
         /// <remarks>
         /// This corresponds to a PaintSolid or PaintVarSolid record in the OpenType COLR table.
         /// </remarks>
-        typedef DWRITE_PAINT_COLOR PAINT_SOLID;
-        PAINT_SOLID solid;
+        DWRITE_PAINT_COLOR solid;
 
         /// <summary>
         /// Valid for paint elements of type DWRITE_PAINT_TYPE_LINEAR_GRADIENT.
@@ -2470,7 +2482,7 @@ struct DWRITE_PAINT_ELEMENT
         } radialGradient;
 
         /// <summary>
-        /// Valid for paint elements of type DWRITE_PAINT_TYPE_SWEEPL_GRADIENT.
+        /// Valid for paint elements of type DWRITE_PAINT_TYPE_SWEEP_GRADIENT.
         /// Specifies a sweep gradient used to fill the current shape or clip.
         /// This paint element has no child elements.
         /// </summary>
@@ -2564,8 +2576,7 @@ struct DWRITE_PAINT_ELEMENT
         /// <remarks>
         /// This corresponds to paint formats 12 through 31 in the OpenType COLR table.
         /// </remarks>
-        typedef DWRITE_MATRIX PAINT_TRANSFORM;
-        PAINT_TRANSFORM transform;
+        DWRITE_MATRIX transform;
 
         /// <summary>
         /// Valid for paint elements of type DWRITE_PAINT_TYPE_COMPOSITE.
