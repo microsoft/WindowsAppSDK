@@ -91,7 +91,6 @@ winrt::PushNotificationChannel RequestChannel()
 
 int main()
 {
-    std::cin.ignore();
     if (!Test::AppModel::IsPackagedProcess())
     {
         constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppRuntime.Test.DDLM" };
@@ -113,7 +112,7 @@ int main()
 
     winrt::com_ptr<IInspectable> deviceIdentifier;
 
-     RoActivateInstance(fakeClass, deviceIdentifier.put());
+    RoActivateInstance(fakeClass, deviceIdentifier.put());
 
     winrt::PushNotificationManager manager{ winrt::PushNotificationManager::Default() };
     // Register Push Event for Foreground
