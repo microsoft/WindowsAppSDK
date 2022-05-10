@@ -428,8 +428,8 @@ namespace UndockedRegFreeWinRT
         _COM_Outptr_opt_result_maybenull_ IMetaDataImport2** ppMetaDataImport,
         _Out_opt_ mdTypeDef* pmdTypeDef)
     {
-        // Walk the dynamic package graph looking for the requested metadata
-        const uint32_t filter{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_IS_IN_RELATED_SET | PACKAGE_FILTER_DYNAMIC };
+        // Walk the package graph looking for the requested metadata
+        const uint32_t filter{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_IS_IN_RELATED_SET | PACKAGE_FILTER_DYNAMIC | PACKAGE_FILTER_STATIC };
         uint32_t bufferLength{};
         uint32_t packagesCount{};
         bool processHasStaticPackageGraph{};
