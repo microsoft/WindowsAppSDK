@@ -39,8 +39,8 @@
 #define WINDOWSAPPSDK_RUNTIME_PACKAGE_FRAMEWORK_PACKAGEFAMILYNAME_W "Microsoft.WindowsAppRuntime.1.1-preview1_8wekyb3d8bbwe"
 #define WINDOWSAPPSDK_RUNTIME_PACKAGE_MAIN_PACKAGEFAMILYNAME        "MicrosoftCorporationII.WinAppRuntime.Main.1.1-p1_8wekyb3d8bbwe"
 #define WINDOWSAPPSDK_RUNTIME_PACKAGE_MAIN_PACKAGEFAMILYNAME_W      L"MicrosoftCorporationII.WinAppRuntime.Main.1.1-p1_8wekyb3d8bbwe"
-#define WINDOWSAPPSDK_RUNTIME_PACKAGE_SINGLETON_PACKAGEFAMILYNAME   "Microsoft.WindowsAppRuntime.Singleton-preview1_8wekyb3d8bbwe"
-#define WINDOWSAPPSDK_RUNTIME_PACKAGE_SINGLETON_PACKAGEFAMILYNAME_W L"Microsoft.WindowsAppRuntime.Singleton-preview1_8wekyb3d8bbwe"
+#define WINDOWSAPPSDK_RUNTIME_PACKAGE_SINGLETON_PACKAGEFAMILYNAME   "MicrosoftCorporationII.WinAppRuntime.Singleton-p1_8wekyb3d8bbwe"
+#define WINDOWSAPPSDK_RUNTIME_PACKAGE_SINGLETON_PACKAGEFAMILYNAME_W L"MicrosoftCorporationII.WinAppRuntime.Singleton-p1_8wekyb3d8bbwe"
 
 #if defined(__cplusplus)
 namespace Microsoft::WindowsAppSDK
@@ -89,7 +89,7 @@ namespace Microsoft::WindowsAppSDK
             }
             namespace Singleton
             {
-                constexpr PCWSTR PackageFamilyName = L"Microsoft.WindowsAppRuntime.Singleton-preview1_8wekyb3d8bbwe";
+                constexpr PCWSTR PackageFamilyName = L"MicrosoftCorporationII.WinAppRuntime.Singleton-p1_8wekyb3d8bbwe";
             }
         }
     }

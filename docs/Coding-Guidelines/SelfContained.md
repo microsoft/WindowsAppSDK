@@ -8,18 +8,18 @@ See the [Self-Contained spec](https://github.com/microsoft/WindowsAppSDK/pull/12
 
 ## How to detect if Windows App SDK is deployed Self-Contained?
 
-If necessary, use `Microsoft::WindowsAppSDK::SelfContained::IsSelfContained()` to detect if the
+If necessary, use `WindowsAppRuntime::SelfContained::IsSelfContained()` to detect if the
 current process is using WindowsAppSDK deployed via SelfContained (vs MSIX).
 
 **NOTE:** The implementation assumes Windows App SDK is in use. Failure to detect
 WindowsAppSDK/MSIX is thus assumed to be WindowsAppSDK/SelfContained.
 
 ```c++
-#include <Microsoft.WindowsAppSDK.SelfContained.h>
+#include <WindowsAppRuntime.SelfContained.h>
 
 void JustDoIt()
 {
-    if (::Microsoft::WindowsAppSDK::SelfContained::IsSelfContained())
+    if (::WindowsAppRuntime::SelfContained::IsSelfContained())
     {
         printf("WindowsAppSDK/SelfContained");
     }
@@ -33,14 +33,15 @@ void JustDoIt()
 ### Unit and Functional Testing
 
 Unit and Functional Tests using alternative test packages (not Integration Tests using the real
-MSIX packages) need to call `::WindowsAppRuntime::SelfContained::TestInitialize()` with a nonexistent
+MSIX packages) need to call `::WindowsAppRuntime::VersionInfo::TestInitialize()` with a nonexistent
 alternative (test) framework package family name **BEFORE** calling `IsSelfContained()` to simulate
 running in a self-contained deployment.
 
 ```c++
 #include "pch.h"
 
-#include <Microsoft.WindowsAppSDK.SelfContained.h>
+#include <WindowsAppRuntime.SelfContained.h>
+#include <WindowsAppRuntime.VersionInfo.h>
 
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
@@ -59,14 +60,14 @@ namespace Test::MyFeature
         {
             ::TB::SetupPackages();
             ::TB::SetupBootstrap();
-            const auto c_doesNotExistPackageFamilyName{ L"Test.SelfContained.PackageFamilyName.DoesNotExist_1234567890abc" };
-            ::WindowsAppRuntime::SelfContained::TestInitialize(c_doesNotExistPackageFamilyName);
+            const auto c_testFrameworkPackageFamilyName{ L"Test.Framework.PackageFamilyName_1234567890abc" };
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(c_testFrameworkPackageFamilyName);
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassCleanup)
         {
-            ::WindowsAppRuntime::SelfContained::TestShutdown();
+            ::WindowsAppRuntime::VersionInfo::TestShutdown();
             ::TB::CleanupBootstrap();
             ::TB::CleanupPackages();
             return true;
@@ -82,12 +83,12 @@ namespace Test::MyFeature
 Alternatively, replace
 
 ```
-::WindowsAppRuntime::SelfContained::TestInitialize(c_doesNotExistPackageFamilyName);
+::WindowsAppRuntime::VersionInfo::TestInitialize(c_testFrameworkPackageFamilyName);
 ```
 
 with
 ```
-::WindowsAppRuntime::SelfContained::TestInitialize(::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+::WindowsAppRuntime::VersionInfo::TestInitialize(::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
 ```
 
 to simulate running in a non-self-contained environment (i.e. Windows App SDK via MSIX packages).
