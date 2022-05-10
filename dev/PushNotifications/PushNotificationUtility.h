@@ -6,6 +6,7 @@
 #include  "NotificationsLongRunningProcess_h.h"
 #include <winrt/Windows.Foundation.Metadata.h>
 #include "../Common/AppModel.Identity.h"
+#include "../Common/AppModel.PackageGraph.h"
 #include "wil/stl.h"
 #include "wil/win32_helpers.h"
 #include "PushBackgroundTaskInstance.h"
@@ -129,6 +130,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 
     inline wil::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
     {
+        const UINT32 flags{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC | PACKAGE_INFORMATION_BASIC };
+        uint32_t packageInfosCount{};
+        const PACKAGE_INFO* packageInfos{};
+        wil::unique_cotaskmem_ptr<BYTE[]> buffer;
+        THROW_IF_FAILED(::AppModel::PackageGraph::GetCurrentPackageGraph(flags, packageInfosCount, packageInfos, buffer));
         return wil::CoCreateInstance<INotificationsLongRunningPlatform>(CLSID_NotificationsLongRunningPlatform, (CLSCTX_LOCAL_SERVER | CLSCTX_ALLOW_LOWER_TRUST_REGISTRATION));
     }
 
@@ -140,7 +146,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 
     inline bool IsPackagedAppScenario()
     {
-        return AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable();
+        return false;
     }
 
     inline HRESULT GetPackageFullName(wil::unique_cotaskmem_string& packagedFullName) noexcept try

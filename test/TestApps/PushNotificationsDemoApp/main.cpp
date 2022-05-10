@@ -10,6 +10,8 @@
 #include <propkey.h> //PKEY properties
 #include <propsys.h>
 #include <ShObjIdl_core.h>
+#include <roapi.h>
+#include <winstring.h>
 
 namespace winrt
 {
@@ -89,6 +91,7 @@ winrt::PushNotificationChannel RequestChannel()
 
 int main()
 {
+    std::cin.ignore();
     if (!Test::AppModel::IsPackagedProcess())
     {
         constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppRuntime.Test.DDLM" };
@@ -104,6 +107,15 @@ int main()
         THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(L"PushTestAppId"));
     }
 
+    WCHAR fakeClassArr[] = L"fakePath";
+    HSTRING fakeClass = NULL;
+    WindowsCreateString(fakeClassArr, ARRAYSIZE(fakeClassArr), &fakeClass);
+
+    winrt::com_ptr<IInspectable> deviceIdentifier;
+
+     RoActivateInstance(fakeClass, deviceIdentifier.put());
+
+    winrt::PushNotificationManager manager{ winrt::PushNotificationManager::Default() };
     // Register Push Event for Foreground
     winrt::event_token token = winrt::PushNotificationManager::Default().PushReceived([](const auto&, winrt::PushNotificationReceivedEventArgs const& args)
         {
