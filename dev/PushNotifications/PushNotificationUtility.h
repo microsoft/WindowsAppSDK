@@ -143,6 +143,17 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
         return AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable();
     }
 
+    inline bool IsElevated()
+    {
+        wil::unique_handle processToken;
+        THROW_IF_WIN32_BOOL_FALSE(OpenProcessToken(GetCurrentProcess(), MAXIMUM_ALLOWED, &processToken));
+
+        auto mandatoryLabel{ wil::get_token_information<TOKEN_MANDATORY_LABEL>(processToken.get()) };
+        LONG levelRid{ static_cast<SID*>(mandatoryLabel->Label.Sid)->SubAuthority[0] };
+
+        return levelRid >= SECURITY_MANDATORY_HIGH_RID;
+    }
+
     inline HRESULT GetPackageFullName(wil::unique_cotaskmem_string& packagedFullName) noexcept try
     {
         WCHAR packageFullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1]{};

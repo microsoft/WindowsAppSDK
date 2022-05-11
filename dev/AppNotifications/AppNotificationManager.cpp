@@ -125,7 +125,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                     storedComActivatorGuid = RegisterComActivatorGuidAndAssets();
                 }
 
-                if (!WindowsAppRuntime::SelfContained::IsSelfContained())
+                if (!WindowsAppRuntime::SelfContained::IsSelfContained() && !PushNotificationHelpers::IsElevated())
                 {
                     auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
                     THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.c_str(), m_appId.c_str()));
@@ -225,7 +225,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                 });
 
             // Remove any Registrations from the Long Running Process that are necessary for Cloud toasts
-            if (!PushNotificationHelpers::IsPackagedAppScenario() && !WindowsAppRuntime::SelfContained::IsSelfContained())
+            if (!PushNotificationHelpers::IsPackagedAppScenario() && !WindowsAppRuntime::SelfContained::IsSelfContained() && !PushNotificationHelpers::IsElevated())
             {
                 auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
                 THROW_IF_FAILED(notificationPlatform->RemoveToastRegistrationMapping(m_processName.c_str()));
