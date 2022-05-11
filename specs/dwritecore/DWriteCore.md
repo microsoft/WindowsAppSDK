@@ -1296,26 +1296,27 @@ HRESULT STDMETHODCALLTYPE TextRenderer::DrawGlyphRun(
 {
     D2D_POINT_2F baselineOrigin{ baselineOriginX, baselineOriginY };
 
-    // Determine the foreground brush to use for this glyph run.
-    // This is the m_foregroundBrush member unless another brush
-    // is specified via the clientDrawingEffect parameter.
-    ID2D1Brush* foregroundBrush = m_foregroundBrush.get();
-    wil::com_ptr<ID2D1Brush> effectBrush;
-    if (clientDrawingEffect != nullptr &&
-        SUCCEEDED(clientDrawingEffect->QueryInterface(&effectBrush)))
+    // If a brush is specified via the clientDrawingEffect parameter, use it as
+    // the foreground brush for this glyph run. Otherwise, use the brush specified
+    // by the m_foregroundBrush member.
+    wil::com_ptr<ID2D1Brush> foregroundBrush;
+    if (clientDrawingEffect != nullptr)
     {
-        foregroundBrush = effectBrush.get();
+        foregroundBrush = wil::try_com_query<ID2D1Brush>(clientDrawingEffect);
+    }
+    if (foregroundBrush == nullptr)
+    {
+        foregroundBrush = m_foregroundBrush;
     }
 
     // If available, use the ID2D1DeviceContext7 interface to draw
     // the glyph run with color the "easy" way.
-    wil::com_ptr<ID2D1DeviceContext7> deviceContext7;
-    if (SUCCEEDED(m_deviceContext->QueryInterface(&deviceContext7)))
+    if (auto deviceContext7 = m_deviceContext.try_query<ID2D1DeviceContext7>())
     {
         deviceContext7->DrawGlyphRunWithColor(
             baselineOrigin,
             glyphRun,
-            foregroundBrush,
+            foregroundBrush.get(),
             measuringMode,
             /*colorPaletteIndex*/ 0
         );
@@ -1367,7 +1368,7 @@ HRESULT STDMETHODCALLTYPE TextRenderer::DrawGlyphRun(
         m_deviceContext->DrawGlyphRun(
             baselineOrigin,
             glyphRun,
-            foregroundBrush,
+            foregroundBrush.get(),
             measuringMode
         );
         return S_OK;
@@ -1393,7 +1394,7 @@ HRESULT STDMETHODCALLTYPE TextRenderer::DrawGlyphRun(
         RETURN_IF_FAILED(colorRunEnumerator->GetCurrentRun(&colorGlyphRun));
 
         // Determine the brush to use for this color glyph run.
-        ID2D1Brush* runBrush;
+        wil::com_ptr<ID2D1Brush> runBrush;
         if (colorGlyphRun->paletteIndex == DWRITE_NO_PALETTE_INDEX)
         {
             // Special palette index meaning use the text foreground brush.
@@ -1402,9 +1403,9 @@ HRESULT STDMETHODCALLTYPE TextRenderer::DrawGlyphRun(
         else
         {
             // Use the specified color from the font's color palette.
+            // Lazily create the solid color brush, or set its color if already created.
             if (solidBrush == nullptr)
             {
-                // Lazily create the solid color brush with the specified color.
                 RETURN_IF_FAILED(m_deviceContext->CreateSolidColorBrush(
                     colorGlyphRun->runColor,
                     &solidBrush
@@ -1412,12 +1413,11 @@ HRESULT STDMETHODCALLTYPE TextRenderer::DrawGlyphRun(
             }
             else
             {
-                // We already created the brush, so just set its color.
                 solidBrush->SetColor(colorGlyphRun->runColor);
             }
 
-            // use the solid color brush as the current run's brush.
-            runBrush = solidBrush.get();
+            // Use the solid color brush as the current run's brush.
+            runBrush = solidBrush;
         }
 
         // Branch depending on the run's glyph image format.
@@ -1444,7 +1444,7 @@ HRESULT STDMETHODCALLTYPE TextRenderer::DrawGlyphRun(
             m_deviceContext->DrawSvgGlyphRun(
                 baselineOrigin,
                 &colorGlyphRun->glyphRun,
-                runBrush,
+                runBrush.get(),
                 /*SVG style*/ nullptr,
                 /*colorPaletteIndex*/ 0,
                 colorGlyphRun->measuringMode
@@ -1459,7 +1459,7 @@ HRESULT STDMETHODCALLTYPE TextRenderer::DrawGlyphRun(
                 baselineOrigin,
                 &colorGlyphRun->glyphRun,
                 colorGlyphRun->glyphRunDescription,
-                runBrush,
+                runBrush.get(),
                 colorGlyphRun->measuringMode
             );
             break;
@@ -2106,6 +2106,10 @@ enum DWRITE_GLYPH_IMAGE_FORMATS
     /// </summary>
     DWRITE_GLYPH_IMAGE_FORMATS_COLR_PAINT_TREE = 0x00000100,
 };
+
+#ifdef DEFINE_ENUM_FLAG_OPERATORS
+DEFINE_ENUM_FLAG_OPERATORS(DWRITE_GLYPH_IMAGE_FORMATS);
+#endif
 
 #define DWRITE_GLYPH_IMAGE_FORMATS_COLR_PAINT_TREE_DEFINED
 ```
