@@ -268,7 +268,7 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "ChannelRequestUsingNullRemoteId",  &ChannelRequestUsingNullRemoteId },
         { "ChannelRequestUsingRemoteId", &ChannelRequestUsingRemoteId },
         { "MultipleChannelClose", &MultipleChannelClose},
-        
+
         { "BackgroundActivationTest", &BackgroundActivationTest},
 
         { "VerifyRegisterandUnregister", &VerifyRegisterandUnregister},
@@ -319,15 +319,15 @@ int main() try
 
 
     // Test hook to ensure that the app is not self-contained
-    ::WindowsAppRuntime::SelfContained::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+    WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
 
     auto scope_exit = wil::scope_exit([&] {
-        ::WindowsAppRuntime::SelfContained::TestShutdown();
+        ::WindowsAppRuntime::VersionInfo::TestShutdown();
         ::Test::Bootstrap::CleanupBootstrap();
         });
 
     PushNotificationManager::Default().Register();
-    
+
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
 

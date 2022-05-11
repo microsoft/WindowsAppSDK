@@ -37,6 +37,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         GUID m_deploymentErrorActivityId{};
         WindowsAppRuntimeInstaller_TraceLogger::Install m_activity;
         WilFailure m_lastFailure{};
+        HANDLE m_hEventLog;
 
     public:
         static WindowsAppRuntimeInstaller::InstallActivity::Context& Get();
@@ -104,6 +105,29 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         }
 
         void SetLastFailure(const wil::FailureInfo& failureInfo);
+
+        const HANDLE& RegisterInstallerEventSourceW()
+        {
+            m_hEventLog = RegisterEventSourceW(nullptr, L"WindowsAppRuntime Installer");
+            return m_hEventLog;
+        }
+
+        const BOOL& DeregisterInstallerEventSourceW()
+        {
+            return DeregisterEventSource(m_hEventLog);
+        }
+
+        BOOL LogInstallerCommandLineArgs(PCWSTR cmdlineArgs);
+
+        BOOL LogInstallerSuccess()
+        {
+            return ReportEventW(m_hEventLog, EVENTLOG_SUCCESS, 0, 0, nullptr, 0, 0, nullptr, nullptr);
+        }
+
+        BOOL LogInstallerFailureEvent(HRESULT hresult);
+
+        BOOL LogInstallerFailureEventWithResourceId(const WORD eventLogType, const HRESULT& hresult, PCWSTR failedComponentMessageFormat, const PCWSTR resourceId = nullptr);
+
     };
 
     static WindowsAppRuntimeInstaller::InstallActivity::Context g_installActivityContext;
