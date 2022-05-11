@@ -4,6 +4,7 @@
 #define WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX                       L"Microsoft.WindowsAppRuntime"
 #define WINDOWSAPPRUNTIME_PACKAGE_NAME_DDLMPREFIX                   L"Microsoft.WinAppRuntime"
 #define WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX                   L"MicrosoftCorporationII.WinAppRuntime"
+#define WINDOWSAPPRUNTIME_PACKAGE_NAME_SINGLETONPREFIX              L"MicrosoftCorporationII.WinAppRuntime"
 #define WINDOWSAPPRUNTIME_PACKAGE_PUBLISHERID                       L"8wekyb3d8bbwe"
 #define WINDOWSAPPRUNTIME_PACKAGE_NAME_DELIMETER                    L"_"
 #define WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER             L"."
@@ -36,15 +37,15 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     // All supported SubTypeNames.
     static const PackageIdentifier c_subTypeNames[] =
     {
-        { WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_MAIN, PackageVersionType::Versioned },
-        { WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, PackageVersionType::Unversioned },
-        { WINDOWSAPPRUNTIME_PACKAGE_NAME_DDLMPREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DDLM, PackageVersionType::Framework },
+        { WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX,      WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_MAIN,      PackageVersionType::Versioned   },
+        { WINDOWSAPPRUNTIME_PACKAGE_NAME_SINGLETONPREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, PackageVersionType::Unversioned },
+        { WINDOWSAPPRUNTIME_PACKAGE_NAME_DDLMPREFIX,      WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DDLM,      PackageVersionType::Framework   },
     };
 
     // All packages that the DeploymentAPI will attempt check and deploy from the framework.
     static const PackageIdentifier c_targetPackages[] =
     {
-        { WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_MAIN, PackageVersionType::Versioned },
-        { WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, PackageVersionType::Unversioned },
+        { WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX,      WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_MAIN,      PackageVersionType::Versioned   },
+        { WINDOWSAPPRUNTIME_PACKAGE_NAME_SINGLETONPREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, PackageVersionType::Unversioned },
     };
 }
