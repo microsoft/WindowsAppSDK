@@ -208,9 +208,6 @@ int main()
         std::wcout << std::endl;
     }
 
-    std::wcout << L"Requesting PushNotificationChannel...\n\n";
-    winrt::PushNotificationChannel channel{ RequestChannel() };
-
     std::wcout << L"Post a Toast..." << std::endl;
     PostToastHelper(L"Tag", L"Group");
     std::wcout << L"Done.\n\n";
@@ -219,7 +216,7 @@ int main()
     std::cin.ignore();
 
     // Call Unregister so that COM can launch a new process for ToastInvokes after we terminate this process.
-    appNotificationManager.Unregister();
+    appNotificationManager.UnregisterAll();
     if (!isPackaged)
     {
         MddBootstrapShutdown();

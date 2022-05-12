@@ -109,14 +109,76 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::RetrieveNotification
     }
 }
 
+void Microsoft::Windows::AppNotifications::Helpers::RegisterForElevatedActivation(wil::unique_cotaskmem_string const& clsid)
+{
+    std::wstring clsidSubkey{ c_clsIdPath };
+    clsidSubkey.append(clsid.get());
+
+    wil::unique_hkey hKeyElevatedClsid;
+    // Create CLSID entry in HKLM
+    // Software\Classes\CLSID\{comActivatorGuidString}
+    THROW_IF_WIN32_ERROR(RegCreateKeyEx(
+        HKEY_LOCAL_MACHINE,
+        clsidSubkey.c_str(),
+        0,
+        nullptr /* lpClass */,
+        REG_OPTION_NON_VOLATILE,
+        KEY_ALL_ACCESS,
+        nullptr /* lpSecurityAttributes */,
+        &hKeyElevatedClsid,
+        nullptr /* lpdwDisposition */));
+
+    RegisterValue(hKeyElevatedClsid, L"AppId", reinterpret_cast<const BYTE*>(clsid.get()), REG_SZ, (wcslen(clsid.get()) * sizeof(wchar_t)));
+
+    // Create LocalServer32 entry for the elevated process in HKLM
+    // Software\Classes\CLSID\{comActivatorGuidString}\LocalServer32
+    clsidSubkey.append(LR"(\LocalServer32)");
+
+    wil::unique_hkey hKeyElevatedServer;
+    THROW_IF_WIN32_ERROR(RegCreateKeyEx(
+        HKEY_LOCAL_MACHINE,
+        clsidSubkey.c_str(),
+        0,
+        nullptr /* lpClass */,
+        REG_OPTION_NON_VOLATILE,
+        KEY_ALL_ACCESS,
+        nullptr /* lpSecurityAttributes */,
+        &hKeyElevatedServer,
+        nullptr /* lpdwDisposition */));
+
+    std::wstring comRegistrationExeString{ c_quote + GetCurrentProcessPath() + c_quote + c_notificationActivatedArgument };
+    RegisterValue(hKeyElevatedServer, nullptr, reinterpret_cast<const BYTE*>(comRegistrationExeString.c_str()), REG_SZ, (comRegistrationExeString.size() * sizeof(wchar_t)));
+
+    // Create an AppId entry for the elevated process
+    // Software\Classes\AppId\{comActivatorGuidString}
+    std::wstring appIdSubkey{ c_elevatedClientPath };
+    appIdSubkey.append(clsid.get());
+
+    wil::unique_hkey hKeyElevatedAppId;
+    THROW_IF_WIN32_ERROR(RegCreateKeyEx(
+        HKEY_LOCAL_MACHINE,
+        appIdSubkey.c_str(),
+        0,
+        nullptr /* lpClass */,
+        REG_OPTION_NON_VOLATILE,
+        KEY_ALL_ACCESS,
+        nullptr /* lpSecurityAttributes */,
+        &hKeyElevatedAppId,
+        nullptr /* lpdwDisposition */));
+
+    // This tells COM to match any client, so Action Center will activate our elevated process.
+    // More info: https://docs.microsoft.com/windows/win32/com/runas
+    RegisterValue(hKeyElevatedAppId, L"RunAs", reinterpret_cast<const BYTE*>(c_interactiveUser), REG_SZ, (wcslen(c_interactiveUser) * sizeof(wchar_t)));
+}
+
 void Microsoft::Windows::AppNotifications::Helpers::RegisterComServer(wil::unique_cotaskmem_string const& clsid)
 {
-    wil::unique_hkey hKey;
     //subKey: Software\Classes\CLSID\{comActivatorGuidString}\LocalServer32
     std::wstring subKey{ c_clsIdPath };
     subKey.append(clsid.get());
     subKey.append(LR"(\LocalServer32)");
 
+    wil::unique_hkey hKey;
     THROW_IF_WIN32_ERROR(RegCreateKeyEx(
         HKEY_CURRENT_USER,
         subKey.c_str(),
@@ -129,8 +191,12 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterComServer(wil::uniqu
         nullptr /* lpdwDisposition */));
 
     std::wstring comRegistrationExeString{ c_quote + GetCurrentProcessPath() + c_quote + c_notificationActivatedArgument };
-
     RegisterValue(hKey, nullptr, reinterpret_cast<const BYTE*>(comRegistrationExeString.c_str()), REG_SZ, (comRegistrationExeString.size() * sizeof(wchar_t)));
+
+    if (PushNotificationHelpers::IsElevated())
+    {
+        RegisterForElevatedActivation(clsid);
+    }
 }
 
 void Microsoft::Windows::AppNotifications::Helpers::UnRegisterComServer(std::wstring const& clsid)
@@ -153,6 +219,30 @@ void Microsoft::Windows::AppNotifications::Helpers::UnRegisterComServer(std::wst
         clsidPath.c_str(),
         KEY_ALL_ACCESS,
         0));
+
+    if (PushNotificationHelpers::IsElevated())
+    {
+        THROW_IF_WIN32_ERROR(RegDeleteKeyEx(
+            HKEY_LOCAL_MACHINE,
+            subKey.c_str(),
+            KEY_ALL_ACCESS,
+            0));
+
+        THROW_IF_WIN32_ERROR(RegDeleteKeyEx(
+            HKEY_LOCAL_MACHINE,
+            clsidPath.c_str(),
+            KEY_ALL_ACCESS,
+            0));
+
+        //subKey: Software\Classes\AppId\{comActivatorGuidString}
+        std::wstring appIdsubKey{ c_elevatedClientPath + clsid };
+        // Need to delete AppId key
+        THROW_IF_WIN32_ERROR(RegDeleteKeyEx(
+            HKEY_LOCAL_MACHINE,
+            appIdsubKey.c_str(),
+            KEY_ALL_ACCESS,
+            0));
+    }
 }
 
 void Microsoft::Windows::AppNotifications::Helpers::UnRegisterNotificationAppIdentifierFromRegistry()

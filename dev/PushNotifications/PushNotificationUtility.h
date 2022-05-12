@@ -148,10 +148,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
         wil::unique_handle processToken;
         THROW_IF_WIN32_BOOL_FALSE(OpenProcessToken(GetCurrentProcess(), MAXIMUM_ALLOWED, &processToken));
 
-        auto mandatoryLabel{ wil::get_token_information<TOKEN_MANDATORY_LABEL>(processToken.get()) };
-        LONG levelRid{ static_cast<SID*>(mandatoryLabel->Label.Sid)->SubAuthority[0] };
-
-        return levelRid >= SECURITY_MANDATORY_HIGH_RID;
+        auto tokenLabel{ wil::get_token_information<TOKEN_MANDATORY_LABEL>(processToken.get()) };
+        DWORD subAuthority = static_cast<DWORD>(*GetSidSubAuthorityCount(tokenLabel->Label.Sid) - 1);
+        return *GetSidSubAuthority(tokenLabel->Label.Sid, subAuthority) >= SECURITY_MANDATORY_HIGH_RID;
     }
 
     inline HRESULT GetPackageFullName(wil::unique_cotaskmem_string& packagedFullName) noexcept try

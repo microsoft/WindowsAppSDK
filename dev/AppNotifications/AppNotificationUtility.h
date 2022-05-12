@@ -13,8 +13,10 @@ namespace Microsoft::Windows::AppNotifications::Helpers
 {
     const PCWSTR c_appIdentifierPath{ LR"(Software\Classes\AppUserModelId\)" };
     const PCWSTR c_clsIdPath{ LR"(Software\Classes\CLSID\)" };
+    const PCWSTR c_elevatedClientPath{ LR"(Software\Classes\AppID\)" };
     const PCWSTR c_quote{ LR"(")" };
     const PCWSTR c_notificationActivatedArgument{ L" ----AppNotificationActivated:" };
+    const PCWSTR c_interactiveUser{ L"Interactive User" };
 
     inline const int GUID_LENGTH = 39; // GUID + '{' + '}' + '/0'
 
@@ -44,6 +46,8 @@ namespace Microsoft::Windows::AppNotifications::Helpers
     std::wstring RetrieveUnpackagedNotificationAppId();
 
     std::wstring RetrieveNotificationAppId();
+
+    void RegisterForElevatedActivation(wil::unique_cotaskmem_string const& clsid);
 
     void RegisterComServer(wil::unique_cotaskmem_string const& clsid);
 
