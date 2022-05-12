@@ -129,7 +129,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     bool PushNotificationManager::IsSupported()
     {
-        // Only scenarios that use the Background Infrastructure component of the OS support Push in the SelfContained case
+        // PackagedAppScenario always works. UnpackagedAppScenario does not when it is self contained
+        // or is elevated because the process cannot use the PushNotificationsLongRunningProcess.
         static bool isSupported{ PushNotificationHelpers::IsPackagedAppScenario() || !(WindowsAppRuntime::SelfContained::IsSelfContained() || PushNotificationHelpers::IsElevated()) };
         return isSupported;
 

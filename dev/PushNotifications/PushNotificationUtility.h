@@ -150,7 +150,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 
         auto tokenLabel{ wil::get_token_information<TOKEN_MANDATORY_LABEL>(processToken.get()) };
         DWORD subAuthority = static_cast<DWORD>(*GetSidSubAuthorityCount(tokenLabel->Label.Sid) - 1);
-        return *GetSidSubAuthority(tokenLabel->Label.Sid, subAuthority) >= SECURITY_MANDATORY_HIGH_RID;
+
+        // HIGH_RID means the process is elevated
+        return *GetSidSubAuthority(tokenLabel->Label.Sid, subAuthority) == SECURITY_MANDATORY_HIGH_RID;
     }
 
     inline HRESULT GetPackageFullName(wil::unique_cotaskmem_string& packagedFullName) noexcept try
