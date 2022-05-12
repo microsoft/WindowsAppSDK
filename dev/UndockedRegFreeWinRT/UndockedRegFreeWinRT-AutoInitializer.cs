@@ -9,7 +9,7 @@ namespace Microsoft.Windows.Foundation.UndockedRegFreeWinRTCS
     internal static class NativeMethods
     {
         [DllImport("Microsoft.WindowsAppRuntime.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
-        internal static extern int UndockedRegFreeWinRT_EnsureIsLoaded();
+        internal static extern int WindowsAppRuntime_EnsureIsLoaded();
     }
 
     class AutoInitialize
@@ -21,7 +21,7 @@ namespace Microsoft.Windows.Foundation.UndockedRegFreeWinRTCS
             // It's the act of calling the function causing the DllImport to load the DLL that
             // matters. This provides the moral equivalent of a native DLL's Import Address
             // Table (IAT) have an entry that's resolved when this module is loaded.
-            NativeMethods.UndockedRegFreeWinRT_EnsureIsLoaded();
+            NativeMethods.WindowsAppRuntime_EnsureIsLoaded();
         }
     }
 }

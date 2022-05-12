@@ -8,7 +8,7 @@
 // the WindowsAppSDK runtime DLL and thus gets loaded when
 // the including PE file gets loaded.
 
-STDAPI UndockedRegFreeWinRT_EnsureIsLoaded();
+STDAPI WindowsAppRuntime_EnsureIsLoaded();
 
 namespace Microsoft::Windows::Foundation::UndockedRegFreeWinRT
 {
@@ -34,7 +34,7 @@ namespace Microsoft::Windows::Foundation::UndockedRegFreeWinRT
                 exit(HRESULT_FROM_WIN32(lastError));
             }
 #else
-            (void) UndockedRegFreeWinRT_EnsureIsLoaded();
+            (void) WindowsAppRuntime_EnsureIsLoaded();
 #endif
         }
     };
