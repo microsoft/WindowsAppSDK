@@ -93,8 +93,19 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         return m_activatedEventArgs;
     }
 
+    bool AppNotificationManager::IsSupported()
+    {
+        static bool isSupported{ !PushNotificationHelpers::IsElevated() };
+        return isSupported;
+    }
+
     void AppNotificationManager::Register()
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         HRESULT hr{ S_OK };
 
         auto logTelemetry{ wil::scope_exit([&]() {
@@ -175,6 +186,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationManager::Unregister()
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         HRESULT hr{ S_OK };
 
         auto logTelemetry{ wil::scope_exit([&]() {
@@ -203,6 +219,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationManager::UnregisterAll()
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         HRESULT hr{ S_OK };
 
         auto logTelemetry{ wil::scope_exit([&]() {
@@ -256,6 +277,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::event_token AppNotificationManager::NotificationInvoked(winrt::Windows::Foundation::TypedEventHandler<winrt::Microsoft::Windows::AppNotifications::AppNotificationManager, winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs> const& handler)
     {
+        if (!IsSupported())
+        {
+            return winrt::event_token{};
+        }
+
         auto lock{ m_lock.lock_exclusive() };
         THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), m_notificationComActivatorRegistration, "Must register event handlers before calling Register()");
         return m_notificationHandlers.add(handler);
@@ -263,6 +289,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationManager::NotificationInvoked(winrt::event_token const& token) noexcept
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         auto lock{ m_lock.lock_exclusive() };
         m_notificationHandlers.remove(token);
     }
@@ -273,7 +304,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         [[maybe_unused]] NOTIFICATION_USER_INPUT_DATA const* data,
         [[maybe_unused]] ULONG dataCount) noexcept try
     {
-
         winrt::IMap<winrt::hstring, winrt::hstring> userInput{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
         for (unsigned long i = 0; i < dataCount; i++)
         {
@@ -335,6 +365,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationManager::Show(winrt::Microsoft::Windows::AppNotifications::AppNotification const& notification)
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         THROW_HR_IF(WPN_E_NOTIFICATION_POSTED, notification.Id() != 0);
 
         HRESULT hr{ S_OK };
@@ -366,6 +401,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressResult> AppNotificationManager::UpdateAsync(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const data, hstring const tag, hstring const group)
     {
+        if (!IsSupported())
+        {
+            co_return winrt::AppNotificationProgressResult::Unsupported;
+        }
+
         THROW_HR_IF_MSG(E_INVALIDARG, tag == winrt::hstring(L""), "Update operation isn't guaranteed to find a specific notification to replace correctly.");
         THROW_HR_IF_MSG(E_INVALIDARG, data.SequenceNumber() == 0, "Sequence Number for Updates should be greater than 0!");
 
@@ -406,11 +446,21 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressResult> AppNotificationManager::UpdateAsync(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const data, hstring const tag)
     {
+        if (!IsSupported())
+        {
+            co_return winrt::AppNotificationProgressResult::Unsupported;
+        }
+
         co_return co_await UpdateAsync(data, tag, L"");
     }
 
     winrt::Microsoft::Windows::AppNotifications::AppNotificationSetting AppNotificationManager::Setting()
     {
+        if (!IsSupported())
+        {
+            return AppNotificationSetting::Unsupported;
+        }
+
         HRESULT hr{ S_OK };
 
         auto logTelemetry{ wil::scope_exit([&]() {
@@ -432,6 +482,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByIdAsync(uint32_t notificationId)
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         THROW_HR_IF(E_INVALIDARG, notificationId == 0);
 
         HRESULT hr{ S_OK };
@@ -456,6 +511,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByTagAsync(hstring const tag)
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         THROW_HR_IF(E_INVALIDARG, tag == winrt::hstring(L""));
 
         HRESULT hr{ S_OK };
@@ -480,6 +540,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByTagAndGroupAsync(hstring const tag, hstring const group)
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         THROW_HR_IF(E_INVALIDARG, tag == winrt::hstring(L""));
         THROW_HR_IF(E_INVALIDARG, group == winrt::hstring(L""));
 
@@ -505,6 +570,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByGroupAsync(hstring const group)
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         THROW_HR_IF(E_INVALIDARG, group == winrt::hstring(L""));
 
         HRESULT hr{ S_OK };
@@ -529,6 +599,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveAllAsync()
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         HRESULT hr{ S_OK };
 
         auto strong = get_strong();
@@ -551,6 +626,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::AppNotifications::AppNotification>> AppNotificationManager::GetAllAsync()
     {
+        if (!IsSupported())
+        {
+            co_return nullptr;
+        }
+
         HRESULT hr{ S_OK };
 
         auto strong = get_strong();
