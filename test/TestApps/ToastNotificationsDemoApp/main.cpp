@@ -98,7 +98,8 @@ std::wstring GetEnumString(winrt::AppNotificationSetting const& setting)
         { winrt::AppNotificationSetting::DisabledForApplication, L"DisabledForApplication" },
         { winrt::AppNotificationSetting::DisabledForUser, L"DisabledForUser"},
         { winrt::AppNotificationSetting::DisabledByGroupPolicy, L"DisabledByGroupPolicy"},
-        { winrt::AppNotificationSetting::DisabledByManifest, L"DisabledByManifest"}
+        { winrt::AppNotificationSetting::DisabledByManifest, L"DisabledByManifest"},
+        { winrt::AppNotificationSetting::Unsupported, L"Unsupported"}
     };
     return enumMapping[setting];
 }
@@ -207,9 +208,6 @@ int main()
         }
         std::wcout << std::endl;
     }
-
-    std::wcout << L"Requesting PushNotificationChannel...\n\n";
-    winrt::PushNotificationChannel channel{ RequestChannel() };
 
     std::wcout << L"Post a Toast..." << std::endl;
     PostToastHelper(L"Tag", L"Group");
