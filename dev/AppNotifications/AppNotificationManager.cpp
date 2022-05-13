@@ -95,7 +95,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     bool AppNotificationManager::IsSupported()
     {
-        static bool isSupported{ !PushNotificationHelpers::IsElevated() };
+        static bool isSupported{ !Security::IntegrityLevel::IsElevated() };
         return isSupported;
     }
 
@@ -447,11 +447,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressResult> AppNotificationManager::UpdateAsync(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const data, hstring const tag)
     {
-        if (!IsSupported())
-        {
-            co_return winrt::AppNotificationProgressResult::Unsupported;
-        }
-
         co_return co_await UpdateAsync(data, tag, L"");
     }
 
@@ -629,7 +624,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     {
         if (!IsSupported())
         {
-            co_return nullptr;
+            co_return {};
         }
 
         HRESULT hr{ S_OK };

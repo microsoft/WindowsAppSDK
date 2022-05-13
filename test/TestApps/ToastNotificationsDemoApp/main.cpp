@@ -209,6 +209,9 @@ int main()
         std::wcout << std::endl;
     }
 
+    std::wcout << L"Requesting PushNotificationChannel...\n\n";
+    winrt::PushNotificationChannel channel{ RequestChannel() };
+
     std::wcout << L"Post a Toast..." << std::endl;
     PostToastHelper(L"Tag", L"Group");
     std::wcout << L"Done.\n\n";

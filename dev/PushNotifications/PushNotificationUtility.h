@@ -138,15 +138,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
         return hasSetTaskEntrypoint;
     }
 
-    inline bool IsElevated()
-    {
-        wil::unique_handle processToken;
-        THROW_IF_WIN32_BOOL_FALSE(OpenProcessToken(GetCurrentProcess(), MAXIMUM_ALLOWED, &processToken));
-
-        auto elevationToken{ wil::get_token_information<TOKEN_ELEVATION>(processToken.get()) };
-        return elevationToken.TokenIsElevated;
-    }
-
     inline bool IsPackagedAppScenario()
     {
         return AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable();
