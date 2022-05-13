@@ -66,15 +66,18 @@
     <NMakeCleanCommandLine>REM TODO Clean</NMakeCleanCommandLine>
     <MakeMsixOutputFilename>$(ProjectName)_$(PlatformTarget).msix</MakeMsixOutputFilename>
     <InstallerPackagesDir>$(RepoRoot)\installer\test\testpackages\</InstallerPackagesDir>
-
     <NMakeBuildCommandLine>@IF NOT EXIST $(InstallerPackagesDir) MKDIR $(InstallerPackagesDir)
                            @ECHO Copy $(MSBuildThisFileDirectory)main_license.xml $(InstallerPackagesDir)main_license.xml
                            @COPY /Y $(MSBuildThisFileDirectory)main_license.xml $(InstallerPackagesDir)main_license.xml >NUL
+                           @ECHO Copy $(MSBuildThisFileDirectory)singleton_license.xml $(InstallerPackagesDir)singleton_license.xml
+                           @COPY /Y $(MSBuildThisFileDirectory)singleton_license.xml $(InstallerPackagesDir)singleton_license.xml >NUL
                            @ECHO Copy $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) to $(InstallerPackagesDir)framework_$(PlatformTarget).msix
                            @COPY /Y $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) $(InstallerPackagesDir)framework_$(PlatformTarget).msix >NUL</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>@IF NOT EXIST $(InstallerPackagesDir) MKDIR $(InstallerPackagesDir)
                              @ECHO Copy $(MSBuildThisFileDirectory)main_license.xml $(InstallerPackagesDir)main_license.xml
                              @COPY /Y $(MSBuildThisFileDirectory)main_license.xml $(InstallerPackagesDir)main_license.xml >NUL
+                             @ECHO Copy $(MSBuildThisFileDirectory)singleton_license.xml $(InstallerPackagesDir)singleton_license.xml
+                             @COPY /Y $(MSBuildThisFileDirectory)singleton_license.xml $(InstallerPackagesDir)singleton_license.xml >NUL
                              @ECHO Copy $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) to $(InstallerPackagesDir)framework_$(PlatformTarget).msix
                              @COPY /Y $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) $(InstallerPackagesDir)framework_$(PlatformTarget).msix >NUL</NMakeReBuildCommandLine>
   </PropertyGroup>
@@ -90,6 +93,7 @@
     </MakeMsixInputsWithLocations>
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)logo.png" />
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)main_license.xml" />
+    <MakeMsixInputs Include="$(MSBuildThisFileDirectory)singleton_license.xml" />
   </ItemGroup>
   <PropertyGroup>
     <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
@@ -101,6 +105,7 @@
     <Xml Include="appxmanifest-x64.xml" />
     <Xml Include="appxmanifest-arm64.xml" />
     <Xml Include="main_license.xml" />
+    <Xml Include="singleton_license.xml" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="logo.png" />
