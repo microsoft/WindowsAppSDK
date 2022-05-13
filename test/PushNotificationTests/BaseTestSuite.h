@@ -16,6 +16,7 @@ class BaseTestSuite
         // Unit test environment functions
         void ClassSetup();
         void ClassCleanup();
+        void MethodSetup();
         void MethodCleanup();
 
         // Base unit tests
