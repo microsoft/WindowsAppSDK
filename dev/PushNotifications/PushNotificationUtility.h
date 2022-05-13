@@ -143,11 +143,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
         wil::unique_handle processToken;
         THROW_IF_WIN32_BOOL_FALSE(OpenProcessToken(GetCurrentProcess(), MAXIMUM_ALLOWED, &processToken));
 
-        auto tokenLabel{ wil::get_token_information<TOKEN_MANDATORY_LABEL>(processToken.get()) };
-        DWORD subAuthority = static_cast<DWORD>(*GetSidSubAuthorityCount(tokenLabel->Label.Sid) - 1);
-
-        // HIGH_RID means the process is elevated
-        return *GetSidSubAuthority(tokenLabel->Label.Sid, subAuthority) == SECURITY_MANDATORY_HIGH_RID;
+        auto elevationToken{ wil::get_token_information<TOKEN_ELEVATION>(processToken.get()) };
+        return elevationToken.TokenIsElevated;
     }
 
     inline bool IsPackagedAppScenario()
