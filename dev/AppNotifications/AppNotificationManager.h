@@ -21,6 +21,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         void Register();
         void Unregister();
         void UnregisterAll();
+        static bool IsSupported();
         winrt::event_token NotificationInvoked(winrt::Windows::Foundation::TypedEventHandler<winrt::Microsoft::Windows::AppNotifications::AppNotificationManager, winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs> const& handler);
         void NotificationInvoked(winrt::event_token const& token) noexcept;
         void Show(winrt::Microsoft::Windows::AppNotifications::AppNotification const& notification);
