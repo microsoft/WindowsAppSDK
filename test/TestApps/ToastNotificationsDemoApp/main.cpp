@@ -98,8 +98,7 @@ std::wstring GetEnumString(winrt::AppNotificationSetting const& setting)
         { winrt::AppNotificationSetting::DisabledForApplication, L"DisabledForApplication" },
         { winrt::AppNotificationSetting::DisabledForUser, L"DisabledForUser"},
         { winrt::AppNotificationSetting::DisabledByGroupPolicy, L"DisabledByGroupPolicy"},
-        { winrt::AppNotificationSetting::DisabledByManifest, L"DisabledByManifest"},
-        { winrt::AppNotificationSetting::Unsupported, L"Unsupported"}
+        { winrt::AppNotificationSetting::DisabledByManifest, L"DisabledByManifest"}
     };
     return enumMapping[setting];
 }

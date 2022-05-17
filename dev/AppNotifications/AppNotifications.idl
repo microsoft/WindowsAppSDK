@@ -52,7 +52,6 @@ namespace Microsoft.Windows.AppNotifications
         DisabledForUser, // Notification is blocked by a user defined Global Setting
         DisabledByGroupPolicy, // Notification is blocked by Group Policy
         DisabledByManifest, // Notification is blocked by a setting in the manifest. Only for packaged applications.
-        Unsupported, // The current operation was called when AppNotifications are not supported
     };
 
     // The Result for a Notification Progress related operation
@@ -61,7 +60,6 @@ namespace Microsoft.Windows.AppNotifications
     {
         Succeeded, // The progress operation succeeded
         AppNotificationNotFound, // The progress operation failed to find a Notification to process updates
-        Unsupported, // The current operation was called when AppNotifications are not supported
     };
 
     // The Priority of the Notification UI associated with it's popup in the Action Centre

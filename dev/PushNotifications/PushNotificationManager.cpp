@@ -203,13 +203,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid remoteId)
     {
-        if (!IsSupported())
-        {
-            co_return winrt::make<PushNotificationCreateChannelResult>(
-                nullptr,
-                E_FAIL,
-                PushNotificationChannelStatus::CompletedFailure);
-        }
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !IsSupported());
 
         HRESULT hr{ S_OK };
 
@@ -366,10 +360,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationManager::Register()
     {
-        if (!IsSupported())
-        {
-            return;
-        }
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !IsSupported());
 
         winrt::hresult hr{ S_OK };
 
@@ -609,10 +600,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationManager::Unregister()
     {
-        if (!IsSupported())
-        {
-            return;
-        }
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !IsSupported());
 
         winrt::hresult hr{ S_OK };
 
@@ -688,10 +676,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationManager::UnregisterAll()
     {
-        if (!IsSupported())
-        {
-            return;
-        }
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !IsSupported());
 
         hresult hr = S_OK;
 
@@ -773,10 +758,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::event_token PushNotificationManager::PushReceived(TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationManager, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
     {
-        if (!IsSupported())
-        {
-            return winrt::event_token{};
-        }
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !IsSupported());
 
         {
             auto lock{ m_lock.lock_shared() };
@@ -790,11 +772,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationManager::PushReceived(winrt::event_token const& token) noexcept
     {
-        if (IsSupported())
-        {
-            auto lock{ m_lock.lock_exclusive() };
-            m_foregroundHandlers.remove(token);
-        }
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !IsSupported());
+
+        auto lock{ m_lock.lock_exclusive() };
+        m_foregroundHandlers.remove(token);
     }
 
     IFACEMETHODIMP PushNotificationManager::InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept try
