@@ -413,7 +413,7 @@ HRESULT UrfwInitialize() noexcept
     DetourAttach(&(PVOID&)TrueRoResolveNamespace, RoResolveNamespaceDetour);
     try
     {
-        ExtRoLoadCatalog();
+        RETURN_IF_FAILED(ExtRoLoadCatalog());
     }
     catch (...)
     {

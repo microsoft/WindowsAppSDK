@@ -9,7 +9,7 @@ namespace Microsoft.Windows.Foundation.UndockedRegFreeWinRTCS
     internal static class NativeMethods
     {
         [DllImport("Microsoft.WindowsAppRuntime.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
-        internal static extern int UndockedRegFreeWinRT_EnsureIsLoaded();
+        internal static extern int WindowsAppRuntime_EnsureIsLoaded();
     }
 
     class AutoInitialize
@@ -17,17 +17,11 @@ namespace Microsoft.Windows.Foundation.UndockedRegFreeWinRTCS
         [global::System.Runtime.CompilerServices.ModuleInitializer]
         internal static void AccessWindowsAppSDK()
         {
-            // Do nothing if we're being loaded for reflection (rather than execcution)
-            if (Assembly.GetEntryAssembly() != Assembly.GetExecutingAssembly())
-            {
-                return;
-            }
-
             // No error handling needed as the target function does nothing (just {return S_OK}).
             // It's the act of calling the function causing the DllImport to load the DLL that
             // matters. This provides the moral equivalent of a native DLL's Import Address
             // Table (IAT) have an entry that's resolved when this module is loaded.
-            NativeMethods.UndockedRegFreeWinRT_EnsureIsLoaded();
+            NativeMethods.WindowsAppRuntime_EnsureIsLoaded();
         }
     }
 }

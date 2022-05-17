@@ -20,7 +20,6 @@
     <LanguageTag>cpp</LanguageTag>
     <LanguageTag>XAML</LanguageTag>
     <PlatformTag>windows</PlatformTag>
-    <PlatformTag>Windows App SDK</PlatformTag>
     <ProjectTypeTag>desktop</ProjectTypeTag>
     <ProjectTypeTag>uwp</ProjectTypeTag>
     <ProjectTypeTag>WinUI</ProjectTypeTag>
