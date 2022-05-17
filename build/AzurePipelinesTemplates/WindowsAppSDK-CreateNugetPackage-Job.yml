@@ -8,7 +8,6 @@ parameters:
   primaryBuildArch: x86
   buildFlavor: Release
   prereleaseVersionTag: 'prerelease'
-  publishToMaestro: false
   condition: ''
   buildPool: ''
 
@@ -63,7 +62,10 @@ jobs:
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.Foundation.props" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.Foundation.props"
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.Bootstrap.CS.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.Bootstrap.CS.targets"
         Copy-Item -Path "$targetsFilePath\WindowsAppSDK-Nuget-Native.Bootstrap.targets" -Destination "$fullpackagePath\build\native\WindowsAppSDK-Nuget-Native.Bootstrap.targets"
-        Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.MddCommon.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.MddCommon.targets"
+        Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.BootstrapCommon.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.BootstrapCommon.targets"
+        Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.targets"
+        Copy-Item -Path "$targetsFilePath\WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.targets" -Destination "$fullpackagePath\build\native\WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.targets"
+        Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets"
 
         Copy-Item -Path "$targetsFilePath\AppxManifest.xml" -Destination "$fullpackagePath\AppxManifest.xml"
         $manifestPath = $fullpackagePath+'\manifests';
@@ -71,18 +73,6 @@ jobs:
         $xslt = New-Object System.Xml.Xsl.XslCompiledTransform;
         $xslt.Load('build\TransformAppxManifest.xslt');
         $xslt.Transform($fullpackagePath+'\AppxManifest.xml', $manifestPath+'\Microsoft.WindowsAppSdk.Foundation.manifest');
-
-        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.AppLifecycle.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.AppLifecycle.xml"
-        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.ApplicationModel.DynamicDependency.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.ApplicationModel.DynamicDependency.xml"
-        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.ApplicationModel.WindowsAppSDK.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.ApplicationModel.WindowsAppSDK.xml"
-        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.System.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.System.xml"
-        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.System.Power.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.System.Power.xml"
-        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.PushNotifications.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.PushNotifications.xml"
-
-        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.AppLifecycle.xml" -Destination "$fullpackagePath\lib\net5.0-windows10.0.17763.0\Microsoft.Windows.AppLifecycle.Projection.xml"
-        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.System.Power.xml" -Destination "$fullpackagePath\lib\net5.0-windows10.0.17763.0\Microsoft.Windows.System.Power.Projection.xml"
-        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.ApplicationModel.DynamicDependency.xml" -Destination "$fullpackagePath\lib\net5.0-windows10.0.17763.0\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.xml"
-        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.ApplicationModel.WindowsAppSDK.xml" -Destination "$fullpackagePath\lib\net5.0-windows10.0.17763.0\Microsoft.Windows.ApplicationModel.WindowsAppSDK.Projection.xml"
 
   # - script: |
   #     dir /s $(Build.SourcesDirectory)
@@ -105,12 +95,14 @@ jobs:
   #   displayName: 'build-nupkg.ps1'
 
   - task: PowerShell@2
+    name: SetVersion
     displayName: Update metapackage version
     inputs:
       targetType: 'inline'
       script: |
         $packageVersion = '$(version).${{ parameters.prereleaseVersionTag }}'
         Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
+        Write-Host "##vso[task.setvariable variable=packageVersion;isOutput=true;]$packageVersion"
         Write-Host $packageVersion
         [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
         $publicNuspec.package.metadata.version = $packageVersion
@@ -161,24 +153,6 @@ jobs:
       PathtoPublish: '${{ parameters.fullnupkgdir }}'
       artifactName: 'FullNuget'
 
-  - ${{if parameters.signConfigPattern }}:
-    # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
-    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-      displayName: 'NuGet push to ProjectReunion.nuget.internal'
-      inputs:
-        command: 'push'
-        packagesToPush: '$(Build.ArtifactStagingDirectory)/fullnuget/*.nupkg;!$(Build.ArtifactStagingDirectory)/fullnuget/*.symbols.nupkg'
-        verbosityPush: 'Detailed'
-        nuGetFeedType: 'internal'
-        #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
-        publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
-
-  - ${{ if eq(parameters.publishToMaestro, 'true') }}:
-    - template: ..\..\eng\common\Maestro-PublishBuildToMaestro.yml
-      parameters:
-        AssetName: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
-        AssetVersion: $(packageVersion)
-        TriggerSubscription: true
 #UNDONE - EHO we need to seed these guid's properly!
 #see, e.g. AzurePipelinesTemplates\WindowsAppSDK-BuildAndPublishPGONuGet-Job.yml
 #

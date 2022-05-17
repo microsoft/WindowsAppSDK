@@ -8,7 +8,7 @@
     <ProjectType>VC</ProjectType>
     <TemplateID>WinUI.Neutral.CppWinRT.ResourceDictionary</TemplateID>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
-    <ShowByDefault>true</ShowByDefault>
+    <ShowByDefault>false</ShowByDefault>
     <TargetPlatformName>Windows</TargetPlatformName>
     <AppIdFilter>blend</AppIdFilter>
     <LanguageTag>cpp</LanguageTag>

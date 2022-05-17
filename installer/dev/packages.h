@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#pragma once
+
 #include "pch.h"
 #include "windowsappruntime_definitions.h"
 
@@ -26,44 +30,71 @@ namespace WindowsAppRuntimeInstaller {
 
     static ResourcePackageInfo c_packages[] =
     {
-    #if defined(WAR_FRAMEWORK_ARM64_LISTENTRY)
-        WAR_FRAMEWORK_ARM64_LISTENTRY
+    #if defined(MSIX_FRAMEWORK_ARM64_LISTENTRY)
+        MSIX_FRAMEWORK_ARM64_LISTENTRY
     #endif
-    #if defined(WAR_FRAMEWORK_X64_LISTENTRY)
-        WAR_FRAMEWORK_X64_LISTENTRY
+    #if defined(MSIX_FRAMEWORK_X64_LISTENTRY)
+        MSIX_FRAMEWORK_X64_LISTENTRY
     #endif
-    #if defined(WAR_FRAMEWORK_X86_LISTENTRY)
-        WAR_FRAMEWORK_X86_LISTENTRY
-    #endif
-
-    #if defined(WAR_MAIN_ARM64_LISTENTRY)
-        WAR_MAIN_ARM64_LISTENTRY
-    #endif
-    #if defined(WAR_MAIN_X64_LISTENTRY)
-        WAR_MAIN_X64_LISTENTRY
-    #endif
-    #if defined(WAR_MAIN_X86_LISTENTRY)
-        WAR_MAIN_X86_LISTENTRY
+    #if defined(MSIX_FRAMEWORK_X86_LISTENTRY)
+        MSIX_FRAMEWORK_X86_LISTENTRY
     #endif
 
-    #if defined(WAR_SINGLETON_ARM64_LISTENTRY)
-        WAR_SINGLETON_ARM64_LISTENTRY
+    #if defined(MSIX_MAIN_ARM64_LISTENTRY)
+        MSIX_MAIN_ARM64_LISTENTRY
     #endif
-    #if defined(WAR_SINGLETON_X64_LISTENTRY)
-        WAR_SINGLETON_X64_LISTENTRY
+    #if defined(MSIX_MAIN_X64_LISTENTRY)
+        MSIX_MAIN_X64_LISTENTRY
     #endif
-    #if defined(WAR_SINGLETON_X86_LISTENTRY)
-        WAR_SINGLETON_X86_LISTENTRY
+    #if defined(MSIX_MAIN_X86_LISTENTRY)
+        MSIX_MAIN_X86_LISTENTRY
     #endif
 
-    #if defined(WAR_DDLM_ARM64_LISTENTRY)
-        WAR_DDLM_ARM64_LISTENTRY
+    #if defined(MSIX_SINGLETON_ARM64_LISTENTRY)
+        MSIX_SINGLETON_ARM64_LISTENTRY
     #endif
-    #if defined(WAR_DDLM_X64_LISTENTRY)
-        WAR_DDLM_X64_LISTENTRY
+    #if defined(MSIX_SINGLETON_X64_LISTENTRY)
+        MSIX_SINGLETON_X64_LISTENTRY
     #endif
-    #if defined(WAR_DDLM_X86_LISTENTRY)
-        WAR_DDLM_X86_LISTENTRY
+    #if defined(MSIX_SINGLETON_X86_LISTENTRY)
+        MSIX_SINGLETON_X86_LISTENTRY
+    #endif
+
+    #if defined(MSIX_DDLM_ARM64_LISTENTRY)
+        MSIX_DDLM_ARM64_LISTENTRY
+    #endif
+    #if defined(MSIX_DDLM_X64_LISTENTRY)
+        MSIX_DDLM_X64_LISTENTRY
+    #endif
+    #if defined(MSIX_DDLM_X86_LISTENTRY)
+        MSIX_DDLM_X86_LISTENTRY
     #endif
     };
+
+    struct ResourceLicenseInfo
+    {
+        std::wstring id;
+        std::wstring resourceType;
+    };
+
+    #if !defined(MSIX_PROCESS_LICENSES)
+    #if defined(MSIX_MAIN_LICENSE_LISTENTRY) || defined(MSIX_SINGLETON_LICENSE_LISTENTRY)
+    #define MSIX_PROCESS_LICENSES
+    #else
+    #undef MSIX_PROCESS_LICENSES
+    #endif
+    #endif
+
+    #if defined(MSIX_PROCESS_LICENSES)
+    static ResourceLicenseInfo c_licenses[] =
+    {
+    #if defined(MSIX_MAIN_LICENSE_LISTENTRY)
+        MSIX_MAIN_LICENSE_LISTENTRY
+    #endif
+
+    #if defined(MSIX_SINGLETON_LICENSE_LISTENTRY)
+        MSIX_SINGLETON_LICENSE_LISTENTRY
+    #endif
+    };
+    #endif
 }

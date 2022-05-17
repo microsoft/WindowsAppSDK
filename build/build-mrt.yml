@@ -4,7 +4,7 @@
 parameters:
   MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
   MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
-
+  GenerateSBOM: False
 steps:
 - task: BatchScript@1
   displayName: Set up environment
@@ -13,10 +13,12 @@ steps:
     arguments: /envonly $(buildPlatform)fre
     modifyEnvironment: true
 
+- template: AzurePipelinesTemplates\WindowsAppSDK-InstallWindowsSDK-Steps.yml
+
 - task: NuGetToolInstaller@1
-  displayName: 'Use NuGet 5.6'
+  displayName: 'Use NuGet 5.11'
   inputs:
-    versionSpec: 5.6
+    versionSpec: 5.11
   continueOnError: true
 
 # Start restoring packages for C++ projects. The C# ones will be restored by the build task
@@ -89,6 +91,14 @@ steps:
     filename: '${{ parameters.MRTSourcesDirectory }}\build\SetDotnetVars.cmd'
     arguments: '${{ parameters.MRTSourcesDirectory }}'
     modifyEnvironment: true
+
+- task: powershell@2
+  displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
+  inputs:
+    targetType: filePath
+    filePath: tools\DevCheck.ps1
+    arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
+    workingDirectory: '$(Build.SourcesDirectory)'
 
 #  - task: BatchScript@1
 #    displayName: 'Debug'
@@ -172,26 +182,6 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-# Copy and Publish the test binaries so we can run them in Helix later.
-- task: CopyFiles@2
-  displayName: 'copy mrtcore test binaries'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
-    Contents: |
-      MrmBaseUnitTests\**
-      MrmUnitTest\**
-      MrtCoreManagedTest\**
-      MrtCoreUnpackagedTests\**
-    TargetFolder: '$(Agent.TempDirectory)\mrt_testbin\$(buildPlatform)'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish mrtcore test binaries'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    PathtoPublish: '$(Agent.TempDirectory)\mrt_testbin\$(buildPlatform)'
-    artifactName: mrtcore_test_binaries_$(buildPlatform)
-
 - task: ComponentGovernanceComponentDetection@0
   inputs:
     scanType: 'Register'
@@ -232,6 +222,12 @@ steps:
       Microsoft.Windows.ApplicationModel.Resources.winmd
     TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu'
     flattenFolders: true
+
+- ${{ if eq(parameters.GenerateSBOM, 'true') }}:
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'SBOM Generation Task'
+    inputs:
+      BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: Binaries'

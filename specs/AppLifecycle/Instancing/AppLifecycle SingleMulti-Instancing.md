@@ -77,28 +77,28 @@ expect. An app can have multiple instances available as redirection targets.
 
 ### Post-Redirection Behavior
 
--   **Platform**: In the UWP implementation, redirection is a terminal operation: after calling the
-    method to redirect, there is nothing the app can do - regardless of whether the redirect
-    succeeded or failed. The platform therefore explicitly terminates an instance that has chosen
-    to redirect. If redirection fails, the activation request fails. The UX is the same as an
-    activation failure today.
+- **Platform**: In the UWP implementation, redirection is a terminal operation: after calling the
+  method to redirect, there is nothing the app can do - regardless of whether the redirect
+  succeeded or failed. The platform therefore explicitly terminates an instance that has chosen
+  to redirect. If redirection fails, the activation request fails. The UX is the same as an
+  activation failure today.
 
--   **Windows App SDK**: The Windows App SDK implementation is more flexible: redirection is not a terminal operation.
-    Partly this is because it is a lot more problematic to terminate a traditional unpackaged app than
-    a UWP app. Partly it is because the app may wish to redirect a given activation request but then
-    to continue activating the current instance anyway. This supports the case where an activation
-    request is redirected to an instance that was already running: that instance could already be
-    doing work, and may choose to  redirect the new request elsewhere. Even in the case where an
-    instance was not already running prior to receiving the activation request, it might still want
-    the option to choose for itself what happens next.
+- **Windows App SDK**: The Windows App SDK implementation is more flexible: redirection is not a terminal operation.
+  Partly this is because it is a lot more problematic to terminate a traditional unpackaged app than
+  a UWP app. Partly it is because the app may wish to redirect a given activation request but then
+  to continue activating the current instance anyway. This supports the case where an activation
+  request is redirected to an instance that was already running: that instance could already be
+  doing work, and may choose to  redirect the new request elsewhere. Even in the case where an
+  instance was not already running prior to receiving the activation request, it might still want
+  the option to choose for itself what happens next.
 
-    An activation request can be redirected multiple times - this leaves it open for the app to decide
-    what makes sense for that app. That is, instance A could redirect to instance B, which in turn
-    could redirect to instance C, and so on. This also allows for a circular redirection - and again,
-    it is left open for the app to resolve circular redirections in whatever way it chooses. For
-    example, to  resolve a circular redirection, an app instance could take note of the activation
-    payload and match it against future activation requests. Or it could modify the payload when it
-    redirects a request,  such that it can easily determine that this is a request it has already seen.
+  An activation request can be redirected multiple times - this leaves it open for the app to decide
+  what makes sense for that app. That is, instance A could redirect to instance B, which in turn
+  could redirect to instance C, and so on. This also allows for a circular redirection - and again,
+  it is left open for the app to resolve circular redirections in whatever way it chooses. For
+  example, to  resolve a circular redirection, an app instance could take note of the activation
+  payload and match it against future activation requests. Or it could modify the payload when it
+  redirects a request,  such that it can easily determine that this is a request it has already seen.
 
 ### Unregistering
 
@@ -153,16 +153,16 @@ int APIENTRY wWinMain(
     // An app might want to set itself up for possible redirection in
     // the case where it opens files - for example, to prevent multiple
     // instances from working on the same file.
-    ExtendedActivationKind kind = activationArgs.Kind;
+    ExtendedActivationKind kind = activationArgs.Kind();
     if (kind == ExtendedActivationKind::File)
     {
-        auto fileArgs = activationArgs.Data.as<FileActivatedEventArgs>();
+        auto fileArgs = activationArgs.Data().as<IFileActivatedEventArgs>();
         IStorageItem file = fileArgs.Files().GetAt(0);
 
         // Let's try to register this instance for this file.
         AppInstance instance =
             AppInstance::FindOrRegisterForKey(file.Name());
-        if (instance.IsCurrent)
+        if (instance.IsCurrent())
         {
             // If we successfully registered this instance, we can now just
             // go ahead and do normal initialization.
@@ -213,7 +213,7 @@ int APIENTRY wWinMain(
         AppInstance::GetCurrent().GetActivatedEventArgs();
 
     // As above, check for any specific activation kind we care about.
-    ExtendedActivationKind kind = activationArgs.Kind;
+    ExtendedActivationKind kind = activationArgs.Kind();
     if (kind == ExtendedActivationKind::File)
     {
         // etc... as in previous scenario.
@@ -237,6 +237,8 @@ int APIENTRY wWinMain(
             if (instance.Key == L"REUSABLE")
             {
                 isFound = true;
+
+                // Note that get() is a synchronous call that will block the current thread.
                 instance.RedirectActivationToAsync(activationArgs).get();
                 break;
             }
@@ -273,34 +275,38 @@ int APIENTRY wWinMain(
 
     // First, hook up the Activated event, to allow for this instance of the app
     // getting reactivated as a result of multi-instance redirection.
-    Microsoft::WindowsAppSDK::AppInstance::GetCurrent().Activated([](
-        AppActivationArguments const& args)
-        { OnActivated(args); });
+
+    AppInstance thisInstance = AppInstance::GetCurrent();
+    auto activationToken = thisInstance.Activated(
+        auto_revoke, [&thisInstance](
+            const auto& sender, const AppActivationArguments& args)
+        { OnActivated(sender, args); }
+    );
 
     //...etc - the rest of WinMain as normal.
 }
 
-void OnActivated(AppActivationArguments const& args)
+void OnActivated(const IInspectable&, const AppActivationArguments& args)
 {
-    ExtendedActivationKind kind = args.Kind;
+    ExtendedActivationKind kind = args.Kind();
     if (kind == ExtendedActivationKind::Launch)
     {
-        auto launchArgs = args.Data().as<LaunchActivatedEventArgs>();
+        auto launchArgs = args.Data().as<ILaunchActivatedEventArgs>();
         DoSomethingWithLaunchArgs(launchArgs.Arguments());
     }
     else if (kind == ExtendedActivationKind::File)
     {
-        auto fileArgs = args.Data().as<FileActivatedEventArgs>();
+        auto fileArgs = args.Data().as<IFileActivatedEventArgs>();
         DoSomethingWithFileArgs(fileArgs.Files());
     }
     else if (kind == ExtendedActivationKind::Protocol)
     {
-        auto protocolArgs = args.Data().as<ProtocolActivatedEventArgs>();
+        auto protocolArgs = args.Data().as<IProtocolActivatedEventArgs>();
         DoSomethingWithProtocolArgs(protocolArgs.Uri());
     }
     else if (kind == ExtendedActivationKind::StartupTask)
     {
-        auto startupArgs = args.Data().as<StartupTaskActivatedEventArgs>();
+        auto startupArgs = args.Data().as<IStartupTaskActivatedEventArgs>();
         DoSomethingWithStartupArgs(startupArgs.TaskId());
     }
 }
@@ -314,14 +320,14 @@ handle this new activation in the current instance or redirect again, effectivel
 redirections.
 
 ```c++
-void OnActivated(AppActivationArguments const& args)
+void OnActivated(const IInspectable&, const AppActivationArguments& args)
 {
-    const ExtendedActivationKind kind = args.Kind;
+    const ExtendedActivationKind kind = args.Kind();
 
     // For example, we might want to redirect protocol activations.
     if (kind == ExtendedActivationKind::Protocol)
     {
-        auto protocolArgs = args.Data().as<ProtocolActivatedEventArgs>();
+        auto protocolArgs = args.Data().as<IProtocolActivatedEventArgs>();
         Uri uri = protocolArgs.Uri();
 
         // We'll try to find the instance that handles protocol activations.

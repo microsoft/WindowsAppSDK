@@ -16,8 +16,6 @@
 
 #include <../Detours/detours.h>
 
-#define WIN1019H1_BLDNUM 18362
-
 // Ensure that metadata resolution functions are imported so they can be detoured
 extern "C"
 {
@@ -65,32 +63,6 @@ enum class ActivationLocation
     CurrentApartment,
     CrossApartmentMTA
 };
-
-VERSIONHELPERAPI IsWindowsVersionOrGreaterEx(WORD wMajorVersion, WORD wMinorVersion, WORD wServicePackMajor, WORD wBuildNumber)
-{
-    OSVERSIONINFOEXW osvi = { sizeof(osvi) };
-    DWORDLONG const dwlConditionMask =
-        VerSetConditionMask(
-            VerSetConditionMask(
-                VerSetConditionMask(
-                    VerSetConditionMask(
-                        0, VER_MAJORVERSION, VER_GREATER_EQUAL),
-                    VER_MINORVERSION, VER_GREATER_EQUAL),
-                VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL),
-            VER_BUILDNUMBER, VER_GREATER_EQUAL);
-
-    osvi.dwMajorVersion = wMajorVersion;
-    osvi.dwMinorVersion = wMinorVersion;
-    osvi.wServicePackMajor = wServicePackMajor;
-    osvi.dwBuildNumber = wBuildNumber;
-
-    return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR | VER_BUILDNUMBER, dwlConditionMask) != FALSE;
-}
-
-VERSIONHELPERAPI IsWindows1019H1OrGreater()
-{
-    return IsWindowsVersionOrGreaterEx(HIBYTE(_WIN32_WINNT_WIN10), LOBYTE(_WIN32_WINNT_WIN10), 0, WIN1019H1_BLDNUM);
-}
 
 VOID CALLBACK EnsureMTAInitializedCallBack
 (
@@ -441,7 +413,7 @@ HRESULT UrfwInitialize() noexcept
     DetourAttach(&(PVOID&)TrueRoResolveNamespace, RoResolveNamespaceDetour);
     try
     {
-        ExtRoLoadCatalog();
+        RETURN_IF_FAILED(ExtRoLoadCatalog());
     }
     catch (...)
     {

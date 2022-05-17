@@ -22,7 +22,7 @@ namespace Test::Bootstrap
         DDLM = 0x0004,
         Singleton = 0x0008,
 
-        Default = Framework | Main | DDLM,
+        Default = Framework | Main | DDLM | Singleton,
     };
 }
 DEFINE_ENUM_FLAG_OPERATORS(Test::Bootstrap::Packages)
@@ -154,8 +154,8 @@ namespace Test::Bootstrap
 
     inline void Cleanup()
     {
-        CleanupPackages();
         CleanupBootstrap();
+        CleanupPackages();
     }
 }
 

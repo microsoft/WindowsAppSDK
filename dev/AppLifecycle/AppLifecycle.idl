@@ -3,6 +3,10 @@
 
 namespace Microsoft.Windows.AppLifecycle
 {
+    [contractversion(2)]
+    apicontract AppLifecycleContract {};
+
+    [contract(AppLifecycleContract, 1)]
     enum ExtendedActivationKind
     {
         Launch = 0,
@@ -53,19 +57,27 @@ namespace Microsoft.Windows.AppLifecycle
         // Windows.ApplicationModel.Activation.ActivationKind.
 
         Push = 5000,
+
+        [contract(AppLifecycleContract, 2)]
+        AppNotification,
     };
 
+    [contract(AppLifecycleContract, 1)]
     runtimeclass AppActivationArguments
     {
         ExtendedActivationKind Kind { get; };
         IInspectable Data{ get; };
     };
 
+    [contract(AppLifecycleContract, 1)]
     runtimeclass AppInstance
     {
         static AppInstance GetCurrent();
         static Windows.Foundation.Collections.IVector<AppInstance> GetInstances();
         static AppInstance FindOrRegisterForKey(String key);
+
+        [contract(AppLifecycleContract, 2)]
+        static Windows.ApplicationModel.Core.AppRestartFailureReason Restart(String arguments);
 
         void UnregisterKey();
         Windows.Foundation.IAsyncAction RedirectActivationToAsync(Microsoft.Windows.AppLifecycle.AppActivationArguments args);
@@ -77,6 +89,7 @@ namespace Microsoft.Windows.AppLifecycle
         UInt32 ProcessId{ get; };
     }
 
+    [contract(AppLifecycleContract, 1)]
     static runtimeclass ActivationRegistrationManager
     {
         static void RegisterForFileTypeActivation(String[] supportedFileTypes, String logo,

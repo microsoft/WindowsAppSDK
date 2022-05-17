@@ -6,12 +6,13 @@
 #include <filesystem>
 #include <fstream>
 
+#include <PushNotificationsLongRunningPlatform-Startup.h>
 void Help();
-HRESULT JustDoIt(PCWSTR path) noexcept;
-void AddPackageIfNecessary(PCWSTR path, const std::wstring& filename, const std::wstring& packageFullName);
+HRESULT JustDoIt(PCWSTR path, bool forceDeployment) noexcept;
+void AddPackageIfNecessary(PCWSTR path, const std::wstring& filename, const std::wstring& packageFullName, bool forceDeployment);
 bool NeedToRegisterPackage(const std::wstring& packageFullName);
 bool NeedToRegisterPackage(PCWSTR packageFullName);
-HRESULT AddPackage(PCWSTR path, const std::wstring& filename);
+HRESULT AddPackage(PCWSTR path, const std::wstring& filename, bool forceDeployment);
 
 class PackageId
 {
@@ -94,7 +95,7 @@ public:
         if (m_packageFamilyName.empty())
         {
             wchar_t packageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
-            uint32_t packageFamilyNameLength{ static_cast<uint32_t>(ARRAYSIZE(packageFamilyName)) };
+            uint32_t packageFamilyNameLength{ ARRAYSIZE(packageFamilyName) };
             THROW_IF_WIN32_ERROR_MSG(::PackageFamilyNameFromFullName(m_packageFullName.c_str(), &packageFamilyNameLength, packageFamilyName), "PackageFullName:%ls", m_packageFullName.c_str());
             m_packageFamilyName = packageFamilyName;
         }
@@ -118,18 +119,18 @@ private:
 void Help()
 {
     wprintf(L"WindowsAppRuntime_MSIXInstallFromPath [options] <path>\n"
-            L"options:\n"
-            L"  -?, --help = Display help\n"
-            L"          -- = End of options\n"
-            L"where:\n"
-            L"  path = Path where Windows App SDK's MSIX packages can be found\n"
-            L"           => Microsoft.WindowsAppRuntime.*.msix\n"
-            L"           => Microsoft.WindowsAppRuntime.DDLM.*.msix\n"
-            L"           => Microsoft.WindowsAppRuntime.Main.*.msix\n"
-            L"           => Microsoft.WindowsAppRuntime.Singleton.*.msix\n");
+        L"options:\n"
+        L"  -f, --force = Force shutdown WinAppSDK's processes if necessary to update WinAppSDK's MSIX packages\n"
+        L"  -?, --help  = Display help\n"
+        L"          --  = End of options\n"
+        L"where:\n"
+        L"  path = Path where Windows App SDK's MSIX packages can be found\n"
+        L"           => Microsoft.WindowsAppRuntime.*.msix\n"
+        L"           => Microsoft.WindowsAppRuntime.DDLM.*.msix\n"
+        L"           => Microsoft.WindowsAppRuntime.Main.*.msix\n"
+        L"           => Microsoft.WindowsAppRuntime.Singleton.*.msix\n");
 }
-
-HRESULT JustDoIt(PCWSTR path) noexcept try
+HRESULT JustDoIt(PCWSTR path, bool forceDeployment) noexcept try
 {
     wprintf(L"path: %s\n", path);
 
@@ -138,6 +139,9 @@ HRESULT JustDoIt(PCWSTR path) noexcept try
     auto inventory{ fpath / L"MSIX.inventory" };
     std::string lineUtf8;
     std::ifstream f{ inventory };
+    
+    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND), std::filesystem::exists(inventory), "%ls", inventory.c_str());
+
     while (getline(f, lineUtf8))
     {
         // Skip blank lines
@@ -161,29 +165,37 @@ HRESULT JustDoIt(PCWSTR path) noexcept try
         auto packageFullName{ std::wstring(line.c_str() + offset + 1) };
         THROW_HR_IF_MSG(E_UNEXPECTED, packageFullName.empty(), "line:%s", lineUtf8.c_str());
 
-        AddPackageIfNecessary(path, filename, packageFullName);
+        AddPackageIfNecessary(path, filename, packageFullName, forceDeployment);
+    }
+
+    // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
+    if (forceDeployment)
+    {
+        // wil callback will be set up to log telemetry events for LRP.
+        THROW_IF_FAILED_MSG(StartupNotificationsLongRunningPlatform(), "Restarting Push Notifications LRP failed after 3 attempts.");
     }
 
     return 0;
 }
 CATCH_RETURN();
 
-void AddPackageIfNecessary(PCWSTR path, const std::wstring& filename, const std::wstring& packageFullName)
+void AddPackageIfNecessary(PCWSTR path, const std::wstring& filename, const std::wstring& packageFullName, bool forceDeployment)
 {
     wprintf(L"Path: %s\n", path);
     wprintf(L"Filename: %s\n", filename.c_str());
     wprintf(L"PackageFullName: %s\n", packageFullName.c_str());
+    wprintf(L"forceDeployment:%s\n", forceDeployment ?  L"true" : L"false");
 
     if (!NeedToRegisterPackage(packageFullName))
     {
         return;
     }
 
-    auto hr{ AddPackage(path, filename) };
+    auto hr{ AddPackage(path, filename, forceDeployment) };
     if (FAILED(hr))
     {
-        wprintf(L"AddPackage(): 0x%X Path:%ls Filename:%ls PackageFullName:%ls", hr, path, filename.c_str(), packageFullName.c_str());
-        THROW_HR_MSG(hr, "Path:%ls Filename:%ls PackageFullName:%ls", path, filename.c_str(), packageFullName.c_str());
+        wprintf(L"AddPackage(): 0x%X Path:%s Filename:%s PackageFullName:%s forceDeployment:%s", hr, path, filename.c_str(), packageFullName.c_str(), forceDeployment ? L"true" : L"false");
+        THROW_HR_MSG(hr, "Path:%ls Filename:%ls PackageFullName:%ls forceDeployment:%ls", path, filename.c_str(), packageFullName.c_str(), forceDeployment ? L"true" : L"false");
     }
 }
 
@@ -231,12 +243,15 @@ bool NeedToRegisterPackage(PCWSTR packageFullName)
     return true;
 }
 
-HRESULT AddPackage(PCWSTR path, const std::wstring& filename)
+HRESULT AddPackage(PCWSTR path, const std::wstring& filename, bool forceDeployment)
 {
     const auto packagePath{ std::filesystem::path(path) / filename };
     const auto packagePathUri{ winrt::Windows::Foundation::Uri(packagePath.c_str()) };
     winrt::Windows::Management::Deployment::PackageManager packageManager;
-    const auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
+
+    const auto options{ forceDeployment ?
+            winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
+            winrt::Windows::Management::Deployment::DeploymentOptions::None };
     auto deploymentResult{ packageManager.AddPackageAsync(packagePathUri, nullptr, options).get() };
     return deploymentResult.ExtendedErrorCode();
 }
@@ -246,6 +261,8 @@ int wmain(int argc, wchar_t *argv[])
     try
     {
         winrt::init_apartment();
+
+        bool forceDeployment{};
 
         // Parse the command line
         int index{ 1 };
@@ -257,11 +274,16 @@ int wmain(int argc, wchar_t *argv[])
                 // Options are -o (short form) or --option (long form)
                 break;
             }
-            else if (arg[1] == L'-')
+            else if ((CompareStringOrdinal(arg, -1, L"--", -1, TRUE) == CSTR_EQUAL))
             {
                 // -- = end of options
                 ++index;
                 break;
+            }
+            else if ((CompareStringOrdinal(arg, -1, L"-f", -1, TRUE) == CSTR_EQUAL) ||
+                     (CompareStringOrdinal(arg, -1, L"--force", -1, TRUE) == CSTR_EQUAL))
+            {
+                forceDeployment = true;
             }
             else if ((CompareStringOrdinal(arg, -1, L"-?", -1, FALSE) == CSTR_EQUAL) ||
                      (CompareStringOrdinal(arg, -1, L"--help", -1, FALSE) == CSTR_EQUAL))
@@ -289,7 +311,7 @@ int wmain(int argc, wchar_t *argv[])
             return ERROR_BAD_ARGUMENTS;
         }
 
-        return JustDoIt(path);
+        return JustDoIt(path, forceDeployment);
     }
     catch (...)
     {

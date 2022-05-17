@@ -17,6 +17,8 @@ using namespace winrt::Windows::System;
 
 namespace Test::PushNotifications
 {
+    static const PCWSTR c_processName = L"TAEF.exe";
+    static const PCWSTR c_appId = L"toastAppId";
     class LRPTests
     {
 
@@ -31,6 +33,12 @@ namespace Test::PushNotifications
         {
             try
             {
+                VERIFY_SUCCEEDED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
+                TP::RemovePackage_PushNotificationsLongRunningTask();
+                TP::RemovePackage_DynamicDependencyLifetimeManager();
+                TP::RemovePackage_DynamicDependencyDataStore();
+                TP::RemovePackage_WindowsAppRuntimeFramework();
+
                 TP::AddPackage_WindowsAppRuntimeFramework();       // Installs WASfwk
                 TP::AddPackage_DynamicDependencyDataStore();       // Installs WASmain
                 TP::AddPackage_DynamicDependencyLifetimeManager(); // Installs WASddlm
@@ -53,6 +61,7 @@ namespace Test::PushNotifications
                 TP::RemovePackage_DynamicDependencyLifetimeManager();
                 TP::RemovePackage_DynamicDependencyDataStore();
                 TP::RemovePackage_WindowsAppRuntimeFramework();
+                VERIFY_NO_THROW(CoUninitialize());
             }
             catch (...)
             {
@@ -82,22 +91,8 @@ namespace Test::PushNotifications
 
         TEST_METHOD(LaunchLRP_FromCoCreateInstance)
         {
-            VERIFY_SUCCEEDED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
-
-            auto scopeExit = wil::scope_exit(
-                [&]() { VERIFY_NO_THROW(CoUninitialize()); });
-
-            VERIFY_NO_THROW(winrt::create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL));
-
-            // Poll the app status every second. It should be alive for 5 seconds.
-            for (int i = 0; i < 5; i++)
-            {
-                VerifyLRP_IsRunning(true);
-                Sleep(1000);
-            }
-
-            // Verify the LRP is not running.
-            VerifyLRP_IsRunning(false);
+            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
+            VERIFY_IS_NOT_NULL(notificationPlatform.get());
         }
 
         TEST_METHOD(LaunchLRP_FromStartupTask)
@@ -179,5 +174,33 @@ namespace Test::PushNotifications
             VERIFY_IS_FALSE(isRunning);
         }
 
+        TEST_METHOD(AddToastRegistrationMappingNoSink)
+        {
+            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
+            VERIFY_IS_NOT_NULL(notificationPlatform.get());
+
+            VERIFY_NO_THROW(notificationPlatform->AddToastRegistrationMapping(c_processName, c_appId));
+        }
+
+        TEST_METHOD(RemoveToastRegistrationMappingNoSink)
+        {
+            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
+            VERIFY_IS_NOT_NULL(notificationPlatform.get());
+
+            VERIFY_NO_THROW(notificationPlatform->RemoveToastRegistrationMapping(c_processName));
+        }
+
+        TEST_METHOD(AddRemoveToastRegistrationMappingWithSink)
+        {
+            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
+            VERIFY_IS_NOT_NULL(notificationPlatform.get());
+
+            wil::unique_cotaskmem_string unpackagedAumid;
+            VERIFY_NO_THROW(notificationPlatform->RegisterFullTrustApplication(c_processName, c_remoteId, &unpackagedAumid));
+            VERIFY_NO_THROW(notificationPlatform->RegisterLongRunningActivator(unpackagedAumid.get()));
+            VERIFY_NO_THROW(notificationPlatform->AddToastRegistrationMapping(c_processName, c_appId));
+            VERIFY_NO_THROW(notificationPlatform->RemoveToastRegistrationMapping(c_processName));
+            VERIFY_NO_THROW(notificationPlatform->UnregisterLongRunningActivator(c_processName));
+        }
     };
 }

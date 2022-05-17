@@ -10,7 +10,7 @@
     <TemplateGroupID>WinRT-Managed-UAP</TemplateGroupID>
     <AppliesTo>CSharp + SharedAssetsProject</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
-    <ShowByDefault>true</ShowByDefault>
+    <ShowByDefault>false</ShowByDefault>
     <TargetPlatformName>Windows</TargetPlatformName>
     <AppIdFilter>blend</AppIdFilter>
     <LanguageTag>csharp</LanguageTag>

@@ -33,10 +33,12 @@
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.ApplicationModel.AppExtensions.h>
 #include <winrt/Windows.Data.Json.h>
+#include <winrt/Windows.Management.Core.h>
 #include <winrt/Windows.Management.Deployment.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
 
 #include <appmodel.identity.h>
+#include <appmodel.packagegraph.h>
 #include <microsoft.utf8.h>
 #include <security.integritylevel.h>

@@ -85,8 +85,8 @@ HRESULT LoadManifestFromPath(std::wstring path)
         return COR_E_ARGUMENT;
     }
     std::wstring ext(path.substr(path.size() - 4, path.size()));
-    if ((CompareStringOrdinal(ext.c_str(), -1, L".exe.", -1, TRUE) == CSTR_EQUAL) ||
-        (CompareStringOrdinal(ext.c_str(), -1, L".dll.", -1, TRUE) == CSTR_EQUAL))
+    if ((CompareStringOrdinal(ext.c_str(), -1, L".exe", -1, TRUE) == CSTR_EQUAL) ||
+        (CompareStringOrdinal(ext.c_str(), -1, L".dll", -1, TRUE) == CSTR_EQUAL))
     {
         return LoadFromEmbeddedManifest(path.c_str());
     }
@@ -405,7 +405,7 @@ HRESULT WinRTGetMetadataFile(
     // will create an instance of the metadata reader to dispense metadata files.
     if (metaDataDispenser == nullptr)
     {
-        // Avoid using CoCreateInstance here, which will trigger a Feature-On-Demand (FOD) 
+        // Avoid using CoCreateInstance here, which will trigger a Feature-On-Demand (FOD)
         // installation request of .NET Framework 3.5 if it's not already installed. In the
         // mean time, Windows App SDK runtime doesn't need .NET Framework 3.5.
         RETURN_IF_FAILED(MetaDataGetDispenser(CLSID_CorMetaDataDispenser,

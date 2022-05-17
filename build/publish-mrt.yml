@@ -3,9 +3,9 @@ parameters:
 
 steps:
 - task: NuGetToolInstaller@1
-  displayName: 'Use NuGet 5.6'
+  displayName: 'Use NuGet 5.11'
   inputs:
-    versionSpec: 5.6
+    versionSpec: 5.11
   continueOnError: true
 
 - task: DownloadBuildArtifacts@0
@@ -28,30 +28,12 @@ steps:
     flattenFolders: true
 
 - task: CopyFiles@2
-  displayName: 'copy Intellisense into uap10.0 folder'
-  inputs:
-    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging\Intellisense'
-    Contents: |
-      Microsoft.Windows.ApplicationModel.Resources.xml
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\uap10.0\'
-    flattenFolders: true
-
-- task: CopyFiles@2
   displayName: 'copy .net 5 projection DLL and PDB'
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\anycpu'
     Contents: |
       net5.0\Microsoft.Windows.ApplicationModel.Resources.Projection.pdb
       net5.0\Microsoft.Windows.ApplicationModel.Resources.Projection.dll
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\net5.0-windows10.0.17763.0\'
-    flattenFolders: true
-
-- task: CopyFiles@2
-  displayName: 'copy Intellisense into .net 5 folder'
-  inputs:
-    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging\Intellisense'
-    Contents: |
-      Microsoft.Windows.ApplicationModel.Resources.Projection.xml
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\net5.0-windows10.0.17763.0\'
     flattenFolders: true
 
@@ -130,6 +112,7 @@ steps:
       native\MrtCore.C.props
       native\MrtCore.props
       native\MrtCore.targets
+      ProjectItemsSchema.xaml
       README.md
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\build'
     flattenFolders: false
@@ -140,6 +123,14 @@ steps:
     SourceFolder: '${{ parameters.MRTSourcesDirectory }}\mrt\core\src'
     Contents: |
       mrm.h
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
+
+- task: CopyFiles@2
+  displayName: 'copy idl'
+  inputs:
+    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\mrt\Microsoft.Windows.ApplicationModel.Resources\src'
+    Contents: |
+      Microsoft.Windows.ApplicationModel.Resources.idl
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
 
 - task: PublishBuildArtifacts@1

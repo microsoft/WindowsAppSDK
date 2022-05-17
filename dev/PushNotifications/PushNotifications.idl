@@ -1,12 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#include <TerminalVelocityFeatures-PushNotifications.h>
-
 namespace Microsoft.Windows.PushNotifications
 {
-    [feature(Feature_PushNotifications)]
+    [contractversion(1)]
+    apicontract PushNotificationsContract {}
+
     // Event args for the Push payload.
+    [contract(PushNotificationsContract, 1)]
     runtimeclass PushNotificationReceivedEventArgs
     {
         // The Push payload
@@ -17,44 +18,9 @@ namespace Microsoft.Windows.PushNotifications
 
         // Subscribe to Cancelled event handler to be signalled when resource policies are no longer true like 30s wallclock timer
         event Windows.ApplicationModel.Background.BackgroundTaskCanceledEventHandler Canceled;
-
-        // Indicates if the foreground push notification will be re-posted through background activation.
-        // Default value is false, which allows re-posting.
-        Boolean Handled;
     };
 
-    [feature(Feature_PushNotifications)]
-    [flags]
-    enum PushNotificationRegistrationActivators
-    {
-        Undefined = 0,
-        PushTrigger = 0x1, // Registers a Push Trigger with Background Infrastructure
-        ComActivator = 0x2, // Registers the Background Task component as an in-process COM server
-        ProtocolActivator = 0x4, // Registers an application with the PushNotificationsLongRunningTask to be activated via protocol
-    };
-
-    [feature(Feature_PushNotifications)]
-    runtimeclass PushNotificationActivationInfo
-    {
-        // Initialize using a Registration option and optionally defined parameters like manifest defined activatorId
-        // 1) If kind = PushTrigger is specified, only the Push Trigger will be Registered with Background Infra
-        // 2) If kind = ComActivator is specified, the Background Task component will be Registered as an in-process COM server
-        PushNotificationActivationInfo(PushNotificationRegistrationActivators activators, Guid taskClsid);
-
-        // Applications that need to use ProtocolActivator will use this constructor
-        PushNotificationActivationInfo(PushNotificationRegistrationActivators activators);
-
-        // The CLSID associated with the Client COM server that Windows App SDK will activate
-        Guid TaskClsid{ get; };
-
-        PushNotificationRegistrationActivators Activators{ get; };
-
-        // The conditions under which Push Triggers would execute
-        Windows.ApplicationModel.Background.IBackgroundCondition[] GetConditions();
-        void SetConditions(Windows.ApplicationModel.Background.IBackgroundCondition[] conditions);
-    };
-
-    [feature(Feature_PushNotifications)]
+    [contract(PushNotificationsContract, 1)]
     enum PushNotificationChannelStatus
     {
         InProgress, // The request is in progress and there is no retry operation
@@ -64,7 +30,7 @@ namespace Microsoft.Windows.PushNotifications
     };
 
     // The PushNotificationChannel Progress result
-    [feature(Feature_PushNotifications)]
+    [contract(PushNotificationsContract, 1)]
     struct PushNotificationCreateChannelStatus
     {
         // Either InProgress or InProgressRetry status
@@ -77,7 +43,7 @@ namespace Microsoft.Windows.PushNotifications
         UInt32 retryCount;
     };
 
-    [feature(Feature_PushNotifications)]
+    [contract(PushNotificationsContract, 1)]
     runtimeclass PushNotificationChannel
     {
         // The Channel Uri for app to Post a notification to.
@@ -88,19 +54,11 @@ namespace Microsoft.Windows.PushNotifications
 
         // Unsubscribes the channel
         void Close();
-
-        // Event handler for Push Notifications
-        event Windows.Foundation.TypedEventHandler<PushNotificationChannel, PushNotificationReceivedEventArgs> PushReceived;
     }
 
-    [feature(Feature_PushNotifications)]
+    [contract(PushNotificationsContract, 1)]
     runtimeclass PushNotificationCreateChannelResult
     {
-        PushNotificationCreateChannelResult(
-            PushNotificationChannel channel,
-            HRESULT extendedError,
-            PushNotificationChannelStatus status);
-
         // The Push channel associated with the Result. Valid only if status is CompletedSuccess.
         PushNotificationChannel Channel { get; };
 
@@ -111,25 +69,33 @@ namespace Microsoft.Windows.PushNotifications
         PushNotificationChannelStatus Status { get; };
     };
 
-    [feature(Feature_PushNotifications)]
-    static runtimeclass PushNotificationManager
+    [contract(PushNotificationsContract, 1)]
+    runtimeclass PushNotificationManager
     {
-        // Register an activator using an ActivationInfo context and cache the flag for unregister
-        static void RegisterActivator(PushNotificationActivationInfo details);
+        // Checks to see if the APIs are supported for the Desktop app
+        // Certain self-contained apps may not support Push Notification scenarios by design
+        static Boolean IsSupported();
 
-        // Unregister any activator given PushNotificationRegistrationActivators
-        // 1) If kind = PushTrigger is specified, the trigger itself will be removed
-        // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will no longer act as an InProc COM Server
-        // 3) If kind = ProtocolActivator is specified, the application will be unregistered from the long running process that handles activation
-        static void UnregisterActivator(PushNotificationRegistrationActivators activators);
+        // Gets a Default instance of a PushNotificationManager
+        static PushNotificationManager Default{ get; };
 
-        // Unregister all activators registered for the application
-        static void UnregisterAllActivators();
+        // Registers an application for Notifications
+        // For Unpackaged applications, registers support for protocol activations
+        // For packaged applications with Background Infrastructure support, registers Push Trigger with the Background Infrastructure
+        // For packaged applications without Background Infrastructure support, registers a COM Service
+        void Register();
+
+        // Packaged Apps: Force COM to launch a new process
+        // Unpackaged apps: Remove the Foreground Sink to force Long Running Process Singleton to launch a new process instance.
+        void Unregister();
+
+        // Disables Push completely for Packaged and Unpackaged apps. Register() needs to be called again for Push to work
+        void UnregisterAll();
 
         // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
-        static Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
+        Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
 
-        // Applications will call this to check which flags are supported for RegisterActivator
-        static Boolean IsActivatorSupported(PushNotificationRegistrationActivators activators);
+        // Event handler for Push Notifications
+        event Windows.Foundation.TypedEventHandler<PushNotificationManager, PushNotificationReceivedEventArgs> PushReceived;
     };
 }

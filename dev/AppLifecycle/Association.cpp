@@ -15,45 +15,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         return (extension.at(0) == L'.');
     }
 
-    std::wstring GetFullIdentityString()
-    {
-        std::wstring identityString;
-        WCHAR idNameBuffer[PACKAGE_FULL_NAME_MAX_LENGTH+1];
-        UINT32 idNameBufferLen = ARRAYSIZE(idNameBuffer);
-        if (::GetCurrentPackageFullName(&idNameBufferLen, idNameBuffer) == ERROR_SUCCESS)
-        {
-            identityString = idNameBuffer;
-        }
-
-        return identityString;
-    }
-
-    bool HasIdentity()
-    {
-        return !(GetFullIdentityString()).empty();
-    }
-
-    std::wstring GetModulePath()
-    {
-        std::wstring path(100, L'?');
-        uint32_t path_size{};
-        DWORD actual_size{};
-
-        do
-        {
-            path_size = static_cast<uint32_t>(path.size());
-            actual_size = ::GetModuleFileName(nullptr, path.data(), path_size);
-
-            if (actual_size + 1 > path_size)
-            {
-                path.resize(path_size * 2, L'?');
-            }
-        } while (actual_size + 1 > path_size);
-
-        path.resize(actual_size);
-        return path;
-    }
-
     std::wstring ComputeAppId(const std::wstring& customSeed)
     {
         // Prefix = App -- Simple human readable piece to help organize these together.
@@ -62,14 +23,21 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         if (seed.empty())
         {
-            seed = GetModulePath();
+            seed = wil::GetModuleFileNameW<std::wstring>(nullptr);
         }
 
         std::hash<std::wstring> hasher;
         auto hash = hasher(seed);
-;
+        uint64_t hash64 = static_cast<uint64_t>(hash);
+
+        // Simulate a larger hash on 32bit platforms to keep the id length consistent.
+        if constexpr (sizeof(size_t) < sizeof(uint64_t))
+        {
+            hash64 = (static_cast<uint64_t>(hash) << 32) | static_cast<uint64_t>(hash);
+        }
+
         wchar_t hashString[17]{}; // 16 + 1 characters for 64bit value represented as a string with a null terminator.
-        THROW_IF_FAILED(StringCchPrintf(hashString, _countof(hashString), L"%I64x", hash));
+        THROW_IF_FAILED(StringCchPrintf(hashString, _countof(hashString), L"%I64x", hash64));
 
         std::wstring result{ c_progIdPrefix };
         result += hashString;
@@ -460,5 +428,10 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                 ::RegDeleteValue(openWithKey.get(), progId.c_str());
             }
         }
+    }
+
+    void NotifyShellAssocChanged()
+    {
+        SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
     }
 }
