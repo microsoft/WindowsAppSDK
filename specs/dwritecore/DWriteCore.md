@@ -242,9 +242,9 @@ family model, the user can simply choose "Sitka", and the application can automa
 
 The concept of axes of variation is often associated with variable fonts, but it also applies to
 static fonts. The OpenType
-[STAT (style attributes)](https://docs.microsoft.com/en-us/typography/opentype/spec/stat) table
-declares what design axes a font has and the values of those axes. This table is required for
-variable fonts but is also relevant to static fonts.
+[STAT (style attributes)](https://docs.microsoft.com/typography/opentype/spec/stat) table declares
+what design axes a font has and the values of those axes. This table is required for variable fonts
+but is also relevant to static fonts.
 
 The DirectWrite API exposes "wght", "wdth", "ital", and "slnt" axis values for every font, even if
 they are not present in the STAT table or if there is no STAT table. These values are derived from
@@ -526,8 +526,8 @@ use monochrome glyph IDs and their associated metrics. The output of the text la
 sequence of monochrome glyph runs. Color font support can be enabled by translating those monochrome
 "base" glyph runs to color glyphs runs at rendering time.
 
-The easiest way to enable color is to call the `DrawGlyphRunWithColor` method instead of calling
-`DrawGlyphRun`. Direct2D exposes this method through the `ID2D1DeviceContext7` interface.
+The easiest way to enable color is to call the `DrawGlyphRunWithColorSupport` method instead of
+calling `DrawGlyphRun`. Direct2D exposes this method through the `ID2D1DeviceContext7` interface.
 DirectWrite exposes this method through the `IDWriteBitmapRenderTarget3` interface.
 
 At a lower level, enabling color involves translating the monochrome _base glyph run_ to a sequence
@@ -713,10 +713,10 @@ according to its type. The following paint types are defined:
 | `DWRITE_PAINT_TYPE_COMPOSITE`       | Render the two child paint elements and compose them using the specified composite mode. |
 
 For more information about paint types, see the
-[OpenType COLR Table](https://docs.microsoft.com/en-us/typography/opentype/spec/colr) specification.
-Note that some paint types in the DirectWrite API correspond to multiple paint formats in the COLR
-table. This is because the API hides some complexities, such as differences in how some paint
-elements are encoded in variable vs. non-variable fonts.
+[OpenType COLR Table](https://docs.microsoft.com/typography/opentype/spec/colr) specification. Note
+that some paint types in the DirectWrite API correspond to multiple paint formats in the COLR table.
+This is because the API hides some complexities, such as differences in how some paint elements are
+encoded in variable vs. non-variable fonts.
 
 ## Examples
 
@@ -1278,8 +1278,8 @@ wil::com_ptr<ID2D1Brush> m_foregroundBrush;
 ```
 
 The example method renders color glyphs in one of two ways. The easy way is to call
-`ID2D1DeviceContext7::DrawGlyphRunWithColor`. However, the example also includes a fallback code
-path in case the available version of Direct2D does not implement the `ID2D1DeviceContext7`
+`ID2D1DeviceContext7::DrawGlyphRunWithColorSupport`. However, the example also includes a fallback
+code path in case the available version of Direct2D does not implement the `ID2D1DeviceContext7`
 interface. The fallback code path uses `TranslateColorGlyphRun`.
 
 ```c++
@@ -1313,7 +1313,9 @@ HRESULT STDMETHODCALLTYPE TextRenderer::DrawGlyphRun(
     // the glyph run with color the "easy" way.
     if (auto deviceContext7 = m_deviceContext.try_query<ID2D1DeviceContext7>())
     {
-        deviceContext7->DrawGlyphRunWithColor(
+        // Note: Direct2D drawing methods return void. If a drawing
+        // operation fails, an error is returned by EndDraw.
+        deviceContext7->DrawGlyphRunWithColorSupport(
             baselineOrigin,
             glyphRun,
             foregroundBrush.get(),
@@ -1365,6 +1367,8 @@ HRESULT STDMETHODCALLTYPE TextRenderer::DrawGlyphRun(
     // just render the base glyph run as a monochrome glyph run.
     if (hr == DWRITE_E_NOCOLOR)
     {
+        // Note: Direct2D drawing methods return void. If a drawing
+        // operation fails, an error is returned by EndDraw.
         m_deviceContext->DrawGlyphRun(
             baselineOrigin,
             glyphRun,
@@ -1431,6 +1435,8 @@ HRESULT STDMETHODCALLTYPE TextRenderer::DrawGlyphRun(
         case DWRITE_GLYPH_IMAGE_FORMATS_JPEG:
         case DWRITE_GLYPH_IMAGE_FORMATS_TIFF:
         case DWRITE_GLYPH_IMAGE_FORMATS_PREMULTIPLIED_B8G8R8A8:
+            // Note: Direct2D drawing methods return void. If a drawing
+            // operation fails, an error is returned by EndDraw.
             m_deviceContext->DrawColorBitmapGlyphRun(
                 colorGlyphRun->glyphImageFormat,
                 baselineOrigin,
@@ -1441,6 +1447,8 @@ HRESULT STDMETHODCALLTYPE TextRenderer::DrawGlyphRun(
             break;
 
         case DWRITE_GLYPH_IMAGE_FORMATS_SVG:
+            // Note: Direct2D drawing methods return void. If a drawing
+            // operation fails, an error is returned by EndDraw.
             m_deviceContext->DrawSvgGlyphRun(
                 baselineOrigin,
                 &colorGlyphRun->glyphRun,
@@ -1571,6 +1579,9 @@ void DumpPaintElement(std::ostream& out, Indent indent, IDWritePaintReader* read
     };
 
     // Helper to write the specified number of children.
+    // The number of children is specified by the caller because it depends on
+    // the paint type. See the description of the DWRITE_PAINT_ELEMENT structure
+    // for more information.
     auto WriteChildren = [&](uint32_t childCount)
     {
         if (childCount != 0)
@@ -1599,6 +1610,8 @@ void DumpPaintElement(std::ostream& out, Indent indent, IDWritePaintReader* read
     {
         out << indent << "DWRITE_PAINT_TYPE_LAYERS:\n";
         auto const& paint = element.paint.layers;
+        // Write the children.
+        // A layers paint element has a variable number of children.
         WriteChildren(paint.childCount);
         break;
     }
@@ -1606,6 +1619,8 @@ void DumpPaintElement(std::ostream& out, Indent indent, IDWritePaintReader* read
     case DWRITE_PAINT_TYPE_SOLID_GLYPH:
     {
         auto const& paint = element.paint.solidGlyph;
+        // Write the properties.
+        // A solid glyph paint element has no children.
         out << indent << "DWRITE_PAINT_TYPE_SOLID_GLYPH:\n"
             << indent << PropName{ "glyphIndex" } << paint.glyphIndex << '\n'
             << indent << PropName{ "color" } << paint.color.value << '\n';
@@ -1615,6 +1630,8 @@ void DumpPaintElement(std::ostream& out, Indent indent, IDWritePaintReader* read
     case DWRITE_PAINT_TYPE_SOLID:
     {
         auto const& paint = element.paint.solid;
+        // Write the properties.
+        // A solid paint element has no children.
         out << indent << "DWRITE_PAINT_TYPE_SOLID:\n"
             << indent << PropName{ "color" } << paint.value << '\n';
         break;
@@ -1623,6 +1640,8 @@ void DumpPaintElement(std::ostream& out, Indent indent, IDWritePaintReader* read
     case DWRITE_PAINT_TYPE_LINEAR_GRADIENT:
     {
         auto const& paint = element.paint.linearGradient;
+        // Write the properties, including gradient stops.
+        // A linear gradient paint element has no children.
         out << indent << "DWRITE_PAINT_TYPE_LINEAR_GRADIENT:\n"
             << indent << PropName{ "p0" } << D2D_POINT_2F{ paint.x0, paint.y0 } << '\n'
             << indent << PropName{ "p1" } << D2D_POINT_2F{ paint.x1, paint.y1 } << '\n'
@@ -1634,6 +1653,8 @@ void DumpPaintElement(std::ostream& out, Indent indent, IDWritePaintReader* read
     case DWRITE_PAINT_TYPE_RADIAL_GRADIENT:
     {
         auto const& paint = element.paint.radialGradient;
+        // Write the properties, including gradient stops.
+        // A radial gradient paint element has no children.
         out << indent << "DWRITE_PAINT_TYPE_RADIAL_GRADIENT:\n"
             << indent << PropName{ "center0" } << D2D_POINT_2F{ paint.x0, paint.y0 } << '\n'
             << indent << PropName{ "radius0" } << paint.radius0 << '\n'
@@ -1646,6 +1667,8 @@ void DumpPaintElement(std::ostream& out, Indent indent, IDWritePaintReader* read
     case DWRITE_PAINT_TYPE_SWEEP_GRADIENT:
     {
         auto const& paint = element.paint.sweepGradient;
+        // Write the properties, including gradient stops.
+        // A sweep gradient paint element has no children.
         out << indent << "DWRITE_PAINT_TYPE_SWEEP_GRADIENT:\n"
             << indent << PropName{ "center" } << D2D_POINT_2F{ paint.centerX, paint.centerY } << '\n'
             << indent << PropName{ "startAngle" } << paint.startAngle << '\n'
@@ -1657,6 +1680,9 @@ void DumpPaintElement(std::ostream& out, Indent indent, IDWritePaintReader* read
     case DWRITE_PAINT_TYPE_GLYPH:
     {
         auto const& paint = element.paint.glyph;
+        // Write the properties and the child element.
+        // A glyph paint element always has one child, which represents the fill
+        // for the glyph shape.
         out << indent << "DWRITE_PAINT_TYPE_GLYPH:\n"
             << indent << PropName{ "glyphIndex" } << paint.glyphIndex << '\n'
             << indent << PropName{ "child" } << '\n';
@@ -1667,6 +1693,9 @@ void DumpPaintElement(std::ostream& out, Indent indent, IDWritePaintReader* read
     case DWRITE_PAINT_TYPE_COLOR_GLYPH:
     {
         auto const& paint = element.paint.colorGlyph;
+        // Write the properties and the child element.
+        // A color glyph paint element always has one child, which is the root
+        // of the paint tree for the glyph specified by glyphIndex.
         out << indent << "DWRITE_PAINT_TYPE_COLOR_GLYPH:\n"
             << indent << PropName{ "glyphIndex" } << paint.glyphIndex << '\n'
             << indent << PropName{ "clipBox" } << paint.clipBox << '\n'
@@ -1678,6 +1707,9 @@ void DumpPaintElement(std::ostream& out, Indent indent, IDWritePaintReader* read
     case DWRITE_PAINT_TYPE_TRANSFORM:
     {
         DWRITE_MATRIX const& paint = element.paint.transform;
+        // Write the properties and the child element.
+        // A transform paint element always has one child, which represents the
+        // transformed content.
         out << indent << "DWRITE_PAINT_TYPE_TRANSFORM:\n"
             << indent << PropName{ "transform" } << paint << '\n'
             << indent << PropName{ "child" } << '\n';
@@ -1688,6 +1720,9 @@ void DumpPaintElement(std::ostream& out, Indent indent, IDWritePaintReader* read
     case DWRITE_PAINT_TYPE_COMPOSITE:
     {
         auto const& paint = element.paint.composite;
+        // Write the properties and the child elements.
+        // A composite paint element always has two children, which represent
+        // the source and destination of the composite operation.
         out << indent << "DWRITE_PAINT_TYPE_COMPOSITE:\n"
             << indent << PropName{ "mode" } << paint.mode << '\n'
             << indent << PropName{ "children (source, destination)" } << '\n';
@@ -2221,13 +2256,13 @@ struct DWRITE_PAINT_COLOR
     float alphaMultiplier;
 
     /// <summary>
-    /// Specifies how the color value is determined. If this member is 
+    /// Specifies how the color value is determined. If this member is
     /// DWRITE_PAINT_ATTRIBUTES_USES_PALETTE, the color value is determined by getting the color at
     /// paletteEntryIndex in the current color palette. The color's alpha value is then multiplied
     /// by alphaMultiplier. If a font has multiple color palettes, a client can set the current color
     /// palette using the IDWritePaintReader::SetColorPaletteIndex method. A client that uses a custom
     /// palette can use the paletteEntryIndex and alphaMultiplier methods to compute the color. If this
-    /// member is DWRITE_PAINT_ATTRIBUTES_USES_TEXT_COLOR, the color value is equal to the text 
+    /// member is DWRITE_PAINT_ATTRIBUTES_USES_TEXT_COLOR, the color value is equal to the text
     /// foreground color, which can be set using the IDWritePaintReader::SetTextColor method.
     /// </summary>
     DWRITE_PAINT_ATTRIBUTES colorAttributes;
@@ -2939,7 +2974,7 @@ DWRITE_BEGIN_INTERFACE(IDWriteBitmapRenderTarget3, "AEEC37DB-C337-40F1-8E2A-9A41
     /// This method internally calls TranslateColorGlyphRun and then automatically calls the appropriate
     /// lower-level methods to render monochrome or color glyph runs.
     /// </remarks>
-    STDMETHOD(DrawGlyphRunWithColor)(
+    STDMETHOD(DrawGlyphRunWithColorSupport)(
         FLOAT baselineOriginX,
         FLOAT baselineOriginY,
         DWRITE_MEASURING_MODE measuringMode,
