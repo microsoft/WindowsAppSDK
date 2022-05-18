@@ -2,38 +2,16 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include <pch.h>
 #include "PathChangeTracker.h"
+#include "EnvironmentVariableChangeTrackerHelper.h"
 
 
 namespace winrt::Microsoft::Windows::System::implementation
 {
     PathChangeTracker::PathChangeTracker(const std::wstring& pathPart, EnvironmentManager::Scope scope, PathOperation operation)
+        : m_Scope(scope), m_PathPart(pathPart), m_Operation(operation)
     {
         THROW_HR_IF(E_INVALIDARG, pathPart.empty());
-
-        // Check if we need to track the changes.
-        // If we do need to track the changes get the Package Full Name
-        WCHAR packageFullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1]{};
-        UINT32 packageFullNameLength{ static_cast<UINT32>(ARRAYSIZE(packageFullName)) };
-        const long getPackageFullNameRC{ ::GetCurrentPackageFullName(&packageFullNameLength, packageFullName) };
-
-
-        if (scope == EnvironmentManager::Scope::Process || getPackageFullNameRC == APPMODEL_ERROR_NO_PACKAGE)
-        {
-            m_ShouldTrackChange = false;
-        }
-        else if (getPackageFullNameRC == ERROR_SUCCESS)
-        {
-            m_PackageFullName = std::wstring(packageFullName);
-            m_ShouldTrackChange = true;
-        }
-        else
-        {
-            THROW_WIN32(getPackageFullNameRC);
-        }
-
-        m_Scope = scope;
-        m_PathPart = pathPart;
-        m_Operation = operation;
+        m_PackageFullName = PackageFullName();
     }
 
     PCWSTR PathChangeTracker::KeyName() const
@@ -43,7 +21,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     HRESULT PathChangeTracker::TrackChange(std::function<HRESULT(void)> callback)
     {
-        if (m_ShouldTrackChange)
+        if (ShouldChangesBeTracked())
         {
             if (m_PathPart.back() != L';')
             {

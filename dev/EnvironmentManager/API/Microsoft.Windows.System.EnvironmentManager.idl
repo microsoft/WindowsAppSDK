@@ -5,7 +5,7 @@
 
 namespace Microsoft.Windows.System
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract EnvironmentManagerContract{};
 
     [contract(EnvironmentManagerContract, 1)]
@@ -16,6 +16,9 @@ namespace Microsoft.Windows.System
         static EnvironmentManager GetForMachine();
 
         static Boolean IsSupported{ get; };
+
+        [contract(EnvironmentManagerContract, 2)]
+        static Boolean AreChangesTracked{ get; };
 
         IMapView<String, String> GetEnvironmentVariables();
         String GetEnvironmentVariable(String name);

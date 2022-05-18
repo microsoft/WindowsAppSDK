@@ -20,6 +20,7 @@ namespace winrt::Microsoft::Windows::System::implementation
         static Microsoft::Windows::System::EnvironmentManager GetForUser();
         static Microsoft::Windows::System::EnvironmentManager GetForMachine();
         static bool IsSupported();
+        static bool AreChangesTracked();
         IMapView<hstring, hstring> GetEnvironmentVariables();
         hstring GetEnvironmentVariable(hstring const& variableName);
         void SetEnvironmentVariable(hstring const& name, hstring const& value);
@@ -35,9 +36,6 @@ namespace winrt::Microsoft::Windows::System::implementation
         PCWSTR c_MachineEvRegLocation{ L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment" };
         PCWSTR c_PathName{ L"PATH" };
         PCWSTR c_PathExtName{ L"PATHEXT" };
-
-        static bool s_HasCheckedIsSupported;
-        static bool s_IsSupported;
 
         StringMap GetProcessEnvironmentVariables() const;
         StringMap GetUserOrMachineEnvironmentVariables() const;

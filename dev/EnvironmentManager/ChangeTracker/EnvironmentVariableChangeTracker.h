@@ -11,22 +11,22 @@ namespace winrt::Microsoft::Windows::System::implementation
 {
     struct EnvironmentVariableChangeTracker : public IChangeTracker
     {
-        EnvironmentVariableChangeTracker(const std::wstring& key, const std::wstring& valueToSet, EnvironmentManager::Scope scope);
+        EnvironmentVariableChangeTracker(const std::wstring& evName, const std::wstring& valueToSet, EnvironmentManager::Scope scope);
         HRESULT TrackChange(std::function<HRESULT(void)> callBack);
 
     private:
-        EnvironmentManager::Scope m_Scope;
-        std::wstring m_Key;
-        std::wstring m_Value;
+        EnvironmentManager::Scope m_scope;
+        std::wstring m_eVName;
+        std::wstring m_eVValue;
 
         PCWSTR KeyName() const;
 
         wil::unique_hkey GetKeyForEnvironmentVariable() const
         {
-            FAIL_FAST_HR_IF(E_INVALIDARG, m_Scope == EnvironmentManager::Scope::Process);
+            FAIL_FAST_HR_IF(E_INVALIDARG, m_scope == EnvironmentManager::Scope::Process);
 
             wil::unique_hkey environmentVariablesHKey{};
-            if (m_Scope == EnvironmentManager::Scope::User)
+            if (m_scope == EnvironmentManager::Scope::User)
             {
                 THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_CURRENT_USER, c_UserEvRegLocation.c_str(), 0, KEY_READ, environmentVariablesHKey.addressof()));
             }
@@ -40,8 +40,8 @@ namespace winrt::Microsoft::Windows::System::implementation
 
         wil::unique_hkey GetKeyForTrackingChange(DWORD* disposition) const
         {
-            std::filesystem::path subKey = std::filesystem::path{L"Software\\ChangeTracker"}
-            / KeyName() / m_PackageFullName / ScopeToString() / m_Key;
+            std::filesystem::path subKey = std::filesystem::path{ L"Software\\ChangeTracker" }
+            / KeyName() / m_PackageFullName / ScopeToString() / m_eVName;
 
             wil::unique_hkey keyToTrackChanges{};
             THROW_IF_WIN32_ERROR(RegCreateKeyEx(HKEY_CURRENT_USER,
@@ -54,7 +54,7 @@ namespace winrt::Microsoft::Windows::System::implementation
         std::wstring GetOriginalValueOfEV() const
         {
             wil::unique_hkey environmentVariableHKey{ GetKeyForEnvironmentVariable() };
-            return QueryEvFromRegistry(m_Key, environmentVariableHKey.get());
+            return QueryEvFromRegistry(m_eVName, environmentVariableHKey.get());
         }
 
         std::wstring QueryEvFromRegistry(const std::wstring& variableKey, const HKEY KeyToOpen) const
@@ -87,11 +87,11 @@ namespace winrt::Microsoft::Windows::System::implementation
 
         std::wstring ScopeToString() const
         {
-            if (m_Scope == EnvironmentManager::Scope::Process)
+            if (m_scope == EnvironmentManager::Scope::Process)
             {
                 return L"process";
             }
-            else if (m_Scope == EnvironmentManager::Scope::User)
+            else if (m_scope == EnvironmentManager::Scope::User)
             {
                 return L"user";
             }

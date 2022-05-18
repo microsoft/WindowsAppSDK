@@ -5,14 +5,12 @@
 #include <EnvironmentVariableChangeTracker.h>
 #include <PathChangeTracker.h>
 #include <PathExtChangeTracker.h>
+#include <EnvironmentVariableChangeTrackerHelper.h>
 #include <IChangeTracker.h>
 #include <TerminalVelocityFeatures-EnvironmentManager.h>
 
 namespace winrt::Microsoft::Windows::System::implementation
 {
-    bool EnvironmentManager::s_HasCheckedIsSupported{};
-    bool EnvironmentManager::s_IsSupported{};
-
     EnvironmentManager::EnvironmentManager(Scope const& scope)
         : m_Scope(scope)
     {
@@ -45,34 +43,16 @@ namespace winrt::Microsoft::Windows::System::implementation
         return environmentManager;
     }
 
+    // Using EM is supported on RS5+.
+    // Tracking the changes is Windows11+.
     bool EnvironmentManager::IsSupported()
     {
-        if (s_HasCheckedIsSupported)
-        {
-            return s_IsSupported;
-        }
+        return true;
+    }
 
-        PCWSTR c_RegLocationForSupportCheck{ L"SOFTWARE\\Microsoft\\AppModel\\RegistryWriteVirtualization\\ExcludedKeys\\HKEY_CURRENT_USER/Software/ChangeTracker" };
-
-        wil::unique_hkey environmentVariablesHKey{};
-        LSTATUS openResult{ RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_RegLocationForSupportCheck, 0, KEY_READ | KEY_WOW64_64KEY, environmentVariablesHKey.addressof()) };
-
-        s_HasCheckedIsSupported = true;
-
-        if (openResult == ERROR_SUCCESS)
-        {
-            s_IsSupported = true;
-        }
-        else if (openResult == ERROR_FILE_NOT_FOUND)
-        {
-            s_IsSupported = false;
-        }
-        else
-        {
-            THROW_WIN32(openResult);
-        }
-
-        return s_IsSupported;
+    bool EnvironmentManager::AreChangesTracked()
+    {
+        return ShouldChangesBeTracked();
     }
 
     IMapView<hstring, hstring> EnvironmentManager::GetEnvironmentVariables()
