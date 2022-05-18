@@ -467,7 +467,8 @@ namespace UndockedRegFreeWinRT
         // in the package graph and thus already checked.
         //
         // NOTE: Only packaged apps have Static entries in their package graph.
-        if ((hr == HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE)) && processHasStaticPackageGraph)
+        //       Unpackaged apps have no Static entries in their package graph.
+        if (!processHasStaticPackageGraph)
         {
             PCWSTR exeDir{};  // Never freed; owned by process global.
             RETURN_IF_FAILED(GetProcessExeDir(&exeDir));
