@@ -18,7 +18,7 @@ namespace Microsoft.Windows.System
         static Boolean IsSupported{ get; };
 
         [contract(EnvironmentManagerContract, 2)]
-        static Boolean AreChangesTracked{ get; };
+        Boolean AreChangesTracked{ get; };
 
         IMapView<String, String> GetEnvironmentVariables();
         String GetEnvironmentVariable(String name);

@@ -21,7 +21,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     HRESULT PathExtChangeTracker::TrackChange(std::function<HRESULT(void)> callback)
     {
-        if (ShouldChangesBeTracked())
+        if (ShouldChangesBeTracked(m_Scope))
         {
             if (m_PathExtPart.back() != L';')
             {

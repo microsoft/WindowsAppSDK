@@ -481,21 +481,12 @@ inline void CompareIMapViews(EnvironmentVariables fromEnvironmentManager, Enviro
         // Make sure the same key exists in both collections
         auto environmentManagerKey = environmentManagerIterator.Current().Key();
 
-        auto logMessage = wil::str_printf<wil::unique_cotaskmem_string>(
-            L"Key from environment Manager: %ls", environmentManagerKey.c_str());
-
-        WEX::Logging::Log::Comment(logMessage.get());
-
         VERIFY_IS_TRUE(fromWin32.HasKey(environmentManagerKey));
 
         // Make sure they have the same value
         auto environmentManagerValue = environmentManagerIterator.Current().Value();
-
-        auto valueMessage = wil::str_printf<wil::unique_cotaskmem_string>(
-            L"Value from environment Manager: %ls\r\nValue from real: %ls", environmentManagerValue.c_str(), fromWin32.Lookup(environmentManagerKey).c_str());
-
-        WEX::Logging::Log::Comment(valueMessage.get());
         VERIFY_ARE_EQUAL(environmentManagerValue, fromWin32.Lookup(environmentManagerKey));
+
         environmentManagerIterator.MoveNext();
     } while (environmentManagerIterator.HasCurrent());
 }

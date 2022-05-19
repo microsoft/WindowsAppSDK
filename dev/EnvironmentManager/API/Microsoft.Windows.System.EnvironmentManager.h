@@ -20,7 +20,7 @@ namespace winrt::Microsoft::Windows::System::implementation
         static Microsoft::Windows::System::EnvironmentManager GetForUser();
         static Microsoft::Windows::System::EnvironmentManager GetForMachine();
         static bool IsSupported();
-        static bool AreChangesTracked();
+        bool AreChangesTracked();
         IMapView<hstring, hstring> GetEnvironmentVariables();
         hstring GetEnvironmentVariable(hstring const& variableName);
         void SetEnvironmentVariable(hstring const& name, hstring const& value);

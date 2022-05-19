@@ -7,7 +7,7 @@
 namespace winrt::Microsoft::Windows::System::implementation
 {
     EnvironmentVariableChangeTracker::EnvironmentVariableChangeTracker(const std::wstring& evName, const std::wstring& valueToSet, EnvironmentManager::Scope scope)
-        : m_eVName(evName), m_eVValue(valueToSet), m_scope(scope)
+        : m_eVName(evName), m_eVValue(valueToSet), m_Scope(scope)
     {
         m_PackageFullName = PackageFullName();
     }
@@ -19,7 +19,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     HRESULT EnvironmentVariableChangeTracker::TrackChange(std::function<HRESULT(void)> callback)
     {
-        if (ShouldChangesBeTracked())
+        if (ShouldChangesBeTracked(m_Scope))
         {
             DWORD disposition{};
             wil::unique_hkey regLocationToWriteChange{ GetKeyForTrackingChange(&disposition) };

@@ -2,15 +2,9 @@
 #include <windows.h>
 #include <wil/result.h>
 #include <appmodel.h>
+#include <Microsoft.Windows.System.EnvironmentManager.h>
 
-enum AreChangesTracked
-{
-    NOT_DEFINED,
-    YES,
-    NO
-};
-
-static AreChangesTracked areChangedTracked{};
+using namespace winrt::Microsoft::Windows::System::implementation;
 
 static bool DoesChangeTrackingKeyExist()
 {
@@ -47,35 +41,20 @@ static std::wstring PackageFullName()
     }
 }
 
-// Technically process scoped changes aren't tracked because all changes are in memory only.
-// Don't consider the process scope here because the changes will go away when the process exits.
-static bool ShouldChangesBeTracked()
+inline bool ShouldChangesBeTracked(EnvironmentManager::Scope scope)
 {
-    if (areChangedTracked == NOT_DEFINED)
-    {
-        auto packageFullName{PackageFullName()};
-        auto doesChangeTrackingKeyExist{ DoesChangeTrackingKeyExist };
+    auto packageFullName{ PackageFullName() };
+    auto doesChangeTrackingKeyExist{ DoesChangeTrackingKeyExist };
+    auto isUserOrMachineScope{ scope != EnvironmentManager::Scope::Process };
 
-        if (doesChangeTrackingKeyExist && !packageFullName.empty())
-        {
-            areChangedTracked = YES;
-        }
-        else
-        {
-            areChangedTracked = NO;
-        }
-    }
-
-    if (areChangedTracked == YES)
+    if (doesChangeTrackingKeyExist &&
+        !packageFullName.empty() &&
+        isUserOrMachineScope)
     {
         return true;
     }
-    else if (areChangedTracked == NO)
-    {
-        return false;
-    }
     else
     {
-        THROW_HR_MSG(E_UNEXPECTED, "areChangesTracked should been YES or NO at this point");
+        return false;
     }
 }

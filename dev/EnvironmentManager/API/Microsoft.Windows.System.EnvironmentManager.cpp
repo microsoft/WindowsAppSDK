@@ -52,7 +52,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     bool EnvironmentManager::AreChangesTracked()
     {
-        return ShouldChangesBeTracked();
+        return ShouldChangesBeTracked(m_Scope);
     }
 
     IMapView<hstring, hstring> EnvironmentManager::GetEnvironmentVariables()
