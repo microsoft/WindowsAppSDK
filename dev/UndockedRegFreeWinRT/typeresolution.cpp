@@ -213,14 +213,8 @@ namespace UndockedRegFreeWinRT
         _COM_Outptr_opt_result_maybenull_ IMetaDataImport2** ppMetaDataImport,
         _Out_opt_ mdTypeDef* pmdTypeDef)
     {
-        HRESULT hr;
-
-        wchar_t szCandidateFilePath[MAX_PATH + 1] = { 0 };
-        wchar_t szCandidateFileName[MAX_PATH + 1] = { 0 };
-        PWSTR pszLastDot;
-
-        hr = StringCchCopy(szCandidateFileName, ARRAYSIZE(szCandidateFileName), pszFullName);
-
+        wchar_t szCandidateFileName[MAX_PATH + 1]{};
+        HRESULT hr{ StringCchCopy(szCandidateFileName, ARRAYSIZE(szCandidateFileName), pszFullName) };
         if (SUCCEEDED(hr))
         {
             // To resolve type SomeNamespace.B.C, first check if SomeNamespace.B.C is a type or
@@ -228,38 +222,26 @@ namespace UndockedRegFreeWinRT
             // 1. SomeNamespace.B.C.WinMD
             // 2. SomeNamespace.B.WinMD
             // 3. SomeNamespace.WinMD
+            wchar_t szCandidateFilePath[MAX_PATH + 1]{};
+            PWSTR pszLastDot{};
             do
             {
                 pszLastDot = nullptr;
 
-                hr = StringCchPrintfEx(
-                    szCandidateFilePath,
-                    ARRAYSIZE(szCandidateFilePath),
-                    nullptr,
-                    nullptr,
-                    0,
-                    METADATA_FILE_PATH_FORMAT,
-                    pszDirectoryPath,
-                    szCandidateFileName);
-
+                hr = StringCchPrintfExW(szCandidateFilePath, ARRAYSIZE(szCandidateFilePath),
+                                        nullptr, nullptr, 0, METADATA_FILE_PATH_FORMAT,
+                                        pszDirectoryPath, szCandidateFileName);
                 if (SUCCEEDED(hr))
                 {
-                    hr = FindTypeInMetaDataFile(
-                        pMetaDataDispenser,
-                        pszFullName,
-                        szCandidateFilePath,
-                        TRO_RESOLVE_TYPE_AND_NAMESPACE,
-                        ppMetaDataImport,
-                        pmdTypeDef);
-
+                    hr = FindTypeInMetaDataFile(pMetaDataDispenser, pszFullName, szCandidateFilePath,
+                                                TRO_RESOLVE_TYPE_AND_NAMESPACE, ppMetaDataImport, pmdTypeDef);
                     if (SUCCEEDED(hr))
                     {
                         if (phstrMetaDataFilePath != nullptr)
                         {
-                            hr = WindowsCreateString(
-                                szCandidateFilePath,
-                                static_cast<UINT32>(wcslen(szCandidateFilePath)),
-                                phstrMetaDataFilePath);
+                            hr = WindowsCreateString(szCandidateFilePath,
+                                                     static_cast<UINT32>(wcslen(szCandidateFilePath)),
+                                                     phstrMetaDataFilePath);
                         }
                         break;
                     }
@@ -267,7 +249,6 @@ namespace UndockedRegFreeWinRT
 
                 hr = RO_E_METADATA_NAME_NOT_FOUND;
                 pszLastDot = wcsrchr(szCandidateFileName, '.');
-
                 if (pszLastDot != nullptr)
                 {
                     *pszLastDot = '\0';
@@ -278,31 +259,16 @@ namespace UndockedRegFreeWinRT
             // the name might be a namespace name in a down-level file.
             if (hr == RO_E_METADATA_NAME_NOT_FOUND)
             {
-                wchar_t szFilePathSearchTemplate[MAX_PATH + 1] = { 0 };
-
-                hr = StringCchPrintfEx(
-                    szFilePathSearchTemplate,
-                    ARRAYSIZE(szFilePathSearchTemplate),
-                    nullptr,
-                    nullptr,
-                    0,
-                    METADATA_FILE_SEARCH_FORMAT,
-                    pszDirectoryPath,
-                    pszFullName);
-
+                wchar_t szFilePathSearchTemplate[MAX_PATH + 1]{};
+                hr = StringCchPrintfExW(szFilePathSearchTemplate, ARRAYSIZE(szFilePathSearchTemplate), nullptr,
+                                        nullptr, 0, METADATA_FILE_SEARCH_FORMAT, pszDirectoryPath, pszFullName);
                 if (SUCCEEDED(hr))
                 {
-                    WIN32_FIND_DATA fd;
-                    HANDLE hFindFile;
-
                     // Search in all files in the directory whose name begin with the input string.
-                    hFindFile = FindFirstFile(szFilePathSearchTemplate, &fd);
-
+                    WIN32_FIND_DATA fd{};
+                    HANDLE hFindFile{ FindFirstFile(szFilePathSearchTemplate, &fd) };
                     if (hFindFile != INVALID_HANDLE_VALUE)
                     {
-                        PWSTR pszFilePathPart;
-                        size_t cchRemaining;
-
                         do
                         {
                             if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
@@ -310,46 +276,27 @@ namespace UndockedRegFreeWinRT
                                 continue;
                             }
 
-                            pszFilePathPart = szCandidateFilePath;
-                            cchRemaining = ARRAYSIZE(szCandidateFilePath);
-                            hr = StringCchCopyEx(
-                                pszFilePathPart,
-                                cchRemaining,
-                                pszDirectoryPath,
-                                &pszFilePathPart,
-                                &cchRemaining,
-                                0);
-
+                            PWSTR pszFilePathPart{ szCandidateFilePath };
+                            size_t cchRemaining{ ARRAYSIZE(szCandidateFilePath) };
+                            hr = StringCchCopyExW(pszFilePathPart, cchRemaining, pszDirectoryPath,
+                                                  &pszFilePathPart, &cchRemaining, 0);
                             if (SUCCEEDED(hr))
                             {
-                                hr = StringCchCopyEx(
-                                    pszFilePathPart,
-                                    cchRemaining,
-                                    fd.cFileName,
-                                    &pszFilePathPart,
-                                    &cchRemaining,
-                                    0);
-                            }
-
-                            if (SUCCEEDED(hr))
-                            {
-                                hr = FindTypeInMetaDataFile(
-                                    pMetaDataDispenser,
-                                    pszFullName,
-                                    szCandidateFilePath,
-                                    TRO_RESOLVE_NAMESPACE,
-                                    ppMetaDataImport,
-                                    pmdTypeDef);
-
-                                if (hr == S_OK)
+                                hr = StringCchCopyExW(pszFilePathPart, cchRemaining, fd.cFileName,
+                                                      &pszFilePathPart, &cchRemaining, 0);
+                                if (SUCCEEDED(hr))
                                 {
-                                    hr = E_UNEXPECTED;
-                                    break;
-                                }
-
-                                if (hr == RO_E_METADATA_NAME_IS_NAMESPACE)
-                                {
-                                    break;
+                                    hr = FindTypeInMetaDataFile(pMetaDataDispenser, pszFullName, szCandidateFilePath,
+                                                                TRO_RESOLVE_NAMESPACE, ppMetaDataImport, pmdTypeDef);
+                                    if (hr == S_OK)
+                                    {
+                                        hr = E_UNEXPECTED;
+                                        break;
+                                    }
+                                    else if (hr == RO_E_METADATA_NAME_IS_NAMESPACE)
+                                    {
+                                        break;
+                                    }
                                 }
                             }
                         } while (FindNextFile(hFindFile, &fd));
@@ -366,10 +313,9 @@ namespace UndockedRegFreeWinRT
 
         if (hr == STRSAFE_E_INSUFFICIENT_BUFFER)
         {
-            hr = RO_E_METADATA_NAME_NOT_FOUND;
+            return RO_E_METADATA_NAME_NOT_FOUND;
         }
-
-        return hr;
+        RETURN_HR(hr);
     }
 
     HRESULT FindTypeInDirectoryWithNormalization(
@@ -380,45 +326,23 @@ namespace UndockedRegFreeWinRT
         _COM_Outptr_opt_result_maybenull_ IMetaDataImport2** ppMetaDataImport,
         _Out_opt_ mdTypeDef* pmdTypeDef)
     {
-        wchar_t pszPackagePath[MAX_PATH + 1];
-        PWSTR pszPackagePathWritePtr = pszPackagePath;
-        size_t cchPackagePathRemaining = ARRAYSIZE(pszPackagePath);
+        wchar_t pszPackagePath[MAX_PATH + 1]{};
+        PWSTR pszPackagePathWritePtr{ pszPackagePath };
+        size_t cchPackagePathRemaining{ ARRAYSIZE(pszPackagePath) };
+        RETURN_IF_FAILED(StringCchCopyExW(pszPackagePath, ARRAYSIZE(pszPackagePath),
+            pszDirectoryPath, &pszPackagePathWritePtr, &cchPackagePathRemaining, 0));
 
-        HRESULT hr = StringCchCopyEx(
-            pszPackagePath,
-            ARRAYSIZE(pszPackagePath),
-            pszDirectoryPath,
-            &pszPackagePathWritePtr,
-            &cchPackagePathRemaining,
-            0);
-
-        if (SUCCEEDED(hr))
+        // If the path is not terminated by a backslash, then append one.
+        if (pszPackagePath[ARRAYSIZE(pszPackagePath) - cchPackagePathRemaining - 1] != L'\\')
         {
-            // If the path is not terminated by a backslash, then append one.
-            if (pszPackagePath[ARRAYSIZE(pszPackagePath) - cchPackagePathRemaining - 1] != L'\\')
-            {
-                hr = StringCchCopyEx(
-                    pszPackagePathWritePtr,
-                    cchPackagePathRemaining,
-                    L"\\",
-                    &pszPackagePathWritePtr,
-                    &cchPackagePathRemaining,
-                    0);
-            }
+            RETURN_IF_FAILED(StringCchCopyExW(pszPackagePathWritePtr, cchPackagePathRemaining,
+                L"\\", &pszPackagePathWritePtr, &cchPackagePathRemaining, 0));
         }
 
-        if (SUCCEEDED(hr))
-        {
-            hr = FindTypeInDirectory(
-                pMetaDataDispenser,
-                pszFullName,
-                pszPackagePath,
-                phstrMetaDataFilePath,
-                ppMetaDataImport,
-                pmdTypeDef);
-        }
+        RETURN_IF_FAILED(FindTypeInDirectory(pMetaDataDispenser, pszFullName,
+                pszPackagePath, phstrMetaDataFilePath, ppMetaDataImport, pmdTypeDef));
 
-        return hr;
+        return S_OK;
     }
 
     HRESULT ResolveThirdPartyType(
@@ -428,40 +352,65 @@ namespace UndockedRegFreeWinRT
         _COM_Outptr_opt_result_maybenull_ IMetaDataImport2** ppMetaDataImport,
         _Out_opt_ mdTypeDef* pmdTypeDef)
     {
-        HRESULT hr = S_OK;
-        UINT32 dwPackagesCount = 0;
-        UINT32 dwBufferLength = 0;
-
-        const UINT32 filter = PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_IS_IN_RELATED_SET;
-        hr = HRESULT_FROM_WIN32(GetCurrentPackageInfo(filter, &dwBufferLength, nullptr, &dwPackagesCount));
-        // Only find the type if the it is an unpackaged app. Packaged apps can have their exe on their package graph,
-        // which will allow type resolution against adjacent WinMDs.
-        if (hr == HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE))
+        // Walk the package graph looking for the requested metadata
+        const uint32_t filter{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_IS_IN_RELATED_SET | PACKAGE_FILTER_DYNAMIC | PACKAGE_FILTER_STATIC };
+        uint32_t bufferLength{};
+        uint32_t packagesCount{};
+        bool processHasStaticPackageGraph{};
+        const HRESULT hr{ HRESULT_FROM_WIN32(GetCurrentPackageInfo(filter, &bufferLength, nullptr, &packagesCount)) };
+        if (hr == HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER))
         {
-            PCWSTR exeDir = nullptr;  // Never freed; owned by process global.
+            // The process has a package graph. Walk it looking for the requested metadata
+            auto buffer{ wil::make_unique_nothrow<BYTE[]>(bufferLength) };
+            RETURN_IF_NULL_ALLOC(buffer);
+            RETURN_IF_WIN32_ERROR(GetCurrentPackageInfo(filter, &bufferLength, buffer.get(), &packagesCount));
+            const auto packageInfos{ reinterpret_cast<PACKAGE_INFO*>(buffer.get()) };
+            for (uint32_t index=0; index < packagesCount; ++index)
+            {
+                const auto& packageInfo{ packageInfos[index] };
+                HRESULT hrFindType{ FindTypeInDirectoryWithNormalization(pMetaDataDispenser, pszFullName,
+                                packageInfo.path, phstrMetaDataFilePath, ppMetaDataImport, pmdTypeDef) };
+                if (SUCCEEDED(hrFindType))
+                {
+                    return hrFindType;
+                }
+
+                // Keep track if we find any Static entries in the package graph
+                if (WI_IsFlagSet(packageInfo.flags, PACKAGE_PROPERTY_STATIC))
+                {
+                    processHasStaticPackageGraph = true;
+                }
+            }
+        }
+
+        // Not found in the package graph.
+
+        // Unpackaged apps may have metadata next to their executable.
+        //
+        // Packaged apps have metadata in their root directory which is
+        // in the package graph and thus already checked.
+        //
+        // NOTE: Only packaged apps have Static entries in their package graph.
+        //       Unpackaged apps have no Static entries in their package graph.
+        if (!processHasStaticPackageGraph)
+        {
+            PCWSTR exeDir{};  // Never freed; owned by process global.
             RETURN_IF_FAILED(GetProcessExeDir(&exeDir));
-
-            hr = FindTypeInDirectoryWithNormalization(
-                pMetaDataDispenser,
-                pszFullName,
-                exeDir,
-                phstrMetaDataFilePath,
-                ppMetaDataImport,
-                pmdTypeDef);
-
-            if (hr == RO_E_METADATA_NAME_NOT_FOUND)
+            const HRESULT hrFindType{ FindTypeInDirectoryWithNormalization(
+                pMetaDataDispenser, pszFullName, exeDir,
+                phstrMetaDataFilePath, ppMetaDataImport, pmdTypeDef) };
+            if (hrFindType == RO_E_METADATA_NAME_NOT_FOUND)
             {
                 // For compatibility purposes, if we fail to find the type in the unpackaged location, we should return
                 // HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE) instead of a "not found" error. This preserves the
                 // behavior that existed before unpackaged type resolution was implemented.
-                hr = HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE);
+                return HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE);
             }
-            return hr;
+            RETURN_HR(hrFindType);
         }
-        else
-        {
-            return RO_E_METADATA_NAME_NOT_FOUND;
-        }
+
+        // Not found
+        return RO_E_METADATA_NAME_NOT_FOUND;
     }
 
     //
