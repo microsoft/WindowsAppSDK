@@ -65,7 +65,7 @@ A Portal Registration flow through
 will also be defined that removes the dependency of the Push Flow with the Partner Center Portal.
 The RemoteIdentifier GUID in this spec maps to the ApplicationId in the AAD App Registration
 process. Below is an illustration of the proposed flow through AAD:
-![Push Flow For Windows App SDK](Push.png)
+![Push Flow For Windows App SDK](Push.PNG)
 
 Phase 1 (Windows App SDK Preview): WNS Push APIs will only support Win32 Packaged app (MSIX Desktop
 Bridge).
