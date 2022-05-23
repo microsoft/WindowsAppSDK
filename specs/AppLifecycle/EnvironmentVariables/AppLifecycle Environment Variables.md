@@ -10,11 +10,12 @@ Environment variables is one example, where there are several existing APIs
 that provide partially overlapping functionality, and with some gaps. This spec
 describes the Reunion support for environment variables.
 
-Important Note: this feature relies on other platform features which are only
-available from Windows summer 2021 onwards. Therefore this feature is also 
+Important Note: The EV tracking feature relies on other platform features which are only
+available from Windows summer 2021 onwards. Therefore EV tracking is also 
 only available from Windows summer 2021 onwards. An app can check the 
-IsSupported property to determine whether the current device supports the 
+AreChangesTracked property to determine whether the current device supports the 
 feature.
+
 
 Note that there are existing Win32 and .NET APIs that cover much of the same 
 behaviors as the new APIs. The only _net_ _new_ behaviors are:
@@ -73,6 +74,7 @@ permissions section below).
   system-wide scope.
 - **static bool IsSupported { get; }** - readonly property that indicates whether this
   API is supported on the current device/OS version.
+- **bool AreChangesTracked{ get;}** - readonly property that indicates whether the EV changes will be tracked.
 - **IMapView<string, string> GetEnvironmentVariables** - gets a collection of
   environment variables at the scope of the current EnvironmentManager.
 - **string GetEnvironmentVariable(string)** - gets the value of the specified
@@ -293,8 +295,6 @@ are listed in the table below:
 | Unpackaged     | Managed  | Read, Write  | Read, Write | Read, Write  |
 | Desktop Bridge | Native   | Read, Write  | Read, Write | Read, Write  |
 | Desktop Bridge | Managed  | Read, Write  | Read, Write | Read, Write  |
-| UWP            | Native   | Read, Write  | Read        | Read         |
-| UWP            | Managed  | Read, Write  | Read        | (none)       |
 
 Environment variables are stored in the registry here:
 
@@ -310,19 +310,10 @@ packaged, writes to HKCU are virtualized, unless the app has the unvirtualizedRe
 restricted capability and has suppressed registry write virtualization for HKCU.
 
 An unpackaged or packaged Win32 (Desktop Bridge) app can write to HKLM if the
-app is running elevated. A UWP app cannot run elevated. In the normal case,
+app is running elevated. In the normal case,
 where virtualization is not disabled, all writes to HKCU actually go to a
 private hive file similar to:
 %ProgramData%\Packages\<PackageFamilyName>\<Security ID>\SystemAppData\Helium
-
-In a non-Desktop Bridge pure UWP app, using the existing System.Environment
-class, you can get/set at the Process scope only: you can't get or set
-environment variables for User or Machine. The calls are merely no-ops - there's
-no exception, but the return is an empty string. The use of the
-unvirtualizedResources feature in a pure UWP app makes no difference to this.
-However, you can use the managed Registry APIs to read at User scope (but not at
-Machine scope), and p/invoke to the native registry APIs to read at both User
-and Machine scope.
 
 Moving forward, the new APIs will enable the following behaviors:
 
@@ -330,7 +321,6 @@ Moving forward, the new APIs will enable the following behaviors:
 | -------------- | -------- | ------------ | ----------- | ------------ |
 | Unpackaged     | Managed  | Read, Write  | Read, Write | Read, Write  |
 | Desktop Bridge | Managed  | Read, Write  | Read, Write | Read, Write  |
-| UWP            | Managed  | Read, Write  | Read        | Read         |
 
 Consistent with the existing System.Environment APIs, for the new APIs, reading
 environment variables does not need any special security consideration. Writing
@@ -351,8 +341,7 @@ Therefore, we will protect the use of User and Machine scope as follows:
   the calling app has fulltrust.
 
 - **Machine**: attempting to set a variable when the scope is Machine will fail
-  unless the calling app is running elevated (which means it will only work for
-  unpackaged or Centennial apps and not for UWP apps).
+  unless the calling app is running elevated.
 
 Note: to update the user-scoped list of variables we need to write to the
 registry and cause Shell to refresh its cache. This will be done using an
@@ -539,6 +528,8 @@ namespace Microsoft.Windows.System
         static EnvironmentManager GetForCurrentUser();
         static EnvironmentManager GetForMachine();
         static bool IsSupported { get; }
+        
+        bool AreChangesTracked {get; };
     
         IMapView<String, String> GetEnvironmentVariables();
         String GetEnvironmentVariable(String name);
