@@ -22,6 +22,7 @@
 #include "AppNotificationUtility.h"
 #include "PushNotificationReceivedEventArgs.h"
 #include <security.integritylevel.h>
+#include <roerrorapi.h>
 
 using namespace std::literals;
 using namespace Microsoft::Windows::AppNotifications::Helpers;
@@ -132,9 +133,20 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         // Elevated processes are not supported by PushNotifications. UnpackagedAppScenario is not supported when it is self contained
         // because the PushNotificationsLongRunningProcess is unavailable due to missing the Singleton package.
-        static bool isSupported{ !Security::IntegrityLevel::IsElevated() && (PushNotificationHelpers::IsPackagedAppScenario() || !WindowsAppRuntime::SelfContained::IsSelfContained()) };
-        return isSupported;
-
+        if (Security::IntegrityLevel::IsElevated())
+        {
+            RoOriginateError(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), wil::make_unique_string_nothrow<wil::unique_hstring>(L"Elevated applications are not supported").get());
+            return false;
+        }
+        else if (!PushNotificationHelpers::IsPackagedAppScenario() && WindowsAppRuntime::SelfContained::IsSelfContained())
+        {
+            RoOriginateError(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), wil::make_unique_string_nothrow<wil::unique_hstring>(L"Self contained applications are not supported on the current Windows build").get());
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     winrt::Microsoft::Windows::PushNotifications::PushNotificationManager PushNotificationManager::Default()

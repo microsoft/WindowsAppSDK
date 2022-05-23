@@ -95,8 +95,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     bool AppNotificationManager::IsSupported()
     {
-        static bool isSupported{ !Security::IntegrityLevel::IsElevated() };
-        return isSupported;
+        if (Security::IntegrityLevel::IsElevated())
+        {
+            RoOriginateError(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), wil::make_unique_string_nothrow<wil::unique_hstring>(L"Elevated applications are not supported").get());
+            return false;
+        }
+
+        return true;
     }
 
     void AppNotificationManager::Register()
