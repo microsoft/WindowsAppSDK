@@ -38,6 +38,8 @@ namespace ToastABI
     using namespace ::ABI::Microsoft::Internal::ToastNotifications;
 }
 
+using namespace Microsoft::Windows::AppNotifications::ShellLocalization;
+
 std::wstring Microsoft::Windows::AppNotifications::Helpers::RetrieveUnpackagedNotificationAppId()
 {
     wil::unique_cotaskmem_string appId;
@@ -241,7 +243,7 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::GetDisplayNameBasedO
     return displayName;
 }
 
-winrt::guid Microsoft::Windows::AppNotifications::Helpers::RegisterComActivatorGuidAndAssets()
+std::wstring Microsoft::Windows::AppNotifications::Helpers::GetOrCreateComActivatorGuid()
 {
     std::wstring registeredGuid;
     auto hr = GetActivatorGuid(registeredGuid);
@@ -264,14 +266,27 @@ winrt::guid Microsoft::Windows::AppNotifications::Helpers::RegisterComActivatorG
         THROW_IF_FAILED(hr);
     }
 
-    std::wstring notificationAppId{ Microsoft::Windows::AppNotifications::Helpers::RetrieveNotificationAppId() };
-    RegisterAssets(notificationAppId, registeredGuid);
-
-    // Remove braces around the guid string
-    return winrt::guid(registeredGuid.substr(1, registeredGuid.size() - 2));
+    return registeredGuid;
 }
 
-void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring const& appId, std::wstring const& clsid)
+// Try the following techniques to retrieve display name and icon:
+// 1. Based on the best app shortcut, using the FrameworkUdk.
+// 2. From the current process.
+// 3. Set a default DisplayName, but leave empty the icon file path so Shell can set a default icon.
+AppNotificationAssets Microsoft::Windows::AppNotifications::Helpers::GetAssetsHelper()
+{
+    AppNotificationAssets assets{};
+
+    if (FAILED(Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromShortcut(assets)) &&
+        FAILED(Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromProcess(assets)))
+    {
+        assets.displayName = GetDisplayNameBasedOnProcessName();
+    }
+
+    return assets;
+}
+
+void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring const& appId, std::wstring const& clsid, std::wstring const& displayName, std::wstring const& iconFilePath)
 {
     wil::unique_hkey hKey;
     // subKey: \Software\Classes\AppUserModelId\{AppGUID}
@@ -288,24 +303,12 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
         &hKey,
         nullptr /* lpdwDisposition */));
 
-    // Try the following techniques to retrieve display name and icon:
-    // 1. Based on the best app shortcut, using the FrameworkUdk.
-    // 2. From the current process.
-    // 3. Set a default DisplayName, but leave empty the icon file path so Shell can set a default icon.
-    Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets assets{};
-
-    if (FAILED(Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromShortcut(assets)) &&
-        FAILED(Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromProcess(assets)))
-    {
-        assets.displayName = GetDisplayNameBasedOnProcessName();
-    }
-
-    RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(assets.displayName.c_str()), REG_EXPAND_SZ, assets.displayName.size() * sizeof(wchar_t));
+    RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.c_str()), REG_EXPAND_SZ, displayName.size() * sizeof(wchar_t));
 
     // If no icon is specified in the Registry, the OS will render a default icon for App Notifications.
-    if (!assets.iconFilePath.empty())
+    if (!iconFilePath.empty())
     {
-        RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(assets.iconFilePath.c_str()), REG_EXPAND_SZ, assets.iconFilePath.size() * sizeof(wchar_t));
+        RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(iconFilePath.c_str()), REG_EXPAND_SZ, iconFilePath.size() * sizeof(wchar_t));
     }
     else // clean any Icon URI from previous registrations
     {

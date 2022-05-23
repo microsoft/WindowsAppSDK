@@ -126,56 +126,84 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                 m_registering = false;
             }) };
 
-            winrt::guid storedComActivatorGuid{ GUID_NULL };
-            if (!PushNotificationHelpers::IsPackagedAppScenario())
-            {
-                if (!AppModel::Identity::IsPackagedProcess())
-                {
-                    THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(m_appId.c_str(), GUID_NULL));
-
-                    storedComActivatorGuid = RegisterComActivatorGuidAndAssets();
-                }
-
-                if (!WindowsAppRuntime::SelfContained::IsSelfContained())
-                {
-                    auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
-                    THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.c_str(), m_appId.c_str()));
-                }
-            }
-
-            winrt::guid registeredClsid{ GUID_NULL };
+            winrt::guid registeredClsid{};
             if (AppModel::Identity::IsPackagedProcess())
             {
-                registeredClsid = PushNotificationHelpers::GetComRegistrationFromRegistry(expectedAppServerArgs.data());
+                registeredClsid = RegisterPackagedAppHelper();
+            }
+            else
+            {
+                AppNotificationAssets assets{ GetAssetsHelper() };
+                registeredClsid = RegisterUnpackagedAppHelper(assets.displayName, assets.iconFilePath);
             }
 
             // Create event handle before COM Registration otherwise if a notification arrives will lead to race condition
             m_waitHandleForArgs.create();
 
-            {
-                auto lock{ m_lock.lock_exclusive() };
-                THROW_HR_IF_MSG(E_INVALIDARG, m_notificationComActivatorRegistration, "Already Registered for App Notifications!");
-
-                // Check if the caller has registered event handlers, if so the REGCLS_MULTIPLEUSE flag will cause COM to ensure that all activators
-                // are routed inproc, otherwise with REGCLS_SINGLEUSE COM will launch a new process of the Win32 app for each invocation.
-                auto activationFlag{ m_notificationHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE };
-
-                // Register an INotificationActivationCallback to receive background activations from AppNotification.
-                // Also, STA threads that call CoRegisterClassObject need to use the REGCLS_AGILE flag so that the object is
-                // associated with the neutral apartment. This allows other threads to activate the STA registered thread.
-                THROW_IF_FAILED(::CoRegisterClassObject(
-                    AppModel::Identity::IsPackagedProcess() ? registeredClsid : storedComActivatorGuid,
-                    winrt::make<AppNotificationManagerFactory>().get(),
-                    CLSCTX_LOCAL_SERVER,
-                    activationFlag | REGCLS_AGILE,
-                    &m_notificationComActivatorRegistration));
-            }
+            RegisterActivationCallback(registeredClsid);
         }
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
             throw;
         }
+    }
+
+    void AppNotificationManager::RegisterActivationCallback(winrt::guid const& registeredClsid)
+    {
+        auto lock{ m_lock.lock_exclusive() };
+        THROW_HR_IF_MSG(E_INVALIDARG, m_notificationComActivatorRegistration, "Already Registered for App Notifications!");
+
+        // Check if the caller has registered event handlers, if so the REGCLS_MULTIPLEUSE flag will cause COM to ensure that all activators
+        // are routed inproc, otherwise with REGCLS_SINGLEUSE COM will launch a new process of the Win32 app for each invocation.
+        auto activationFlag{ m_notificationHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE };
+
+        // Register an INotificationActivationCallback to receive background activations from AppNotification.
+        // Also, STA threads that call CoRegisterClassObject need to use the REGCLS_AGILE flag so that the object is
+        // associated with the neutral apartment. This allows other threads to activate the STA registered thread.
+        THROW_IF_FAILED(::CoRegisterClassObject(
+            registeredClsid,
+            winrt::make<AppNotificationManagerFactory>().get(),
+            CLSCTX_LOCAL_SERVER,
+            activationFlag | REGCLS_AGILE,
+            &m_notificationComActivatorRegistration));
+    }
+
+    void AppNotificationManager::RegisterAppNotificationSinkWithNotificationPlatform()
+    {
+        auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
+        THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.c_str(), m_appId.c_str()));
+    }
+
+    winrt::guid AppNotificationManager::RegisterPackagedAppHelper()
+    {
+        winrt::guid registeredClsid{ PushNotificationHelpers::GetComRegistrationFromRegistry(expectedAppServerArgs.data()) };
+
+        if (!PushNotificationHelpers::IsPackagedAppScenario() && !WindowsAppRuntime::SelfContained::IsSelfContained())
+        {
+            RegisterAppNotificationSinkWithNotificationPlatform();
+        }
+
+        return registeredClsid;
+    }
+
+    winrt::guid AppNotificationManager::RegisterUnpackagedAppHelper(std::wstring const& displayName, std::wstring const& iconFilePath)
+    {
+        THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(m_appId.c_str(), GUID_NULL));
+
+        // GuidString is registered in 
+        std::wstring comActivatorGuidString{ GetOrCreateComActivatorGuid() };
+        std::wstring notificationAppId{ RetrieveNotificationAppId() };
+
+        RegisterAssets(notificationAppId, comActivatorGuidString, displayName, iconFilePath);
+
+        if (!WindowsAppRuntime::SelfContained::IsSelfContained())
+        {
+            RegisterAppNotificationSinkWithNotificationPlatform();
+        }
+
+        // Remove braces around the guid string
+        return winrt::guid(comActivatorGuidString.substr(1, comActivatorGuidString.size() - 2));
     }
 
     // This assumes that the caller has taken an exclusive lock
@@ -338,7 +366,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                     }
                     else
                     { 
-                        registeredClsid = RegisterComActivatorGuidAndAssets();
+                        std::wstring registeredClsidString;
+                        THROW_IF_FAILED(GetActivatorGuid(registeredClsidString));
+
+                        registeredClsid = winrt::guid(registeredClsidString.substr(1, registeredClsidString.size() - 2));
                     }
 
                     auto notificationCallback{ winrt::create_instance<INotificationActivationCallback>(registeredClsid, CLSCTX_ALL) };
