@@ -329,7 +329,6 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
         // attributeCount is always >0 so we need to allocate a buffer. Call InitializeProcThreadAttributeList()
         // to determine the size needed so we always expect ERROR_INSUFFICIENT_BUFFER.
-        THROW_IF_WIN32_BOOL_FALSE(InitializeProcThreadAttributeList(nullptr, attributeCount, 0, &attributeListSize));
         THROW_HR_IF(E_UNEXPECTED, !!InitializeProcThreadAttributeList(nullptr, attributeCount, 0, &attributeListSize));
         const auto lastError{ GetLastError() };
         THROW_HR_IF(HRESULT_FROM_WIN32(lastError), lastError != ERROR_INSUFFICIENT_BUFFER);
