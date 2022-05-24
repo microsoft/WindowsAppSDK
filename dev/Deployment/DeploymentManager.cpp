@@ -300,7 +300,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     CATCH_RETURN()
 
 
-    std::wstring DeploymentManager::GenerateDeploymentAgentPath() 
+    std::wstring DeploymentManager::GenerateDeploymentAgentPath()
     {
         // Calculate the path to the restart agent as being in the same directory as the current module.
         wil::unique_hmodule module;
@@ -310,7 +310,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         return modulePath.parent_path() / c_deploymentAgentFilename;
     }
 
-    HRESULT DeploymentManager::AddPackageInBreakAwayProcess(const std::filesystem::path& packagePath, const bool forceDeployment) try 
+    HRESULT DeploymentManager::AddPackageInBreakAwayProcess(const std::filesystem::path& packagePath, const bool forceDeployment) try
     {
         auto exePath{ GenerateDeploymentAgentPath() };
         auto activityId{ winrt::to_hstring(*::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Id()) };
@@ -327,7 +327,12 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             attributeCount++;
         }
 
+        // attributeCount is always >0 so we need to allocate a buffer. Call InitializeProcThreadAttributeList()
+        // to determine the size needed so we always expect ERROR_INSUFFICIENT_BUFFER.
         THROW_IF_WIN32_BOOL_FALSE(InitializeProcThreadAttributeList(nullptr, attributeCount, 0, &attributeListSize));
+        THROW_HR_IF(E_UNEXPECTED, !!InitializeProcThreadAttributeList(nullptr, attributeCount, 0, &attributeListSize));
+        const auto lastError{ GetLastError() };
+        THROW_HR_IF(HRESULT_FROM_WIN32(lastError), lastError != ERROR_INSUFFICIENT_BUFFER);
         PPROC_THREAD_ATTRIBUTE_LIST attributeList = reinterpret_cast<PPROC_THREAD_ATTRIBUTE_LIST>(new BYTE[attributeListSize]);
         THROW_IF_WIN32_BOOL_FALSE(InitializeProcThreadAttributeList(attributeList, attributeCount, 0, &attributeListSize));
         auto freeAttributeList{ wil::scope_exit([&] { DeleteProcThreadAttributeList(attributeList); }) };
@@ -366,7 +371,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         return S_OK;
     }
     CATCH_RETURN()
-        
+
     // Deploys all of the packages carried by the specified framework.
     HRESULT DeploymentManager::Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment) try
     {
