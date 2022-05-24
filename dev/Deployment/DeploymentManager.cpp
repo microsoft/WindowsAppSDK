@@ -320,7 +320,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         auto cmdLine{ wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" \"%s\" % s % s", exePath.c_str(), packagePath.c_str(), forceDeployment, activityId.c_str()) };
 
         SIZE_T attributeListSize{};
-        auto attributeCount{ 2 };   // PROC_THREAD_ATTRIBUTE_HANDLE_LIST + PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_OVERRIDE
+        auto attributeCount{ 1 };
 
         // attributeCount is always >0 so we need to allocate a buffer. Call InitializeProcThreadAttributeList()
         // to determine the size needed so we always expect ERROR_INSUFFICIENT_BUFFER.
@@ -332,12 +332,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         THROW_IF_WIN32_BOOL_FALSE(InitializeProcThreadAttributeList(attributeList, attributeCount, 0, &attributeListSize));
         auto freeAttributeList{ wil::scope_exit([&] { DeleteProcThreadAttributeList(attributeList); }) };
 
-        // Launch the deployment agent
-        THROW_IF_WIN32_BOOL_FALSE(UpdateProcThreadAttribute(attributeList, 0, PROC_THREAD_ATTRIBUTE_HANDLE_LIST, nullptr, 0, nullptr, nullptr));
-
-        // Desktop Bridge applications by default have their child processes break away from the parent process.  In order to recreate the calling process'
-        // environment correctly, this code must prevent child breakaway semantics when calling the agent. Additionally the agent must do the same when
-        // restarting the caller.
+        // Desktop Bridge applications by default have their child processes break away from the parent process.
+        // In order to recreate the calling process' environment correctly, we must prevent child breakaway semantics
+        // when calling the agent. Additionally the agent must do the same when restarting the caller.
         DWORD policy{ PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_OVERRIDE };
         THROW_IF_WIN32_BOOL_FALSE(UpdateProcThreadAttribute(attributeList, 0, PROC_THREAD_ATTRIBUTE_DESKTOP_APP_POLICY, &policy, sizeof(policy), nullptr, nullptr));
 
