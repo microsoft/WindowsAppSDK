@@ -356,8 +356,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         wil::handle_wait(processInfo.hProcess);
 
         DWORD processExitCode{};
-        THROW_IF_WIN32_BOOL_FALSE_MSG(GetExitCodeProcess(processInfo.hProcess, &processExitCode), "CmdLine: %ls, processExitCode: %lu", cmdLine.get(), processExitCode);
-        RETURN_IF_FAILED_MSG(processExitCode, "DeploymentAgent exitcode:0x%X", processExitCode);
+        THROW_IF_WIN32_BOOL_FALSE_MSG(GetExitCodeProcess(processInfo.hProcess, &processExitCode), "CmdLine: %ls, processExitCode: %u", cmdLine.get(), processExitCode);
+        RETURN_IF_FAILED_MSG(HRESULT_FROM_WIN32(processExitCode), "DeploymentAgent exitcode:0x%X", processExitCode);
         return S_OK;
     }
     CATCH_RETURN()
