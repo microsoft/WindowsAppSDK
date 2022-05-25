@@ -135,6 +135,8 @@ bool PostToastHelper(std::wstring const& tag, std::wstring const& group)
 
 int main()
 {
+    std::cin.ignore();
+
     // Retrieve the app scenario.
     bool isPackaged{ Test::AppModel::IsPackagedProcess() };
     if (!isPackaged)
@@ -209,7 +211,7 @@ int main()
     }
 
     std::wcout << L"Requesting PushNotificationChannel...\n\n";
-    winrt::PushNotificationChannel channel{ RequestChannel() };
+    // winrt::PushNotificationChannel channel{ RequestChannel() };
 
     std::wcout << L"Post a Toast..." << std::endl;
     PostToastHelper(L"Tag", L"Group");

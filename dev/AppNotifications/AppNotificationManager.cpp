@@ -21,6 +21,9 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include <WindowsAppRuntime.SelfContained.h>
 #include <ShellLocalization.h>
+#include "AppInstance.h"
+#include "AppActivationArguments.h"
+#include "Security.IntegrityLevel.h"
 
 using namespace std::literals;
 
@@ -32,6 +35,7 @@ namespace winrt
     using namespace winrt::Windows::Foundation;
     using namespace winrt::Windows::Foundation::Collections;
     using namespace winrt::Microsoft::Windows::AppNotifications;
+    using namespace winrt::Microsoft::Windows::AppLifecycle;
 	using namespace Windows::ApplicationModel::Core;
 }
 
@@ -114,6 +118,24 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                 auto lock { m_lock.lock_exclusive() };
                 m_registering = false;
             }) };
+
+            // If the application is elevated, we need to setup redirection
+            if (Security::IntegrityLevel::IsElevated())
+            {
+                auto thisInstance{ winrt::AppInstance::GetCurrent() };
+                winrt::AppInstance keyInstance{ winrt::AppInstance::FindOrRegisterForKey(L"KeyCheck") };
+                auto token{ thisInstance.Activated([this](const auto&, const winrt::AppActivationArguments& args)
+                {
+                        if (m_notificationHandlers)
+                        {
+                            m_notificationHandlers(Default(), args.Data().as<winrt::AppNotificationActivatedEventArgs>());
+                        }
+                        else
+                        {
+                            // CoCreateInstance
+                        }
+                }) };
+            }
 
             winrt::guid storedComActivatorGuid{ GUID_NULL };
             if (!PushNotificationHelpers::IsPackagedAppScenario())
@@ -281,6 +303,16 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         }
 
         winrt::AppNotificationActivatedEventArgs activatedEventArgs = winrt::make<implementation::AppNotificationActivatedEventArgs>(invokedArgs, userInput);
+        winrt::AppInstance keyInstance{ winrt::AppInstance::FindOrRegisterForKey(L"KeyCheck") };
+        if (!keyInstance.IsCurrent())
+        {
+            auto appArguments{ winrt::make<winrt::Microsoft::Windows::AppLifecycle::implementation::AppActivationArguments>(
+                winrt::ExtendedActivationKind::AppNotification,
+                activatedEventArgs) };
+            keyInstance.RedirectActivationToAsync(appArguments).get();
+            exit(0);
+        }
+
 
         // Need to store the first notification in the case of ToastActivation
 

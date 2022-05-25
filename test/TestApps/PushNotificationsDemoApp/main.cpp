@@ -12,6 +12,7 @@
 #include <ShObjIdl_core.h>
 #include <roapi.h>
 #include <winstring.h>
+#include <wil/resource.h>
 
 namespace winrt
 {
@@ -91,6 +92,8 @@ winrt::PushNotificationChannel RequestChannel()
 
 int main()
 {
+    std::cout << "Press enter to start the repro.\n\n" << std::endl;
+    std::cin.ignore();
     if (!Test::AppModel::IsPackagedProcess())
     {
         constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppRuntime.Test.DDLM" };
@@ -106,13 +109,10 @@ int main()
         THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(L"PushTestAppId"));
     }
 
-    WCHAR fakeClassArr[] = L"fakePath";
-    HSTRING fakeClass = NULL;
-    WindowsCreateString(fakeClassArr, ARRAYSIZE(fakeClassArr), &fakeClass);
-
+    auto activatableClass{ wil::make_unique_string_nothrow<wil::unique_hstring>(L"FakeClass.ClassName") };
     winrt::com_ptr<IInspectable> deviceIdentifier;
 
-    RoActivateInstance(fakeClass, deviceIdentifier.put());
+    HRESULT hr{ RoActivateInstance(activatableClass.get(), deviceIdentifier.put()) };
 
     winrt::PushNotificationManager manager{ winrt::PushNotificationManager::Default() };
     // Register Push Event for Foreground
