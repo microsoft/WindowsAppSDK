@@ -21,6 +21,9 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include <WindowsAppRuntime.SelfContained.h>
 #include <ShellLocalization.h>
+#include "AppInstance.h"
+#include "AppActivationArguments.h"
+#include "Security.IntegrityLevel.h"
 
 using namespace std::literals;
 
@@ -32,6 +35,7 @@ namespace winrt
     using namespace winrt::Windows::Foundation;
     using namespace winrt::Windows::Foundation::Collections;
     using namespace winrt::Microsoft::Windows::AppNotifications;
+    using namespace winrt::Microsoft::Windows::AppLifecycle;
 	using namespace Windows::ApplicationModel::Core;
 }
 
@@ -52,6 +56,15 @@ using namespace Microsoft::Windows::AppNotifications::ShellLocalization;
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
     AppNotificationManager::AppNotificationManager() : m_processName(GetCurrentProcessPath()), m_appId(RetrieveNotificationAppId()) {}
+
+    AppNotificationManager::~AppNotificationManager()
+    {
+        // Unregister the redirection key for elevated apps on process termination.
+        if (Security::IntegrityLevel::IsElevated())
+        {
+            AppInstance::GetCurrent().UnregisterKey();
+        }
+    }
 
     winrt::Microsoft::Windows::AppNotifications::AppNotificationManager AppNotificationManager::Default()
     {
@@ -115,49 +128,70 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                 m_registering = false;
             }) };
 
-            winrt::guid storedComActivatorGuid{ GUID_NULL };
-            if (!PushNotificationHelpers::IsPackagedAppScenario())
+            // If the application is elevated, we need to setup redirection
+            if (Security::IntegrityLevel::IsElevated() && PushNotificationHelpers::IsPackagedAppScenario())
             {
-                if (!AppModel::Identity::IsPackagedProcess())
+                auto thisInstance{ winrt::AppInstance::GetCurrent() };
+                winrt::AppInstance keyInstance{ winrt::AppInstance::FindOrRegisterForKey(L"KeyCheck") };
+                auto token{ thisInstance.Activated([this](const auto&, const winrt::AppActivationArguments& args)
                 {
-                    THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(m_appId.c_str(), GUID_NULL));
+                        if (m_notificationHandlers)
+                        {
+                            m_notificationHandlers(Default(), args.Data().as<winrt::AppNotificationActivatedEventArgs>());
+                        }
+                        else
+                        {
+                            // Allow the second instance to receive the payload.
+                            AppInstance::GetCurrent().UnregisterKey();
+                        }
+                }) };
+            }
+            else
+            {
+                winrt::guid storedComActivatorGuid{ GUID_NULL };
+                if (!PushNotificationHelpers::IsPackagedAppScenario())
+                {
+                    if (!AppModel::Identity::IsPackagedProcess())
+                    {
+                        THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(m_appId.c_str(), GUID_NULL));
 
-                    storedComActivatorGuid = RegisterComActivatorGuidAndAssets();
+                        storedComActivatorGuid = RegisterComActivatorGuidAndAssets();
+                    }
+
+                    if (!WindowsAppRuntime::SelfContained::IsSelfContained() && !PushNotificationHelpers::IsElevated())
+                    {
+                        auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
+                        THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.c_str(), m_appId.c_str()));
+                    }
                 }
 
-                if (!WindowsAppRuntime::SelfContained::IsSelfContained() && !PushNotificationHelpers::IsElevated())
+                winrt::guid registeredClsid{ GUID_NULL };
+                if (AppModel::Identity::IsPackagedProcess())
                 {
-                    auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
-                    THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.c_str(), m_appId.c_str()));
+                    registeredClsid = PushNotificationHelpers::GetComRegistrationFromRegistry(expectedAppServerArgs.data());
                 }
-            }
 
-            winrt::guid registeredClsid{ GUID_NULL };
-            if (AppModel::Identity::IsPackagedProcess())
-            {
-                registeredClsid = PushNotificationHelpers::GetComRegistrationFromRegistry(expectedAppServerArgs.data());
-            }
+                // Create event handle before COM Registration otherwise if a notification arrives will lead to race condition
+                m_waitHandleForArgs.create();
 
-            // Create event handle before COM Registration otherwise if a notification arrives will lead to race condition
-            m_waitHandleForArgs.create();
+                {
+                    auto lock{ m_lock.lock_exclusive() };
+                    THROW_HR_IF_MSG(E_INVALIDARG, m_notificationComActivatorRegistration, "Already Registered for App Notifications!");
 
-            {
-                auto lock{ m_lock.lock_exclusive() };
-                THROW_HR_IF_MSG(E_INVALIDARG, m_notificationComActivatorRegistration, "Already Registered for App Notifications!");
+                    // Check if the caller has registered event handlers, if so the REGCLS_MULTIPLEUSE flag will cause COM to ensure that all activators
+                    // are routed inproc, otherwise with REGCLS_SINGLEUSE COM will launch a new process of the Win32 app for each invocation.
+                    auto activationFlag{ m_notificationHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE };
 
-                // Check if the caller has registered event handlers, if so the REGCLS_MULTIPLEUSE flag will cause COM to ensure that all activators
-                // are routed inproc, otherwise with REGCLS_SINGLEUSE COM will launch a new process of the Win32 app for each invocation.
-                auto activationFlag{ m_notificationHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE };
-
-                // Register an INotificationActivationCallback to receive background activations from AppNotification.
-                // Also, STA threads that call CoRegisterClassObject need to use the REGCLS_AGILE flag so that the object is
-                // associated with the neutral apartment. This allows other threads to activate the STA registered thread.
-                THROW_IF_FAILED(::CoRegisterClassObject(
-                    AppModel::Identity::IsPackagedProcess() ? registeredClsid : storedComActivatorGuid,
-                    winrt::make<AppNotificationManagerFactory>().get(),
-                    CLSCTX_LOCAL_SERVER,
-                    activationFlag | REGCLS_AGILE,
-                    &m_notificationComActivatorRegistration));
+                    // Register an INotificationActivationCallback to receive background activations from AppNotification.
+                    // Also, STA threads that call CoRegisterClassObject need to use the REGCLS_AGILE flag so that the object is
+                    // associated with the neutral apartment. This allows other threads to activate the STA registered thread.
+                    THROW_IF_FAILED(::CoRegisterClassObject(
+                        AppModel::Identity::IsPackagedProcess() ? registeredClsid : storedComActivatorGuid,
+                        winrt::make<AppNotificationManagerFactory>().get(),
+                        CLSCTX_LOCAL_SERVER,
+                        activationFlag | REGCLS_AGILE,
+                        &m_notificationComActivatorRegistration));
+                }
             }
         }
         catch (...)
@@ -280,10 +314,28 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             userInput.Insert(data[i].Key, data[i].Value);
         }
 
-        winrt::AppNotificationActivatedEventArgs activatedEventArgs = winrt::make<implementation::AppNotificationActivatedEventArgs>(invokedArgs, userInput);
+        winrt::AppNotificationActivatedEventArgs activatedEventArgs{ winrt::make<implementation::AppNotificationActivatedEventArgs>(invokedArgs, userInput) };
+        winrt::AppInstance keyInstance{ winrt::AppInstance::FindOrRegisterForKey(L"KeyCheck") };
+        if (!keyInstance.IsCurrent())
+        {
+            auto appNotificationArguments{ winrt::make<winrt::Microsoft::Windows::AppLifecycle::implementation::AppActivationArguments>(
+                winrt::ExtendedActivationKind::AppNotification, activatedEventArgs) };
+
+            // Deliver appNotificationArguments to elevated instance.
+            keyInstance.RedirectActivationToAsync(appNotificationArguments).get();
+
+            // Check if the elevated process wants new instance.
+            keyInstance = winrt::AppInstance::FindOrRegisterForKey(L"KeyCheck");
+            if (!keyInstance.IsCurrent())
+            {
+                exit(0);
+            }
+        }
+
+        // Need to unregister key here since we are now the main app instance.
+        AppInstance::GetCurrent().UnregisterKey();
 
         // Need to store the first notification in the case of ToastActivation
-
         auto lock{ m_lock.lock_exclusive() };
         if (!m_firstNotificationReceived)
         {

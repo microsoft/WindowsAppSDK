@@ -15,6 +15,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     struct AppNotificationManager : AppNotificationManagerT<AppNotificationManager, INotificationActivationCallback, INotificationManagerDeserializer>
     {
         AppNotificationManager();
+        ~AppNotificationManager();
 
         static winrt::Microsoft::Windows::AppNotifications::AppNotificationManager Default();
         static winrt::Windows::Foundation::IInspectable AppNotificationDeserialize(winrt::Windows::Foundation::Uri const& uri);
