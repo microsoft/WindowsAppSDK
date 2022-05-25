@@ -125,6 +125,14 @@ int main()
             std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
         });
 
+    winrt::event_token token2 = winrt::AppNotificationManager::Default().NotificationInvoked([](const auto&, winrt::AppNotificationActivatedEventArgs const& toastArgs)
+        {
+            std::wcout << L"AppNotification received foreground!\n";
+            winrt::hstring arguments{ toastArgs.Argument() };
+            std::wcout << arguments.c_str() << L"\n\n";
+            std::wcout << L"\n";
+        });
+
     winrt::AppNotificationManager::Default().Register();
 
     winrt::PushNotificationManager::Default().Register();
