@@ -34,6 +34,7 @@ class PackagedTests : BaseTestSuite
 
     TEST_METHOD_SETUP(MethodInit)
     {
+        BaseTestSuite::MethodSetup();
         return true;
     }
 
