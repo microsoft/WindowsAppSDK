@@ -343,8 +343,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         info.lpAttributeList = attributeList;
 
         wil::unique_process_information processInfo;
-        THROW_IF_WIN32_BOOL_FALSE(CreateProcess(nullptr, cmdLine.get(), nullptr, nullptr, TRUE, CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr,
-                                                &info.StartupInfo, &processInfo));
+        THROW_IF_WIN32_BOOL_FALSE(CreateProcess(nullptr, cmdLine.get(), nullptr, nullptr, TRUE, EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, &info.StartupInfo, &processInfo));
 
         // Transfer foreground rights to the new process before resuming it.
         AllowSetForegroundWindow(processInfo.dwProcessId);
