@@ -364,6 +364,23 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
+        public void ResourceLoader_ReturnSameResultAsResourceManager()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            if (m_exeFolder != m_assemblyFolder)
+            {
+                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
+            }
+
+            CommonTestCode.ResourceLoaderTest.ReturnSameResultAsResourceManager();
+        }
+
+        [TestMethod]
         public void ResourceManager_ValueAsStringTest_StringResource_Succeeds()
         {
             if (m_rs5)
