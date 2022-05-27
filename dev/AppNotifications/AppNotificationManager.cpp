@@ -24,7 +24,7 @@
 
 using namespace std::literals;
 
-constexpr std::wstring_view expectedAppServerArgs = L"----AppNotificationActivated:"sv;
+constexpr std::wstring_view c_expectedAppServerArgs = L"----AppNotificationActivated:"sv;
 
 namespace winrt
 {
@@ -129,17 +129,18 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             winrt::guid registeredClsid{};
             if (AppModel::Identity::IsPackagedProcess())
             {
-                registeredClsid = RegisterPackagedAppHelper();
+                registeredClsid = RegisterPackagedApp();
             }
             else
             {
-                AppNotificationAssets assets{ GetAssetsHelper() };
-                registeredClsid = RegisterUnpackagedAppHelper(assets.displayName, assets.iconFilePath);
+                AppNotificationAssets assets{ GetAssets() };
+                registeredClsid = RegisterUnpackagedApp(assets);
             }
 
             // Create event handle before COM Registration otherwise if a notification arrives will lead to race condition
             m_waitHandleForArgs.create();
 
+            // Register AppNotificationManager Object for Shell to activate
             RegisterActivationCallback(registeredClsid);
         }
         catch (...)
@@ -175,9 +176,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.c_str(), m_appId.c_str()));
     }
 
-    winrt::guid AppNotificationManager::RegisterPackagedAppHelper()
+    winrt::guid AppNotificationManager::RegisterPackagedApp()
     {
-        winrt::guid registeredClsid{ PushNotificationHelpers::GetComRegistrationFromRegistry(expectedAppServerArgs.data()) };
+        winrt::guid registeredClsid{ PushNotificationHelpers::GetComRegistrationFromRegistry(c_expectedAppServerArgs.data()) };
 
         if (!PushNotificationHelpers::IsPackagedAppScenario() && !WindowsAppRuntime::SelfContained::IsSelfContained())
         {
@@ -187,15 +188,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         return registeredClsid;
     }
 
-    winrt::guid AppNotificationManager::RegisterUnpackagedAppHelper(std::wstring const& displayName, std::wstring const& iconFilePath)
+    winrt::guid AppNotificationManager::RegisterUnpackagedApp(AppNotificationAssets const& assets)
     {
         THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(m_appId.c_str(), GUID_NULL));
 
-        // GuidString is registered in 
         std::wstring comActivatorGuidString{ GetOrCreateComActivatorGuid() };
         std::wstring notificationAppId{ RetrieveNotificationAppId() };
 
-        RegisterAssets(notificationAppId, comActivatorGuidString, displayName, iconFilePath);
+        RegisterAssets(notificationAppId, comActivatorGuidString, assets);
 
         if (!WindowsAppRuntime::SelfContained::IsSelfContained())
         {
@@ -362,7 +362,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                     winrt::guid registeredClsid{ GUID_NULL };
                     if (AppModel::Identity::IsPackagedProcess())
                     {
-                        registeredClsid = PushNotificationHelpers::GetComRegistrationFromRegistry(expectedAppServerArgs.data());
+                        registeredClsid = PushNotificationHelpers::GetComRegistrationFromRegistry(c_expectedAppServerArgs.data());
                     }
                     else
                     { 

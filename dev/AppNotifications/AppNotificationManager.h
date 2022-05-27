@@ -3,6 +3,7 @@
 #include "NotificationActivationCallback.h"
 #include "AppNotificationUtility.h"
 #include "externs.h"
+#include "ShellLocalization.h"
 
 constexpr PCWSTR c_appNotificationContractId = L"Windows.Toast";
 
@@ -46,8 +47,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri);
     private:
 
-        winrt::guid RegisterPackagedAppHelper();
-        winrt::guid RegisterUnpackagedAppHelper(std::wstring const& displayName, std::wstring const& iconFilePath);
+        winrt::guid RegisterPackagedApp();
+        winrt::guid RegisterUnpackagedApp(::Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets const& assets);
         void RegisterAppNotificationSinkWithNotificationPlatform();
         void RegisterActivationCallback(winrt::guid const& registeredClsid);
 

@@ -273,12 +273,12 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::GetOrCreateComActiva
 // 1. Based on the best app shortcut, using the FrameworkUdk.
 // 2. From the current process.
 // 3. Set a default DisplayName, but leave empty the icon file path so Shell can set a default icon.
-AppNotificationAssets Microsoft::Windows::AppNotifications::Helpers::GetAssetsHelper()
+AppNotificationAssets Microsoft::Windows::AppNotifications::Helpers::GetAssets()
 {
     AppNotificationAssets assets{};
 
-    if (FAILED(Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromShortcut(assets)) &&
-        FAILED(Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromProcess(assets)))
+    if (FAILED(RetrieveAssetsFromShortcut(assets)) &&
+        FAILED(RetrieveAssetsFromProcess(assets)))
     {
         assets.displayName = GetDisplayNameBasedOnProcessName();
     }
@@ -286,7 +286,7 @@ AppNotificationAssets Microsoft::Windows::AppNotifications::Helpers::GetAssetsHe
     return assets;
 }
 
-void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring const& appId, std::wstring const& clsid, std::wstring const& displayName, std::wstring const& iconFilePath)
+void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring const& appId, std::wstring const& clsid, AppNotificationAssets const& assets)
 {
     wil::unique_hkey hKey;
     // subKey: \Software\Classes\AppUserModelId\{AppGUID}
@@ -303,12 +303,12 @@ void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring 
         &hKey,
         nullptr /* lpdwDisposition */));
 
-    RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.c_str()), REG_EXPAND_SZ, displayName.size() * sizeof(wchar_t));
+    RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(assets.displayName.c_str()), REG_EXPAND_SZ, assets.displayName.size() * sizeof(wchar_t));
 
     // If no icon is specified in the Registry, the OS will render a default icon for App Notifications.
-    if (!iconFilePath.empty())
+    if (!assets.iconFilePath.empty())
     {
-        RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(iconFilePath.c_str()), REG_EXPAND_SZ, iconFilePath.size() * sizeof(wchar_t));
+        RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(assets.iconFilePath.c_str()), REG_EXPAND_SZ, assets.iconFilePath.size() * sizeof(wchar_t));
     }
     else // clean any Icon URI from previous registrations
     {

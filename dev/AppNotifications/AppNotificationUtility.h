@@ -56,7 +56,7 @@ namespace Microsoft::Windows::AppNotifications::Helpers
 
     std::wstring GetOrCreateComActivatorGuid();
 
-    void RegisterAssets(std::wstring const& appId, std::wstring const& clsid, std::wstring const& displayName, std::wstring const& iconFilePath);
+    void RegisterAssets(std::wstring const& appId, std::wstring const& clsid, Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets const& assets);
 
     wil::unique_cotaskmem_string ConvertUtf8StringToWideString(unsigned long length, const BYTE* utf8String);
 
@@ -64,5 +64,5 @@ namespace Microsoft::Windows::AppNotifications::Helpers
 
     std::wstring GetDisplayNameBasedOnProcessName();
 
-    Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets GetAssetsHelper();
+    Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets GetAssets();
 }
