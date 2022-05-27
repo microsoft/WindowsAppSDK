@@ -103,6 +103,16 @@ namespace CommonTestCode
             var filepath = ResourceLoader.GetDefaultResourceFilePath();
             Verify.AreNotEqual(filepath.IndexOf("resources.pri"), -1);
         }
+
+        public static void ReturnSameResultAsResourceManager()
+        {
+            var resourceLoader = new ResourceLoader("resources.pri.standalone");
+            var fromLoader = resourceLoader.GetString("IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE");
+
+            var resourceManager = new ResourceManager("resources.pri.standalone");
+            var fromManager = resourceManager.MainResourceMap.GetValue("resources/IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE").ValueAsString;
+            Verify.AreEqual(fromLoader, fromManager);
+        }
     }
 
     public class ResourceManagerTest
