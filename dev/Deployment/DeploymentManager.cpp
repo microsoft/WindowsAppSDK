@@ -332,10 +332,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         THROW_IF_WIN32_BOOL_FALSE(InitializeProcThreadAttributeList(attributeList, attributeCount, 0, &attributeListSize));
         auto freeAttributeList{ wil::scope_exit([&] { DeleteProcThreadAttributeList(attributeList); }) };
 
-        // Desktop Bridge applications by default have their child processes break away from the parent process.
-        // In order to recreate the calling process' environment correctly, we must prevent child breakaway semantics
-        // when calling the agent. Additionally the agent must do the same when restarting the caller.
-        DWORD policy{ PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_OVERRIDE };
+        // The process being created will create any child processes outside of the desktop app runtime environment.
+        // This behavior is the default for processes for which no policy has been set.
+        DWORD policy{ PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_ENABLE_PROCESS_TREE };
         THROW_IF_WIN32_BOOL_FALSE(UpdateProcThreadAttribute(attributeList, 0, PROC_THREAD_ATTRIBUTE_DESKTOP_APP_POLICY, &policy, sizeof(policy), nullptr, nullptr));
 
         STARTUPINFOEX info{};
