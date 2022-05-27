@@ -343,7 +343,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         info.lpAttributeList = attributeList;
 
         wil::unique_process_information processInfo;
-        THROW_IF_WIN32_BOOL_FALSE(CreateProcess(nullptr, cmdLine.get(), nullptr, nullptr, TRUE, EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, &info.StartupInfo, &processInfo));
+        THROW_IF_WIN32_BOOL_FALSE(CreateProcess(nullptr, cmdLine.get(), nullptr, nullptr, FALSE, EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, &info.StartupInfo, &processInfo));
 
         // This API is designed to only return to the caller on failure, otherwise block until process termination.
         // Wait for the agent to exit.  If the agent succeeds, it will terminate this process.  If the agent fails,
