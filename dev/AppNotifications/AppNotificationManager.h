@@ -49,8 +49,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         winrt::guid RegisterPackagedApp();
         winrt::guid RegisterUnpackagedApp(::Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets const& assets);
-        void RegisterAppNotificationSinkWithNotificationPlatform();
-        void RegisterActivationCallback(winrt::guid const& registeredClsid);
+        void RegisterAppNotificationSinkWithLongRunningPlatform();
+        void RegisterComServer(winrt::guid const& registeredClsid);
 
         void UnregisterHelper();
 

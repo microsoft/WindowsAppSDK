@@ -140,8 +140,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             // Create event handle before COM Registration otherwise if a notification arrives will lead to race condition
             m_waitHandleForArgs.create();
 
-            // Register AppNotificationManager Object for Shell to activate
-            RegisterActivationCallback(registeredClsid);
+            // Register the AppNotificationManager as a COM server for Shell to Activate and Invoke
+            RegisterComServer(registeredClsid);
         }
         catch (...)
         {
@@ -150,7 +150,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         }
     }
 
-    void AppNotificationManager::RegisterActivationCallback(winrt::guid const& registeredClsid)
+    void AppNotificationManager::RegisterComServer(winrt::guid const& registeredClsid)
     {
         auto lock{ m_lock.lock_exclusive() };
         THROW_HR_IF_MSG(E_INVALIDARG, m_notificationComActivatorRegistration, "Already Registered for App Notifications!");
@@ -170,7 +170,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             &m_notificationComActivatorRegistration));
     }
 
-    void AppNotificationManager::RegisterAppNotificationSinkWithNotificationPlatform()
+    void AppNotificationManager::RegisterAppNotificationSinkWithLongRunningPlatform()
     {
         auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
         THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.c_str(), m_appId.c_str()));
@@ -182,7 +182,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         if (!PushNotificationHelpers::IsPackagedAppScenario() && !WindowsAppRuntime::SelfContained::IsSelfContained())
         {
-            RegisterAppNotificationSinkWithNotificationPlatform();
+            RegisterAppNotificationSinkWithLongRunningPlatform();
         }
 
         return registeredClsid;
@@ -192,14 +192,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     {
         THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(m_appId.c_str(), GUID_NULL));
 
-        std::wstring comActivatorGuidString{ GetOrCreateComActivatorGuid() };
         std::wstring notificationAppId{ RetrieveNotificationAppId() };
+        std::wstring comActivatorGuidString{ GetOrCreateComActivatorGuid() };
 
         RegisterAssets(notificationAppId, comActivatorGuidString, assets);
 
         if (!WindowsAppRuntime::SelfContained::IsSelfContained())
         {
-            RegisterAppNotificationSinkWithNotificationPlatform();
+            RegisterAppNotificationSinkWithLongRunningPlatform();
         }
 
         // Remove braces around the guid string
@@ -369,6 +369,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                         std::wstring registeredClsidString;
                         THROW_IF_FAILED(GetActivatorGuid(registeredClsidString));
 
+                        // Remove braces around the guid string
                         registeredClsid = winrt::guid(registeredClsidString.substr(1, registeredClsidString.size() - 2));
                     }
 
