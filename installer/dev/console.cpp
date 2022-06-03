@@ -46,7 +46,7 @@ void WindowsAppRuntimeInstaller::Console::DisplayError(const HRESULT hr)
 
     wil::unique_hlocal_ptr<WCHAR[]> message;
     if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-        nullptr, hr, 0, reinterpret_cast<PWSTR>(&message), 0, nullptr) != 0)
+                      nullptr, hr, 0, reinterpret_cast<PWSTR>(&message), 0, nullptr) != 0)
     {
         std::wcout << message.get();
     }
@@ -55,8 +55,9 @@ void WindowsAppRuntimeInstaller::Console::DisplayError(const HRESULT hr)
     // Don't log redundant Hr information
     if (installActivityContext.GetDeploymentErrorExtendedHResult() &&
         installActivityContext.GetDeploymentErrorExtendedHResult() != hr &&
-        (installActivityContext.GetInstallStage() == InstallStage::AddPackage ||
-            installActivityContext.GetInstallStage() == InstallStage::RegisterPackage))
+        (installActivityContext.GetInstallStage() == InstallStage::StagePackage ||
+         installActivityContext.GetInstallStage() == InstallStage::AddPackage ||
+         installActivityContext.GetInstallStage() == InstallStage::RegisterPackage))
     {
         std::wcout << "ExtendedError: 0x" << std::hex << installActivityContext.GetDeploymentErrorExtendedHResult() << " ";
 
@@ -74,4 +75,3 @@ void WindowsAppRuntimeInstaller::Console::DisplayError(const HRESULT hr)
         std::wcout << "ErrorMessage: " << installActivityContext.GetDeploymentErrorText();
     }
 }
-
