@@ -1,0 +1,17 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <Target Name="GenerateUndockedRegFreeWinRTCpp" BeforeTargets="ClCompile" Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)' == 'true'">
+        <ItemGroup>
+            <ClCompile>
+                <PreprocessorDefinitions>MICROSOFT_WINDOWSAPPSDK_UNDOCKEDREGFREEWINRT_AUTO_INITIALIZE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+                <PreprocessorDefinitions Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitializeLoadLibrary)' == 'true'">MICROSOFT_WINDOWSAPPSDK_UNDOCKEDREGFREEWINRT_AUTO_INITIALIZE_LOADLIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            </ClCompile>
+            <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\UndockedRegFreeWinRT-AutoInitializer.cpp">
+                <PrecompiledHeader>NotUsing</PrecompiledHeader>
+                <PreprocessorDefinitions>MICROSOFT_WINDOWSAPPSDK_UNDOCKEDREGFREEWINRT_AUTO_INITIALIZE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+                <PreprocessorDefinitions Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitializeLoadLibrary)' == 'true'">MICROSOFT_WINDOWSAPPSDK_UNDOCKEDREGFREEWINRT_AUTO_INITIALIZE_LOADLIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            </ClCompile>
+        </ItemGroup>
+    </Target>
+
+</Project>

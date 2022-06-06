@@ -23,3 +23,5 @@ EXPORTS
 
     WindowsAppRuntime_VersionInfo_MSIX_Framework_PackageFamilyName_Get
     WindowsAppRuntime_VersionInfo_TestInitialize
+
+    WindowsAppRuntime_EnsureIsLoaded

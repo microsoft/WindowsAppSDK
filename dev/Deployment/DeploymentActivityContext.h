@@ -36,6 +36,7 @@ namespace WindowsAppRuntime::Deployment::Activity
         GUID m_deploymentErrorActivityId{};
         WindowsAppRuntimeDeployment_TraceLogger::Initialize m_activity;
         WilFailure m_lastFailure;
+        bool isFullTrustPackage{};
 
     public:
         static WindowsAppRuntime::Deployment::Activity::Context& Get();
@@ -77,6 +78,11 @@ namespace WindowsAppRuntime::Deployment::Activity
             return m_lastFailure;
         }
 
+        const bool& GetIsFullTrustPackage() const
+        {
+            return isFullTrustPackage;
+        }
+
         void SetInstallStage(const DeploymentStage& installStage)
         {
             m_installStage = installStage;
@@ -103,6 +109,11 @@ namespace WindowsAppRuntime::Deployment::Activity
         }
 
         void SetLastFailure(const wil::FailureInfo& failure);
+
+        void SetIsFullTrustPackage()
+        {
+            isFullTrustPackage = true;
+        }
     };
 
     static WindowsAppRuntime::Deployment::Activity::Context g_DeploymentActivityContext;

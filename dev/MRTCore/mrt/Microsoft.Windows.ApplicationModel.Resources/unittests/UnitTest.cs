@@ -39,6 +39,12 @@ namespace ManagedTest
         {
             CommonTestCode.ResourceLoaderTest.GetDefaultResourceFilePathTest();
         }
+
+        [TestMethod]
+        public void ReturnSameResultAsResourceManager()
+        {
+            CommonTestCode.ResourceLoaderTest.ReturnSameResultAsResourceManager();
+        }
     }
 
     [TestClass]
