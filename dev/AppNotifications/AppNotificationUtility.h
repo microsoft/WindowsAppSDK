@@ -8,6 +8,7 @@
 #include <wil/resource.h>
 #include <AppNotificationActivatedEventArgs.h>
 #include <FrameworkUdk/toastnotificationsrt.h>
+#include <ShellLocalization.h>
 
 namespace Microsoft::Windows::AppNotifications::Helpers
 {
@@ -53,13 +54,15 @@ namespace Microsoft::Windows::AppNotifications::Helpers
 
     HRESULT GetActivatorGuid(std::wstring& activatorGuid) noexcept;
 
-    winrt::guid RegisterComActivatorGuidAndAssets();
+    std::wstring GetOrCreateComActivatorGuid();
 
-    void RegisterAssets(std::wstring const& appId, std::wstring const& clsid);
+    void RegisterAssets(std::wstring const& appId, std::wstring const& clsid, Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets const& assets);
 
     wil::unique_cotaskmem_string ConvertUtf8StringToWideString(unsigned long length, const BYTE* utf8String);
 
     winrt::Microsoft::Windows::AppNotifications::AppNotification ToastNotificationFromToastProperties(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* properties);
 
     std::wstring GetDisplayNameBasedOnProcessName();
+
+    Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets GetAssets();
 }
