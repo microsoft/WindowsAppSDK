@@ -21,6 +21,7 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include <WindowsAppRuntime.SelfContained.h>
 #include <ShellLocalization.h>
+#include <filesystem>
 
 using namespace std::literals;
 
@@ -136,6 +137,54 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                 AppNotificationAssets assets{ GetAssets() };
                 registeredClsid = RegisterUnpackagedApp(assets);
             }
+
+            // Create event handle before COM Registration otherwise if a notification arrives will lead to race condition
+            m_waitHandleForArgs.create();
+
+            // Register the AppNotificationManager as a COM server for Shell to Activate and Invoke
+            RegisterComServer(registeredClsid);
+        }
+        catch (...)
+        {
+            hr = wil::ResultFromCaughtException();
+            throw;
+        }
+    }
+
+    void AppNotificationManager::Register(hstring const& displayName, winrt::Windows::Foundation::Uri const& iconUri)
+    {
+        if (!IsSupported())
+        {
+            return;
+        }
+
+        HRESULT hr{ S_OK };
+
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationTelemetry::LogRegister(hr, m_appId);
+        }) };
+
+        try
+        {
+            THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, AppModel::Identity::IsPackagedProcess(), "Not applicable for packaged applications");
+
+            THROW_HR_IF(E_INVALIDARG, (displayName == winrt::hstring{}) || (iconUri == nullptr));
+
+            AppNotificationAssets assets{ GetAssets(displayName.c_str(), iconUri.RawUri().c_str()) };
+
+            {
+                auto lock{ m_lock.lock_exclusive() };
+                THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_OPERATION_IN_PROGRESS), m_registering, "Registration is in progress!");
+                m_registering = true;
+            }
+
+            auto registeringScopeExit{ wil::scope_exit([&]()
+            {
+                auto lock { m_lock.lock_exclusive() };
+                m_registering = false;
+            }) };
+
+            winrt::guid registeredClsid{ RegisterUnpackagedApp(assets) };
 
             // Create event handle before COM Registration otherwise if a notification arrives will lead to race condition
             m_waitHandleForArgs.create();
