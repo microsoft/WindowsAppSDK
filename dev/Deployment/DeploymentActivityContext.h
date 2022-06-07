@@ -68,7 +68,7 @@ namespace WindowsAppRuntime::Deployment::Activity
             return m_deploymentErrorActivityId;
         }
 
-        WindowsAppRuntimeDeployment_TraceLogger::Initialize GetActivity() const
+        WindowsAppRuntimeDeployment_TraceLogger::Initialize& GetActivity()
         {
             return m_activity;
         }
