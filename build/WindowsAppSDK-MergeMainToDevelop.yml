@@ -9,7 +9,7 @@ jobs:
   - task: CmdLine@2
     inputs:
       script: |
-        git checkout develop
+        git checkout TestDevelop
         git config user.name "reunion-maestro-bot"
         git config user.email "reunion-maestro-bot@microsoft.com"
         git pull origin main
