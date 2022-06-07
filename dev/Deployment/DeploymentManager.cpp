@@ -317,7 +317,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         auto activityId{ winrt::to_hstring(*::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Id()) };
 
         // <currentdirectory>\deploymentagent.exe <custom arguments passed by caller>
-        auto cmdLine{ wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" \"%s\" % s % s", exePath.c_str(), packagePath.c_str(), forceDeployment, activityId.c_str()) };
+        auto cmdLine{ wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" \"%s\" %u %s", exePath.c_str(), packagePath.c_str(), (forceDeployment ? 1 : 0), activityId.c_str()) };
 
         SIZE_T attributeListSize{};
         auto attributeCount{ 1 };
@@ -356,7 +356,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         wil::handle_wait(processInfo.hProcess);
 
         DWORD processExitCode{};
-        THROW_IF_WIN32_BOOL_FALSE_MSG(GetExitCodeProcess(processInfo.hProcess, &processExitCode), "CmdLine: %ls, processExitCode: %lu", cmdLine.get(), processExitCode);
+        THROW_IF_WIN32_BOOL_FALSE_MSG(GetExitCodeProcess(processInfo.hProcess, &processExitCode), "CmdLine: %ls, processExitCode: %u", cmdLine.get(), processExitCode);
+        RETURN_IF_FAILED_MSG(HRESULT_FROM_WIN32(processExitCode), "DeploymentAgent exitcode:0x%X", processExitCode);
         return S_OK;
     }
     CATCH_RETURN()
