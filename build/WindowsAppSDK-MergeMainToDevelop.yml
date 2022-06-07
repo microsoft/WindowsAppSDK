@@ -10,6 +10,8 @@ jobs:
 - job: Merge
   pool: $(ProjectReunionBuildPool)
   steps:
+  - checkout: self
+    persistCredentials: true
   - task: CmdLine@2
     inputs:
       script: |
