@@ -8,6 +8,7 @@ jobs:
 
   - task: CmdLine@2
     inputs:
+      failOnStderr: true
       script: |
         git checkout TestDevelop
         git config user.name "reunion-maestro-bot"
