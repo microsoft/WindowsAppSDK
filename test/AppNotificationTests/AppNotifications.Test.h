@@ -11,7 +11,8 @@ namespace winrt
     using namespace winrt::Windows::Foundation;
 }
 
-namespace AppNotificationHelpers {
+namespace AppNotifications::Test
+{
     winrt::AppNotification CreateToastNotification(winrt::hstring message)
     {
         winrt::hstring xmlPayload{ L"<toast>" + message + L"</toast>" };
@@ -23,7 +24,7 @@ namespace AppNotificationHelpers {
         return CreateToastNotification(L"intrepidToast");
     }
 
-    void VerifyToastStatus(UINT32 expectedToastId, bool expected)
+    void VerifyToastStatus(UINT32 expectedToastId, bool isToastActive)
     {
         auto retrieveNotificationsAsync{ winrt::AppNotificationManager::Default().GetAllAsync() };
         auto scope_exit = wil::scope_exit(
@@ -36,7 +37,7 @@ namespace AppNotificationHelpers {
 
         auto notifications{ retrieveNotificationsAsync.get() };
 
-        bool found{ false };
+        bool found{};
         for (auto notification : notifications)
         {
             if (notification.Id() == expectedToastId)
@@ -45,7 +46,7 @@ namespace AppNotificationHelpers {
                 break;
             }
         }
-        VERIFY_ARE_EQUAL(found, expected);
+        VERIFY_ARE_EQUAL(found, isToastActive);
     }
 
     void VerifyToastIsActive(UINT32 expectedToastId)
@@ -93,7 +94,8 @@ namespace AppNotificationHelpers {
             return;
         }
 
-        VERIFY_IS_FALSE(!expected || !actual);
+        VERIFY_IS_TRUE(!!expected);
+        VERIFY_IS_TRUE(!!actual);
 
         VERIFY_ARE_EQUAL(expected.Status(), actual.Status());
         VERIFY_ARE_EQUAL(expected.Title(), actual.Title());
@@ -162,7 +164,7 @@ namespace AppNotificationHelpers {
             auto actualToastVector{ getAllAsync.GetResults() };
             if (actualToastVector.Size() == expectedToastVector.size())
             {
-                for (int actualToastIndex{ 0 }; (uint32_t)actualToastIndex < actualToastVector.Size(); actualToastIndex++)
+                for (int actualToastIndex{ 0 }; static_cast<uint32_t>(actualToastIndex) < actualToastVector.Size(); actualToastIndex++)
                 {
                     for (int expectedToastIndex{ 0 }; expectedToastIndex < expectedToastVector.size(); expectedToastIndex++)
                     {
@@ -211,24 +213,22 @@ namespace AppNotificationHelpers {
             scopeExitGetAll.release();
 
             auto actualToastVector{ getAllAsync.GetResults() };
-            if (actualToastVector.Size() == (uint32_t) 0)
+            if (actualToastVector.Size() == static_cast<uint32_t>(0))
             {
                 result = true;
                 break;
             }
-
-            Sleep(500);
         }
         return result;
     }
 
     bool EnsureNoActiveToasts()
     {
-        auto removeAllAsync = winrt::AppNotificationManager::Default().RemoveAllAsync();
+        auto removeAllAsync{ winrt::AppNotificationManager::Default().RemoveAllAsync() };
         if (removeAllAsync.wait_for(c_timeout) != winrt::Windows::Foundation::AsyncStatus::Completed)
         {
             removeAllAsync.Cancel();
-            THROW_HR_MSG(E_FAIL, "Failed to remove all active toasts");
+            THROW_HR_MSG(E_UNEXPECTED, "Failed to remove all active toasts");
         }
 
         VERIFY_IS_TRUE(VerifyToastsCleared());

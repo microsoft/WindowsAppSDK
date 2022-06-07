@@ -4,7 +4,7 @@
 #include "pch.h"
 
 #include "AppNotification-Test-Constants.h"
-#include "AppNotificationHelpers.h"
+#include "AppNotifications.Test.h"
 #include "BaseTestSuite.h"
 
 using namespace WEX::Common;
@@ -19,22 +19,20 @@ using namespace winrt::Windows::Management::Deployment;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 using namespace winrt::Microsoft::Windows::AppNotifications;
-using namespace AppNotificationHelpers;
+using namespace AppNotifications::Test;
 
 void BaseTestSuite::ClassSetup()
 {
-    ::Test::Bootstrap::SetupPackages();
+    ::Test::Bootstrap::Setup();
 }
 
 void BaseTestSuite::ClassCleanup()
 {
-    ::Test::Bootstrap::CleanupPackages();
+    ::Test::Bootstrap::Cleanup();
 }
 
 void BaseTestSuite::MethodSetup()
 {
-    ::Test::Bootstrap::SetupBootstrap();
-
     bool isSelfContained{};
     VERIFY_SUCCEEDED(TestData::TryGetValue(L"SelfContained", isSelfContained));
 
@@ -45,7 +43,7 @@ void BaseTestSuite::MethodSetup()
     }
     else
     {
-        ::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!");
+        ::WindowsAppRuntime::VersionInfo::TestInitialize(c_nonExistentPackage);
         VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
     }
 }
@@ -63,7 +61,6 @@ void BaseTestSuite::MethodCleanup()
     }
 
     ::WindowsAppRuntime::VersionInfo::TestShutdown();
-    ::Test::Bootstrap::CleanupBootstrap();
 }
 
 void BaseTestSuite::RegisterWithAppNotificationManager()
@@ -148,7 +145,7 @@ void BaseTestSuite::VerifyToastProgressDataFromToast()
     VERIFY_ARE_EQUAL(progressDataFromToast.Title(), L"Title");
     VERIFY_ARE_EQUAL(progressDataFromToast.Value(), 0.14);
     VERIFY_ARE_EQUAL(progressDataFromToast.ValueStringOverride(), L"14%");
-    VERIFY_ARE_EQUAL(progressDataFromToast.SequenceNumber(), (uint32_t) 1);
+    VERIFY_ARE_EQUAL(progressDataFromToast.SequenceNumber(), 1u);
 }
 
 void BaseTestSuite::VerifyToastExpirationTime()
@@ -269,7 +266,7 @@ void BaseTestSuite::VerifyGetAllAsyncWithZeroActiveToast()
     VERIFY_ARE_EQUAL(retrieveNotificationsAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
     scope_exit.release();
 
-    VERIFY_ARE_EQUAL(retrieveNotificationsAsync.GetResults().Size(), (uint32_t) 0);
+    VERIFY_ARE_EQUAL(retrieveNotificationsAsync.GetResults().Size(), 0u);
 }
 
 void BaseTestSuite::VerifyGetAllAsyncWithOneActiveToast()
@@ -302,7 +299,7 @@ void BaseTestSuite::VerifyGetAllAsyncWithOneActiveToast()
     scope_exit.release();
 
     auto notifications{ retrieveNotificationsAsync.GetResults() };
-    VERIFY_ARE_EQUAL(notifications.Size(), (uint32_t) 1);
+    VERIFY_ARE_EQUAL(notifications.Size(), 1u);
 
     auto actual = notifications.GetAt(0);
     return VerifyToastNotificationIsValid(toast, actual, ExpectedTransientProperties::DEFAULT);
@@ -349,7 +346,7 @@ void BaseTestSuite::VerifyGetAllAsyncIgnoresUpdatesToProgressData()
     scope_exit.release();
 
     auto notifications{ retrieveNotificationsAsync.GetResults() };
-    VERIFY_ARE_EQUAL(notifications.Size(), (uint32_t) 1);
+    VERIFY_ARE_EQUAL(notifications.Size(), 1u);
     VerifyToastNotificationIsValid(toast, notifications.GetAt(0), ExpectedTransientProperties::EQUAL);
 }
 

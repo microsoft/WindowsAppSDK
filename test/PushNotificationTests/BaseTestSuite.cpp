@@ -21,18 +21,16 @@ using namespace winrt::Microsoft::Windows::PushNotifications;
 
 void BaseTestSuite::ClassSetup()
 {
-    ::Test::Bootstrap::SetupPackages();
+    ::Test::Bootstrap::Setup();
 }
 
 void BaseTestSuite::ClassCleanup()
 {
-    ::Test::Bootstrap::CleanupPackages();
+    ::Test::Bootstrap::Cleanup();
 }
 
 void BaseTestSuite::MethodSetup()
 {
-    ::Test::Bootstrap::SetupBootstrap();
-
     bool isSelfContained{};
     VERIFY_SUCCEEDED(TestData::TryGetValue(L"SelfContained", isSelfContained));
 
@@ -57,7 +55,6 @@ void BaseTestSuite::MethodCleanup()
     }
 
     ::WindowsAppRuntime::VersionInfo::TestShutdown();
-    ::Test::Bootstrap::CleanupBootstrap();
 }
 
 HRESULT BaseTestSuite::ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& channelOperation)

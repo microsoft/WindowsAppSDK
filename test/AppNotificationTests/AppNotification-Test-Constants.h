@@ -7,4 +7,5 @@ inline const std::chrono::milliseconds c_timeout = std::chrono::milliseconds(500
 inline IID c_toastComServerId = winrt::guid("1940dba9-0f64-4f0d-8a4b-5d207b812e61"); // Value from ToastNotificationsTestAppPackage ComActivator in appxmanifest.
 inline const std::wstring c_localWindowsAppSDKFolder{ LR"(\Microsoft\WindowsAppSDK\)" };
 inline const std::wstring c_pngExtension{ LR"(.png)" };
-inline const std::wstring c_appUserModelId{ LR"(TaefTestAppId)" };
+inline const std::wstring c_appUserModelId{ L"TaefTestAppId" };
+constexpr PCWSTR c_nonExistentPackage{ L"NonExistentPackage" };

@@ -123,7 +123,7 @@
     <ClCompile Include="UnpackagedTests.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AppNotificationHelpers.h" />
+    <ClInclude Include="AppNotifications.Test.h" />
     <ClInclude Include="BaseTestSuite.h" />
     <ClInclude Include="PackagedTests.h" />
     <ClInclude Include="pch.h" />

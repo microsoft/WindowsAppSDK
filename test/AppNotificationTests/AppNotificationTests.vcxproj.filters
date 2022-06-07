@@ -30,7 +30,7 @@
     <ClInclude Include="UnpackagedTests.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AppNotificationHelpers.h">
+    <ClInclude Include="AppNotifications.Test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
