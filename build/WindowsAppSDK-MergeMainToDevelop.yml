@@ -17,7 +17,6 @@ jobs:
   # - script: |
   #     dir /s $(Build.SourcesDirectory)
 
-    displayName: 'Contents of APIScanStaging and other source folders'
   - task: PowerShell@2
     inputs:
       targetType: 'inline'
