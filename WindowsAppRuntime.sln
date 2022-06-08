@@ -182,6 +182,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask.ProxyStub", "dev\PushNotifications\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.vcxproj", "{BF3FCED0-CADB-490A-93A7-4D90E1F45AB0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask.StartupTask", "dev\PushNotifications\PushNotificationsLongRunningTask.StartupTask\PushNotificationsLongRunningTask.StartupTask.vcxproj", "{1DEBBFF6-EE6E-4944-9DE2-35B7A686AF42}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowerNotifications", "PowerNotifications", "{E9117D76-63AC-4289-A628-AB39EF6E5D19}"
 EndProject
@@ -341,6 +344,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_BootstrapAutoInitialize_CS_Options_None", "test\DynamicDependency\Test_BootstrapAutoInitialize\CS\Test_BootstrapAutoInitialize_CS_Options_None\Test_BootstrapAutoInitialize_CS_Options_None.csproj", "{4A74BBED-3B20-44A7-B6FF-3373160DE741}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeploymentAgent", "dev\DeploymentAgent\DeploymentAgent.vcxproj", "{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
