@@ -8,15 +8,12 @@ jobs:
 
   - task: CmdLine@2
     inputs:
-      failOnStderr: false
       script: |
         git checkout TestDevelop
         git config user.name "reunion-maestro-bot"
         git config user.email "reunion-maestro-bot@microsoft.com"
         git pull origin main
-
-  # - script: |
-  #     dir /s $(Build.SourcesDirectory)
+        git push > log.txt
 
   - task: PowerShell@2
     inputs:
