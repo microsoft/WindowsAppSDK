@@ -16,10 +16,10 @@ jobs:
         git pull origin main
         git push > $(Build.SourcesDirectory)\log.txt 2> $(Build.SourcesDirectory)\errorlog.txt
 
-    - task: PowerShell@2
-      inputs:
-        targetType: 'inline'
-        script: |
-          $error = Get-Content  $(Build.SourcesDirectory)\errorlog.txt
-          Write-Host "ERRRIRS"
-          Write-Host $error
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+        $error = Get-Content $(Build.SourcesDirectory)\errorlog.txt
+        Write-Host "ERRRIRS"
+        Write-Host $error
