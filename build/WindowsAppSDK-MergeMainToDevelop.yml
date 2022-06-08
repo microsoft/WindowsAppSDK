@@ -8,10 +8,13 @@ jobs:
 
   - task: CmdLine@2
     inputs:
-      failOnStderr: true
       script: |
         git checkout develop
         git config user.name "reunion-maestro-bot"
         git config user.email "reunion-maestro-bot@microsoft.com"
         git pull origin main
+
+  - task: CmdLine@2
+    inputs:
+      script: |
         git push
