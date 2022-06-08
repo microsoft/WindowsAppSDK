@@ -139,6 +139,29 @@ int main()
 }
 ```
 
+## Registering for App Notifications using assets
+
+For Unpackaged applications, the developer can Register using a custom Display Name and Icon.
+WinAppSDK will register the application and display these assets when an App Notification is received.
+The developer should provide both the assets or not provide them at all. Icon provided by the developer
+should be a valid supported format. The API supports the formats - png, bmp, jpg. The icon
+should reside on the local machine only otherwise the API throws an exception. For Packaged applications,
+this API is not applicable and will throw an exception.
+
+```cpp
+int main()
+{
+    auto manager = winrt::AppNotificationManager::Default();
+    manager.Register(L"AppNotifications", winrt::Windows::Foundation::Uri {L"<Path to Icon>"});
+
+    // other app init and then message loop here
+
+    // Call Unregister() before exiting main so that subsequent invocations will launch a new process
+    manager.Unregister();
+    return 0;
+}
+```
+
 ## Displaying an App Notification
 
 To display a Notification, an app needs to define a payload in xml. In the example below, the
@@ -450,6 +473,9 @@ namespace Microsoft.Windows.AppNotifications
         // For Packaged apps, the COM server is defined in the manifest. The Process calling Register() and the process defined as the COM server are required to be the same.
         // For Unpackaged apps, the caller process will be registered as the COM server. And assets like displayname and icon will be gleaned from Shell and registered as well.
         void Register();
+
+         // For Unpackaged apps only, the caller process will be registered as the COM server.
+        void Register(String displayName, Windows.Foundation.Uri iconUri);
 
         // Unregisters the COM Service so that a subsequent activation will launch a new process
         void Unregister();

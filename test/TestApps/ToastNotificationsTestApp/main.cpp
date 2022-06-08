@@ -1329,9 +1329,6 @@ bool VerifyRegisterWithNullDisplayNameFail_Unpackaged()
     try
     {
         winrt::AppNotificationManager::Default().Register(winrt::hstring{}, winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-
-
-        winrt::AppNotificationManager::Default().UnregisterAll();
     }
     catch (...)
     {
@@ -1348,8 +1345,6 @@ bool VerifyRegisterWithNullIconFail_Unpackaged()
     try
     {
         winrt::AppNotificationManager::Default().Register(L"AppNotificationApp", nullptr);
-
-        winrt::AppNotificationManager::Default().UnregisterAll();
     }
     catch (...)
     {
@@ -1366,9 +1361,6 @@ bool VerifyRegisterWithNullDisplayNameAndNullIconFail_Unpackaged()
     try
     {
         winrt::AppNotificationManager::Default().Register(winrt::hstring{}, nullptr);
-
-
-        winrt::AppNotificationManager::Default().UnregisterAll();
     }
     catch (...)
     {
@@ -1403,8 +1395,6 @@ bool VerifyRegisterWithDisplayNameAndInvalidIconPathFail_Unpackaged()
     try
     {
         winrt::AppNotificationManager::Default().Register(L"AppNotificationApp", winrt::Uri{ LR"(C:\InvalidPath\)" });
-
-        winrt::AppNotificationManager::Default().UnregisterAll();
     }
     catch (...)
     {
@@ -1422,8 +1412,6 @@ bool VerifyRegisterWithEmptyDisplayNameFail_Unpackaged()
     {
         // hstring treats L"" as assigning nullptr
         winrt::AppNotificationManager::Default().Register(L"", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-
-        winrt::AppNotificationManager::Default().UnregisterAll();
     }
     catch (...)
     {
@@ -1440,8 +1428,6 @@ bool VerifyRegisterWithEmptyIconFail_Unpackaged()
     try
     {
         winrt::AppNotificationManager::Default().Register(L"AppNotificationApp", winrt::Uri{ L"" });
-
-        winrt::AppNotificationManager::Default().UnregisterAll();
     }
     catch (...)
     {
@@ -1458,8 +1444,6 @@ bool VerifyRegisterWithEmptyDisplayNameAndEmptyIconFail_Unpackaged()
     try
     {
         winrt::AppNotificationManager::Default().Register(L"", winrt::Uri{ L"" });
-
-        winrt::AppNotificationManager::Default().UnregisterAll();
     }
     catch (...)
     {
@@ -1475,9 +1459,8 @@ bool VerifyRegisterWithAssetsFail()
     winrt::AppNotificationManager::Default().UnregisterAll();
     try
     {
+        // API fails for Packaged Scenario
         winrt::AppNotificationManager::Default().Register(L"AppNotificationApp", winrt::Uri{ LR"(C:\InvalidPath\)" });
-
-        winrt::AppNotificationManager::Default().UnregisterAll();
     }
     catch (...)
     {

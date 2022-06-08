@@ -170,7 +170,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
             THROW_HR_IF(E_INVALIDARG, (displayName == winrt::hstring{}) || (iconUri == nullptr));
 
-            AppNotificationAssets assets{ GetAssets(displayName.c_str(), iconUri.RawUri().c_str()) };
+            AppNotificationAssets assets{ ValidateAssets(displayName.c_str(), iconUri.RawUri().c_str()) };
 
             {
                 auto lock{ m_lock.lock_exclusive() };

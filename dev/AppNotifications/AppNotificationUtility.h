@@ -66,5 +66,5 @@ namespace Microsoft::Windows::AppNotifications::Helpers
 
     Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets GetAssets();
 
-    Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets GetAssets(std::wstring displayName, std::wstring iconFilePath);
+    Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets ValidateAssets(std::wstring displayName, std::filesystem::path iconFilePath);
 }
