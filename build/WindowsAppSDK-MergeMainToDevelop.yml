@@ -13,7 +13,6 @@ jobs:
         git config user.name "reunion-maestro-bot"
         git config user.email "reunion-maestro-bot@microsoft.com"
         git pull origin main
-        git push > log.txt
 
   - task: PowerShell@2
     inputs:
