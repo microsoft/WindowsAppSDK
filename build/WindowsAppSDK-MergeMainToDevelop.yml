@@ -14,7 +14,4 @@ jobs:
         git config user.name "reunion-maestro-bot"
         git config user.email "reunion-maestro-bot@microsoft.com"
         git pull origin main
-        git push  > log.txt 2>  $(Build.SourcesDirectory)\errorlog.txt
-        $error = Get-Content  $(Build.SourcesDirectory)\errorlog.txt
-        Write-Host "ERRRIRS"
-        Write-Host $error
+        git push
