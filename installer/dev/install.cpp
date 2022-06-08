@@ -66,7 +66,7 @@ namespace WindowsAppRuntimeInstaller
             {
                 const auto deploymentResult{ deploymentOperation.GetResults() };
                 installActivityContext.SetDeploymentErrorInfo(hrAddPackage, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str(), deploymentResult.ActivityId());
-                RETURN_HR(hrAddPackage);
+                RETURN_HR(static_cast<HRESULT>(deploymentResult.ExtendedErrorCode()));
             }
         }
         return S_OK;
@@ -93,7 +93,7 @@ namespace WindowsAppRuntimeInstaller
             {
                 const auto deploymentResult{ deploymentOperation.GetResults() };
                 installActivityContext.SetDeploymentErrorInfo(hrStagePackage, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str(), deploymentResult.ActivityId());
-                RETURN_HR(hrStagePackage);
+                RETURN_HR(static_cast<HRESULT>(deploymentResult.ExtendedErrorCode()));
             }
         }
         return S_OK;

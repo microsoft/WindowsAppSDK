@@ -56,11 +56,10 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
             return m_currentResourceId;
         }
 
-        const HRESULT& GetdeploymentErrorHresult() const
+        const HRESULT& GetDeploymentErrorHresult() const
         {
             return m_deploymentErrorHresult;
         }
-
 
         const HRESULT& GetDeploymentErrorExtendedHResult() const
         {

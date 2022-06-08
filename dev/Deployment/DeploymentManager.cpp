@@ -295,7 +295,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                 deploymentResult.ActivityId());
         }
 
-        return hrAddPackage;
+        return deploymentResult.ExtendedErrorCode();
     }
     CATCH_RETURN()
 
