@@ -19,6 +19,6 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        $error = Get-Content $(Build.SourcesDirectory)\errorlog.txt
+        $errorlog = Get-Content $(Build.SourcesDirectory)\errorlog.txt
         Write-Host "ERRRIRS"
-        Write-Host $error
+        Write-Host $errorlog
