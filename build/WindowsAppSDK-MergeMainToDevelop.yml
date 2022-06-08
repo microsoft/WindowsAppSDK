@@ -13,16 +13,16 @@ jobs:
         git config user.name "reunion-maestro-bot"
         git config user.email "reunion-maestro-bot@microsoft.com"
         git pull origin main
-        git push > log.txt
 
-  - script: |
-      dir /s $(Build.SourcesDirectory)
+  # - script: |
+  #     dir /s $(Build.SourcesDirectory)
 
     displayName: 'Contents of APIScanStaging and other source folders'
   - task: PowerShell@2
     inputs:
       targetType: 'inline'
       script: |
+        git push > log.txt
         $errorlog = Get-Content log.txt
         Write-Host "ERRRIRS"
         Write-Host $errorlog
