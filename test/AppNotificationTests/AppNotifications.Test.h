@@ -15,7 +15,8 @@ namespace AppNotifications::Test
 {
     winrt::AppNotification CreateToastNotification(winrt::hstring message)
     {
-        winrt::hstring xmlPayload{ L"<toast>" + message + L"</toast>" };
+        winrt::hstring xmlPayload{ LR"(<toast><visual><binding template="ToastGeneric"><text>)" + message + LR"(</text></binding></visual></toast>)" };
+
         return winrt::AppNotification(xmlPayload);
     }
 
@@ -158,7 +159,7 @@ namespace AppNotifications::Test
                     getAllAsync.Cancel();
                 });
 
-            VERIFY_ARE_EQUAL(getAllAsync.wait_for(std::chrono::milliseconds(500)), winrt::Windows::Foundation::AsyncStatus::Completed);
+            VERIFY_ARE_EQUAL(getAllAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
             scopeExitGetAll.release();
 
             auto actualToastVector{ getAllAsync.GetResults() };
