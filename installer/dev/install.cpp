@@ -27,11 +27,12 @@ namespace WindowsAppRuntimeInstaller
         {
             const auto deploymentResult{ deploymentOperation.GetResults() };
             WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetDeploymentErrorInfo(
+                deploymentOperation.ErrorCode(),
                 deploymentResult.ExtendedErrorCode(),
                 deploymentResult.ErrorText().c_str(),
                 deploymentResult.ActivityId());
 
-            return static_cast<HRESULT>(deploymentOperation.ErrorCode());
+            return static_cast<HRESULT>(deploymentResult.ExtendedErrorCode());
         }
 
         return S_OK;
@@ -61,9 +62,9 @@ namespace WindowsAppRuntimeInstaller
             else
             {
                 const auto deploymentResult{ deploymentOperation.GetResults() };
-                WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetDeploymentErrorInfo(deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str(), deploymentResult.ActivityId());
+                WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetDeploymentErrorInfo(hrAddPackage, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str(), deploymentResult.ActivityId());
 
-                RETURN_HR(hrAddPackage);
+                RETURN_HR(static_cast<HRESULT>(deploymentResult.ExtendedErrorCode()));
             }
         }
         return S_OK;

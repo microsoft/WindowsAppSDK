@@ -67,12 +67,12 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
             return m_initializationPackageFullName;
         }
 
-        WindowsAppRuntimeBootstrap_TraceLogger::Initialize GetInitializeActivity()
+        WindowsAppRuntimeBootstrap_TraceLogger::Initialize& GetInitializeActivity()
         {
             return m_bootstrapInitializeActivity;
         }
 
-        WindowsAppRuntimeBootstrap_TraceLogger::Shutdown GetShutdownActivity()
+        WindowsAppRuntimeBootstrap_TraceLogger::Shutdown& GetShutdownActivity()
         {
             return m_bootstrapShutdownActivity;
         }
