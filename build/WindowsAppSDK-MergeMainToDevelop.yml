@@ -6,9 +6,9 @@ jobs:
   - checkout: self
     persistCredentials: true
 
-  - task: CmdLine@2
+  - task: PowerShell@2
     inputs:
-      failOnStderr: true
+      targetType: 'inline'
       script: |
         git checkout TestDevelop
         git config user.name "reunion-maestro-bot"
