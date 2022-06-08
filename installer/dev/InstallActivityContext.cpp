@@ -19,10 +19,12 @@ void WindowsAppRuntimeInstaller::InstallActivity::Context::Reset()
 }
 
 void WindowsAppRuntimeInstaller::InstallActivity::Context::SetDeploymentErrorInfo(
+    const HRESULT& deploymentErrorHresult,
     const HRESULT& deploymentErrorExtendedHresult,
     const std::wstring& deploymentErrorText,
     const GUID& deploymentErrorActivityId)
 {
+    m_deploymentErrorHresult = deploymentErrorHresult;
     m_deploymentErrorExtendedHresult = deploymentErrorExtendedHresult;
     m_deploymentErrorText = deploymentErrorText;
     SetDeploymentErrorActivityId(deploymentErrorActivityId);

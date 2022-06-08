@@ -54,7 +54,7 @@ public:
         PCWSTR failureMessage,
         UINT32 failedInstallStage,
         PCWSTR currentResourceId,
-        HRESULT deploymentErrorExtendedHResult,
+        HRESULT deploymentErrorHresult,
         PCWSTR deploymentErrorText,
         GUID deploymentErrorActivityId)
     {
@@ -70,7 +70,7 @@ public:
                 TraceLoggingValue(failureMessage, "FailureMessage"),
                 TraceLoggingValue(failedInstallStage, "FailedInstallStage"),
                 TraceLoggingValue(currentResourceId, "CurrentResourceId"),
-                TraceLoggingValue(deploymentErrorExtendedHResult, "DeploymentErrorExtendedHResult"),
+                TraceLoggingValue(deploymentErrorHresult, "DeploymentErrorHResult"),
                 TraceLoggingValue(deploymentErrorText, "DeploymentErrorText"),
                 TraceLoggingValue(deploymentErrorActivityId, "DeploymentErrorActivityId"));
         }
