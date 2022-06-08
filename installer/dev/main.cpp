@@ -136,7 +136,7 @@ int wmain(int argc, wchar_t *argv[])
                 installActivityContext.GetLastFailure().message.c_str(),
                 static_cast<UINT32>(installActivityContext.GetInstallStage()),
                 installActivityContext.GetCurrentResourceId().c_str(),
-                installActivityContext.GetDeploymentErrorExtendedHResult(),
+                installActivityContext.GetdeploymentErrorHresult(),
                 installActivityContext.GetDeploymentErrorText().c_str(),
                 installActivityContext.GetDeploymentErrorActivityId());
         }
