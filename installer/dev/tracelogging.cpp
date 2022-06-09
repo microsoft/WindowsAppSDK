@@ -77,7 +77,7 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                     failure.pszMessage,
                     static_cast<UINT32>(installActivityContext.GetInstallStage()),
                     installActivityContext.GetCurrentResourceId().c_str(),
-                    installActivityContext.GetDeploymentErrorExtendedHResult(),
+                    installActivityContext.GetdeploymentErrorHresult(),
                     installActivityContext.GetDeploymentErrorText().c_str(),
                     installActivityContext.GetDeploymentErrorActivityId());
 
