@@ -180,8 +180,6 @@ namespace AppNotifications::Test
                 result = true;
                 break;
             }
-
-            Sleep(500);
         }
         return result;
     }
