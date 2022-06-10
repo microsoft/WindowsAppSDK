@@ -6,13 +6,13 @@
 #include "pch.h"
 
 void MddBootstrap_StopActivity(
-    const std::string failureType,
+    const std::string& failureType,
     const bool isActivityRunning,
     const GUID *activityId,
     const WindowsAppRuntime::MddBootstrap::Activity::Context& activityContext,
     const wil::FailureInfo& failure)
 {
-    MddBootstrap_WriteEventWithActivity(*failureType.c_str(), activityId);
+    MddBootstrap_WriteEventWithActivity(failureType.c_str(), activityId);
 
     if (isActivityRunning)
     {
