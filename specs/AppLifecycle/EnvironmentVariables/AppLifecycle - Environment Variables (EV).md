@@ -12,8 +12,7 @@ describes the Reunion support for environment variables.
 
 Important Note: The EV tracking feature relies on other platform features which are only
 available from Windows 21H1+ (i.e. version >=10.0.19043.0). An app can check the 
-IsChangeTrackingSupported property to determine whether the current device supports the 
-feature.
+IsChangeTrackingSupported property to determine whether Environment manager will track EV changes.
 
 
 Note that there are existing Win32 and .NET APIs that cover much of the same 
@@ -281,12 +280,12 @@ There are 3 scopes for writing environment variables, **Process**, **User**, and
 Setting a **User** or **System** variable will persist that variable beyond the
 life of the process in the user profile or system profile.
 
-Unpackaged apps can use the existing native Win32 Get/SetEnvironment and
-registry APIs. Unpackaged .NET apps can use [System.Environment](https://docs.microsoft.com/en-us/dotnet/api/system.environment?view=net-6.0) class, and
-specifically the methods [GetEnvironmentVariable](https://docs.microsoft.com/en-us/dotnet/api/system.environment.getenvironmentvariable?view=net-6.0), 
-[GetEnvironmentVariables](https://docs.microsoft.com/en-us/dotnet/api/system.environment.getenvironmentvariables?view=net-6.0)
-and [SetEnvironmentVariable](https://docs.microsoft.com/en-us/dotnet/api/system.environment.setenvironmentvariable?view=net-6.0).
-We are introducing the new API so non-fulltrust apps can access the same functionality.
+Unpackaged apps can use the existing native Win32 [GetEnvironmentVariable](https://docs.microsoft.com/windows/win32/api/winbase/nf-winbase-getenvironmentvariable)/
+[SetEnvironmentVariable](https://docs.microsoft.com/windows/win32/api/winbase/nf-winbase-setenvironmentvariable) and
+registry APIs. Unpackaged .NET apps can use [System.Environment](https://docs.microsoft.com/dotnet/api/system.environment?view=net-6.0) class, and
+specifically the methods [GetEnvironmentVariable](https://docs.microsoft.com/dotnet/api/system.environment.getenvironmentvariable?view=net-6.0), 
+[GetEnvironmentVariables](https://docs.microsoft.com/dotnet/api/system.environment.getenvironmentvariables?view=net-6.0)
+and [SetEnvironmentVariable](https://docs.microsoft.com/dotnet/api/system.environment.setenvironmentvariable?view=net-6.0).
 
 Environment variables are stored in the registry here:
 
@@ -294,46 +293,6 @@ Environment variables are stored in the registry here:
 
 - Machine: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session
   Manager\Environment
-
-Packaging a Win32 app in an MSIX (and therefore a Helium container at runtime)
-doesn't affect its ability to read Environment variables. For writing, an
-unpackaged app can write to HKCU; but needs elevation to write to HKLM. When
-packaged, writes to HKCU are virtualized, unless the app has the unvirtualizedResources
-restricted capability and has suppressed registry write virtualization for HKCU.
-
-An unpackaged or packaged Win32 (Desktop Bridge) app can write to HKLM if the
-app is running elevated. In the normal case,
-where virtualization is not disabled, all writes to HKCU actually go to a
-private hive file similar to:
-%ProgramData%\Packages\<PackageFamilyName>\<Security ID>\SystemAppData\Helium
-
-Moving forward, the new APIs will enable the following behaviors:
-
-| App Type       | API Type | Process Vars | User Vars   | Machine Vars |
-| -------------- | -------- | ------------ | ----------- | ------------ |
-| Unpackaged     | Managed  | Read, Write  | Read, Write | Read, Write  |
-| Desktop Bridge | Managed  | Read, Write  | Read, Write | Read, Write  |
-
-Consistent with the existing System.Environment APIs, for the new APIs, reading
-environment variables does not need any special security consideration. Writing
-variables where the scope is the current process also does not pose any security
-issues. However, writing variables where the scope is either User or Machine can
-affect other apps:
-
-- **User**: even though the calling app is running with the current user's
-  credentials and permissions, this does not mean that it is acceptable for one
-  app to change a variable that could affect other apps.
-
-- **Machine**: changing a machine-wide variable can affect not only all apps on
-  the machine, but also all users on the machine.
-
-Therefore, we will protect the use of User and Machine scope as follows:
-
-- **User**: attempting to set a variable when the scope is User will fail unless
-  the calling app has fulltrust.
-
-- **Machine**: attempting to set a variable when the scope is Machine will fail
-  unless the calling app is running elevated.
 
 Note: to update the user-scoped list of variables we need to write to the
 registry and cause Shell to refresh its cache. This will be done using an
@@ -514,18 +473,23 @@ The new types are defined as follows:
 ```idl
 namespace Microsoft.Windows.System
 {
+    [contractversion(2)]
+    apicontract EnvironmentManagerContract{};
+
+    [contract(EnvironmentManagerContract, 1)]
     runtimeclass EnvironmentManager
     {
         static EnvironmentManager GetForProcess();
         static EnvironmentManager GetForCurrentUser();
         static EnvironmentManager GetForMachine();
         static bool IsSupported { get; }
-        
+
+        [contract(EnvironmentManagerContract, 2]
         bool IsChangeTrackingSupported  {get; };
-    
+
         IMapView<String, String> GetEnvironmentVariables();
         String GetEnvironmentVariable(String name);
-    
+
         void SetEnvironmentVariable(String name, String value);
         void AppendToPath(String path);
         void RemoveFromPath(String path);
