@@ -158,7 +158,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             return;
         }
 
-        HRESULT hr{ S_OK };
+        HRESULT hr{};
 
         auto logTelemetry{ wil::scope_exit([&]() {
             AppNotificationTelemetry::LogRegister(hr, m_appId);
@@ -168,7 +168,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         {
             THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, AppModel::Identity::IsPackagedProcess(), "Not applicable for packaged applications");
 
-            THROW_HR_IF(E_INVALIDARG, (displayName == winrt::hstring{}) || (iconUri == nullptr));
+            THROW_HR_IF(E_INVALIDARG, displayName.empty() || (iconUri == nullptr));
 
             AppNotificationAssets assets{ ValidateAssets(displayName.c_str(), iconUri.RawUri().c_str()) };
 

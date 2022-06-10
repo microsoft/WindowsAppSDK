@@ -286,7 +286,7 @@ AppNotificationAssets Microsoft::Windows::AppNotifications::Helpers::GetAssets()
     return assets;
 }
 
-AppNotificationAssets Microsoft::Windows::AppNotifications::Helpers::ValidateAssets(std::wstring displayName, std::filesystem::path iconFilePath)
+AppNotificationAssets Microsoft::Windows::AppNotifications::Helpers::ValidateAssets(std::wstring const& displayName, std::filesystem::path iconFilePath)
 {
     winrt::check_bool(std::filesystem::exists(iconFilePath));
 

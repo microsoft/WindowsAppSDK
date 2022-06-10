@@ -4,7 +4,7 @@ import "..\AppLifecycle\AppLifecycle.idl";
 
 namespace Microsoft.Windows.AppNotifications
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract AppNotificationsContract {}
 
     // Event args for the Notification Activation
@@ -124,6 +124,7 @@ namespace Microsoft.Windows.AppNotifications
         void Register();
 
         // For Unpackaged apps only, the caller process will be registered as the COM server.
+        [contract(AppNotificationsContract, 2)]
         void Register(String displayName, Windows.Foundation.Uri iconUri);
 
         // Unregisters the COM Service so that a subsequent activation will launch a new process
