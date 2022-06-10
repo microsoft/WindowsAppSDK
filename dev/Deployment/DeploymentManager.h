@@ -8,6 +8,8 @@
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
+    static PCWSTR c_deploymentAgentFilename{ L"DeploymentAgent.exe" };
+
     struct DeploymentManager
     {
         DeploymentManager() = default;
@@ -22,11 +24,14 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         static std::vector<std::wstring> FindPackagesByFamily(std::wstring const& packageFamilyName);
         static HRESULT VerifyPackage(const std::wstring& packageFamilyName, const PACKAGE_VERSION targetVersion);
         static std::wstring GetPackagePath(std::wstring const& packageFullName);
-        static HRESULT AddPackage(const std::filesystem::path& packagePath, bool forceDeployment);
-        static HRESULT DeployPackages(const std::wstring& frameworkPackageFullName, bool forceDeployment);
-        static HRESULT Deploy(const std::wstring& frameworkPackageFullName, bool forceDeployment = false);
+        static HRESULT AddPackageInBreakAwayProcess(const std::filesystem::path& packagePath, const bool forceDeployment);
+        static std::wstring GenerateDeploymentAgentPath();
+        static HRESULT AddPackage(const std::filesystem::path& packagePath, const bool forceDeployment);
+        static HRESULT DeployPackages(const std::wstring& frameworkPackageFullName, const bool forceDeployment);
+        static HRESULT Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment = false);
         static HRESULT InstallLicenses(const std::wstring& frameworkPackageFullName);
         static hstring GetCurrentFrameworkPackageFullName();
+
     };
 }
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::factory_implementation
@@ -35,4 +40,3 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::factor
     {
     };
 }
-

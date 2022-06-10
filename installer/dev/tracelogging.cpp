@@ -45,6 +45,7 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                 {
                     WindowsAppRuntimeInstaller_WriteEventWithActivity("FailureLog");
                 }
+                installActivityContext.LogInstallerFailureEvent(failure.hr);
                 break;
             }
             case wil::FailureType::Exception:
@@ -76,9 +77,11 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                     failure.pszMessage,
                     static_cast<UINT32>(installActivityContext.GetInstallStage()),
                     installActivityContext.GetCurrentResourceId().c_str(),
-                    installActivityContext.GetDeploymentErrorExtendedHResult(),
+                    installActivityContext.GetdeploymentErrorHresult(),
                     installActivityContext.GetDeploymentErrorText().c_str(),
                     installActivityContext.GetDeploymentErrorActivityId());
+
+                installActivityContext.LogInstallerFailureEvent(failure.hr);
                 break;
             }
             case wil::FailureType::Return:

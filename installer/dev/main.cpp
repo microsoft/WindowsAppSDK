@@ -14,8 +14,14 @@ int wmain(int argc, wchar_t *argv[])
 {
     init_apartment();
 
+    auto& installActivityContext{ WindowsAppRuntimeInstaller::InstallActivity::Context::Get() };
+    const bool isElevated{ Security::IntegrityLevel::IsElevated() };
+
     // Set a process-wide callback function for WIL to call each time it logs a failure.
     wil::SetResultLoggingCallback(wilResultLoggingCallback);
+
+    // Register WindowsAppRuntime Installer event source to log it's events to %Windir%\System32\WinEvt\Logs\Application.Evtx
+    LOG_LAST_ERROR_IF_NULL(WindowsAppRuntimeInstaller::InstallActivity::Context::Get().RegisterInstallerEventSourceW());
 
     auto options{ WindowsAppRuntimeInstaller::Options::InstallPackages |
                   WindowsAppRuntimeInstaller::Options::InstallLicenses };
@@ -24,7 +30,7 @@ int wmain(int argc, wchar_t *argv[])
 
     for (int i = 1; i < argc; ++i)
     {
-        auto arg = std::wstring_view(argv[i]);
+        auto arg{ std::wstring_view(argv[i]) };
 
         if (arg == L"--dry-run")
         {
@@ -76,21 +82,23 @@ int wmain(int argc, wchar_t *argv[])
         {
             std::wcerr << "Unknown argument: " << arg.data() << std::endl;
             DisplayHelp();
-            return ERROR_BAD_ARGUMENTS;
+            installActivityContext.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(), static_cast<UINT32>(options), isElevated));
+            LOG_IF_WIN32_BOOL_FALSE(installActivityContext.LogInstallerCommandLineArgs(args.str().c_str()));
+            LOG_IF_WIN32_BOOL_FALSE(installActivityContext.LogInstallerFailureEvent(HRESULT_FROM_WIN32(ERROR_BAD_ARGUMENTS)));
+            installActivityContext.GetActivity().Stop(HRESULT_FROM_WIN32(ERROR_BAD_ARGUMENTS));
+            return HRESULT_FROM_WIN32(ERROR_BAD_ARGUMENTS);
         }
 
         // Capture valid arguments only
         args << argv[i] << " ";
     }
-
-    auto& installActivityContext{ WindowsAppRuntimeInstaller::InstallActivity::Context::Get() };
-
-    const bool isElevated{ Security::IntegrityLevel::IsElevated() };
     installActivityContext.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(), static_cast<UINT32>(options), isElevated));
+    LOG_IF_WIN32_BOOL_FALSE(installActivityContext.LogInstallerCommandLineArgs(args.str().c_str()));
     args.clear();
+
     if (!isElevated)
     {
-        std::wcout << std::endl << "INFO: Provisioning of WindowsAppSDK packages will be skipped as it requires elevation." << std::endl;
+        std::wcout << "INFO: Provisioning of WindowsAppSDK packages will be skipped as it requires elevation." << std::endl;
     }
 
     const HRESULT deployPackagesResult{ WindowsAppRuntimeInstaller::Deploy(options) };
@@ -99,6 +107,8 @@ int wmain(int argc, wchar_t *argv[])
         if (SUCCEEDED(deployPackagesResult))
         {
             std::wcout << "All install operations successful." << std::endl;
+
+            LOG_IF_WIN32_BOOL_FALSE(installActivityContext.LogInstallerSuccess());
 
             installActivityContext.GetActivity().StopWithResult(
                 deployPackagesResult,
@@ -116,6 +126,8 @@ int wmain(int argc, wchar_t *argv[])
         {
             std::wcerr << "One or more install operations failed. Result: 0x" << std::hex << deployPackagesResult << std::endl;
 
+            LOG_IF_WIN32_BOOL_FALSE(installActivityContext.LogInstallerFailureEvent(deployPackagesResult));
+
             installActivityContext.GetActivity().StopWithResult(
                 deployPackagesResult,
                 static_cast<UINT32>(installActivityContext.GetLastFailure().type),
@@ -124,11 +136,12 @@ int wmain(int argc, wchar_t *argv[])
                 installActivityContext.GetLastFailure().message.c_str(),
                 static_cast<UINT32>(installActivityContext.GetInstallStage()),
                 installActivityContext.GetCurrentResourceId().c_str(),
-                installActivityContext.GetDeploymentErrorExtendedHResult(),
+                installActivityContext.GetdeploymentErrorHresult(),
                 installActivityContext.GetDeploymentErrorText().c_str(),
                 installActivityContext.GetDeploymentErrorActivityId());
         }
     }
 
+    LOG_IF_WIN32_BOOL_FALSE(WindowsAppRuntimeInstaller::InstallActivity::Context::Get().DeregisterInstallerEventSourceW());
     return deployPackagesResult;
 }

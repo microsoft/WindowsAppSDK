@@ -21,6 +21,7 @@
 #include "PushNotificationUtility.h"
 #include "AppNotificationUtility.h"
 #include "PushNotificationReceivedEventArgs.h"
+#include <security.integritylevel.h>
 
 using namespace std::literals;
 using namespace Microsoft::Windows::AppNotifications::Helpers;
@@ -129,8 +130,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     bool PushNotificationManager::IsSupported()
     {
-        // Only scenarios that use the Background Infrastructure component of the OS support Push in the SelfContained case
-        static bool isSupported{ !WindowsAppRuntime::SelfContained::IsSelfContained() || PushNotificationHelpers::IsPackagedAppScenario() };
+        // Elevated processes are not supported by PushNotifications. UnpackagedAppScenario is not supported when it is self contained
+        // because the PushNotificationsLongRunningProcess is unavailable due to missing the Singleton package.
+        static bool isSupported{ !Security::IntegrityLevel::IsElevated() && (PushNotificationHelpers::IsPackagedAppScenario() || !WindowsAppRuntime::SelfContained::IsSelfContained()) };
         return isSupported;
 
     }

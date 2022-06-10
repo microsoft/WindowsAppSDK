@@ -81,6 +81,7 @@ STDAPI_(void) MddBootstrapShutdown() noexcept;
 #if defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)
 
 #include <memory>
+#include <stdint.h>
 
 namespace Microsoft::Windows::ApplicationModel
 {

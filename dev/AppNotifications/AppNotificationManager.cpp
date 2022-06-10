@@ -24,7 +24,7 @@
 
 using namespace std::literals;
 
-constexpr std::wstring_view expectedAppServerArgs = L"----AppNotificationActivated:"sv;
+constexpr std::wstring_view c_expectedAppServerArgs = L"----AppNotificationActivated:"sv;
 
 namespace winrt
 {
@@ -93,8 +93,19 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         return m_activatedEventArgs;
     }
 
+    bool AppNotificationManager::IsSupported()
+    {
+        static bool isSupported{ !Security::IntegrityLevel::IsElevated() };
+        return isSupported;
+    }
+
     void AppNotificationManager::Register()
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         HRESULT hr{ S_OK };
 
         auto logTelemetry{ wil::scope_exit([&]() {
@@ -115,56 +126,84 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                 m_registering = false;
             }) };
 
-            winrt::guid storedComActivatorGuid{ GUID_NULL };
-            if (!PushNotificationHelpers::IsPackagedAppScenario())
-            {
-                if (!AppModel::Identity::IsPackagedProcess())
-                {
-                    THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(m_appId.c_str(), GUID_NULL));
-
-                    storedComActivatorGuid = RegisterComActivatorGuidAndAssets();
-                }
-
-                if (!WindowsAppRuntime::SelfContained::IsSelfContained())
-                {
-                    auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
-                    THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.c_str(), m_appId.c_str()));
-                }
-            }
-
-            winrt::guid registeredClsid{ GUID_NULL };
+            winrt::guid registeredClsid{};
             if (AppModel::Identity::IsPackagedProcess())
             {
-                registeredClsid = PushNotificationHelpers::GetComRegistrationFromRegistry(expectedAppServerArgs.data());
+                registeredClsid = RegisterPackagedApp();
+            }
+            else
+            {
+                AppNotificationAssets assets{ GetAssets() };
+                registeredClsid = RegisterUnpackagedApp(assets);
             }
 
             // Create event handle before COM Registration otherwise if a notification arrives will lead to race condition
             m_waitHandleForArgs.create();
 
-            {
-                auto lock{ m_lock.lock_exclusive() };
-                THROW_HR_IF_MSG(E_INVALIDARG, m_notificationComActivatorRegistration, "Already Registered for App Notifications!");
-
-                // Check if the caller has registered event handlers, if so the REGCLS_MULTIPLEUSE flag will cause COM to ensure that all activators
-                // are routed inproc, otherwise with REGCLS_SINGLEUSE COM will launch a new process of the Win32 app for each invocation.
-                auto activationFlag{ m_notificationHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE };
-
-                // Register an INotificationActivationCallback to receive background activations from AppNotification.
-                // Also, STA threads that call CoRegisterClassObject need to use the REGCLS_AGILE flag so that the object is
-                // associated with the neutral apartment. This allows other threads to activate the STA registered thread.
-                THROW_IF_FAILED(::CoRegisterClassObject(
-                    AppModel::Identity::IsPackagedProcess() ? registeredClsid : storedComActivatorGuid,
-                    winrt::make<AppNotificationManagerFactory>().get(),
-                    CLSCTX_LOCAL_SERVER,
-                    activationFlag | REGCLS_AGILE,
-                    &m_notificationComActivatorRegistration));
-            }
+            // Register the AppNotificationManager as a COM server for Shell to Activate and Invoke
+            RegisterComServer(registeredClsid);
         }
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
             throw;
         }
+    }
+
+    void AppNotificationManager::RegisterComServer(winrt::guid const& registeredClsid)
+    {
+        auto lock{ m_lock.lock_exclusive() };
+        THROW_HR_IF_MSG(E_INVALIDARG, m_notificationComActivatorRegistration, "Already Registered for App Notifications!");
+
+        // Check if the caller has registered event handlers, if so the REGCLS_MULTIPLEUSE flag will cause COM to ensure that all activators
+        // are routed inproc, otherwise with REGCLS_SINGLEUSE COM will launch a new process of the Win32 app for each invocation.
+        auto activationFlag{ m_notificationHandlers ? REGCLS_MULTIPLEUSE : REGCLS_SINGLEUSE };
+
+        // Register an INotificationActivationCallback to receive background activations from AppNotification.
+        // Also, STA threads that call CoRegisterClassObject need to use the REGCLS_AGILE flag so that the object is
+        // associated with the neutral apartment. This allows other threads to activate the STA registered thread.
+        THROW_IF_FAILED(::CoRegisterClassObject(
+            registeredClsid,
+            winrt::make<AppNotificationManagerFactory>().get(),
+            CLSCTX_LOCAL_SERVER,
+            activationFlag | REGCLS_AGILE,
+            &m_notificationComActivatorRegistration));
+    }
+
+    void AppNotificationManager::RegisterAppNotificationSinkWithLongRunningPlatform()
+    {
+        auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
+        THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.c_str(), m_appId.c_str()));
+    }
+
+    winrt::guid AppNotificationManager::RegisterPackagedApp()
+    {
+        winrt::guid registeredClsid{ PushNotificationHelpers::GetComRegistrationFromRegistry(c_expectedAppServerArgs.data()) };
+
+        if (!PushNotificationHelpers::IsPackagedAppScenario() && !WindowsAppRuntime::SelfContained::IsSelfContained())
+        {
+            RegisterAppNotificationSinkWithLongRunningPlatform();
+        }
+
+        return registeredClsid;
+    }
+
+    winrt::guid AppNotificationManager::RegisterUnpackagedApp(AppNotificationAssets const& assets)
+    {
+        THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(m_appId.c_str(), GUID_NULL));
+
+        std::wstring notificationAppId{ RetrieveNotificationAppId() };
+        std::wstring comActivatorGuidString{ GetOrCreateComActivatorGuid() };
+
+        RegisterAssets(notificationAppId, comActivatorGuidString, assets);
+
+        if (!WindowsAppRuntime::SelfContained::IsSelfContained())
+        {
+            RegisterAppNotificationSinkWithLongRunningPlatform();
+        }
+
+        // Remove braces around the guid string
+        return winrt::guid(comActivatorGuidString.substr(1, comActivatorGuidString.size() - 2));
     }
 
     // This assumes that the caller has taken an exclusive lock
@@ -175,6 +214,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationManager::Unregister()
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         HRESULT hr{ S_OK };
 
         auto logTelemetry{ wil::scope_exit([&]() {
@@ -203,6 +247,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationManager::UnregisterAll()
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         HRESULT hr{ S_OK };
 
         auto logTelemetry{ wil::scope_exit([&]() {
@@ -256,6 +305,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::event_token AppNotificationManager::NotificationInvoked(winrt::Windows::Foundation::TypedEventHandler<winrt::Microsoft::Windows::AppNotifications::AppNotificationManager, winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs> const& handler)
     {
+        if (!IsSupported())
+        {
+            return winrt::event_token{};
+        }
+
         auto lock{ m_lock.lock_exclusive() };
         THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), m_notificationComActivatorRegistration, "Must register event handlers before calling Register()");
         return m_notificationHandlers.add(handler);
@@ -263,6 +317,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationManager::NotificationInvoked(winrt::event_token const& token) noexcept
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         auto lock{ m_lock.lock_exclusive() };
         m_notificationHandlers.remove(token);
     }
@@ -303,11 +362,15 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
                     winrt::guid registeredClsid{ GUID_NULL };
                     if (AppModel::Identity::IsPackagedProcess())
                     {
-                        registeredClsid = PushNotificationHelpers::GetComRegistrationFromRegistry(expectedAppServerArgs.data());
+                        registeredClsid = PushNotificationHelpers::GetComRegistrationFromRegistry(c_expectedAppServerArgs.data());
                     }
                     else
                     { 
-                        registeredClsid = RegisterComActivatorGuidAndAssets();
+                        std::wstring registeredClsidString;
+                        THROW_IF_FAILED(GetActivatorGuid(registeredClsidString));
+
+                        // Remove braces around the guid string
+                        registeredClsid = winrt::guid(registeredClsidString.substr(1, registeredClsidString.size() - 2));
                     }
 
                     auto notificationCallback{ winrt::create_instance<INotificationActivationCallback>(registeredClsid, CLSCTX_ALL) };
@@ -335,6 +398,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationManager::Show(winrt::Microsoft::Windows::AppNotifications::AppNotification const& notification)
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         THROW_HR_IF(WPN_E_NOTIFICATION_POSTED, notification.Id() != 0);
 
         HRESULT hr{ S_OK };
@@ -366,6 +434,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressResult> AppNotificationManager::UpdateAsync(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const data, hstring const tag, hstring const group)
     {
+        if (!IsSupported())
+        {
+            co_return winrt::AppNotificationProgressResult::Unsupported;
+        }
+
         THROW_HR_IF_MSG(E_INVALIDARG, tag == winrt::hstring(L""), "Update operation isn't guaranteed to find a specific notification to replace correctly.");
         THROW_HR_IF_MSG(E_INVALIDARG, data.SequenceNumber() == 0, "Sequence Number for Updates should be greater than 0!");
 
@@ -411,6 +484,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Microsoft::Windows::AppNotifications::AppNotificationSetting AppNotificationManager::Setting()
     {
+        if (!IsSupported())
+        {
+            return AppNotificationSetting::Unsupported;
+        }
+
         HRESULT hr{ S_OK };
 
         auto logTelemetry{ wil::scope_exit([&]() {
@@ -432,6 +510,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByIdAsync(uint32_t notificationId)
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         THROW_HR_IF(E_INVALIDARG, notificationId == 0);
 
         HRESULT hr{ S_OK };
@@ -456,6 +539,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByTagAsync(hstring const tag)
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         THROW_HR_IF(E_INVALIDARG, tag == winrt::hstring(L""));
 
         HRESULT hr{ S_OK };
@@ -480,6 +568,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByTagAndGroupAsync(hstring const tag, hstring const group)
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         THROW_HR_IF(E_INVALIDARG, tag == winrt::hstring(L""));
         THROW_HR_IF(E_INVALIDARG, group == winrt::hstring(L""));
 
@@ -505,6 +598,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveByGroupAsync(hstring const group)
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         THROW_HR_IF(E_INVALIDARG, group == winrt::hstring(L""));
 
         HRESULT hr{ S_OK };
@@ -529,6 +627,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveAllAsync()
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
         HRESULT hr{ S_OK };
 
         auto strong = get_strong();
@@ -551,6 +654,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::AppNotifications::AppNotification>> AppNotificationManager::GetAllAsync()
     {
+        if (!IsSupported())
+        {
+            co_return {};
+        }
+
         HRESULT hr{ S_OK };
 
         auto strong = get_strong();

@@ -33,19 +33,15 @@
         }
 
     private:
-        static inline std::string LoadStringFromResource(uint32_t id)
+        static std::string LoadStringFromResource(uint32_t id)
         {
-            static wil::unique_hmodule module = std::move(LoadResourceModule());
             const uint32_t c_ResourceMaxLength{ 100 };
             char resourceValue[c_ResourceMaxLength]{};
-
-            if(module)
+            static wil::unique_hmodule module{ LoadResourceModule() };
+            if (module)
             {
-                if(0 == ::LoadStringA(module.get(), id, resourceValue, ARRAYSIZE(resourceValue)))
-                {
-                    DWORD error{ GetLastError() };
-                    LOG_HR_IF_MSG(HRESULT_FROM_WIN32(error), ERROR_SUCCESS != error, "Failed to load resource string. id: %d", id);
-                }
+                const auto resourceValueLength{ ::LoadStringA(module.get(), id, resourceValue, ARRAYSIZE(resourceValue)) };
+                LOG_LAST_ERROR_IF_MSG(resourceValueLength == 0, "Failed to load resource string. id: %u", id);
             }
             return resourceValue;
         }
@@ -54,13 +50,11 @@
         {
             const PCWSTR c_resourceDllName{ L"Microsoft.WindowsAppRuntime.Insights.Resource.dll" };
             wil::unique_hmodule resourceDllHandle(::LoadLibraryW(c_resourceDllName));
-            LOG_HR_IF_NULL_MSG(HRESULT_FROM_WIN32(GetLastError()), resourceDllHandle, "Unable to load resource dll. %ws", c_resourceDllName);
+            LOG_LAST_ERROR_IF_NULL_MSG(resourceDllHandle, "Unable to load resource dll. %ls", c_resourceDllName);
             return resourceDllHandle;
         }
     };
-
-    } // namespace Microsoft::WindowsAppRuntime::Insights
-
+    }
 
     #define _GENERIC_PARTB_FIELDS_ENABLED \
             TraceLoggingStruct(4, "COMMON_WINDOWSAPPSDK_PARAMS"), \

@@ -68,6 +68,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.WindowsAppRuntime.Framework", "test\DynamicDependency\data\Microsoft.WindowsAppRuntime.Framework\Microsoft.WindowsAppRuntime.Framework.vcxproj", "{9C1A6C58-52D6-4514-9120-5C339C5DF4BE}"
 	ProjectSection(ProjectDependencies) = postProject
 		{BC5E5A3E-E733-4388-8B00-F8495DA7C778} = {BC5E5A3E-E733-4388-8B00-F8495DA7C778}
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF} = {4410D374-A90C-4ADF-8B15-AA2AAE2636BF}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicDependencyDataStore", "DynamicDependencyDataStore", "{441A3BB0-7FD2-4902-AEDB-A1C57B528C77}"
@@ -181,6 +182,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask.ProxyStub", "dev\PushNotifications\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.vcxproj", "{BF3FCED0-CADB-490A-93A7-4D90E1F45AB0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask.StartupTask", "dev\PushNotifications\PushNotificationsLongRunningTask.StartupTask\PushNotificationsLongRunningTask.StartupTask.vcxproj", "{1DEBBFF6-EE6E-4944-9DE2-35B7A686AF42}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowerNotifications", "PowerNotifications", "{E9117D76-63AC-4289-A628-AB39EF6E5D19}"
 EndProject
@@ -339,10 +343,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_BootstrapAutoInitializ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_BootstrapAutoInitialize_CS_Options_None", "test\DynamicDependency\Test_BootstrapAutoInitialize\CS\Test_BootstrapAutoInitialize_CS_Options_None\Test_BootstrapAutoInitialize_CS_Options_None.csproj", "{4A74BBED-3B20-44A7-B6FF-3373160DE741}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeploymentAgent", "dev\DeploymentAgent\DeploymentAgent.vcxproj", "{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{08bc78e0-63c6-49a7-81b3-6afc3deac4de}*SharedItemsImports = 4
-		test\inc\inc.vcxitems*{0a5fee93-48b7-40ec-bb9a-b27d11060da9}*SharedItemsImports = 4
 		dev\PushNotifications\PushNotifications.vcxitems*{103c0c23-7ba8-4d44-a63c-83488e2e3a81}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{2cd5cd9b-cf45-4fa7-9769-ee4e02426bf0}*SharedItemsImports = 4
 		dev\EnvironmentManager\API\Microsoft.Process.Environment.vcxitems*{2f3fad1b-d3df-4866-a3a3-c2c777d55638}*SharedItemsImports = 9
@@ -1332,6 +1340,22 @@ Global
 		{4A74BBED-3B20-44A7-B6FF-3373160DE741}.Release|x64.Build.0 = Release|x64
 		{4A74BBED-3B20-44A7-B6FF-3373160DE741}.Release|x86.ActiveCfg = Release|x86
 		{4A74BBED-3B20-44A7-B6FF-3373160DE741}.Release|x86.Build.0 = Release|x86
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Debug|ARM64.ActiveCfg = Debug|arm64
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Debug|ARM64.Build.0 = Debug|arm64
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Debug|x64.ActiveCfg = Debug|x64
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Debug|x64.Build.0 = Debug|x64
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Debug|x86.ActiveCfg = Debug|x86
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Debug|x86.Build.0 = Debug|x86
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Release|ARM64.ActiveCfg = Release|arm64
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Release|ARM64.Build.0 = Release|arm64
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Release|x64.ActiveCfg = Release|x64
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Release|x64.Build.0 = Release|x64
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Release|x86.ActiveCfg = Release|x86
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1445,6 +1469,7 @@ Global
 		{0EF1080B-15C6-42E7-A0E2-D624D85C3EBF} = {99C514E4-A6B3-4B09-B870-5511EF9D93AC}
 		{D9139E3C-8D21-4BD9-84E3-30A03A54D610} = {99C514E4-A6B3-4B09-B870-5511EF9D93AC}
 		{4A74BBED-3B20-44A7-B6FF-3373160DE741} = {99C514E4-A6B3-4B09-B870-5511EF9D93AC}
+		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF} = {E378857C-D22A-4E5E-A6DA-A59C445CF22E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}

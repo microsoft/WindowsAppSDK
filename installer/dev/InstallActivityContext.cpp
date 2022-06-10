@@ -19,10 +19,12 @@ void WindowsAppRuntimeInstaller::InstallActivity::Context::Reset()
 }
 
 void WindowsAppRuntimeInstaller::InstallActivity::Context::SetDeploymentErrorInfo(
+    const HRESULT& deploymentErrorHresult,
     const HRESULT& deploymentErrorExtendedHresult,
     const std::wstring& deploymentErrorText,
     const GUID& deploymentErrorActivityId)
 {
+    m_deploymentErrorHresult = deploymentErrorHresult;
     m_deploymentErrorExtendedHresult = deploymentErrorExtendedHresult;
     m_deploymentErrorText = deploymentErrorText;
     SetDeploymentErrorActivityId(deploymentErrorActivityId);
@@ -52,4 +54,109 @@ void WindowsAppRuntimeInstaller::InstallActivity::Context::SetLastFailure(const 
     {
         m_lastFailure.message.clear();
     }
+}
+
+// This is Informational Log
+BOOL WindowsAppRuntimeInstaller::InstallActivity::Context::LogInstallerCommandLineArgs(PCWSTR cmdlineArgs)
+{
+    DWORD eventId{ 0x4000 };
+    if (m_hEventLog)
+    {
+        WCHAR message[1024]{};
+        PCWSTR messageFormat{ L"Windows App Runtime Installer (ActivityId: %s) is called with Command Line Args: %s" };
+        auto installerActivityId{ winrt::to_hstring(*m_activity.Id()) };
+        FAIL_FAST_IF_FAILED(StringCchPrintfW(message, ARRAYSIZE(message), messageFormat, installerActivityId, cmdlineArgs));
+        PCWSTR messageStrings[1]{ message };
+        return ReportEventW(m_hEventLog, EVENTLOG_INFORMATION_TYPE, 0, eventId, nullptr, ARRAYSIZE(messageStrings), 0, messageStrings, nullptr);
+    }
+    return false;
+}
+
+BOOL WindowsAppRuntimeInstaller::InstallActivity::Context::LogInstallerFailureEvent(HRESULT hresult)
+{
+    DWORD eventId{ static_cast<DWORD>(hresult) };
+    if (m_hEventLog)
+    {
+        WCHAR message[1024]{};
+        std::wstring customMessage{};
+
+        switch (m_installStage)
+        {
+            case InstallStage::None:
+            {
+                THROW_IF_WIN32_BOOL_FALSE(LogInstallerFailureEventWithResourceId(EVENTLOG_ERROR_TYPE, hresult, L"Bad arguments"));
+                break;
+            }
+            case InstallStage::CreatePackageURI:
+            {
+                THROW_IF_WIN32_BOOL_FALSE(LogInstallerFailureEventWithResourceId(EVENTLOG_ERROR_TYPE, hresult, L"Creating Package URI for Package: %s", m_currentResourceId.c_str()));
+                break;
+            }
+            case InstallStage::GetPackageProperties:
+            {
+                THROW_IF_WIN32_BOOL_FALSE(LogInstallerFailureEventWithResourceId(EVENTLOG_ERROR_TYPE, hresult, L"Getting Package Properties for Package: %s", m_currentResourceId.c_str()));
+                break;
+            }
+            case InstallStage::AddPackage:
+            {
+                WCHAR customMessage[1024]{};
+                auto deploymentActivityId{ winrt::to_hstring(*m_activity.Id()) };
+                auto customMessageFormat{ L"Installing Package %s with DeploymentExtendedError: 0x%08X, DeploymentExtendedText:%s, DeploymentActivityId: %s" };
+                FAIL_FAST_IF_FAILED(StringCchPrintfW(customMessage,
+                                                     ARRAYSIZE(customMessage),
+                                                     customMessageFormat,
+                                                     m_currentResourceId,
+                                                     m_deploymentErrorExtendedHresult,
+                                                     m_deploymentErrorText,
+                                                     m_deploymentErrorActivityId));
+                THROW_IF_WIN32_BOOL_FALSE(LogInstallerFailureEventWithResourceId(EVENTLOG_ERROR_TYPE, hresult, customMessage));
+                break;
+            }
+            case InstallStage::InstallLicense:
+            {
+                THROW_IF_WIN32_BOOL_FALSE(LogInstallerFailureEventWithResourceId(EVENTLOG_ERROR_TYPE, hresult, L"Installing License: %s", m_currentResourceId.c_str()));
+                break;
+            }
+            case InstallStage::RestartPushNotificationsLRP:
+            {
+                THROW_IF_WIN32_BOOL_FALSE(LogInstallerFailureEventWithResourceId(EVENTLOG_WARNING_TYPE, hresult, L"Restarting Push Notifications Long Running Process"));
+                break;
+            }
+            case InstallStage::ProvisionPackage:
+            {
+                WCHAR customProvisionMessage[1024]{};
+                auto provisionActivityId{ winrt::to_hstring(*m_activity.Id()) };
+                auto customProvisionMessageFormat{ L"Provisioning Package %s (Activity Id:%s)" };
+                FAIL_FAST_IF_FAILED(StringCchPrintfW(customProvisionMessage, ARRAYSIZE(customProvisionMessage), customProvisionMessageFormat, provisionActivityId));
+                THROW_IF_WIN32_BOOL_FALSE(LogInstallerFailureEventWithResourceId(EVENTLOG_WARNING_TYPE, hresult, customProvisionMessage));
+                break;
+            }
+            default:
+                break;
+        }
+    }
+    return false;
+}
+
+// This is Log with eventLog type and custom message provided by the caller and that will include resourceId.
+BOOL WindowsAppRuntimeInstaller::InstallActivity::Context::LogInstallerFailureEventWithResourceId(const WORD eventLogType, const HRESULT& hresult, PCWSTR failedComponentMessageFormat, const PCWSTR resourceId)
+{
+    DWORD eventId{ static_cast<DWORD>(hresult) };
+    if (m_hEventLog)
+    {
+        WCHAR failedComponentMessage[512]{};
+        if (resourceId)
+        {
+            FAIL_FAST_IF_FAILED(StringCchPrintfW(failedComponentMessage, ARRAYSIZE(failedComponentMessage), failedComponentMessageFormat, resourceId));
+        }
+
+        WCHAR message[1024]{};
+        PCWSTR messageFormat{ L"Error 0x%08X: Windows App Runtime Installer (Activity ID: %s) failed in %s" };
+        auto installerActivityId{ winrt::to_hstring(*m_activity.Id()) };
+        FAIL_FAST_IF_FAILED(StringCchPrintfW(message, ARRAYSIZE(message), messageFormat, hresult, installerActivityId, (resourceId ? failedComponentMessage : failedComponentMessageFormat)));
+
+        PCWSTR messageStrings[1]{ message };
+        return ReportEventW(m_hEventLog, eventLogType, 0, eventId, nullptr, ARRAYSIZE(messageStrings), 0, messageStrings, nullptr);
+    }
+    return false;
 }

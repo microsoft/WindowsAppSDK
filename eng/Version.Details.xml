@@ -19,7 +19,7 @@
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>9b4a4df6144ac1f1642307046cc2468ce4664b0a</Sha>
     </Dependency>
-    <Dependency Name="CsWinRT.Dependency.WindowsSdkPackage" Version="24">
+    <Dependency Name="CsWinRT.Dependency.WindowsSdkVersionSuffix" Version="24">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>9b4a4df6144ac1f1642307046cc2468ce4664b0a</Sha>
     </Dependency>
