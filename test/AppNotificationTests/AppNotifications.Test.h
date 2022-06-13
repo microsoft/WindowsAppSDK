@@ -181,6 +181,7 @@ namespace AppNotifications::Test
                 break;
             }
 
+            // Give enough time for AppNotifications to be added to Action Center
             Sleep(1000);
         }
         return result;
@@ -220,6 +221,7 @@ namespace AppNotifications::Test
                 break;
             }
 
+            // Give enough time for AppNotifications to be removed from Action Center
             Sleep(1000);
         }
         return result;
