@@ -47,7 +47,10 @@ namespace Test::DynamicDependency
 
             m_bootstrapDll = std::move(bootstrapDll);
 
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix,
+                                                              Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                                                              Test::Packages::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                                                              Test::Packages::WindowsAppRuntimeMain::c_PackageNamePrefix));
 
             // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
