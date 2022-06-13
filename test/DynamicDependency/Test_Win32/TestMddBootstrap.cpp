@@ -45,6 +45,7 @@ namespace Test::DynamicDependency
             TP::RemovePackage_FrameworkMathMultiply();
             TP::RemovePackage_FrameworkMathAdd();
             TP::AddPackage_WindowsAppRuntimeFramework();
+            TP::AddPackage_DynamicDependencyDataStore();
             TP::AddPackage_DynamicDependencyLifetimeManager();
 
             SaveBootstrapDll(bootstrapDll.release());
@@ -57,6 +58,7 @@ namespace Test::DynamicDependency
             SaveBootstrapDll(nullptr);
 
             TP::RemovePackage_DynamicDependencyLifetimeManager();
+            TP::RemovePackage_DynamicDependencyDataStore();
             TP::RemovePackage_WindowsAppRuntimeFramework();
 
             return true;
