@@ -348,6 +348,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeploymentAgent", "dev\Depl
 		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppNitificationContentBuilder", "AppNitificationContentBuilder", "{1BE24A5E-3760-475F-95E5-E11DCC67C210}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppNotificationContentBuilder", "dev\AppNotifications\AppNotificationContentBuilder\AppNotificationContentBuilder.vcxitems", "{69E0C123-8529-47A5-ADD0-C8CCE91FB6E6}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{08bc78e0-63c6-49a7-81b3-6afc3deac4de}*SharedItemsImports = 4
@@ -359,6 +363,7 @@ Global
 		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{56371ca6-144b-4989-a4e9-391ad4fa7651}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{56a1d696-feda-4333-bf37-772ebececb10}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{5b2d17fe-c371-417f-860c-3d32397c2404}*SharedItemsImports = 4
+		dev\AppNotifications\AppNotificationContentBuilder\AppNotificationContentBuilder.vcxitems*{69e0c123-8529-47a5-add0-c8cce91fb6e6}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{7c502995-59c3-483b-86ba-815985353633}*SharedItemsImports = 4
 		dev\Common\Common.vcxitems*{8828053c-d6ec-4744-8624-f8c676c2d4df}*SharedItemsImports = 9
 		dev\Licensing\Licensing.vcxitems*{885a43fa-052d-4b0d-a2dc-13ee15796435}*SharedItemsImports = 9
@@ -1470,6 +1475,8 @@ Global
 		{D9139E3C-8D21-4BD9-84E3-30A03A54D610} = {99C514E4-A6B3-4B09-B870-5511EF9D93AC}
 		{4A74BBED-3B20-44A7-B6FF-3373160DE741} = {99C514E4-A6B3-4B09-B870-5511EF9D93AC}
 		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF} = {E378857C-D22A-4E5E-A6DA-A59C445CF22E}
+		{1BE24A5E-3760-475F-95E5-E11DCC67C210} = {1C9A0791-2BAA-420B-84B6-C0721F22A6E8}
+		{69E0C123-8529-47A5-ADD0-C8CCE91FB6E6} = {1BE24A5E-3760-475F-95E5-E11DCC67C210}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
