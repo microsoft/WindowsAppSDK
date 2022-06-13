@@ -209,7 +209,7 @@ std::filesystem::path MddCore::DataStore::GetDataStorePathForUserViaApplicationD
 std::wstring MddCore::DataStore::GetWindowsAppRuntimeMainPackageFamilyName()
 {
 #if 1
-    return ::WindowsAppRuntime::VersionInfo::Framework::GetPackageFamilyName();
+    return ::WindowsAppRuntime::VersionInfo::Main::GetPackageFamilyName();
 #else
     const UINT32 flags{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC | PACKAGE_INFORMATION_BASIC };
     uint32_t packageInfosCount{};
