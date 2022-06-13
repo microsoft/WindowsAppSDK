@@ -180,6 +180,8 @@ namespace AppNotifications::Test
                 result = true;
                 break;
             }
+
+            Sleep(1000);
         }
         return result;
     }
@@ -217,6 +219,8 @@ namespace AppNotifications::Test
                 result = true;
                 break;
             }
+
+            Sleep(1000);
         }
         return result;
     }
