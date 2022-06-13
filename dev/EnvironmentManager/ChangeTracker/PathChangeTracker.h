@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
+
 #include "IChangeTracker.h"
 #include <Microsoft.Windows.System.EnvironmentManager.h>
 #include <wil/registry.h>
@@ -50,7 +51,7 @@ namespace winrt::Microsoft::Windows::System::implementation
             }
 
             std::filesystem::path subKey = std::filesystem::path{L"Software\\ChangeTracker"}
-            / KeyName() / m_PackageFullName / ScopeToString();
+            / KeyName() / m_packageFullName / ScopeToString();
 
             wil::unique_hkey keyToTrackChanges{};
             THROW_IF_WIN32_ERROR(RegCreateKeyEx(HKEY_CURRENT_USER,

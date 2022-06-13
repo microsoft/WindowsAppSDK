@@ -3,13 +3,14 @@
 #include <pch.h>
 #include "EnvironmentVariableChangeTracker.h"
 #include "EnvironmentVariableChangeTrackerHelper.h"
+#include "AppModel.Identity.h"
 
 namespace winrt::Microsoft::Windows::System::implementation
 {
     EnvironmentVariableChangeTracker::EnvironmentVariableChangeTracker(const std::wstring& evName, const std::wstring& valueToSet, EnvironmentManager::Scope scope)
         : m_eVName(evName), m_eVValue(valueToSet), m_Scope(scope)
     {
-        m_PackageFullName = PackageFullName();
+        m_packageFullName = ::AppModel::Identity::GetCurrentPackageFullName();
     }
 
     PCWSTR EnvironmentVariableChangeTracker::KeyName() const

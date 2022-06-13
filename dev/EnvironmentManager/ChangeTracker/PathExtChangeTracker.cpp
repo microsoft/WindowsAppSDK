@@ -11,7 +11,7 @@ namespace winrt::Microsoft::Windows::System::implementation
         : m_Scope(scope), m_PathExtPart(pathExtPart), m_Operation(operation)
     {
         THROW_HR_IF(E_INVALIDARG, pathExtPart.empty());
-        m_PackageFullName = PackageFullName();
+        m_packageFullName = ::AppModel::Identity::GetCurrentPackageFullName();
     }
 
     PCWSTR PathExtChangeTracker::KeyName() const

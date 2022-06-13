@@ -16,6 +16,25 @@ inline bool IsPackagedProcess()
     return rc == ERROR_INSUFFICIENT_BUFFER;
 }
 
+inline std::wstring GetCurrentPackageFullName()
+{
+    WCHAR packageFullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1]{};
+    UINT32 n{ ARRAYSIZE(packageFullName) };
+    const auto rc{ ::GetCurrentPackageFullName(&n, packageFullName) };
+    if (rc == ERROR_SUCCESS)
+    {
+        return std::wstring{ packageFullName };
+    }
+    else if (rc == APPMODEL_ERROR_NO_PACKAGE)
+    {
+        return std::wstring();
+    }
+    else
+    {
+        THROW_HR_MSG(HRESULT_FROM_WIN32(rc), "GetCurrentPackageFullName rc=%d", rc);
+    }
+}
+
 constexpr winrt::Windows::System::ProcessorArchitecture GetCurrentArchitecture()
 {
 #if defined(_M_X64)

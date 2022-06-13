@@ -84,7 +84,7 @@ inline std::wstring GetEnvironmentVariableFromRegistry(const std::wstring variab
     {
         if (queryResult == ERROR_FILE_NOT_FOUND)
         {
-            return L"";
+            return c_FileNotFound;
         }
 
         THROW_HR(HRESULT_FROM_WIN32((queryResult)));

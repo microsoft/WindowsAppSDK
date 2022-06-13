@@ -12,6 +12,8 @@ inline constexpr PCWSTR c_EvValueName2 = L"TheBestTestValue2";
 inline constexpr PCWSTR c_PathName = L"PATH";
 inline constexpr PCWSTR c_PathExtName = L"PATHEXT";
 
+inline constexpr PCWSTR c_FileNotFound = L"FileNotFound";
+
 enum class ProcessRunLevel
 {
     UntrustedIL,

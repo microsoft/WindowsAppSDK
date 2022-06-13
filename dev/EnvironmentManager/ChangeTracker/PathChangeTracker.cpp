@@ -3,6 +3,7 @@
 #include <pch.h>
 #include "PathChangeTracker.h"
 #include "EnvironmentVariableChangeTrackerHelper.h"
+#include "AppModel.Identity.h"
 
 
 namespace winrt::Microsoft::Windows::System::implementation
@@ -11,7 +12,7 @@ namespace winrt::Microsoft::Windows::System::implementation
         : m_Scope(scope), m_PathPart(pathPart), m_Operation(operation)
     {
         THROW_HR_IF(E_INVALIDARG, pathPart.empty());
-        m_PackageFullName = PackageFullName();
+        m_packageFullName = ::AppModel::Identity::GetCurrentPackageFullName();
     }
 
     PCWSTR PathChangeTracker::KeyName() const

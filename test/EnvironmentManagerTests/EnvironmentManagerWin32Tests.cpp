@@ -129,7 +129,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
         // Remove the value
         // setting the value to empty is the same as deleting the variable
         VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, L""));
-        VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableForUser(c_EvKeyName));
+        VERIFY_ARE_EQUAL(c_FileNotFound, GetEnvironmentVariableForUser(c_EvKeyName));
     }
 
     void EnvironmentManagerWin32Tests::TestSetEnvironmentVariableForMachine()

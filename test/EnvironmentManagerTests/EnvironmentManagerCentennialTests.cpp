@@ -129,7 +129,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
         // Remove the value
         // setting the value to empty is the same as deleting the variable
         VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, L""));
-        VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableForUser(c_EvKeyName));
+        VERIFY_ARE_EQUAL(c_FileNotFound, GetEnvironmentVariableForUser(c_EvKeyName));
 
         // Check the values in Change Tracker.
         // Both values should be empty.
@@ -167,7 +167,6 @@ namespace WindowsAppSDKEnvironmentManagerTests
 
         // Check the values in Change Tracker.
         // Both values should be empty.
-        // Previous Value is empty because the EV did not exist.
         // Current value is empty because it was deleted.
         wil::unique_hkey keyChangeTracker{ GetKeyForEVTrackingChange(false, GetPackageFullName(), c_EvKeyName) };
         VERIFY_ARE_EQUAL(c_EvValueName2, GetEnvironmentVariableFromRegistry(L"PreviousValue", keyChangeTracker.get()));
