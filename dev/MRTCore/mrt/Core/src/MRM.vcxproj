@@ -67,13 +67,8 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;UNICODE;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalIncludeDirectories>..\..\..\..\WindowsAppRuntime_Insights;..\..\mrm\include</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <ControlFlowGuard>Guard</ControlFlowGuard>
-      <!-- MRT Core doesn't use RTTI. -->
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(OutDir)..\mrmmin\mrmmin.lib;rpcrt4.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -85,7 +80,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Optimization>Disabled</Optimization>
       <WarningVersion>18</WarningVersion>
     </ClCompile>
     <Link>

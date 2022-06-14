@@ -45,7 +45,6 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -58,7 +57,6 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
@@ -72,7 +70,6 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
@@ -118,10 +115,8 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;TOASTNOTIFICATIONTESTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -135,20 +130,14 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;TOASTNOTIFICATIONTESTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
-      <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -157,11 +146,9 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;TOASTNOTIFICATIONTESTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
-      <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -175,19 +162,13 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;TOASTNOTIFICATIONTESTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -197,7 +178,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);;INLINE_TEST_METHOD_MARKUP</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
@@ -212,9 +192,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;..\inc;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);;INLINE_TEST_METHOD_MARKUP</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
@@ -222,8 +199,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>

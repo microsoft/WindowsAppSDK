@@ -54,7 +54,6 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -73,14 +72,12 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -147,9 +144,7 @@
     <ClCompile>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;WINDOWSAPPRUNTIMEDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -168,9 +163,7 @@
     <ClCompile>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;WINDOWSAPPRUNTIMEDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -189,9 +182,7 @@
     <ClCompile>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;WINDOWSAPPRUNTIMEDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -210,17 +201,11 @@
     <ClCompile>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;WINDOWSAPPRUNTIMEDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -235,17 +220,11 @@
     <ClCompile>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;WINDOWSAPPRUNTIMEDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -260,17 +239,11 @@
     <ClCompile>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;WINDOWSAPPRUNTIMEDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>

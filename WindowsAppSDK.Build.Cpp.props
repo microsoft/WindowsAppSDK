@@ -20,6 +20,9 @@
       <!-- /W4 Enable max warning level -->
       <WarningLevel>Level4</WarningLevel>
 
+      <!-- /sdk Enable additional security checks-->
+      <SDLCheck>true</SDLCheck>
+
       <!-- /GR- Disable RTTI (causes binary bloat) -->
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
@@ -28,14 +31,14 @@
   </ItemDefinitionGroup>
 
   <!-- Debug-specific options -->
-<!--
   <ItemDefinitionGroup Condition="'$(Configuration)' == 'Debug'">
     <ClCompile>
+      <!-- /Ox- Disable most speed optimizations-->
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
     </Link>
   </ItemDefinitionGroup>
--->
 
   <!-- Release-specific options -->
   <ItemDefinitionGroup Condition="'$(Configuration)' == 'Release'">
