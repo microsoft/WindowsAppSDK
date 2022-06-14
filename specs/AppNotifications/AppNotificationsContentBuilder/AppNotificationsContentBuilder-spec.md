@@ -4,6 +4,7 @@
 ## Toast Notification with Avatar Image
 
 To generate a toast like this one:
+
 ![Toast With Avatar Image](ToastWithAvatarImage.png)
 
 developpers have to write something like this:
