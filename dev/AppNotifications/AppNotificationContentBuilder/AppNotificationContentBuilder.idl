@@ -1,244 +1,148 @@
 ﻿import "oaidl.idl";
 import "ocidl.idl";
 
-Constructors
-// Initializes a new instance of the ToastButton class.
-ToastButton()
+[contract(AppNotificationsContract, 1)]
+runtimeclass AppNotificationButtonBuilder
+{
+    Constructors
+    // Initializes a new instance of the ToastButton class.
+    ToastButton()
 
-// Initializes a new instance of the ToastButton class.
-ToastButton(String, String)
-
-
-Properties
-// Gets or sets additional options relating to activation of the toast button.New in Creators Update
-ActivationOptions
-
-// Gets or sets what type of activation this button will use when clicked.Defaults to Foreground.
-ActivationType
-
-// Gets app - defined string of arguments that the app can later retrieve once it is activated when the user clicks the button.Required
-Arguments
-
-// Gets the text to display on the button.Required
-Content
-
-// Gets or sets an identifier used in telemetry to identify your category of action.This should be something like "Delete", "Reply", or "Archive".In the upcoming toast telemetry dashboard in Dev Center, you will be able to view how frequently your actions are being clicked.
-HintActionId
-
-// Gets or sets an optional image icon for the button to display(required for buttons adjacent to inputs like quick reply).
-ImageUri
-
-// Gets or sets the ID of an existing ToastTextBox in order to have this button display to the right of the input, achieving a quick reply scenario.
-TextBoxId
-
-Methods
-// Adds a key(without value) to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-AddArgument(String)
-
-// Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-AddArgument(String, Boolean)
-
-// Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-AddArgument(String, Double)
-
-// Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-AddArgument(String, Enum)
-
-// Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-AddArgument(String, Int32)
-
-// Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-AddArgument(String, Single)
-
-// Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-AddArgument(String, String)
-
-// Sets the behavior that the toast should use when the user invokes this button.Desktop - only, supported in builds 16251 or higher.New in Fall Creators Update.
-SetAfterActivationBehavior(ToastAfterActivationBehavior)
-
-// Configures the button to use background activation when the button is clicked.
-SetBackgroundActivation()
-
-// Sets the text to display on the button.
-SetContent(String)
-
-// Configures the button to use system dismiss activation when the button is clicked(the toast will simply dismiss rather than activating).
-SetDismissActivation()
-
-// Sets an identifier used in telemetry to identify your category of action.This should be something like "Delete", "Reply", or "Archive".In the upcoming toast telemetry dashboard in Dev Center, you will be able to view how frequently your actions are being clicked.
-SetHintActionId(String)
-
-// Sets an optional image icon for the button to display(required for buttons adjacent to inputs like quick reply).
-SetImageUri(Uri)
-
-// Configures the button to launch the specified url when the button is clicked.
-SetProtocolActivation(Uri)
-
-// Configures the button to launch the specified url when the button is clicked.
-SetProtocolActivation(Uri, String)
-
-// Configures the button to use system snooze activation when the button is clicked, using the default system snooze time.
-SetSnoozeActivation()
-
-// Configures the button to use system snooze activation when the button is clicked, with a snooze time defined by the specified selection box.
-SetSnoozeActivation(String)
-
-// Sets the ID of an existing ToastTextBox in order to have this button display to the right of the input, achieving a quick reply scenario.
-SetTextBoxId(String)
+    // Initializes a new instance of the ToastButton class.
+    ToastButton(String, String)
 
 
+    Properties
+    // Gets or sets additional options relating to activation of the toast button.New in Creators Update
+    ActivationOptions
 
+    // Gets or sets what type of activation this button will use when clicked.Defaults to Foreground.
+    ActivationType
 
+    // Gets app - defined string of arguments that the app can later retrieve once it is activated when the user clicks the button.Required
+    Arguments
 
+    // Gets the text to display on the button.Required
+    Content
+
+    // Gets or sets an identifier used in telemetry to identify your category of action.This should be something like "Delete", "Reply", or "Archive".In the upcoming toast telemetry dashboard in Dev Center, you will be able to view how frequently your actions are being clicked.
+    HintActionId
+
+    // Gets or sets an optional image icon for the button to display(required for buttons adjacent to inputs like quick reply).
+    ImageUri
+
+    // Gets or sets the ID of an existing ToastTextBox in order to have this button display to the right of the input, achieving a quick reply scenario.
+    TextBoxId
+
+    Methods
+    // Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
+    AddArgument(String, String)
+
+    // Configures the button to use background activation when the button is clicked.
+    SetBackgroundActivation()
+
+    // Sets the text to display on the button.
+    SetContent(String)
+
+    // Sets an identifier used in telemetry to identify your category of action.This should be something like "Delete", "Reply", or "Archive".In the upcoming toast telemetry dashboard in Dev Center, you will be able to view how frequently your actions are being clicked.
+    SetHintActionId(String)
+
+    // Configures the button to launch the specified url when the button is clicked.
+    SetProtocolActivation(Uri)
+
+    // Configures the button to launch the specified url when the button is clicked.
+    SetProtocolActivation(Uri, String)
+
+    // Sets the ID of an existing ToastTextBox in order to have this button display to the right of the input, achieving a quick reply scenario.
+    SetTextBoxId(String)
+}
 
 // Notification Content Builder
 [contract(AppNotificationsContract, 1)]
 runtimeclass AppNotificationContentBuilder
 {
 
-// Initializes a new instance of the ToastContentBuilder class.
-ToastContentBuilder()
+    // Initializes a new instance of the ToastContentBuilder class.
+    ToastContentBuilder()
 
-Properties
-// Gets internal instance of ToastContent.This is equivalent to the call to GetToastContent().
-Content
+    Properties
+    // Gets internal instance of ToastContent.This is equivalent to the call to GetToastContent().
+    Content
 
 
-Methods
-// Override the app logo with custom image of choice that will be displayed on the toast.
-AddAppLogoOverride(Uri, Nullable<ToastGenericAppLogoCrop>, String, Nullable<Boolean>)
+    Methods
+    // Override the app logo with custom image of choice that will be displayed on the toast.
+    AddAppLogoOverride(Uri, Nullable<ToastGenericAppLogoCrop>, String, Nullable<Boolean>)
 
-// Adds a key(without value) to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-AddArgument(String)
+    // Adds a key(without value) to the activation arguments that will be returned when the toast notification or its buttons are clicked.
+    AddArgument(String)
 
-// Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-AddArgument(String, Boolean)
+    // Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
+    AddArgument(String, Boolean)
 
-// Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-AddArgument(String, Double)
+    // Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
+    AddArgument(String, Double)
 
-// Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-AddArgument(String, Enum)
+    // Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
+    AddArgument(String, Enum)
 
-// Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-AddArgument(String, Int32)
+    // Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
+    AddArgument(String, Int32)
 
-// Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-AddArgument(String, Single)
+    // Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
+    AddArgument(String, Single)
 
-// Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-AddArgument(String, String)
+    // Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
+    AddArgument(String, String)
 
-// Add an Attribution Text to be displayed on the toast.
-AddAttributionText(String)
+    // Add an Attribution Text to be displayed on the toast.
+    AddAttributionText(String)
 
-// Add an Attribution Text to be displayed on the toast.
-AddAttributionText(String, String)
+    // Add an Attribution Text to be displayed on the toast.
+    AddAttributionText(String, String)
 
-// Set custom audio to go along with the toast.
-AddAudio(ToastAudio)
+    // Add a button to the current toast.
+    AddButton(IToastButton)
 
-// Set custom audio to go along with the toast.
-AddAudio(Uri, Nullable<Boolean>, Nullable<Boolean>)
+    // Add an button to the toast that will be display to the right of the input text box, achieving a quick reply scenario.
+    AddButton(String, String, ToastActivationType, String)
 
-// Add a button to the current toast.
-AddButton(IToastButton)
+    // Add an button to the toast that will be display to the right of the input text box, achieving a quick reply scenario.
+    AddButton(String, String, ToastActivationType, String, Uri)
 
-// Add an button to the toast that will be display to the right of the input text box, achieving a quick reply scenario.
-AddButton(String, String, ToastActivationType, String)
+    // Add a button to the current toast.
+    AddButton(String, ToastActivationType, String)
 
-// Add an button to the toast that will be display to the right of the input text box, achieving a quick reply scenario.
-AddButton(String, String, ToastActivationType, String, Uri)
+    // Add a button to the current toast.
+    AddButton(String, ToastActivationType, String, Uri)
 
-// Add a button to the current toast.
-AddButton(String, ToastActivationType, String)
+    // Add an image inline with other toast content.
+    AddInlineImage(Uri, String, Nullable<Boolean>, Nullable<AdaptiveImageCrop>, Nullable<Boolean>)
 
-// Add a button to the current toast.
-AddButton(String, ToastActivationType, String, Uri)
+    // Add an input text box that the user can type into.
+    AddInputTextBox(String, String, String)
 
-// Add a combo box / drop - down menu that contain options for user to select.
-AddComboBox(String, String, String, IEnumerable<ValueTuple<String, String>>)
+    // Add text to the toast.
+    AddText(String, Nullable<AdaptiveTextStyle>, Nullable<Boolean>, Nullable<Int32>, Nullable<Int32>, Nullable<AdaptiveTextAlign>, String)
 
-// Add a combo box / drop - down menu that contain options for user to select.
-AddComboBox(String, String, String, ValueTuple<String, String>[])
+    // Add an input option to the Toast.
+    AddToastInput(IToastInput)
 
-// Add a combo box / drop - down menu that contain options for user to select.
-AddComboBox(String, String, ValueTuple<String, String>[])
+    // Get the instance of ToastContent that has been built by the builder with specified configuration so far.
+    GetToastContent()
 
-// Add a combo box / drop - down menu that contain options for user to select.
-AddComboBox(String, ValueTuple<String, String>[])
+    // Retrieves the notification XML content as a WinRT XmlDocument, so that it can be used with a local Toast notification's constructor on either Windows.UI.Notifications.ToastNotification or Windows.UI.Notifications.ScheduledToastNotification.
+    GetXml()
 
-// Add custom time stamp on the toast to override the time display on the toast.
-AddCustomTimeStamp(DateTime)
+    // Configures the toast notification to use background activation when the toast body is clicked.
+    SetBackgroundActivation()
 
-// Add a header to a toast.
-AddHeader(String, String, String)
+    // Configures the toast notification to launch the specified url when the toast body is clicked.
+    SetProtocolActivation(Uri)
 
-// Add a header to a toast.
-AddHeader(String, String, ToastArguments)
+    // Configures the toast notification to launch the specified url when the toast body is clicked.
+    SetProtocolActivation(Uri, String)
 
-// Add a hero image to the toast.
-AddHeroImage(Uri, String, Nullable<Boolean>)
-
-// Add an image inline with other toast content.
-AddInlineImage(Uri, String, Nullable<Boolean>, Nullable<AdaptiveImageCrop>, Nullable<Boolean>)
-
-// Add an input text box that the user can type into.
-AddInputTextBox(String, String, String)
-
-// Add a progress bar to the toast.
-AddProgressBar(String, Nullable<Double>, Boolean, String, String)
-
-// Add text to the toast.
-AddText(String, Nullable<AdaptiveTextStyle>, Nullable<Boolean>, Nullable<Int32>, Nullable<Int32>, Nullable<AdaptiveTextAlign>, String)
-
-// Instead of this method, for foreground / background activation, it is suggested to use AddArgument(String, String) and optionally SetBackgroundActivation().For protocol activation, you should use SetProtocolActivation(Uri).Add info that can be used by the application when the app was activated / launched by the toast.
-AddToastActivationInfo(String, ToastActivationType)
-
-// Add an input option to the Toast.
-AddToastInput(IToastInput)
-
-// Add a visual element to the toast.
-AddVisualChild(IToastBindingGenericChild)
-
-//Create an instance of NotificationData that can be used to update toast that has a progress bar.
-CreateProgressBarData(ToastContent, Int32, String, Nullable<Double>, String, String, UInt32)
-
-// Get the instance of ToastContent that has been built by the builder with specified configuration so far.
-GetToastContent()
-
-// Retrieves the notification XML content as a WinRT XmlDocument, so that it can be used with a local Toast notification's constructor on either Windows.UI.Notifications.ToastNotification or Windows.UI.Notifications.ScheduledToastNotification.
-GetXml()
-
-// Schedules the notification.
-Schedule(DateTimeOffset)
-
-// Schedules the notification.
-Schedule(DateTimeOffset, CustomizeScheduledToast)
-
-// Schedules the notification.
-Schedule(DateTimeOffset, CustomizeScheduledToastAsync)
-
-// Configures the toast notification to use background activation when the toast body is clicked.
-SetBackgroundActivation()
-
-// Configures the toast notification to launch the specified url when the toast body is clicked.
-SetProtocolActivation(Uri)
-
-// Configures the toast notification to launch the specified url when the toast body is clicked.
-SetProtocolActivation(Uri, String)
-
-// Sets the amount of time the Toast should display.You typically should use the Scenario attribute instead, which impacts how long a Toast stays on screen.
-SetToastDuration(ToastDuration)
-
-// Sets the scenario, to make the Toast behave like an alarm, reminder, or more.
-SetToastScenario(ToastScenario)
-
-// Shows a new toast notification with the current content.
-Show()
-
-// Shows a new toast notification with the current content.
-Show(CustomizeToast)
-
-// Shows a new toast notification with the current content.
-Show(CustomizeToastAsync)
+    // Shows a new toast notification with the current content.
+    Show()
+}
