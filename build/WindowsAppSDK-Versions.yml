@@ -1,6 +1,7 @@
 variables:
   # Version Control
   major: "1"
-  minor: "1"
-  patch: "0"
+  minor: "2"
+  patch: $[format('{0:yyMMdd}', pipeline.startTime)]
+  revision: $[counter(variables['PatchVersion'], 1)] # Start from 1 because if Revision is zero, it is omitted from the normalized version string.
   branch: 'main'

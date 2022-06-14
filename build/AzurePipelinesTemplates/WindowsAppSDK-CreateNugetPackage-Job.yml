@@ -7,7 +7,6 @@ parameters:
 # The "primary" build arch is the one that the nuspec gets its winmd, pri, and other neutral files from
   primaryBuildArch: x86
   buildFlavor: Release
-  prereleaseVersionTag: 'prerelease'
   condition: ''
   buildPool: ''
 
@@ -100,7 +99,7 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        $packageVersion = '$(version).${{ parameters.prereleaseVersionTag }}'
+        $packageVersion = '$(version).$(Build.SourceBranchName)'
         Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
         Write-Host "##vso[task.setvariable variable=packageVersion;isOutput=true;]$packageVersion"
         Write-Host $packageVersion

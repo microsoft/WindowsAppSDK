@@ -187,7 +187,6 @@ jobs:
     dependsOn:
       - Build
       - PublishMRT
-    prereleaseVersionTag: ci
     condition: |
       and
       (
