@@ -11,6 +11,9 @@
 /// MSIX Dynamic Dependency HRESULT: Windows App Runtime is not in the package graph.
 #define MDD_E_WINDOWSAPPRUNTIME_NOT_IN_PACKAGE_GRAPH    _HRESULT_TYPEDEF_(0x80040001L)
 
+/// MSIX Dynamic Dependency HRESULT: Data Store not found (Windows App Runtime's Main package not registered?)
+#define MDD_E_WINDOWSAPPRUNTIME_DATASTORE_NOT_FOUND     _HRESULT_TYPEDEF_(0x80040002L)
+
 /// MSIX Dynamic Dependency: Bootstrap initialization is scanning for an applicable DynamicDependencyLifetimeManager (DDLM) package
 #define MDD_E_BOOTSTRAP_INITIALIZE_SCAN_FOR_DDLM        _HRESULT_TYPEDEF_(0x80040010L)
 
