@@ -2,59 +2,55 @@
 import "ocidl.idl";
 
 [contract(AppNotificationsContract, 1)]
-runtimeclass AppNotificationButtonBuilder
+runtimeclass AppNotificationButton
 {
     Constructors
     // Initializes a new instance of the ToastButton class.
-    ToastButton()
+    AppNotificationButton()
 
     // Initializes a new instance of the ToastButton class.
-    ToastButton(String, String)
+    AppNotificationButton(String, String)
 
-
-    Properties
     // Gets or sets additional options relating to activation of the toast button.New in Creators Update
-    ActivationOptions
+    ActivationOptions { Get }
 
     // Gets or sets what type of activation this button will use when clicked.Defaults to Foreground.
-    ActivationType
+    ActivationType { Get }
 
     // Gets app - defined string of arguments that the app can later retrieve once it is activated when the user clicks the button.Required
-    Arguments
-
-    // Gets the text to display on the button.Required
-    Content
+    Arguments { Get }
 
     // Gets or sets an identifier used in telemetry to identify your category of action.This should be something like "Delete", "Reply", or "Archive".In the upcoming toast telemetry dashboard in Dev Center, you will be able to view how frequently your actions are being clicked.
-    HintActionId
+    HintActionId { Get }
 
     // Gets or sets an optional image icon for the button to display(required for buttons adjacent to inputs like quick reply).
-    ImageUri
+    ImageUri { Get}
 
     // Gets or sets the ID of an existing ToastTextBox in order to have this button display to the right of the input, achieving a quick reply scenario.
-    TextBoxId
+    TextBoxId { Get };
 
-    Methods
     // Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-    AddArgument(String, String)
+    AppNotificationButton AddArgument(String, String)
 
     // Configures the button to use background activation when the button is clicked.
-    SetBackgroundActivation()
+    AppNotificationButton SetBackgroundActivation()
 
     // Sets the text to display on the button.
-    SetContent(String)
+    AppNotificationButton SetContent(String)
 
     // Sets an identifier used in telemetry to identify your category of action.This should be something like "Delete", "Reply", or "Archive".In the upcoming toast telemetry dashboard in Dev Center, you will be able to view how frequently your actions are being clicked.
-    SetHintActionId(String)
+    AppNotificationButton SetHintActionId(String)
 
     // Configures the button to launch the specified url when the button is clicked.
-    SetProtocolActivation(Uri)
+    AppNotificationButton SetProtocolActivation(Uri)
 
     // Configures the button to launch the specified url when the button is clicked.
-    SetProtocolActivation(Uri, String)
+    AppNotificationButton SetProtocolActivation(Uri, String)
 
     // Sets the ID of an existing ToastTextBox in order to have this button display to the right of the input, achieving a quick reply scenario.
-    SetTextBoxId(String)
+    AppNotificationButton SetTextBoxId(String)
+
+    GetXml()
 }
 
 // Notification Content Builder
@@ -63,86 +59,80 @@ runtimeclass AppNotificationContentBuilder
 {
 
     // Initializes a new instance of the ToastContentBuilder class.
-    ToastContentBuilder()
+    AppNotificationContentBuilder()
 
-    Properties
-    // Gets internal instance of ToastContent.This is equivalent to the call to GetToastContent().
-    Content
-
-
-    Methods
     // Override the app logo with custom image of choice that will be displayed on the toast.
-    AddAppLogoOverride(Uri, Nullable<ToastGenericAppLogoCrop>, String, Nullable<Boolean>)
+    AppNotificationContentBuilder AddAppLogoOverride(Uri, Nullable<ToastGenericAppLogoCrop>, String, Nullable<Boolean>)
 
     // Adds a key(without value) to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-    AddArgument(String)
+    AppNotificationContentBuilder AddArgument(String)
 
     // Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-    AddArgument(String, Boolean)
+    AppNotificationContentBuilder AddArgument(String, Boolean)
 
     // Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-    AddArgument(String, Double)
+    AppNotificationContentBuilder AddArgument(String, Double)
 
     // Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-    AddArgument(String, Enum)
+    AppNotificationContentBuilder AddArgument(String, Enum)
 
     // Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-    AddArgument(String, Int32)
+    AppNotificationContentBuilderAddArgument(String, Int32)
 
     // Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-    AddArgument(String, Single)
+    AppNotificationContentBuilder AddArgument(String, Single)
 
     // Adds a key / value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
-    AddArgument(String, String)
+    AppNotificationContentBuilder AddArgument(String, String)
 
     // Add an Attribution Text to be displayed on the toast.
-    AddAttributionText(String)
+    AppNotificationContentBuilder AddAttributionText(String)
 
     // Add an Attribution Text to be displayed on the toast.
-    AddAttributionText(String, String)
+    AppNotificationContentBuilder AddAttributionText(String, String)
 
     // Add a button to the current toast.
-    AddButton(IToastButton)
+    AppNotificationContentBuilder AddButton(IToastButton)
 
     // Add an button to the toast that will be display to the right of the input text box, achieving a quick reply scenario.
-    AddButton(String, String, ToastActivationType, String)
+    AppNotificationContentBuilder AddButton(String, String, ToastActivationType, String)
 
     // Add an button to the toast that will be display to the right of the input text box, achieving a quick reply scenario.
-    AddButton(String, String, ToastActivationType, String, Uri)
+    AppNotificationContentBuilder AddButton(String, String, ToastActivationType, String, Uri)
 
     // Add a button to the current toast.
-    AddButton(String, ToastActivationType, String)
+    AppNotificationContentBuilder AddButton(String, ToastActivationType, String)
 
     // Add a button to the current toast.
-    AddButton(String, ToastActivationType, String, Uri)
+    AppNotificationContentBuilder AddButton(String, ToastActivationType, String, Uri)
 
     // Add an image inline with other toast content.
-    AddInlineImage(Uri, String, Nullable<Boolean>, Nullable<AdaptiveImageCrop>, Nullable<Boolean>)
+    AppNotificationContentBuilder AddInlineImage(Uri, String, Nullable<Boolean>, Nullable<AdaptiveImageCrop>, Nullable<Boolean>)
 
     // Add an input text box that the user can type into.
-    AddInputTextBox(String, String, String)
+    AppNotificationContentBuilder AddInputTextBox(String, String, String)
 
     // Add text to the toast.
-    AddText(String, Nullable<AdaptiveTextStyle>, Nullable<Boolean>, Nullable<Int32>, Nullable<Int32>, Nullable<AdaptiveTextAlign>, String)
+    AppNotificationContentBuilder AddText(String, Nullable<AdaptiveTextStyle>, Nullable<Boolean>, Nullable<Int32>, Nullable<Int32>, Nullable<AdaptiveTextAlign>, String)
 
     // Add an input option to the Toast.
-    AddToastInput(IToastInput)
+    AppNotificationContentBuilder AddToastInput(IToastInput)
 
     // Get the instance of ToastContent that has been built by the builder with specified configuration so far.
-    GetToastContent()
+    AppNotificationContentBuilder GetToastContent()
 
     // Retrieves the notification XML content as a WinRT XmlDocument, so that it can be used with a local Toast notification's constructor on either Windows.UI.Notifications.ToastNotification or Windows.UI.Notifications.ScheduledToastNotification.
-    GetXml()
+    AppNotificationContentBuilder GetXml()
 
     // Configures the toast notification to use background activation when the toast body is clicked.
-    SetBackgroundActivation()
+    AppNotificationContentBuilder SetBackgroundActivation()
 
     // Configures the toast notification to launch the specified url when the toast body is clicked.
-    SetProtocolActivation(Uri)
+    AppNotificationContentBuilder SetProtocolActivation(Uri)
 
     // Configures the toast notification to launch the specified url when the toast body is clicked.
-    SetProtocolActivation(Uri, String)
+    AppNotificationContentBuilder SetProtocolActivation(Uri, String)
 
     // Shows a new toast notification with the current content.
-    Show()
+    void Show()
 }
