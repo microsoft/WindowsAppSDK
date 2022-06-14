@@ -90,13 +90,8 @@ namespace AppNotifications::Test
 
     void VerifyProgressData(const winrt::AppNotificationProgressData& expected, const winrt::AppNotificationProgressData& actual)
     {
-        if (!expected && !actual)
-        {
-            return;
-        }
-
-        VERIFY_IS_TRUE(!!expected);
-        VERIFY_IS_TRUE(!!actual);
+        VERIFY_IS_NOT_NULL(expected);
+        VERIFY_IS_NOT_NULL(actual);
 
         VERIFY_ARE_EQUAL(expected.Status(), actual.Status());
         VERIFY_ARE_EQUAL(expected.Title(), actual.Title());
@@ -165,9 +160,9 @@ namespace AppNotifications::Test
             auto actualToastVector{ getAllAsync.GetResults() };
             if (actualToastVector.Size() == expectedToastVector.size())
             {
-                for (int actualToastIndex{ 0 }; static_cast<uint32_t>(actualToastIndex) < actualToastVector.Size(); actualToastIndex++)
+                for (uint32_t actualToastIndex{ 0 }; actualToastIndex < actualToastVector.Size(); actualToastIndex++)
                 {
-                    for (int expectedToastIndex{ 0 }; expectedToastIndex < expectedToastVector.size(); expectedToastIndex++)
+                    for (uint32_t expectedToastIndex{ 0 }; expectedToastIndex < expectedToastVector.size(); expectedToastIndex++)
                     {
                         if (actualToastVector.GetAt(actualToastIndex).Id() == expectedToastVector[expectedToastIndex].Id())
                         {
@@ -215,7 +210,7 @@ namespace AppNotifications::Test
             scopeExitGetAll.release();
 
             auto actualToastVector{ getAllAsync.GetResults() };
-            if (actualToastVector.Size() == static_cast<uint32_t>(0))
+            if (actualToastVector.Size() == 0u)
             {
                 result = true;
                 break;
