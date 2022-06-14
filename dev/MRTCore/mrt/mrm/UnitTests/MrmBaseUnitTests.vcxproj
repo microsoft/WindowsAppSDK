@@ -17,14 +17,6 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|ARM">
-      <Configuration>Debug</Configuration>
-      <Platform>ARM</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|ARM">
-      <Configuration>Release</Configuration>
-      <Platform>ARM</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|ARM64">
       <Configuration>Debug</Configuration>
       <Platform>ARM64</Platform>
@@ -69,7 +61,6 @@
   <PropertyGroup Label="UseOneCoreLibs">
     <LibraryPath Condition="'$(Platform)'=='Win32'">$(VCInstallDir)lib\onecore;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Platform)'=='x64'">$(VCInstallDir)lib\onecore\amd64;$(LibraryPath)</LibraryPath>
-    <LibraryPath Condition="'$(Platform)'=='ARM'">$(VCInstallDir)lib\onecore\arm;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Platform)'=='ARM64'">$(VCInstallDir)lib\onecore\arm64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Label="UserMacros" />
