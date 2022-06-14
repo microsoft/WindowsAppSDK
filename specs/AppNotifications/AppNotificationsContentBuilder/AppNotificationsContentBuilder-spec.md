@@ -1,11 +1,11 @@
 # App Notifications Content Builder
 
 # Examples
-## Toast Notification with Avatar Image
+## App Notification with Avatar Image
 
 To generate a toast like this one:
 
-![Toast With Avatar Image](ToastWithAvatarImage.png)
+![App Notification With Avatar Image](ToastWithAvatarImage.png)
 
 developpers have to write something like this:
 
@@ -39,16 +39,16 @@ AppNotificationContentBuilder("ToastClick")
     .AddText(L"Toast Notification with Avatar Image")
     .AddText(L"This is an example message")
     .AddButton(new Button(L"Open App", L"OpenAppButton"))
-    .AddArgument(L"Sequence", L"1234") };
+    .AddArgument(L"Sequence", L"1234")
     .Show();
 ```
-## Toast Notification with Avatar And Text Box
+## App Notification with Avatar And Text Box
 
 To generate a toast like this one:
 
-![Toast With Avatar Image](ToastWithTextBox.png)
+![App Notification With Avatar Image](ToastWithTextBox.png)
 
-developpers have to write something like this:
+Developers have to write something like this:
 
 ``` c++
     winrt::hstring xmlPayload{
@@ -88,7 +88,7 @@ AppNotificationContentBuilder("ToastClick")
         .PlaceHolderContent("Type a reply"))
     .AddButton(new Button(L"Reply", L"ReplyButton")
         .GroupingHint("textboxReply"))
-    .AddArgument(L"Sequence", L"1234") };
+    .AddArgument(L"Sequence", L"1234")
     .Show();
 ```
 
