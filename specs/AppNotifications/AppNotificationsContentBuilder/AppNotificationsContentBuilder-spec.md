@@ -7,21 +7,21 @@ To generate a toast like this one:
 
 ![App Notification With Avatar Image](ToastWithAvatarImage.png)
 
-developpers have to write something like this:
+Developers have to write something like this:
 
 ``` c++
     winrt::hstring xmlPayload{
-        L"<toast launch = \"action=ToastClick&amp;\">\
+        LR"<toast launch = "action=ToastClick&amp;">\
             <visual>\
-                <binding template = \"ToastGeneric\">\
-                    <image placement = \"appLogoOverride\" hint-crop=\"circle\" src = \"Path\\To\\My\\Image.png\"/>\
+                <binding template = "ToastGeneric">\
+                    <image placement = "appLogoOverride" hint-crop="circle" src = "Path\To\My\Image.png"/>\
                     <text>This is an example message</text>\
                 </binding>\
             </visual>\
             <actions>\
                 <action\
-                    content = \"Open App\"\
-                    arguments = \"action=OpenAppButton&amp;Sequence=1234\"/>\
+                    content = "Open App"\
+                    arguments = "action=OpenAppButton&amp;Sequence=1234"/>\
             </actions>\
         </toast>" };
 
@@ -52,22 +52,22 @@ Developers have to write something like this:
 
 ``` c++
     winrt::hstring xmlPayload{
-        L"<toast launch = \"action=ToastClick&amp;\">\
+        LR"<toast launch = "action=ToastClick&amp;">\
             <visual>\
-                <binding template = \"ToastGeneric\">\
-                    <image placement = \"appLogoOverride\" hint-crop=\"circle\" src = \"Path\\To\\My\\Image.png\"/>\
+                <binding template = "ToastGeneric">\
+                    <image placement = "appLogoOverride" hint-crop="circle" src = "Path\To\My\Image.png"/>\
                     <text>This is an example message</text>\
                 </binding>\
             </visual>\
             <actions>\
                 <input\
-                    id = \"textboxReply"\"\
-                    type = \"text\"\
-                    placeHolderContent = \"Type a reply\"/>\
+                    id = "textboxReply"\
+                    type = "text"\
+                    placeHolderContent = "Type a reply"/>\
                 <action\
-                    content = \"Reply\"\
-                    arguments = \"action=ReplyButton&amp;Sequence=1234\"/>\
-                    hint-inputId=\"textboxReply\"/>\
+                    content = "Reply"\
+                    arguments = "action=ReplyButton&amp;Sequence=1234"/>\
+                    hint-inputId="textboxReply"/>\
             </actions>\
         </toast>" };
 
