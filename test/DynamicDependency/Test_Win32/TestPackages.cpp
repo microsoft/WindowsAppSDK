@@ -97,6 +97,11 @@ namespace Test::Packages
         return GetPackagePath(packageFullName.c_str());
     }
 
+    winrt::hstring GetPackagePath(const winrt::hstring& packageFullName)
+    {
+        return winrt::hstring{ GetPackagePath(packageFullName.c_str()) };
+    }
+
     void AddPackage_DynamicDependencyLifetimeManager()
     {
         AddPackage(Test::Packages::DynamicDependencyLifetimeManager::c_PackageDirName, Test::Packages::DynamicDependencyLifetimeManager::c_PackageFullName);
