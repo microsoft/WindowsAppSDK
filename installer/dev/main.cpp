@@ -132,7 +132,7 @@ int wmain(int argc, wchar_t *argv[])
                 deployPackagesResult,
                 static_cast<UINT32>(installActivityContext.GetLastFailure().type),
                 installActivityContext.GetLastFailure().file.c_str(),
-                installActivityContext.GetLastFailure().lineNumer,
+                installActivityContext.GetLastFailure().lineNumber,
                 installActivityContext.GetLastFailure().message.c_str(),
                 static_cast<UINT32>(installActivityContext.GetInstallStage()),
                 installActivityContext.GetCurrentResourceId().c_str(),

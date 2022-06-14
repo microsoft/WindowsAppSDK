@@ -25,7 +25,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         wil::FailureType type;
         HRESULT hr;
         std::string file;
-        unsigned int lineNumer;
+        unsigned int lineNumber;
         std::wstring message;
     };
 

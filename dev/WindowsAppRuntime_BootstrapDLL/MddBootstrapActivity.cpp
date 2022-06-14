@@ -25,7 +25,7 @@ void WindowsAppRuntime::MddBootstrap::Activity::Context::SetLastFailure(const wi
         m_lastFailure.file.clear();
     }
 
-    m_lastFailure.lineNumer = failure.uLineNumber;
+    m_lastFailure.lineNumber = failure.uLineNumber;
 
     if (failure.pszMessage)
     {

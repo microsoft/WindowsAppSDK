@@ -42,7 +42,8 @@ void WindowsAppRuntimeInstaller::Console::DisplayError(const HRESULT hr)
 
     HRESULT hResult = hr;
 
-    if (installActivityContext.GetInstallStage() == InstallStage::StagePackage ||
+    if (installActivityContext.GetDeploymentErrorHresult() &&
+        installActivityContext.GetInstallStage() == InstallStage::StagePackage ||
         installActivityContext.GetInstallStage() == InstallStage::AddPackage ||
         installActivityContext.GetInstallStage() == InstallStage::RegisterPackage)
     {

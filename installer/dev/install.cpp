@@ -118,6 +118,7 @@ namespace WindowsAppRuntimeInstaller
             installActivityContext.SetInstallStage(InstallStage::AddPackage);
             RETURN_IF_FAILED(AddPackage(installActivityContext, packageUri, packageProperties, forceDeployment));
         }
+        return S_OK;
     }
 
     HRESULT ProvisionPackage(const std::wstring& packageFamilyName)

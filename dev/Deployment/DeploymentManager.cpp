@@ -174,7 +174,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                 deployPackagesResult,
                 static_cast<UINT32>(initializeActivityContext.GetLastFailure().type),
                 initializeActivityContext.GetLastFailure().file.c_str(),
-                initializeActivityContext.GetLastFailure().lineNumer,
+                initializeActivityContext.GetLastFailure().lineNumber,
                 initializeActivityContext.GetLastFailure().message.c_str(),
                 initializeActivityContext.GetLastFailure().module.c_str(),
                 static_cast<UINT32>(status),

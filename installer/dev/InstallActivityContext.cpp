@@ -44,7 +44,7 @@ void WindowsAppRuntimeInstaller::InstallActivity::Context::SetLastFailure(const 
         m_lastFailure.file.clear();
     }
 
-    m_lastFailure.lineNumer = failure.uLineNumber;
+    m_lastFailure.lineNumber = failure.uLineNumber;
 
     if (failure.pszMessage)
     {
