@@ -127,7 +127,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -143,7 +143,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -159,7 +159,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -175,7 +175,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -191,7 +191,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -207,7 +207,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir)\..\WindowsAppRuntime_DLL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
