@@ -2,5 +2,6 @@ variables:
   channel: 'experimental'
   rerunPassesRequiredToAvoidFailure: 5
   version: >
-   $[format('{0}.{1}.{2}.{3}-{4}.{5}}', 
-      variables['major'], variables['minor'], variables['patch'], variables['revision'], variables['branch'], variables['PipelineType'])]
+   $[format('{0}.{1}.{2}.{3}-{4}.{5}', 
+      variables['major'], variables['minor'], variables['patch'], 
+      variables['revision'], variables['branch'], variables['PipelineType'])]
