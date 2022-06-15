@@ -63,12 +63,6 @@
     <LibraryPath Condition="'$(Platform)'=='ARM64'">$(VCInstallDir)lib\onecore\arm64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <LinkIncremental>true</LinkIncremental>
-    <!-- Under Razzle Microsoft.Build.Cpp.props automatically sets LinkerDebugOptions to /debugtype which is incompatible with LinkIncremental so reset it back here. -->
-    <LinkerDebugOptions>
-    </LinkerDebugOptions>
-  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <!-- This project has numerous compilation errors if read-only string pooling is enabled

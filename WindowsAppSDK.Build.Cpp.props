@@ -31,6 +31,10 @@
   </ItemDefinitionGroup>
 
   <!-- Debug-specific options -->
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <!-- /INCREMENTAL Enable incremental linking -->
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)' == 'Debug'">
     <ClCompile>
       <!-- /d- Disable optimization -->
