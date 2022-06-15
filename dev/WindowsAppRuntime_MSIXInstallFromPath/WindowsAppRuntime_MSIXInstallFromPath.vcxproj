@@ -119,15 +119,12 @@
     <TargetName>WindowsAppRuntime_MSIXInstallFromPath</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
     <TargetName>WindowsAppRuntime_MSIXInstallFromPath</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
     <TargetName>WindowsAppRuntime_MSIXInstallFromPath</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-    <LinkIncremental>false</LinkIncremental>
     <TargetName>WindowsAppRuntime_MSIXInstallFromPath</TargetName>
   </PropertyGroup>
   <PropertyGroup>

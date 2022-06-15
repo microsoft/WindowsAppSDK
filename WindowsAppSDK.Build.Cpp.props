@@ -41,6 +41,10 @@
   </ItemDefinitionGroup>
 
   <!-- Release-specific options -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <!-- /INCREMENTAL:NO Disable incremental linking -->
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)' == 'Release'">
     <ClCompile>
       <!-- /GS Enable Control Flow Guard -->
