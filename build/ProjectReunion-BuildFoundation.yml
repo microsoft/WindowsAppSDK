@@ -61,7 +61,7 @@ jobs:
 #      TSLint: false
 #      ToolLogsNotFoundAction: 'Standard'
 
-- template: WindowsAppSDK-SourceAnalysis-job.yml
+- template: AzurePipelinesTemplates\WindowsAppSDK-SourceAnalysis-job.yml
   parameters:
     buildPool: '$(ProjectReunionBuildPool)'
 # alam end
