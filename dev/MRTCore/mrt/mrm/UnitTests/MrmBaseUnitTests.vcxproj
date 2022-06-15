@@ -69,6 +69,23 @@
     <LinkerDebugOptions>
     </LinkerDebugOptions>
   </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <!-- This project has numerous compilation errors if read-only string pooling is enabled
+           due to intermixing PWSTR and PCWSTR e.g. StringResult_C.UnitTest.cpp lines 534 + 590
+                PWSTR aStuff = L"asdfaeaef";
+                ...
+                VERIFY_FAILED(DefStringResult_SetContents(&selfValid, aStuff, 0));
+           due to the prototype declares the 2nd parameter as non-const and will be written to?
+                DefStringResult_SetContents(_Inout_ DEFSTRINGRESULT* pSelf, _Inout_ PWSTR pBuffer, _In_ size_t cchBuffer)
+           This pattern is extensively repeated and will require more than a small tweak to correct.
+           Disabling StringPooling and /Zc:stringStrings for now and filing a bug for an MRTCore dev to follow up.
+           https://task.ms/40017890 filed to remove this ItemDefinitionGroup and fix the errors.
+        -->
+      <StringPooling>false</StringPooling>
+      <AdditionalOptions>%(AdditionalOptions) /Zc:strictStrings-</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Label="OneCoreCompileOptions">
     <ClCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);_WIN32_WINNT=_WIN32_WINNT_WIN10;INLINE_TEST_METHOD_MARKUP;UNICODE;_UNICODE;</PreprocessorDefinitions>
