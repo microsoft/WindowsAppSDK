@@ -57,16 +57,16 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <AdditionalOptions>%(AdditionalOptions) /Gw</AdditionalOptions>
 
-      <!-- /Ox Enable most speed optimizations
+      <!-- /Oxs Enable most speed optimizations
            NOTE: /Ox is short-hand for multiple options:
                      /Ob2 Enable inline function expansion (/Ob2 = Any Suitable)
                      /Oi Enable intrinsic functions
-                     /Ot Favor fast code
+                     /Os Favor fast code
                      /Oy Omit frame pointers
         -->
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
     </ClCompile>
     <Link>
