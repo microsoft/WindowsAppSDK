@@ -5,6 +5,10 @@ parameters:
   MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
   MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
   GenerateSBOM: False
+  # alam start
+  runSDLBinaryAnalysis: false
+  # alam end
+
 steps:
 - task: BatchScript@1
   displayName: Set up environment
@@ -129,6 +133,13 @@ steps:
     solution: '${{ parameters.MRTSourcesDirectory }}\mrt\MrtCore.sln'
     configuration: '$(buildConfiguration)'
     msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+
+# alam start
+- ${{ if eq(parameters.runSDLBinaryAnalysis, 'true') }}:
+  - template: WindowsAppSDK-BinaryAnalysis-steps.yml
+    parameters:
+      outputDirectory: '${{ parameters.MRTBinariesDirectory }}'
+# alam end
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish mrtcore binlog'
