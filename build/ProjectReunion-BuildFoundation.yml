@@ -19,32 +19,52 @@ parameters:
   - name: "GenerateSBOM"
     type: boolean
     default: False
-jobs:
-- job: CredScan
-  pool: $(ProjectReunionBuildPool)
-  steps:
-  # Scans the root source folder for security vulnerability
-  - task: CredScan@2
-    inputs:
-      toolMajorVersion: 'V2'
+  # alam start
+  - name: "RunSDLBinaryAnalysis"
+    displayName: "Run SDL's Binary Analysis (PREFast, BinSkim)"
+    type: boolean
+    default: true
 
-  # This PostAnalysis will fail the pipeline if CredScan identifies an issue
-  - task: PostAnalysis@1
-    inputs:
-      AllTools: false
-      APIScan: false
-      BinSkim: false
-      CodesignValidation: false
-      CredScan: true
-      FortifySCA: false
-      FxCop: false
-      ModernCop: false
-      PoliCheck: false
-      RoslynAnalyzers: false
-      SDLNativeRules: false
-      Semmle: false
-      TSLint: false
-      ToolLogsNotFoundAction: 'Standard'
+resources:
+  repositories:
+  - repository: templates_onebranch
+    type: git
+    name: OneBranch.Pipelines/GovernedTemplates
+    ref: refs/heads/main
+# alam end
+
+jobs:
+# alam start
+#- job: CredScan
+#  pool: $(ProjectReunionBuildPool)
+#  steps:
+#  # Scans the root source folder for security vulnerability
+#  - task: CredScan@2
+#    inputs:
+#      toolMajorVersion: 'V2'
+
+#  # This PostAnalysis will fail the pipeline if CredScan identifies an issue
+#  - task: PostAnalysis@1
+#    inputs:
+#      AllTools: false
+#      APIScan: false
+#      BinSkim: false
+#      CodesignValidation: false
+#      CredScan: true
+#      FortifySCA: false
+#      FxCop: false
+#      ModernCop: false
+#      PoliCheck: false
+#      RoslynAnalyzers: false
+#      SDLNativeRules: false
+#      Semmle: false
+#      TSLint: false
+#      ToolLogsNotFoundAction: 'Standard'
+
+- template: WindowsAppSDK-SourceAnalysis-job.yml
+  parameters:
+    buildPool: '$(ProjectReunionBuildPool)'
+# alam end
 
 - job: Build
   # Skip the build job if we are reusing the output of a previous build.
@@ -116,30 +136,32 @@ jobs:
     parameters:
       GenerateSBOM: true
 
-  - task: BinSkim@3
-    inputs:
-      InputType: 'Basic'
-      Function: 'analyze'
-      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
-      AnalyzeVerbose: true
+  # alam start
+  #- task: BinSkim@3
+  #  inputs:
+  #    InputType: 'Basic'
+  #    Function: 'analyze'
+  #    AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
+  #    AnalyzeVerbose: true
 
-  - task: PostAnalysis@1
-    inputs:
-      AllTools: false
-      APIScan: false
-      BinSkim: true
-      BinSkimBreakOn: 'Error'
-      CodesignValidation: false
-      CredScan: false
-      FortifySCA: false
-      FxCop: false
-      ModernCop: false
-      PoliCheck: false
-      RoslynAnalyzers: false
-      SDLNativeRules: false
-      Semmle: false
-      TSLint: false
-      ToolLogsNotFoundAction: 'Standard'
+  #- task: PostAnalysis@1
+  #  inputs:
+  #    AllTools: false
+  #    APIScan: false
+  #    BinSkim: true
+  #    BinSkimBreakOn: 'Error'
+  #    CodesignValidation: false
+  #    CredScan: false
+  #    FortifySCA: false
+  #    FxCop: false
+  #    ModernCop: false
+  #    PoliCheck: false
+  #    RoslynAnalyzers: false
+  #    SDLNativeRules: false
+  #    Semmle: false
+  #    TSLint: false
+  #    ToolLogsNotFoundAction: 'Standard'
+  # alam end
 
 - job: BuildAnyCPU
   # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
@@ -183,6 +205,9 @@ jobs:
       publishDir: $(publishDir)
       channel: ${{ variables.channel }}
       enableLicenseInstall: true
+      # alam start
+      runSDLBinaryAnalysis: '${{ parameters.RunSDLBinaryAnalysis }}'
+      # alam end
 
   - task: CopyFiles@2
     displayName: 'Copy AnyCpu-built binaries to Nuget for staging'
@@ -250,30 +275,33 @@ jobs:
     parameters:
       buildJobName: 'BuildMRTCore'
       GenerateSBOM: true
+      # alam start
+      runSDLBinaryAnalysis: '${{ parameters.RunSDLBinaryAnalysis }}'
 
-  - task: BinSkim@3
-    inputs:
-      InputType: 'Basic'
-      Function: 'analyze'
-      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
-      AnalyzeVerbose: true
-  - task: PostAnalysis@1
-    inputs:
-      AllTools: false
-      APIScan: false
-      BinSkim: true
-      BinSkimBreakOn: 'Error'
-      CodesignValidation: false
-      CredScan: false
-      FortifySCA: false
-      FxCop: false
-      ModernCop: false
-      PoliCheck: false
-      RoslynAnalyzers: false
-      SDLNativeRules: false
-      Semmle: false
-      TSLint: false
-      ToolLogsNotFoundAction: 'Standard'
+  #- task: BinSkim@3
+  #  inputs:
+  #    InputType: 'Basic'
+  #    Function: 'analyze'
+  #    AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
+  #    AnalyzeVerbose: true
+  #- task: PostAnalysis@1
+  #  inputs:
+  #    AllTools: false
+  #    APIScan: false
+  #    BinSkim: true
+  #    BinSkimBreakOn: 'Error'
+  #    CodesignValidation: false
+  #    CredScan: false
+  #    FortifySCA: false
+  #    FxCop: false
+  #    ModernCop: false
+  #    PoliCheck: false
+  #    RoslynAnalyzers: false
+  #    SDLNativeRules: false
+  #    Semmle: false
+  #    TSLint: false
+  #    ToolLogsNotFoundAction: 'Standard'
+  # alam end
 
 - job: PublishMRT
   dependsOn:
