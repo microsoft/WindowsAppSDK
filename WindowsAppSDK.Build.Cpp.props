@@ -33,7 +33,7 @@
   <!-- Debug-specific options -->
   <ItemDefinitionGroup Condition="'$(Configuration)' == 'Debug'">
     <ClCompile>
-      <!-- /Ox- Disable most speed optimizations-->
+      <!-- /d- Disable optimization -->
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
@@ -72,7 +72,10 @@
     <Link>
       <!-- Link-time optimizations:
            /LCTG:incremental Enable Fast Link Time Code Generation
+           /OPT:ICF Enable COMDAT folding
+           /OPT:REF Optimize references
         -->
+      <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
