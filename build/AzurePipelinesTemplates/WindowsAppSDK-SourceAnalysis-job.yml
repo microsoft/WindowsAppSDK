@@ -7,7 +7,7 @@ parameters:
 jobs:
 - job: SDLSourcesScanning
   pool: 
-    name: {{ parameters.buildPool }}
+    name: ${{ parameters.buildPool }}
   steps:
   # Required by the Packaged ES SDL Templates.
   - checkout: self
@@ -43,3 +43,4 @@ jobs:
             # ToDo: Once pre-existing issues have been resolved, set break to true.
             enable: true
             break: false
+
