@@ -6,8 +6,8 @@ parameters:
 
 steps:
   # Required by the Packaged ES SDL Templates.
-  - checkout: self
-    persistCredentials: true
+  #- checkout: self
+  #  persistCredentials: true
 
   # Typically this has been done.
   - task: NodeTool@0
