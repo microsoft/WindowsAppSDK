@@ -181,14 +181,36 @@ std::filesystem::path MddCore::DataStore::GetDataStorePathForUserViaCOMDataStore
 
 std::filesystem::path MddCore::DataStore::GetDataStorePathForUserViaApplicationDataManager()
 {
-    static winrt::hstring mainPackageFamilyName{ GetWindowsAppRuntimeMainPackageFamilyName().c_str() };
-    auto applicationData{ winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(mainPackageFamilyName) };
-
-    return std::filesystem::path(applicationData.LocalFolder().Path().c_str());
+    const auto& mainPackageFamilyName{ GetWindowsAppRuntimeMainPackageFamilyName() };
+    try
+    {
+        static winrt::hstring mainPackageFamilyNameAsHString{ mainPackageFamilyName.c_str() };
+        winrt::Windows::Storage::ApplicationData applicationData{ winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(mainPackageFamilyNameAsHString) };
+        return std::filesystem::path(applicationData.LocalFolder().Path().c_str());
+    }
+    catch (winrt::hresult_error& e)
+    {
+        if (e.code() == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+        {
+            // If the Main package isn't registered for the caller there'll be no ApplicationData
+            // available but we get ERROR_FILE_NOT_FOUND. This may be technically correct but it's
+            // routinely misleading as that's the very (most) common NotFound error for Registry
+            // APIs. Worse, it'll cause us to throw it as an exception but our higher level
+            // machine handles 'NotFound' as ERROR_NOT_FOUND so this would just further confuse
+            // folks (and our higher level logic before it even makes it to the caller!). So we'll
+            // trap the ERROR_FILE_NOT_FOUND case and map it to our more expected ERROR_NOT_FOUND
+            // (and log something so callers can understand).
+            THROW_HR_MSG(MDD_E_WINDOWSAPPRUNTIME_DATASTORE_NOT_FOUND, "PackageFamily:%ls", mainPackageFamilyName.c_str());
+        }
+        throw;
+    }
 }
 
 std::wstring MddCore::DataStore::GetWindowsAppRuntimeMainPackageFamilyName()
 {
+#if 1
+    return ::WindowsAppRuntime::VersionInfo::Main::GetPackageFamilyName();
+#else
     const UINT32 flags{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC | PACKAGE_INFORMATION_BASIC };
     uint32_t packageInfosCount{};
     const PACKAGE_INFO* packageInfos{};
@@ -206,7 +228,7 @@ std::wstring MddCore::DataStore::GetWindowsAppRuntimeMainPackageFamilyName()
             continue;
         }
 
-        // Framework package's name in the package graph is Microsoft.WindowsAppRuntime.Main.<major>.<minor>
+        // Framework package's name in the package graph is Microsoft.WindowsAppRuntime.<major>.<minor>
         const auto packageName{ packageId.name };
         const auto packageNameLength{ wcslen(packageName) };
         PCWSTR c_windowsAppRuntimeNamePrefix{ L"Microsoft.WindowsAppRuntime." };
@@ -219,14 +241,15 @@ std::wstring MddCore::DataStore::GetWindowsAppRuntimeMainPackageFamilyName()
         {
             continue;
         }
-        PCWSTR packageNameSuffix{ packageName + packageNameLength };
+        PCWSTR packageNameSuffix{ packageName + c_windowsAppRuntimeNamePrefixLength };
 
         // Gotcha!
         WCHAR mainPackageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
-        wsprintf(mainPackageFamilyName, L"MicrosoftCorporationII.WindowsAppRuntime.Main.1.0_8wekyb3d8bbwe", packageNameSuffix);
+        wsprintf(mainPackageFamilyName, L"MicrosoftCorporationII.WinAppRuntime.Main.%s_8wekyb3d8bbwe", packageNameSuffix);
         return std::wstring(mainPackageFamilyName);
     }
 
     // Didn't find the Windows App SDK framework package in the package graph. Can't determine the package identity!
     THROW_HR(MDD_E_WINDOWSAPPRUNTIME_NOT_IN_PACKAGE_GRAPH);
+#endif
 }

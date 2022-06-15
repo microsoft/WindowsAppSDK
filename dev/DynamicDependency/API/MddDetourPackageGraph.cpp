@@ -225,3 +225,15 @@ LONG MddGetPackageInfo1Or2(
         return ::GetPackageInfo(packageInfoReference, flags, bufferLength, buffer, count);
     }
 }
+
+HRESULT MddTrueGetCurrentPackageInfo3(
+    UINT32 flags,
+    PackageInfoType packageInfoType,
+    UINT32* bufferLength,
+    void* buffer,
+    UINT32* count)
+{
+    // Passthru to the original (not-Detoured) Windows API
+    RETURN_IF_FAILED(TrueGetCurrentPackageInfo3(flags, packageInfoType, bufferLength, buffer, count));
+    return S_OK;
+}

@@ -34,6 +34,7 @@ namespace Test::DynamicDependency
             TP::RemovePackage_FrameworkMathAdd();
             TP::AddPackage_FrameworkMathAdd();
             TP::AddPackage_WindowsAppRuntimeFramework();
+            TP::AddPackage_DynamicDependencyDataStore();
             TP::AddPackage_DynamicDependencyLifetimeManager();
 
             // Load the DLL hooking GetCurrentPackageInfo*()
@@ -56,6 +57,7 @@ namespace Test::DynamicDependency
             m_dll.reset();
 
             TP::RemovePackage_DynamicDependencyLifetimeManager();
+            TP::RemovePackage_DynamicDependencyDataStore();
             TP::RemovePackage_WindowsAppRuntimeFramework();
             TP::RemovePackage_FrameworkMathAdd();
 

@@ -5,6 +5,8 @@
 
 #include "PackageGraphManager.h"
 
+#include "MddDetourPackageGraph.h"
+
 std::recursive_mutex MddCore::PackageGraphManager::s_lock;
 MddCore::PackageGraph MddCore::PackageGraphManager::s_packageGraph;
 volatile ULONG MddCore::PackageGraphManager::s_generationId{};
@@ -133,12 +135,18 @@ HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo3(
         *generationId = GetGenerationId();
         return S_OK;
     }
-    RETURN_HR_IF(E_INVALIDARG, (packageInfoType != PackageInfoType_PackageInfoInstallPath) &&
-                               (packageInfoType != PackageInfoType_PackageInfoMutablePath) &&
-                               (packageInfoType != PackageInfoType_PackageInfoEffectivePath) &&
-                               (packageInfoType != PackageInfoType_PackageInfoMachineExternalPath) &&
-                               (packageInfoType != PackageInfoType_PackageInfoUserExternalPath) &&
-                               (packageInfoType != PackageInfoType_PackageInfoEffectiveExternalPath));
+    else if ((packageInfoType != PackageInfoType_PackageInfoInstallPath) &&
+               (packageInfoType != PackageInfoType_PackageInfoMutablePath) &&
+               (packageInfoType != PackageInfoType_PackageInfoEffectivePath) &&
+               (packageInfoType != PackageInfoType_PackageInfoMachineExternalPath) &&
+               (packageInfoType != PackageInfoType_PackageInfoUserExternalPath) &&
+               (packageInfoType != PackageInfoType_PackageInfoEffectiveExternalPath))
+    {
+        // packageInfoType isn't a value we recognize and/or handle
+        // Pass the call on down to Windows to handle the request
+        RETURN_IF_FAILED(MddTrueGetCurrentPackageInfo3(flags, packageInfoType, bufferLength, buffer, count));
+        return S_OK;
+    }
 
     // We manage the package graph as a list of nodes, where each contain contains information about 1+ package.
     //
