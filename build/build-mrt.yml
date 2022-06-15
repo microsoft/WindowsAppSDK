@@ -136,7 +136,7 @@ steps:
 
 # alam start
 - ${{ if eq(parameters.runSDLBinaryAnalysis, 'true') }}:
-  - template: WindowsAppSDK-BinaryAnalysis-steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
     parameters:
       outputDirectory: '${{ parameters.MRTBinariesDirectory }}'
 # alam end
