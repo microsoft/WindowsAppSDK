@@ -71,11 +71,11 @@
     </ClCompile>
     <Link>
       <!-- Link-time optimizations:
-           /LCTG:incremental Enable Fast Link Time Code Generation
+           /LCTG Enable Link Time Code Generation
            /OPT:ICF Enable COMDAT folding
            /OPT:REF Optimize references
         -->
-      <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
