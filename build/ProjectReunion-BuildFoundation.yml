@@ -96,6 +96,12 @@ jobs:
     publishDir : $(Build.ArtifactStagingDirectory)
 
   steps:
+  # alam start
+  # Required by the Packaged ES SDL Templates.
+  - checkout: self
+    persistCredentials: true
+  # alam end
+
   - task: NuGetAuthenticate@0
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
