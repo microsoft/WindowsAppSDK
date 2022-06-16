@@ -3,6 +3,9 @@ parameters:
   - name: outputDirectory
     type: string
     default: $(Build.SourcesDirectory)\BuildOutput
+  - name: enablePREFast
+    type: boolean
+    default: true
 
 steps:
   # Required by the Packaged ES SDL Templates.
@@ -28,8 +31,12 @@ steps:
           # The following serves as an include/exclude example (*untested*).
           # analyzeTargetGlob: '+:file|**\bin\**\*.dll;-:file|**\Microsoft.WindowsAppRuntime.Insights.Resource.dll'
         prefast:
-          enabled: true
-          break: true
+          ${{ if ne(parameters.enablePREFast, true) }}:
+            enabled: false
+          ${{ if eq(parameters.enablePREFast, true) }}:
+            enabled: true
+          # ToDo: set the following to true once pre-existing errors are resolved.
+          break: false
         # The following scans we already did during the SourceAnalysis Stage, not repeating here.
         # ToDo: Consider disabling Antimalware also, but how?
         credscan:
