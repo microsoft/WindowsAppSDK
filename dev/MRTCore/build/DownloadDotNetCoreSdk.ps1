@@ -7,9 +7,12 @@ param(
 $dotnetInstallScript = "$env:TEMP\dotnet-install.ps1"
 
 $repoInstallDir  = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\.dotnet")
-$versionPropsFilePropertyGroup = ([xml](Get-Content -Raw "$PSScriptRoot\..\..\..\eng\versions.props")).Project.PropertyGroup[0]
+$versionPropsFilePropertyGroup = ([xml](Get-Content -Raw "$PSScriptRoot\..\..\..\eng\versions.props")).Project.PropertyGroup
+Write-Host "$versionPropsFilePropertyGroup"
 $dotNetSdkVersion = $versionPropsFilePropertyGroup.CsWinRTDependencyDotNetCoreSdkPackageVersion
 $dotNetSdkVersionLkg =  if (-not $skipLKG) { $versionPropsFilePropertyGroup.CsWinRTDependencyDotNetCoreSdkLkgPackageVersion }
+
+write-host "dotNetSdkVersion=$dotNetSdkVersion"
 
 if ($version -ne "")
 {
