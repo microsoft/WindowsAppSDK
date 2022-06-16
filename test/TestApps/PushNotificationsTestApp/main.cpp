@@ -237,7 +237,7 @@ bool VerifyForegroundHandlerSucceeds()
     PushNotificationManager::Default().UnregisterAll();
     try
     {
-        PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& /*args*/) {});
+        PushNotificationManager::Default().PushReceived([](const auto& /*sender*/, PushNotificationReceivedEventArgs const& /*args*/) {});
         PushNotificationManager::Default().Register();
     }
     catch (...)
@@ -252,7 +252,7 @@ bool VerifyForegroundHandlerFails()
     try
     {
         // Register is already called in main
-        PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& /*args*/) {});
+        PushNotificationManager::Default().PushReceived([](const auto& /*sender*/, PushNotificationReceivedEventArgs const& /*args*/) {});
     }
     catch (...)
     {
