@@ -99,7 +99,13 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        $packageVersion = '$(version).$(PipelineType)'
+        $packageVersion = '$(version)'
+        $pipelineType = '$(PipelineType)'
+        $sourceBranchName = '$(Build.SourceBranchName)'
+        if ($sourceBranchName -eq 'main' -or $sourceBranchName -eq 'develop')
+        {
+          $packageVersion = $packageVersion + '.' + $sourceBranchName + '.' + $pipelineType
+        }
         Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
         Write-Host "##vso[task.setvariable variable=packageVersion;isOutput=true;]$packageVersion"
         Write-Host $packageVersion
