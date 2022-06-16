@@ -15,6 +15,8 @@ if ($version -ne "")
 {
     $dotNetSdkVersion = $version
 }
+write-host "dotNetSdkVersion=$dotNetSdkVersion"
+
 # Use-RunAs function from TechNet Script Gallery
 # https://gallery.technet.microsoft.com/scriptcenter/63fd1c0d-da57-4fb4-9645-ea52fc4f1dfb
 function Use-RunAs {    
@@ -73,6 +75,7 @@ function Is-Installed
     Invoke-Expression "dotnet --list-sdks" | ForEach-Object {
         $sdkVersionMatch = $dotNetSdkVersionRegex.Match($_)
         $versionNumber = $sdkVersionMatch.Groups[1].Value
+        write-host "versionNumber = $versionNumber"
         $installPath = $sdkVersionMatch.Groups[2].Value
 
         # Ignore any SDKs installed to the repo directory - those ones won't be picked up by Visual Studio by default.
