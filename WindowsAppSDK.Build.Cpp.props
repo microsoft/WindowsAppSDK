@@ -66,7 +66,7 @@
       <AdditionalOptions>%(AdditionalOptions) /Gw</AdditionalOptions>
 
       <!-- /Oxs Enable most speed optimizations
-           NOTE: /Ox is short-hand for multiple options:
+           NOTE: /Oxs is short-hand for multiple options:
                      /Ob2 Enable inline function expansion (/Ob2 = Any Suitable)
                      /Oi Enable intrinsic functions
                      /Os Favor fast code
