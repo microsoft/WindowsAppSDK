@@ -101,7 +101,7 @@ jobs:
       script: |
         $packageVersion = '$(version)'
         $pipelineType = '$(PipelineType)'
-        $sourceBranchName = '$(Build.SourceBranchName)'
+        $sourceBranchName = 'main'
         if ($sourceBranchName -eq 'main' -or $sourceBranchName -eq 'develop')
         {
           $packageVersion = $packageVersion + '.' + $sourceBranchName + '.' + $pipelineType
