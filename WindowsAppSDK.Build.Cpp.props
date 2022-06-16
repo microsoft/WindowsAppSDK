@@ -25,8 +25,13 @@
 
       <!-- /GR- Disable RTTI (causes binary bloat) -->
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+
+      <!-- /ZH:SHA_256 Hash algorithm for file checksums in debug info -->
+      <AdditionalOptions>%(AdditionalOptions) /ZH:SHA_256</AdditionalOptions>
     </ClCompile>
     <Link>
+      <!-- /DEBUG:FULL Create PDF containing full debug information -->
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
 

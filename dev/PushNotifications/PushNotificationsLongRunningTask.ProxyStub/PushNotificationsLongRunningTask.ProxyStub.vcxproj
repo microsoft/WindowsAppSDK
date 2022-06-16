@@ -3,7 +3,6 @@
   <Import Project="..\..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('..\..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.props')" />
   <Import Project="..\..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-20204-02\build\Microsoft.SourceLink.Common.props" Condition="Exists('..\..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-20204-02\build\Microsoft.SourceLink.Common.props')" />
   <Import Project="..\..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-21055-01\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('..\..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-21055-01\build\Microsoft.Build.Tasks.Git.props')" />
-  <Import Project="..\..\WindowsAppSDK.Build.Cpp.props" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|ARM64">
       <Configuration>Debug</Configuration>
@@ -157,7 +156,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>PushNotificationsLongRunningTask.ProxyStub.def</ModuleDefinitionFile>
     </Link>
@@ -176,7 +174,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>PushNotificationsLongRunningTask.ProxyStub.def</ModuleDefinitionFile>
     </Link>
@@ -195,7 +192,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>PushNotificationsLongRunningTask.ProxyStub.def</ModuleDefinitionFile>
     </Link>
@@ -214,7 +210,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>PushNotificationsLongRunningTask.ProxyStub.def</ModuleDefinitionFile>
     </Link>
@@ -233,7 +228,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
@@ -254,7 +248,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>PushNotificationsLongRunningTask.ProxyStub.def</ModuleDefinitionFile>
     </Link>
