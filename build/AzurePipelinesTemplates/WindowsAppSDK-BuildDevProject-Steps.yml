@@ -1,9 +1,7 @@
 parameters:
   channel: 'experimental'
   enableLicenseInstall: false
-  # alam start
   runSDLBinaryAnalysis: false
-  # alam end
 
 steps:
   - template: WindowsAppSDK-BuildProject-Steps.yml
@@ -14,6 +12,4 @@ steps:
       publishDir: $(publishDir)
       channel: ${{ parameters.channel }}
       enableLicenseInstall: ${{ parameters.enableLicenseInstall }}
-      # alam start
       runSDLBinaryAnalysis: ${{ parameters.runSDLBinaryAnalysis }}
-      # alam end
