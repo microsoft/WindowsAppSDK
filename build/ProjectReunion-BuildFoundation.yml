@@ -213,6 +213,8 @@ jobs:
       enableLicenseInstall: true
       # alam start
       runSDLBinaryAnalysis: '${{ parameters.RunSDLBinaryAnalysis }}'
+      # We are building non-native code at this point, skip PREFast.
+      enablePREFast: false
       # alam end
 
   - task: CopyFiles@2
