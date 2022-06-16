@@ -1,5 +1,5 @@
 parameters:
-  # Caller optionally overrides this.
+  # Caller optionally overrides these.
   - name: outputDirectory
     type: string
     default: $(Build.SourcesDirectory)\BuildOutput
@@ -8,11 +8,6 @@ parameters:
     default: true
 
 steps:
-  # Required by the Packaged ES SDL Templates.
-  #- checkout: self
-  #  persistCredentials: true
-
-  # Typically this has been done.
   - task: NodeTool@0
     displayName: 'Use Node >=8.6.0'
     inputs:
