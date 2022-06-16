@@ -26,5 +26,12 @@ inline bool ShouldChangesBeTracked(EnvironmentManager::Scope scope)
 {
     auto isUserOrMachineScope{ scope != EnvironmentManager::Scope::Process };
 
-    return isUserOrMachineScope && DoesChangeTrackingKeyExist() && ::AppModel::Identity::IsPackagedProcess();
+    bool willChangesBeTracked{ isUserOrMachineScope && DoesChangeTrackingKeyExist() && ::AppModel::Identity::IsPackagedProcess() };
+
+    if (scope == EnvironmentManager::Scope::Machine)
+    {
+        willChangesBeTracked &= ::Security::IntegrityLevel::IsElevated();
+    }
+
+    return willChangesBeTracked;
 }
