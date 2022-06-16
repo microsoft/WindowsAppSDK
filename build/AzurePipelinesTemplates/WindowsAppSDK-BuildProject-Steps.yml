@@ -9,10 +9,8 @@ parameters:
   # license installation assets are only accessible in internal builds, but are only
   # needed in release-signed stable builds. Only enble this functionality in the private
   # pipeline builds. Otherwise, default to an inert placeholder implementation.
-  # alam start
   runSDLBinaryAnalysis: false
   enablePREFast: true
-  # alam end
 
 steps:
   - ${{ if eq(parameters.enableLicenseInstall, true) }}:
@@ -178,13 +176,11 @@ steps:
       configuration: '$(buildConfiguration)'
       msbuildArgs: '/restore /p:AppxSymbolPackageEnabled=false /binaryLogger:$(Build.SourcesDirectory)/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:WindowsAppSDKVersionBuild=$(builddate_yymm) /p:WindowsAppSDKVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode=$(PGOBuildMode) /p:WindowsAppSDKBuildPipeline=1 /p:WindowsAppSDKCleanIntermediateFiles=${{ parameters.WindowsAppSDKCleanIntermediateFiles }}'
 
-# alam start
   - ${{ if eq(parameters.runSDLBinaryAnalysis, 'true') }}:
     - template: WindowsAppSDK-BinaryAnalysis-steps.yml
       parameters:
         outputDirectory: '${{ parameters.buildOutputDir }}'
         enablePREFast: ${{ parameters.enablePREFast }}
-# alam end
 
   - task: powershell@2
     displayName: 'Install test certificate for MSIX test packages (DevCheck)'
