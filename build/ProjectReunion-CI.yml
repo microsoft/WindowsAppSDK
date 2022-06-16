@@ -10,7 +10,7 @@ parameters:
   - name: runSDLBinaryAnalysis
     displayName: "Run SDL's Binary Analysis (PREFast, BinSkim)"
     type: boolean
-    default: true
+    default: false
 
 resources:
   repositories:
