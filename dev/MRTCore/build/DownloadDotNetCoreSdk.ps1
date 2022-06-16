@@ -105,6 +105,7 @@ $x86InstallDir  = "$x64InstallDir\x86"
 # without needing to go through a command line that has run init.cmd.
 
 $latestAlreadyInstalled = Is-Installed $dotNetSdkVersion
+write-host "latestAlreadyInstalled = $latestAlreadyInstalled"
 $lkgAlreadyInstalled = $true
 
 # Only try to install the lkg sdk if specified
@@ -162,3 +163,4 @@ if (-not $lkgAlreadyInstalled)
     Install-SDK -version $dotNetSdkVersionLkg -channel "master"
 }
 
+dotnet --list-sdks
