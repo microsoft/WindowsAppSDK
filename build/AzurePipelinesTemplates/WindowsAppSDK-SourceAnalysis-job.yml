@@ -10,8 +10,8 @@ jobs:
     name: ${{ parameters.buildPool }}
   steps:
   # Required by the Packaged ES SDL Templates.
-  - checkout: self
-    persistCredentials: true
+  #- checkout: self
+  #  persistCredentials: true
 
   - task: NodeTool@0
     displayName: 'Use Node >=8.6.0'
