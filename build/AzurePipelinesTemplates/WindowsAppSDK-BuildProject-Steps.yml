@@ -11,6 +11,7 @@ parameters:
   # pipeline builds. Otherwise, default to an inert placeholder implementation.
   # alam start
   runSDLBinaryAnalysis: false
+  enablePREFast: true
   # alam end
 
 steps:
@@ -182,6 +183,7 @@ steps:
     - template: WindowsAppSDK-BinaryAnalysis-steps.yml
       parameters:
         outputDirectory: '${{ parameters.buildOutputDir }}'
+        enablePREFast: ${{ parameters.enablePREFast }}
 # alam end
 
   - task: powershell@2
