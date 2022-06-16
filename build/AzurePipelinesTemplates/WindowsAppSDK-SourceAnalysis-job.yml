@@ -13,7 +13,6 @@ jobs:
   - checkout: self
     persistCredentials: true
 
-  # Typically this has been done.
   - task: NodeTool@0
     displayName: 'Use Node >=8.6.0'
     inputs:
