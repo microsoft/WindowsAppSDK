@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- WARNING: This project contains settings that may contradict the standard options (per \WindowsAppSDK.Build.Cpp.props).
+                This is ByDesign. This is a Visual C++ project mirroring how the Detours project's makefiles build Detours.
+                Long-term this should be replaced by a Detours nuget but that doesn't exist today. Until then we're forced
+                to build Detours from source but we carefully do so, to build Detours the same way Detours' makefiles do.
+                Be very very careful changing anything in this file
+    -->
   <Import Project="..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.props')" />
   <Import Project="..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.props')" />
   <Import Project="..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.props" Condition="Exists('..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.props')" />
