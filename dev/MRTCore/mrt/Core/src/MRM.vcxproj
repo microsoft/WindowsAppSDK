@@ -82,9 +82,6 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningVersion>18</WarningVersion>
     </ClCompile>
-    <Link>
-      <EnableCOMDATFolding>false</EnableCOMDATFolding>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
