@@ -319,7 +319,8 @@ int main() try
 
 
     // Test hook to ensure that the app is not self-contained
-    WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+    WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
+                                                   ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
 
     auto scope_exit = wil::scope_exit([&] {
         ::WindowsAppRuntime::VersionInfo::TestShutdown();
