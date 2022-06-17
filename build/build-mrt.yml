@@ -79,19 +79,19 @@ steps:
 #      PathtoPublish: '${{ parameters.MRTSourcesDirectory }}\msbuild-install-logs'
 #      artifactName: 'installlogs'
 
-- task: powershell@2
-  displayName: 'Installing .NET SDK'
-  inputs:
-    targetType: filePath
-    workingDirectory: ${{ parameters.MRTSourcesDirectory }}\build
-    filePath: ${{ parameters.MRTSourcesDirectory }}\build\DownloadDotNetCoreSdk.ps1
+# - task: powershell@2
+#   displayName: 'Installing .NET SDK'
+#   inputs:
+#     targetType: filePath
+#     workingDirectory: ${{ parameters.MRTSourcesDirectory }}\build
+#     filePath: ${{ parameters.MRTSourcesDirectory }}\build\DownloadDotNetCoreSdk.ps1
 
-- task: BatchScript@1
-  displayName: 'Use .NET SDK'
-  inputs:
-    filename: '${{ parameters.MRTSourcesDirectory }}\build\SetDotnetVars.cmd'
-    arguments: '${{ parameters.MRTSourcesDirectory }}'
-    modifyEnvironment: true
+# - task: BatchScript@1
+#   displayName: 'Use .NET SDK'
+#   inputs:
+#     filename: '${{ parameters.MRTSourcesDirectory }}\build\SetDotnetVars.cmd'
+#     arguments: '${{ parameters.MRTSourcesDirectory }}'
+#     modifyEnvironment: true
 
 - task: powershell@2
   displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
