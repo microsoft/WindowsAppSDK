@@ -27,7 +27,8 @@ void BaseTestSuite::ClassSetup()
 
     if (!isSelfContained)
     {
-        ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+        ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
+                                                         ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
     }
 }
 

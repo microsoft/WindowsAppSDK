@@ -25,7 +25,8 @@
 #include <winrt/Windows.Management.Deployment.h>
 
 #include <appmodel.identity.h>
-#include <security.integritylevel.h>
 #include <iswindowsversion.h>
+#include <security.integritylevel.h>
+#include <WindowsAppRuntime.VersionInfo.h>
 
 #include "wil_msixdynamicdependency.h"
