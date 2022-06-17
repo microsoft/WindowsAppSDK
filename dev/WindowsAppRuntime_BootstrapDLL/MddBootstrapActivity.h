@@ -29,7 +29,7 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
         wil::FailureType type;
         HRESULT hr;
         std::string file;
-        unsigned int lineNumer;
+        unsigned int lineNumber;
         std::wstring message;
         std::string module;
     };

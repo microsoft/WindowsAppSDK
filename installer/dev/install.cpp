@@ -27,6 +27,7 @@ namespace WindowsAppRuntimeInstaller
         {
             const auto deploymentResult{ deploymentOperation.GetResults() };
             WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetDeploymentErrorInfo(
+                deploymentOperation.ErrorCode(),
                 deploymentResult.ExtendedErrorCode(),
                 deploymentResult.ErrorText().c_str(),
                 deploymentResult.ActivityId());
@@ -37,14 +38,17 @@ namespace WindowsAppRuntimeInstaller
         return S_OK;
     }
 
-    HRESULT AddPackage(const Uri& packageUri, const std::unique_ptr<PackageProperties>& packageProperties, bool forceDeployment)
+    HRESULT AddPackage(
+        WindowsAppRuntimeInstaller::InstallActivity::Context& installActivityContext,
+        const Uri& packageUri,
+        const std::unique_ptr<PackageProperties>& packageProperties,
+        bool forceDeployment)
     {
-        PackageManager packageManager;
-
         const auto deploymentOptions{ forceDeployment ?
-                winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
-                winrt::Windows::Management::Deployment::DeploymentOptions::None };
+            winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
+            winrt::Windows::Management::Deployment::DeploymentOptions::None };
 
+        PackageManager packageManager;
         const auto deploymentOperation{ packageManager.AddPackageAsync(packageUri, nullptr, DeploymentOptions::None) };
         deploymentOperation.get();
         if (deploymentOperation.Status() != AsyncStatus::Completed)
@@ -52,7 +56,7 @@ namespace WindowsAppRuntimeInstaller
             auto hrAddPackage{ static_cast<HRESULT>(deploymentOperation.ErrorCode()) };
             if (hrAddPackage == ERROR_PACKAGE_ALREADY_EXISTS)
             {
-                WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetInstallStage(InstallStage::RegisterPackage);
+                installActivityContext.SetInstallStage(InstallStage::RegisterPackage);
 
                 // Package already exists (such as via provisioning), re-register it instead.
                 RETURN_IF_FAILED(RegisterPackage(packageProperties->fullName.get()));
@@ -61,10 +65,58 @@ namespace WindowsAppRuntimeInstaller
             else
             {
                 const auto deploymentResult{ deploymentOperation.GetResults() };
-                WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetDeploymentErrorInfo(deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str(), deploymentResult.ActivityId());
-
-                RETURN_HR(hrAddPackage);
+                installActivityContext.SetDeploymentErrorInfo(hrAddPackage, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str(), deploymentResult.ActivityId());
+                RETURN_HR(static_cast<HRESULT>(deploymentResult.ExtendedErrorCode()));
             }
+        }
+        return S_OK;
+    }
+
+    HRESULT StagePackage(
+        WindowsAppRuntimeInstaller::InstallActivity::Context& installActivityContext,
+        const Uri& packageUri)
+    {
+        const auto deploymentOptions{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
+
+        PackageManager packageManager;
+        const auto deploymentOperation{ packageManager.StagePackageAsync(packageUri, nullptr, DeploymentOptions::None) };
+        deploymentOperation.get();
+        if (deploymentOperation.Status() != AsyncStatus::Completed)
+        {
+            auto hrStagePackage{ static_cast<HRESULT>(deploymentOperation.ErrorCode()) };
+            if (hrStagePackage == ERROR_PACKAGE_ALREADY_EXISTS)
+            {
+                // Package already exists, nothing more to do
+                return S_OK;
+            }
+            else
+            {
+                const auto deploymentResult{ deploymentOperation.GetResults() };
+                installActivityContext.SetDeploymentErrorInfo(hrStagePackage, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str(), deploymentResult.ActivityId());
+                RETURN_HR(static_cast<HRESULT>(deploymentResult.ExtendedErrorCode()));
+            }
+        }
+        return S_OK;
+    }
+
+    HRESULT AddOrStagePackage(
+        WindowsAppRuntimeInstaller::InstallActivity::Context& installActivityContext,
+        const Uri& packageUri,
+        const std::unique_ptr<PackageProperties>& packageProperties,
+        bool forceDeployment)
+    {
+        // Windows doesn't support registering packages for LocalSystem
+        // If you're doing that you're really intending to provision the package for all users on the machine
+        // That means we need to Stage the package instead of Add it
+        if (Security::User::IsLocalSystem())
+        {
+            installActivityContext.SetInstallStage(InstallStage::StagePackage);
+            RETURN_IF_FAILED(StagePackage(installActivityContext, packageUri));
+        }
+        else
+        {
+            installActivityContext.SetInstallStage(InstallStage::AddPackage);
+            RETURN_IF_FAILED(AddPackage(installActivityContext, packageUri, packageProperties, forceDeployment));
         }
         return S_OK;
     }
@@ -252,11 +304,9 @@ namespace WindowsAppRuntimeInstaller
         THROW_IF_FAILED(outStream->Commit(STGC_OVERWRITE));
         outStream.reset();
 
-        installActivityContext.SetInstallStage(InstallStage::AddPackage);
-
-        // Add the package
+        // Add-or-Stage the package
         Uri packageUri{ packageFilename };
-        auto hrAddResult{ AddPackage(packageUri, packageProperties, forceDeployment) };
+        auto hrAddResult{ AddOrStagePackage(installActivityContext, packageUri, packageProperties, forceDeployment) };
         if (!quiet)
         {
             std::wcout << "Package deployment result : 0x" << std::hex << hrAddResult << " ";
@@ -266,8 +316,7 @@ namespace WindowsAppRuntimeInstaller
 
         // Framework provisioning is not supported by the PackageManager ProvisionPackageForAllUsersAsync API.
         // Hence, skip attempting to provision framework package.
-        if (!packageProperties->isFramework &&
-            Security::IntegrityLevel::IsElevated())
+        if (!packageProperties->isFramework && Security::IntegrityLevel::IsElevated())
         {
             installActivityContext.SetInstallStage(InstallStage::ProvisionPackage);
 

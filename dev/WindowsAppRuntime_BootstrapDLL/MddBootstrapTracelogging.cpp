@@ -28,7 +28,7 @@ void MddBootstrap_StopActivity(
                 initializationFrameworkPackageFullName,
                 static_cast<UINT32>(activityContext.GetLastFailure().type),
                 activityContext.GetLastFailure().file.c_str(),
-                activityContext.GetLastFailure().lineNumer,
+                activityContext.GetLastFailure().lineNumber,
                 activityContext.GetLastFailure().message.c_str(),
                 activityContext.GetLastFailure().module.c_str());
         }
@@ -39,7 +39,7 @@ void MddBootstrap_StopActivity(
                 static_cast<UINT32>(initializationCount),
                 static_cast<UINT32>(activityContext.GetLastFailure().type),
                 activityContext.GetLastFailure().file.c_str(),
-                activityContext.GetLastFailure().lineNumer,
+                activityContext.GetLastFailure().lineNumber,
                 activityContext.GetLastFailure().message.c_str(),
                 activityContext.GetLastFailure().module.c_str());
         }
