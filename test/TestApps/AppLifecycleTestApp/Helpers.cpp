@@ -6,7 +6,7 @@
 
 const wchar_t* g_bootStrapDllName = L"Microsoft.WindowsAppRuntime.Bootstrap.dll";
 
-typedef HRESULT (*BootStrapTestInit)(PCWSTR prefix, PCWSTR publisherId);
+typedef HRESULT (*BootStrapTestInit)(PCWSTR ddlmPrefix, PCWSTR publisherId, PCWSTR frameworkPrefix, PCWSTR mainPrefix);
 typedef HRESULT (*BootStrapInit)(const UINT32 majorMinorVersion, PCWSTR versionTag, const PACKAGE_VERSION minVersion);
 typedef void (*BootStrapShutdown)();
 
@@ -42,7 +42,9 @@ HRESULT BootstrapInitialize()
 
     constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppRuntime.Test.DDLM" };
     constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
-    RETURN_IF_FAILED(mddTestInitialize(c_PackageNamePrefix, c_PackagePublisherId));
+    constexpr PCWSTR c_FrameworkPackageFamilyName = L"Microsoft.WindowsAppRuntime.Framework-4.1_8wekyb3d8bbwe";
+    constexpr PCWSTR c_MainPackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore-4.1_8wekyb3d8bbwe";
+    RETURN_IF_FAILED(mddTestInitialize(c_PackageNamePrefix, c_PackagePublisherId, c_FrameworkPackageFamilyName, c_MainPackageFamilyName));
 
     // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
     const UINT32 c_Version_MajorMinor{ 0x00040001 };
