@@ -474,7 +474,6 @@ jobs:
     dependsOn: SignBinariesAndPublishSymbols
     signConfigPattern: 'Microsoft.WindowsAppSDK*.nupkg'
     useReleaseTag: '$(WindowsAppSDKFinalRelease)'
-    prereleaseVersionTag: nightly
     buildPool: $(ProjectReunionBuildPool)
 
 # Build WinAppSDK and Run Integration Test from TestAll.ps1
