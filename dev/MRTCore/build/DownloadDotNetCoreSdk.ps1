@@ -7,19 +7,14 @@ param(
 $dotnetInstallScript = "$env:TEMP\dotnet-install.ps1"
 
 $repoInstallDir  = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\.dotnet")
-$versionPropsFilePropertyGroup = ([xml](Get-Content -Raw "$PSScriptRoot\..\..\..\eng\versions.props")).Project.PropertyGroup
-Write-Host "$versionPropsFilePropertyGroup"
+$versionPropsFilePropertyGroup = ([xml](Get-Content -Raw "$PSScriptRoot\..\..\..\eng\versions.props")).Project.PropertyGroup[0]
 $dotNetSdkVersion = $versionPropsFilePropertyGroup.CsWinRTDependencyDotNetCoreSdkPackageVersion
 $dotNetSdkVersionLkg =  if (-not $skipLKG) { $versionPropsFilePropertyGroup.CsWinRTDependencyDotNetCoreSdkLkgPackageVersion }
-
-write-host "dotNetSdkVersion=$dotNetSdkVersion"
 
 if ($version -ne "")
 {
     $dotNetSdkVersion = $version
 }
-write-host "dotNetSdkVersion=$dotNetSdkVersion"
-
 # Use-RunAs function from TechNet Script Gallery
 # https://gallery.technet.microsoft.com/scriptcenter/63fd1c0d-da57-4fb4-9645-ea52fc4f1dfb
 function Use-RunAs {    
@@ -78,7 +73,6 @@ function Is-Installed
     Invoke-Expression "dotnet --list-sdks" | ForEach-Object {
         $sdkVersionMatch = $dotNetSdkVersionRegex.Match($_)
         $versionNumber = $sdkVersionMatch.Groups[1].Value
-        write-host "versionNumber = $versionNumber"
         $installPath = $sdkVersionMatch.Groups[2].Value
 
         # Ignore any SDKs installed to the repo directory - those ones won't be picked up by Visual Studio by default.
@@ -111,7 +105,6 @@ $x86InstallDir  = "$x64InstallDir\x86"
 # without needing to go through a command line that has run init.cmd.
 
 $latestAlreadyInstalled = Is-Installed $dotNetSdkVersion
-write-host "latestAlreadyInstalled = $latestAlreadyInstalled"
 $lkgAlreadyInstalled = $true
 
 # Only try to install the lkg sdk if specified
@@ -169,4 +162,3 @@ if (-not $lkgAlreadyInstalled)
     Install-SDK -version $dotNetSdkVersionLkg -channel "master"
 }
 
-dotnet --list-sdks
