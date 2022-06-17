@@ -38,7 +38,19 @@ void WindowsAppRuntimeInstaller::Console::DisplayInfo()
 
 void WindowsAppRuntimeInstaller::Console::DisplayError(const HRESULT hr)
 {
-    if (SUCCEEDED(hr))
+    auto& installActivityContext{ WindowsAppRuntimeInstaller::InstallActivity::Context::Get() };
+
+    HRESULT hResult = hr;
+
+    if (installActivityContext.GetDeploymentErrorHresult() &&
+        installActivityContext.GetInstallStage() == InstallStage::StagePackage ||
+        installActivityContext.GetInstallStage() == InstallStage::AddPackage ||
+        installActivityContext.GetInstallStage() == InstallStage::RegisterPackage)
+    {
+        hResult = installActivityContext.GetDeploymentErrorHresult();
+    }
+
+    if (SUCCEEDED(hResult))
     {
         std::wcout << std::endl;
         return;
@@ -46,16 +58,16 @@ void WindowsAppRuntimeInstaller::Console::DisplayError(const HRESULT hr)
 
     wil::unique_hlocal_ptr<WCHAR[]> message;
     if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-        nullptr, hr, 0, reinterpret_cast<PWSTR>(&message), 0, nullptr) != 0)
+                      nullptr, hResult, 0, reinterpret_cast<PWSTR>(&message), 0, nullptr) != 0)
     {
         std::wcout << message.get();
     }
 
-    auto& installActivityContext{ WindowsAppRuntimeInstaller::InstallActivity::Context::Get() };
     // Don't log redundant Hr information
     if (installActivityContext.GetDeploymentErrorExtendedHResult() &&
-        installActivityContext.GetDeploymentErrorExtendedHResult() != hr &&
-        (installActivityContext.GetInstallStage() == InstallStage::AddPackage ||
+        installActivityContext.GetDeploymentErrorExtendedHResult() != hResult &&
+        (installActivityContext.GetInstallStage() == InstallStage::StagePackage ||
+            installActivityContext.GetInstallStage() == InstallStage::AddPackage ||
             installActivityContext.GetInstallStage() == InstallStage::RegisterPackage))
     {
         std::wcout << "ExtendedError: 0x" << std::hex << installActivityContext.GetDeploymentErrorExtendedHResult() << " ";
@@ -67,11 +79,11 @@ void WindowsAppRuntimeInstaller::Console::DisplayError(const HRESULT hr)
         }
     }
 
-    if (installActivityContext.GetDeploymentErrorText().empty() &&
-        (installActivityContext.GetInstallStage() == InstallStage::AddPackage ||
+    if (!installActivityContext.GetDeploymentErrorText().empty() &&
+        (installActivityContext.GetInstallStage() == InstallStage::StagePackage ||
+            installActivityContext.GetInstallStage() == InstallStage::AddPackage ||
             installActivityContext.GetInstallStage() == InstallStage::RegisterPackage))
     {
         std::wcout << "ErrorMessage: " << installActivityContext.GetDeploymentErrorText();
     }
 }
-
