@@ -7,7 +7,7 @@ param(
 $dotnetInstallScript = "$env:TEMP\dotnet-install.ps1"
 
 $repoInstallDir  = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\.dotnet")
-$versionPropsFilePropertyGroup = ([xml](Get-Content -Raw "$PSScriptRoot\..\..\..\eng\versions.props")).Project.PropertyGroup[0]
+$versionPropsFilePropertyGroup = ([xml](Get-Content -Raw "$PSScriptRoot\..\..\..\eng\versions.props")).Project.PropertyGroup
 $dotNetSdkVersion = $versionPropsFilePropertyGroup.CsWinRTDependencyDotNetCoreSdkPackageVersion
 $dotNetSdkVersionLkg =  if (-not $skipLKG) { $versionPropsFilePropertyGroup.CsWinRTDependencyDotNetCoreSdkLkgPackageVersion }
 
@@ -108,7 +108,7 @@ $latestAlreadyInstalled = Is-Installed $dotNetSdkVersion
 $lkgAlreadyInstalled = $true
 
 # Only try to install the lkg sdk if specified
-if (-not [string]::IsNullOrEmpty($dotNetSdkVersionLkg))
+if ((-not [string]::IsNullOrEmpty($dotNetSdkVersionLkg)) -and ($dotNetSdkVersionLkg -ine '$(CsWinRTDependencyDotNetCoreSdkPackageVersion)'))
 {
     $lkgAlreadyInstalled = Is-Installed $dotNetSdkVersionLkg
 }
@@ -161,4 +161,3 @@ if (-not $lkgAlreadyInstalled)
 {
     Install-SDK -version $dotNetSdkVersionLkg -channel "master"
 }
-
