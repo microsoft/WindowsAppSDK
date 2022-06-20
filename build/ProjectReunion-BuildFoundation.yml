@@ -23,6 +23,9 @@ parameters:
     displayName: "Run SDL's Binary Analysis (PREFast, BinSkim)"
     type: boolean
     default: False
+  - name: "enablePREFast"
+    type: boolean
+    default: true
 
 resources:
   repositories:
@@ -105,6 +108,7 @@ jobs:
       channel: ${{ variables.channel }}
       enableLicenseInstall: true
       runSDLBinaryAnalysis: ${{ parameters.RunSDLBinaryAnalysis }}
+      enablePREFast: ${{ parameters.enablePREFast }}
 
 # component detection must happen *within* the build task
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
@@ -226,6 +230,7 @@ jobs:
       buildJobName: 'BuildMRTCore'
       GenerateSBOM: true
       runSDLBinaryAnalysis: '${{ parameters.RunSDLBinaryAnalysis }}'
+      enablePREFast: ${{ parameters.enablePREFast }}
 
 - job: PublishMRT
   dependsOn:
