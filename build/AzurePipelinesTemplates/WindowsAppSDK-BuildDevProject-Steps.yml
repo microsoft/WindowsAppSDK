@@ -2,6 +2,7 @@ parameters:
   channel: 'experimental'
   enableLicenseInstall: false
   runSDLBinaryAnalysis: false
+  enablePREFast: true
 
 steps:
   - template: WindowsAppSDK-BuildProject-Steps.yml
@@ -13,3 +14,4 @@ steps:
       channel: ${{ parameters.channel }}
       enableLicenseInstall: ${{ parameters.enableLicenseInstall }}
       runSDLBinaryAnalysis: ${{ parameters.runSDLBinaryAnalysis }}
+      enablePREFast: ${{ parameters.enablePREFast }}
