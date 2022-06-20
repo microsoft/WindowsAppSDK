@@ -11,6 +11,9 @@ parameters:
     displayName: "Run SDL's Binary Analysis (PREFast, BinSkim)"
     type: boolean
     default: false
+  - name: enablePREFast
+    type: boolean
+    default: true
 
 resources:
   repositories:
@@ -69,6 +72,7 @@ jobs:
     parameters:
       channel: ${{ variables.channel }}
       runSDLBinaryAnalysis: ${{ parameters.runSDLBinaryAnalysis }}
+      enablePREFast: ${{ parameters.enablePREFast }}
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
     parameters:
@@ -101,6 +105,7 @@ jobs:
       buildJobName: 'BuildMRTCore'
       GenerateSBOM: false
       runSDLBinaryAnalysis: ${{ parameters.runSDLBinaryAnalysis }}
+      enablePREFast: ${{ parameters.enablePREFast }}
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish BuildOutput'
