@@ -1,4 +1,4 @@
-# App Notification Builder
+# App Notification Content Builder
 
 # Background
 
@@ -48,7 +48,7 @@ AppNotificationContent()
     .AddArgument(L"AppNotificationClick")
     .AddArgument(L"sequence", 1234)
     .AddImage(Image(LR"(path\to\my\image.png)")
-        .SetImagePlacement(ImagePlacement::AppLogoOverride)
+    .SetImagePlacement(ImagePlacement::AppLogoOverride)
         .SetUsesCircleCrop(true))
     .AddText(Text(L"App Notification with Avatar Image"))
     .AddText(Text(L"This is an example message"))
@@ -60,27 +60,48 @@ AppNotificationContent()
 
 # API Components
 
-**AppNotificationContent** The AppNotificationContent component sets up the xml for a <toast>. This
-is the wrapper content that will include any component adding to the AppNotification UI.
+# AppNotificationContent
 
-Here is the <toast> schema: <toast launch? = string duration? = "long" | "short" displayTimeStamp? =
-string scenario? = "reminder" | "alarm" | "incomingCall" | "urgent" useButtonStyle? = boolean>
+The AppNotificationContent component sets up the xml for a \<toast\>. This is the wrapper content
+that will include any component adding to the AppNotification UI.
 
-  <!-- Child elements -->
+**WinAppSDK 1.2 \<toast\> Schema**:
 
-visual, audio?, actions? </toast>
+```c#
+<toast
+    launch? = string
+    duration? = "long" | "short"
+    displayTimeStamp? = string
+    scenario? = "reminder" | "alarm" | "incomingCall" | "urgent"
+    useButtonStyle? = boolean>
+      <!-- Child elements -->
+    visual, audio?, actions?
+</toast>
+```
 
-These attributes are abstracted away by the AppNotificationContent component APIs:
+These attributes are abstracted away through the AppNotificationContent component APIs:
 
 -   AddArgument(String key)
 -   AddArgument(String key, T value)
+    -   string
+    -   bool
+    -   integer
+    -   double
+    -   float
 -   SetDuration(enum Duration)
+    -   Duration::Short
+    -   Duration::Long
 -   SetUseButtonStyle(Boolean usesButtonStyle)
 -   SetTimeStamp(String timeStamp)
+    -   Must be in ISO 8601 format
+        -   Example: 2022-06-19T08:30:00Z
 -   SetScenario(ScenarioType scenarioType)
+    -   ScenarioType::Reminder
+    -   ScenarioType::Alarm
+    -   ScenarioType::IncomingCall
+    -   ScenarioType::Urgent
 
-All the below UI components are able to be appended through the AppNotificationContent component
-APIs:
+All the UI components are able to be appended through the AppNotificationContent component APIs:
 
 -   AddText(Text text)
 -   AddButton(Button button)
@@ -120,19 +141,42 @@ AppNotificationContent()
     .Show();
 ```
 
+Example result:
+
 ![AppNotification IncomingCall Example](AppNotificationIncomingCallExample.png)
 
 If the developer wants the XML payload to add more components, AppNotificationContent::GetXml will
 return the current version of their AppNotificationContent in a string format.
 
+```c#
+winrt::hstring xmlPayload{ AppNotificationContent()
+    .AddArgument(L"launch")
+        .AddText(Text(L"Content"))
+    .GetXml() };
+```
+
 AppNotificationContent also has a Show API that allows the developer to display an AppNotification
 of what has been added so far to the AppNotificationContent.
 
-**Text** The Text component sets up the xml for a <text> element. Developers can define the content,
+```c#
+winrt::hstring xmlPayload{ AppNotificationContent()
+    .AddArgument(L"launch")
+        .AddText(Text(L"Content"))
+    .Show() };
+```
+
+# Text
+
+The Text component sets up the xml for a \<text\> element. Developers can define the content,
 language, and placement of the text on the AppNotification.
 
-Here is the xml schema for <text>: <text lang? = string placement? = "attribution"
-hint-callScenarioCenterAlign? = boolean />
+**WinAppSDK 1.2 \<text\> Schema**:
+
+```c#
+<text lang? = string
+      placement? = "attribution"
+      hint-callScenarioCenterAlign? = boolean />
+```
 
 These attributes are abstracted with the Text component APIs:
 
@@ -141,8 +185,6 @@ These attributes are abstracted with the Text component APIs:
 -   SetIsCallScenario(Boolean isCallScenario)
 
 Below are some example usages:
-
--   AppNotificationContent Example
 
 ```c#
 AppNotificationContent()
@@ -169,12 +211,21 @@ AppNotificationContent()
 
 ![IncomingCall Example](IncomingCallExample.png)
 
-**Button** The Button component API sets up the xml for the <action> element. Buttons are
-user-clickable components meant to start an action from the app.
+# Button
 
-Here is the <action> schema: <action content = string arguments = string placement? = "contextMenu"
-imageUri? = string hint-inputid? = string hint-buttonStyle? = "success" | "critical" hint-toolTip? =
-string />
+The Button component API sets up the xml for the \<action\> element. Buttons are user-clickable
+components meant to start an action from the app.
+
+**WinAppSDK 1.2 \<action\> Schema**:
+
+```c#
+<action content = string
+        arguments = string placement? = "contextMenu"
+        imageUri? = string
+        hint-inputid? = string
+        hint-buttonStyle? = "success" | "critical"
+        hint-toolTip? = string />
+```
 
 These attributes are abstracted with the Button component APIs:
 
@@ -182,7 +233,7 @@ These attributes are abstracted with the Button component APIs:
 -   AddArguments(String key)
 -   AddArguments(String key, T value)
 -   SetIconUri(String iconUri)
--   SetToolTip(String toolTip);
+-   SetToolTip(String toolTip)
 -   SetIsContextMenuPlacement(Boolean isContextMenuPlacement)
 -   SetInputId(String inputId)
 
@@ -200,6 +251,7 @@ AppNotificationContent()
     .Show();
 ```
 
+Example result:
 ![Button Example](ButtonExample.png)
 
 Developers can change the color of the button using SetButtonStyle(ButtonStyle). The two button
@@ -219,6 +271,7 @@ AppNotificationContent()
     .Show();
 ```
 
+Example result:
 ![Button Success Example](ButtonSuccessExample.png)
 
 The ToolTip is useful for buttons with icons and no content. Users can hover over the button with
@@ -237,6 +290,7 @@ AppNotificationContent()
     Show();
 ```
 
+Example result:
 ![Button ToolTip Example](ButtonToolTipExample.png)
 
 The placement attribute defines action for a user to interact with when the AppNotification is
@@ -247,16 +301,19 @@ AppNotificationContent().
     AddText(Text(L"Content")).
     AddTextBox(TextBox(L"textBox").
         SetPlaceHolderContent(L"Reply")).
-    AddButton(Button(L"Send").
+    AddButton(Button(L"Modify app settings").
         SetInputId(L"textBox").
         SetIsContextMenuPlacement(true))
     .Show();
 ```
 
+Example result:
 ![Button ContextMenu Example](ButtonContextMenuExample.png)
 
-**Image** The Image component API sets up the xml for the <image> element. Images are visual
-elements that are used to enhance an AppNotification.
+# Image
+
+The Image component API sets up the xml for the \<image\> element. Images are visual elements that
+are used to enhance an AppNotification.
 
 The image source can be pulled using one of these protocol handlers:
 
@@ -265,8 +322,14 @@ The image source can be pulled using one of these protocol handlers:
 -   ms-appdata:///local/ (An image saved to local storage)
 -   file:/// (A local image)
 
-Here is the <image> schema: <image src = string alt? = string placement? = "appLogoOverride" |
-"hero" hint-crop? = "circle" />
+**WinAppSDK 1.2 \<image\> Schema**:
+
+```c#
+<image src = string
+       alt? = string
+       placement? = "appLogoOverride" | "hero"
+       hint-crop? = "circle" />
+```
 
 These attributes are abstracted with the Button component APIs:
 
@@ -277,7 +340,9 @@ These attributes are abstracted with the Button component APIs:
 
 Images can be displayed in three different ways:
 
--   Inline (A full-width inline-image that appears when you expand the AppNotification)
+## Inline
+
+A full-width inline-image that appears when you expand the AppNotification.
 
 ```c#
 AppNotificationContent()
@@ -288,9 +353,12 @@ AppNotificationContent()
     .Show();
 ```
 
+Example result:
 ![Inline Image Example](InlineImageExample.png)
 
--   AppLogoOverride (overrides the AppNotification app logo with a custom image)
+## AppLogoOverride
+
+Overrides the AppNotification app logo with a custom image.
 
 ```c#
 AppNotificationContent()
@@ -301,10 +369,12 @@ AppNotificationContent()
     Show();
 ```
 
+Example result:
 ![AppLogoOverride Image Example](AppLogoOverrideImageExample.png)
 
--   Hero (prominently displays image within the AppNotification banner and while inside Notification
-    Center)
+## Hero
+
+Prominently displays image within the AppNotification banner and while inside Notification Center.
 
 ```c#
 AppNotificationContent()
@@ -315,12 +385,13 @@ AppNotificationContent()
     .Show();
 ```
 
+Example result:
 ![Hero Image Example](HeroImageExample.png)
 
 For both Inline and AppLogoOverride, developers can set how the image will be cropped with
 SetUsesCircleCrop(bool).
 
--   Cropped AppLogoOverride
+## Cropped AppLogoOverride
 
 ```c#
 AppNotificationContent()
@@ -332,14 +403,22 @@ AppNotificationContent()
     .Show();
 ```
 
+Example result:
 ![Cropped AppLogoOverride Image Example](CroppedAppLogoOverrideExample.png)
 
-**Audio** The Audio component allows the developer to define a custom audio to play when an
-AppNotification is displayed. The audio file can be defined by string value pointing to an app asset
-or one of the
+# Audio
+
+The Audio component allows the developer to define a custom audio to play when an AppNotification is
+displayed. The audio file can be defined by string value pointing to an app asset or one of the
 [ms-winsoundevents](https://docs.microsoft.com/en-us/uwp/schemas/tiles/toastschema/element-audio).
 
-Here is the xml schema for <audio>: <audio src? = string loop? = boolean silent? = boolean />
+**WinAppSDK 1.2 \<audio\> Schema**:
+
+```c#
+<audio src? = string
+       loop? = boolean
+       silent? = boolean />
+```
 
 These attributes are abstracted with the Audio component APIs:
 
@@ -381,11 +460,18 @@ AppNotificationContent()
     .Show();
 ```
 
-**TextBox** TextBox is an <input> component that allows users to type custom responses on an
-AppNotification.
+# TextBox
 
-Here is the schema for input when type="text" <input id = string placeHolderContent? = string >
+TextBox is an \<input\> component that allows users to type custom responses on an AppNotification.
+
+**WinAppSDK 1.2 TextBox Schema**:
+
+```c#
+<input id = string
+        type="text"
+        placeHolderContent? = string>
 </input>
+```
 
 These attributes are abstracted with the TextBox component APIs:
 
@@ -393,8 +479,6 @@ These attributes are abstracted with the TextBox component APIs:
 -   SetPlaceHolderContent(String placeHolderContent)
 
 Below is an example use:
-
--   AppNotificationContent
 
 ```c#
 AppNotificationContent()
@@ -405,14 +489,24 @@ AppNotificationContent()
     .Show();
 ```
 
+Example result:
 ![TextBox Example](TextBoxExample.png)
 
-**SelectionMenu** SelectionMenu is an <input> component that allows users to pick from a dropdown
-menu of values on an AppNotification.
+# SelectionMenu
 
-Here is the schema for input when type="selection" <input id = string defaultInput? = string >
+SelectionMenu is an \<input\> component that allows users to pick from a dropdown menu of values on
+an AppNotification.
 
-<!-- Child elements --> selection{0,5} </input>
+**WinAppSDK 1.2 SelectionMenu Schema**:
+
+```c#
+<input id = string
+        type="selection"
+        defaultInput? = string>
+    <!-- Child elements -->
+    selection{0,5}
+</input>
+```
 
 These attributes are abstracted with the SelectionMenu component APIs:
 
@@ -421,8 +515,6 @@ These attributes are abstracted with the SelectionMenu component APIs:
 -   AddSelection(String id, String content)
 
 Below is an example use:
-
--   AppNotificationContent
 
 ```c#
 AppNotificationContent()
@@ -436,9 +528,10 @@ AppNotificationContent()
     .Show();
 ```
 
+Example result:
 ![SelectionMenu Example](SelectionMenuExample.png)
 
-# API Details
+# Full API Details
 
 ```c#
 namespace Microsoft.Windows.AppNotifications.Builder
@@ -635,6 +728,9 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Allows Buttons using SetButtonStyle to display "success" | "critical" styles
         AppNotificationContent SetUseButtonStyle(Boolean usesButtonStyle);
+
+        // Sets the timeStamp of the AppNotification to when it was constructed instead of when it was sent.
+        AppNotificationContent SetTimeStamp(String timeStamp);
 
         // Sets the scenario of the AppNotification.
         AppNotificationContent SetScenario(ScenarioType scenarioType);
