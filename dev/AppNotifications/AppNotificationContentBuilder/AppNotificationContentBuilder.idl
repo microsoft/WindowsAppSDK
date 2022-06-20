@@ -3,6 +3,19 @@
 
 namespace Microsoft.Windows.AppNotifications
 {
+    // Use for retrieving values store in the arguments string received from an AppNotification activation.
+    [contract(AppNotificationsContract, 2)]
+    runtimeclass ArgumentsDecoder
+    {
+        ArgumentsDecoder(String arguments);
+
+        String GetStringArgument(String key);
+        Int32 GetInt32Argument(String key);
+        Double GetDoubleArgument(String key);
+        Single GetSingleArgument(String key);
+        Boolean GetBooleanArgument(String key);
+    }
+
     [contract(AppNotificationsContract, 2)]
     runtimeclass ButtonConfig
     {
