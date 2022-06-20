@@ -33,8 +33,8 @@ winrt::hstring xmlPayload{
         </actions>\
     </toast>" };
 
-auto toast{ winrt::AppNotification(xmlPayload) };
-winrt::AppNotificationManager::Default().Show(toast);
+auto appNotification{ winrt::AppNotification(xmlPayload) };
+winrt::AppNotificationManager::Default().Show(appNotication);
 ```
 
 # Description
@@ -597,10 +597,10 @@ namespace Microsoft.Windows.AppNotifications.Builder
         String InputId{ get; };
         Button SetInputId(String inputId);
 
-        // Adds a key(without value) to the activation arguments that will be returned when the toast notification or its buttons are clicked.
+        // Adds a key(without value) to the activation arguments that will be returned when the App Notification or its buttons are clicked.
         Button AddArgument(String key);
 
-        // Adds a key/value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
+        // Adds a key/value to the activation arguments that will be returned when the App Notification or its buttons are clicked.
         [default_overload]
         Button AddArgument(String key, String value);
         Button AddArgument(String key, Int32 value);
@@ -695,7 +695,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
     enum ScenarioType
     {
-        Default, // The normal Toast behavior. The AppNotification appears for a short duration, and then automatically dismisses into Notification Center.
+        Default, // The normal AppNotification behavior. The AppNotification appears for a short duration, and then automatically dismisses into Notification Center.
         Reminder, // The notification will stay on screen until the user dismisses it or takes action.
         Alarm,    // Alarms behave like Reminder, but alarms will additionally loop audio with a default alarm sound.
         IncomingCall, // Incoming call notifications are displayed pre-expanded in a special call format and stay on the user's screen till dismissed.
@@ -704,18 +704,18 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
     enum Duration
     {
-        Short, // Default value. Toast appears for a short while and then goes into Notification Center.
-        Long, // Toast stays on-screen for longer, and then goes into Notification Center.
+        Short, // Default value. AppNotification appears for a short while and then goes into Notification Center.
+        Long, // AppNotification stays on-screen for longer, and then goes into Notification Center.
     }
 
     runtimeclass AppNotificationContent
     {
         AppNotificationContent();
 
-        // Adds a key(without value) to the activation arguments that will be returned when the toast notification or its buttons are clicked.
+        // Adds a key(without value) to the activation arguments that will be returned when the App Notification or its buttons are clicked.
         AppNotificationContent AddArgument(String key);
 
-        // Adds a key/value to the activation arguments that will be returned when the toast notification or its buttons are clicked.
+        // Adds a key/value to the activation arguments that will be returned when the App Notification or its buttons are clicked.
         [default_overload]
         AppNotificationContent AddArgument(String key, String value);
         AppNotificationContent AddArgument(String key, Boolean value);
@@ -723,7 +723,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationContent AddArgument(String key, Double value);
         AppNotificationContent AddArgument(String key, Single value);
 
-        // Defines the amount of time the toast should display.
+        // Defines the amount of time the App Notification should display.
         AppNotificationContent SetDuration(Duration duration);
 
         // Allows Buttons using SetButtonStyle to display "success" | "critical" styles
