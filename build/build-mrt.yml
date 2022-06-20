@@ -6,6 +6,8 @@ parameters:
   MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
   GenerateSBOM: False
   runSDLBinaryAnalysis: false
+  enablePREFast: true
+
 steps:
 - task: BatchScript@1
   displayName: Set up environment
@@ -135,6 +137,7 @@ steps:
   - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
     parameters:
       outputDirectory: '${{ parameters.MRTBinariesDirectory }}'
+      enablePREFast: ${{ parameters.enablePREFast }}
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish mrtcore binlog'
