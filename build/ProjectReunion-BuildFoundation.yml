@@ -37,7 +37,7 @@ resources:
 jobs:
 # This relatively low-cost job is always run, in parallel w/ the Build job.
 - template: AzurePipelinesTemplates\WindowsAppSDK-SourceAnalysis-job.yml
-  parameters:
+  variables:
     buildPool: '$(ProjectReunionBuildPool)'
 
 - job: Build
