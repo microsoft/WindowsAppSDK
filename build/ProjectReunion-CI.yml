@@ -5,24 +5,6 @@ variables:
 - template: WindowsAppSDK-CommonVariables.yml
 - name: buildOutputDir
   value: $(Build.SourcesDirectory)\BuildOutput
-- name: buildPool
-  value: 'windows-2019'
-
-parameters:
-  - name: runSDLBinaryAnalysis
-    displayName: "Run SDL's Binary Analysis (PREFast, BinSkim)"
-    type: boolean
-    default: false
-  - name: enablePREFast
-    type: boolean
-    default: true
-
-resources:
-  repositories:
-  - repository: templates_onebranch
-    type: git
-    name: OneBranch.Pipelines/GovernedTemplates
-    ref: refs/heads/main
 
 jobs:
 - job: PreChecks
@@ -40,10 +22,30 @@ jobs:
         Get-ChildItem $propPaths | ForEach-Object { $_.Name; [xml](Get-Content $_) | Out-Null }
       failOnStderr: true
 
-- template: AzurePipelinesTemplates\WindowsAppSDK-SourceAnalysis-job.yml
+  # Scans the root source folder for security vulnerability
+  - task: CredScan@2
+    inputs:
+      toolMajorVersion: 'V2'
+
+  # This PostAnalysis will fail the pipeline if CredScan identifies an issue
+  - task: PostAnalysis@1
+    inputs:
+      AllTools: false
+      APIScan: false
+      BinSkim: false
+      CodesignValidation: false
+      CredScan: true
+      FortifySCA: false
+      FxCop: false
+      ModernCop: false
+      PoliCheck: false
+      RoslynAnalyzers: false
+      SDLNativeRules: false
+      Semmle: false
+      TSLint: false
+      ToolLogsNotFoundAction: 'Standard'
 
 - job: Build
-  dependsOn: []
   pool:
     vmImage: 'windows-2019'
   timeoutInMinutes: 120
@@ -71,8 +73,8 @@ jobs:
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
     parameters:
       channel: ${{ variables.channel }}
-      runSDLBinaryAnalysis: ${{ parameters.runSDLBinaryAnalysis }}
-      enablePREFast: ${{ parameters.enablePREFast }}
+      # This pipeline is unable to access OneBranch, so skip running BinaryAnalysis.
+      runSDLBinaryAnalysis: false
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
     parameters:
@@ -83,6 +85,32 @@ jobs:
     inputs:
       artifactName: BuildOutput
       PathtoPublish: '$(buildOutputDir)'
+
+  - task: BinSkim@3
+    inputs:
+      InputType: 'Basic'
+      Function: 'analyze'
+      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
+      AnalyzeVerbose: true
+    condition: ne(variables['buildConfiguration'], 'Debug')
+
+  - task: PostAnalysis@1
+    inputs:
+      AllTools: false
+      APIScan: false
+      BinSkim: true
+      BinSkimBreakOn: 'Error'
+      CodesignValidation: false
+      CredScan: false
+      FortifySCA: false
+      FxCop: false
+      ModernCop: false
+      PoliCheck: false
+      RoslynAnalyzers: false
+      SDLNativeRules: false
+      Semmle: false
+      TSLint: false
+      ToolLogsNotFoundAction: 'Standard'
 
 - job: BuildMRT
   pool:
@@ -104,14 +132,39 @@ jobs:
     parameters:
       buildJobName: 'BuildMRTCore'
       GenerateSBOM: false
-      runSDLBinaryAnalysis: ${{ parameters.runSDLBinaryAnalysis }}
-      enablePREFast: ${{ parameters.enablePREFast }}
+      # This pipeline is unable to access OneBranch, so skip running BinaryAnalysis.
+      runSDLBinaryAnalysis: false
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish BuildOutput'
     inputs:
       artifactName: BuildOutput
       PathtoPublish: '$(buildOutputDir)'
+
+  - task: BinSkim@3
+    inputs:
+      InputType: 'Basic'
+      Function: 'analyze'
+      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
+      AnalyzeVerbose: true
+
+  - task: PostAnalysis@1
+    inputs:
+      AllTools: false
+      APIScan: false
+      BinSkim: true
+      BinSkimBreakOn: 'Error'
+      CodesignValidation: false
+      CredScan: false
+      FortifySCA: false
+      FxCop: false
+      ModernCop: false
+      PoliCheck: false
+      RoslynAnalyzers: false
+      SDLNativeRules: false
+      Semmle: false
+      TSLint: false
+      ToolLogsNotFoundAction: 'Standard'
 
 - job: PublishMRT
   dependsOn:
