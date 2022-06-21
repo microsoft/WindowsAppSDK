@@ -44,7 +44,7 @@ namespace Test::Packages
         auto deploymentResult{ packageManager.AddPackageAsync(msixUri, nullptr, options).get() };
         if (FAILED(deploymentResult.ExtendedErrorCode()))
         {
-            auto message = wil::str_printf<wil::unique_process_heap_string>(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str());
+            auto message = wil::str_printf<wil::unique_process_heap_string>(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode().value, deploymentResult.ErrorText().c_str());
             VERIFY_FAIL(message.get());
         }
     }
@@ -63,7 +63,7 @@ namespace Test::Packages
         auto deploymentResult{ packageManager.RemovePackageAsync(packageFullName).get() };
         if (!deploymentResult)
         {
-            auto message = wil::str_printf<wil::unique_process_heap_string>(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str());
+            auto message = wil::str_printf<wil::unique_process_heap_string>(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode().value, deploymentResult.ErrorText().c_str());
             VERIFY_FAIL(message.get());
         }
     }
@@ -206,6 +206,22 @@ namespace Test::Packages
         //
         // Thus, do a *IfNecessary removal
         RemovePackageIfNecessary(Test::Packages::FrameworkMathMultiply::c_PackageFullName);
+    }
+
+    void AddPackage_FrameworkWidgets()
+    {
+        AddPackage(Test::Packages::FrameworkWidgets::c_PackageDirName, Test::Packages::FrameworkWidgets::c_PackageFullName);
+    }
+
+    void RemovePackage_FrameworkWidgets()
+    {
+        // Best-effort removal. PackageManager.RemovePackage errors if the package
+        // is not registered, but if it's not registered we're good. "'Tis the destination
+        // that matters, not the journey" so regardless how much or little work
+        // we need do, we're happy as long as the package isn't registered when we're done
+        //
+        // Thus, do a *IfNecessary removal
+        RemovePackageIfNecessary(Test::Packages::FrameworkWidgets::c_PackageFullName);
     }
 
     void AddPackage_DynamicDependencyDataStore()

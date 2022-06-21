@@ -42,3 +42,4 @@
 #include <appmodel.packagegraph.h>
 #include <microsoft.utf8.h>
 #include <security.integritylevel.h>
+#include <windowsappruntime.versioninfo.h>

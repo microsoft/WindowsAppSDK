@@ -107,7 +107,7 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
             return ++m_initializationCount;
         }
 
-        uint32_t DecrementInitializationCount();
+        void DecrementInitializationCount();
 
         void SetLastFailure(const wil::FailureInfo& failure);
 
