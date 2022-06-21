@@ -73,6 +73,8 @@ jobs:
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
     parameters:
       channel: ${{ variables.channel }}
+      # This pipeline is unable to access OneBranch, so skip running BinaryAnalysis.
+      runSDLBinaryAnalysis: false
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
     parameters:
@@ -130,6 +132,8 @@ jobs:
     parameters:
       buildJobName: 'BuildMRTCore'
       GenerateSBOM: false
+      # This pipeline is unable to access OneBranch, so skip running BinaryAnalysis.
+      runSDLBinaryAnalysis: false
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish BuildOutput'
