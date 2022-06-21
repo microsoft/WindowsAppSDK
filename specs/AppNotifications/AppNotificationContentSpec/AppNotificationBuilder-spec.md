@@ -45,8 +45,8 @@ developer.
 
 ```c++
 AppNotificationContent()
-    .AddArgument(L"AppNotificationClick")
-    .AddArgument(L"sequence", 1234)
+    .AddLaunchArgument(L"AppNotificationClick")
+    .AddLaunchArgument(L"sequence", 1234)
     .AddImage(Image(LR"(path\to\my\image.png)")
     .SetImagePlacement(ImagePlacement::AppLogoOverride)
         .SetUsesCircleCrop(true))
@@ -114,7 +114,8 @@ Below is an example usage:
 
 ```c#
 AppNotificationContent()
-    .AddArgument(L"launch")
+    .AddLaunchArgument(L"action", L"answer")
+    .AddLaunchArgument(L"callId", 938163)
     .SetDuration(Duration::Long)
     .SetTimeStamp(L"2022-06-19T08:30:00Z")
     .SetScenarioType(ScenarioType::IncomingCall)
@@ -138,7 +139,50 @@ AppNotificationContent()
             .SetIconUri(LR"(Assets/Icons/telephone.png)")
             .AddArgument(L"action", L"answer")
             .AddArgument(L"callId", 938163))
-    .Show();
+    .GetXml();
+```
+
+Result from GetXml():
+
+```c#
+<toast launch="action=answer&amp;callId=938163" scenario="incomingCall"
+        displayTimestamp="2022-06-19T08:30:00Z">
+
+  <visual>
+    <binding template="ToastGeneric">
+      <text>Incoming Call</text>
+      <image hint-crop="circle" src="https://unsplash.it/100?image=883"/>
+    </binding>
+  </visual>
+
+  <actions>
+
+    <action
+      content="Text reply"
+      imageUri="Assets/Icons/message.png"
+      activationType="foreground"
+      arguments="action=textReply&amp;callId=938163"/>
+
+    <action
+      content="Reminder"
+      imageUri="Assets/Icons/reminder.png"
+      activationType="background"
+      arguments="action=reminder&amp;callId=938163"/>
+
+    <action
+      content="Ignore"
+      imageUri="Assets/Icons/cancel.png"
+      activationType="background"
+      arguments="action=ignore&amp;callId=938163"/>
+
+    <action
+      content="Answer"
+      imageUri="Assets/Icons/telephone.png"
+      arguments="action=answer&amp;callId=938163"/>
+
+  </actions>
+
+</toast>
 ```
 
 Example result:
@@ -150,9 +194,21 @@ return the current version of their AppNotificationContent in a string format.
 
 ```c#
 winrt::hstring xmlPayload{ AppNotificationContent()
-    .AddArgument(L"launch")
+    .AddLaunchArgument(L"action", L"Clicked")
         .AddText(Text(L"Content"))
     .GetXml() };
+```
+
+Output
+
+```c#
+<toast launch="action=Clicked">
+  <visual>
+    <binding template="ToastGeneric">
+      <text>Content</text>
+    </binding>
+  </visual>
+</toast>
 ```
 
 AppNotificationContent also has a Show API that allows the developer to display an AppNotification
@@ -160,7 +216,7 @@ of what has been added so far to the AppNotificationContent.
 
 ```c#
 winrt::hstring xmlPayload{ AppNotificationContent()
-    .AddArgument(L"launch")
+    .AddLaunchArgument(L"action", L"Clicked")
         .AddText(Text(L"Content"))
     .Show() };
 ```
@@ -192,7 +248,19 @@ AppNotificationContent()
         .SetLanguage(L"en-US"))
     .AddText(Text(L"Attribution Text")
         .SetIsAttributionText(true))
-    .Show();
+    .GetXml();
+```
+
+XML output:
+
+```c#
+<toast>
+  <visual>
+    <binding template="ToastGeneric">
+      <text lang="en-US" placement="attribution">Attribution Text</text>
+    </binding>
+  </visual>
+</toast>
 ```
 
 ![Text Example](TextExample.png)
@@ -207,6 +275,18 @@ AppNotificationContent()
     .AddText(Text(L"Content"))
         .SetIsCallScenario(true)
     .Show()
+```
+
+XML output:
+
+```c#
+<toast scenario="incomingCall">
+  <visual>
+    <binding template="ToastGeneric">
+      <text>Content</text>
+    </binding>
+  </visual>
+</toast>
 ```
 
 ![IncomingCall Example](IncomingCallExample.png)
@@ -248,7 +328,28 @@ AppNotificationContent()
         .SetIconUri(LR"(Assets/Icons/send.png)")
         .AddArgument(L"action", L"textReply")
         .SetInputId(L"textBox"))
-    .Show();
+    .GetXml();
+```
+
+XML output:
+
+```c#
+<toast>
+  <visual>
+    <binding template="ToastGeneric">
+      <text>Content</text>
+    </binding>
+  </visual>
+
+    <actions>
+        <input id="textBox" type="text" placeHolderContent="Reply"/>
+        <action
+          content="Send"
+          imageUri="Assets/Icons/send.png"
+          hint-inputId="textBox"
+          arguments="action=textReply"/>
+    </actions>
+</toast>
 ```
 
 Example result: ![Button Example](ButtonExample.png)
@@ -280,12 +381,32 @@ AppNotificationContent()
     .AddText(Text(L"Content"))
     .AddTextBox(TextBox(L"textBox")
         .SetPlaceHolderContent(L"Reply"))
-    .AddButton(Button(L"Send")
-       .AddArgument(L"action", L"textReply")
+    .AddButton(Button()
+        .AddArgument(L"action", L"textReply")
         .SetInputId(L"textBox")
         .SetToolTip(L"Send")
         .SetIconUri(LR"(Assets/Icons/message.png)"))
-    Show();
+    GetXml();
+```
+XML output:
+```c#
+<toast>
+  <visual>
+    <binding template="ToastGeneric">
+      <text>Content</text>
+    </binding>
+  </visual>
+
+    <actions>
+            <input id="textBox" type="text" placeHolderContent="Reply"/>
+            <action
+            content=""
+            imageUri="Assets/Icons/message.png"
+            hint-inputId="textBox"
+            hint-toolTip="Send"
+            arguments="action=textReply"/>
+    </actions>
+</toast>
 ```
 
 Example result: ![Button ToolTip Example](ButtonToolTipExample.png)
@@ -299,11 +420,28 @@ AppNotificationContent().
     AddTextBox(TextBox(L"textBox").
         SetPlaceHolderContent(L"Reply")).
     AddButton(Button(L"Modify app settings").
-        SetInputId(L"textBox").
         SetIsContextMenuPlacement(true))
-    .Show();
+    .GetXml();
 ```
+XML output:
+```c#
+<toast>
+  <visual>
+    <binding template="ToastGeneric">
+      <text>Content</text>
+    </binding>
+  </visual>
 
+    <actions>
+            <input id="textBox" type="text" placeHolderContent="Reply"/>
+            <action
+            placement="contextMenu"
+            content="Modify app settings"
+            imageUri="Assets/Icons/message.png"
+            arguments="action=textReply"/>
+    </actions>
+</toast>
+```
 Example result: ![Button ContextMenu Example](ButtonContextMenuExample.png)
 
 # Image
@@ -346,9 +484,19 @@ AppNotificationContent()
     .AddImage(Image(LR"(https://unsplash.it/360/202?image=883)")
         .SetImagePlacement(ImagePlacement::Inline)
         .SetAlternateText(L"Image with nature"))
-    .Show();
+    .GetXml();
 ```
-
+XML output:
+```c#
+<toast>
+  <visual>
+    <binding template="ToastGeneric">
+      <text>Below is an inline image</text>
+      <image src="https://unsplash.it/360/202?image=883" alt="Image with nature">
+    </binding>
+  </visual>
+</toast>
+```
 Example result: ![Inline Image Example](InlineImageExample.png)
 
 ## AppLogoOverride
@@ -361,7 +509,20 @@ AppNotificationContent()
     .AddImage(Image(LR"(https://unsplash.it/64?image=669)")
         .SetImagePlacement(ImagePlacement::AppLogoOverride)
         .SetAlternateText(L"Profile picture"))
-    Show();
+    GetXml();
+```
+XML output:
+```c#
+<toast>
+  <visual>
+    <binding template="ToastGeneric">
+      <text>To the left is an AppLogoOverride</text>
+      <image src="https://unsplash.it/64?image=669" 
+                placement="appLogoOverride" 
+                alt="Profile picture" />
+    </binding>
+  </visual>
+</toast>
 ```
 
 Example result: ![AppLogoOverride Image Example](AppLogoOverrideImageExample.png)
@@ -376,9 +537,21 @@ AppNotificationContent()
     .AddImage(Image(LR"(https://unsplash.it/360/180?image=1043)")
         .SetImagePlacement(ImagePlacement::Hero)
         .SetAlternateText(L"Image with nature"))
-    .Show();
+    .GetXml();
 ```
-
+XML output:
+```c#
+<toast>
+  <visual>
+    <binding template="ToastGeneric">
+      <text>Above is a Hero image</text>
+      <image src="https://unsplash.it/360/180?image=1043" 
+                placement="hero" 
+                alt="Image with nature" />
+    </binding>
+  </visual>
+</toast>
+```
 Example result: ![Hero Image Example](HeroImageExample.png)
 
 For both Inline and AppLogoOverride, developers can set how the image will be cropped with
@@ -395,7 +568,20 @@ AppNotificationContent()
         .SetAlternateText(L"Profile picture"))
     .Show();
 ```
-
+XML output:
+```c#
+<toast>
+  <visual>
+    <binding template="ToastGeneric">
+      <text>To the left is a cropped AppLogoOverride</text>
+      <image src="https://unsplash.it/64?image=669" 
+                hint-crop="circle" 
+                placement="appLogoOverride" 
+                alt="Profile picture" />
+    </binding>
+  </visual>
+</toast>
+```
 Example result: ![Cropped AppLogoOverride Image Example](CroppedAppLogoOverrideExample.png)
 
 # Audio
@@ -424,9 +610,18 @@ Below are some example usages:
 AppNotificationContent()
     .AddAudio(Audio()
         .SetAudioSrc(L"ms-winsoundevent:Notification.Reminder"))
-    Show();
+    GetXml();
 ```
-
+XML output:
+```c#
+<toast>
+  <visual>
+    <binding template="ToastGeneric">
+    </binding>
+  </visual>
+  <audio src="ms-winsoundevent:Notification.Reminder" />
+</toast>
+```
 Developers can define if the audio should be looped using SetIsLooped(bool). The duration of the
 AppNotification must also be set using AppNotificationContent::AddDuration(enum Duration), which can
 be short or long.
@@ -438,9 +633,19 @@ AppNotificationContent()
     .AddAudio(Audio()
         .SetAudioSrc(L"ms-winsoundevent:Notification.Looping.Alarm")
         .SetIsLooped(true))
-    .Show();
+    .GetXml();
 ```
-
+XML output:
+```c#
+<toast duration="long">
+  <visual>
+    <binding template="ToastGeneric">
+        <text>Above is a Hero image</text>
+    </binding>
+  </visual>
+  <audio src="ms-winsoundevent:Notification.Looping.Alarm" loop="true" />
+</toast>
+```
 An AppNotification that does not want to play any audio including the default, can use
 SetIsMuted(bool) to mute the audio.
 
@@ -450,6 +655,17 @@ AppNotificationContent()
     .AddAudio(Audio()
         .SetIsMuted(true))
     .Show();
+```
+XML output:
+```c#
+<toast duration="long">
+  <visual>
+    <binding template="ToastGeneric">
+        <text>Content</text>
+    </binding>
+  </visual>
+  <audio silent="true" />
+</toast>
 ```
 
 # TextBox
@@ -477,10 +693,28 @@ AppNotificationContent()
     .AddTextBox(TextBox(L"textBox")
         .SetPlaceHolderContent(L"reply"))
     .AddButton(Button(L"Send").
+        .AddArguments(L"action", L"Send")
         .SetInputId(L"textBox"))
-    .Show();
+    .GetXml();
 ```
+XML output:
+```c#
+<toast>
+  <visual>
+    <binding template="ToastGeneric">
+    </binding>
+  </visual>
 
+  <actions>
+    <input id="textBox" type="text" />
+    <action
+      arguments="action=Send"
+      content="Send"
+      hint-inputId="textBox" />
+  </actions>
+
+</toast>
+```
 Example result: ![TextBox Example](TextBoxExample.png)
 
 # SelectionMenu
@@ -515,10 +749,32 @@ AppNotificationContent()
         .AddSelection(L"maybe", L"Maybe")
         .AddSelection(L"no", L"Decline"))
     .AddButton(Button(L"Send")
+        .AddArgument(L"action", L"Send")
         .SetInputId(L"selectionMenu"))
-    .Show();
+    .GetXml();
 ```
+XML output:
+```c#
+<toast>
+  <visual>
+    <binding template="ToastGeneric">
+    </binding>
+  </visual>
 
+  <actions>
+    <input id="selectionMenu" type="selection" defaultInput="yes">
+      <selection id="yes" content="Going" />
+      <selection id="maybe" content="Maybe" />
+      <selection id="no" content="Decline" />
+    </input>
+    <action
+      arguments="action=Send"
+      hint-inputId="selectionMenu"
+      content="Send"/>
+    
+  </actions>
+</toast>
+```
 Example result: ![SelectionMenu Example](SelectionMenuExample.png)
 
 # ProgressBar
@@ -550,8 +806,8 @@ All the attributes have static data binding constants:
 -   ValueStringOverride = "{progressValueString}
 
 Every ProgressBar component will have the binded status and value. Title and ValueStringOverride are
-not required so those constants will not be added unless the developers calls the Progress
-components APIs
+not required so those constants will not be added unless the developers call the ProgressBar
+component APIs
 
 -   AddTitle()
 -   AddValueStringOverride()
@@ -566,13 +822,30 @@ winrt::hstring xmlPayload { AppNotificationContent()
         .AddTitle()
         .AddValueStringOverride())
     .GetXml() };
-
-// Construct an AppNotification with the string xml payload from AppNotificationContent
+```
+Xml result:
+```c#
+<toast>
+  <visual>
+    <binding template="ToastGeneric">
+      <text>Downloading this week's new music...</text>
+      <progress
+        title="{progressTitle}"
+        value="{progressValue}"
+        valueStringOverride="{progressValueString}"
+        status="{progressStatus}"/>
+    </binding>
+  </visual> 
+</toast>
+```
+Construct an AppNotification with the string xml payload from AppNotificationContent
+```c#
 winrt::Microsoft::Windows::AppNotifications::AppNotification notification(xmlPayload);
 notification.Tag(L"Tag");
 notification.Group(L"Group");
-
-// Assign initial values for first notification progress UI
+```
+Assign initial values for first notification progress UI
+```c#
 winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData data(1 /* Sequence number */);
 data.Title(L"Katy Perry"); // Binds to {progressTitle} in xml payload
 data.Value(0.5); // Binds to {progressValue} in xml payload
@@ -588,14 +861,13 @@ Example result: ![Progress Bar Example 1](ProgressBarExample1.png)
 Then update the ProgressBar using AppNotificationProgressData:
 
 ```c#
-// Assign initial values for second notification progress UI
 data.SequenceNumber(2);
 data.Title(L"Katy Perry"); // Binds to {progressTitle} in xml payload
 data.Value(1.0); // Binds to {progressValue} in xml payload
 data.ValueStringOverride(L"2/2 songs"); // Binds to {progressValueString} in xml payload
 data.Status(L"Downloaded!"); // Binds to {progressStatus} in xml payload
 
-auto result = co_await winrt::AppNotificationManager::Default().UpdateAsync(data, L"Tag", L"Group");
+auto result = co_await winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::Default().UpdateAsync(data, L"Tag", L"Group");
 ```
 
 Example result: ![Progress Bar Example 2](ProgressBarExample2.png)
@@ -631,7 +903,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
     runtimeclass Button
     {
-        // Button can use ToolTip instead of content which requires empty content 
+        // Button can use ToolTip instead of content which requires empty content
         Button();
         Button(String content);
 
@@ -723,7 +995,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // AppNotificationContent::Duration must also be set to define the loop length.
         Audio SetIsLooped(Boolean isLooped);
-        
+
         Audio SetIsMuted(Boolean isMuted);
 
         // Retrieves the XML content of the audio.
@@ -774,15 +1046,15 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationContent();
 
         // Adds a key(without value) to the activation arguments that will be returned when the App Notification or its buttons are clicked.
-        AppNotificationContent AddArgument(String key);
+        AppNotificationContent AddLaunchArgument(String key);
 
         // Adds a key/value to the activation arguments that will be returned when the App Notification or its buttons are clicked.
         [default_overload]
-        AppNotificationContent AddArgument(String key, String value);
-        AppNotificationContent AddArgument(String key, Boolean value);
-        AppNotificationContent AddArgument(String key, Int32 value);
-        AppNotificationContent AddArgument(String key, Double value);
-        AppNotificationContent AddArgument(String key, Single value);
+        AppNotificationContent AddLaunchArgument(String key, String value);
+        AppNotificationContent AddLaunchArgument(String key, Boolean value);
+        AppNotificationContent AddLaunchArgument(String key, Int32 value);
+        AppNotificationContent AddLaunchArgument(String key, Double value);
+        AppNotificationContent AddLaunchArgument(String key, Single value);
 
         // Defines the amount of time the App Notification should display.
         AppNotificationContent SetDuration(Duration duration);
