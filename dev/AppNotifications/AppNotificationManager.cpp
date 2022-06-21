@@ -158,7 +158,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             return;
         }
 
-        HRESULT hr{};
+        HRESULT hr{ S_OK };
 
         auto logTelemetry{ wil::scope_exit([&]() {
             AppNotificationTelemetry::LogRegister(hr, m_appId);
@@ -170,7 +170,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
             THROW_HR_IF(E_INVALIDARG, displayName.empty() || (iconUri == nullptr));
 
-            AppNotificationAssets assets{ ValidateAssets(displayName.c_str(), iconUri.RawUri().c_str()) };
+            AppNotificationAssets assets{ ValidateAssets(displayName, iconUri.RawUri().c_str()) };
 
             {
                 auto lock{ m_lock.lock_exclusive() };

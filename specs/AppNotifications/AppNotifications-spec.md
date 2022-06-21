@@ -152,7 +152,9 @@ this API is not applicable and will throw an exception.
 int main()
 {
     auto manager = winrt::AppNotificationManager::Default();
-    manager.Register(L"AppNotifications", winrt::Windows::Foundation::Uri {L"<Path to Icon>"});
+
+    std::wstring iconFilepath{ std::filesystem::current_path() / "icon.ico" };
+    manager.Register(L"AppNotifications", winrt::Windows::Foundation::Uri {iconFilepath});
 
     // other app init and then message loop here
 

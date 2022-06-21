@@ -599,9 +599,9 @@ namespace Test::ToastNotifications
             RunTestUnpackaged(L"VerifyRegisterWithNullDisplayNameAndNullIconFail_Unpackaged", testWaitTime());
         }
 
-        TEST_METHOD(VerifyRegisterWithDisplayNameAndIcon_Unpackaged)
+        TEST_METHOD(VerifyShowToastWithCustomDisplayNameAndIcon_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyRegisterWithDisplayNameAndIcon_Unpackaged", testWaitTime());
+            RunTestUnpackaged(L"VerifyShowToastWithCustomDisplayNameAndIcon_Unpackaged", testWaitTime());
         }
 
         TEST_METHOD(VerifyRegisterWithDisplayNameAndInvalidIconPathFail_Unpackaged)
@@ -612,16 +612,6 @@ namespace Test::ToastNotifications
         TEST_METHOD(VerifyRegisterWithEmptyDisplayNameFail_Unpackaged)
         {
             RunTestUnpackaged(L"VerifyRegisterWithEmptyDisplayNameFail_Unpackaged", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyRegisterWithEmptyIconFail_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyRegisterWithEmptyIconFail_Unpackaged", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyRegisterWithEmptyDisplayNameAndEmptyIconFail_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyRegisterWithEmptyDisplayNameAndEmptyIconFail_Unpackaged", testWaitTime());
         }
 
         TEST_METHOD(VerifyRegisterWithAssetsFail)

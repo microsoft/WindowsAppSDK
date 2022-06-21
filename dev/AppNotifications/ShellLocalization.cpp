@@ -259,7 +259,7 @@ HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::DeleteIconFromC
     std::path iconFilePath{ RetrieveLocalFolderPath() / (notificationAppId + c_pngExtension) };
 
     // If DeleteFile returned FALSE, then deletion failed and we should return the corresponding error code.
-    winrt::check_bool(DeleteFileW(iconFilePath.c_str()) != FALSE);
+    RETURN_IF_WIN32_BOOL_FALSE(DeleteFileW(iconFilePath.c_str()));
 
     return S_OK;
 }

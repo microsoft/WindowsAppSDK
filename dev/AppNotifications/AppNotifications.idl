@@ -123,7 +123,7 @@ namespace Microsoft.Windows.AppNotifications
         // For Unpackaged apps, the caller process will be registered as the COM server. And assets like displayname and icon will be gleaned from Shell and registered as well.
         void Register();
 
-        // For Unpackaged apps only, the caller process will be registered as the COM server.
+        // Unpackaged Apps can call this API to register custom displayname and icon for AppNotifications and register themselves as a COM server.
         [contract(AppNotificationsContract, 2)]
         void Register(String displayName, Windows.Foundation.Uri iconUri);
 
