@@ -1,7 +1,4 @@
 # This job is expected to run in parallel with the build task.
-variables:
-- name: buildPool
-  value: '$(buildPool)'
 
 jobs:
 - job: SDLSourcesScanning
