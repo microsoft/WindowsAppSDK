@@ -251,8 +251,7 @@ AppNotificationContent()
     .Show();
 ```
 
-Example result:
-![Button Example](ButtonExample.png)
+Example result: ![Button Example](ButtonExample.png)
 
 Developers can change the color of the button using SetButtonStyle(ButtonStyle). The two button
 styles are ButtonStyle::Success (green) and ButtonStyle::Critical (red).
@@ -271,8 +270,7 @@ AppNotificationContent()
     .Show();
 ```
 
-Example result:
-![Button Success Example](ButtonSuccessExample.png)
+Example result: ![Button Success Example](ButtonSuccessExample.png)
 
 The ToolTip is useful for buttons with icons and no content. Users can hover over the button with
 the cursor and a text will display describing what the button does.
@@ -290,8 +288,7 @@ AppNotificationContent()
     Show();
 ```
 
-Example result:
-![Button ToolTip Example](ButtonToolTipExample.png)
+Example result: ![Button ToolTip Example](ButtonToolTipExample.png)
 
 The placement attribute defines action for a user to interact with when the AppNotification is
 right-clicked. This would typically be used by developers to ask the user for setting changes.
@@ -307,8 +304,7 @@ AppNotificationContent().
     .Show();
 ```
 
-Example result:
-![Button ContextMenu Example](ButtonContextMenuExample.png)
+Example result: ![Button ContextMenu Example](ButtonContextMenuExample.png)
 
 # Image
 
@@ -353,8 +349,7 @@ AppNotificationContent()
     .Show();
 ```
 
-Example result:
-![Inline Image Example](InlineImageExample.png)
+Example result: ![Inline Image Example](InlineImageExample.png)
 
 ## AppLogoOverride
 
@@ -369,8 +364,7 @@ AppNotificationContent()
     Show();
 ```
 
-Example result:
-![AppLogoOverride Image Example](AppLogoOverrideImageExample.png)
+Example result: ![AppLogoOverride Image Example](AppLogoOverrideImageExample.png)
 
 ## Hero
 
@@ -385,8 +379,7 @@ AppNotificationContent()
     .Show();
 ```
 
-Example result:
-![Hero Image Example](HeroImageExample.png)
+Example result: ![Hero Image Example](HeroImageExample.png)
 
 For both Inline and AppLogoOverride, developers can set how the image will be cropped with
 SetUsesCircleCrop(bool).
@@ -403,8 +396,7 @@ AppNotificationContent()
     .Show();
 ```
 
-Example result:
-![Cropped AppLogoOverride Image Example](CroppedAppLogoOverrideExample.png)
+Example result: ![Cropped AppLogoOverride Image Example](CroppedAppLogoOverrideExample.png)
 
 # Audio
 
@@ -489,8 +481,7 @@ AppNotificationContent()
     .Show();
 ```
 
-Example result:
-![TextBox Example](TextBoxExample.png)
+Example result: ![TextBox Example](TextBoxExample.png)
 
 # SelectionMenu
 
@@ -528,8 +519,86 @@ AppNotificationContent()
     .Show();
 ```
 
-Example result:
-![SelectionMenu Example](SelectionMenuExample.png)
+Example result: ![SelectionMenu Example](SelectionMenuExample.png)
+
+# ProgressBar
+
+ProgressBar is a component that builds the \<progress\> xml. ProgressBar is used to update an
+AppNotification that is currently displayed. This allows developers to inform users about the status
+of certain operations such as download or install.
+
+**WinAppSDK 1.2 \<progress\> Schema**:
+
+```c#
+<progress title? = string
+    status = string
+    value = string
+    valueStringOverride? = string
+/>
+```
+
+ProgressBar uses data binding to update the active UI. In the WindowsAppSDK, this is done by using
+AppNotificationProgressData. Click
+[Here](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/AppNotifications/AppNotifications-spec.md#notification-progress-updates)
+for an example.
+
+All the attributes have static data binding constants:
+
+-   Status = "{progressStatus}"
+-   Value = "{progressValue}"
+-   Title = "{progressTitle}"
+-   ValueStringOverride = "{progressValueString}
+
+Every ProgressBar component will have the binded status and value. Title and ValueStringOverride are
+not required so those constants will not be added unless the developers calls the Progress
+components APIs
+
+-   AddTitle()
+-   AddValueStringOverride()
+
+Below is an example use:
+
+```c#
+// Using AppNotificationContent, build the Xml payload with ProgressBar.
+winrt::hstring xmlPayload { AppNotificationContent()
+    .AddText(Text(L"Downloading this week's new music..."))
+    .AddProgressBar(ProgressBar()
+        .AddTitle()
+        .AddValueStringOverride())
+    .GetXml() };
+
+// Construct an AppNotification with the string xml payload from AppNotificationContent
+winrt::Microsoft::Windows::AppNotifications::AppNotification notification(xmlPayload);
+notification.Tag(L"Tag");
+notification.Group(L"Group");
+
+// Assign initial values for first notification progress UI
+winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData data(1 /* Sequence number */);
+data.Title(L"Katy Perry"); // Binds to {progressTitle} in xml payload
+data.Value(0.5); // Binds to {progressValue} in xml payload
+data.ValueStringOverride(L"1/2 songs"); // Binds to {progressValueString} in xml payload
+data.Status(L"Downloading..."); // Binds to {progressStatus} in xml payload
+
+notification.Progress(data); // Updates the AppNotification values
+winrt::AppNotificationManager::Default().Show(notification);
+```
+
+Example result: ![Progress Bar Example 1](ProgressBarExample1.png)
+
+Then update the ProgressBar using AppNotificationProgressData:
+
+```c#
+// Assign initial values for second notification progress UI
+data.SequenceNumber(2);
+data.Title(L"Katy Perry"); // Binds to {progressTitle} in xml payload
+data.Value(1.0); // Binds to {progressValue} in xml payload
+data.ValueStringOverride(L"2/2 songs"); // Binds to {progressValueString} in xml payload
+data.Status(L"Downloaded!"); // Binds to {progressStatus} in xml payload
+
+auto result = co_await winrt::AppNotificationManager::Default().UpdateAsync(data, L"Tag", L"Group");
+```
+
+Example result: ![Progress Bar Example 2](ProgressBarExample2.png)
 
 # Full API Details
 
@@ -642,6 +711,24 @@ namespace Microsoft.Windows.AppNotifications.Builder
         SelectionMenu SetDefaultSelection(String id);
 
         // Retrieves the XML content of the input.
+        String GetXml();
+    }
+
+    runtimeclass ProgressBar
+    {
+        // ProgressBar binds to AppNotificationProgressData so the AppNotification will
+        // receive every update to the status and value. In the WinAppSDK, these binding
+        // values are static, so developers won't need to define these binding values
+        // themselves.
+        ProgressBar();
+
+        // Adds the title binding value.
+        ProgressBar AddTitle();
+
+        // Adds the valueStringOverride value.
+        ProgressBar AddValueStringOverride();
+
+        // Retrieves the XML content of the ProgressBar
         String GetXml();
     }
 
