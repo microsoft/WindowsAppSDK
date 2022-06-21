@@ -1,13 +1,11 @@
 # This job is expected to run in parallel with the build task.
-parameters:
-  - name: buildPool
-    type: string
-    default: 'ProjectReunionESPool'
+variables:
+  buildPool: 'ProjectReunionESPool'
 
 jobs:
 - job: SDLSourcesScanning
   pool: 
-    name: ${{ parameters.buildPool }}
+    name: $(buildPool)
   steps:
   # Required by the Packaged ES SDL Templates.
   - checkout: self
