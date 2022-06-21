@@ -353,7 +353,7 @@ Example result: ![Inline Image Example](InlineImageExample.png)
 
 ## AppLogoOverride
 
-Overrides the AppNotification app logo with a custom image.
+An image that is left-aligned with notification text.
 
 ```c#
 AppNotificationContent()
@@ -388,7 +388,7 @@ SetUsesCircleCrop(bool).
 
 ```c#
 AppNotificationContent()
-    .AddText(Text(L"To the left is an AppLogoOverride"))
+    .AddText(Text(L"To the left is a cropped AppLogoOverride"))
     .AddImage(Image(LR"(https://unsplash.it/64?image=669)")
         .SetImagePlacement(ImagePlacement::AppLogoOverride)
         .SetUsesCircleCrop(true)
@@ -609,61 +609,48 @@ namespace Microsoft.Windows.AppNotifications.Builder
     {
         Text(String content);
 
-        String Content{ get; };
-        Text SetContent(String content);
-
         // The target locale of the XML payload, specified as a BCP-47 language tags.
-        String Language{ get; };
         Text SetLanguage(String language);
 
         // Center the text for incoming call notifications. This value is only used for notifications with with a scenario value of IncomingCall.
-        Boolean IsCallScenario { get; };
         Text SetIsCallScenario(Boolean isCallScenario);
 
         // Displays text at the bottom of your notification, along with your app's identity or the notification's timestamp.
         // On older versions of Windows that don't support attribution text, the text will simply be displayed as another text element.
-        Boolean IsAttributionText { get; };
         Text SetIsAttributionText(Boolean isAttributionText);
 
         // Retrieves the XML content of the Text.
         String GetXml();
-    }
+    };
 
     enum ButtonStyle
     {
         Success, // The button will be green
         Critical, // The button will be red
-    }
+    };
 
     runtimeclass Button
     {
+        // Button can use ToolTip instead of content which requires empty content 
         Button();
         Button(String content);
 
-        // Get/Sets the text to display on the button.
-        String Content{ get; };
+        // Sets the text to display on the button.
         Button SetContent(String content);
 
-        // Gets app-defined string of arguments that the app can later retrieve once it is activated when the user clicks the button.
-        String Arguments { get; };
-
-        // Gets/sets the Icon source for the button.
-        String IconUri { get; };
+        // Sets the Icon source for the button.
         Button SetIconUri(String iconUri);
 
         // The tooltip for a button, if the button has an empty content string.
-        String ToolTip { get; };
         Button SetToolTip(String toolTip);
 
         // Sets if the Button will be a context menu action.
-        Boolean IsContextMenuPlacement { get; };
         Button SetIsContextMenuPlacement(Boolean isContextMenuPlacement);
 
-        ButtonStyle ButtonStyle { get;};
+        // Sets the ButtonStyle to Success or Critical
         Button SetButtonStyle(ButtonStyle buttonStyle);
 
-        // Gets or sets the ID of an existing AppNotificationTextBox in order to have this button display to the right of the input.
-        String InputId{ get; };
+        // Sets the ID of an existing AppNotificationTextBox in order to have this button display to the right of the input.
         Button SetInputId(String inputId);
 
         // Adds a key(without value) to the activation arguments that will be returned when the App Notification or its buttons are clicked.
@@ -679,29 +666,24 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Retrieves the XML content of the button.
         String GetXml();
-    }
+    };
 
     runtimeclass TextBox
     {
         TextBox(String id);
 
         // Gets the ID of the TextBox
-        String Id { get; };
 
         // The placeholder displayed for text input.
-        String PlaceHolderContent { get; };
         TextBox SetPlaceHolderContent(String placeHolderContent);
 
         // Retrieves the XML content of the input.
         String GetXml();
-    }
+    };
 
     runtimeclass SelectionMenu
     {
         SelectionMenu(String id);
-
-        // Gets the ID of the SelectionMenu
-        String Id { get; };
 
         // Add a selection item to the SelectionMenu if InputType is SelectionMenu. The id parameter is used to retrieve the user input when the app is activated
         // and content is the displayed text for the item.
@@ -712,7 +694,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Retrieves the XML content of the input.
         String GetXml();
-    }
+    };
 
     runtimeclass ProgressBar
     {
@@ -730,31 +712,28 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Retrieves the XML content of the ProgressBar
         String GetXml();
-    }
+    };
 
     runtimeclass Audio
     {
         Audio();
 
-        // Get/Set the audio source for the AppNotification.
-        String AudioSrc { get;};
+        // Set the audio source for the AppNotification.
         Audio SetAudioSrc(String audioSrc);
 
-        // Duration must also be set to define the loop length.
-        Boolean IsLooped { get; };
+        // AppNotificationContent::Duration must also be set to define the loop length.
         Audio SetIsLooped(Boolean isLooped);
-
-        Boolean IsMuted { get; };
+        
         Audio SetIsMuted(Boolean isMuted);
 
         // Retrieves the XML content of the audio.
         String GetXml();
-    }
+    };
 
     enum ImagePlacement
     {
         Inline, // A full-width inline-image that appears when you expand the AppNotification.
-        AppLogoOverride, // Overrides the AppNotification app logo with a custom image.
+        AppLogoOverride, // An image that is left-aligned with notification text
         Hero, // Prominently displays image within the AppNotification banner and while inside Notification Center.
     };
 
@@ -762,23 +741,18 @@ namespace Microsoft.Windows.AppNotifications.Builder
     {
         Image(String imageSrc);
 
-        String ImageSrc { get; };
-
         // A description of the image, for users of assistive technologies.
-        String AlternateText{ get; };
         Image SetAlternateText(String alternateText);
 
         // An enum to describe how the image will be cropped.
-        Boolean UsesCircleCrop{ get; };
         Image SetUsesCircleCrop(Boolean usesCircleCrop);
 
         // Override the app logo with custom image of choice that will be displayed on the AppNotification, otherwise it will be an inline image.
-        ImagePlacement Placement{ get; };
         Image SetImagePlacement(ImagePlacement placement);
 
         // Retrieves the XML content of the image.
         String GetXml();
-    }
+    };
 
     enum ScenarioType
     {
@@ -787,13 +761,13 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Alarm,    // Alarms behave like Reminder, but alarms will additionally loop audio with a default alarm sound.
         IncomingCall, // Incoming call notifications are displayed pre-expanded in a special call format and stay on the user's screen till dismissed.
         Urgent, // Important notifications allow users to have more control over what 1st party and 3rd party apps can send them high-priority AppNotifications (urgent/important) that can break through Focus Assist.
-    }
+    };
 
     enum Duration
     {
         Short, // Default value. AppNotification appears for a short while and then goes into Notification Center.
         Long, // AppNotification stays on-screen for longer, and then goes into Notification Center.
-    }
+    };
 
     runtimeclass AppNotificationContent
     {
@@ -846,6 +820,6 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Shows a new AppNotification with the current content.
         void Show();
-    }
+    };
 }
 ```
