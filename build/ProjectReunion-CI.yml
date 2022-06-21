@@ -39,7 +39,7 @@ jobs:
       failOnStderr: true
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-SourceAnalysis-job.yml
-  parameters:
+  variables:
     buildPool: 'windows-2019'
 
 - job: Build
