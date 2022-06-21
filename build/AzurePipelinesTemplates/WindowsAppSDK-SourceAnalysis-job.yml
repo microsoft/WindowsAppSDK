@@ -1,6 +1,7 @@
 # This job is expected to run in parallel with the build task.
 variables:
-  buildPool: 'ProjectReunionESPool'
+- name: buildPool
+  value: '$(buildPool)'
 
 jobs:
 - job: SDLSourcesScanning
