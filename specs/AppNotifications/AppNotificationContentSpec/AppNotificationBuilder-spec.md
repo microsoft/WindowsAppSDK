@@ -272,24 +272,44 @@ AppNotificationContent::SetScenario(enum ScenarioType).
 ```c#
 AppNotificationContent()
     .SetScenario(ScenarioType::IncomingCall)
-    .AddText(Text(L"Content"))
-        .SetIsCallScenario(true)
-    .Show()
+    .SetUseButtonStyle(true)
+    .AddText(Text(L"Incoming Call")
+        .SetIsCallScenario(true))
+    .AddText(Text(L"Andrew Barnes")
+        .SetIsCallScenario(true))
+    .AddImage(Image(L"https://unsplash.it/100?image=883")
+        .SetUsesCropCircle(true))
+    .AddButton(Button()
+        .SetIconUri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png")
+        .AddArgument(L"videoCallId")
+        .SetButtonStyle(ButtonStyle::Success)
+        .SetToolTip(L"Answer video call"))
+    .GetXml();
 ```
 
 XML output:
 
 ```c#
-<toast scenario="incomingCall">
-  <visual>
-    <binding template="ToastGeneric">
-      <text>Content</text>
-    </binding>
-  </visual>
+<toast scenario="incomingCall" useButtonStyle="true">
+    <visual>
+        <binding template="ToastGeneric">
+            <text hint-callScenarioCenterAlign = "true">Incoming Call</text>
+            <text hint-callScenarioCenterAlign = "true">Andrew Barnes</text>
+            <image hint-crop="circle"  src="https://unsplash.it/100?image=883"/>
+        </binding>
+    </visual>
+  
+    <actions>
+        <action
+              arguments="videoCallId" 
+              content="" 
+              imageUri="https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png" 
+              hint-buttonStyle = "Success" 
+              hint-toolTip = "Asnwer video call"/>
 </toast>
 ```
 
-![IncomingCall Example](IncomingCallExample.png)
+![IncomingCall Simple Example](IncomingCallSimpleExample.png)
 
 # Button
 
@@ -361,17 +381,65 @@ styles.
 
 ```c#
 AppNotificationContent()
+    .SetScenario(ScenarioType::IncomingCall)
     .SetUseButtonStyle(true)
-    .AddText(Text(L"Content"))
-    .AddTextBox(TextBox(L"textBox")
-        .SetPlaceHolderContent(L"Reply"))
-    .AddButton(Button(L"Send")
-        .AddArgument(L"action", L"textReply")
-        .SetButtonStyle(ButtonStyle::Success))
-    .Show();
+    .AddText(Text(L"Incoming Call")
+        .SetIsCallScenario(true))
+    .AddText(Text(L"Andrew Barnes")
+        .SetIsCallScenario(true))
+    .AddImage(Image(L"https://unsplash.it/100?image=883")
+        .SetUsesCropCircle(true))
+    .AddButton(Button()
+        .SetIconUri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png")
+        .AddArgument(L"videoCallId")
+        .SetButtonStyle(ButtonStyle::Success)
+        .SetToolTip(L"Answer video call"))
+    .AddButton(Button()
+        .SetIconUri(L"https://www.nicepng.com/png/full/379-3794777_white-phone-icon-white-phone-call-icon.png")
+        .AddArgument(L"voiceCallId")
+        .SetButtonStyle(ButtonStyle::Success)
+        .SetToolTip(L"Answer voice call"))
+    .AddButton(Button()
+        .SetIconUri(L"https://static.thenounproject.com/png/5012-200.png")
+        .AddArgument(L"DeclineCallId")
+        .SetButtonStyle(ButtonStyle::Critical)
+        .SetToolTip(L"Decline all"))
+    .GetXml();
 ```
-
-Example result: ![Button Success Example](ButtonSuccessExample.png)
+Xml result:
+```c#
+<toast scenario="incomingCall" useButtonStyle="true">
+    <visual>
+        <binding template="ToastGeneric">
+            <text hint-callScenarioCenterAlign = "true">Incoming Call</text>
+            <text hint-callScenarioCenterAlign = "true">Andrew Barnes</text>
+            <image hint-crop="circle"  src="https://unsplash.it/100?image=883"/>
+        </binding>
+    </visual>
+  
+    <actions>
+        <action
+              arguments="videoCallId" 
+              content="" 
+              imageUri="https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png" 
+              hint-buttonStyle = "Success" 
+              hint-toolTip = "Answer video call"/>
+        <action 
+              arguments="voiceCallId" 
+              content="" 
+              imageUri="https://www.nicepng.com/png/full/379-3794777_white-phone-icon-white-phone-call-icon.png" 
+              hint-buttonStyle = "Success" 
+              hint-toolTip = "Answer voice call"/>
+        <action 
+              arguments="DeclineCallId" 
+              content="" 
+              imageUri="https://static.thenounproject.com/png/5012-200.png" 
+              hint-buttonStyle = "Critical" 
+              hint-toolTip = "Decline all"/>
+      </actions>
+</toast>
+```
+Example result: ![Button Style Example](IncomingCallExample.png)
 
 The ToolTip is useful for buttons with icons and no content. Users can hover over the button with
 the cursor and a text will display describing what the button does.
