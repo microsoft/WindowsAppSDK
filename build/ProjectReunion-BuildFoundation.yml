@@ -2,6 +2,8 @@ name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
+- name: buildPool
+  value: '$(ProjectReunionBuildPool)'
 
 parameters:
   - name: "ReleaseSigning"
@@ -37,8 +39,6 @@ resources:
 jobs:
 # This relatively low-cost job is always run, in parallel w/ the Build job.
 - template: AzurePipelinesTemplates\WindowsAppSDK-SourceAnalysis-job.yml
-  variables:
-    buildPool: '$(ProjectReunionBuildPool)'
 
 - job: Build
   dependsOn: []
