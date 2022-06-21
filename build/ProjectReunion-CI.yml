@@ -5,6 +5,8 @@ variables:
 - template: WindowsAppSDK-CommonVariables.yml
 - name: buildOutputDir
   value: $(Build.SourcesDirectory)\BuildOutput
+- name: buildPool
+  value: 'windows-2019'
 
 parameters:
   - name: runSDLBinaryAnalysis
@@ -39,8 +41,6 @@ jobs:
       failOnStderr: true
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-SourceAnalysis-job.yml
-  variables:
-    buildPool: 'windows-2019'
 
 - job: Build
   dependsOn: []
