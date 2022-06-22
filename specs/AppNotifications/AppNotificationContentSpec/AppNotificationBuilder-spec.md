@@ -221,6 +221,10 @@ winrt::hstring xmlPayload{ AppNotificationContent()
     .Show() };
 ```
 
+## Limitations
+- ScenarioType::Urgent is only supported for to builds 19041 (20H1) and above. 
+Using this attribute on lower builds will not prevent the AppNotification from being constructed, but developers will receive a debug warning that the attribute is not supported.
+
 # Text
 
 The Text component sets up the xml for a \<text\> element. Developers can define the content,
@@ -511,6 +515,9 @@ XML output:
 </toast>
 ```
 Example result: ![Button ContextMenu Example](ButtonContextMenuExample.png)
+
+## Limitations
+- hint-toolTip and hint-buttonStyle are only supported for builds 19041 (20H1) and above. Using these attributes on lower builds will not prevent the AppNotification from being constructed, but developers will receive a debug warning that the attributes are not supported.
 
 # Image
 
