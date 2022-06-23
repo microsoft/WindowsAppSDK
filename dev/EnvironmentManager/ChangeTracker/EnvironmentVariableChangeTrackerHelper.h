@@ -3,8 +3,10 @@
 #pragma once
 
 #include <windows.h>
+#include <memory>
 #include <wil/result.h>
 #include <appmodel.h>
+#include <winrt/Windows.Management.Deployment.h>
 #include <Microsoft.Windows.System.EnvironmentManager.h>
 #include "AppModel.Identity.h"
 
@@ -22,16 +24,47 @@ static bool DoesChangeTrackingKeyExist()
     return openResult == ERROR_SUCCESS;
 }
 
-inline bool ShouldChangesBeTracked(EnvironmentManager::Scope scope)
+inline bool IsDllOnSystemAndRegistered()
 {
-    auto isUserOrMachineScope{ scope != EnvironmentManager::Scope::Process };
+    constexpr std::wstring_view frameworkPackageFamily{ L"Microsoft.WindowsAppRuntime.8wekyb3d8bbwe" };
 
-    bool willChangesBeTracked{ isUserOrMachineScope && DoesChangeTrackingKeyExist() && ::AppModel::Identity::IsPackagedProcess() };
+    UINT32 count{};
+    UINT32 bufferLength{};
+    THROW_HR_IF(E_UNEXPECTED, ERROR_INSUFFICIENT_BUFFER != FindPackagesByPackageFamily(frameworkPackageFamily.data(), PACKAGE_INFORMATION_BASIC, &count, nullptr, &bufferLength, nullptr, nullptr));
 
-    if (scope == EnvironmentManager::Scope::Machine)
+    // dll for reverting tracking is registered and on the system for the current user.
+    if (count > 0)
     {
-        willChangesBeTracked &= ::Security::IntegrityLevel::IsElevated();
+        return true;
     }
 
-    return willChangesBeTracked;
+    std::unique_ptr<wchar_t> buffer{ new wchar_t[bufferLength] };
+    std::unique_ptr<wchar_t> fullNames{ new wchar_t[count] };
+
+    THROW_HR_IF(E_UNEXPECTED, ERROR_SUCCESS != FindPackagesByPackageFamily(frameworkPackageFamily.data(), PACKAGE_INFORMATION_BASIC, &count, reinterpret_cast<PWSTR*>(fullNames.get()), &bufferLength, buffer.get(), nullptr));
+
+}
+
+inline bool ShouldChangesBeTracked(EnvironmentManager::Scope scope)
+{
+    if (scope == EnvironmentManager::Scope::Process)
+    {
+        return false;
+    }
+
+    
+    //auto isUserOrMachineScope{ scope != EnvironmentManager::Scope::Process };
+
+    //bool willChangesBeTracked{ isUserOrMachineScope && DoesChangeTrackingKeyExist() && ::AppModel::Identity::IsPackagedProcess() };
+
+    //if (scope == EnvironmentManager::Scope::Machine)
+    //{
+    //    willChangesBeTracked &= ::Security::IntegrityLevel::IsElevated();
+    //}
+
+    //winrt::Windows::Management::Deployment::PackageManager manager{};
+    //manager.FindPackage
+    //
+
+    //return willChangesBeTracked;
 }

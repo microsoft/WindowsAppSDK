@@ -425,6 +425,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
 
         wil::unique_hkey keyChangeTracker{ GetKeyForPathExtTrackingChange(true, GetPackageFullName()) };
         VERIFY_ARE_EQUAL(expectedValue, GetEnvironmentVariableFromRegistry(L"AppendedValues", keyChangeTracker.get()));
+        MessageBoxEx(NULL, L"In here", L"In here", 0, 0);
     }
 
     void EnvironmentManagerCentennialTests::CentennialTestAppendToPathExtForMachine()
