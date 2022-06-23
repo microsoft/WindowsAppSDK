@@ -3,6 +3,9 @@
 
 #pragma once
 #include "ResourceLoader.g.h"
+#include "ResourceContext.h"
+
+using namespace winrt::Microsoft::Windows::ApplicationModel::Resources;
 
 namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 {
@@ -20,9 +23,11 @@ struct ResourceLoader : ResourceLoaderT<ResourceLoader>
 
 private:
     ~ResourceLoader();
+    void SetDefaultContext();
 
     MrmManagerHandle m_resourceManager = nullptr;
     MrmMapHandle m_currentResourceMap = nullptr;
+    Resources::ResourceContext m_defaultContext {nullptr};
 };
 
 } // namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation

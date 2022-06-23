@@ -37,7 +37,7 @@ namespace Test::Common
                 ::TB::CleanupBootstrap();
             });
             const auto c_doesNotExistPackageFamilyName{ L"Test.PackageFamilyName.DoesNotExist_1234567890abc" };
-            ::WindowsAppRuntime::VersionInfo::TestInitialize(c_doesNotExistPackageFamilyName);
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(c_doesNotExistPackageFamilyName, c_doesNotExistPackageFamilyName);
 
             VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
         }
@@ -50,7 +50,8 @@ namespace Test::Common
                     ::WindowsAppRuntime::VersionInfo::TestShutdown();
                     ::TB::CleanupBootstrap();
                 });
-                WindowsAppRuntime::VersionInfo::TestInitialize(::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+                WindowsAppRuntime::VersionInfo::TestInitialize(::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
+                                                               ::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
 
                 VERIFY_IS_FALSE(::WindowsAppRuntime::SelfContained::IsSelfContained());
             }
@@ -64,12 +65,13 @@ namespace Test::Common
                 ::TB::CleanupBootstrap();
             });
             const auto c_doesNotExistPackageFamilyName{ L"Test.PackageFamilyName.DoesNotExist_1234567890abc" };
-            WindowsAppRuntime::VersionInfo::TestInitialize(c_doesNotExistPackageFamilyName);
+            WindowsAppRuntime::VersionInfo::TestInitialize(c_doesNotExistPackageFamilyName, c_doesNotExistPackageFamilyName);
             VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
 
-            WindowsAppRuntime::VersionInfo::TestInitialize(::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+            WindowsAppRuntime::VersionInfo::TestInitialize(::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
+                                                           ::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
             VERIFY_IS_FALSE(::WindowsAppRuntime::SelfContained::IsSelfContained());
-            WindowsAppRuntime::VersionInfo::TestInitialize(c_doesNotExistPackageFamilyName);
+            WindowsAppRuntime::VersionInfo::TestInitialize(c_doesNotExistPackageFamilyName, c_doesNotExistPackageFamilyName);
 
             VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
         }

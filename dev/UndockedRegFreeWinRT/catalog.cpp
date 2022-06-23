@@ -188,11 +188,12 @@ HRESULT ParseFileTag(IXmlReader* xmlReader)
     HRESULT hr = S_OK;
     XmlNodeType nodeType;
     PCWSTR localName = nullptr;
-    PCWSTR fileName = nullptr;
+    PCWSTR value = nullptr;
     hr = xmlReader->MoveToAttributeByName(L"name", nullptr);
     RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_SXS_MANIFEST_PARSE_ERROR), hr != S_OK);
-    RETURN_IF_FAILED(xmlReader->GetValue(&fileName, nullptr));
-    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_SXS_MANIFEST_PARSE_ERROR), fileName == nullptr || !fileName[0]);
+    RETURN_IF_FAILED(xmlReader->GetValue(&value, nullptr));
+    std::wstring fileName{ !value ? L"" : value };
+    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_SXS_MANIFEST_PARSE_ERROR), fileName.empty());
     auto locale = _create_locale(LC_ALL, "C");
     while (S_OK == xmlReader->Read(&nodeType))
     {
@@ -201,7 +202,7 @@ HRESULT ParseFileTag(IXmlReader* xmlReader)
             RETURN_IF_FAILED(xmlReader->GetLocalName(&localName, nullptr));
             if (localName != nullptr && _wcsicmp_l(localName, L"activatableClass", locale) == 0)
             {
-                RETURN_IF_FAILED(ParseActivatableClassTag(xmlReader, fileName));
+                RETURN_IF_FAILED(ParseActivatableClassTag(xmlReader, fileName.c_str()));
             }
         }
         else if (nodeType == XmlNodeType_EndElement)

@@ -22,7 +22,7 @@ namespace WindowsAppRuntime::Deployment::Activity
         wil::FailureType type;
         HRESULT hr;
         std::string file;
-        unsigned int lineNumer;
+        unsigned int lineNumber;
         std::wstring message;
         std::string module;
     };
@@ -68,7 +68,7 @@ namespace WindowsAppRuntime::Deployment::Activity
             return m_deploymentErrorActivityId;
         }
 
-        WindowsAppRuntimeDeployment_TraceLogger::Initialize GetActivity() const
+        WindowsAppRuntimeDeployment_TraceLogger::Initialize& GetActivity()
         {
             return m_activity;
         }
