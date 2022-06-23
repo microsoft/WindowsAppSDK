@@ -11,7 +11,7 @@ using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace std::chrono;
 
-bool RunRequestRestartTestSucceeded(const AppActivationArguments& args)
+bool RunRequestRestartTestSucceeded(const AppActivationArguments& /*args*/)
 {
     SignalPhase(c_testRequestRestartNowPhaseEventName);
 

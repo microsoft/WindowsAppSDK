@@ -25,7 +25,7 @@ void WindowsAppRuntime::MddBootstrap::Activity::Context::SetLastFailure(const wi
         m_lastFailure.file.clear();
     }
 
-    m_lastFailure.lineNumer = failure.uLineNumber;
+    m_lastFailure.lineNumber = failure.uLineNumber;
 
     if (failure.pszMessage)
     {
@@ -46,21 +46,19 @@ void WindowsAppRuntime::MddBootstrap::Activity::Context::SetLastFailure(const wi
     }
 }
 
-uint32_t WindowsAppRuntime::MddBootstrap::Activity::Context::DecrementInitializationCount()
+void WindowsAppRuntime::MddBootstrap::Activity::Context::DecrementInitializationCount()
 {
-    const auto initializationCount{ m_initializationCount.load() };
-
-    if (initializationCount > 1)
+    const uint32_t initializationCount{ m_initializationCount.load() };
+    if (initializationCount == 0)
     {
-        // Multiply initialized. Just decrement our count
-        return --m_initializationCount;
+        // Not initialized
+        SetInitializationPackageFullName(nullptr);
     }
-    else if (initializationCount == 0)
+    else
     {
-        // Not initialized.
-        SetInitializationPackageFullName(PWSTR{});
+        // Initialized (at least once). Decrement our count
+        --m_initializationCount;
     }
-    return m_initializationCount;
 }
 
 const WindowsAppRuntime::MddBootstrap::Activity::IntegrityFlags WindowsAppRuntime::MddBootstrap::Activity::Context::GetIntegrityFlags(HANDLE token)
