@@ -44,17 +44,18 @@ AppNotificationContent, a builder that constructs simple or rich App Notificatio
 developer.
 
 ```c++
-AppNotificationContent()
-    .AddLaunchArgument(L"AppNotificationClick")
-    .AddLaunchArgument(L"sequence", 1234)
+AppNotificationContent(ArgumentSerializer()
+      .AddArgument()
+      .AddArgument(L"AppNotificationClick")
+      .AddArgument(L"sequence", 1234));
     .AddImage(Image(LR"(path\to\my\image.png)")
     .SetImagePlacement(ImagePlacement::AppLogoOverride)
-        .SetUsesCircleCrop(true))
+        .UsesCircleCrop())
     .AddText(Text(L"App Notification with Avatar Image"))
     .AddText(Text(L"This is an example message"))
-    .AddButton(Button(L"Open App")
+    .AddButton(Button(L"Open App", ArgumentSerializer().
         .AddArgument(L"action", "OpenAppButton")
-        .AddArgument(L"sequence", sequenceId))
+        .AddArgument(L"sequence", sequenceId)))
     .Show();
 ```
 
@@ -81,17 +82,10 @@ that will include any component adding to the AppNotification UI.
 
 These attributes are abstracted away through the AppNotificationContent component APIs:
 
--   AddArgument(String key)
--   AddArgument(String key, T value)
-    -   string
-    -   bool
-    -   integer
-    -   double
-    -   float
+-   AppNotificationContent(ArgumentSerializer argumentSerializer);
 -   SetDuration(enum Duration)
     -   Duration::Short
     -   Duration::Long
--   SetUseButtonStyle(Boolean usesButtonStyle)
 -   SetTimeStamp(String timeStamp)
     -   Must be in ISO 8601 format
         -   Example: 2022-06-19T08:30:00Z
@@ -100,6 +94,8 @@ These attributes are abstracted away through the AppNotificationContent componen
     -   ScenarioType::Alarm
     -   ScenarioType::IncomingCall
     -   ScenarioType::Urgent
+
+useButtonStyle will only be set if Button::SetButtonStyle is used.
 
 All the UI components are able to be appended through the AppNotificationContent component APIs:
 
@@ -113,32 +109,32 @@ All the UI components are able to be appended through the AppNotificationContent
 Below is an example usage:
 
 ```c#
-AppNotificationContent()
-    .AddLaunchArgument(L"action", L"answer")
-    .AddLaunchArgument(L"callId", 938163)
+AppNotificationContent(ArgumentSerializer().
+    .AddArgument(L"action", L"answer")
+    .AddArgument(L"callId", 938163))
     .SetDuration(Duration::Long)
     .SetTimeStamp(L"2022-06-19T08:30:00Z")
     .SetScenarioType(ScenarioType::IncomingCall)
         .AddText(Text(L"Incoming Call")
-            .SetIsCallScenario(true))
+            .UsesCallScenarioAlign())
         .AddImage(Image(LR"(https://unsplash.it/100?image=883)")
-            .SetUsesCropCircle(true))
-        .AddButton(Button(L"Text Reply")
-            .SetIconUri(LR"(Assets/Icons/message.png)")
+            .UsesCropCircle())
+        .AddButton(Button(L"Text Reply", ArgumentSerializer().
             .AddArgument(L"action", L"textReply")
-            .AddArgument(L"callId", 938163))
-        .AddButton(Button(L"Reminder")
-            .SetIconUri(LR"(Assets/Icons/reminder.png)")
+            .AddArgument(L"callId", 938163)).
+            .SetIconUri(LR"(Assets/Icons/message.png)"))
+        .AddButton(Button(L"Reminder", ArgumentSerializer().
             .AddArgument(L"action", L"reminder")
             .AddArgument(L"callId", 938163))
-        .AddButton(Button(L"Ignore")
-            .SetIconUri(LR"(Assets/Icons/cancel.png)")
+            .SetIconUri(LR"(Assets/Icons/reminder.png)"))
+        .AddButton(Button(L"Ignore", ArgumentSerializer().
             .AddArgument(L"action", L"ignore")
-            .AddArgument(L"callId", 938163))
-        .AddButton(Button(L"Answer")
-            .SetIconUri(LR"(Assets/Icons/telephone.png)")
+            .AddArgument(L"callId", 938163)))
+            .SetIconUri(LR"(Assets/Icons/cancel.png)")
+        .AddButton(Button(L"Answer", ArgumentSerializer().
             .AddArgument(L"action", L"answer")
             .AddArgument(L"callId", 938163))
+            .SetIconUri(LR"(Assets/Icons/telephone.png)"))
     .GetXml();
 ```
 
@@ -194,15 +190,14 @@ return the current version of their AppNotificationContent in a string format.
 
 ```c#
 winrt::hstring xmlPayload{ AppNotificationContent()
-    .AddLaunchArgument(L"action", L"Clicked")
-        .AddText(Text(L"Content"))
+      .AddText(Text(L"Content"))
     .GetXml() };
 ```
 
 Output
 
 ```c#
-<toast launch="action=Clicked">
+<toast>
   <visual>
     <binding template="ToastGeneric">
       <text>Content</text>
@@ -216,14 +211,15 @@ of what has been added so far to the AppNotificationContent.
 
 ```c#
 winrt::hstring xmlPayload{ AppNotificationContent()
-    .AddLaunchArgument(L"action", L"Clicked")
         .AddText(Text(L"Content"))
     .Show() };
 ```
 
 ## Limitations
-- ScenarioType::Urgent is only supported for to builds 19041 (20H1) and above. 
-Using this attribute on lower builds will not prevent the AppNotification from being constructed, but developers will receive a debug warning that the attribute is not supported.
+
+-   ScenarioType::Urgent is only supported for to builds 19041 (20H1) and above. Using this
+    attribute on lower builds will not prevent the AppNotification from being constructed, but
+    developers will receive a debug warning that the attribute is not supported.
 
 # Text
 
@@ -241,8 +237,8 @@ language, and placement of the text on the AppNotification.
 These attributes are abstracted with the Text component APIs:
 
 -   SetLanguage(String language)
--   SetIsAttributionText(Boolean isAttributionText)
--   SetIsCallScenario(Boolean isCallScenario)
+-   UsesAttributionText()
+-   UsesCallScenarioAlign()
 
 Below are some example usages:
 
@@ -251,7 +247,7 @@ AppNotificationContent()
     .AddText(Text(L"Content")
         .SetLanguage(L"en-US"))
     .AddText(Text(L"Attribution Text")
-        .SetIsAttributionText(true))
+        .UsesAttributionText())
     .GetXml();
 ```
 
@@ -276,16 +272,15 @@ AppNotificationContent::SetScenario(enum ScenarioType).
 ```c#
 AppNotificationContent()
     .SetScenario(ScenarioType::IncomingCall)
-    .SetUseButtonStyle(true)
     .AddText(Text(L"Incoming Call")
-        .SetIsCallScenario(true))
+        .UsesCallScenarioAlign())
     .AddText(Text(L"Andrew Barnes")
-        .SetIsCallScenario(true))
+        .UsesCallScenarioAlign())
     .AddImage(Image(L"https://unsplash.it/100?image=883")
-        .SetUsesCropCircle(true))
-    .AddButton(Button()
+        .UsesCropCircle())
+    .AddButton(Button(ArgumentSerializer().
+        .AddArgument(L"videoCallId"))
         .SetIconUri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png")
-        .AddArgument(L"videoCallId")
         .SetButtonStyle(ButtonStyle::Success)
         .SetToolTip(L"Answer video call"))
     .GetXml();
@@ -302,13 +297,13 @@ XML output:
             <image hint-crop="circle"  src="https://unsplash.it/100?image=883"/>
         </binding>
     </visual>
-  
+
     <actions>
         <action
-              arguments="videoCallId" 
-              content="" 
-              imageUri="https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png" 
-              hint-buttonStyle = "Success" 
+              arguments="videoCallId"
+              content=""
+              imageUri="https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"
+              hint-buttonStyle = "Success"
               hint-toolTip = "Asnwer video call"/>
 </toast>
 ```
@@ -334,11 +329,10 @@ components meant to start an action from the app.
 These attributes are abstracted with the Button component APIs:
 
 -   Button(String content)
--   AddArguments(String key)
--   AddArguments(String key, T value)
+-   Button(String content, ArgumentSerializer serializer)
 -   SetIconUri(String iconUri)
 -   SetToolTip(String toolTip)
--   SetIsContextMenuPlacement(Boolean isContextMenuPlacement)
+-   UsesContextMenuPlacement()
 -   SetInputId(String inputId)
 
 Below are some example usages:
@@ -348,9 +342,9 @@ AppNotificationContent()
     .AddText(Text(L"Content"))
     .AddTextBox(TextBox(L"textBox")
         .SetPlaceHolderContent(L"Reply"))
-    .AddButton(Button(L"Send")
+    .AddButton(Button(L"Send", ArgumentSerializer()
+        .AddArgument(L"action", L"textReply"))
         .SetIconUri(LR"(Assets/Icons/send.png)")
-        .AddArgument(L"action", L"textReply")
         .SetInputId(L"textBox"))
     .GetXml();
 ```
@@ -386,31 +380,32 @@ styles.
 ```c#
 AppNotificationContent()
     .SetScenario(ScenarioType::IncomingCall)
-    .SetUseButtonStyle(true)
     .AddText(Text(L"Incoming Call")
-        .SetIsCallScenario(true))
+        .UsesCallScenarioAlign())
     .AddText(Text(L"Andrew Barnes")
-        .SetIsCallScenario(true))
+        .UsesCallScenarioAlign())
     .AddImage(Image(L"https://unsplash.it/100?image=883")
         .SetUsesCropCircle(true))
-    .AddButton(Button()
+    .AddButton(Button(ArgumentSerializer().
+        .AddArgument(L"videoCallId"))
         .SetIconUri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png")
-        .AddArgument(L"videoCallId")
         .SetButtonStyle(ButtonStyle::Success)
         .SetToolTip(L"Answer video call"))
-    .AddButton(Button()
+    .AddButton(Button(ArgumentSerializer().
+        .AddArgument(L"voiceCallId"))
         .SetIconUri(L"https://www.nicepng.com/png/full/379-3794777_white-phone-icon-white-phone-call-icon.png")
-        .AddArgument(L"voiceCallId")
         .SetButtonStyle(ButtonStyle::Success)
         .SetToolTip(L"Answer voice call"))
-    .AddButton(Button()
+    .AddButton(Button(ArgumentSerializer().
+        .AddArgument(L"DeclineCallId"))
         .SetIconUri(L"https://static.thenounproject.com/png/5012-200.png")
-        .AddArgument(L"DeclineCallId")
         .SetButtonStyle(ButtonStyle::Critical)
         .SetToolTip(L"Decline all"))
     .GetXml();
 ```
+
 Xml result:
+
 ```c#
 <toast scenario="incomingCall" useButtonStyle="true">
     <visual>
@@ -420,29 +415,30 @@ Xml result:
             <image hint-crop="circle"  src="https://unsplash.it/100?image=883"/>
         </binding>
     </visual>
-  
+
     <actions>
         <action
-              arguments="videoCallId" 
-              content="" 
-              imageUri="https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png" 
-              hint-buttonStyle = "Success" 
+              arguments="videoCallId"
+              content=""
+              imageUri="https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"
+              hint-buttonStyle = "Success"
               hint-toolTip = "Answer video call"/>
-        <action 
-              arguments="voiceCallId" 
-              content="" 
-              imageUri="https://www.nicepng.com/png/full/379-3794777_white-phone-icon-white-phone-call-icon.png" 
-              hint-buttonStyle = "Success" 
+        <action
+              arguments="voiceCallId"
+              content=""
+              imageUri="https://www.nicepng.com/png/full/379-3794777_white-phone-icon-white-phone-call-icon.png"
+              hint-buttonStyle = "Success"
               hint-toolTip = "Answer voice call"/>
-        <action 
-              arguments="DeclineCallId" 
-              content="" 
-              imageUri="https://static.thenounproject.com/png/5012-200.png" 
-              hint-buttonStyle = "Critical" 
+        <action
+              arguments="DeclineCallId"
+              content=""
+              imageUri="https://static.thenounproject.com/png/5012-200.png"
+              hint-buttonStyle = "Critical"
               hint-toolTip = "Decline all"/>
       </actions>
 </toast>
 ```
+
 Example result: ![Button Style Example](IncomingCallExample.png)
 
 The ToolTip is useful for buttons with icons and no content. Users can hover over the button with
@@ -453,14 +449,16 @@ AppNotificationContent()
     .AddText(Text(L"Content"))
     .AddTextBox(TextBox(L"textBox")
         .SetPlaceHolderContent(L"Reply"))
-    .AddButton(Button()
-        .AddArgument(L"action", L"textReply")
+    .AddButton(Button(ArgumentSerializer().
+        .AddArgument(L"action", L"textReply"))
         .SetInputId(L"textBox")
         .SetToolTip(L"Send")
         .SetIconUri(LR"(Assets/Icons/message.png)"))
     GetXml();
 ```
+
 XML output:
+
 ```c#
 <toast>
   <visual>
@@ -491,11 +489,14 @@ AppNotificationContent().
     AddText(Text(L"Content")).
     AddTextBox(TextBox(L"textBox").
         SetPlaceHolderContent(L"Reply")).
-    AddButton(Button(L"Modify app settings").
-        SetIsContextMenuPlacement(true))
+    AddButton(Button(L"Modify app settings", ArgumentSerializer()
+        .AddArgument(L"action", L"textReply"))
+        .UsesContextMenuPlacement())
     .GetXml();
 ```
+
 XML output:
+
 ```c#
 <toast>
   <visual>
@@ -514,10 +515,14 @@ XML output:
     </actions>
 </toast>
 ```
+
 Example result: ![Button ContextMenu Example](ButtonContextMenuExample.png)
 
 ## Limitations
-- hint-toolTip and hint-buttonStyle are only supported for builds 19041 (20H1) and above. Using these attributes on lower builds will not prevent the AppNotification from being constructed, but developers will receive a debug warning that the attributes are not supported.
+
+-   hint-toolTip and hint-buttonStyle are only supported for builds 19041 (20H1) and above. Using
+    these attributes on lower builds will not prevent the AppNotification from being constructed,
+    but developers will receive a debug warning that the attributes are not supported.
 
 # Image
 
@@ -545,7 +550,7 @@ These attributes are abstracted with the Button component APIs:
 -   Image(String imageSrc)
 -   SetAlternateText(String alternateText)
 -   SetImagePlacement(ImagePlacement placement)
--   SetUsesCircleCrop(Boolean usesCircleCrop)
+-   UsesCircleCrop()
 
 Images can be displayed in three different ways:
 
@@ -561,7 +566,9 @@ AppNotificationContent()
         .SetAlternateText(L"Image with nature"))
     .GetXml();
 ```
+
 XML output:
+
 ```c#
 <toast>
   <visual>
@@ -572,6 +579,7 @@ XML output:
   </visual>
 </toast>
 ```
+
 Example result: ![Inline Image Example](InlineImageExample.png)
 
 ## AppLogoOverride
@@ -586,14 +594,16 @@ AppNotificationContent()
         .SetAlternateText(L"Profile picture"))
     GetXml();
 ```
+
 XML output:
+
 ```c#
 <toast>
   <visual>
     <binding template="ToastGeneric">
       <text>To the left is an AppLogoOverride</text>
-      <image src="https://unsplash.it/64?image=669" 
-                placement="appLogoOverride" 
+      <image src="https://unsplash.it/64?image=669"
+                placement="appLogoOverride"
                 alt="Profile picture" />
     </binding>
   </visual>
@@ -614,23 +624,26 @@ AppNotificationContent()
         .SetAlternateText(L"Image with nature"))
     .GetXml();
 ```
+
 XML output:
+
 ```c#
 <toast>
   <visual>
     <binding template="ToastGeneric">
       <text>Above is a Hero image</text>
-      <image src="https://unsplash.it/360/180?image=1043" 
-                placement="hero" 
+      <image src="https://unsplash.it/360/180?image=1043"
+                placement="hero"
                 alt="Image with nature" />
     </binding>
   </visual>
 </toast>
 ```
+
 Example result: ![Hero Image Example](HeroImageExample.png)
 
 For both Inline and AppLogoOverride, developers can set how the image will be cropped with
-SetUsesCircleCrop(bool).
+UsesCircleCrop().
 
 ## Cropped AppLogoOverride
 
@@ -639,24 +652,27 @@ AppNotificationContent()
     .AddText(Text(L"To the left is a cropped AppLogoOverride"))
     .AddImage(Image(LR"(https://unsplash.it/64?image=669)")
         .SetImagePlacement(ImagePlacement::AppLogoOverride)
-        .SetUsesCircleCrop(true)
+        .UsesCircleCrop()
         .SetAlternateText(L"Profile picture"))
     .Show();
 ```
+
 XML output:
+
 ```c#
 <toast>
   <visual>
     <binding template="ToastGeneric">
       <text>To the left is a cropped AppLogoOverride</text>
-      <image src="https://unsplash.it/64?image=669" 
-                hint-crop="circle" 
-                placement="appLogoOverride" 
+      <image src="https://unsplash.it/64?image=669"
+                hint-crop="circle"
+                placement="appLogoOverride"
                 alt="Profile picture" />
     </binding>
   </visual>
 </toast>
 ```
+
 Example result: ![Cropped AppLogoOverride Image Example](CroppedAppLogoOverrideExample.png)
 
 # Audio
@@ -675,19 +691,22 @@ displayed. The audio file can be defined by string value pointing to an app asse
 
 These attributes are abstracted with the Audio component APIs:
 
--   SetAudioSrc(String audioSrc)
--   SetIsLooped(Boolean isLooped)
--   SetIsMuted(Boolean isMuted)
+-   Audio();
+-   Audio(MSWinSoundEvent msWinSoundEvent);
+-   Audio(Windows.Foundation.Uri audioUri);
+-   SetLoopDuration(Duration duration)
+-   Mute()
 
 Below are some example usages:
 
 ```c#
 AppNotificationContent()
-    .AddAudio(Audio()
-        .SetAudioSrc(L"ms-winsoundevent:Notification.Reminder"))
+    .AddAudio(Audio(MSWinSoundEvent::Reminder))
     GetXml();
 ```
+
 XML output:
+
 ```c#
 <toast>
   <visual>
@@ -697,6 +716,7 @@ XML output:
   <audio src="ms-winsoundevent:Notification.Reminder" />
 </toast>
 ```
+
 Developers can define if the audio should be looped using SetIsLooped(bool). The duration of the
 AppNotification must also be set using AppNotificationContent::AddDuration(enum Duration), which can
 be short or long.
@@ -705,12 +725,13 @@ be short or long.
 AppNotificationContent()
     .AddDuration(Duration::Long)
     .AddText(Text(L"Content"))
-    .AddAudio(Audio()
-        .SetAudioSrc(L"ms-winsoundevent:Notification.Looping.Alarm")
-        .SetIsLooped(true))
+    .AddAudio(Audio(MSWinSoundEvent::Alarm)
+        .SetLoopDuration(true))
     .GetXml();
 ```
+
 XML output:
+
 ```c#
 <toast duration="long">
   <visual>
@@ -721,6 +742,7 @@ XML output:
   <audio src="ms-winsoundevent:Notification.Looping.Alarm" loop="true" />
 </toast>
 ```
+
 An AppNotification that does not want to play any audio including the default, can use
 SetIsMuted(bool) to mute the audio.
 
@@ -728,10 +750,12 @@ SetIsMuted(bool) to mute the audio.
 AppNotificationContent()
     .AddText(Text(L"Content"))
     .AddAudio(Audio()
-        .SetIsMuted(true))
+        .Mute())
     .Show();
 ```
+
 XML output:
+
 ```c#
 <toast duration="long">
   <visual>
@@ -767,12 +791,14 @@ Below is an example use:
 AppNotificationContent()
     .AddTextBox(TextBox(L"textBox")
         .SetPlaceHolderContent(L"reply"))
-    .AddButton(Button(L"Send").
-        .AddArguments(L"action", L"Send")
+    .AddButton(Button(L"Send", ArgumentSerializer().
+        .AddArguments(L"action", L"Send"))
         .SetInputId(L"textBox"))
     .GetXml();
 ```
+
 XML output:
+
 ```c#
 <toast>
   <visual>
@@ -790,6 +816,7 @@ XML output:
 
 </toast>
 ```
+
 Example result: ![TextBox Example](TextBoxExample.png)
 
 # SelectionMenu
@@ -823,12 +850,14 @@ AppNotificationContent()
         .AddSelection(L"yes", L"Going")
         .AddSelection(L"maybe", L"Maybe")
         .AddSelection(L"no", L"Decline"))
-    .AddButton(Button(L"Send")
-        .AddArgument(L"action", L"Send")
+    .AddButton(Button(L"Send", ArgumentSerializer().
+        .AddArgument(L"action", L"Send"))
         .SetInputId(L"selectionMenu"))
     .GetXml();
 ```
+
 XML output:
+
 ```c#
 <toast>
   <visual>
@@ -846,10 +875,11 @@ XML output:
       arguments="action=Send"
       hint-inputId="selectionMenu"
       content="Send"/>
-    
+
   </actions>
 </toast>
 ```
+
 Example result: ![SelectionMenu Example](SelectionMenuExample.png)
 
 # ProgressBar
@@ -884,8 +914,8 @@ Every ProgressBar component will have the binded status and value. Title and Val
 not required so those constants will not be added unless the developers call the ProgressBar
 component APIs
 
--   AddTitle()
--   AddValueStringOverride()
+-   UseTitle()
+-   UseValueStringOverride()
 
 Below is an example use:
 
@@ -894,11 +924,13 @@ Below is an example use:
 winrt::hstring xmlPayload { AppNotificationContent()
     .AddText(Text(L"Downloading this week's new music..."))
     .AddProgressBar(ProgressBar()
-        .AddTitle()
-        .AddValueStringOverride())
+        .UseTitle()
+        .UseValueStringOverride())
     .GetXml() };
 ```
+
 Xml result:
+
 ```c#
 <toast>
   <visual>
@@ -910,16 +942,20 @@ Xml result:
         valueStringOverride="{progressValueString}"
         status="{progressStatus}"/>
     </binding>
-  </visual> 
+  </visual>
 </toast>
 ```
+
 Construct an AppNotification with the string xml payload from AppNotificationContent
+
 ```c#
 winrt::Microsoft::Windows::AppNotifications::AppNotification notification(xmlPayload);
 notification.Tag(L"Tag");
 notification.Group(L"Group");
 ```
+
 Assign initial values for first notification progress UI
+
 ```c#
 winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData data(1 /* Sequence number */);
 data.Title(L"Katy Perry"); // Binds to {progressTitle} in xml payload
@@ -947,6 +983,62 @@ auto result = co_await winrt::Microsoft::Windows::AppNotifications::AppNotificat
 
 Example result: ![Progress Bar Example 2](ProgressBarExample2.png)
 
+# ArgumentSerializer
+The ArgumentSerializer component is used to insert a list of arguments into the Button and AppNotificationContent
+components. 
+
+Here are the different types of key | key/value that are available:
+- AddArgument(String key);
+- AddArgument(String key, String value);
+- AddArgument(String key, Int32 value);
+- AddArgument(String key, Double value);
+- AddArgument(String key, Single value);
+- AddArgument(String key, Boolean value);
+
+Below is an example usage with AppNotificationContent and Button:
+
+```c#
+AppNotificationContent(ArgumentSerializer().
+    .AddArgument(L"action", L"appNotificationBodyTouch")
+    .AddArgument(L"user", 938163))
+    .AddButton(Button(L"Send", ArgumentSerializer().
+        .AddArgument(L"action", L"buttonTouch")
+        .AddArgument(L"user", 938163)));
+```
+
+When the user clicks on the AppNotification body, the resulting argument string is:
+- "action=appNotificationBodyTouch;user=938163"
+
+When the user clicks on the Button, the result argument string is:
+- "action=buttonTouch;callId=938163"
+
+Notice that ';' is used as the delimiter between each argument.
+
+To retrieve the arguments from the serialized string, developers will use 
+ArgumentSerializer::Deserialize(String argumentString), a static function which returns a mapping of the 
+all the arguments received from the action.
+
+Below is an example usage:
+```c#
+using namespace winrt::Microsoft::Windows::AppLifecycle;
+using namespace winrt::Microsoft::Windows::AppNotifications;
+
+// Retrieve the activation args using Windows App SDK AppLifecycle functions
+AppActivationArguments args { AppLifecycle::AppInstance::GetCurrent().GetActivatedEventArgs() };
+ExtendedActivationKind kind { args.Kind() };
+
+// Check the activation kind
+if (kind == ExtendedActivationKind::AppNotification)
+{
+    AppNotificationActivatedEventArgs appActivatedArgs { args.Data().as<AppNotificationActivatedEventArgs>() };
+
+    // Retrieve the serialized arguments from AppNotificationActivatedEventArgs
+    winrt::hstring argumentString{ appActivatedArgs.Argument() };
+
+    // Deserialize the string to a mapping of the arguments
+    Windows.Foundation.Collections::IMap<winrt::hstring, winrt::hstring> argumentMap { ArgumentSerializer::Deserialize(argumentString) };
+}
+```
 # Full API Details
 
 ```c#
@@ -960,15 +1052,37 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Text SetLanguage(String language);
 
         // Center the text for incoming call notifications. This value is only used for notifications with with a scenario value of IncomingCall.
-        Text SetIsCallScenario(Boolean isCallScenario);
+        Text UsesCallScenarioAlign();
 
         // Displays text at the bottom of your notification, along with your app's identity or the notification's timestamp.
         // On older versions of Windows that don't support attribution text, the text will simply be displayed as another text element.
-        Text SetIsAttributionText(Boolean isAttributionText);
+        Text UsesAttributionText();
 
         // Retrieves the XML content of the Text.
         String GetXml();
     };
+
+    runtimeclass ArgumentSerializer
+    {
+        ArgumentSerializer();
+
+        // Adds a key(without value) to the activation arguments that will be returned when the App Notification or its buttons are clicked.
+        ArgumentSerializer AddArgument(String key);
+
+        // Adds a key/value to the activation arguments that will be returned when the App Notification or its buttons are clicked.
+        [default_overload]
+        ArgumentSerializer AddArgument(String key, String value);
+        ArgumentSerializer AddArgument(String key, Int32 value);
+        ArgumentSerializer AddArgument(String key, Double value);
+        ArgumentSerializer AddArgument(String key, Single value);
+        ArgumentSerializer AddArgument(String key, Boolean value);
+
+        // Builds a string from the added arguments to be used in the arguments attribute
+        String Serialize() { get; };
+
+        // Deserializes a string payload that was generated by Serialize() to a Map<String,String>
+        static Windows.Foundation.Collections.IMap<String, String> Deserialize(String argument);
+    }
 
     enum ButtonStyle
     {
@@ -978,38 +1092,26 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
     runtimeclass Button
     {
-        // Button can use ToolTip instead of content which requires empty content
-        Button();
-        Button(String content);
+        // Button can use ToolTip instead of content which requires empty content.
+        // Argument attribute is required and uses the ArgumentSerializer construct
+        // to add arguments to the button.
+        Button(ArgumentSerializer serializer);
+        Button(String content, ArgumentSerializer serializer);
 
-        // Sets the text to display on the button.
-        Button SetContent(String content);
-
-        // Sets the Icon source for the button.
-        Button SetIconUri(String iconUri);
+        // Sets the IconUri for the button.
+        Button SetIconUri(Windows.Foundation.Uri iconUri);
 
         // The tooltip for a button, if the button has an empty content string.
         Button SetToolTip(String toolTip);
 
-        // Sets if the Button will be a context menu action.
-        Button SetIsContextMenuPlacement(Boolean isContextMenuPlacement);
+        // Sets the Button as context menu action.
+        Button UsesContextMenuPlacement(); // AllowContextMenuPlacement
 
         // Sets the ButtonStyle to Success or Critical
         Button SetButtonStyle(ButtonStyle buttonStyle);
 
-        // Sets the ID of an existing AppNotificationTextBox in order to have this button display to the right of the input.
+        // Sets the ID of an existing TextBox in order to have this button display to the right of the input.
         Button SetInputId(String inputId);
-
-        // Adds a key(without value) to the activation arguments that will be returned when the App Notification or its buttons are clicked.
-        Button AddArgument(String key);
-
-        // Adds a key/value to the activation arguments that will be returned when the App Notification or its buttons are clicked.
-        [default_overload]
-        Button AddArgument(String key, String value);
-        Button AddArgument(String key, Int32 value);
-        Button AddArgument(String key, Double value);
-        Button AddArgument(String key, Single value);
-        Button AddArgument(String key, Boolean value);
 
         // Retrieves the XML content of the button.
         String GetXml();
@@ -1018,8 +1120,6 @@ namespace Microsoft.Windows.AppNotifications.Builder
     runtimeclass TextBox
     {
         TextBox(String id);
-
-        // Gets the ID of the TextBox
 
         // The placeholder displayed for text input.
         TextBox SetPlaceHolderContent(String placeHolderContent);
@@ -1052,26 +1152,55 @@ namespace Microsoft.Windows.AppNotifications.Builder
         ProgressBar();
 
         // Adds the title binding value.
-        ProgressBar AddTitle();
+        ProgressBar UseTitle();
 
         // Adds the valueStringOverride value.
-        ProgressBar AddValueStringOverride();
+        ProgressBar UseValueStringOverride();
 
         // Retrieves the XML content of the ProgressBar
         String GetXml();
     };
 
+    enum MSWinSoundEvent
+    {
+        Default,
+        IM,
+        Mail,
+        Reminder,
+        SMS,
+        Alarm,
+        Alarm2,
+        Alarm3,
+        Alarm4,
+        Alarm5,
+        Alarm6,
+        Alarm7,
+        Alarm8,
+        Alarm9,
+        Alarm10,
+        Call,
+        Call2,
+        Call3,
+        Call4,
+        Call5,
+        Call6,
+        Call7,
+        Call8,
+        Call9,
+        Call10,
+    };
+
     runtimeclass Audio
     {
         Audio();
+        Audio(MSWinSoundEvent msWinSoundEvent);
+        Audio(Windows.Foundation.Uri audioUri);
 
-        // Set the audio source for the AppNotification.
-        Audio SetAudioSrc(String audioSrc);
+        // The audio will be looped for either Duration::Long or Duration::Short
+        Audio SetLoopDuration(Duration duration);
 
-        // AppNotificationContent::Duration must also be set to define the loop length.
-        Audio SetIsLooped(Boolean isLooped);
-
-        Audio SetIsMuted(Boolean isMuted);
+        // Mutes the audio when the AppNotification is delievered
+        Audio Mute();
 
         // Retrieves the XML content of the audio.
         String GetXml();
@@ -1079,20 +1208,20 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
     enum ImagePlacement
     {
-        Inline, // A full-width inline-image that appears when you expand the AppNotification.
+        Inline, // The default value, a full-width inline-image that appears when you expand the AppNotification.
         AppLogoOverride, // An image that is left-aligned with notification text
         Hero, // Prominently displays image within the AppNotification banner and while inside Notification Center.
     };
 
     runtimeclass Image
     {
-        Image(String imageSrc);
+        Image(Windows.Foundation.Uri imageUri);
 
         // A description of the image, for users of assistive technologies.
         Image SetAlternateText(String alternateText);
 
         // An enum to describe how the image will be cropped.
-        Image SetUsesCircleCrop(Boolean usesCircleCrop);
+        Image UsesCircleCrop();
 
         // Override the app logo with custom image of choice that will be displayed on the AppNotification, otherwise it will be an inline image.
         Image SetImagePlacement(ImagePlacement placement);
@@ -1120,25 +1249,11 @@ namespace Microsoft.Windows.AppNotifications.Builder
     {
         AppNotificationContent();
 
-        // Adds a key(without value) to the activation arguments that will be returned when the App Notification or its buttons are clicked.
-        AppNotificationContent AddLaunchArgument(String key);
-
-        // Adds a key/value to the activation arguments that will be returned when the App Notification or its buttons are clicked.
-        [default_overload]
-        AppNotificationContent AddLaunchArgument(String key, String value);
-        AppNotificationContent AddLaunchArgument(String key, Boolean value);
-        AppNotificationContent AddLaunchArgument(String key, Int32 value);
-        AppNotificationContent AddLaunchArgument(String key, Double value);
-        AppNotificationContent AddLaunchArgument(String key, Single value);
-
-        // Defines the amount of time the App Notification should display.
-        AppNotificationContent SetDuration(Duration duration);
-
-        // Allows Buttons using SetButtonStyle to display "success" | "critical" styles
-        AppNotificationContent SetUseButtonStyle(Boolean usesButtonStyle);
+        // Adds arguments to the launch attribute to return when AppNotification is clicked.
+        AppNotificationContent(ArgumentSerializer serializer);
 
         // Sets the timeStamp of the AppNotification to when it was constructed instead of when it was sent.
-        AppNotificationContent SetTimeStamp(String timeStamp);
+        AppNotificationContent SetTimeStamp(Windows.Foundation.DateTime timeStamp);
 
         // Sets the scenario of the AppNotification.
         AppNotificationContent SetScenario(ScenarioType scenarioType);
@@ -1165,8 +1280,8 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // AppNotification constructor.
         String GetXml();
 
-        // Shows a new AppNotification with the current content.
-        void Show();
+        // TODO: BuildAppNotification with all the properties
+        // AppNotification BuildAppNotification(...); // L"Tag", "Group", ...
     };
 }
 ```
