@@ -50,7 +50,7 @@ AppNotificationContent(ArgumentSerializer()
       .AddArgument(L"sequence", 1234));
     .AddImage(Image(LR"(path\to\my\image.png)")
     .SetImagePlacement(ImagePlacement::AppLogoOverride)
-        .UsesCircleCrop())
+        .UseCircleCrop())
     .AddText(Text(L"App Notification with Avatar Image"))
     .AddText(Text(L"This is an example message"))
     .AddButton(Button(L"Open App", ArgumentSerializer().
@@ -116,9 +116,9 @@ AppNotificationContent(ArgumentSerializer().
     .SetTimeStamp(L"2022-06-19T08:30:00Z")
     .SetScenarioType(ScenarioType::IncomingCall)
         .AddText(Text(L"Incoming Call")
-            .UsesCallScenarioAlign())
+            .UseCallScenarioAlign())
         .AddImage(Image(LR"(https://unsplash.it/100?image=883)")
-            .UsesCropCircle())
+            .UseCropCircle())
         .AddButton(Button(L"Text Reply", ArgumentSerializer().
             .AddArgument(L"action", L"textReply")
             .AddArgument(L"callId", 938163)).
@@ -237,8 +237,8 @@ language, and placement of the text on the AppNotification.
 These attributes are abstracted with the Text component APIs:
 
 -   SetLanguage(String language)
--   UsesAttributionText()
--   UsesCallScenarioAlign()
+-   UseAttributionText()
+-   UseCallScenarioAlign()
 
 Below are some example usages:
 
@@ -247,7 +247,7 @@ AppNotificationContent()
     .AddText(Text(L"Content")
         .SetLanguage(L"en-US"))
     .AddText(Text(L"Attribution Text")
-        .UsesAttributionText())
+        .UseAttributionText())
     .GetXml();
 ```
 
@@ -273,11 +273,11 @@ AppNotificationContent::SetScenario(enum ScenarioType).
 AppNotificationContent()
     .SetScenario(ScenarioType::IncomingCall)
     .AddText(Text(L"Incoming Call")
-        .UsesCallScenarioAlign())
+        .UseCallScenarioAlign())
     .AddText(Text(L"Andrew Barnes")
-        .UsesCallScenarioAlign())
+        .UseCallScenarioAlign())
     .AddImage(Image(L"https://unsplash.it/100?image=883")
-        .UsesCropCircle())
+        .UseCropCircle())
     .AddButton(Button(ArgumentSerializer().
         .AddArgument(L"videoCallId"))
         .SetIconUri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png")
@@ -332,7 +332,7 @@ These attributes are abstracted with the Button component APIs:
 -   Button(String content, ArgumentSerializer serializer)
 -   SetIconUri(String iconUri)
 -   SetToolTip(String toolTip)
--   UsesContextMenuPlacement()
+-   UseContextMenuPlacement()
 -   SetInputId(String inputId)
 
 Below are some example usages:
@@ -374,18 +374,18 @@ Example result: ![Button Example](ButtonExample.png)
 
 Developers can change the color of the button using SetButtonStyle(ButtonStyle). The two button
 styles are ButtonStyle::Success (green) and ButtonStyle::Critical (red).
-AppNotificationContent::SetUseButtonStyle(bool) must be set to true for the button to use the button
+AppNotificationContent::SetUseButtonStyle(ButtonStyle) must be set to true for the button to use the button
 styles.
 
 ```c#
 AppNotificationContent()
     .SetScenario(ScenarioType::IncomingCall)
     .AddText(Text(L"Incoming Call")
-        .UsesCallScenarioAlign())
+        .UseCallScenarioAlign())
     .AddText(Text(L"Andrew Barnes")
-        .UsesCallScenarioAlign())
+        .UseCallScenarioAlign())
     .AddImage(Image(L"https://unsplash.it/100?image=883")
-        .SetUsesCropCircle(true))
+        .UseCropCircle(true))
     .AddButton(Button(ArgumentSerializer().
         .AddArgument(L"videoCallId"))
         .SetIconUri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png")
@@ -491,7 +491,7 @@ AppNotificationContent().
         SetPlaceHolderContent(L"Reply")).
     AddButton(Button(L"Modify app settings", ArgumentSerializer()
         .AddArgument(L"action", L"textReply"))
-        .UsesContextMenuPlacement())
+        .UseContextMenuPlacement())
     .GetXml();
 ```
 
@@ -550,7 +550,7 @@ These attributes are abstracted with the Button component APIs:
 -   Image(String imageSrc)
 -   SetAlternateText(String alternateText)
 -   SetImagePlacement(ImagePlacement placement)
--   UsesCircleCrop()
+-   UseCircleCrop()
 
 Images can be displayed in three different ways:
 
@@ -643,7 +643,7 @@ XML output:
 Example result: ![Hero Image Example](HeroImageExample.png)
 
 For both Inline and AppLogoOverride, developers can set how the image will be cropped with
-UsesCircleCrop().
+UseCircleCrop().
 
 ## Cropped AppLogoOverride
 
@@ -652,7 +652,7 @@ AppNotificationContent()
     .AddText(Text(L"To the left is a cropped AppLogoOverride"))
     .AddImage(Image(LR"(https://unsplash.it/64?image=669)")
         .SetImagePlacement(ImagePlacement::AppLogoOverride)
-        .UsesCircleCrop()
+        .UseCircleCrop()
         .SetAlternateText(L"Profile picture"))
     .Show();
 ```
@@ -1052,11 +1052,11 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Text SetLanguage(String language);
 
         // Center the text for incoming call notifications. This value is only used for notifications with with a scenario value of IncomingCall.
-        Text UsesCallScenarioAlign();
+        Text UseCallScenarioAlign();
 
         // Displays text at the bottom of your notification, along with your app's identity or the notification's timestamp.
         // On older versions of Windows that don't support attribution text, the text will simply be displayed as another text element.
-        Text UsesAttributionText();
+        Text UseAttributionText();
 
         // Retrieves the XML content of the Text.
         String GetXml();
@@ -1078,10 +1078,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         ArgumentSerializer AddArgument(String key, Boolean value);
 
         // Builds a string from the added arguments to be used in the arguments attribute
-        String Serialize() { get; };
-
-        // Deserializes a string payload that was generated by Serialize() to a Map<String,String>
-        static Windows.Foundation.Collections.IMap<String, String> Deserialize(String argument);
+        String Serialize();
     }
 
     enum ButtonStyle
@@ -1105,7 +1102,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Button SetToolTip(String toolTip);
 
         // Sets the Button as context menu action.
-        Button UsesContextMenuPlacement(); // AllowContextMenuPlacement
+        Button UseContextMenuPlacement(); // AllowContextMenuPlacement
 
         // Sets the ButtonStyle to Success or Critical
         Button SetButtonStyle(ButtonStyle buttonStyle);
@@ -1221,7 +1218,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Image SetAlternateText(String alternateText);
 
         // An enum to describe how the image will be cropped.
-        Image UsesCircleCrop();
+        Image UseCircleCrop();
 
         // Override the app logo with custom image of choice that will be displayed on the AppNotification, otherwise it will be an inline image.
         Image SetImagePlacement(ImagePlacement placement);
