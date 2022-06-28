@@ -692,8 +692,8 @@ displayed. The audio file can be defined by string value pointing to an app asse
 These attributes are abstracted with the Audio component APIs:
 
 -   Audio();
--   Audio(MSWinSoundEvent msWinSoundEvent);
--   Audio(Windows.Foundation.Uri audioUri);
+-   static CreateFromMSWinSoundEvent(MSWinSoundEvent msWinSoundEvent);
+-   static CreateFromUri(Windows.Foundation.Uri audioUri);
 -   SetLoopDuration(Duration duration)
 -   Mute()
 
@@ -701,7 +701,7 @@ Below are some example usages:
 
 ```c#
 AppNotificationContent()
-    .AddAudio(Audio(MSWinSoundEvent::Reminder))
+    .AddAudio(Audio::CreateFromMSWinSoundEvent(MSWinSoundEvent::Reminder))
     GetXml();
 ```
 
@@ -725,7 +725,7 @@ be short or long.
 AppNotificationContent()
     .AddDuration(Duration::Long)
     .AddText(Text(L"Content"))
-    .AddAudio(Audio(MSWinSoundEvent::Alarm)
+    .AddAudio(Audio::CreateFromMSWinSoundEvent(MSWinSoundEvent::Alarm)
         .SetLoopDuration(true))
     .GetXml();
 ```
@@ -1190,8 +1190,9 @@ namespace Microsoft.Windows.AppNotifications.Builder
     runtimeclass Audio
     {
         Audio();
-        Audio(MSWinSoundEvent msWinSoundEvent);
-        Audio(Windows.Foundation.Uri audioUri);
+
+        static Audio CreateFromUri(Windows.Foundation.Uri audioUri);
+        static Audio CreateFromMSWinSoundEvent(MSWinSoundEvent msWinSoundEvent);
 
         // The audio will be looped for either Duration::Long or Duration::Short
         Audio SetLoopDuration(Duration duration);
