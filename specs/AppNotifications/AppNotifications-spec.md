@@ -144,9 +144,9 @@ int main()
 For Unpackaged applications, the developer can Register using a custom Display Name and Icon.
 WinAppSDK will register the application and display these assets when an App Notification is received.
 The developer should provide both the assets or not provide them at all. Icon provided by the developer
-should be a valid supported format. The API supports the formats - png, bmp, jpg. The icon
+should be a valid supported format. The API supports the formats - png, bmp, jpg, ico. The icon
 should reside on the local machine only otherwise the API throws an exception. For Packaged applications,
-this API is not applicable and will throw an exception.
+this API is not applicable and will throw an exception. Below are some examples of usage:
 
 ```cpp
 int main()
@@ -154,7 +154,29 @@ int main()
     auto manager = winrt::AppNotificationManager::Default();
 
     std::wstring iconFilepath{ std::filesystem::current_path() / "icon.ico" };
-    manager.Register(L"AppNotifications", winrt::Windows::Foundation::Uri {iconFilepath});
+    winrt::hstring displayName{ L"AppNotifications" };
+
+    manager.Register(displayName, winrt::Windows::Foundation::Uri {iconFilepath});
+
+    // other app init and then message loop here
+
+    // Call Unregister() before exiting main so that subsequent invocations will launch a new process
+    manager.Unregister();
+    return 0;
+}
+```
+
+```cpp
+int main()
+{
+    auto manager = winrt::AppNotificationManager::Default();
+
+    std::wstring iconFilepath{ std::filesystem::current_path() / "icon.ico" };
+
+    std::wstring displayName{};
+    wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, displayName);
+
+    manager.Register(displayName.c_str(), winrt::Windows::Foundation::Uri {iconFilepath});
 
     // other app init and then message loop here
 
