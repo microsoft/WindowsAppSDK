@@ -1015,12 +1015,12 @@ When the user clicks on the Button, the result argument string is:
 Notice that ';' is used as the delimiter between each argument.
 
 To retrieve the arguments from the serialized string, developers will use 
-ArgumentSerializer::Deserialize(String argumentString), a static function which returns a mapping of the 
-all the arguments received from the action.
+ArgumentDeserializer to get the values from the argument string.
 
 Below is an example usage:
 ```c#
 using namespace winrt::Microsoft::Windows::AppLifecycle;
+using namespace winrt::Microsoft::Windows::AppNotifications;
 using namespace winrt::Microsoft::Windows::AppNotifications;
 
 // Retrieve the activation args using Windows App SDK AppLifecycle functions
@@ -1035,8 +1035,11 @@ if (kind == ExtendedActivationKind::AppNotification)
     // Retrieve the serialized arguments from AppNotificationActivatedEventArgs
     winrt::hstring argumentString{ appActivatedArgs.Argument() };
 
-    // Deserialize the string to a mapping of the arguments
-    Windows.Foundation.Collections::IMap<winrt::hstring, winrt::hstring> argumentMap { ArgumentSerializer::Deserialize(argumentString) };
+    // Build a deserializer to get the arguments
+    Builder::ArgumentDeserializer deserializer { argumentString };
+
+    winrt::hstring value { deserializer.GetStringArgument(L"action")};
+    int integerValue { deserializer.GetIntegerArgument(L"user") };
 }
 ```
 # Full API Details
@@ -1079,6 +1082,18 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Builds a string from the added arguments to be used in the arguments attribute
         String Serialize();
+    }
+
+    // Deserializes an argument string produced by the ArgumentSerializer
+    runtimeclass ArgumentDeserializer
+    {
+        ArgumentDeserializer(String argumentString);
+
+        String GetStringArgument(String key);
+        Int32 GetIntegerArgument(String key);
+        Double GetDoubleArgument(String key);
+        Single GetFloat(String key);
+        Boolean GetBoolArgument(String key);
     }
 
     enum ButtonStyle
