@@ -1078,6 +1078,9 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // Sets the ID of an existing TextBox in order to have this button display to the right of the input.
         Button SetInputId(String inputId);
 
+        // Launches the URI passed into the button when activated.
+        Button UseProtocolActivation(Windows.Foundation.Uri protocolUri);
+
         // Retrieves the XML content of the button.
         String GetXml();
     };
@@ -1248,9 +1251,6 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Build map after retrieving arguments from AppActivatedEventArgs
         static Windows.Foundation.Collections.IMap<String, String> DeserializeArguments(String argumentString);
-
-        // TODO: BuildAppNotification with all the properties
-        // AppNotification BuildAppNotification(...); // L"Tag", "Group", ...
     };
 }
 ```
