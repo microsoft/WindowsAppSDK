@@ -1,0 +1,82 @@
+﻿namespace Microsoft.Windows.AppNotifications.Builder
+{
+    runtimeclass Text
+    {
+        Text(String content);
+
+        // The target locale of the XML payload, specified as a BCP-47 language tags.
+        Text SetLanguage(String language);
+
+        // Center the text for incoming call notifications. This value is only used for notifications with with a scenario value of IncomingCall.
+        Text UseCallScenarioAlign();
+
+        // Displays text at the bottom of your notification, along with your app's identity or the notification's timestamp.
+        // On older versions of Windows that don't support attribution text, the text will simply be displayed as another text element.
+        Text UseAttributionText();
+
+        // Retrieves the XML content of the Text.
+        String GetXml();
+    };
+
+    enum ImagePlacement
+    {
+        Inline, // The default value, a full-width inline-image that appears when you expand the AppNotification.
+        AppLogoOverride, // An image that is left-aligned with notification text
+        Hero, // Prominently displays image within the AppNotification banner and while inside Notification Center.
+    };
+
+    runtimeclass Image
+    {
+        Image(Windows.Foundation.Uri imageUri);
+
+        // A description of the image, for users of assistive technologies.
+        Image SetAlternateText(String alternateText);
+
+        // An enum to describe how the image will be cropped.
+        Image UseCircleCrop();
+
+        // Override the app logo with custom image of choice that will be displayed on the AppNotification, otherwise it will be an inline image.
+        Image SetImagePlacement(ImagePlacement placement);
+
+        // Retrieves the XML content of the image.
+        String GetXml();
+    };
+
+    enum ButtonStyle
+    {
+        Default, // Button will be the default color
+        Success, // The button will be green
+        Critical, // The button will be red
+    };
+
+    runtimeclass Button
+    {
+        // Button can use ToolTip instead of content which requires empty content.
+        Button();
+        Button(String content);
+
+        // Adds a key/value pair to the arguments of the button
+        Button AddArgument(String key, String value);
+
+        // Sets the IconUri for the button.
+        Button SetIconUri(Windows.Foundation.Uri iconUri);
+
+        // The tooltip for a button, if the button has an empty content string.
+        Button SetToolTip(String toolTip);
+
+        // Sets the Button as context menu action.
+        Button UseContextMenuPlacement(); // AllowContextMenuPlacement
+
+        // Sets the ButtonStyle to Success or Critical
+        Button SetButtonStyle(ButtonStyle buttonStyle);
+
+        // Sets the ID of an existing TextBox in order to have this button display to the right of the input.
+        Button SetInputId(String inputId);
+
+        // Launches the URI passed into the button when activated.
+        Button UseProtocolActivation(Windows.Foundation.Uri protocolUri);
+
+        // Retrieves the XML content of the button.
+        String GetXml();
+    };
+}
