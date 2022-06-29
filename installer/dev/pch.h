@@ -30,6 +30,7 @@
 #include <winrt/Windows.System.h>
 
 #include <Security.IntegrityLevel.h>
+#include <Security.User.h>
 #include <PushNotifications-Constants.h>
 
 #include "tracelogging.h"

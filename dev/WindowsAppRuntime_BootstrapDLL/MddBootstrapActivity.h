@@ -29,7 +29,7 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
         wil::FailureType type;
         HRESULT hr;
         std::string file;
-        unsigned int lineNumer;
+        unsigned int lineNumber;
         std::wstring message;
         std::string module;
     };
@@ -67,12 +67,12 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
             return m_initializationPackageFullName;
         }
 
-        WindowsAppRuntimeBootstrap_TraceLogger::Initialize GetInitializeActivity()
+        WindowsAppRuntimeBootstrap_TraceLogger::Initialize& GetInitializeActivity()
         {
             return m_bootstrapInitializeActivity;
         }
 
-        WindowsAppRuntimeBootstrap_TraceLogger::Shutdown GetShutdownActivity()
+        WindowsAppRuntimeBootstrap_TraceLogger::Shutdown& GetShutdownActivity()
         {
             return m_bootstrapShutdownActivity;
         }
@@ -107,7 +107,7 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
             return ++m_initializationCount;
         }
 
-        uint32_t DecrementInitializationCount();
+        void DecrementInitializationCount();
 
         void SetLastFailure(const wil::FailureInfo& failure);
 

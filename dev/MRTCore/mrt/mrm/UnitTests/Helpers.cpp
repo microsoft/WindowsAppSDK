@@ -172,7 +172,7 @@ bool TestStringArray::TryInitFromTestVars(__in PCWSTR pVarPrefix)
         }
     }
 #pragma prefast(suppress : 26045, "DefArray_AllocZeroed ensures size, but macros & intsafe make that invisible to prefast")
-    return (m_ppStrings != NULL);
+    return (m_ppStrings != nullptr);
 }
 
 // Same as TryInitFromTestVars but logs an error if no data is found
@@ -192,24 +192,24 @@ bool TestStringArray::InitFromList(__in String stringsList)
 {
     Release();
     m_ppStrings = ParseList(stringsList, m_numStrings);
-    return (m_ppStrings != NULL);
+    return (m_ppStrings != nullptr);
 }
 
 // Releases the array and its contents
 void TestStringArray::Release()
 {
-    if (m_ppStrings != NULL)
+    if (m_ppStrings != nullptr)
     {
         for (int i = 0; i < m_numStrings; i++)
         {
-            if (m_ppStrings[i] != NULL)
+            if (m_ppStrings[i] != nullptr)
             {
                 Def_Free(m_ppStrings[i]);
-                m_ppStrings[i] = NULL;
+                m_ppStrings[i] = nullptr;
             }
         }
         Def_Free(m_ppStrings);
-        m_ppStrings = NULL;
+        m_ppStrings = nullptr;
     }
     m_numStrings = 0;
 }
@@ -221,11 +221,11 @@ bool TestStringArray::InitFromAtomPool(__in const IAtomPool* pAtomPool)
     bool complete = false;
     Release();
 
-    if (pAtomPool != NULL)
+    if (pAtomPool != nullptr)
     {
         m_numStrings = pAtomPool->GetNumAtoms();
         m_ppStrings = _DefArray_AllocZeroed(PWSTR, m_numStrings);
-        if (m_ppStrings != NULL)
+        if (m_ppStrings != nullptr)
         {
             StringResult str;
             for (int i = 0; i < m_numStrings; i++)
@@ -233,7 +233,7 @@ bool TestStringArray::InitFromAtomPool(__in const IAtomPool* pAtomPool)
                 if (pAtomPool->TryGetString(i, &str))
                 {
                     m_ppStrings[i] = _DefDuplicateString(str.GetRef());
-                    if (m_ppStrings[i] == NULL)
+                    if (m_ppStrings[i] == nullptr)
                     {
                         Log::Error(L"Test setup: couldn't duplicate string");
                         break;
@@ -241,7 +241,7 @@ bool TestStringArray::InitFromAtomPool(__in const IAtomPool* pAtomPool)
                 }
             }
             __analysis_assume(m_numStrings > 0);
-            complete = (m_ppStrings[m_numStrings - 1] != NULL);
+            complete = (m_ppStrings[m_numStrings - 1] != nullptr);
         }
         else if (m_numStrings > 0)
         {
@@ -274,7 +274,7 @@ _Success_(return != nullptr) PWSTR* TestStringArray::ParseList(String stringsLis
     PWSTR* ppStrings = _DefArray_AllocZeroed(PWSTR, sizeStrings);
     if (ppStrings == nullptr)
     {
-        return NULL;
+        return nullptr;
     }
 
     String key;
@@ -306,14 +306,14 @@ _Success_(return != nullptr) PWSTR* TestStringArray::ParseList(String stringsLis
 // static method to release an array of strings
 void TestStringArray::ReleaseStrings(__in_ecount_opt(numStrings) PWSTR* ppStrings, int numStrings)
 {
-    if (ppStrings != NULL)
+    if (ppStrings != nullptr)
     {
         for (int i = 0; i < numStrings; i++)
         {
             if (ppStrings[i])
             {
                 Def_Free(ppStrings[i]);
-                ppStrings[i] = NULL;
+                ppStrings[i] = nullptr;
             }
         }
         Def_Free(ppStrings);
@@ -364,7 +364,7 @@ bool TestAtomPool::Init(__in PCWSTR pDesc, __in bool isCaseInsensitive, __in Tes
             return false;
         }
 
-        if ((pAtoms != NULL) && (m_pPool != NULL))
+        if ((pAtoms != nullptr) && (m_pPool != nullptr))
         {
             if (FAILED(pAtoms->AddAtomPool(m_pPool, bAtomGroupAssumesOwnership)))
             {
@@ -373,7 +373,7 @@ bool TestAtomPool::Init(__in PCWSTR pDesc, __in bool isCaseInsensitive, __in Tes
             }
         }
     }
-    return (m_pPool != NULL);
+    return (m_pPool != nullptr);
 }
 
 bool TestAtomPool::InitFromSpecs(
@@ -408,7 +408,7 @@ bool TestAtomPool::InitFromSpecs(
             Log::Error(logmsg.Format(L"Index %d is out of range", index));
             return false;
         }
-        if (m_ppStrings[index] == NULL)
+        if (m_ppStrings[index] == nullptr)
         {
             m_ppStrings[index] = _DefDuplicateString(key);
         }
@@ -425,14 +425,14 @@ bool TestAtomPool::InitFromSpecs(
         return false;
     }
 
-    if ((pAtoms != NULL) && (m_pPool != NULL))
+    if ((pAtoms != nullptr) && (m_pPool != nullptr))
     {
         if (FAILED(pAtoms->AddAtomPool(m_pPool, bAtomGroupAssumesOwnership)))
         {
             return false;
         }
     }
-    return (m_pPool != NULL);
+    return (m_pPool != nullptr);
 }
 
 bool TestAtomPool::InitFromList(__in PCWSTR pDesc, __in bool isCaseInsensitive, __in String stringsList, __in_opt AtomPoolGroup* pAtoms)
@@ -450,7 +450,7 @@ bool TestAtomPool::InitFromList(__in PCWSTR pDesc, __in bool isCaseInsensitive, 
         Log::Error(L"Test setup: coludn't create static atom pool");
         Release();
     }
-    else if (pAtoms != NULL)
+    else if (pAtoms != nullptr)
     {
         if (FAILED(pAtoms->AddAtomPool(m_pPool, bAtomGroupAssumesOwnership)))
         {
@@ -458,7 +458,7 @@ bool TestAtomPool::InitFromList(__in PCWSTR pDesc, __in bool isCaseInsensitive, 
             Release();
         }
     }
-    return (m_pPool != NULL);
+    return (m_pPool != nullptr);
 }
 
 bool TestAtomPool::InitFromTestVarsOrClone(
@@ -474,13 +474,13 @@ bool TestAtomPool::InitFromTestVarsOrClone(
     if ((!TestStringArray::TryInitFromTestVars(varName)) && (!TestStringArray::InitFromAtomPool(pOther)))
     {
         // If we have no data, create an empty pool
-        m_ppStrings = NULL;
+        m_ppStrings = nullptr;
         m_numStrings = 0;
     }
 
     if (SUCCEEDED(StaticAtomPool::CreateInstance(m_ppStrings, m_numStrings, pDesc, isCaseInsensitive, &m_pPool)))
     {
-        if ((pAtoms != NULL) && (FAILED(pAtoms->AddAtomPool(m_pPool, bAtomGroupAssumesOwnership))))
+        if ((pAtoms != nullptr) && (FAILED(pAtoms->AddAtomPool(m_pPool, bAtomGroupAssumesOwnership))))
         {
             Log::Error(L"Test setup: couldn't add atom pool to group");
             Release();
@@ -491,36 +491,36 @@ bool TestAtomPool::InitFromTestVarsOrClone(
         Log::Error(L"Test setup: couldn't create static atom pool");
         Release();
     }
-    return (m_pPool != NULL);
+    return (m_pPool != nullptr);
 }
 
 void TestAtomPool::Release()
 {
     delete m_pPool;
-    m_pPool = NULL;
+    m_pPool = nullptr;
 
     TestStringArray::Release();
 }
 
 TestBlob::TestBlob() :
-    m_pStringValue(false), m_destinationAlignment(DefaultAlignment), m_cbBuffer(0), m_cbBlob(0), m_blobOffset(0), m_pBuffer(NULL)
+    m_pStringValue(nullptr), m_destinationAlignment(DefaultAlignment), m_cbBuffer(0), m_cbBlob(0), m_blobOffset(0), m_pBuffer(nullptr)
 {
     m_bufferFill.ui32 = DefaultBufferFill;
 }
 
 void TestBlob::Release()
 {
-    if (m_pBuffer != NULL)
+    if (m_pBuffer != nullptr)
     {
         Def_Free(m_pBuffer);
     }
     m_cbBuffer = m_cbBlob = m_blobOffset = 0;
-    m_pBuffer = NULL;
+    m_pBuffer = nullptr;
 
-    if (m_pStringValue != NULL)
+    if (m_pStringValue != nullptr)
     {
         Def_Free(m_pStringValue);
-        m_pStringValue = NULL;
+        m_pStringValue = nullptr;
     }
     m_destinationAlignment = DefaultAlignment;
 }
@@ -733,19 +733,19 @@ TestBlob** TestBlob::CreateBlobsFromTestVars(__in PCWSTR pVarPrefix, __out int* 
     if ((!SUCCEEDED(TestData::TryGetValue(tmp.Format(L"%s_Count", pVarPrefix), numBlobs))) || (numBlobs < 1))
     {
         Log::Error(tmp.Format(L"Couldn't read the number of test blobs for %s", pVarPrefix));
-        return NULL;
+        return nullptr;
     }
 
     TestBlob** ppRtrn = _DefArray_AllocZeroed(TestBlob*, numBlobs);
-    if (ppRtrn == NULL)
+    if (ppRtrn == nullptr)
     {
-        return NULL;
+        return nullptr;
     }
 
     for (int i = 0; i < numBlobs; i++)
     {
         TestBlob* pBlob = new TestBlob();
-        if ((pBlob == NULL) || (!pBlob->InitFromTestVars(tmp.Format(L"%s%d", pVarPrefix, i))))
+        if ((pBlob == nullptr) || (!pBlob->InitFromTestVars(tmp.Format(L"%s%d", pVarPrefix, i))))
         {
             Log::Error(tmp.Format(L"Couldn't initialized test blob %d", i));
             *pNumBlobsOut = i;
@@ -760,10 +760,10 @@ TestBlob** TestBlob::CreateBlobsFromTestVars(__in PCWSTR pVarPrefix, __out int* 
 
 BuildHelper::~BuildHelper()
 {
-    if (m_pBuf != NULL)
+    if (m_pBuf != nullptr)
     {
         Def_Free(m_pBuf);
-        m_pBuf = NULL;
+        m_pBuf = nullptr;
     }
 }
 
@@ -773,7 +773,7 @@ HRESULT BuildHelper::Build(__in ISectionBuilder* pBuilder)
 
     UINT32 size = pBuilder->GetMaxSizeInBytes();
 
-    BYTE* pBuffer = ((size > 0) ? _DefArray_AllocZeroed(BYTE, size) : NULL);
+    BYTE* pBuffer = ((size > 0) ? _DefArray_AllocZeroed(BYTE, size) : nullptr);
     RETURN_IF_NULL_ALLOC(pBuffer);
 
     UINT32 cbWritten = 0;
@@ -784,7 +784,7 @@ HRESULT BuildHelper::Build(__in ISectionBuilder* pBuilder)
         return hr;
     }
 
-    if (m_pBuf != NULL)
+    if (m_pBuf != nullptr)
     {
         Def_Free(m_pBuf);
     }

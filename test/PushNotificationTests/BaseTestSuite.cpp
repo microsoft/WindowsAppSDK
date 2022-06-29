@@ -38,12 +38,13 @@ void BaseTestSuite::MethodSetup()
 
     if (!isSelfContained)
     {
-        ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+        ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
+                                                         ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
         VERIFY_IS_FALSE(::WindowsAppRuntime::SelfContained::IsSelfContained());
     }
     else
     {
-        ::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!");
+        ::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!", L"I_don't_exist_package!");
         VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
     }
 }

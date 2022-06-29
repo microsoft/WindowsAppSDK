@@ -20,16 +20,15 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(VSIXVersion)' == ''">
     <!-- Use 3-part Windows App SDK version, less any tagging suffix -->
+    <!-- 
+      WindowsAppSDK release versions now have a timestamp as part of the patch
+      and a revision count making very release versions unique. This avoids
+      version sequencing issues between experimental and stable/preview versions
+      that might otherwise have the same version number, since VSIX does not
+      support preview tags or other mechanisms to distinguish.
+    -->
     <VSIXVersion>$(WindowsAppSDKVersion)</VSIXVersion>
     <VSIXVersion Condition="$(VSIXVersion.Contains(&quot;-&quot;))">$(VSIXVersion.Substring(0, $(VSIXVersion.IndexOf("-"))))</VSIXVersion>
-    <!--
-      Add a timestamp as part 4 of the version for uniqueness, and to ensure newer builds are newer
-      versions. Note that the timestamp is also included in release builds. This avoids version
-      sequencing issues between experimental and stable/preview versions that might otherwise have the same
-      version number, since VSIX does not support preview tags or other mechanisms to distinguish.
-    -->
-    <TimeSpan>$([System.Math]::Floor($([System.DateTime]::UtcNow.Subtract($([System.DateTime]::Parse('2020-01-01T00:00Z'))).TotalSeconds)))</TimeSpan>
-    <VSIXVersion>$(VSIXVersion).$(TimeSpan)</VSIXVersion>
   </PropertyGroup>
 
   <Target Name="GetVSIXVersion" Outputs="$(VSIXVersion)" />

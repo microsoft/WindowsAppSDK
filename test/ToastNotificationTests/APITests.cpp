@@ -122,7 +122,7 @@ namespace Test::ToastNotifications
 
             DWORD exitCode{};
             VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(m_processHandle.get(), &exitCode));
-            VERIFY_ARE_EQUAL(exitCode, 0);
+            VERIFY_ARE_EQUAL(exitCode, 0u);
         }
 
         wil::unique_handle RunUnpackaged(const std::wstring& command, const std::wstring& args, const std::wstring& directory)
@@ -161,7 +161,7 @@ namespace Test::ToastNotifications
 
             DWORD exitCode{};
             VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(processHandle.get(), &exitCode));
-            VERIFY_ARE_EQUAL(exitCode, 0);
+            VERIFY_ARE_EQUAL(exitCode, 0u);
         }
 
         TEST_METHOD(VerifyBackgroundActivation)

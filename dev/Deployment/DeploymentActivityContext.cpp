@@ -43,7 +43,7 @@ void WindowsAppRuntime::Deployment::Activity::Context::SetLastFailure(const wil:
         m_lastFailure.file.clear();
     }
 
-    m_lastFailure.lineNumer = failure.uLineNumber;
+    m_lastFailure.lineNumber = failure.uLineNumber;
 
     if (failure.pszMessage)
     {

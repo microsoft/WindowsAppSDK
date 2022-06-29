@@ -349,7 +349,7 @@ bool VerifyFailedMultipleRegisterActivator()
     {
         return winrt::to_hresult() == E_INVALIDARG;
     }
-    
+
     return false;
 }
 
@@ -679,6 +679,7 @@ bool VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup()
         winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", 1);
 
         auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateAsync(progressData, L"", L"Group").get();
+        (void)progressResultOperation;  // Unused local, exists for debugging, optimized away in Release builds
     }
     catch (...)
     {
@@ -702,6 +703,7 @@ bool VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup()
         winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", 1);
 
         auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateAsync(progressData, L"", L"").get();
+        (void)progressResultOperation;  // Unused local, exists for debugging, optimized away in Release builds
     }
     catch (...)
     {

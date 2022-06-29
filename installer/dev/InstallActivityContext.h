@@ -17,6 +17,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         RegisterPackage = 0x5,
         ProvisionPackage = 0x6,
         RestartPushNotificationsLRP = 0x7,
+        StagePackage = 0x8,
     };
 
     struct WilFailure
@@ -24,7 +25,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         wil::FailureType type;
         HRESULT hr;
         std::string file;
-        unsigned int lineNumer;
+        unsigned int lineNumber;
         std::wstring message;
     };
 
@@ -32,6 +33,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
     {
         InstallStage m_installStage{};
         std::wstring m_currentResourceId;
+        HRESULT m_deploymentErrorHresult{};
         HRESULT m_deploymentErrorExtendedHresult{};
         std::wstring m_deploymentErrorText;
         GUID m_deploymentErrorActivityId{};
@@ -52,6 +54,11 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         const std::wstring& GetCurrentResourceId() const
         {
             return m_currentResourceId;
+        }
+
+        const HRESULT& GetDeploymentErrorHresult() const
+        {
+            return m_deploymentErrorHresult;
         }
 
         const HRESULT& GetDeploymentErrorExtendedHResult() const
@@ -90,6 +97,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         }
 
         void SetDeploymentErrorInfo(
+            const HRESULT& deploymentErrorHresult,
             const HRESULT& deploymentErrorExtendedHresult,
             const std::wstring& deploymentErrorText,
             const GUID& deploymentErrorActivityId);

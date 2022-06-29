@@ -174,7 +174,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                 deployPackagesResult,
                 static_cast<UINT32>(initializeActivityContext.GetLastFailure().type),
                 initializeActivityContext.GetLastFailure().file.c_str(),
-                initializeActivityContext.GetLastFailure().lineNumer,
+                initializeActivityContext.GetLastFailure().lineNumber,
                 initializeActivityContext.GetLastFailure().message.c_str(),
                 initializeActivityContext.GetLastFailure().module.c_str(),
                 static_cast<UINT32>(status),
@@ -295,7 +295,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                 deploymentResult.ActivityId());
         }
 
-        return hrAddPackage;
+        return deploymentResult.ExtendedErrorCode();
     }
     CATCH_RETURN()
 
@@ -317,7 +317,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         auto activityId{ winrt::to_hstring(*::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Id()) };
 
         // <currentdirectory>\deploymentagent.exe <custom arguments passed by caller>
-        auto cmdLine{ wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" \"%s\" % s % s", exePath.c_str(), packagePath.c_str(), forceDeployment, activityId.c_str()) };
+        auto cmdLine{ wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" \"%s\" %u %s", exePath.c_str(), packagePath.c_str(), (forceDeployment ? 1 : 0), activityId.c_str()) };
 
         SIZE_T attributeListSize{};
         auto attributeCount{ 1 };
@@ -332,10 +332,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         THROW_IF_WIN32_BOOL_FALSE(InitializeProcThreadAttributeList(attributeList, attributeCount, 0, &attributeListSize));
         auto freeAttributeList{ wil::scope_exit([&] { DeleteProcThreadAttributeList(attributeList); }) };
 
-        // Desktop Bridge applications by default have their child processes break away from the parent process.
-        // In order to recreate the calling process' environment correctly, we must prevent child breakaway semantics
-        // when calling the agent. Additionally the agent must do the same when restarting the caller.
-        DWORD policy{ PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_OVERRIDE };
+        // https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute
+        // The process being created will create any child processes outside of the desktop app runtime environment.
+        // This behavior is the default for processes for which no policy has been set
+        DWORD policy{ PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_ENABLE_PROCESS_TREE };
         THROW_IF_WIN32_BOOL_FALSE(UpdateProcThreadAttribute(attributeList, 0, PROC_THREAD_ATTRIBUTE_DESKTOP_APP_POLICY, &policy, sizeof(policy), nullptr, nullptr));
 
         STARTUPINFOEX info{};
@@ -343,12 +343,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         info.lpAttributeList = attributeList;
 
         wil::unique_process_information processInfo;
-        THROW_IF_WIN32_BOOL_FALSE(CreateProcess(nullptr, cmdLine.get(), nullptr, nullptr, TRUE, CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr,
-                                                &info.StartupInfo, &processInfo));
-
-        // Transfer foreground rights to the new process before resuming it.
-        AllowSetForegroundWindow(processInfo.dwProcessId);
-        ResumeThread(processInfo.hThread);
+        THROW_IF_WIN32_BOOL_FALSE(CreateProcess(nullptr, cmdLine.get(), nullptr, nullptr, FALSE, EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, &info.StartupInfo, &processInfo));
 
         // This API is designed to only return to the caller on failure, otherwise block until process termination.
         // Wait for the agent to exit.  If the agent succeeds, it will terminate this process.  If the agent fails,
@@ -356,7 +351,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         wil::handle_wait(processInfo.hProcess);
 
         DWORD processExitCode{};
-        THROW_IF_WIN32_BOOL_FALSE_MSG(GetExitCodeProcess(processInfo.hProcess, &processExitCode), "CmdLine: %ls, processExitCode: %lu", cmdLine.get(), processExitCode);
+        THROW_IF_WIN32_BOOL_FALSE_MSG(GetExitCodeProcess(processInfo.hProcess, &processExitCode), "CmdLine: %ls, processExitCode: %u", cmdLine.get(), processExitCode);
+        RETURN_IF_FAILED_MSG(HRESULT_FROM_WIN32(processExitCode), "DeploymentAgent exitcode:0x%X", processExitCode);
         return S_OK;
     }
     CATCH_RETURN()
