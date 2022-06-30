@@ -18,7 +18,7 @@ int sequenceId {1234};
 std::wstring pathToImage {LR"(path\to\my\image.png)"};
 
 winrt::hstring xmlPayload{
-    L"<toast launch = \"action=AppNotificationClick&amp;sequence=" + to_wstring(sequenceId) + L"\">\
+    L"<toast launch = \"action=AppNotificationClick;sequence=" + to_wstring(sequenceId) + L"\">\
         <visual>\
             <binding template = \"ToastGeneric\">\
                 <image placement = \"appLogoOverride\" hint-crop=\"circle\" src = \"" + pathToImage + L"\"/>\
@@ -137,7 +137,7 @@ AppNotificationContent(
 Result from GetXml():
 
 ```c#
-<toast launch="action=answer&amp;callId=938163" scenario="incomingCall"
+<toast launch="action=answer;callId=938163" scenario="incomingCall"
         displayTimestamp="2022-06-19T08:30:00Z">
 
   <visual>
@@ -153,24 +153,24 @@ Result from GetXml():
       content="Text reply"
       imageUri="Assets/Icons/message.png"
       activationType="foreground"
-      arguments="action=textReply&amp;callId=938163"/>
+      arguments="action=textReply;callId=938163"/>
 
     <action
       content="Reminder"
       imageUri="Assets/Icons/reminder.png"
       activationType="background"
-      arguments="action=reminder&amp;callId=938163"/>
+      arguments="action=reminder;callId=938163"/>
 
     <action
       content="Ignore"
       imageUri="Assets/Icons/cancel.png"
       activationType="background"
-      arguments="action=ignore&amp;callId=938163"/>
+      arguments="action=ignore;callId=938163"/>
 
     <action
       content="Answer"
       imageUri="Assets/Icons/telephone.png"
-      arguments="action=answer&amp;callId=938163"/>
+      arguments="action=answer;callId=938163"/>
 
   </actions>
 
@@ -305,7 +305,8 @@ components meant to start an action from the app.
 
 ```c#
 <action content = string
-        arguments = string placement? = "contextMenu"
+        arguments = string 
+        placement? = "contextMenu"
         imageUri? = string
         hint-inputid? = string
         hint-buttonStyle? = "success" | "critical"
@@ -314,8 +315,8 @@ components meant to start an action from the app.
 
 These attributes are abstracted with the Button component APIs:
 
+-   Button()
 -   Button(String content)
--   Button(String content, ArgumentSerializer serializer)
 -   SetIconUri(String iconUri)
 -   SetToolTip(String toolTip)
 -   UseContextMenuPlacement()
@@ -404,7 +405,7 @@ Xml result:
 
     <actions>
         <action
-              arguments="videoCall=938465"
+              arguments="videoCall=938465;action=accept"
               content=""
               imageUri="https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"
               hint-buttonStyle = "Success"
@@ -471,11 +472,11 @@ The placement attribute defines action for a user to interact with when the AppN
 right-clicked. This would typically be used by developers to ask the user for setting changes.
 
 ```c#
-AppNotificationContent().
-    AddText(Text(L"Content")).
-    AddTextBox(TextBox(L"textBox").
-        SetPlaceHolderContent(L"Reply")).
-    AddButton(Button(L"Modify app settings")
+AppNotificationContent()
+    .AddText(Text(L"Content"))
+    .AddTextBox(TextBox(L"textBox")
+        .SetPlaceHolderContent(L"Reply"))
+    .AddButton(Button(L"Modify app settings")
         .AddArgument(L"action", L"textReply")
         .UseContextMenuPlacement())
     .GetXml();
@@ -533,7 +534,7 @@ The image source can be pulled using one of these protocol handlers:
 
 These attributes are abstracted with the Button component APIs:
 
--   Image(String imageSrc)
+-   Image(Windows.Foundation.Uri imageUri)
 -   SetAlternateText(String alternateText)
 -   SetImagePlacement(ImagePlacement placement)
 -   UseCircleCrop()
@@ -967,19 +968,11 @@ auto result = co_await winrt::Microsoft::Windows::AppNotifications::AppNotificat
 
 Example result: ![Progress Bar Example 2](ProgressBarExample2.png)
 
-# ArgumentSerializer
-The ArgumentSerializer component is used to insert a list of arguments into the Button and AppNotificationContent
-components. 
+# Retrieving Arguments
+AppNotificationContent and Button return arguments to the activated application when the user clicks on the component. Developers can
+add multiple key/value pairs and Windows App SDK will serialize them into a string.
 
-Here are the different types of key | key/value that are available:
-- AddArgument(String key);
-- AddArgument(String key, String value);
-- AddArgument(String key, Int32 value);
-- AddArgument(String key, Double value);
-- AddArgument(String key, Single value);
-- AddArgument(String key, Boolean value);
-
-Below is an example usage with AppNotificationContent and Button:
+Below is an example with AppNotificationContent and Button:
 
 ```c#
 AppNotificationContent(
@@ -998,8 +991,8 @@ When the user clicks on the Button, the result argument string is:
 
 Notice that ';' is used as the delimiter between each argument.
 
-To retrieve the arguments from the serialized string, developers will use 
-ArgumentDeserializer to get the values from the argument string.
+To retrieve the arguments from the serialized string, developers will use AppNotificationContent::DeserializeArguments(String arguments) 
+to get the values from the argument string as a map.
 
 Below is an example usage:
 ```c#
@@ -1018,12 +1011,7 @@ if (kind == ExtendedActivationKind::AppNotification)
 
     // Retrieve the serialized arguments from AppNotificationActivatedEventArgs
     winrt::hstring argumentString{ appActivatedArgs.Argument() };
-
-    // Build a deserializer to get the arguments
-    ArgumentDeserializer deserializer { argumentString };
-
-    winrt::hstring stringValue { deserializer.GetStringArgument(L"action")};
-    int integerValue { deserializer.GetIntegerArgument(L"user") };
+    winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> argumentMap { AppNotificationContent::DeserializeArguments(argumentString) };
 }
 ```
 # Full API Details
@@ -1060,8 +1048,10 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // Button can use ToolTip instead of content which requires empty content.
         // Argument attribute is required and uses the ArgumentSerializer construct
         // to add arguments to the button.
-        Button(ArgumentSerializer serializer);
-        Button(String content, ArgumentSerializer serializer);
+        Button();
+        Button(String content);
+
+        Button AddArgument(String key, String value);
 
         // Sets the IconUri for the button.
         Button SetIconUri(Windows.Foundation.Uri iconUri);
@@ -1079,7 +1069,8 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Button SetInputId(String inputId);
 
         // Launches the URI passed into the button when activated.
-        Button UseProtocolActivation(Windows.Foundation.Uri protocolUri);
+        Button SetProtocolActivation(Windows.Foundation.Uri protocolUri);
+        Button SetProtocolActivation(Windows.Foundation.Uri protocolUri, String targetApplicationPfn);
 
         // Retrieves the XML content of the button.
         String GetXml();
