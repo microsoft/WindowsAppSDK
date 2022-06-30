@@ -10,14 +10,15 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         winrt::Microsoft::Windows::AppNotifications::Builder::Button AddArgument(winrt::hstring const& key, winrt::hstring const& value);
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::Button SetIconUri(winrt::Windows::Foundation::Uri iconUri);
+        winrt::Microsoft::Windows::AppNotifications::Builder::Button SetIconUri(winrt::Windows::Foundation::Uri const& iconUri);
 
         winrt::Microsoft::Windows::AppNotifications::Builder::Button SetToolTip(winrt::hstring const& toolTip);
 
         winrt::Microsoft::Windows::AppNotifications::Builder::Button SetInputId(winrt::hstring const& inputId);
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::Button UseProtocolActivation(winrt::Windows::Foundation::Uri protocolUri);
-        
+        winrt::Microsoft::Windows::AppNotifications::Builder::Button SetProtocolActivation(winrt::Windows::Foundation::Uri const& protocolUri);
+        winrt::Microsoft::Windows::AppNotifications::Builder::Button SetProtocolActivation(winrt::Windows::Foundation::Uri const& protocolUri, winrt::hstring const& targetApplicationPfn);
+
         winrt::Microsoft::Windows::AppNotifications::Builder::Button UseContextMenuPlacement();
 
         winrt::Microsoft::Windows::AppNotifications::Builder::Button SetButtonStyle(ButtonStyle const& buttonStyle);

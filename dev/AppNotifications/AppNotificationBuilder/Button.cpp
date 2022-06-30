@@ -12,13 +12,19 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::Button Button::SetIconUri(winrt::Windows::Foundation::Uri iconUri)
+    winrt::Microsoft::Windows::AppNotifications::Builder::Button Button::SetIconUri(winrt::Windows::Foundation::Uri const& iconUri)
     {
         m_iconUri = iconUri;
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::Button Button::UseProtocolActivation(winrt::Windows::Foundation::Uri protocolUri)
+    winrt::Microsoft::Windows::AppNotifications::Builder::Button Button::SetProtocolActivation(winrt::Windows::Foundation::Uri const& protocolUri)
+    {
+        m_protocolUri = protocolUri;
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::Button Button::SetProtocolActivation(winrt::Windows::Foundation::Uri const& protocolUri)
     {
         m_protocolUri = protocolUri;
         return *this;

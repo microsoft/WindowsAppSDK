@@ -74,7 +74,8 @@
         Button SetInputId(String inputId);
 
         // Launches the URI passed into the button when activated.
-        Button UseProtocolActivation(Windows.Foundation.Uri protocolUri);
+        Button SetProtocolActivation(Windows.Foundation.Uri protocolUri);
+        Button SetProtocolActivation(Windows.Foundation.Uri protocolUri, String targetApplicationPfn);
 
         // Retrieves the XML content of the button.
         String GetXml();
