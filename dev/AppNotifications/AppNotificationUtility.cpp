@@ -286,6 +286,15 @@ AppNotificationAssets Microsoft::Windows::AppNotifications::Helpers::GetAssets()
     return assets;
 }
 
+AppNotificationAssets Microsoft::Windows::AppNotifications::Helpers::ValidateAssets(winrt::hstring const& displayName, std::filesystem::path const& iconFilePath)
+{
+    winrt::check_bool(std::filesystem::exists(iconFilePath));
+
+    THROW_HR_IF_MSG(E_INVALIDARG, !IsIconFileExtensionSupported(iconFilePath), "Icon format not supported");
+
+    return AppNotificationAssets{ displayName.c_str(), iconFilePath.wstring() };
+}
+
 void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring const& appId, std::wstring const& clsid, AppNotificationAssets const& assets)
 {
     wil::unique_hkey hKey;
