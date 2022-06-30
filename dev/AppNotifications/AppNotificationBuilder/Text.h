@@ -7,6 +7,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         Text(winrt::hstring const& content);
 
+        Text(winrt::hstring const& content, int const& maxLines);
         winrt::Microsoft::Windows::AppNotifications::Builder::Text SetLanguage(winrt::hstring const& language);
 
         winrt::Microsoft::Windows::AppNotifications::Builder::Text UseCallScenarioAlign();
@@ -17,6 +18,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     private:
         winrt::hstring m_content;
+        int m_maxLines{ 0 };
         winrt::hstring m_language;
         bool m_useCallScenarioAlign{};
         bool m_useAttributionText{};

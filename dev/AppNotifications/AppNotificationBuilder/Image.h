@@ -13,6 +13,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         winrt::Microsoft::Windows::AppNotifications::Builder::Image SetImagePlacement(ImagePlacement const& imagePlacement);
 
+        ImagePlacement GetImagePlacement() { return m_imagePlacement;  };
+
         winrt::hstring GetXml();
 
     private:

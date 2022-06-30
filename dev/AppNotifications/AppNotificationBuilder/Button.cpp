@@ -24,7 +24,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::Button Button::SetProtocolActivation(winrt::Windows::Foundation::Uri const& protocolUri)
+    winrt::Microsoft::Windows::AppNotifications::Builder::Button Button::SetProtocolActivation(winrt::Windows::Foundation::Uri const& protocolUri, winrt::hstring const& targetApplicationPfn)
     {
         m_protocolUri = protocolUri;
         return *this;
@@ -57,10 +57,27 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     winrt::hstring Button::GetXml()
     {
         winrt::hstring xml{ L"<action content=" + m_content + L" arguments="};
-        for (auto pair : m_arguments)
+
+        if (m_protocolUri)
         {
-            xml = xml + pair.Key() + L"&" + pair.Value() + L";";
+            xml = xml + m_protocolUri.ToString() + LR"( activationType="protocol")";
+            if (!m_targetApplicationPfn.empty())
+            {
+                xml = xml + L" protocolActivationTargetApplicationPfn=" + m_targetApplicationPfn;
+            }
         }
+        else
+        {
+            for (auto pair : m_arguments)
+            {
+                xml = xml + pair.Key();
+                if (!pair.Value().empty())
+                {
+                    xml = xml + L"&" + pair.Value() + L";";
+                }
+            }
+        }
+        
 
         if (m_useContextMenuPlacement)
         {

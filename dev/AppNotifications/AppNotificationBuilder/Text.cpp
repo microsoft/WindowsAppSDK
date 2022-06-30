@@ -6,6 +6,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
     Text::Text(winrt::hstring const& content) : m_content(content) { };
 
+    Text::Text(winrt::hstring const& content, int const& maxLines) : m_content(content), m_maxLines(maxLines) { };
+
     winrt::Microsoft::Windows::AppNotifications::Builder::Text Text::SetLanguage(winrt::hstring const& language)
     {
         m_language = language;
@@ -27,6 +29,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     winrt::hstring Text::GetXml()
     {
         winrt::hstring xml{ L"<text" };
+        if (m_maxLines)
+        {
+            xml = xml + L" hint-maxLines=\"" + m_maxLines + L"\"";
+        }
+
         if (!m_language.empty())
         {
             xml = xml + L" lang=" + m_language;

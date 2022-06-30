@@ -30,6 +30,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_arguments { winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
         winrt::Windows::Foundation::Uri m_iconUri{ nullptr };
         winrt::Windows::Foundation::Uri m_protocolUri{ nullptr };
+        winrt::hstring m_targetApplicationPfn;
         winrt::hstring m_toolTip;
         winrt::hstring m_inputId;
         bool m_useContextMenuPlacement{};
