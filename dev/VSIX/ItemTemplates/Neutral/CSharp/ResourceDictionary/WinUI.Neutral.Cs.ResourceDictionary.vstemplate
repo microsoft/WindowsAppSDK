@@ -8,7 +8,7 @@
     <ProjectType>CSharp</ProjectType>
     <TemplateID>WinUI.Cs.Neutral.ResourceDictionary</TemplateID>
     <TemplateGroupID>WinRT-Managed-UAP</TemplateGroupID>
-    <AppliesTo>CSharp + SharedAssetsProject</AppliesTo>
+    <AppliesTo>CSharp + WindowsAppSDK</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
     <ShowByDefault>false</ShowByDefault>
     <TargetPlatformName>Windows</TargetPlatformName>

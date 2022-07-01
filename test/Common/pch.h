@@ -35,7 +35,9 @@
 #include <WexTestClass.h>
 
 #include <Microsoft.Utf8.h>
+#include <Security.User.h>
 #include <WindowsAppRuntime.SelfContained.h>
+#include <WindowsAppRuntime.VersionInfo.h>
 
 #include <WindowsAppRuntime.Test.AppModel.h>
 #include <WindowsAppRuntime.Test.Package.h>

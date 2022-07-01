@@ -17,6 +17,8 @@
 #include <Ocidl.h>
 #include <windows.h>
 
+#include <frameworkudk/toastnotifications.h>
+
 namespace std
 {
     using namespace std::filesystem;
@@ -165,7 +167,8 @@ void WriteHIconToPngFile(wil::unique_hicon const& hIcon, _In_ PCWSTR pszFileName
     THROW_IF_FAILED(spStreamOut->Commit(STGC_DANGEROUSLYCOMMITMERELYTODISKCACHE));
 }
 
-bool IsIconFileExtensionSupported(std::filesystem::path const& iconFilePath)
+
+bool Microsoft::Windows::AppNotifications::ShellLocalization::IsIconFileExtensionSupported(std::filesystem::path const& iconFilePath)
 {
     static PCWSTR c_supportedExtensions[]{ L".bmp", L".ico", L".jpg", L".png" };
 
@@ -188,9 +191,8 @@ inline std::path RetrieveLocalFolderPath()
     THROW_IF_FAILED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0 /* flags */, nullptr /* access token handle */, &localAppDataPath));
 
     // path: C:\Users\<currentUser>\AppData\Local\Microsoft\WindowsAppSDK
-    std::path localFolderPath{ std::wstring(localAppDataPath.get()) +
-        Microsoft::Windows::AppNotifications::ShellLocalization::c_localMicrosoftFolder +
-        Microsoft::Windows::AppNotifications::ShellLocalization::c_localWindowsAppSDKFolder };
+    std::path localFolderPath{ localAppDataPath.get() };
+    localFolderPath /= Microsoft::Windows::AppNotifications::ShellLocalization::c_localWindowsAppSDKFolder;
 
     if (!std::exists(localFolderPath))
     {
@@ -232,14 +234,22 @@ HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsF
 }
 CATCH_RETURN()
 
-HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromShortcut(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& /*assets*/) noexcept
+HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::RetrieveAssetsFromShortcut(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& assets) noexcept try
 {
-    // Do nothing for now. This is just a placeholder while we wait for the FrameworkUdk API
-    // to get icon file path from shortcut. This API is already implemented but not ready for consumption.
-    // THROW_HR_IF_MSG(E_UNEXPECTED, IsIconFileExtensionSupported(iconFilePath));
+    wil::unique_cotaskmem_string displayName;
+    wil::unique_cotaskmem_string iconFilePath;
 
-    return E_NOTIMPL;
+    THROW_IF_FAILED(ToastNotifications_RetrieveAssets(&displayName, &iconFilePath));
+
+    std::path iconFilePathAsSystemPath{ iconFilePath.get() };
+    THROW_HR_IF(E_UNEXPECTED, !IsIconFileExtensionSupported(iconFilePathAsSystemPath));
+
+    assets.displayName = displayName.get();
+    assets.iconFilePath = iconFilePath.get();
+
+    return S_OK;
 }
+CATCH_RETURN()
 
 HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::DeleteIconFromCache() noexcept try
 {
@@ -249,10 +259,7 @@ HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::DeleteIconFromC
     std::path iconFilePath{ RetrieveLocalFolderPath() / (notificationAppId + c_pngExtension) };
 
     // If DeleteFile returned FALSE, then deletion failed and we should return the corresponding error code.
-    if (DeleteFile(iconFilePath.c_str()) == FALSE)
-    {
-        THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
-    }
+    RETURN_IF_WIN32_BOOL_FALSE(DeleteFileW(iconFilePath.c_str()));
 
     return S_OK;
 }

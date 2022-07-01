@@ -27,36 +27,36 @@ namespace WindowsAppRuntimeInstaller
         {
             const auto deploymentResult{ deploymentOperation.GetResults() };
             WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetDeploymentErrorInfo(
+                deploymentOperation.ErrorCode(),
                 deploymentResult.ExtendedErrorCode(),
                 deploymentResult.ErrorText().c_str(),
                 deploymentResult.ActivityId());
 
-            return static_cast<HRESULT>(deploymentOperation.ErrorCode());
+            return static_cast<HRESULT>(deploymentResult.ExtendedErrorCode());
         }
 
         return S_OK;
     }
 
-    HRESULT AddPackage(const Uri& packageUri, const std::unique_ptr<PackageProperties>& packageProperties, bool forceDeployment)
+    HRESULT AddPackage(
+        WindowsAppRuntimeInstaller::InstallActivity::Context& installActivityContext,
+        const Uri& packageUri,
+        const std::unique_ptr<PackageProperties>& packageProperties,
+        bool forceDeployment)
     {
+        const auto deploymentOptions{ forceDeployment ?
+            winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
+            winrt::Windows::Management::Deployment::DeploymentOptions::None };
+
         PackageManager packageManager;
-
-        auto GetDeploymentOptions = [](bool forceDeployment)
-        {
-            return (forceDeployment ?
-                winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
-                winrt::Windows::Management::Deployment::DeploymentOptions::None);
-        };
-
-        const auto deploymentOptions{ GetDeploymentOptions(forceDeployment) };
         const auto deploymentOperation{ packageManager.AddPackageAsync(packageUri, nullptr, DeploymentOptions::None) };
         deploymentOperation.get();
         if (deploymentOperation.Status() != AsyncStatus::Completed)
         {
-            auto hrAddPackage = static_cast<HRESULT>(deploymentOperation.ErrorCode());
+            auto hrAddPackage{ static_cast<HRESULT>(deploymentOperation.ErrorCode()) };
             if (hrAddPackage == ERROR_PACKAGE_ALREADY_EXISTS)
             {
-                WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetInstallStage(InstallStage::RegisterPackage);
+                installActivityContext.SetInstallStage(InstallStage::RegisterPackage);
 
                 // Package already exists (such as via provisioning), re-register it instead.
                 RETURN_IF_FAILED(RegisterPackage(packageProperties->fullName.get()));
@@ -65,10 +65,58 @@ namespace WindowsAppRuntimeInstaller
             else
             {
                 const auto deploymentResult{ deploymentOperation.GetResults() };
-                WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetDeploymentErrorInfo(deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str(), deploymentResult.ActivityId());
-
-                RETURN_HR(hrAddPackage);
+                installActivityContext.SetDeploymentErrorInfo(hrAddPackage, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str(), deploymentResult.ActivityId());
+                RETURN_HR(static_cast<HRESULT>(deploymentResult.ExtendedErrorCode()));
             }
+        }
+        return S_OK;
+    }
+
+    HRESULT StagePackage(
+        WindowsAppRuntimeInstaller::InstallActivity::Context& installActivityContext,
+        const Uri& packageUri)
+    {
+        const auto deploymentOptions{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
+
+        PackageManager packageManager;
+        const auto deploymentOperation{ packageManager.StagePackageAsync(packageUri, nullptr, DeploymentOptions::None) };
+        deploymentOperation.get();
+        if (deploymentOperation.Status() != AsyncStatus::Completed)
+        {
+            auto hrStagePackage{ static_cast<HRESULT>(deploymentOperation.ErrorCode()) };
+            if (hrStagePackage == ERROR_PACKAGE_ALREADY_EXISTS)
+            {
+                // Package already exists, nothing more to do
+                return S_OK;
+            }
+            else
+            {
+                const auto deploymentResult{ deploymentOperation.GetResults() };
+                installActivityContext.SetDeploymentErrorInfo(hrStagePackage, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str(), deploymentResult.ActivityId());
+                RETURN_HR(static_cast<HRESULT>(deploymentResult.ExtendedErrorCode()));
+            }
+        }
+        return S_OK;
+    }
+
+    HRESULT AddOrStagePackage(
+        WindowsAppRuntimeInstaller::InstallActivity::Context& installActivityContext,
+        const Uri& packageUri,
+        const std::unique_ptr<PackageProperties>& packageProperties,
+        bool forceDeployment)
+    {
+        // Windows doesn't support registering packages for LocalSystem
+        // If you're doing that you're really intending to provision the package for all users on the machine
+        // That means we need to Stage the package instead of Add it
+        if (Security::User::IsLocalSystem())
+        {
+            installActivityContext.SetInstallStage(InstallStage::StagePackage);
+            RETURN_IF_FAILED(StagePackage(installActivityContext, packageUri));
+        }
+        else
+        {
+            installActivityContext.SetInstallStage(InstallStage::AddPackage);
+            RETURN_IF_FAILED(AddPackage(installActivityContext, packageUri, packageProperties, forceDeployment));
         }
         return S_OK;
     }
@@ -83,7 +131,9 @@ namespace WindowsAppRuntimeInstaller
             const auto deploymentResult{ deploymentOperation.GetResults() };
             WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetDeploymentErrorActivityId(deploymentResult.ActivityId());
 
-            return static_cast<HRESULT>(deploymentOperation.ErrorCode());
+            HRESULT errorCode{ static_cast<HRESULT>(deploymentOperation.ErrorCode()) };
+            WindowsAppRuntimeInstaller::InstallActivity::Context::Get().LogInstallerFailureEvent(errorCode);
+            return errorCode;
         }
         return S_OK;
     }
@@ -154,12 +204,12 @@ namespace WindowsAppRuntimeInstaller
 
     wil::com_ptr<IStream> GetResourceStream(const std::wstring& resourceName, const std::wstring& resourceType)
     {
-        HMODULE const hModule = GetModuleHandle(NULL);
-        HRSRC hResourceSource = ::FindResource(hModule, resourceName.c_str(), resourceType.c_str());
+        HMODULE const hModule{ GetModuleHandle(NULL) };
+        HRSRC hResourceSource{ ::FindResource(hModule, resourceName.c_str(), resourceType.c_str()) };
         THROW_LAST_ERROR_IF_NULL(hResourceSource);
-        HGLOBAL hResource = LoadResource(hModule, hResourceSource);
+        HGLOBAL hResource{ LoadResource(hModule, hResourceSource) };
         THROW_LAST_ERROR_IF_NULL(hResource);
-        const BYTE* data = reinterpret_cast<BYTE*>(::LockResource(hResource));
+        const BYTE* data{ reinterpret_cast<BYTE*>(::LockResource(hResource)) };
         THROW_LAST_ERROR_IF_NULL(data);
         const DWORD size{ ::SizeofResource(hModule, hResourceSource) };
         return CreateMemoryStream(data, size);
@@ -168,7 +218,7 @@ namespace WindowsAppRuntimeInstaller
     std::unique_ptr<PackageProperties> GetPackagePropertiesFromStream(wil::com_ptr<IStream>& stream)
     {
         // Get PackageId from the manifest.
-        auto factory = wil::CoCreateInstance<AppxFactory, IAppxFactory>();
+        auto factory{ wil::CoCreateInstance<AppxFactory, IAppxFactory>() };
         wil::com_ptr<IAppxPackageReader> reader;
         THROW_IF_FAILED(factory->CreatePackageReader(stream.get(), wil::out_param(reader)));
         wil::com_ptr<IAppxManifestReader> manifest;
@@ -177,7 +227,7 @@ namespace WindowsAppRuntimeInstaller
         THROW_IF_FAILED(manifest->GetPackageId(&id));
 
         // Populate properties from the manifest PackageId
-        auto properties = std::make_unique<PackageProperties>();
+        auto properties{ std::make_unique<PackageProperties>() };
         THROW_IF_FAILED(id->GetPackageFullName(&properties->fullName));
         THROW_IF_FAILED(id->GetPackageFamilyName(&properties->familyName));
         APPX_PACKAGE_ARCHITECTURE arch{};
@@ -188,7 +238,7 @@ namespace WindowsAppRuntimeInstaller
         // Populate framework from the manifest properties.
         wil::com_ptr<IAppxManifestProperties> manifestProperties;
         THROW_IF_FAILED(manifest->GetProperties(wil::out_param(manifestProperties)));
-        BOOL isFramework = FALSE;
+        BOOL isFramework{};
         THROW_IF_FAILED(manifestProperties->GetBoolValue(L"Framework", &isFramework));
         properties->isFramework = isFramework == TRUE;
 
@@ -211,8 +261,8 @@ namespace WindowsAppRuntimeInstaller
         installActivityContext.SetInstallStage(InstallStage::GetPackageProperties);
 
         // Get package properties by loading the resource as a stream and reading the manifest.
-        auto packageStream = GetResourceStream(resource.id, resource.resourceType);
-        auto packageProperties = GetPackagePropertiesFromStream(packageStream);
+        auto packageStream{ GetResourceStream(resource.id, resource.resourceType) };
+        auto packageProperties{ GetPackagePropertiesFromStream(packageStream) };
 
         installActivityContext.SetCurrentResourceId(packageProperties->fullName.get());
 
@@ -222,16 +272,16 @@ namespace WindowsAppRuntimeInstaller
             return;
         }
 
-        PCWSTR c_windowsAppRuntimeTempDirectoryPrefix{ L"WAR" };
+        PCWSTR c_windowsAppRuntimeTempDirectoryPrefix{ L"MSIX" };
         wchar_t packageFilename[MAX_PATH];
         THROW_LAST_ERROR_IF(0 == GetTempFileName(std::filesystem::temp_directory_path().c_str(), c_windowsAppRuntimeTempDirectoryPrefix, 0u, packageFilename));
 
         // GetTempFileName will create the temp file by that name due to the unique parameter being specified.
         // From here on out if we leave scope for any reason we will attempt to delete that file.
-        auto removeTempFileOnScopeExit = wil::scope_exit([&]
+        auto removeTempFileOnScopeExit{ wil::scope_exit([&]
             {
                 LOG_IF_WIN32_BOOL_FALSE(::DeleteFile(packageFilename));
-            });
+            }) };
 
         if (!quiet)
         {
@@ -254,11 +304,9 @@ namespace WindowsAppRuntimeInstaller
         THROW_IF_FAILED(outStream->Commit(STGC_OVERWRITE));
         outStream.reset();
 
-        installActivityContext.SetInstallStage(InstallStage::AddPackage);
-
-        // Add the package
+        // Add-or-Stage the package
         Uri packageUri{ packageFilename };
-        auto hrAddResult = AddPackage(packageUri, packageProperties, forceDeployment);
+        auto hrAddResult{ AddOrStagePackage(installActivityContext, packageUri, packageProperties, forceDeployment) };
         if (!quiet)
         {
             std::wcout << "Package deployment result : 0x" << std::hex << hrAddResult << " ";
@@ -268,13 +316,12 @@ namespace WindowsAppRuntimeInstaller
 
         // Framework provisioning is not supported by the PackageManager ProvisionPackageForAllUsersAsync API.
         // Hence, skip attempting to provision framework package.
-        if (!packageProperties->isFramework &&
-            Security::IntegrityLevel::IsElevated())
+        if (!packageProperties->isFramework && Security::IntegrityLevel::IsElevated())
         {
             installActivityContext.SetInstallStage(InstallStage::ProvisionPackage);
 
             // Provisioning is expected to fail if the program is not run elevated or the user is not admin.
-            auto hrProvisionResult = ProvisionPackage(packageProperties->familyName.get());
+            auto hrProvisionResult{ ProvisionPackage(packageProperties->familyName.get()) };
             if (!quiet)
             {
                 std::wcout << "Provisioning result : 0x" << std::hex << hrProvisionResult << " ";
@@ -300,21 +347,22 @@ namespace WindowsAppRuntimeInstaller
     }
     CATCH_RETURN()
 
-    // RestartPushNotificationsLRP is best effort and non-blocking to Installer functionality
+    // RestartPushNotificationsLRP is best effort and non-blocking to Installer functionality.
+    // Any failures in this helper method will be logged in Telemetry but will not return error to the caller.
     void RestartPushNotificationsLRP()
     {
         WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetInstallStage(WindowsAppRuntimeInstaller::InstallActivity::InstallStage::RestartPushNotificationsLRP);
 
         IID pushNotificationsIMPL_CLSID;
-        THROW_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_IMPL_CLSID_WSTRING, &pushNotificationsIMPL_CLSID));
+        LOG_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_IMPL_CLSID_WSTRING, &pushNotificationsIMPL_CLSID));
 
         IID pushNotificationsLRP_IID;
-        THROW_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_LRP_CLSID_WSTRING, &pushNotificationsLRP_IID));
+        LOG_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_LRP_CLSID_WSTRING, &pushNotificationsLRP_IID));
 
         wil::com_ptr<::IUnknown> pNotificationsLRP{};
 
-        unsigned int retries = 0;
-        HRESULT hr = S_OK;
+        unsigned int retries{ 0 };
+        HRESULT hr{ S_OK };
         while (retries < 3)
         {
              hr = CoCreateInstance(pushNotificationsIMPL_CLSID,
@@ -329,13 +377,13 @@ namespace WindowsAppRuntimeInstaller
             }
             retries++;
         }
-        // wil call back is setup to log telemetry event for any failure in restartign Notifications LRP
+        // wil call back is setup to log telemetry event for any failure in restarting Notifications LRP
         LOG_IF_FAILED_MSG(hr, "Restarting Push Notifications LRP failed after 3 attempts.");
     }
 
     HRESULT InstallLicenses(const WindowsAppRuntimeInstaller::Options options)
     {
-#if defined(WAR_PROCESS_LICENSES)
+#if defined(MSIX_PROCESS_LICENSES)
         const auto quiet{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet) };
 
         if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallLicenses))
@@ -382,13 +430,14 @@ namespace WindowsAppRuntimeInstaller
             {
                 WindowsAppRuntimeInstaller::InstallActivity::Context::Get().Reset();
                 DeployPackageFromResource(package, options);
-            }
-        }
 
-        // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
-        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment))
-        {
-            RestartPushNotificationsLRP();
+                // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
+                if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment) &&
+                    CompareStringOrdinal(package.id.c_str(), static_cast<int>(package.id.size() - 3), MSIX_SINGLETON_X86_ID, static_cast<int>(package.id.size() - 3), TRUE) == CSTR_EQUAL)
+                {
+                    RestartPushNotificationsLRP();
+                }
+            }
         }
 
         return S_OK;

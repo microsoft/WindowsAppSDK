@@ -39,17 +39,22 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationChannel::Close()
     {
+        HRESULT hr{ S_OK };
+
+        auto logTelemetry{ wil::scope_exit([&]() {
+            PushNotificationTelemetry::LogCloseChannel(hr);
+        }) };
+
         try
         {
             THROW_IF_FAILED(PushNotifications_CloseChannel(m_channelInfo.appId.c_str(), m_channelInfo.channelId.c_str()));
-            PushNotificationTelemetry::ChannelClosedByApi(S_OK);
         }
 
         catch (...)
         {
             auto channelCloseException { hresult_error(to_hresult()) };
 
-            PushNotificationTelemetry::ChannelClosedByApi(channelCloseException.code());
+            hr = channelCloseException.code();
 
             if (channelCloseException.code() != HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
             {

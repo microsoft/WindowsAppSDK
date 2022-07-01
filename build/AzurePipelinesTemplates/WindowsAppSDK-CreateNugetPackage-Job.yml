@@ -7,7 +7,6 @@ parameters:
 # The "primary" build arch is the one that the nuspec gets its winmd, pri, and other neutral files from
   primaryBuildArch: x86
   buildFlavor: Release
-  prereleaseVersionTag: 'prerelease'
   condition: ''
   buildPool: ''
 
@@ -63,6 +62,9 @@ jobs:
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.Bootstrap.CS.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.Bootstrap.CS.targets"
         Copy-Item -Path "$targetsFilePath\WindowsAppSDK-Nuget-Native.Bootstrap.targets" -Destination "$fullpackagePath\build\native\WindowsAppSDK-Nuget-Native.Bootstrap.targets"
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.BootstrapCommon.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.BootstrapCommon.targets"
+        Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.targets"
+        Copy-Item -Path "$targetsFilePath\WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.targets" -Destination "$fullpackagePath\build\native\WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.targets"
+        Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets"
 
         Copy-Item -Path "$targetsFilePath\AppxManifest.xml" -Destination "$fullpackagePath\AppxManifest.xml"
         $manifestPath = $fullpackagePath+'\manifests';
@@ -97,7 +99,13 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        $packageVersion = '$(version).${{ parameters.prereleaseVersionTag }}'
+        $packageVersion = '$(version)'
+        $pipelineType = '$(PipelineType)'
+        $sourceBranchName = '$(Build.SourceBranchName)'
+        if ($sourceBranchName -eq 'main' -or $sourceBranchName -eq 'develop')
+        {
+          $packageVersion = $packageVersion + '.' + $sourceBranchName + '.' + $pipelineType
+        }
         Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
         Write-Host "##vso[task.setvariable variable=packageVersion;isOutput=true;]$packageVersion"
         Write-Host $packageVersion

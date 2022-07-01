@@ -6,6 +6,7 @@
 
 #include <unknwn.h>
 
+#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 #include <sddl.h>
 #include <appmodel.h>
@@ -39,6 +40,16 @@
 #include <ShObjIdl_core.h>
 
 #include <winrt/Microsoft.Windows.PushNotifications.h>
+#include <WindowsAppRuntime.SelfContained.h>
+#include <WindowsAppRuntime.VersionInfo.h>
+
+#define VERIFY_THROWS_HR(expression, hr)        \
+            VERIFY_THROWS_SPECIFIC(expression,          \
+                winrt::hresult_error,                   \
+                [&](winrt::hresult_error e) -> bool     \
+                {                                       \
+                    return (e.code() == hr);    \
+                })
 
 namespace TP = ::Test::Packages;
 namespace TAEF = ::Test::TAEF;

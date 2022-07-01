@@ -26,7 +26,7 @@
   </PropertyGroup>
 
   <Target Name="DirectoryBuildPropsInfo">
-    <Message Condition="$(WindowsAppSDKBuildPipeline) == '1'" Importance="High" Text="Directory.Build.props detects WindowsAppSDKBuildPipeline=$(WindowsAppSDKBuildPipeline)"/>
+    <Message Condition="'$(WindowsAppSDKBuildPipeline)' == '1'" Importance="High" Text="Directory.Build.props detects WindowsAppSDKBuildPipeline=$(WindowsAppSDKBuildPipeline)"/>
 
     <Error Condition="!Exists('$(RepoTestCertificatePFX)')" Text="$(RepoTestCertificatePFX) not found. Run '$(RepoRoot)\tools\DevCheck.cmd' to generate the test certificate." />
     <Error Condition="!Exists('$(RepoTestCertificatePWD)')" Text="$(RepoTestCertificatePWD) not found. Run '$(RepoRoot)\tools\DevCheck.cmd' to generate the test certificate." />
@@ -48,11 +48,8 @@
     </Midl>
   </ItemDefinitionGroup>
 
-  <!-- Build with the hybrid CRT (Universal CRT + Static VS CRT (for what little the Universal CRT doesn't cover) -->
-  <Import Project="$(MSBuildThisFileDirectory)HybridCRT.props" />
-
-  <!-- Build with APIscan-friendly compiler+linker options -->
-  <Import Project="$(MSBuildThisFileDirectory)ApiScan.Cpp.props" />
+  <!-- Define our standardardized options for C/C++ builds -->
+  <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK.Build.Cpp.props" />
 
   <!-- Load the test certificate's password (so we do it once for reuse across projects) -->
   <PropertyGroup Condition="'$(RepoTestCertificatePFX)' == ''">
@@ -65,4 +62,9 @@
     <RepoTestCertificatePassword>$([System.IO.File]::ReadAllText('$(RepoTestCertificatePWD)').TrimEnd())</RepoTestCertificatePassword>
     <RepoTestCertificatePasswordRedacted>...redacted...</RepoTestCertificatePasswordRedacted>
   </PropertyGroup>
+
+  <!-- 'Clean As We Go' if necessary (specified). Prevents build agents from running out of disk space -->
+  <Target Name="CleanIntermediateFiles" AfterTargets="Build" Condition="'$(WindowsAppSDKCleanIntermediateFiles)' == 'true'">
+    <RemoveDir Directories="$(IntermediateOutputPath)" />
+  </Target>
 </Project>

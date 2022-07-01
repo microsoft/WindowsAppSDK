@@ -32,7 +32,7 @@ winrt::IAsyncOperation<winrt::PushNotificationChannel> RequestChannelAsync()
 
     // Setup the inprogress event handler
     channelOperation.Progress(
-        [](auto&& sender, auto&& args)
+        [](auto&& /*sender*/, auto&& args)
         {
             if (args.status == winrt::PushNotificationChannelStatus::InProgress)
             {
@@ -87,47 +87,23 @@ winrt::PushNotificationChannel RequestChannel()
     return result;
 }
 
-// This function is intended to be called in the unpackaged scenario.
-void SetDisplayNameAndIcon() noexcept try
-{
-    // Not mandatory, but it's highly recommended to specify AppUserModelId
-    THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(L"TestPushAppId"));
-
-    // Icon is mandatory
-    winrt::com_ptr<IPropertyStore> propertyStore;
-    wil::unique_hwnd hWindow{ GetConsoleWindow() };
-
-    THROW_IF_FAILED(SHGetPropertyStoreForWindow(hWindow.get(), IID_PPV_ARGS(&propertyStore)));
-
-    wil::unique_prop_variant propVariantIcon;
-    wil::unique_cotaskmem_string sth = wil::make_unique_string<wil::unique_cotaskmem_string>(LR"(%SystemRoot%\system32\@WLOGO_96x96.png)");
-    propVariantIcon.pwszVal = sth.release();
-    propVariantIcon.vt = VT_LPWSTR;
-    THROW_IF_FAILED(propertyStore->SetValue(PKEY_AppUserModel_RelaunchIconResource, propVariantIcon));
-
-    // App name is not mandatory, but it's highly recommended to specify it
-    wil::unique_prop_variant propVariantAppName;
-    wil::unique_cotaskmem_string prodName = wil::make_unique_string<wil::unique_cotaskmem_string>(L"The Push Notification Demo App");
-    propVariantAppName.pwszVal = prodName.release();
-    propVariantAppName.vt = VT_LPWSTR;
-    THROW_IF_FAILED(propertyStore->SetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, propVariantAppName));
-}
-CATCH_LOG()
-
 int main()
 {
     if (!Test::AppModel::IsPackagedProcess())
     {
         constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppRuntime.Test.DDLM" };
         constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
-        RETURN_IF_FAILED(MddBootstrapTestInitialize(c_PackageNamePrefix, c_PackagePublisherId));
+        constexpr PCWSTR c_FrameworkPackageFamilyName = L"Microsoft.WindowsAppRuntime.Framework-4.1_8wekyb3d8bbwe";
+        constexpr PCWSTR c_MainPackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore-4.1_8wekyb3d8bbwe";
+        RETURN_IF_FAILED(MddBootstrapTestInitialize(c_PackageNamePrefix, c_PackagePublisherId, c_FrameworkPackageFamilyName, c_MainPackageFamilyName));
 
         // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
         const UINT32 c_Version_MajorMinor{ 0x00040001 };
         const PACKAGE_VERSION minVersion{};
         RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
 
-        SetDisplayNameAndIcon();
+        // Not mandatory, but it's highly recommended to specify AppUserModelId
+        THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(L"PushTestAppId"));
     }
 
     // Register Push Event for Foreground

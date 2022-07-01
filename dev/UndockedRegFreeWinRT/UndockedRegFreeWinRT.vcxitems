@@ -23,4 +23,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)typeresolution.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)urfw.h" />
   </ItemGroup>
+  <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)UndockedRegFreeWinRT-AutoInitializer.cpp" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)UndockedRegFreeWinRT-AutoInitializer.cs" />
+  </ItemGroup>
 </Project>

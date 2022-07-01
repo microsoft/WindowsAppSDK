@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.SelfContained.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.VersionInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Identity.h" />
@@ -25,5 +26,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Utf8.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Security.IntegrityLevel.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.SelfContained.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.VersionInfo.h" />
   </ItemGroup>
 </Project>

@@ -4,11 +4,11 @@ import "..\AppLifecycle\AppLifecycle.idl";
 
 namespace Microsoft.Windows.AppNotifications
 {
-    [contractversion(1)]
-    apicontract WindowsAppNotificationsContract {}
+    [contractversion(2)]
+    apicontract AppNotificationsContract {}
 
     // Event args for the Notification Activation
-    [contract(WindowsAppNotificationsContract, 1)]
+    [contract(AppNotificationsContract, 1)]
     runtimeclass AppNotificationActivatedEventArgs
     {
         // Arguments from the invoked button. Empty for Default Activation with no launch args specified in payload.
@@ -19,7 +19,7 @@ namespace Microsoft.Windows.AppNotifications
     }
 
     // Notification Progress Data
-    [contract(WindowsAppNotificationsContract, 1)]
+    [contract(AppNotificationsContract, 1)]
     runtimeclass AppNotificationProgressData
     {
         // Initializes a new Instance of NotificationProgressData
@@ -27,7 +27,7 @@ namespace Microsoft.Windows.AppNotifications
         AppNotificationProgressData(UInt32 sequenceNumber);
 
         // Gets or sets a non-zero sequence number of this notification data.
-        // When multiple NotificationProgressData objects are received, the system displays the data with the greatest non-zero number. 
+        // When multiple NotificationProgressData objects are received, the system displays the data with the greatest non-zero number.
         UInt32 SequenceNumber;
 
         // Gets/Sets the value for the title. Binds to {progressTitle} in progress xml tag.
@@ -44,7 +44,7 @@ namespace Microsoft.Windows.AppNotifications
     }
 
     // The Notification User Setting or Notification Group Policy Setting
-    [contract(WindowsAppNotificationsContract, 1)]
+    [contract(AppNotificationsContract, 1)]
     enum AppNotificationSetting
     {
         Enabled, // Notification is not blocked by settings or group policy
@@ -52,25 +52,27 @@ namespace Microsoft.Windows.AppNotifications
         DisabledForUser, // Notification is blocked by a user defined Global Setting
         DisabledByGroupPolicy, // Notification is blocked by Group Policy
         DisabledByManifest, // Notification is blocked by a setting in the manifest. Only for packaged applications.
+        Unsupported, // The current operation was called when AppNotifications are not supported
     };
 
     // The Result for a Notification Progress related operation
-    [contract(WindowsAppNotificationsContract, 1)]
+    [contract(AppNotificationsContract, 1)]
     enum AppNotificationProgressResult
     {
         Succeeded, // The progress operation succeeded
         AppNotificationNotFound, // The progress operation failed to find a Notification to process updates
+        Unsupported, // The current operation was called when AppNotifications are not supported
     };
 
     // The Priority of the Notification UI associated with it's popup in the Action Centre
-    [contract(WindowsAppNotificationsContract, 1)]
+    [contract(AppNotificationsContract, 1)]
     enum AppNotificationPriority
     {
         Default, // The notification should have default behavior in terms of delivery and display priority during connected standby mode.
         High, // The notification should be treated as high priority. For desktop PCs, this means during connected standby mode the incoming notification can turn on the screen for Surface-like devices if it doesn't have a closed lid detected.
     };
 
-    [contract(WindowsAppNotificationsContract, 1)]
+    [contract(AppNotificationsContract, 1)]
     runtimeclass AppNotification
     {
         // The notification payload representation in xml
@@ -106,9 +108,13 @@ namespace Microsoft.Windows.AppNotifications
     }
 
     // The manager class which encompasses all App Notification API Functionality
-    [contract(WindowsAppNotificationsContract, 1)]
+    [contract(AppNotificationsContract, 1)]
     runtimeclass AppNotificationManager
     {
+        // Checks to see if the APIs are supported for the Desktop app
+        // Certain scenarios are unsupported by AppNotifications
+        static Boolean IsSupported();
+
         // Gets a Default instance of a AppNotificationManager
         static AppNotificationManager Default{ get; };
 
@@ -116,6 +122,10 @@ namespace Microsoft.Windows.AppNotifications
         // For Packaged apps, the COM server is defined in the manifest. The Process calling Register() and the process defined as the COM server are required to be the same.
         // For Unpackaged apps, the caller process will be registered as the COM server. And assets like displayname and icon will be gleaned from Shell and registered as well.
         void Register();
+
+        // Unpackaged Apps can call this API to register custom displayname and icon for AppNotifications and register themselves as a COM server.
+        [contract(AppNotificationsContract, 2)]
+        void Register(String displayName, Windows.Foundation.Uri iconUri);
 
         // Unregisters the COM Service so that a subsequent activation will launch a new process
         void Unregister();

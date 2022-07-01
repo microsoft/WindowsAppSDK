@@ -85,8 +85,8 @@ HRESULT LoadManifestFromPath(std::wstring path)
         return COR_E_ARGUMENT;
     }
     std::wstring ext(path.substr(path.size() - 4, path.size()));
-    if ((CompareStringOrdinal(ext.c_str(), -1, L".exe.", -1, TRUE) == CSTR_EQUAL) ||
-        (CompareStringOrdinal(ext.c_str(), -1, L".dll.", -1, TRUE) == CSTR_EQUAL))
+    if ((CompareStringOrdinal(ext.c_str(), -1, L".exe", -1, TRUE) == CSTR_EQUAL) ||
+        (CompareStringOrdinal(ext.c_str(), -1, L".dll", -1, TRUE) == CSTR_EQUAL))
     {
         return LoadFromEmbeddedManifest(path.c_str());
     }
@@ -188,11 +188,12 @@ HRESULT ParseFileTag(IXmlReader* xmlReader)
     HRESULT hr = S_OK;
     XmlNodeType nodeType;
     PCWSTR localName = nullptr;
-    PCWSTR fileName = nullptr;
+    PCWSTR value = nullptr;
     hr = xmlReader->MoveToAttributeByName(L"name", nullptr);
     RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_SXS_MANIFEST_PARSE_ERROR), hr != S_OK);
-    RETURN_IF_FAILED(xmlReader->GetValue(&fileName, nullptr));
-    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_SXS_MANIFEST_PARSE_ERROR), fileName == nullptr || !fileName[0]);
+    RETURN_IF_FAILED(xmlReader->GetValue(&value, nullptr));
+    std::wstring fileName{ !value ? L"" : value };
+    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_SXS_MANIFEST_PARSE_ERROR), fileName.empty());
     auto locale = _create_locale(LC_ALL, "C");
     while (S_OK == xmlReader->Read(&nodeType))
     {
@@ -201,7 +202,7 @@ HRESULT ParseFileTag(IXmlReader* xmlReader)
             RETURN_IF_FAILED(xmlReader->GetLocalName(&localName, nullptr));
             if (localName != nullptr && _wcsicmp_l(localName, L"activatableClass", locale) == 0)
             {
-                RETURN_IF_FAILED(ParseActivatableClassTag(xmlReader, fileName));
+                RETURN_IF_FAILED(ParseActivatableClassTag(xmlReader, fileName.c_str()));
             }
         }
         else if (nodeType == XmlNodeType_EndElement)
@@ -405,7 +406,7 @@ HRESULT WinRTGetMetadataFile(
     // will create an instance of the metadata reader to dispense metadata files.
     if (metaDataDispenser == nullptr)
     {
-        // Avoid using CoCreateInstance here, which will trigger a Feature-On-Demand (FOD) 
+        // Avoid using CoCreateInstance here, which will trigger a Feature-On-Demand (FOD)
         // installation request of .NET Framework 3.5 if it's not already installed. In the
         // mean time, Windows App SDK runtime doesn't need .NET Framework 3.5.
         RETURN_IF_FAILED(MetaDataGetDispenser(CLSID_CorMetaDataDispenser,

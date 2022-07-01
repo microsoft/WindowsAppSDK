@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 #include "NotificationActivationCallback.h"
-#include <TestDef.h>
+#include "AppNotification-Test-Constants.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -122,7 +122,7 @@ namespace Test::ToastNotifications
 
             DWORD exitCode{};
             VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(m_processHandle.get(), &exitCode));
-            VERIFY_ARE_EQUAL(exitCode, 0);
+            VERIFY_ARE_EQUAL(exitCode, 0u);
         }
 
         wil::unique_handle RunUnpackaged(const std::wstring& command, const std::wstring& args, const std::wstring& directory)
@@ -161,7 +161,7 @@ namespace Test::ToastNotifications
 
             DWORD exitCode{};
             VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(processHandle.get(), &exitCode));
-            VERIFY_ARE_EQUAL(exitCode, 0);
+            VERIFY_ARE_EQUAL(exitCode, 0u);
         }
 
         TEST_METHOD(VerifyBackgroundActivation)
@@ -577,6 +577,46 @@ namespace Test::ToastNotifications
         TEST_METHOD(VerifyToastUpdateZeroSequenceFail_Unpackaged)
         {
             RunTestUnpackaged(L"VerifyToastUpdateZeroSequenceFail_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyIconPathExists_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyIconPathExists_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRegisterWithNullDisplayNameFail_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRegisterWithNullDisplayNameFail_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRegisterWithNullIconFail_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRegisterWithNullIconFail_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRegisterWithNullDisplayNameAndNullIconFail_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRegisterWithNullDisplayNameAndNullIconFail_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyShowToastWithCustomDisplayNameAndIcon_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyShowToastWithCustomDisplayNameAndIcon_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRegisterWithDisplayNameAndInvalidIconPathFail_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRegisterWithDisplayNameAndInvalidIconPathFail_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRegisterWithEmptyDisplayNameFail_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyRegisterWithEmptyDisplayNameFail_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyRegisterWithAssetsFail)
+        {
+            RunTest(L"VerifyRegisterWithAssetsFail", testWaitTime());
         }
     };
 }

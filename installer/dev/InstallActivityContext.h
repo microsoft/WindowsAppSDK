@@ -17,27 +17,29 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         RegisterPackage = 0x5,
         ProvisionPackage = 0x6,
         RestartPushNotificationsLRP = 0x7,
+        StagePackage = 0x8,
     };
 
     struct WilFailure
     {
         wil::FailureType type;
         HRESULT hr;
-        std::wstring file;
-        unsigned int lineNumer;
+        std::string file;
+        unsigned int lineNumber;
         std::wstring message;
-        std::wstring code;
     };
 
     class Context
     {
-        InstallStage m_installStage{ InstallStage::None };
+        InstallStage m_installStage{};
         std::wstring m_currentResourceId;
+        HRESULT m_deploymentErrorHresult{};
         HRESULT m_deploymentErrorExtendedHresult{};
         std::wstring m_deploymentErrorText;
         GUID m_deploymentErrorActivityId{};
         WindowsAppRuntimeInstaller_TraceLogger::Install m_activity;
         WilFailure m_lastFailure{};
+        HANDLE m_hEventLog;
 
     public:
         static WindowsAppRuntimeInstaller::InstallActivity::Context& Get();
@@ -52,6 +54,11 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         const std::wstring& GetCurrentResourceId() const
         {
             return m_currentResourceId;
+        }
+
+        const HRESULT& GetDeploymentErrorHresult() const
+        {
+            return m_deploymentErrorHresult;
         }
 
         const HRESULT& GetDeploymentErrorExtendedHResult() const
@@ -90,6 +97,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         }
 
         void SetDeploymentErrorInfo(
+            const HRESULT& deploymentErrorHresult,
             const HRESULT& deploymentErrorExtendedHresult,
             const std::wstring& deploymentErrorText,
             const GUID& deploymentErrorActivityId);
@@ -105,6 +113,29 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         }
 
         void SetLastFailure(const wil::FailureInfo& failureInfo);
+
+        const HANDLE& RegisterInstallerEventSourceW()
+        {
+            m_hEventLog = RegisterEventSourceW(nullptr, L"WindowsAppRuntime Installer");
+            return m_hEventLog;
+        }
+
+        const BOOL& DeregisterInstallerEventSourceW()
+        {
+            return DeregisterEventSource(m_hEventLog);
+        }
+
+        BOOL LogInstallerCommandLineArgs(PCWSTR cmdlineArgs);
+
+        BOOL LogInstallerSuccess()
+        {
+            return ReportEventW(m_hEventLog, EVENTLOG_SUCCESS, 0, 0, nullptr, 0, 0, nullptr, nullptr);
+        }
+
+        BOOL LogInstallerFailureEvent(HRESULT hresult);
+
+        BOOL LogInstallerFailureEventWithResourceId(const WORD eventLogType, const HRESULT& hresult, PCWSTR failedComponentMessageFormat, const PCWSTR resourceId = nullptr);
+
     };
 
     static WindowsAppRuntimeInstaller::InstallActivity::Context g_installActivityContext;
