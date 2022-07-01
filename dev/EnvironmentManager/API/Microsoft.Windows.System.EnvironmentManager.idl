@@ -5,7 +5,10 @@
 
 namespace Microsoft.Windows.System
 {
-    [feature(Feature_EnvironmentManager)]
+    [contractversion(1)]
+    apicontract EnvironmentManagerContract{};
+
+    [contract(EnvironmentManagerContract, 1)]
     runtimeclass EnvironmentManager
     {
         static EnvironmentManager GetForProcess();

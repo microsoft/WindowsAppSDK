@@ -23,6 +23,9 @@ parameters:
   - name: TransportPackageArtifactName
     type: string
     default: ''
+  - name: WindowsAppSDKPackageVersion
+    type: string
+    default: ''
   - name: BuildType
     displayName: "Build Type"
     type: string
@@ -43,7 +46,7 @@ steps:
     - task: DownloadBuildArtifacts@0
       inputs:
         artifactName: ${{ parameters.TransportPackageArtifactName }}
-        downloadPath: '$(Build.SourcesDirectory)\build\packages'
+        downloadPath: '$(Build.SourcesDirectory)\localpackages'
         itemPattern: |
           **/*.nupkg
 
@@ -61,12 +64,14 @@ steps:
     inputs:
       filePath: 'BuildAll.ps1'
       arguments: >
-        -WindowsAppSDKPackageVersion ""
-        -BuildType ${{ parameters.BuildType }}
+        -WindowsAppSDKPackageVersion ${{ parameters.WindowsAppSDKPackageVersion }}
+        -Channel ${{ parameters.BuildType }}
         -Checkpoint "none"
         -Platform "x86,x64,arm64"
         -Configuration "release,debug"
-        -YamlStep "none"
+        -AzureBuildStep "all"
+        -TransportPackages "none"
+        -AzurePipelineBuild
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Windows App SDK Packages'

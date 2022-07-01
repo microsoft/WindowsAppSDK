@@ -453,9 +453,6 @@ inline EnvironmentVariables GetEnvironmentVariablesForProcess()
     return environmentVariables.GetView();
 }
 
-
-
-
 /// Compares two IMapView<winrt::hstring, winrt::hstring> collections for
 /// 1. Have the same size
 /// 2. All the keys in underTest are in real

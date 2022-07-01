@@ -81,9 +81,9 @@ for more details.
 Windows App SDK 1.0 has 4 MSIX packages
 
 * `Microsoft.WindowsAppRuntime` aka **WARfwk**
-* `Microsoft.WindowsAppRuntime.Main` aka **WARmain**
-* `Microsoft.WindowsAppRuntime.Singleton` aka **WARsingleton**
-* `Microsoft.WindowsAppRuntime.DDLM` aka **WARddlm**
+* `MicrosoftCorporationII.WinAppRuntime.Main` aka **WARmain**
+* `MicrosoftCorporationII.WinAppRuntime.Singleton` aka **WARsingleton**
+* `Microsoft.WinAppRuntime.DDLM` aka **WARddlm**
 
 WARsingleton supplements WARmain to provide a mechanism for features needing singular global
 behavior across all versions of Windows App SDK. See [Windows App SDK: MSIX Packages](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/MSIXPackage.md)
@@ -393,11 +393,18 @@ MinVersion
 Windows App SDK 0.8+ has 3 MSIX packages. We have choices for package Name patterns for 0.8 and 1.x.
 
 Assuming Breaking Change Boundary for v0.x and v1+'s decision are `Major.Minor` version we have the
-following naming patterns...
+following naming patterns release 0.x...
 
 * WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
 * WARmain: `Microsoft.WindowsAppRuntime.Main.<rmajor>.<rminor>[-tag]`
 * WARddlm: `Microsoft.WindowsAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
+
+and release 1.x...
+
+* WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
+* WARmain: `MicrosoftCorporationII.WinAppRuntime.Main.<rmajor>.<rminor>[-shorttag]`
+* WARsingleton: `MicrosoftCorporationII.WinAppRuntime.Singleton[-shorttag]`
+* WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
 
 where
 
@@ -428,22 +435,22 @@ This leads to package Name length issues even for common cases:
 | --- | :--- | :---: |
 |WARfwk |Microsoft.WindowsAppRuntime.1.15-preview1|41|
 |WARmain|Microsoft.WindowsAppRuntime.Main.1.15-preview1|46|
-|WARmain|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
-|WARddlm|Microsoft.WindowsAppRuntime.DDLM.1.15.12345.24680-arm64-preview1|**<span style="color:red">64</span>**|
+|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
+|WARddlm|Microsoft.WinAppRuntime.DDLM.1.15.12345.24680-arm64-preview1|**<span style="color:red">64</span>**|
 
 |Package|Min|MinLength|
 | --- | :--- | :---: |
 |WARfwk |Microsoft.WindowsAppRuntime.1.0-preview1|40|
 |WARmain|Microsoft.WindowsAppRuntime.Main.1.0-preview1|45|
-|WARmain|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
-|WARddlm|Microsoft.WindowsAppRuntime.DDLM.1.0.0.0-arm64-preview1|**<span style="color:red">52</span>**|
+|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
+|WARddlm|Microsoft.WinAppRuntime.DDLM.1.0.0.0-arm64-preview1|**<span style="color:red">52</span>**|
 
 |Package|Max|MaxLength|
 | --- | :--- | :---: |
 |WARfwk |Microsoft.WindowsAppRuntime.65535.65535-preview1|48|
-|WARmain|Microsoft.WindowsAppRuntime.Main.65535.65535-preview1|**<span style="color:red">60</span>**|
-|WARmain|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
-|WARddlm|Microsoft.WindowsAppRuntime.DDLM.65535.65535.65535.65535-arm64-preview1|**<span style="color:red">71</span>**|
+|WARmain|Microsoft.WindowsAppRuntime.Main.65535.65535-preview1|53|
+|WARsingleton|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
+|WARddlm|Microsoft.WinAppRuntime.DDLM.65535.65535.65535.65535-arm64-preview1|**<span style="color:red">71</span>**|
 
 Possible options we can use to shorten package Name:
 
@@ -451,8 +458,8 @@ Possible options we can use to shorten package Name:
 * Dictate max values e.g. Major=0-99
 * Encode values as base-16
 * Replace -channel with a shorter string e.g. replace "-preview" with "-pre", "-p", "p"
-* Encode the channel name in the delimiter between name+version e.g. Microsoft.WindowsAppRuntime.DDLM<span style="color:red; font-size:xx-large"><b>.preview1</b></span>.1.0.0.0-arm64
-* Encode tag in the delimiter between version+architecture e.g. Microsoft.WindowsAppRuntime.DDLM.1.0.0.0<span style="color:red"><b>p1</b></span>arm64 using P1 for Preview1, E1=Experimental1, ...
+* Encode the channel name in the delimiter between name+version e.g. Microsoft.WinAppRuntime.DDLM<span style="color:red; font-size:xx-large"><b>.preview1</b></span>.1.0.0.0-arm64
+* Encode tag in the delimiter between version+architecture e.g. Microsoft.WinAppRuntime.DDLM.1.0.0.0<span style="color:red"><b>p1</b></span>arm64 using P1 for Preview1, E1=Experimental1, ...
 * Name WARddlm differently from WARfwk and WARmain e.g. use "-p1" for WARddlm regardless if WARfwk and WARmain use "-preview1"
 * ???
 
@@ -469,10 +476,10 @@ Windows App SDK 0.8 will use package Names of...
 * WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
 * WARmain: `Microsoft.WindowsAppRuntime.Main.<rmajor>.<rminor>[-tag]`
 * WARsingleton: `Microsoft.WindowsAppRuntime.Singleton[-tag]`
-* WARddlm: `Microsoft.WindowsAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
+* WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
 
 Using Decision 5: Version Encoding = Option D (NPPP.E.B.0) WARddlm's maximum package Name length is
-`Microsoft.WindowsAppRuntime.DDLM.1714.3944.123.24680-arm64-p3` = 58 characters. This can be reduced
+`Microsoft.WinAppRuntime.DDLM.1714.3944.123.24680-arm64-p3` = 58 characters. This can be reduced
 with the following rules:
 
 * Major version <= 99
@@ -508,8 +515,8 @@ i.e. format encoding `NPPP.E.B.0`. See
 length constraints. The specific packages Names in Windows App SDK 1.0:
 
 * WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
-* WARmain: `Microsoft.WindowsAppRuntime.Main.<rmajor>.<rminor>[-tag]`
-* WARmain: `Microsoft.WindowsAppRuntime.Singleton[-tag]`
+* WARmain: `MicrosoftCorporationII.WinAppRuntime.Main.<rmajor>.<rminor>[-shorttag]`
+* WARsingleton: `MicrosoftCorporationII.WinAppRuntime.Singleton[-shorttag]`
 * WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
 
 See [2.5. Decision 5: Package Names](#25-decision-5-package-names) for more details.

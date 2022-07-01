@@ -1,8 +1,4 @@
 {
-    "sdk": {
-        "version": "5.0.402",
-        "rollForward": "latestMajor"
-    },
     "msbuild-sdks": {
         "Microsoft.Build.NoTargets" : "1.0.88"
     }

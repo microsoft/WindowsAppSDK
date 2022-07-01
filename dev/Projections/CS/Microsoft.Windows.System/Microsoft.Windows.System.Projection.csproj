@@ -20,7 +20,8 @@
 
   <PropertyGroup>
     <CSWinRTIncludes>Microsoft.Windows.System</CSWinRTIncludes>
-    <CSWinRTWindowsMetadata>$(CsWinRTDependencyWindowsSdkPackagePackageVersion)</CSWinRTWindowsMetadata>
+    <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
+    <WindowsSdkPackageVersion>10.0.17763.$(CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion)</WindowsSdkPackageVersion>
   </PropertyGroup>
 
   <!-- Configure the release build binary to be as required by internal API scanning tools. -->
@@ -35,7 +36,7 @@
 
   <ItemGroup>
     <Reference Include="Microsoft.Windows.System">
-      <HintPath>$(OutDir)..\WindowsAppSDK_DLL\StrippedWinMD\Microsoft.Windows.System.winmd</HintPath>
+      <HintPath>$(OutDir)..\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.System.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>

@@ -3,12 +3,25 @@ name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
+- name: buildOutputDir
+  value: $(Build.SourcesDirectory)\BuildOutput
 
 jobs:
-- job: CredScan
+- job: PreChecks
   pool:
     vmImage: 'windows-2019'
   steps:
+  - task: PowerShell@2
+    displayName: 'Smoke test props and targets in \build\NuSpecs'
+    inputs:
+      targetType: 'inline'
+      script: |
+        $targetPaths = "$(Build.SourcesDirectory)\build\NuSpecs\*.targets"
+        $propPaths = "$(Build.SourcesDirectory)\build\NuSpecs\*.props"
+        Get-ChildItem $targetPaths | ForEach-Object { $_.Name; [xml](Get-Content $_) | Out-Null }
+        Get-ChildItem $propPaths | ForEach-Object { $_.Name; [xml](Get-Content $_) | Out-Null }
+      failOnStderr: true
+
   # Scans the root source folder for security vulnerability
   - task: CredScan@2
     inputs:
@@ -55,14 +68,23 @@ jobs:
         buildConfiguration: 'Release'
 
   variables:
-    buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
     publishDir : $(Build.ArtifactStagingDirectory)
   steps:
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
     parameters:
       channel: ${{ variables.channel }}
+      # This pipeline is unable to access OneBranch, so skip running BinaryAnalysis.
+      runSDLBinaryAnalysis: false
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
+    parameters:
+      GenerateSBOM: false
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish BuildOutput'
+    inputs:
+      artifactName: BuildOutput
+      PathtoPublish: '$(buildOutputDir)'
 
   - task: BinSkim@3
     inputs:
@@ -109,6 +131,15 @@ jobs:
   - template: build-mrt.yml
     parameters:
       buildJobName: 'BuildMRTCore'
+      GenerateSBOM: false
+      # This pipeline is unable to access OneBranch, so skip running BinaryAnalysis.
+      runSDLBinaryAnalysis: false
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish BuildOutput'
+    inputs:
+      artifactName: BuildOutput
+      PathtoPublish: '$(buildOutputDir)'
 
   - task: BinSkim@3
     inputs:
@@ -116,6 +147,7 @@ jobs:
       Function: 'analyze'
       AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
       AnalyzeVerbose: true
+
   - task: PostAnalysis@1
     inputs:
       AllTools: false

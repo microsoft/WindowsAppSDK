@@ -136,7 +136,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
         // Previous Value is empty because the EV did not exist.
         // Current value is empty because it was deleted.
         wil::unique_hkey keyChangeTracker{ GetKeyForEVTrackingChange(true, GetPackageFullName(), c_EvKeyName) };
-        VERIFY_ARE_EQUAL(c_EvValueName2, GetEnvironmentVariableFromRegistry(L"PreviousValue", keyChangeTracker.get()));
+        VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableFromRegistry(L"PreviousValue", keyChangeTracker.get()));
         VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableFromRegistry(L"CurrentValue", keyChangeTracker.get()));
     }
 

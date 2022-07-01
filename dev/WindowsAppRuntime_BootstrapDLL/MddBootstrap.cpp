@@ -12,6 +12,18 @@
 
 #include <filesystem>
 
+HRESULT _MddBootstrapInitialize(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion) noexcept;
+void VerifyInitializationIsCompatible(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion);
+void FirstTimeInitialization(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion);
 wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo);
 DLL_DIRECTORY_COOKIE AddFrameworkToPath(PCWSTR path);
 void RemoveFrameworkFromPath(PCWSTR frameworkPath);
@@ -46,50 +58,309 @@ void FindDDLMViaEnumeration(
     std::wstring& ddlmPackageFamilyName,
     std::wstring& ddlmPackageFullName);
 CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension& appExtension);
+bool IsOptionEnabled(PCWSTR name);
+HRESULT MddBootstrapInitialize_Log(
+    HRESULT hrInitialize,
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion) noexcept;
+HRESULT MddBootstrapInitialize_ShowUI_OnNoMatch(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion);
 
-IDynamicDependencyLifetimeManager* g_lifetimeManager{};
-wil::unique_event g_endTheLifetimeManagerEvent;
-wil::unique_hmodule g_windowsAppRuntimeDll;
-wil::unique_process_heap_string g_packageDependencyId;
-MDD_PACKAGEDEPENDENCY_CONTEXT g_packageDependencyContext{};
+static std::mutex g_initializationLock;
+
+static IDynamicDependencyLifetimeManager* g_lifetimeManager{};
+static wil::unique_event g_endTheLifetimeManagerEvent;
+static wil::unique_hmodule g_windowsAppRuntimeDll;
+static wil::unique_process_heap_string g_packageDependencyId;
+static MDD_PACKAGEDEPENDENCY_CONTEXT g_packageDependencyContext{};
+
+static UINT32 g_initializationMajorMinorVersion{};
+static std::wstring g_initializationVersionTag;
+static PACKAGE_VERSION g_initializationFrameworkPackageVersion{};
 
 static std::wstring g_test_ddlmPackageNamePrefix;
 static std::wstring g_test_ddlmPackagePublisherId;
-
-namespace MddCore
-{
-// Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/WindowsAppSdk/issues/567
-HRESULT FailIfElevated()
-{
-    RETURN_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), Security::IntegrityLevel::IsElevated() || Security::IntegrityLevel::IsElevated(GetCurrentProcessToken()),
-                     "DynamicDependencies Bootstrap doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567");
-    return S_OK;
-}
-}
+static std::wstring g_test_frameworkPackageNamePrefix;
+static std::wstring g_test_mainPackageNamePrefix;
 
 STDAPI MddBootstrapInitialize(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
+    PACKAGE_VERSION minVersion) noexcept
+{
+    return MddBootstrapInitialize2(majorMinorVersion, versionTag, minVersion, MddBootstrapInitializeOptions_None);
+}
+
+STDAPI MddBootstrapInitialize2(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion,
+    MddBootstrapInitializeOptions options) noexcept try
+{
+    auto lock{ std::lock_guard(g_initializationLock) };
+
+    auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
+
+    PWSTR initializationFrameworkPackageFullName{};
+    auto initializationCount{ activityContext.GetInitializeData(initializationFrameworkPackageFullName) };
+    activityContext.SetMddBootstrapAPI(WindowsAppRuntime::MddBootstrap::Activity::MddBootstrapAPI::Initialize);
+    auto threadCallback = wil::ThreadFailureCallback(wilResultLoggingThreadCallback);
+    auto initializeActivity{
+        activityContext.GetInitializeActivity().Start(
+            majorMinorVersion,
+            versionTag,
+            minVersion,
+            static_cast<UINT32>(options),
+            initializationCount) };
+    activityContext.SaveInitializeActivityId(*initializeActivity.Id());
+
+    // Dynamic Dependencies Bootstrap API requires an unpackaged process?
+    HRESULT hr{};
+    if (AppModel::Identity::IsPackagedProcess())
+    {
+        if (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnPackageIdentity_NOOP))
+        {
+            // The process has package identity but that's OK. Do nothing
+            return S_OK;
+        }
+        hr = LOG_HR_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), "MddBootstrapInitialize called in a process with package identity");
+    }
+    else
+    {
+        hr = _MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion);
+    }
+    if (FAILED(hr))
+    {
+        LOG_IF_FAILED(MddBootstrapInitialize_Log(hr, majorMinorVersion, versionTag, minVersion));
+
+        // NOTE: IsDebuggerPresent()=TRUE if running under a debugger context.
+        //       IsDebuggerPresent()=FALSE if not running under a debugger context, even if AEDebug is set.
+        if (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnError_DebugBreak) ||
+            (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnError_DebugBreak_IfDebuggerAttached) && IsDebuggerPresent()) ||
+            IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_BOOTSTRAP_INITIALIZE_DEBUGBREAK"))
+        {
+            DebugBreak();
+        }
+
+        if (hr == HRESULT_FROM_WIN32(ERROR_NO_MATCH))
+        {
+            if (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnNoMatch_ShowUI) ||
+                IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_BOOTSTRAP_INITIALIZE_SHOWUI"))
+            {
+                LOG_IF_FAILED(MddBootstrapInitialize_ShowUI_OnNoMatch(majorMinorVersion, versionTag, minVersion));
+            }
+        }
+
+        if (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnError_FailFast) ||
+            IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_BOOTSTRAP_INITIALIZE_FAILFAST"))
+        {
+            FAIL_FAST_HR_MSG(hr,
+                             "Bootstrap initialize(0x%08X, '%ls', %hu.%hu.%hu.%hu)",
+                             majorMinorVersion, (!versionTag ? L"" : versionTag),
+                             minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
+        }
+        activityContext.StopActivityForWilReturnHR(true);
+        RETURN_HR(hr);
+    }
+
+    // Success!
+    activityContext.IncrementInitializationCount();
+
+    if (activityContext.GetInitializeActivity().IsRunning())
+    {
+        initializationCount = activityContext.GetInitializeData(initializationFrameworkPackageFullName);
+        initializeActivity.StopWithResult(
+            hr,
+            static_cast<UINT32>(initializationCount),
+            static_cast<UINT32>(WindowsAppRuntime::MddBootstrap::Activity::Context::GetIntegrityFlags()),
+            initializationFrameworkPackageFullName,
+            static_cast <UINT32>(0),
+            static_cast<PCSTR>(nullptr),
+            static_cast <unsigned int>(0),
+            static_cast<PCWSTR>(nullptr),
+            static_cast<PCSTR>(nullptr));
+    }
+    activityContext.SaveInitializeActivityId(GUID_NULL);
+
+    return S_OK;
+}
+CATCH_RETURN();
+
+HRESULT _MddBootstrapInitialize(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
     PACKAGE_VERSION minVersion) noexcept try
 {
-    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
-    THROW_IF_FAILED(MddCore::FailIfElevated());
+    PWSTR initializationFrameworkPackageFullName{};
+    auto initializationCount{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeData(initializationFrameworkPackageFullName) };
 
-    // Dynamic Dependencies Bootstrap API requires a non-packaged process
-    LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), AppModel::Identity::IsPackagedProcess());
+    // Are we already initialized?
+    if (initializationCount > 0)
+    {
+        // Verify the request is compatible with our already initialized state
+        VerifyInitializationIsCompatible(majorMinorVersion, versionTag, minVersion);
+    }
+    else
+    {
+        // First to the key! Do the initialization
+        FirstTimeInitialization(majorMinorVersion, versionTag, minVersion);
+    }
+    return S_OK;
+}
+CATCH_RETURN();
 
-    FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_lifetimeManager != nullptr);
-    FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_windowsAppRuntimeDll != nullptr);
-    FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyId != nullptr);
-    FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyContext != nullptr);
+STDAPI_(void) MddBootstrapShutdown() noexcept
+{
+    auto lock{ std::lock_guard(g_initializationLock) };
 
-    wil::unique_cotaskmem_string packageFullName;
+    auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
+
+    PWSTR initializationFrameworkPackageFullName{};
+    auto initializationCount{ activityContext.GetInitializeData(initializationFrameworkPackageFullName) };
+    activityContext.SetMddBootstrapAPI(WindowsAppRuntime::MddBootstrap::Activity::MddBootstrapAPI::Shutdown);
+    auto threadCallback = wil::ThreadFailureCallback(wilResultLoggingThreadCallback);
+    auto shutdownActivity{
+        activityContext.GetShutdownActivity().Start(
+            static_cast<UINT32>(initializationCount),
+            initializationFrameworkPackageFullName) };
+
+    activityContext.DecrementInitializationCount();
+    if (initializationCount == 1)
+    {
+        // Last one out turn out the lights...
+        if (g_packageDependencyContext && g_windowsAppRuntimeDll)
+        {
+            MddRemovePackageDependency(g_packageDependencyContext);
+            g_packageDependencyContext = nullptr;
+        }
+
+        g_packageDependencyId.reset();
+
+        g_windowsAppRuntimeDll.reset();
+
+        if (g_endTheLifetimeManagerEvent)
+        {
+            g_endTheLifetimeManagerEvent.SetEvent();
+            g_endTheLifetimeManagerEvent.reset();
+        }
+
+        HRESULT hrLifetimeManagerShutdown = S_OK;
+        if (g_lifetimeManager)
+        {
+            hrLifetimeManagerShutdown = g_lifetimeManager->Shutdown();
+            (void)LOG_IF_FAILED(hrLifetimeManagerShutdown);
+
+            g_lifetimeManager->Release();
+            g_lifetimeManager = nullptr;
+        }
+    }
+
+    if (activityContext.GetShutdownActivity().IsRunning())
+    {
+        shutdownActivity.StopWithResult(
+            S_OK,
+            initializationCount - 1,
+            static_cast <UINT32>(0),
+            static_cast<PCSTR>(nullptr),
+            static_cast <unsigned int>(0),
+            static_cast<PCWSTR>(nullptr),
+            static_cast<PCSTR>(nullptr));
+    }
+
+    g_initializationMajorMinorVersion = {};
+    g_initializationVersionTag.clear();
+    g_initializationFrameworkPackageVersion = {};
+
+    activityContext.SaveShutdownActivityId(GUID_NULL);
+}
+
+STDAPI MddBootstrapTestInitialize(
+    _In_ PCWSTR ddlmPackageNamePrefix,
+    _In_ PCWSTR ddlPackagePublisherId,
+    _In_ PCWSTR frameworkPackageNamePrefix,
+    _In_ PCWSTR mainPackageNamePrefix) noexcept try
+{
+    RETURN_HR_IF(E_INVALIDARG, !ddlmPackageNamePrefix);
+    RETURN_HR_IF(E_INVALIDARG, *ddlmPackageNamePrefix == L'0');
+    RETURN_HR_IF(E_INVALIDARG, !ddlPackagePublisherId);
+    RETURN_HR_IF(E_INVALIDARG, *ddlPackagePublisherId == L'0');
+    RETURN_HR_IF(E_INVALIDARG, !frameworkPackageNamePrefix);
+    RETURN_HR_IF(E_INVALIDARG, *frameworkPackageNamePrefix == L'0');
+    RETURN_HR_IF(E_INVALIDARG, !mainPackageNamePrefix);
+    RETURN_HR_IF(E_INVALIDARG, *mainPackageNamePrefix == L'0');
+
+    g_test_ddlmPackageNamePrefix = ddlmPackageNamePrefix;
+    g_test_ddlmPackagePublisherId = ddlPackagePublisherId;
+    g_test_frameworkPackageNamePrefix = frameworkPackageNamePrefix;
+    g_test_mainPackageNamePrefix = mainPackageNamePrefix;
+    return S_OK;
+} CATCH_RETURN();
+
+void VerifyInitializationIsCompatible(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion)
+{
+    // Sanity check we're already initialized
+    // g_lifetimeManager is optional. Don't check it
+    // g_endTheLifetimeManagerEvent is optional. Don't check it
+    FAIL_FAST_HR_IF(E_UNEXPECTED, g_windowsAppRuntimeDll == nullptr);
+    FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyId == nullptr);
+    FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyContext == nullptr);
+
+    // Is the initialization request compatible with the current initialization state?
+    THROW_HR_IF_MSG(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE,
+                    majorMinorVersion != g_initializationMajorMinorVersion,
+                    "MddBootstrapInitialize(***0x%08X***, '%ls', %hu.%hu.%hu.%hu) not compatible with current initialization state (0x%X, '%ls', %hu.%hu.%hu.%hu)",
+                    majorMinorVersion, (!versionTag ? L"" : versionTag),
+                    minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision,
+                    g_initializationMajorMinorVersion, g_initializationVersionTag.c_str(),
+                    g_initializationFrameworkPackageVersion.Major, g_initializationFrameworkPackageVersion.Minor,
+                    g_initializationFrameworkPackageVersion.Build, g_initializationFrameworkPackageVersion.Revision);
+    THROW_HR_IF_MSG(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE,
+                    CompareStringOrdinal((!versionTag ? L"" : versionTag), -1, g_initializationVersionTag.c_str(), -1, TRUE) != CSTR_EQUAL,
+                    "MddBootstrapInitialize(0x%08X, ***'%ls'***, %hu.%hu.%hu.%hu) not compatible with current initialization state (0x%X, '%ls', %hu.%hu.%hu.%hu)",
+                    majorMinorVersion, (!versionTag ? L"" : versionTag),
+                    minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision,
+                    g_initializationMajorMinorVersion, g_initializationVersionTag.c_str(),
+                    g_initializationFrameworkPackageVersion.Major, g_initializationFrameworkPackageVersion.Minor,
+                    g_initializationFrameworkPackageVersion.Build, g_initializationFrameworkPackageVersion.Revision);
+    THROW_HR_IF_MSG(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE,
+                    minVersion.Version > g_initializationFrameworkPackageVersion.Version,
+                    "MddBootstrapInitialize(0x%08X, '%ls', ***%hu.%hu.%hu.%hu***) not compatible with current initialization state (0x%X, '%ls', %hu.%hu.%hu.%hu)",
+                    majorMinorVersion, (!versionTag ? L"" : versionTag),
+                    minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision,
+                    g_initializationMajorMinorVersion, g_initializationVersionTag.c_str(),
+                    g_initializationFrameworkPackageVersion.Major, g_initializationFrameworkPackageVersion.Minor,
+                    g_initializationFrameworkPackageVersion.Build, g_initializationFrameworkPackageVersion.Revision);
+}
+
+void FirstTimeInitialization(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion)
+{
+    // Sanity check we're not already initialized
+    // g_lifetimeManager is optional. Don't check it
+    // g_endTheLifetimeManagerEvent is optional. Don't check it
+    FAIL_FAST_HR_IF(E_UNEXPECTED, g_windowsAppRuntimeDll != nullptr);
+    FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyId != nullptr);
+    FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyContext != nullptr);
+
+    // Make a copy of the versionTag in preparation of succcess
+    auto packageVersionTag{ std::wstring(!versionTag ? L"" : versionTag) };
+
+    // Create the lifetime manager
     wil::com_ptr_nothrow<IDynamicDependencyLifetimeManager> lifetimeManager;
     wil::unique_event endTheLifetimeManagerEvent;
-    CreateLifetimeManager(majorMinorVersion, versionTag, minVersion, lifetimeManager, endTheLifetimeManagerEvent, packageFullName);
+    auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
+    CreateLifetimeManager(majorMinorVersion, versionTag, minVersion, lifetimeManager, endTheLifetimeManagerEvent, activityContext.GetInitializationPackageFullName());
 
     const PACKAGE_INFO* frameworkPackageInfo{};
-    auto packageInfoBuffer{ GetFrameworkPackageInfoForPackage(packageFullName.get(), frameworkPackageInfo) };
+    auto packageInfoBuffer{ GetFrameworkPackageInfoForPackage(activityContext.GetInitializationPackageFullName().get(), frameworkPackageInfo) };
 
     // Temporarily add the framework's package directory to PATH so LoadLibrary can find it and any colocated imports
     wil::unique_dll_directory_cookie dllDirectoryCookie{ AddFrameworkToPath(frameworkPackageInfo->path) };
@@ -102,6 +373,7 @@ STDAPI MddBootstrapInitialize(
         THROW_WIN32_MSG(lastError, "Error in LoadLibrary: %d (0x%X) loading %ls", lastError, lastError, windowsAppRuntimeDllFilename.c_str());
     }
 
+    // Add the framework package to the package graph
     const MddPackageDependencyProcessorArchitectures architectureFilter{};
     const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
     const MddCreatePackageDependencyOptions createOptions{};
@@ -112,58 +384,42 @@ STDAPI MddBootstrapInitialize(
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
     THROW_IF_FAILED(MddAddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, nullptr));
 
-    // Remove out temporary path addition
+    // Remove our temporary path addition
     RemoveFrameworkFromPath(frameworkPackageInfo->path);
     dllDirectoryCookie.reset();
 
+    // Pass along test information (if necessary)
+    if (!g_test_ddlmPackageNamePrefix.empty())
+    {
+        FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_ddlmPackagePublisherId.empty());
+        FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_frameworkPackageNamePrefix.empty());
+        FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_mainPackageNamePrefix.empty());
+
+        uint16_t majorVersion{ static_cast<uint16_t>(majorMinorVersion >> 16) };
+        uint16_t minorVersion{ static_cast<uint16_t>(majorMinorVersion) };
+        PCWSTR packagVersionTagDelimiter{ packageVersionTag.empty() ? L"" : L"-" };
+
+        WCHAR frameworkPackageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
+        wsprintf(frameworkPackageFamilyName, L"%s-%hu.%hu%s%s_8wekyb3d8bbwe", g_test_frameworkPackageNamePrefix.c_str(),
+                 majorVersion, minorVersion, packagVersionTagDelimiter, packageVersionTag.c_str());
+
+        WCHAR mainPackageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
+        wsprintf(mainPackageFamilyName, L"%s-%hu.%hu%s%s_8wekyb3d8bbwe", g_test_mainPackageNamePrefix.c_str(),
+                 majorVersion, minorVersion, packagVersionTagDelimiter, packageVersionTag.c_str());
+        ::WindowsAppRuntime::VersionInfo::TestInitialize(frameworkPackageFamilyName, mainPackageFamilyName);
+    }
+
+    // Track our initialized state
     g_lifetimeManager = lifetimeManager.detach();
     g_endTheLifetimeManagerEvent = std::move(endTheLifetimeManagerEvent);
     g_windowsAppRuntimeDll = std::move(windowsAppRuntimeDll);
     g_packageDependencyId = std::move(packageDependencyId);
     g_packageDependencyContext = packageDependencyContext;
-    return S_OK;
+    //
+    g_initializationMajorMinorVersion = majorMinorVersion;
+    g_initializationVersionTag = std::move(packageVersionTag);
+    g_initializationFrameworkPackageVersion.Version = frameworkPackageInfo->packageId.version.Version;
 }
-CATCH_RETURN();
-
-STDAPI_(void) MddBootstrapShutdown() noexcept
-{
-    if (g_packageDependencyContext && g_windowsAppRuntimeDll)
-    {
-        MddRemovePackageDependency(g_packageDependencyContext);
-        g_packageDependencyContext = nullptr;
-    }
-
-    g_packageDependencyId.reset();
-
-    g_windowsAppRuntimeDll.reset();
-
-    if (g_endTheLifetimeManagerEvent)
-    {
-        g_endTheLifetimeManagerEvent.SetEvent();
-        g_endTheLifetimeManagerEvent.reset();
-    }
-
-    if (g_lifetimeManager)
-    {
-        (void)LOG_IF_FAILED(g_lifetimeManager->Shutdown());
-        g_lifetimeManager->Release();
-        g_lifetimeManager = nullptr;
-    }
-}
-
-STDAPI MddBootstrapTestInitialize(
-    _In_ PCWSTR ddlmPackageNamePrefix,
-    _In_ PCWSTR ddlPackagePublisherId) noexcept try
-{
-    RETURN_HR_IF(E_INVALIDARG, !ddlmPackageNamePrefix);
-    RETURN_HR_IF(E_INVALIDARG, *ddlmPackageNamePrefix == L'0');
-    RETURN_HR_IF(E_INVALIDARG, !ddlPackagePublisherId);
-    RETURN_HR_IF(E_INVALIDARG, *ddlPackagePublisherId == L'0');
-
-    g_test_ddlmPackageNamePrefix = ddlmPackageNamePrefix;
-    g_test_ddlmPackagePublisherId = ddlPackagePublisherId;
-    return S_OK;
-} CATCH_RETURN();
 
 /// Determine the path for the Windows App Runtime Framework package
 wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo)
@@ -310,6 +566,14 @@ bool IsLifetimeManagerViaEnumeration()
                 return false;
             }
         }
+    }
+
+    // Elevated processes MUST use Enumeration.
+    // MediumIL can go either way so we'll favor it too.
+    // AppContainer cannot use Enumeration (unless we have the packageQuery capability, which is uncommon).
+    if (!wil::get_token_is_app_container())
+    {
+        return true;
     }
 
     // Use the AppExtension-style LifetimeManager
@@ -508,18 +772,18 @@ void FindDDLMViaEnumeration(
     // 2. Check if the package is in the <majorversion>.<minorversion> release
     // 2a. Check if the package's Description starts with "Microsoft Windows App Runtime DDLM <majorversion>.<minorversion> "
     // 3. Check if the architecture matches
-    // 4. Check if the package meets the specified minVerrsion
+    // 4. Check if the package meets the specified minVersion
 
     const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
     const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
-    WCHAR packageNamePrefix[PACKAGE_NAME_MAX_LENGTH + 1]{};
+    PCWSTR packageNamePrefix{};
     if (!g_test_ddlmPackageNamePrefix.empty())
     {
-        FAIL_FAST_IF_FAILED(StringCchCopyW(packageNamePrefix, ARRAYSIZE(packageNamePrefix), g_test_ddlmPackageNamePrefix.c_str()));
+        packageNamePrefix = g_test_ddlmPackageNamePrefix.c_str();
     }
     else
     {
-        wsprintf(packageNamePrefix, L"microsoft.winappruntime.ddlm.%hu", minorVersion);
+        packageNamePrefix = L"microsoft.winappruntime.ddlm.";
     }
     const auto packageNamePrefixLength{ wcslen(packageNamePrefix) };
 
@@ -539,11 +803,20 @@ void FindDDLMViaEnumeration(
         expectedPublisherId = g_test_ddlmPackagePublisherId.c_str();
     }
 
+    auto criteria{ wil::str_printf<wil::unique_cotaskmem_string>(L"Major.Minor=%hu.%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
+                                                                 majorVersion, minorVersion, (!versionTag ? L"" : versionTag),
+                                                                 minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision) };
+
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     winrt::hstring currentUser;
     const auto c_packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Main };
-    for (auto package : packageManager.FindPackagesForUserWithPackageTypes(currentUser, c_packageTypes))
+    auto packages{ packageManager.FindPackagesForUserWithPackageTypes(currentUser, c_packageTypes) };
+    (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_SCAN_FOR_DDLM, "Bootstrap.Intitialize: Scanning packages for %ls", criteria.get());
+    int packagesScanned{};
+    for (auto package : packages)
     {
+        ++packagesScanned;
+
         // Check the package identity against the package identity test qualifiers (if any)
         const auto packageId{ package.Id() };
         const auto packageName{ packageId.Name() };
@@ -612,7 +885,7 @@ void FindDDLMViaEnumeration(
         }
         if ((releaseMajorVersion != majorVersion) || (releaseMinorVersion != minorVersion))
         {
-            // The package's minor release version doesn't match the expected value. Skip it
+            // The package's major or minor release version doesn't match the expected value. Skip it
             continue;
         }
 
@@ -625,19 +898,29 @@ void FindDDLMViaEnumeration(
         version.Revision = packageVersion.Revision;
         if (version.Version < minVersion.Version)
         {
+            (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_NO_MATCH,
+                             "Bootstrap.Intitialize: %ls not applicable. Version doesn't match MinVersion criteria (%ls)",
+                             packageFullName.c_str(), criteria.get());
             continue;
         }
 
         // Does the architecture match?
         const auto architecture{ packageId.Architecture() };
-        if (architecture != AppModel::Identity::GetCurrentArchitecture())
+        const auto currentArchitecture{ AppModel::Identity::GetCurrentArchitecture() };
+        if (architecture != currentArchitecture)
         {
+            (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_NO_MATCH,
+                             "Bootstrap.Intitialize: %ls not applicable. Architecture doesn't match current architecture %ls (%ls)",
+                             packageFullName.c_str(), ::AppModel::Identity::GetCurrentArchitectureAsString(), criteria.get());
             continue;
         }
 
         // Do we have a package under consideration?
         if (!foundAny)
         {
+            (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_MATCH,
+                             "Bootstrap.Intitialize: %ls is applicable (%ls)",
+                             packageFullName.c_str(), criteria.get());
             bestFitVersion = version;
             bestFitPackageFamilyName = packageId.FamilyName();
             bestFitPackageFullName = packageId.FullName();
@@ -648,15 +931,19 @@ void FindDDLMViaEnumeration(
         // Do we already have a higher version under consideration?
         if (bestFitVersion.Version < version.Version)
         {
+            (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_MATCH,
+                             "Bootstrap.Intitialize: %ls is more applicable (%ls)",
+                             packageFullName.c_str(), criteria.get());
             bestFitVersion = version;
             bestFitPackageFamilyName = packageId.FamilyName();
             bestFitPackageFullName = packageId.FullName();
             continue;
         }
     }
-    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NO_MATCH), !foundAny, "Enumeration: Major=%hu, Minor=%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
-                    majorVersion, minorVersion, (!versionTag ? L"" : versionTag),
-                    minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
+    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NO_MATCH), !foundAny, "Enumeration: %ls", criteria.get());
+    (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_FOUND,
+                     "Bootstrap.Intitialize: %ls best matches the criteria (%ls) of %d packages scanned",
+                     bestFitPackageFullName.c_str(), criteria.get(), packagesScanned);
     ddlmPackageFamilyName = bestFitPackageFamilyName.c_str();
     ddlmPackageFullName = bestFitPackageFullName.c_str();
 }
@@ -688,4 +975,127 @@ CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtensi
     UUID clsid{};
     THROW_IF_WIN32_ERROR(UuidFromStringW(textRpcString, &clsid));
     return clsid;
+}
+
+bool IsOptionEnabled(PCWSTR name)
+{
+    WCHAR value[1 + 1]{};
+    if (GetEnvironmentVariableW(name, value, ARRAYSIZE(value)) == 1)
+    {
+        if (*value == L'0')
+        {
+            return false;
+        }
+        else if (*value == L'1')
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+HRESULT MddBootstrapInitialize_Log(
+    HRESULT hrInitialize,
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion) noexcept try
+{
+    HANDLE hEventLog{ RegisterEventSourceW(nullptr, L"Windows App Runtime") };
+    RETURN_LAST_ERROR_IF_NULL(hEventLog);
+
+    const DWORD c_eventId{ static_cast<DWORD>(hrInitialize) };
+    PCWSTR message1{ L"Windows App Runtime" };
+    WCHAR message2[1024]{};
+    PCWSTR message2Format{ L"ERROR 0x%08X: Bootstrapper initialization failed while looking for version %hu.%hu%s (MSIX package version >= %hu.%hu.%hu.%hu)" };
+    const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
+    const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
+    WCHAR formattedVersionTag[64]{};
+    if (versionTag && (versionTag[0] != L'\0'))
+    {
+        FAIL_FAST_IF_FAILED(StringCchPrintfW(formattedVersionTag, ARRAYSIZE(formattedVersionTag), L"-%s", versionTag));
+    }
+    FAIL_FAST_IF_FAILED(StringCchPrintfW(message2, ARRAYSIZE(message2), message2Format,
+                                         hrInitialize, majorVersion, minorVersion, formattedVersionTag,
+                                         minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision));
+    PCWSTR strings[2]{ message1, message2 };
+    LOG_IF_WIN32_BOOL_FALSE(ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, 0, c_eventId, nullptr, ARRAYSIZE(strings), 0, strings, nullptr));
+
+    DeregisterEventSource(hEventLog);
+
+    return S_OK;
+}
+CATCH_RETURN()
+
+HRESULT MddBootstrapInitialize_ShowUI_OnNoMatch(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion)
+{
+    // Get the message caption
+    PCWSTR caption{};
+    wil::unique_cotaskmem_string captionString;
+    WCHAR captionOnError[100]{};
+    try
+    {
+        PCWSTR executable{};
+        wil::unique_cotaskmem_string module;
+        auto hr{ LOG_IF_FAILED(wil::GetModuleFileNameW(nullptr, module)) };
+        if (SUCCEEDED(hr))
+        {
+            auto delimiter{ wcsrchr(module.get(), L'\\') };
+            if (delimiter)
+            {
+                executable = delimiter + 1;
+            }
+            else
+            {
+                executable = module.get();
+            }
+            PCWSTR captionSuffix{ L"This application could not be started" };
+            captionString = wil::str_printf<wil::unique_cotaskmem_string>(L"%s - %s", executable, captionSuffix);
+            caption = captionString.get();
+        }
+    }
+    catch (...)
+    {
+    }
+    if (!caption)
+    {
+        LOG_IF_FAILED(StringCchPrintfW(captionOnError, ARRAYSIZE(captionOnError),
+                                       L"<Process %d> - This application could not be started",
+                                       GetCurrentProcessId()));
+        caption = captionOnError;
+    }
+
+    // Get the message body
+    WCHAR text[1024]{};
+    PCWSTR textFormat{ L"This application requires the Windows App Runtime\n"
+                       L"    Version %hu.%hu%s\n"
+                       L"    (MSIX package version >= %hu.%hu.%hu.%hu)\n"
+                       L"\n"
+                       L"Do you want to install a compatible Windows App Runtime now?"
+                     };
+    const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
+    const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
+    WCHAR formattedVersionTag[64]{};
+    if (versionTag && (versionTag[0] != L'\0'))
+    {
+        FAIL_FAST_IF_FAILED(StringCchPrintfW(formattedVersionTag, ARRAYSIZE(formattedVersionTag), L"-%s", versionTag));
+    }
+    FAIL_FAST_IF_FAILED(StringCchPrintfW(text, ARRAYSIZE(text), textFormat,
+                                         majorVersion, minorVersion, formattedVersionTag,
+                                         minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision));
+
+    // Show the prompt
+    const auto yesno{ MessageBoxW(nullptr, text, caption, MB_YESNO | MB_ICONERROR) };
+    if (yesno == IDYES)
+    {
+        SHELLEXECUTEINFOW sei{};
+        sei.cbSize = sizeof(sei);
+        sei.lpVerb = L"open";
+        sei.lpFile = L"https://docs.microsoft.com/windows/apps/windows-app-sdk/downloads";
+        sei.nShow = SW_SHOWNORMAL;
+        LOG_IF_WIN32_BOOL_FALSE(ShellExecuteExW(&sei));
+    }
+    return S_OK;
 }

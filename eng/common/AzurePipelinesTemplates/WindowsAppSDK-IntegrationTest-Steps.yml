@@ -83,9 +83,10 @@ steps:
         -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)"
         -Checkpoint "none" -Platform "x64" 
         -Configuration "release" 
-        -YamlStep "none"
+        -AzureBuildStep "all"
         -RunTestMachineSetup
         -Name "${{ parameters.TestSelection }}"
+        -AzurePipelineBuild
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish test results'

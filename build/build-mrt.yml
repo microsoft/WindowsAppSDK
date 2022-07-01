@@ -4,6 +4,9 @@
 parameters:
   MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
   MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
+  GenerateSBOM: False
+  runSDLBinaryAnalysis: false
+  enablePREFast: true
 
 steps:
 - task: BatchScript@1
@@ -12,6 +15,8 @@ steps:
     filename: '${{ parameters.MRTSourcesDirectory }}\build\init.cmd'
     arguments: /envonly $(buildPlatform)fre
     modifyEnvironment: true
+
+- template: AzurePipelinesTemplates\WindowsAppSDK-InstallWindowsSDK-Steps.yml
 
 - task: NuGetToolInstaller@1
   displayName: 'Use NuGet 5.11'
@@ -76,19 +81,27 @@ steps:
 #      PathtoPublish: '${{ parameters.MRTSourcesDirectory }}\msbuild-install-logs'
 #      artifactName: 'installlogs'
 
+# - task: powershell@2
+#   displayName: 'Installing .NET SDK'
+#   inputs:
+#     targetType: filePath
+#     workingDirectory: ${{ parameters.MRTSourcesDirectory }}\build
+#     filePath: ${{ parameters.MRTSourcesDirectory }}\build\DownloadDotNetCoreSdk.ps1
+
+# - task: BatchScript@1
+#   displayName: 'Use .NET SDK'
+#   inputs:
+#     filename: '${{ parameters.MRTSourcesDirectory }}\build\SetDotnetVars.cmd'
+#     arguments: '${{ parameters.MRTSourcesDirectory }}'
+#     modifyEnvironment: true
+
 - task: powershell@2
-  displayName: 'Installing .NET SDK'
+  displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
   inputs:
     targetType: filePath
-    workingDirectory: ${{ parameters.MRTSourcesDirectory }}\build
-    filePath: ${{ parameters.MRTSourcesDirectory }}\build\DownloadDotNetCoreSdk.ps1
-
-- task: BatchScript@1
-  displayName: 'Use .NET SDK'
-  inputs:
-    filename: '${{ parameters.MRTSourcesDirectory }}\build\SetDotnetVars.cmd'
-    arguments: '${{ parameters.MRTSourcesDirectory }}'
-    modifyEnvironment: true
+    filePath: tools\DevCheck.ps1
+    arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
+    workingDirectory: '$(Build.SourcesDirectory)'
 
 #  - task: BatchScript@1
 #    displayName: 'Debug'
@@ -119,6 +132,12 @@ steps:
     solution: '${{ parameters.MRTSourcesDirectory }}\mrt\MrtCore.sln'
     configuration: '$(buildConfiguration)'
     msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+
+- ${{ if eq(parameters.runSDLBinaryAnalysis, 'true') }}:
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
+    parameters:
+      outputDirectory: '${{ parameters.MRTBinariesDirectory }}'
+      enablePREFast: ${{ parameters.enablePREFast }}
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish mrtcore binlog'
@@ -172,26 +191,6 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-# Copy and Publish the test binaries so we can run them in Helix later.
-- task: CopyFiles@2
-  displayName: 'copy mrtcore test binaries'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
-    Contents: |
-      MrmBaseUnitTests\**
-      MrmUnitTest\**
-      MrtCoreManagedTest\**
-      MrtCoreUnpackagedTests\**
-    TargetFolder: '$(Agent.TempDirectory)\mrt_testbin\$(buildPlatform)'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish mrtcore test binaries'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    PathtoPublish: '$(Agent.TempDirectory)\mrt_testbin\$(buildPlatform)'
-    artifactName: mrtcore_test_binaries_$(buildPlatform)
-
 - task: ComponentGovernanceComponentDetection@0
   inputs:
     scanType: 'Register'
@@ -233,10 +232,11 @@ steps:
     TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu'
     flattenFolders: true
 
-- task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-  displayName: 'SBOM Generation Task'
-  inputs:
-    BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
+- ${{ if eq(parameters.GenerateSBOM, 'true') }}:
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'SBOM Generation Task'
+    inputs:
+      BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: Binaries'

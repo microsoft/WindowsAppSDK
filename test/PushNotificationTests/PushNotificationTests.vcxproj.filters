@@ -21,27 +21,30 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MockBackgroundTaskInstance.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="PackagedTests.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MockRawNotification.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="UnpackagedTests.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseTestSuite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PushNotification-Test-Constants.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="APITests.cpp">
+    <ClCompile Include="BaseTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MockBackgroundTaskInstance.cpp">
+    <ClCompile Include="PackagedTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MockRawNotification.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LRPTests.cpp">
+    <ClCompile Include="UnpackagedTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,9 +53,12 @@
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
-    <CopyFileToFolders Include="$(TestPkgOutputPath)\Dependencies\$(PlatformTarget)\Microsoft.VCLibs.$(PlatformTarget)$(VCLibsDebugConfigName).14.00.appx" />
-    <CopyFileToFolders Include="$(TargetDir)..\PushNotificationsTestApp\PushNotificationsTestApp.exe">
-      <Filter>CopyFiles</Filter>
-    </CopyFileToFolders>
+    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
+    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="PushNotifications-AppxManifest.xml">
+      <Filter>Source Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

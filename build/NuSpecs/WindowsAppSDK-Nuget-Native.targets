@@ -61,7 +61,10 @@
     </Reference>
   </ItemGroup>
 
-  <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.MddCommon.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.BootstrapCommon.targets" />
   <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK-Nuget-Native.Bootstrap.targets" Condition="'$(WindowsAppSdkBootstrapInitialize)' == 'true'"/>
+
+  <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.targets" Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)' == 'true'"/>
 
 </Project>

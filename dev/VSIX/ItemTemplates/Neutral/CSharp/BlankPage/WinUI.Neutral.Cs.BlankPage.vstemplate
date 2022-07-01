@@ -8,9 +8,9 @@
     <ProjectType>CSharp</ProjectType>
     <TemplateID>WinUI.Neutral.Cs.BlankPage</TemplateID>
     <TemplateGroupID>WinRT-Managed-UAP</TemplateGroupID>
-    <AppliesTo>CSharp + SharedAssetsProject</AppliesTo>
+    <AppliesTo>CSharp + WindowsAppSDK</AppliesTo>
     <NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
-    <ShowByDefault>true</ShowByDefault>
+    <ShowByDefault>false</ShowByDefault>
     <TargetPlatformName>Windows</TargetPlatformName>
     <AppIdFilter>blend</AppIdFilter>
     <LanguageTag>csharp</LanguageTag>

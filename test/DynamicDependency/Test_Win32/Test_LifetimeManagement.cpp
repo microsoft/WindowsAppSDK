@@ -43,11 +43,15 @@ namespace Test::DynamicDependency
             TP::RemovePackage_FrameworkMathMultiply();
             TP::RemovePackage_FrameworkMathAdd();
             TP::AddPackage_WindowsAppRuntimeFramework();
+            TP::AddPackage_DynamicDependencyDataStore();
             TP::AddPackage_DynamicDependencyLifetimeManager();
 
             m_bootstrapDll = std::move(bootstrapDll);
 
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix,
+                                                              Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                                                              Test::Packages::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                                                              Test::Packages::WindowsAppRuntimeMain::c_PackageNamePrefix));
 
             // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
@@ -68,6 +72,7 @@ namespace Test::DynamicDependency
             TP::RemovePackage_DynamicDependencyLifetimeManagerGC1010();
             TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
             TP::RemovePackage_DynamicDependencyLifetimeManager();
+            TP::RemovePackage_DynamicDependencyDataStore();
             TP::RemovePackage_WindowsAppRuntimeFramework();
 
             return true;
@@ -117,6 +122,42 @@ namespace Test::DynamicDependency
 
     private:
         static wil::unique_hmodule m_bootstrapDll;
+    };
+
+    class LifetimeManagementTests_Elevated : LifetimeManagementTests
+    {
+    public:
+        BEGIN_TEST_CLASS(LifetimeManagementTests_Elevated)
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(Setup_Elevated)
+        {
+            return Setup();
+        }
+
+        TEST_CLASS_CLEANUP(Cleanup_Elevated)
+        {
+            return Cleanup();
+        }
+
+        TEST_METHOD(GC_Found0_Elevated)
+        {
+            GC_Found0();
+        }
+
+        TEST_METHOD(GC_Found1_Elevated)
+        {
+            GC_Found1();
+        }
+
+        TEST_METHOD(GC_Found2_Elevated)
+        {
+            GC_Found2();
+        }
     };
 }
 

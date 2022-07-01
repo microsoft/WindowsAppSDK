@@ -7,8 +7,10 @@
     <Icon>WinUI.Neutral.Cs.Resw.ico</Icon>
     <ProjectType>CSharp</ProjectType>
     <TemplateID>WinUI.Cs.Neutral.Resw</TemplateID>
+    <TemplateGroupID>WinRT-Managed-UAP</TemplateGroupID>
+    <AppliesTo>CSharp + WindowsAppSDK</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
-    <ShowByDefault>true</ShowByDefault>
+    <ShowByDefault>false</ShowByDefault>
     <TargetPlatformName>Windows</TargetPlatformName>
     <AppIdFilter>blend</AppIdFilter>
     <LanguageTag>csharp</LanguageTag>

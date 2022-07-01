@@ -48,12 +48,12 @@ namespace winrt::Microsoft::Windows::System::implementation
                 topLevelKey = HKEY_LOCAL_MACHINE;
             }
 
-            auto subKey{ wil::str_printf<wil::unique_cotaskmem_string>(
-                L"Software\\ChangeTracker\\%ws\\%ws\\", KeyName(), m_PackageFullName.c_str()) };
+            std::filesystem::path subKey = std::filesystem::path{ L"Software\\ChangeTracker" }
+            / KeyName() / m_PackageFullName / ScopeToString();
 
             wil::unique_hkey keyToTrackChanges{};
             THROW_IF_WIN32_ERROR(RegCreateKeyEx(HKEY_CURRENT_USER,
-                subKey.get(), 0, nullptr, REG_OPTION_NON_VOLATILE,
+                subKey.c_str(), 0, nullptr, REG_OPTION_NON_VOLATILE,
                 KEY_ALL_ACCESS | KEY_WOW64_64KEY, nullptr, keyToTrackChanges.put(), disposition));
 
             return keyToTrackChanges;
@@ -114,6 +114,22 @@ namespace winrt::Microsoft::Windows::System::implementation
                 &sizeOfEnvironmentValue));
 
             return std::wstring(environmentValue.get());
+        }
+
+        std::wstring ScopeToString() const
+        {
+            if (m_Scope == EnvironmentManager::Scope::Process)
+            {
+                return L"process";
+            }
+            else if (m_Scope == EnvironmentManager::Scope::User)
+            {
+                return L"user";
+            }
+            else
+            {
+                return L"machine";
+            }
         }
     };
 }
