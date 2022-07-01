@@ -1,4 +1,4 @@
-develop branch
+`develop` Branch
 ===
 
 Building the full Windows App SDK package involves multiple repos and build pipelines.
