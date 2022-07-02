@@ -77,7 +77,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependency.DataStore
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependency.DataStore.ProxyStub", "dev\DynamicDependencyDataStore\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.vcxproj", "{1A41BB90-CC34-4EDD-9A27-50714CDBC169}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependency.DataStore.Msix", "test\DynamicDependency\data\DynamicDependency.DataStore.Msix\DynamicDependencies.DataStore.Msix.vcxproj", "{B71E818A-882E-456A-87E5-4DE4A6602B99}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependencies.DataStore.Msix", "test\DynamicDependency\data\DynamicDependency.DataStore.Msix\DynamicDependencies.DataStore.Msix.vcxproj", "{B71E818A-882E-456A-87E5-4DE4A6602B99}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicDependencyLifetimeManager", "DynamicDependencyLifetimeManager", "{D043D403-31F1-43F1-B2D4-FA8F7090006D}"
 EndProject
@@ -225,11 +225,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.PushNotif
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{68E63911-6283-4212-BFFE-3F972AF8F835}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Deployment.WindowsAppRuntime.Test.Framework", "test\Deployment\data\WindowsAppRuntime.Test.Framework\WindowsAppRuntime.Test.Framework.vcxproj", "{5E2CC9D5-7C05-41D9-9DB5-EC5DF64BA1DC}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppRuntime.Test.Framework", "test\Deployment\data\WindowsAppRuntime.Test.Framework\WindowsAppRuntime.Test.Framework.vcxproj", "{5E2CC9D5-7C05-41D9-9DB5-EC5DF64BA1DC}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Deployment.WindowsAppRuntime.Test.Main", "test\Deployment\data\WindowsAppRuntime.Test.Main\WindowsAppRuntime.Test.Main.vcxproj", "{34519337-9249-451E-B5A9-1ECACF9C3DA8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppRuntime.Test.Main", "test\Deployment\data\WindowsAppRuntime.Test.Main\WindowsAppRuntime.Test.Main.vcxproj", "{34519337-9249-451E-B5A9-1ECACF9C3DA8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Deployment.WindowsAppRuntime.Test.Singleton", "test\Deployment\data\WindowsAppRuntime.Test.Singleton\WindowsAppRuntime.Test.Singleton.vcxproj", "{0B01DB78-F115-4C90-B28F-7819071303C6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppRuntime.Test.Singleton", "test\Deployment\data\WindowsAppRuntime.Test.Singleton\WindowsAppRuntime.Test.Singleton.vcxproj", "{0B01DB78-F115-4C90-B28F-7819071303C6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Environmentmanager", "Environmentmanager", "{B4196B13-AB24-492E-9147-03CC7F2CAE59}"
 EndProject
