@@ -1019,24 +1019,6 @@ if (kind == ExtendedActivationKind::AppNotification)
 ```c#
 namespace Microsoft.Windows.AppNotifications.Builder
 {
-    runtimeclass Text
-    {
-        Text(String content);
-
-        // The target locale of the XML payload, specified as a BCP-47 language tags.
-        Text SetLanguage(String language);
-
-        // Center the text for incoming call notifications. This value is only used for notifications with with a scenario value of IncomingCall.
-        Text UseCallScenarioAlign();
-
-        // Displays text at the bottom of your notification, along with your app's identity or the notification's timestamp.
-        // On older versions of Windows that don't support attribution text, the text will simply be displayed as another text element.
-        Text UseAttributionText();
-
-        // Retrieves the XML content of the Text.
-        String GetXml();
-    };
-
     enum ButtonStyle
     {
         Success, // The button will be green
@@ -1073,17 +1055,6 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Button SetProtocolActivation(Windows.Foundation.Uri protocolUri, String targetApplicationPfn);
 
         // Retrieves the XML content of the button.
-        String GetXml();
-    };
-
-    runtimeclass TextBox
-    {
-        TextBox(String id);
-
-        // The placeholder displayed for text input.
-        TextBox SetPlaceHolderContent(String placeHolderContent);
-
-        // Retrieves the XML content of the input.
         String GetXml();
     };
 
@@ -1149,47 +1120,6 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Call10,
     };
 
-    runtimeclass Audio
-    {
-        Audio();
-
-        static Audio CreateFromUri(Windows.Foundation.Uri audioUri);
-        static Audio CreateFromMSWinSoundEvent(MSWinSoundEvent msWinSoundEvent);
-
-        // The audio will be looped for either Duration::Long or Duration::Short
-        Audio SetLoopDuration(Duration duration);
-
-        // Mutes the audio when the AppNotification is delievered
-        Audio Mute();
-
-        // Retrieves the XML content of the audio.
-        String GetXml();
-    };
-
-    enum ImagePlacement
-    {
-        Inline, // The default value, a full-width inline-image that appears when you expand the AppNotification.
-        AppLogoOverride, // An image that is left-aligned with notification text
-        Hero, // Prominently displays image within the AppNotification banner and while inside Notification Center.
-    };
-
-    runtimeclass Image
-    {
-        Image(Windows.Foundation.Uri imageUri);
-
-        // A description of the image, for users of assistive technologies.
-        Image SetAlternateText(String alternateText);
-
-        // An enum to describe how the image will be cropped.
-        Image UseCircleCrop();
-
-        // Override the app logo with custom image of choice that will be displayed on the AppNotification, otherwise it will be an inline image.
-        Image SetImagePlacement(ImagePlacement placement);
-
-        // Retrieves the XML content of the image.
-        String GetXml();
-    };
-
     enum ScenarioType
     {
         Default, // The normal AppNotification behavior. The AppNotification appears for a short duration, and then automatically dismisses into Notification Center.
@@ -1218,20 +1148,51 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // Sets the scenario of the AppNotification.
         AppNotificationContent SetScenarioType(ScenarioType scenarioType);
 
-        // Adds text to the AppNotification with a Text component.
-        AppNotificationContent AddText(Text text);
+        // Adds text to the AppNotification.
+        AppNotificationContent AddText(String text);
+        [default_overload]
+        AppNotificationContent AddText(String text, String language);
+        AppNotificationContent AddText(String text, Boolean useCallScenarioAlign);
+        AppNotificationContent AddText(String text, String language, Boolean useCallScenarioAlign);
+
+        AppNotificationContent SetAttributionText(String text);
+        AppNotificationContent SetAttributionText(String text, String language);
+
+        // Sets the full-width inline-image that appears when you expand the AppNotification
+        AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri);
+        [default_overload]
+        AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri, String alternateText);
+        AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri, Boolean useCircleCrop);
+        AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri, String alternateText, Boolean useCircleCrop);
+        
+        // Sets the image that is left-aligned with notification text
+        AppNotificationContent SetAppLogoOverrideImage(Windows.Foundation.Uri imageUri);
+        [default_overload]
+        AppNotificationContent SetAppLogoOverrideImage(Windows.Foundation.Uri imageUri, String alternateText);
+        AppNotificationContent SetAppLogoOverrideImage(Windows.Foundation.Uri imageUri, Boolean useCircleCrop);
+        AppNotificationContent SetAppLogoOverrideImage(Windows.Foundation.Uri imageUri, String alternateText, Boolean useCircleCrop);
+        
+        // Sets the image that displays within the banner of the AppNotification.
+        AppNotificationContent SetHeroImage(Windows.Foundation.Uri imageUri);
+        AppNotificationContent SetHeroImage(Windows.Foundation.Uri imageUri, String alternateText);
+
+        // SetAudio
+        [default_overload]
+        AppNotificationContent SetAudio(Windows.Foundation.Uri audioUri);
+        AppNotificationContent SetAudio(MSWinSoundEvent msWinSoundEvent);
+
+        [default_overload]
+        AppNotificationContent SetAudio(Windows.Foundation.Uri audioUri, Duration duration);
+        AppNotificationContent SetAudio(MSWinSoundEvent msWinSoundEvent, Duration duration);
+
+        AppNotificationContent MuteAudio();
+
+        // Add an input textbox to retrieve user input.
+        AppNotificationContent AddTextBox(String id);
+        AppNotificationContent AddTextBox(String id, String placeHolderText);
 
         // Adds a button to the AppNotificationContent
         AppNotificationContent AddButton(Button button);
-
-        // Add an image to the AppNotificationContent.
-        AppNotificationContent AddImage(Image image);
-
-        // Add an audio to play when the AppNotification is displayed.
-        AppNotificationContent AddAudio(Audio audio);
-
-        // Add an input TextBox to retrieve user input.
-        AppNotificationContent AddTextBox(TextBox textBox);
 
         // Add an input SelectionMenu to retrieve user input.
         AppNotificationContent AddSelectionMenu(SelectionMenu selectionMenu);
