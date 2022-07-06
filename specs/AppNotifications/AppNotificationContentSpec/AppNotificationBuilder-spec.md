@@ -101,7 +101,7 @@ All the UI components are able to be appended through the AppNotificationContent
     - Hero
 -   SetAudio(...)
 -   AddTextBox(...)
--   AddSelectionMenu(...)
+-   AddComboBox(...)
 
 Below is an example usage:
 
@@ -773,12 +773,12 @@ XML output:
 
 Example result: ![TextBox Example](TextBoxExample.png)
 
-# SelectionMenu
+# ComboBox
 
-SelectionMenu is an \<input\> component that allows users to pick from a dropdown menu of values on
+ComboBox is an \<input\> component that allows users to pick from a dropdown menu of values on
 an AppNotification.
 
-**WinAppSDK 1.2 SelectionMenu Schema**:
+**WinAppSDK 1.2 ComboBox Schema**:
 
 ```c#
 <input id = string
@@ -789,9 +789,9 @@ an AppNotification.
 </input>
 ```
 
-These attributes are abstracted with the SelectionMenu component APIs:
+These attributes are abstracted with the ComboBox component APIs:
 
--   SelectionMenu(String id)
+-   ComboBox(String id)
 -   SetDefaultSelection(String id)
 -   AddSelection(String id, String content)
 
@@ -799,14 +799,14 @@ Below is an example use:
 
 ```c#
 AppNotificationContent()
-    .AddSelectionMenu(SelectionMenu(L"selectionMenu")
+    .AddComboBox(ComboBox(L"ComboBox")
         .SetDefaultSelection(L"yes")
         .AddSelection(L"yes", L"Going")
         .AddSelection(L"maybe", L"Maybe")
         .AddSelection(L"no", L"Decline"))
     .AddButton(Button(L"Send")
         .AddArgument(L"action", L"Send"))
-        .SetInputId(L"selectionMenu"))
+        .SetInputId(L"ComboBox"))
     .GetXml();
 ```
 
@@ -820,21 +820,21 @@ XML output:
   </visual>
 
   <actions>
-    <input id="selectionMenu" type="selection" defaultInput="yes">
+    <input id="ComboBox" type="selection" defaultInput="yes">
       <selection id="yes" content="Going" />
       <selection id="maybe" content="Maybe" />
       <selection id="no" content="Decline" />
     </input>
     <action
       arguments="action=Send"
-      hint-inputId="selectionMenu"
+      hint-inputId="ComboBox"
       content="Send"/>
 
   </actions>
 </toast>
 ```
 
-Example result: ![SelectionMenu Example](SelectionMenuExample.png)
+Example result: ![ComboBox Example](ComboBoxExample.png)
 
 # ProgressBar
 
@@ -1036,16 +1036,16 @@ namespace Microsoft.Windows.AppNotifications.Builder
         String GetXml();
     };
 
-    runtimeclass SelectionMenu
+    runtimeclass ComboBox
     {
-        SelectionMenu(String id);
+        ComboBox(String id);
 
-        // Add a selection item to the SelectionMenu if InputType is SelectionMenu. The id parameter is used to retrieve the user input when the app is activated
+        // Add a selection item to the ComboBox if InputType is ComboBox. The id parameter is used to retrieve the user input when the app is activated
         // and content is the displayed text for the item.
-        SelectionMenu AddSelection(String id, String content);
+        ComboBox AddSelection(String id, String content);
 
-        // Sets the default selection to be displayed by the SelectionMenu
-        SelectionMenu SetDefaultSelection(String id);
+        // Sets the default selection to be displayed by the ComboBox
+        ComboBox SetDefaultSelection(String id);
 
         // Retrieves the XML content of the input.
         String GetXml();
@@ -1164,13 +1164,13 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Add an input textbox to retrieve user input.
         AppNotificationContent AddTextBox(String id);
-        AppNotificationContent AddTextBox(String id, String placeHolderText);
+        AppNotificationContent AddTextBox(String id, String placeHolderText, String title);
 
         // Adds a button to the AppNotificationContent
         AppNotificationContent AddButton(Button button);
 
-        // Add an input SelectionMenu to retrieve user input.
-        AppNotificationContent AddSelectionMenu(SelectionMenu selectionMenu);
+        // Add an input ComboBox to retrieve user input.
+        AppNotificationContent AddComboBox(ComboBox comboBox);
 
         AppNotificationContent SetProgressBar(ProgressBar progressBar);
         
