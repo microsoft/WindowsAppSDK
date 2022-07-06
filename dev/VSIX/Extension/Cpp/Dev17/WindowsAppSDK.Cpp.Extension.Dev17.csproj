@@ -23,6 +23,7 @@
     <StartArguments>/rootsuffix Exp</StartArguments>
     <VsixManifestSource>$(Deployment)\source.extension.vsixmanifest</VsixManifestSource>
     <TargetVsixContainerName>$(AssemblyName).$(Deployment).vsix</TargetVsixContainerName>
+    <IsProductComponent Condition="'$(Deployment)' == 'Component'">true</IsProductComponent>
     <!-- This MUST match VSPackage.PackageGuidString -->
     <PackageGuidString>{39ED574D-B112-4145-8E14-1695800E36C8}</PackageGuidString>
   </PropertyGroup>
