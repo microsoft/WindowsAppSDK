@@ -54,6 +54,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
+    ButtonStyle Button::GetButtonStyle()
+    {
+        return m_buttonStyle;
+    }
+
     winrt::hstring Button::GetXml()
     {
         winrt::hstring xml{ L"<action content=" + m_content + L" arguments="};

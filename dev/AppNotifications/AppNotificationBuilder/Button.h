@@ -22,6 +22,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::Microsoft::Windows::AppNotifications::Builder::Button UseContextMenuPlacement();
 
         winrt::Microsoft::Windows::AppNotifications::Builder::Button SetButtonStyle(ButtonStyle const& buttonStyle);
+        ButtonStyle GetButtonStyle();
 
         winrt::hstring GetXml();
 
