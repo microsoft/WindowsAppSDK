@@ -47,7 +47,7 @@ developer.
 AppNotificationContent(
     .AddArgument(L"AppNotificationClick")
     .AddArgument(L"sequence", 1234)
-    .SetAppLogoOverride(winrt::Windows::Foundation::Uri(L"http://www.contoso.com"), true)
+    .SetAppLogoOverrideWithCircleCrop(winrt::Windows::Foundation::Uri(L"http://www.contoso.com"))
     .AddText(L"App Notification with Avatar Image")
     .AddText(L"This is an example message")
     .AddButton(Button(L"Open App")
@@ -113,7 +113,7 @@ AppNotificationContent(
     .SetTimeStamp(L"2022-06-19T08:30:00Z")
     .SetScenarioType(ScenarioType::IncomingCall)
         .AddText(L"Incoming Call", TextProperties().UseCallScenarioAlign())
-        .AddInlineImage(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/100?image=883)"), true /* useCircleCrop */)
+        .AddInlineImageWithCircleCrop(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/100?image=883)"))
         .AddButton(Button(L"Text Reply")
             .AddArgument(L"action", L"textReply")
             .AddArgument(L"callId", 938163)
@@ -262,7 +262,7 @@ AppNotificationContent()
         .UseCallScenarioAlign())
     .AddText(L"Andrew Barnes", TextProperties()
         .UseCallScenarioAlign())
-    .AddInlineImage(winrt::Windows::Foundation::Uri(L"https://unsplash.it/100?image=883"), true /* usesCropCircle */)
+    .AddInlineImageWithCircleCrop(winrt::Windows::Foundation::Uri(L"https://unsplash.it/100?image=883"))
     .AddButton(Button()
         .SetIconUri(winrt::Windows::Foundation::Uri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"))
         .SetButtonStyle(ButtonStyle::Success)
@@ -366,7 +366,7 @@ AppNotificationContent()
         .UseCallScenarioAlign())
     .AddText(L"Andrew Barnes", TextProperties()
         .UseCallScenarioAlign())
-    .AddImage(winrt::Windows::Foundation::Uri(L"https://unsplash.it/100?image=883"), true /* usesCropCircle */)
+    .AddInlineImageWithCircleCrop(winrt::Windows::Foundation::Uri(L"https://unsplash.it/100?image=883"))
     .AddButton(Button()
         .AddArgument(L"videoCall", L"938465")
         .SetIconUri(winrt::Windows::Foundation::Uri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"))
@@ -559,7 +559,7 @@ An image that is left-aligned with notification text.
 ```c#
 AppNotificationContent()
     .AddText(L"To the left is an AppLogoOverride")
-    .SetAppLogoOverrideImage(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/64?image=669)"))
+    .SetAppLogoOverride(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/64?image=669)"))
   .GetXml();
 ```
 
@@ -613,7 +613,7 @@ For both Inline and AppLogoOverride, developers can set how the image will be cr
 ```c#
 AppNotificationContent()
     .AddText(L"To the left is a cropped AppLogoOverride")
-    .SetAppLogoOverrideImage(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/64?image=669)"), true /* usesCircleCrop */)
+    .SetAppLogoOverrideWithCircleCrop(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/64?image=669)"))
     .Show();
 ```
 
@@ -746,7 +746,7 @@ Below is an example use:
 AppNotificationContent()
     .AddTextBox(L"textBox", L"reply")
     .AddButton(Button(L"Send")
-        .AddArguments(L"action", L"Send"))
+        .AddArguments(L"action", L"Send")
         .SetInputId(L"textBox"))
     .GetXml();
 ```
@@ -995,6 +995,8 @@ namespace Microsoft.Windows.AppNotifications.Builder
         TextProperties SetLanguage(String language);
         TextProperties UsesCallScenarioAlign();
         TextProperties SetMaxLines(Int32 maxLines);
+
+        String GetXml();
     }
 
     enum ButtonStyle
@@ -1135,17 +1137,17 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Sets the full-width inline-image that appears when you expand the AppNotification
         AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri);
-        [default_overload]
         AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri, String alternateText);
-        AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri, Boolean useCircleCrop);
-        AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri, String alternateText, Boolean useCircleCrop);
+
+        AppNotificationContent SetInlineImageWithCircleCrop(Windows.Foundation.Uri imageUri);
+        AppNotificationContent SetInlineImageWithCircleCrop(Windows.Foundation.Uri imageUri, String alternateText);
         
         // Sets the image that is left-aligned with notification text
-        AppNotificationContent SetAppLogoOverrideImage(Windows.Foundation.Uri imageUri);
-        [default_overload]
-        AppNotificationContent SetAppLogoOverrideImage(Windows.Foundation.Uri imageUri, String alternateText);
-        AppNotificationContent SetAppLogoOverrideImage(Windows.Foundation.Uri imageUri, Boolean useCircleCrop);
-        AppNotificationContent SetAppLogoOverrideImage(Windows.Foundation.Uri imageUri, String alternateText, Boolean useCircleCrop);
+        AppNotificationContent SetAppLogoOverride(Windows.Foundation.Uri imageUri);
+        AppNotificationContent SetAppLogoOverride(Windows.Foundation.Uri imageUri, String alternateText);
+
+        AppNotificationContent SetAppLogoOverrideCirleCrop(Windows.Foundation.Uri imageUri);
+        AppNotificationContent SetAppLogoOverrideCirleCrop(Windows.Foundation.Uri imageUri, String alternateText);
         
         // Sets the image that displays within the banner of the AppNotification.
         AppNotificationContent SetHeroImage(Windows.Foundation.Uri imageUri);
