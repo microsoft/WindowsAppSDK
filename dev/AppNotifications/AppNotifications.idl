@@ -4,7 +4,7 @@ import "..\AppLifecycle\AppLifecycle.idl";
 
 namespace Microsoft.Windows.AppNotifications
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract AppNotificationsContract {}
 
     // Event args for the Notification Activation
@@ -122,6 +122,10 @@ namespace Microsoft.Windows.AppNotifications
         // For Packaged apps, the COM server is defined in the manifest. The Process calling Register() and the process defined as the COM server are required to be the same.
         // For Unpackaged apps, the caller process will be registered as the COM server. And assets like displayname and icon will be gleaned from Shell and registered as well.
         void Register();
+
+        // Unpackaged Apps can call this API to register custom displayname and icon for AppNotifications and register themselves as a COM server.
+        [contract(AppNotificationsContract, 2)]
+        void Register(String displayName, Windows.Foundation.Uri iconUri);
 
         // Unregisters the COM Service so that a subsequent activation will launch a new process
         void Unregister();
