@@ -9,7 +9,7 @@ dev/PowerNotifications
 
 ## ETA: < 5 mins
 
-## Special needs
+## Special notes
 A battery level aware VM will fail on the battery level and power source tests as the tests are currently configured for AC power devices.
 
 ## Test steps
@@ -26,4 +26,5 @@ If not, manually load up BuildOutput\[Release/Debug]\[Arch]\PowerNotifications\P
 All tests should run successfully
 ## Applicability: [Default]
 
-## Automation Plan: None at the moment as the tests also have an Integration test equivalent and this has been deemed enough for this feature.
+## Automation Plan:
+None at the moment as the tests also have an Integration test equivalent and this has been deemed enough for this feature.
