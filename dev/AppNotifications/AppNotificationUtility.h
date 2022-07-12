@@ -65,4 +65,6 @@ namespace Microsoft::Windows::AppNotifications::Helpers
     std::wstring GetDisplayNameBasedOnProcessName();
 
     Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets GetAssets();
+
+    Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets ValidateAssets(winrt::hstring const& displayName, std::filesystem::path const& iconFilePath);
 }

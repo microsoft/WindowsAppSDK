@@ -20,6 +20,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         static winrt::Microsoft::Windows::AppNotifications::AppNotificationManager Default();
         static winrt::Windows::Foundation::IInspectable AppNotificationDeserialize(winrt::Windows::Foundation::Uri const& uri);
         void Register();
+        void Register(hstring const& displayName, winrt::Windows::Foundation::Uri const& iconUri);
         void Unregister();
         void UnregisterAll();
         static bool IsSupported();
