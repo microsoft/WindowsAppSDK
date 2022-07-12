@@ -47,10 +47,10 @@ developer.
 AppNotificationContent(
     .AddArgument(L"AppNotificationClick")
     .AddArgument(L"sequence", 1234)
-    .SetAppLogoOverrideWithCircleCrop(winrt::Windows::Foundation::Uri(L"http://www.contoso.com"))
+    .SetAppLogoOverride(winrt::Windows::Foundation::Uri(L"http://www.contoso.com"), ImageCrop::Circle)
     .AddText(L"App Notification with Avatar Image")
     .AddText(L"This is an example message")
-    .AddButton(Button(L"Open App")
+    .AddButton(AppNotificationButton(L"Open App")
         .AddArgument(L"action", "OpenAppButton")
         .AddArgument(L"sequence", sequenceId)));
 ```
@@ -94,11 +94,11 @@ useButtonStyle will only be set if Button::SetButtonStyle is used.
 All the UI components are able to be appended through the AppNotificationContent component APIs:
 
 -   AddText(...)
--   AddButton(Button button)
+-   AddButton(AppNotificationButton button)
 -   Set[type]Image(...)
-    - Inline
-    - AppLogoOverride
-    - Hero
+    -   Inline
+    -   AppLogoOverride
+    -   Hero
 -   SetAudio(...)
 -   AddTextBox(...)
 -   AddComboBox(...)
@@ -112,13 +112,13 @@ AppNotificationContent(
     .SetDuration(Duration::Long)
     .SetTimeStamp(L"2022-06-19T08:30:00Z")
     .SetScenarioType(ScenarioType::IncomingCall)
-        .AddText(L"Incoming Call", TextProperties().UseCallScenarioAlign())
-        .AddInlineImageWithCircleCrop(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/100?image=883)"))
-        .AddButton(Button(L"Text Reply")
+        .AddText(L"Incoming Call", AppNotificationTextProperties().UseCallScenarioAlign())
+        .AddInlineImage(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/100?image=883)"), ImageCrop::Circle)
+        .AddButton(AppNotificationButton(L"Text Reply")
             .AddArgument(L"action", L"textReply")
             .AddArgument(L"callId", 938163)
             .SetIconUri(winrt::Windows::Foundation::Uri(LR"(Assets/Icons/message.png)")))
-        .AddButton(Button(L"Reminder")
+        .AddButton(AppNotificationButton(L"Reminder")
             .AddArgument(L"action", L"reminder")
             .AddArgument(L"callId", 938163)
             .SetIconUri(winrt::Windows::Foundation::Uri(LR"(Assets/Icons/reminder.png)")))
@@ -217,11 +217,11 @@ language, and placement of the text on the AppNotification.
 ```c#
 <text lang? = string
       placement? = "attribution"
-      hint-callScenarioCenterAlign? = 
+      hint-callScenarioCenterAlign? =
       hint-maxLines? = integer />
 ```
 
-These attributes are abstracted with the TextProperties component APIs:
+These attributes are abstracted with the AppNotificationTextProperties component APIs:
 
 -   SetLanguage(String language)
 -   SetHintMaxLines(Int32)
@@ -253,16 +253,16 @@ XML output:
 
 Developers can use UseCallScenarioAlign() to center the text like an incoming call. This feature
 will be ignored unless the AppNotification scenario is set to IncomingCall using
-AppNotificationContent::SetScenarioType(enum ScenarioType). 
+AppNotificationContent::SetScenarioType(enum ScenarioType).
 
 ```c#
 AppNotificationContent()
     .SetScenarioType(ScenarioType::IncomingCall)
-    .AddText(L"Incoming Call", TextProperties()
+    .AddText(L"Incoming Call", AppNotificationTextProperties()
         .UseCallScenarioAlign())
-    .AddText(L"Andrew Barnes", TextProperties()
+    .AddText(L"Andrew Barnes", AppNotificationTextProperties()
         .UseCallScenarioAlign())
-    .AddInlineImageWithCircleCrop(winrt::Windows::Foundation::Uri(L"https://unsplash.it/100?image=883"))
+    .AddInlineImage(winrt::Windows::Foundation::Uri(L"https://unsplash.it/100?image=883"), ImageCrop::Circle)
     .AddButton(Button()
         .SetIconUri(winrt::Windows::Foundation::Uri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"))
         .SetButtonStyle(ButtonStyle::Success)
@@ -294,16 +294,16 @@ XML output:
 
 ![IncomingCall Simple Example](IncomingCallSimpleExample.png)
 
-# Button
+# AppNotificationButton
 
-The Button component API sets up the xml for the \<action\> element. Buttons are user-clickable
-components meant to start an action from the app.
+The AppNotificationButton component API sets up the xml for the \<action\> element.
+AppNotificationButtons are user-clickable components meant to start an action from the app.
 
 **WinAppSDK 1.2 \<action\> Schema**:
 
 ```c#
 <action content = string
-        arguments = string 
+        arguments = string
         placement? = "contextMenu"
         imageUri? = string
         hint-inputid? = string
@@ -311,10 +311,10 @@ components meant to start an action from the app.
         hint-toolTip? = string />
 ```
 
-These attributes are abstracted with the Button component APIs:
+These attributes are abstracted with the AppNotificationButton component APIs:
 
--   Button()
--   Button(String content)
+-   AppNotificationButton()
+-   AppNotificationButton(String content)
 -   SetIconUri(Windows.Foundation.Uri iconUri)
 -   SetToolTip(String toolTip)
 -   UseContextMenuPlacement()
@@ -326,7 +326,7 @@ Below are some example usages:
 AppNotificationContent()
     .AddText(L"Content")
     .AddTextBox(L"textBox", L"Reply")
-    .AddButton(Button(L"Send")
+    .AddButton(AppNotificationButton(L"Send")
         .AddArgument(L"action", L"textReply")
         .SetIconUri(winrt::Windows::Foundation::Uri(LR"(Assets/Icons/send.png)"))
         .SetInputId(L"textBox"))
@@ -362,22 +362,22 @@ styles are ButtonStyle::Success (green) and ButtonStyle::Critical (red).
 ```c#
 AppNotificationContent()
     .SetScenarioType(ScenarioType::IncomingCall)
-    .AddText(L"Incoming Call", TextProperties()
+    .AddText(L"Incoming Call", AppNotificationTextProperties()
         .UseCallScenarioAlign())
-    .AddText(L"Andrew Barnes", TextProperties()
+    .AddText(L"Andrew Barnes", AppNotificationTextProperties()
         .UseCallScenarioAlign())
-    .AddInlineImageWithCircleCrop(winrt::Windows::Foundation::Uri(L"https://unsplash.it/100?image=883"))
-    .AddButton(Button()
+    .AddInlineImage(winrt::Windows::Foundation::Uri(L"https://unsplash.it/100?image=883"), ImageCrop::Circle)
+    .AddButton(AppNotificationButton()
         .AddArgument(L"videoCall", L"938465")
         .SetIconUri(winrt::Windows::Foundation::Uri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"))
         .SetButtonStyle(ButtonStyle::Success)
         .SetToolTip(L"Answer video call"))
-    .AddButton(Button()
+    .AddButton(AppNotificationButton()
         .AddArgument(L"voiceCall", L"938465")
         .SetIconUri(winrt::Windows::Foundation::Uri(L"https://www.nicepng.com/png/full/379-3794777_white-phone-icon-white-phone-call-icon.png"))
         .SetButtonStyle(ButtonStyle::Success)
         .SetToolTip(L"Answer voice call"))
-    .AddButton(Button()
+    .AddButton(AppNotificationButton()
         .AddArgument(L"declineCall", L"938465")
         .SetIconUri(winrt::Windows::Foundation::Uri(L"https://static.thenounproject.com/png/5012-200.png"))
         .SetButtonStyle(ButtonStyle::Critical)
@@ -429,7 +429,7 @@ the cursor and a text will display describing what the button does.
 AppNotificationContent()
     .AddText(L"Content")
     .AddTextBox(L"textBox", L"Reply")
-    .AddButton(Button()
+    .AddButton(AppNotificationButton()
         .AddArgument(L"action", L"textReply")
         .SetInputId(L"textBox")
         .SetToolTip(L"Send")
@@ -613,7 +613,7 @@ For both Inline and AppLogoOverride, developers can set how the image will be cr
 ```c#
 AppNotificationContent()
     .AddText(L"To the left is a cropped AppLogoOverride")
-    .SetAppLogoOverrideWithCircleCrop(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/64?image=669)"))
+    .SetAppLogoOverride(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/64?image=669)"), ImageCrop::Circle)
     .Show();
 ```
 
@@ -676,8 +676,8 @@ XML output:
 </toast>
 ```
 
-Developers can define if the audio should be looped using SetLoopDuration(bool), which can
-be short or long.
+Developers can define if the audio should be looped using SetLoopDuration(bool), which can be short
+or long.
 
 ```c#
 AppNotificationContent()
@@ -699,8 +699,8 @@ XML output:
 </toast>
 ```
 
-An AppNotification that does not want to play any audio including the default, can use
-SetIsMuted(bool) to mute the audio.
+An AppNotification that does not want to play any audio including the default, can use MuteAudio to
+mute the audio.
 
 ```c#
 AppNotificationContent()
@@ -773,12 +773,12 @@ XML output:
 
 Example result: ![TextBox Example](TextBoxExample.png)
 
-# ComboBox
+# AppNotificationComboBox
 
-ComboBox is an \<input\> component that allows users to pick from a dropdown menu of values on
-an AppNotification.
+AppNotificationComboBox is an \<input\> component that allows users to pick from a dropdown menu of
+values on an AppNotification.
 
-**WinAppSDK 1.2 ComboBox Schema**:
+**WinAppSDK 1.2 AppNotificationComboBox Schema**:
 
 ```c#
 <input id = string
@@ -789,9 +789,9 @@ an AppNotification.
 </input>
 ```
 
-These attributes are abstracted with the ComboBox component APIs:
+These attributes are abstracted with the AppNotificationComboBox component APIs:
 
--   ComboBox(String id)
+-   AppNotificationComboBox(String id)
 -   SetDefaultSelection(String id)
 -   AddSelection(String id, String content)
 
@@ -799,7 +799,7 @@ Below is an example use:
 
 ```c#
 AppNotificationContent()
-    .AddComboBox(ComboBox(L"ComboBox")
+    .AddComboBox(AppNotificationComboBox(L"ComboBox")
         .SetDefaultSelection(L"yes")
         .AddSelection(L"yes", L"Going")
         .AddSelection(L"maybe", L"Maybe")
@@ -836,11 +836,12 @@ XML output:
 
 Example result: ![ComboBox Example](ComboBoxExample.png)
 
-# ProgressBar
+# AppNotificationProgressBar
 
-ProgressBar is a component that builds the \<progress\> xml. ProgressBar is used to update an
-AppNotification that is currently displayed. This allows developers to inform users about the status
-of certain operations such as download or install.
+AppNotificationProgressBar is a component that builds the \<progress\> xml.
+AppNotificationProgressBar is used to update an AppNotification that is currently displayed. This
+allows developers to inform users about the status of certain operations such as download or
+install.
 
 **WinAppSDK 1.2 \<progress\> Schema**:
 
@@ -852,8 +853,8 @@ of certain operations such as download or install.
 />
 ```
 
-ProgressBar uses data binding to update the active UI. In the WindowsAppSDK, this is done by using
-AppNotificationProgressData. Click
+AppNotificationProgressBar uses data binding to update the active UI. In the WindowsAppSDK, this is
+done by using AppNotificationProgressData. Click
 [Here](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/AppNotifications/AppNotifications-spec.md#notification-progress-updates)
 for an example.
 
@@ -864,9 +865,9 @@ All the attributes have static data binding constants:
 -   Title = "{progressTitle}"
 -   ValueStringOverride = "{progressValueString}
 
-Every ProgressBar component will have the binded status and value. Title and ValueStringOverride are
-not required so those constants will not be added unless the developers call the ProgressBar
-component APIs
+Every AppNotificationProgressBar component will have the binded status and value. Title and
+ValueStringOverride are not required so those constants will not be added unless the developers call
+the AppNotificationProgressBar component APIs
 
 -   UseTitle()
 -   UseStaticTitle(String title)
@@ -875,10 +876,10 @@ component APIs
 Below is an example use:
 
 ```c#
-// Using AppNotificationContent, build the Xml payload with ProgressBar.
+// Using AppNotificationContent, build the Xml payload with AppNotificationProgressBar.
 winrt::hstring xmlPayload { AppNotificationContent()
     .AddText(L"Downloading this week's new music...")
-    .SetProgressBar(ProgressBar()
+    .SetProgressBar(AppNotificationProgressBar()
         .UseTitle()
         .UseValueStringOverride())
     .GetXml() };
@@ -924,7 +925,7 @@ winrt::AppNotificationManager::Default().Show(notification);
 
 Example result: ![Progress Bar Example 1](ProgressBarExample1.png)
 
-Then update the ProgressBar using AppNotificationProgressData:
+Then update the AppNotificationProgressBar using AppNotificationProgressData:
 
 ```c#
 data.SequenceNumber(2);
@@ -939,8 +940,10 @@ auto result = co_await winrt::Microsoft::Windows::AppNotifications::AppNotificat
 Example result: ![Progress Bar Example 2](ProgressBarExample2.png)
 
 # Retrieving Arguments
-AppNotificationContent and Button return arguments to the activated application when the user clicks on the component. Developers can
-add multiple key/value pairs and Windows App SDK will serialize them into a string.
+
+AppNotificationContent and Button return arguments to the activated application when the user clicks
+on the component. Developers can add multiple key/value pairs and Windows App SDK will serialize
+them into a string.
 
 Below is an example with AppNotificationContent and Button:
 
@@ -954,10 +957,12 @@ AppNotificationContent(
 ```
 
 When the user clicks on the AppNotification body, the resulting argument string is:
-- "action=appNotificationBodyTouch;user=938163"
+
+-   "action=appNotificationBodyTouch;user=938163"
 
 When the user clicks on the Button, the result argument string is:
-- "action=buttonTouch;callId=938163"
+
+-   "action=buttonTouch;callId=938163"
 
 Notice that ';' is used as the delimiter between each argument.
 
@@ -965,6 +970,7 @@ To retrieve the arguments from the serialized string, developers will use
 AppNotificationReceivedEventArgs::Arguments to get the values from the argument string as a map.
 
 Below is an example usage:
+
 ```c#
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::AppNotifications;
@@ -982,19 +988,20 @@ if (kind == ExtendedActivationKind::AppNotification)
     winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> argumentMap { appActivatedArgs.Argument() };
 }
 ```
+
 # Full API Details
 
 ```c#
 namespace Microsoft.Windows.AppNotifications.Builder
 {
-    runtimeclass TextProperties
+    runtimeclass AppNotificationTextProperties
     {
         // Contains the set of <text> attributes
-        TextProperties();
+        AppNotificationTextProperties();
 
-        TextProperties SetLanguage(String language);
-        TextProperties UsesCallScenarioAlign();
-        TextProperties SetMaxLines(Int32 maxLines);
+        AppNotificationTextProperties SetLanguage(String language);
+        AppNotificationTextProperties UsesCallScenarioAlign();
+        AppNotificationTextProperties SetMaxLines(Int32 maxLines);
 
         String GetXml();
     }
@@ -1005,69 +1012,72 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Critical, // The button will be red
     };
 
-    runtimeclass Button
+    runtimeclass AppNotificationButton
     {
         // Button can use ToolTip instead of content which requires empty content.
         // Argument attribute is required and uses the ArgumentSerializer construct
         // to add arguments to the button.
-        Button();
-        Button(String content);
+        AppNotificationButton();
+        AppNotificationButton(String content);
 
-        Button AddArgument(String key, String value);
+        AppNotificationButton AddArgument(String key, String value);
 
         // Sets the IconUri for the button.
-        Button SetIconUri(Windows.Foundation.Uri iconUri);
+        AppNotificationButton SetIconUri(Windows.Foundation.Uri iconUri);
 
         // The tooltip for a button, if the button has an empty content string.
-        Button SetToolTip(String toolTip);
+        AppNotificationButton SetToolTip(String toolTip);
 
         // Sets the Button as context menu action.
-        Button UseContextMenuPlacement();
+        AppNotificationButton UseContextMenuPlacement();
 
         // Sets the ButtonStyle to Success or Critical
-        Button SetButtonStyle(ButtonStyle buttonStyle);
+        AppNotificationButton SetButtonStyle(ButtonStyle buttonStyle);
 
         // Sets the ID of an existing TextBox in order to have this button display to the right of the input.
-        Button SetInputId(String inputId);
+        AppNotificationButton SetInputId(String inputId);
 
         // Launches the URI passed into the button when activated.
-        Button SetProtocolActivation(Windows.Foundation.Uri protocolUri);
-        Button SetProtocolActivation(Windows.Foundation.Uri protocolUri, String targetApplicationPfn);
+        AppNotificationButton SetProtocolActivation(Windows.Foundation.Uri protocolUri);
+        AppNotificationButton SetProtocolActivation(Windows.Foundation.Uri protocolUri, String targetApplicationPfn);
 
         // Retrieves the XML content of the button.
         String GetXml();
     };
 
-    runtimeclass ComboBox
+    runtimeclass AppNotificationComboBox
     {
-        ComboBox(String id);
+        AppNotificationComboBox(String id);
 
-        // Add a selection item to the ComboBox if InputType is ComboBox. The id parameter is used to retrieve the user input when the app is activated
+        // Add a selection item to the AppNotificationComboBox if InputType is AppNotificationComboBox. The id parameter is used to retrieve the user input when the app is activated
         // and content is the displayed text for the item.
-        ComboBox AddSelection(String id, String content);
+        AppNotificationComboBox AddSelection(String id, String content);
 
-        // Sets the default selection to be displayed by the ComboBox
-        ComboBox SetDefaultSelection(String id);
+        // Adds a title to display on top
+        AppNotificationComboBox SetTitle(String title);
+
+        // Sets the default selection to be displayed by the AppNotificationComboBox
+        AppNotificationComboBox SetDefaultSelection(String id);
 
         // Retrieves the XML content of the input.
         String GetXml();
     };
 
-    runtimeclass ProgressBar
+    runtimeclass AppNotificationProgressBar
     {
-        // ProgressBar binds to AppNotificationProgressData so the AppNotification will
+        // AppNotificationProgressBar binds to AppNotificationProgressData so the AppNotification will
         // receive every update to the status and value. In the WinAppSDK, these binding
         // values are static, so developers won't need to define these binding values
         // themselves.
-        ProgressBar();
+        AppNotificationProgressBar();
 
         // Adds the title binding value.
-        ProgressBar UseTitle();
+        AppNotificationProgressBar UseTitle();
 
         // Adds the valueStringOverride value.
-        ProgressBar UseValueStringOverride();
+        AppNotificationProgressBar UseValueStringOverride();
 
-        // Retrieves the XML content of the ProgressBar
+        // Retrieves the XML content of the AppNotificationProgressBar
         String GetXml();
     };
 
@@ -1115,6 +1125,12 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Long, // AppNotification stays on-screen for longer, and then goes into Notification Center.
     };
 
+    enum ImageCrop
+    {
+        Default, // Uses the default renderer to display the image
+        Circle, // Crops the image as a circle.
+    }
+
     runtimeclass AppNotificationContent
     {
         AppNotificationContent();
@@ -1130,25 +1146,24 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Adds text to the AppNotification.
         AppNotificationContent AddText(String text);
-        AppNotificationContent AddText(String text, TextProperties properties);
+        AppNotificationContent AddText(String text, AppNotificationTextProperties properties);
 
         AppNotificationContent SetAttributionText(String text);
         AppNotificationContent SetAttributionText(String text, String language);
 
         // Sets the full-width inline-image that appears when you expand the AppNotification
         AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri);
+        [default_overload]
+        AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri, ImageCrop imageCrop);
         AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri, String alternateText);
+        AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri, String alternateText, ImageCrop imagecrop);
 
-        AppNotificationContent SetInlineImageWithCircleCrop(Windows.Foundation.Uri imageUri);
-        AppNotificationContent SetInlineImageWithCircleCrop(Windows.Foundation.Uri imageUri, String alternateText);
-        
         // Sets the image that is left-aligned with notification text
         AppNotificationContent SetAppLogoOverride(Windows.Foundation.Uri imageUri);
         AppNotificationContent SetAppLogoOverride(Windows.Foundation.Uri imageUri, String alternateText);
+        AppNotificationContent SetAppLogoOverride(Windows.Foundation.Uri imageUri, ImageCrop imageCrop);
+        AppNotificationContent SetAppLogoOverride(Windows.Foundation.Uri imageUri, String alternateText, ImageCrop imageCrop);
 
-        AppNotificationContent SetAppLogoOverrideCirleCrop(Windows.Foundation.Uri imageUri);
-        AppNotificationContent SetAppLogoOverrideCirleCrop(Windows.Foundation.Uri imageUri, String alternateText);
-        
         // Sets the image that displays within the banner of the AppNotification.
         AppNotificationContent SetHeroImage(Windows.Foundation.Uri imageUri);
         AppNotificationContent SetHeroImage(Windows.Foundation.Uri imageUri, String alternateText);
@@ -1169,13 +1184,13 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationContent AddTextBox(String id, String placeHolderText, String title);
 
         // Adds a button to the AppNotificationContent
-        AppNotificationContent AddButton(Button button);
+        AppNotificationContent AddButton(AppNotificationButton button);
 
         // Add an input ComboBox to retrieve user input.
-        AppNotificationContent AddComboBox(ComboBox comboBox);
+        AppNotificationContent AddComboBox(AppNotificationComboBox comboBox);
 
-        AppNotificationContent SetProgressBar(ProgressBar progressBar);
-        
+        AppNotificationContent SetProgressBar(AppNotificationProgressBar progressBar);
+
         // Retrieves the notification XML content so that it can be used with a local
         // AppNotification constructor.
         String GetXml();
