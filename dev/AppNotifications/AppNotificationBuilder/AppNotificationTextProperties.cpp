@@ -1,28 +1,28 @@
 ﻿#include "pch.h"
-#include "TextProperties.h"
-#include "Microsoft.Windows.AppNotifications.Builder.TextProperties.g.cpp"
+#include "AppNotificationTextProperties.h"
+#include "Microsoft.Windows.AppNotifications.Builder.AppNotificationTextProperties.g.cpp"
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
-    winrt::Microsoft::Windows::AppNotifications::Builder::TextProperties TextProperties::SetMaxLines(int const& maxLines)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties AppNotificationTextProperties::SetMaxLines(int const& maxLines)
     {
         m_maxLines = maxLines;
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::TextProperties TextProperties::SetLanguage(winrt::hstring const& language)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties AppNotificationTextProperties::SetLanguage(winrt::hstring const& language)
     {
         m_language = language;
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::TextProperties TextProperties::UsesCallScenarioAlign()
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties AppNotificationTextProperties::UsesCallScenarioAlign()
     {
         m_useCallScenarioAlign = true;
         return *this;
     }
 
-    winrt::hstring TextProperties::GetXml()
+    winrt::hstring AppNotificationTextProperties::GetXml()
     {
         winrt::hstring xmlResult{ L"<text "};
         if (m_maxLines)
