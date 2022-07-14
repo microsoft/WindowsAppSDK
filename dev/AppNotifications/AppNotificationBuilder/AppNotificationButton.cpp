@@ -8,6 +8,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::AddArgument(winrt::hstring const& key, winrt::hstring const& value)
     {
+        THROW_HR_IF(E_INVALIDARG, key.empty());
+        THROW_HR_IF(E_INVALIDARG, m_protocolUri);
+
         m_arguments.Insert(key, value);
         return *this;
     }
@@ -20,13 +23,18 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetProtocolActivation(winrt::Windows::Foundation::Uri const& protocolUri)
     {
+        THROW_HR_IF(E_INVALIDARG, m_arguments.Size() > 0u);
+
         m_protocolUri = protocolUri;
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetProtocolActivation(winrt::Windows::Foundation::Uri const& protocolUri, winrt::hstring const& targetApplicationPfn)
     {
+        THROW_HR_IF(E_INVALIDARG, m_arguments.Size() > 0u);
+
         m_protocolUri = protocolUri;
+        m_targetApplicationPfn = targetApplicationPfn;
         return *this;
     }
 
@@ -56,26 +64,31 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::hstring AppNotificationButton::GetXml()
     {
-        winrt::hstring xml{ L"<action content=" + m_content + L" arguments="};
+        winrt::hstring xml{ L"<action content=\"" + m_content + L"\" arguments=\""};
+
 
         if (m_protocolUri)
         {
-            xml = xml + m_protocolUri.ToString() + LR"( activationType="protocol")";
+            xml = xml + m_protocolUri.ToString() + LR"(" activationType="protocol")";
             if (!m_targetApplicationPfn.empty())
             {
-                xml = xml + L" protocolActivationTargetApplicationPfn=" + m_targetApplicationPfn;
+                xml = xml + L" protocolActivationTargetApplicationPfn=\"" + m_targetApplicationPfn + L"\"";
             }
         }
         else
         {
+            std::wstring arguments{};
             for (auto pair : m_arguments)
             {
-                xml = xml + pair.Key();
+                arguments = arguments + pair.Key();
                 if (!pair.Value().empty())
                 {
-                    xml = xml + L"&" + pair.Value() + L";";
+                    arguments = arguments + L"=" + pair.Value();
                 }
+                arguments = arguments + L";";
             }
+
+            xml = xml + arguments.substr(0, arguments.size() - 1) + L"\"";
         }
         
 
@@ -86,34 +99,29 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         if (m_iconUri)
         {
-            xml = xml + L" imageUri=" + m_iconUri.ToString();
-        }
-
-        if (m_protocolUri)
-        {
-            xml = xml + LR"( activationType="protocol" protocolActivationTargetApplicationPfn=)" + m_protocolUri.ToString();
+            xml = xml + L" imageUri=\"" + m_iconUri.ToString() + L"\"";
         }
 
         if (!m_inputId.empty())
         {
-            xml = xml + L" hint-inputId=" + m_inputId;
+            xml = xml + L" hint-inputId=\"" + m_inputId + L"\"";
         }
 
         if (m_buttonStyle == ButtonStyle::Success)
         {
-            xml = xml + LR"( hint-buttonStyle="success")";
+            xml = xml + LR"( hint-buttonStyle="Success")";
         }
         else if (m_buttonStyle == ButtonStyle::Success)
         {
-            xml = xml + LR"( hint-buttonStyle="critical")";
+            xml = xml + LR"( hint-buttonStyle="Critical")";
         }
 
         if (!m_toolTip.empty())
         {
-            xml = xml + L" hint-toolTip=" + m_toolTip;
+            xml = xml + L" hint-toolTip=\"" + m_toolTip + L"\"";
         }
 
-        xml = xml + L" />";
+        xml = xml + L"/>";
         return xml;
     }
 }

@@ -24,15 +24,15 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::hstring AppNotificationTextProperties::GetXml()
     {
-        winrt::hstring xmlResult{ L"<text "};
-        if (m_maxLines)
-        {
-            xmlResult = xmlResult + L" hint-maxLines=\"" + winrt::to_hstring(m_maxLines) + L"\"";
-        }
-
+        winrt::hstring xmlResult{ L"<text"};
         if (!m_language.empty())
         {
             xmlResult = xmlResult + L" lang=\"" + m_language + L"\"";
+        }
+
+        if (m_maxLines)
+        {
+            xmlResult = xmlResult + L" hint-maxLines=\"" + winrt::to_hstring(m_maxLines) + L"\"";
         }
 
         if (m_useCallScenarioAlign)

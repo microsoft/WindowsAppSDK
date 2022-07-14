@@ -7,13 +7,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="AppNotificationBuilderTests.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="APITests.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AppNotificationBuilderTests.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
