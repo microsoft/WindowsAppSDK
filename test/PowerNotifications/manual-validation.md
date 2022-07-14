@@ -5,12 +5,13 @@ PowerNotifications.APITests & FunctionalTests
 PowerStateNotifications
 
 ## Area Path
-dev/PowerNotifications
+OS\WDX\DXP\APT-Application Platform and Tools\EMR-Enterprise MSIX Runtime
 
-## ETA: < 5 mins
+## ETA: < 30 mins (including setup)
 
 ## Special notes
 A battery level aware VM will fail on the battery level and power source tests as the tests are currently configured for AC power devices.
+Repeat for all architectures
 
 ## Test steps
 1. Install Visual Studio 2019 or later
@@ -24,7 +25,6 @@ If not, manually load up BuildOutput\[Release/Debug]\[Arch]\PowerNotifications\P
 
 ## Pass criteria
 All tests should run successfully
-## Applicability: [Default]
 
 ## Automation Plan:
 None at the moment as the tests also have an Integration test equivalent and this has been deemed enough for this feature.
