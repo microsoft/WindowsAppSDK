@@ -10,9 +10,40 @@ using namespace winrt::Windows::Globalization;
 using namespace winrt::Windows::Globalization::DateTimeFormatting;
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
-    winrt::hstring GetWinSoundEventString(MSWinSoundEvent msWinSoundEvent)
+    
+
+    std::wstring AppNotificationContent::GetWinSoundEventString(MSWinSoundEvent msWinSoundEvent)
     {
-        return L"";
+        static std::map<MSWinSoundEvent, std::wstring> c_soundEventMap
+        {
+            { MSWinSoundEvent::Default, L"ms-winsoundevent:Notification.Default"},
+            { MSWinSoundEvent::IM, L"ms-winsoundevent:Notification.IM"},
+            { MSWinSoundEvent::Mail, L"ms-winsoundevent:Notification.Mail"},
+            { MSWinSoundEvent::Reminder, L"ms-winsoundevent:Notification.Reminder"},
+            { MSWinSoundEvent::SMS, L"ms-winsoundevent:Notification.SMS"},
+            { MSWinSoundEvent::Alarm, L"ms-winsoundevent:Notification.Looping.Alarm"},
+            { MSWinSoundEvent::Alarm2, L"ms-winsoundevent:Notification.Looping.Alarm2"},
+            { MSWinSoundEvent::Alarm3, L"ms-winsoundevent:Notification.Looping.Alarm3"},
+            { MSWinSoundEvent::Alarm4, L"ms-winsoundevent:Notification.Looping.Alarm4"},
+            { MSWinSoundEvent::Alarm5, L"ms-winsoundevent:Notification.Looping.Alarm5"},
+            { MSWinSoundEvent::Alarm6, L"ms-winsoundevent:Notification.Looping.Alarm6"},
+            { MSWinSoundEvent::Alarm7, L"ms-winsoundevent:Notification.Looping.Alarm7"},
+            { MSWinSoundEvent::Alarm8, L"ms-winsoundevent:Notification.Looping.Alarm8"},
+            { MSWinSoundEvent::Alarm9, L"ms-winsoundevent:Notification.Looping.Alarm9"},
+            { MSWinSoundEvent::Alarm10, L"ms-winsoundevent:Notification.Looping.Alarm10"},
+            { MSWinSoundEvent::Call, L"ms-winsoundevent:Notification.Looping.Call"},
+            { MSWinSoundEvent::Call2, L"ms-winsoundevent:Notification.Looping.Call2"},
+            { MSWinSoundEvent::Call3, L"ms-winsoundevent:Notification.Looping.Call3"},
+            { MSWinSoundEvent::Call4, L"ms-winsoundevent:Notification.Looping.Call4"},
+            { MSWinSoundEvent::Call5, L"ms-winsoundevent:Notification.Looping.Call5"},
+            { MSWinSoundEvent::Call6, L"ms-winsoundevent:Notification.Looping.Call6"},
+            { MSWinSoundEvent::Call7, L"ms-winsoundevent:Notification.Looping.Call7"},
+            { MSWinSoundEvent::Call8, L"ms-winsoundevent:Notification.Looping.Call8"},
+            { MSWinSoundEvent::Call9, L"ms-winsoundevent:Notification.Looping.Call9"},
+            { MSWinSoundEvent::Call10, L"ms-winsoundevent:Notification.Looping.Call10"},
+        };
+
+        return c_soundEventMap[msWinSoundEvent];
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationContent AppNotificationContent::AddArgument(hstring const& key, hstring const& value)

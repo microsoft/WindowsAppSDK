@@ -52,6 +52,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::hstring GetXml();
 
     private:
+        std::wstring GetWinSoundEventString(MSWinSoundEvent msSoundEvent);
+
         winrt::Windows::Foundation::DateTime m_timeStamp{};
         Duration m_duration{ Duration::Default };
         Scenario m_scenario{ Scenario::Default };

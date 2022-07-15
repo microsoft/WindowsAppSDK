@@ -19,17 +19,17 @@ namespace Test::AppNotification::Builder
 
         TEST_CLASS_SETUP(ClassInit)
         {
-            ::Test::Bootstrap::SetupPackages();
+            ::Test::Bootstrap::Setup();
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            ::Test::Bootstrap::CleanupPackages();
+            ::Test::Bootstrap::Cleanup();
             return true;
         }
 
-        TEST_METHOD_SETUP(MethodSetup)
+       TEST_METHOD_SETUP(MethodSetup)
         {
 
             ::Test::Bootstrap::SetupBootstrap();
@@ -325,6 +325,49 @@ namespace Test::AppNotification::Builder
                     .AddArgument(L"key", L"value")), E_INVALIDARG);
         }
 
+        TEST_METHOD(SetAudioWithUri)
+        {
+            auto builder{ AppNotificationContent()
+                    .SetAudio(c_sampleUri) };
+            auto expected{ LR"(<toast><visual><binding template="ToastGeneric"></binding></visual><audio src="http://www.microsoft.com/"/></toast>)" };
+
+            VERIFY_ARE_EQUAL(builder.GetXml(), expected);
+        }
+
+        TEST_METHOD(SetAudioWithUriAndDuration)
+        {
+            auto builder{ AppNotificationContent()
+                    .SetAudio(c_sampleUri, Duration::Long) };
+            auto expected{ LR"(<toast duration="long"><visual><binding template="ToastGeneric"></binding></visual><audio src="http://www.microsoft.com/" loop="true"/></toast>)" };
+
+            VERIFY_ARE_EQUAL(builder.GetXml(), expected);
+        }
+
+        TEST_METHOD(SetAudioWithMSWinSoundEvent)
+        {
+            auto builder{ AppNotificationContent()
+                    .SetAudio(MSWinSoundEvent::Reminder) };
+            auto expected{ LR"(<toast><visual><binding template="ToastGeneric"></binding></visual><audio src="ms-winsoundevent:Notification.Reminder"/></toast>)" };
+
+            VERIFY_ARE_EQUAL(builder.GetXml(), expected);
+        }
+
+        TEST_METHOD(SetAudioWithMSWinSoundEventAndDuration)
+        {
+            auto builder{ AppNotificationContent()
+                    .SetAudio(MSWinSoundEvent::Reminder, Duration::Long) };
+            auto expected{ LR"(<toast duration="long"><visual><binding template="ToastGeneric"></binding></visual><audio src="ms-winsoundevent:Notification.Reminder" loop="true"/></toast>)" };
+
+            VERIFY_ARE_EQUAL(builder.GetXml(), expected);
+        }
+
+        TEST_METHOD(MuteAudio)
+        {
+            auto builder{ AppNotificationContent().MuteAudio() };
+            auto expected{ LR"(<toast><visual><binding template="ToastGeneric"></binding></visual><audio silent="true"/></toast>)" };
+
+            VERIFY_ARE_EQUAL(builder.GetXml(), expected);
+        }
 
     };
 }
