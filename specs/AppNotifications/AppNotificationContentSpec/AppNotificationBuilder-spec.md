@@ -80,14 +80,14 @@ These attributes are abstracted away through the AppNotificationContent componen
 
 -   AppNotificationContent();
 -   AddArgument(String key, String value)
--   SetTimeStamp(Windows.Foundation.DateTimeOffset dateTimeOffset)
--   SetScenario(Scenario Scenario)
-    -   Scenario::Reminder
-    -   Scenario::Alarm
-    -   Scenario::IncomingCall
-    -   Scenario::Urgent
+-   SetTimeStamp(Windows.Foundation.DateTime dateTime)
+-   SetScenario(AppNotificationScenario Scenario)
+    -   AppNotificationScenario::Reminder
+    -   AppNotificationScenario::Alarm
+    -   AppNotificationScenario::IncomingCall
+    -   AppNotificationScenario::Urgent
 
-useButtonStyle will only be set if Button::SetButtonStyle is used.
+useButtonStyle will only be set if Button::SetButtonColor is used.
 
 All the UI components are able to be appended through the AppNotificationContent component APIs:
 
@@ -107,27 +107,27 @@ Below is an example usage:
 AppNotificationContent(
     .AddArgument(L"action", L"answer")
     .AddArgument(L"callId", 938163)
-    .SetDuration(Duration::Long)
-    .SetTimeStamp(DateTimeOffset.Now())
-    .SetScenario(Scenario::IncomingCall)
+    .SetDuration(AppNotificationDuration::Long)
+    .SetTimeStamp(DateTime.now())
+    .SetScenario(AppNotificationScenario::IncomingCall)
         .AddText(L"Incoming Call", AppNotificationTextProperties().UseCallScenarioAlign())
         .AddInlineImage(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/100?image=883)"), ImageCrop::Circle)
         .AddButton(AppNotificationButton(L"Text Reply")
             .AddArgument(L"action", L"textReply")
             .AddArgument(L"callId", 938163)
-            .SetIconUri(winrt::Windows::Foundation::Uri(LR"(Assets/Icons/message.png)")))
+            .SetIcon(winrt::Windows::Foundation::Uri(LR"(Assets/Icons/message.png)")))
         .AddButton(AppNotificationButton(L"Reminder")
             .AddArgument(L"action", L"reminder")
             .AddArgument(L"callId", 938163)
-            .SetIconUri(winrt::Windows::Foundation::Uri(LR"(Assets/Icons/reminder.png)")))
+            .SetIcon(winrt::Windows::Foundation::Uri(LR"(Assets/Icons/reminder.png)")))
         .AddButton(Button(L"Ignore")
             .AddArgument(L"action", L"ignore")
             .AddArgument(L"callId", 938163)
-            .SetIconUri(winrt::Windows::Foundation::Uri(LR"(Assets/Icons/cancel.png)")))
+            .SetIcon(winrt::Windows::Foundation::Uri(LR"(Assets/Icons/cancel.png)")))
         .AddButton(Button(L"Answer")
             .AddArgument(L"action", L"answer")
             .AddArgument(L"callId", 938163)
-            .SetIconUri(winrt::Windows::Foundation::Uri(LR"(Assets/Icons/telephone.png)")))
+            .SetIcon(winrt::Windows::Foundation::Uri(LR"(Assets/Icons/telephone.png)")))
     .GetXml();
 ```
 
@@ -201,7 +201,7 @@ Output
 
 ## Limitations
 
--   Scenario::Urgent is only supported for to builds 19041 (20H1) and above. Using this
+-   AppNotificationScenario::Urgent is only supported for to builds 19041 (20H1) and above. Using this
     attribute on lower builds will not prevent the AppNotification from being constructed, but
     developers will receive a debug warning that the attribute is not supported.
 
@@ -251,19 +251,19 @@ XML output:
 
 Developers can use UseCallScenarioAlign() to center the text like an incoming call. This feature
 will be ignored unless the AppNotification scenario is set to IncomingCall using
-AppNotificationContent::SetScenario(enum Scenario).
+AppNotificationContent::SetScenario(enum AppNotificationScenario).
 
 ```c#
 AppNotificationContent()
-    .SetScenario(Scenario::IncomingCall)
+    .SetScenario(AppNotificationScenario::IncomingCall)
     .AddText(L"Incoming Call", AppNotificationTextProperties()
         .UseCallScenarioAlign())
     .AddText(L"Andrew Barnes", AppNotificationTextProperties()
         .UseCallScenarioAlign())
     .AddInlineImage(winrt::Windows::Foundation::Uri(L"https://unsplash.it/100?image=883"), ImageCrop::Circle)
     .AddButton(Button()
-        .SetIconUri(winrt::Windows::Foundation::Uri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"))
-        .SetButtonStyle(ButtonStyle::Success)
+        .SetIcon(winrt::Windows::Foundation::Uri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"))
+        .SetButtonColor(ButtonColor::Green)
         .SetToolTip(L"Answer video call"))
     .GetXml();
 ```
@@ -313,7 +313,7 @@ These attributes are abstracted with the AppNotificationButton component APIs:
 
 -   AppNotificationButton()
 -   AppNotificationButton(String content)
--   SetIconUri(Windows.Foundation.Uri iconUri)
+-   SetIcon(Windows.Foundation.Uri iconUri)
 -   SetToolTip(String toolTip)
 -   UseContextMenuPlacement()
 -   SetInputId(String inputId)
@@ -326,7 +326,7 @@ AppNotificationContent()
     .AddTextBox(L"textBox", L"Reply")
     .AddButton(AppNotificationButton(L"Send")
         .AddArgument(L"action", L"textReply")
-        .SetIconUri(winrt::Windows::Foundation::Uri(LR"(Assets/Icons/send.png)"))
+        .SetIcon(winrt::Windows::Foundation::Uri(LR"(Assets/Icons/send.png)"))
         .SetInputId(L"textBox"))
     .GetXml();
 ```
@@ -354,12 +354,12 @@ XML output:
 
 Example result: ![Button Example](ButtonExample.png)
 
-Developers can change the color of the button using SetButtonStyle(ButtonStyle). The two button
-styles are ButtonStyle::Success (green) and ButtonStyle::Critical (red).
+Developers can change the color of the button using SetButtonColor(ButtonColor). The two button
+styles are ButtonColor::Green and ButtonColor::Red.
 
 ```c#
 AppNotificationContent()
-    .SetScenario(Scenario::IncomingCall)
+    .SetScenario(AppNotificationScenario::IncomingCall)
     .AddText(L"Incoming Call", AppNotificationTextProperties()
         .UseCallScenarioAlign())
     .AddText(L"Andrew Barnes", AppNotificationTextProperties()
@@ -367,18 +367,18 @@ AppNotificationContent()
     .AddInlineImage(winrt::Windows::Foundation::Uri(L"https://unsplash.it/100?image=883"), ImageCrop::Circle)
     .AddButton(AppNotificationButton()
         .AddArgument(L"videoCall", L"938465")
-        .SetIconUri(winrt::Windows::Foundation::Uri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"))
-        .SetButtonStyle(ButtonStyle::Success)
+        .SetIcon(winrt::Windows::Foundation::Uri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"))
+        .SetButtonColor(ButtonColor::Green)
         .SetToolTip(L"Answer video call"))
     .AddButton(AppNotificationButton()
         .AddArgument(L"voiceCall", L"938465")
-        .SetIconUri(winrt::Windows::Foundation::Uri(L"https://www.nicepng.com/png/full/379-3794777_white-phone-icon-white-phone-call-icon.png"))
-        .SetButtonStyle(ButtonStyle::Success)
+        .SetIcon(winrt::Windows::Foundation::Uri(L"https://www.nicepng.com/png/full/379-3794777_white-phone-icon-white-phone-call-icon.png"))
+        .SetButtonColor(ButtonColor::Green)
         .SetToolTip(L"Answer voice call"))
     .AddButton(AppNotificationButton()
         .AddArgument(L"declineCall", L"938465")
-        .SetIconUri(winrt::Windows::Foundation::Uri(L"https://static.thenounproject.com/png/5012-200.png"))
-        .SetButtonStyle(ButtonStyle::Critical)
+        .SetIcon(winrt::Windows::Foundation::Uri(L"https://static.thenounproject.com/png/5012-200.png"))
+        .SetButtonColor(ButtonColor::Red)
         .SetToolTip(L"Decline all"))
     .GetXml();
 ```
@@ -431,7 +431,7 @@ AppNotificationContent()
         .AddArgument(L"action", L"textReply")
         .SetInputId(L"textBox")
         .SetToolTip(L"Send")
-        .SetIconUri(winrt::Windows::Foundation::Uri(LR"(Assets/Icons/message.png)")))
+        .SetIcon(winrt::Windows::Foundation::Uri(LR"(Assets/Icons/message.png)")))
     GetXml();
 ```
 
@@ -650,8 +650,8 @@ These attributes are abstracted with the Audio component APIs:
 
 -   SetAudio(Windows.Foundation.Uri audioUri)
 -   SetAudio(MSWinSoundEvent winSoundEvent)
--   SetAudio(Windows.Foundation.Uri audioUri, Duration duration)
--   SetAudio(MSWinSoundEvent winSoundEvent, Duration duration)
+-   SetAudio(Windows.Foundation.Uri audioUri, AppNotificationDuration duration)
+-   SetAudio(MSWinSoundEvent winSoundEvent, AppNotificationDuration duration)
 -   MuteAudio()
 
 Below are some example usages:
@@ -674,13 +674,13 @@ XML output:
 </toast>
 ```
 
-Developers can define if the audio should be looped using SetAudio(Uri, Duration), which can be short
+Developers can define if the audio should be looped using SetAudio(Uri, AppNotificationDuration), which can be short
 or long.
 
 ```c#
 AppNotificationContent()
     .AddText(L"Content")
-    .SetAudio(MSWinSoundEvent::Alarm, Duration::Long)
+    .SetAudio(MSWinSoundEvent::Alarm, AppNotificationDuration::Long)
     .GetXml();
 ```
 
@@ -868,7 +868,8 @@ ValueStringOverride are not required so those constants will not be added unless
 the AppNotificationProgressBar component APIs
 
 -   UseTitle()
--   UseStaticTitle(String title)
+-   UseBoundTitleForLabel()
+-   UseStaticTitleForLabel(String title)
 -   UseValueStringOverride()
 
 Below is an example use:
@@ -878,7 +879,7 @@ Below is an example use:
 winrt::hstring xmlPayload { AppNotificationContent()
     .AddText(L"Downloading this week's new music...")
     .SetProgressBar(AppNotificationProgressBar()
-        .UseTitle()
+        .UseBoundTitleForLabel()
         .UseValueStringOverride())
     .GetXml() };
 ```
@@ -992,22 +993,22 @@ if (kind == ExtendedActivationKind::AppNotification)
 ```c#
 namespace Microsoft.Windows.AppNotifications.Builder
 {
-    runtimeclass AppNotificationTextProperties
+    runtimeclass AppNotificationTextPropertiesGreen
     {
         // Contains the set of <text> attributes
         AppNotificationTextProperties();
 
-        AppNotificationTextProperties SetLanguage(String language);
+        AppNotificationTextProperties SetLanguage(String value);
         AppNotificationTextProperties UsesCallScenarioAlign();
-        AppNotificationTextProperties SetMaxLines(Int32 maxLines);
+        AppNotificationTextProperties SetMaxLines(Int32 value);
 
         String GetXml();
     }
 
-    enum ButtonStyle
+    enum ButtonColor
     {
-        Success, // The button will be green
-        Critical, // The button will be red
+        Red, // The button will be green
+        Green, // The button will be red
     };
 
     runtimeclass AppNotificationButton
@@ -1016,28 +1017,28 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // Argument attribute is required and uses the ArgumentSerializer construct
         // to add arguments to the button.
         AppNotificationButton();
-        AppNotificationButton(String content);
+        AppNotificationButton(String buttonText);
 
         AppNotificationButton AddArgument(String key, String value);
 
         // Sets the IconUri for the button.
-        AppNotificationButton SetIconUri(Windows.Foundation.Uri iconUri);
+        AppNotificationButton SetIcon(Windows.Foundation.Uri value);
 
         // The tooltip for a button, if the button has an empty content string.
-        AppNotificationButton SetToolTip(String toolTip);
+        AppNotificationButton SetToolTip(String value);
 
         // Sets the Button as context menu action.
         AppNotificationButton UseContextMenuPlacement();
 
-        // Sets the ButtonStyle to Success or Critical
-        AppNotificationButton SetButtonStyle(ButtonStyle buttonStyle);
+        // Sets the ButtonColor to Green or Red
+        AppNotificationButton SetButtonColor(ButtonColor value);
 
         // Sets the ID of an existing TextBox in order to have this button display to the right of the input.
-        AppNotificationButton SetInputId(String inputId);
+        AppNotificationButton SetInputId(String value);
 
         // Launches the URI passed into the button when activated.
-        AppNotificationButton SetProtocolActivation(Windows.Foundation.Uri protocolUri);
-        AppNotificationButton SetProtocolActivation(Windows.Foundation.Uri protocolUri, String targetApplicationPfn);
+        AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri);
+        AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri, String targetAppId);
 
         // Retrieves the XML content of the button.
         String GetXml();
@@ -1049,13 +1050,13 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Add a selection item to the AppNotificationComboBox if InputType is AppNotificationComboBox. The id parameter is used to retrieve the user input when the app is activated
         // and content is the displayed text for the item.
-        AppNotificationComboBox AddSelection(String id, String content);
+        AppNotificationComboBox AddItem(String id, String content);
 
         // Adds a title to display on top
-        AppNotificationComboBox SetTitle(String title);
+        AppNotificationComboBox SetTitle(String value);
 
         // Sets the default selection to be displayed by the AppNotificationComboBox
-        AppNotificationComboBox SetDefaultSelection(String id);
+        AppNotificationComboBox SetSelectedItem(String id);
 
         // Retrieves the XML content of the input.
         String GetXml();
@@ -1069,8 +1070,11 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // themselves.
         AppNotificationProgressBar();
 
-        // Adds the title binding value.
-        AppNotificationProgressBar UseTitle();
+        // Adds a static title to the progress bar
+        AppNotificationProgressBar UseStaticTitleForLabel(String value);
+
+        // Adds the title binding value to be used with AppNotificationProgressData
+        AppNotificationProgressBar UseBoundTitleForLabel();
 
         // Adds the valueStringOverride value.
         AppNotificationProgressBar UseValueStringOverride();
@@ -1108,7 +1112,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Call10,
     };
 
-    enum Scenario
+    enum AppNotificationScenario
     {
         Default, // The normal AppNotification behavior. The AppNotification appears for a short duration, and then automatically dismisses into Notification Center.
         Reminder, // The notification will stay on screen until the user dismisses it or takes action.
@@ -1117,7 +1121,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Urgent, // Important notifications allow users to have more control over what 1st party and 3rd party apps can send them high-priority AppNotifications (urgent/important) that can break through Focus Assist.
     };
 
-    enum Duration
+    enum AppNotificationDuration
     {
         Short, // Default value. AppNotification appears for a short while and then goes into Notification Center.
         Long, // AppNotification stays on-screen for longer, and then goes into Notification Center.
@@ -1137,10 +1141,10 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationContent AddArgument(String key, String value);
 
         // Sets the timeStamp of the AppNotification to when it was constructed instead of when it was sent.
-        AppNotificationContent SetTimeStamp(Windows.Foundation.DateTimeOffset timeStamp);
+        AppNotificationContent SetTimeStamp(Windows.Foundation.DateTime value);
 
         // Sets the scenario of the AppNotification.
-        AppNotificationContent SetScenario(Scenario Scenario);
+        AppNotificationContent SetScenario(AppNotificationScenario value);
 
         // Adds text to the AppNotification.
         AppNotificationContent AddText(String text);
@@ -1172,8 +1176,8 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationContent SetAudio(MSWinSoundEvent msWinSoundEvent);
 
         [default_overload]
-        AppNotificationContent SetAudio(Windows.Foundation.Uri audioUri, Duration duration);
-        AppNotificationContent SetAudio(MSWinSoundEvent msWinSoundEvent, Duration duration);
+        AppNotificationContent SetAudio(Windows.Foundation.Uri audioUri, AppNotificationDuration duration);
+        AppNotificationContent SetAudio(MSWinSoundEvent msWinSoundEvent, AppNotificationDuration duration);
 
         AppNotificationContent MuteAudio();
 
@@ -1182,12 +1186,12 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationContent AddTextBox(String id, String placeHolderText, String title);
 
         // Adds a button to the AppNotificationContent
-        AppNotificationContent AddButton(AppNotificationButton button);
+        AppNotificationContent AddButton(AppNotificationButton value);
 
         // Add an input ComboBox to retrieve user input.
-        AppNotificationContent AddComboBox(AppNotificationComboBox comboBox);
+        AppNotificationContent AddComboBox(AppNotificationComboBox value);
 
-        AppNotificationContent SetProgressBar(AppNotificationProgressBar progressBar);
+        AppNotificationContent SetProgressBar(AppNotificationProgressBar value);
 
         // Retrieves the notification XML content so that it can be used with a local
         // AppNotification constructor.
