@@ -279,6 +279,17 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
+        TEST_METHOD(AppNotificationContentTooManyButtons)
+        {
+            VERIFY_THROWS_HR(AppNotificationContent()
+                .AddButton(AppNotificationButton(L"content").AddArgument(L"key1", L"value1"))
+                .AddButton(AppNotificationButton(L"content").AddArgument(L"key2", L"value2"))
+                .AddButton(AppNotificationButton(L"content").AddArgument(L"key3", L"value3"))
+                .AddButton(AppNotificationButton(L"content").AddArgument(L"key4", L"value4"))
+                .AddButton(AppNotificationButton(L"content").AddArgument(L"key5", L"value5"))
+                .AddButton(AppNotificationButton(L"content").AddArgument(L"key6", L"value6")), E_INVALIDARG);
+        }
+
         TEST_METHOD(AddButtonWithProtocolActivation)
         {
             auto builder{ AppNotificationContent()
