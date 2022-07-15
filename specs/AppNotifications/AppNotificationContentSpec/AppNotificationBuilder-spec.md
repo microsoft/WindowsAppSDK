@@ -80,14 +80,12 @@ These attributes are abstracted away through the AppNotificationContent componen
 
 -   AppNotificationContent();
 -   AddArgument(String key, String value)
--   SetTimeStamp(String timeStamp)
-    -   Must be in ISO 8601 format
-        -   Example: 2022-06-19T08:30:00Z
--   SetScenarioType(ScenarioType scenarioType)
-    -   ScenarioType::Reminder
-    -   ScenarioType::Alarm
-    -   ScenarioType::IncomingCall
-    -   ScenarioType::Urgent
+-   SetTimeStamp(Windows.Foundation.DateTimeOffset dateTimeOffset)
+-   SetScenario(Scenario Scenario)
+    -   Scenario::Reminder
+    -   Scenario::Alarm
+    -   Scenario::IncomingCall
+    -   Scenario::Urgent
 
 useButtonStyle will only be set if Button::SetButtonStyle is used.
 
@@ -110,8 +108,8 @@ AppNotificationContent(
     .AddArgument(L"action", L"answer")
     .AddArgument(L"callId", 938163)
     .SetDuration(Duration::Long)
-    .SetTimeStamp(L"2022-06-19T08:30:00Z")
-    .SetScenarioType(ScenarioType::IncomingCall)
+    .SetTimeStamp(DateTimeOffset.Now())
+    .SetScenario(Scenario::IncomingCall)
         .AddText(L"Incoming Call", AppNotificationTextProperties().UseCallScenarioAlign())
         .AddInlineImage(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/100?image=883)"), ImageCrop::Circle)
         .AddButton(AppNotificationButton(L"Text Reply")
@@ -203,7 +201,7 @@ Output
 
 ## Limitations
 
--   ScenarioType::Urgent is only supported for to builds 19041 (20H1) and above. Using this
+-   Scenario::Urgent is only supported for to builds 19041 (20H1) and above. Using this
     attribute on lower builds will not prevent the AppNotification from being constructed, but
     developers will receive a debug warning that the attribute is not supported.
 
@@ -253,11 +251,11 @@ XML output:
 
 Developers can use UseCallScenarioAlign() to center the text like an incoming call. This feature
 will be ignored unless the AppNotification scenario is set to IncomingCall using
-AppNotificationContent::SetScenarioType(enum ScenarioType).
+AppNotificationContent::SetScenario(enum Scenario).
 
 ```c#
 AppNotificationContent()
-    .SetScenarioType(ScenarioType::IncomingCall)
+    .SetScenario(Scenario::IncomingCall)
     .AddText(L"Incoming Call", AppNotificationTextProperties()
         .UseCallScenarioAlign())
     .AddText(L"Andrew Barnes", AppNotificationTextProperties()
@@ -361,7 +359,7 @@ styles are ButtonStyle::Success (green) and ButtonStyle::Critical (red).
 
 ```c#
 AppNotificationContent()
-    .SetScenarioType(ScenarioType::IncomingCall)
+    .SetScenario(Scenario::IncomingCall)
     .AddText(L"Incoming Call", AppNotificationTextProperties()
         .UseCallScenarioAlign())
     .AddText(L"Andrew Barnes", AppNotificationTextProperties()
@@ -676,7 +674,7 @@ XML output:
 </toast>
 ```
 
-Developers can define if the audio should be looped using SetLoopDuration(bool), which can be short
+Developers can define if the audio should be looped using SetAudio(Uri, Duration), which can be short
 or long.
 
 ```c#
@@ -1110,7 +1108,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Call10,
     };
 
-    enum ScenarioType
+    enum Scenario
     {
         Default, // The normal AppNotification behavior. The AppNotification appears for a short duration, and then automatically dismisses into Notification Center.
         Reminder, // The notification will stay on screen until the user dismisses it or takes action.
@@ -1139,10 +1137,10 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationContent AddArgument(String key, String value);
 
         // Sets the timeStamp of the AppNotification to when it was constructed instead of when it was sent.
-        AppNotificationContent SetTimeStamp(Windows.Foundation.DateTime timeStamp);
+        AppNotificationContent SetTimeStamp(Windows.Foundation.DateTimeOffset timeStamp);
 
         // Sets the scenario of the AppNotification.
-        AppNotificationContent SetScenarioType(ScenarioType scenarioType);
+        AppNotificationContent SetScenario(Scenario Scenario);
 
         // Adds text to the AppNotification.
         AppNotificationContent AddText(String text);
