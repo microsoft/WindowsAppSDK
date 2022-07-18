@@ -31,7 +31,7 @@ The below section can be added to the section [How the Windows App SDK instancin
     events call [GetActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.appinstance.getactivatedeventargs) 
  * _Windows App SDK_: Custom arguments can be passed into the new instance by first calling [GetActivatedEventArgs](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appinstance.getactivatedeventargs#microsoft-windows-applifecycle-appinstance-getactivatedeventargs)
    then `AddCustomArgs` on the returned object from [GetActivatedEventArgs](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appinstance.getactivatedeventargs#microsoft-windows-applifecycle-appinstance-getactivatedeventargs).
-   The modified [AppActivationArguments](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appactivationarguments) object can be passed into [RedirectToTargetAsync]()
+   The modified [AppActivationArguments](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appactivationarguments) object can be passed into [RedirectActivationToAsync](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appinstance.redirectactivationtoasync#microsoft-windows-applifecycle-appinstance-redirectactivationtoasync(microsoft-windows-applifecycle-appactivationarguments)).
 
 # API Pages
 
@@ -39,7 +39,7 @@ The below section can be added to the section [How the Windows App SDK instancin
 
 A page for [AppActivationArguments](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appactivationarguments) exists.
 
-The following is added to the [Remarks](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appactivationarguments) section.
+The following is added to the [Remarks](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appactivationarguments#remarks) section.
 
 If an app wants to pass in custom arguments, the app can call `AddCustomArgs(IInspectable newArgs)` on the [AppActivationArguments](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appactivationarguments)
 object returned from [GetActivatedEventArgs](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appinstance.getactivatedeventargs).
