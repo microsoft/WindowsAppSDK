@@ -15,7 +15,7 @@ an app could redirect to another instance with the argument "/SafeMode" to tell 
 something is wrong and should start in safe mode.
 
 The proposal is
-  1. Add a new method `AddCustomArgs(IInspectable newArgs)` That would change the [activation kind](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.extendedactivationkind) to
+  1. Add a new method `AddCustomArgs(IInspectable newArgs)` That would change the [activation kind](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appactivationarguments.kind#microsoft-windows-applifecycle-appactivationarguments-kind) to
   `UserDefined` and [Data](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appactivationarguments.data#microsoft-windows-applifecycle-appactivationarguments-data) would be replaced with the passed in `newArgs`.
   2. Add a new ExtendedActivationKind `UserDefined`
   
