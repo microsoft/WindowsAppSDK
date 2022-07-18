@@ -4,7 +4,7 @@ Custom Activated Event Args for App Redirection.
 # Background
 
 Each AppInstance can redirect its activation to another AppInstance and pass in an [AppActivationArguments](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appactivationarguments)
-object via [GetActivatedEventArgs](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appinstance.getactivatedeventargs).  This works if all you want to do is pass the arguments to
+object obtained [GetActivatedEventArgs](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appinstance.getactivatedeventargs).  This works if all you want to do is pass the arguments to
 another instance.  However, the arguments can't be changed.  This is because
 
   1. [AppActivationArguments](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appactivationarguments) does not have a projected constructor, and
@@ -15,8 +15,8 @@ an app could redirect to another instance with the argument "/SafeMode" to tell 
 something is wrong and should start in safe mode.
 
 The proposal is
-  1. Add a new method `AddCustomArgs(IInspectable newArgs)` That would change the activation kind to
-  `UserDefined` and `Data` would be replaced with the passed in `newArgs`.
+  1. Add a new method `AddCustomArgs(IInspectable newArgs)` That would change the [activation kind](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.extendedactivationkind) to
+  `UserDefined` and [Data](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appactivationarguments.data#microsoft-windows-applifecycle-appactivationarguments-data) would be replaced with the passed in `newArgs`.
   2. Add a new ExtendedActivationKind `UserDefined`
   
 
@@ -40,7 +40,8 @@ A page for [AppActivationArguments](https://docs.microsoft.com/windows/windows-a
 
 The following is added to the [Remarks](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appactivationarguments) section.
 
-If an app wants to pass in custom arguments, the app can call the set methods on both `Data` and `Kind`.
+If an app wants to pass in custom arguments, the app can call `AddCustomArgs(IInspectable newArgs)` on the [AppActivationArguments](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appactivationarguments)
+object returned from [GetActivatedEventArgs](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appinstance.getactivatedeventargs).
 
 ## AppActivationArguments.Data
 
