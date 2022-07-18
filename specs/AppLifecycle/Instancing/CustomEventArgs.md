@@ -29,8 +29,9 @@ The below section can be added to the section [How the Windows App SDK instancin
 
  * _UWP_: Does not allow arguments to be passed into the activated instance.  To get the activated
     events call [GetActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.appinstance.getactivatedeventargs) 
-	* _Windows App SDK_: Custom arguments can be passed into a new instance by first calling [GetActivatedEventArgs](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appinstance.getactivatedeventargs#microsoft-windows-applifecycle-appinstance-getactivatedeventargs)
-   then `AddCustomArgs` and the returned object from [GetActivatedEventArgs](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appinstance.getactivatedeventargs#microsoft-windows-applifecycle-appinstance-getactivatedeventargs).
+ * _Windows App SDK_: Custom arguments can be passed into the new instance by first calling [GetActivatedEventArgs](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appinstance.getactivatedeventargs#microsoft-windows-applifecycle-appinstance-getactivatedeventargs)
+   then `AddCustomArgs` on the returned object from [GetActivatedEventArgs](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appinstance.getactivatedeventargs#microsoft-windows-applifecycle-appinstance-getactivatedeventargs).
+   The modified [AppActivationArguments](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.windows.applifecycle.appactivationarguments) object can be passed into [RedirectToTargetAsync]()
 
 # API Pages
 
