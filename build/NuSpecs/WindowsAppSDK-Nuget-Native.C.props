@@ -29,7 +29,7 @@
       </AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Copy SourceFiles="$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)"</Command>
+      <Copy SourceFiles="$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
     </PostBuildEvent>
   </ItemDefinitionGroup>
 
