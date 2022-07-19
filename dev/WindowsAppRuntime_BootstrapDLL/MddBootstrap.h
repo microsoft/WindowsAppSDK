@@ -6,6 +6,12 @@
 
 #include <appmodel.h>
 
+#if defined(__cplusplus)
+#define MDDBOOTSTRAP_NOEXCEPT   noexcept
+#else
+#define MDDBOOTSTRAP_NOEXCEPT
+#endif // defined(__cplusplus)
+
 /// Options for Bootstrap initialization
 typedef enum MddBootstrapInitializeOptions
 {
@@ -48,7 +54,7 @@ DEFINE_ENUM_FLAG_OPERATORS(MddBootstrapInitializeOptions)
 STDAPI MddBootstrapInitialize(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
-    PACKAGE_VERSION minVersion);
+    PACKAGE_VERSION minVersion) MDDBOOTSTRAP_NOEXCEPT;
 
 /// Initialize the calling process to use Windows App Runtime framework package.
 ///
@@ -68,13 +74,13 @@ STDAPI MddBootstrapInitialize2(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
     PACKAGE_VERSION minVersion,
-    MddBootstrapInitializeOptions options);
+    MddBootstrapInitializeOptions options) MDDBOOTSTRAP_NOEXCEPT;
 
 /// Undo the changes made by MddBoostrapInitialize().
 ///
 /// @warning Packages made available via MddBootstrapInitialize2() and
 ///          the Dynamic Dependencies API should not be used after this call.
-STDAPI_(void) MddBootstrapShutdown();
+STDAPI_(void) MddBootstrapShutdown() MDDBOOTSTRAP_NOEXCEPT;
 
 // C++ friendly APIs
 #if defined(__cplusplus)
