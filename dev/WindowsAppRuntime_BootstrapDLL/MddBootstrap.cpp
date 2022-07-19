@@ -89,7 +89,7 @@ static std::wstring g_test_mainPackageNamePrefix;
 STDAPI MddBootstrapInitialize(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
-    PACKAGE_VERSION minVersion) noexcept
+    PACKAGE_VERSION minVersion)
 {
     return MddBootstrapInitialize2(majorMinorVersion, versionTag, minVersion, MddBootstrapInitializeOptions_None);
 }
@@ -98,7 +98,7 @@ STDAPI MddBootstrapInitialize2(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
     PACKAGE_VERSION minVersion,
-    MddBootstrapInitializeOptions options) noexcept try
+    MddBootstrapInitializeOptions options) try
 {
     auto lock{ std::lock_guard(g_initializationLock) };
 
@@ -212,7 +212,7 @@ HRESULT _MddBootstrapInitialize(
 }
 CATCH_RETURN();
 
-STDAPI_(void) MddBootstrapShutdown() noexcept
+STDAPI_(void) MddBootstrapShutdown()
 {
     auto lock{ std::lock_guard(g_initializationLock) };
 

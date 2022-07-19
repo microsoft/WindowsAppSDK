@@ -48,7 +48,7 @@ DEFINE_ENUM_FLAG_OPERATORS(MddBootstrapInitializeOptions)
 STDAPI MddBootstrapInitialize(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
-    PACKAGE_VERSION minVersion) noexcept;
+    PACKAGE_VERSION minVersion);
 
 /// Initialize the calling process to use Windows App Runtime framework package.
 ///
@@ -68,13 +68,13 @@ STDAPI MddBootstrapInitialize2(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
     PACKAGE_VERSION minVersion,
-    MddBootstrapInitializeOptions options) noexcept;
+    MddBootstrapInitializeOptions options);
 
 /// Undo the changes made by MddBoostrapInitialize().
 ///
 /// @warning Packages made available via MddBootstrapInitialize2() and
 ///          the Dynamic Dependencies API should not be used after this call.
-STDAPI_(void) MddBootstrapShutdown() noexcept;
+STDAPI_(void) MddBootstrapShutdown();
 
 // C++ friendly APIs
 #if defined(__cplusplus)
