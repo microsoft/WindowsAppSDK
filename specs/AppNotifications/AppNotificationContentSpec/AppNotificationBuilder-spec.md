@@ -64,7 +64,7 @@ that will include any component adding to the AppNotification UI.
 
 ### WinAppSDK 1.2 `<toast>` Schema
 
-```c#
+```xml
 <toast
     launch? = string
     duration? = "long" | "short"
@@ -89,17 +89,18 @@ These attributes are abstracted away through the AppNotificationContent componen
 
 useButtonStyle will only be set if Button::SetButtonColor is used.
 
-All the UI components are able to be appended through the AppNotificationContent component APIs:
+You can append UI components through the AppNotificationContent component APIs:
 
--   AddText(...)
--   AddButton(AppNotificationButton button)
--   Set[type]Image(...)
-    -   Inline
-    -   AppLogoOverride
-    -   Hero
--   SetAudio(...)
--   AddTextBox(...)
--   AddComboBox(...)
+-   AddText
+-   AddButton
+-   SetInlineImage
+-   SetAppLogoOverrideImage
+-   SetHeroImage
+-   SetAudio
+-   AddTextBox
+-   AddComboBox
+
+The main advantage as an API is to provide validation, type safety, and foremost intellisense.
 
 Below is an example usage:
 
@@ -127,7 +128,7 @@ AppNotificationContent()
 
 Result from GetXml():
 
-```c#
+```xml
 <toast launch="action=openThread&amp;threadId=92187" displayTimestamp="2022-06-19T08:30:00Z">
     <visual>
         <binding template="ToastGeneric">
@@ -156,12 +157,12 @@ Result from GetXml():
 
 # Text
 
-The Text component sets up the xml for a \<text\> element. Developers can define the content,
+The Text component sets up the xml for a `<text>` element. Developers can define the content,
 language, and placement of the text on the AppNotification.
 
 **WinAppSDK 1.2 \<text\> Schema**:
 
-```c#
+```xml
 <text lang? = string
       placement? = "attribution"
       hint-callScenarioCenterAlign? =
@@ -172,7 +173,7 @@ These attributes are abstracted with the AppNotificationTextProperties component
 
 -   SetLanguage(String language)
 -   SetHintMaxLines(Int32)
--   UseCallScenarioAlign()
+-   UseIncomingCallAlignment()
 
 Below are some example usages:
 
@@ -189,7 +190,7 @@ AppNotificationContent()
 
 XML output:
 
-```c#
+```xml
 <toast>
   <visual>
     <binding template="ToastGeneric">
@@ -200,7 +201,7 @@ XML output:
 </toast>
 ```
 
-Developers can use UseCallScenarioAlign() to center the text like an incoming call. This feature
+Developers can use UseIncomingCallAlignment() to center the text like an incoming call. This feature
 will be ignored unless the AppNotification scenario is set to IncomingCall using
 AppNotificationContent::SetScenario(enum AppNotificationScenario).
 
@@ -212,9 +213,9 @@ AppNotificationContent code:
 AppNotificationContent()
     .SetScenario(AppNotificationScenario::IncomingCall)
     .AddText(L"Incoming Call", AppNotificationTextProperties()
-        .UseCallScenarioAlign())
+        .UseIncomingCallAlignment())
     .AddText(L"Andrew Barnes", AppNotificationTextProperties()
-        .UseCallScenarioAlign())
+        .UseIncomingCallAlignment())
     .AddInlineImage(winrt::Windows::Foundation::Uri(L"https://unsplash.it/100?image=883"), ImageCrop::Circle)
     .AddButton(AppNotificationButton()
         .SetIcon(winrt::Windows::Foundation::Uri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"))
@@ -225,7 +226,7 @@ AppNotificationContent()
 
 XML output:
 
-```c#
+```xml
 <toast scenario="incomingCall" useButtonStyle="true">
     <visual>
         <binding template="ToastGeneric">
@@ -241,7 +242,7 @@ XML output:
               content=""
               imageUri="https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"
               hint-buttonStyle = "Success"
-              hint-toolTip = "Asnwer video call"/>
+              hint-toolTip = "Answer video call"/>
 </toast>
 ```
 
@@ -249,12 +250,12 @@ Notice that the text is inserted into the xml the order that it was provided in 
 
 # AppNotificationButton
 
-The AppNotificationButton component API sets up the xml for the \<action\> element.
+The AppNotificationButton component API sets up the xml for the `<action>` element.
 AppNotificationButtons are user-clickable components meant to start an action from the app.
 
 **WinAppSDK 1.2 \<action\> Schema**:
 
-```c#
+```xml
 <action content = string
         arguments = string
         placement? = "contextMenu"
@@ -292,7 +293,7 @@ AppNotificationContent()
 
 XML output:
 
-```c#
+```xml
 <toast>
   <visual>
     <binding template="ToastGeneric">
@@ -322,9 +323,9 @@ AppNotificationContent code:
 AppNotificationContent()
     .SetScenario(AppNotificationScenario::IncomingCall)
     .AddText(L"Incoming Call", AppNotificationTextProperties()
-        .UseCallScenarioAlign())
+        .UseIncomingCallAlignment())
     .AddText(L"Andrew Barnes", AppNotificationTextProperties()
-        .UseCallScenarioAlign())
+        .UseIncomingCallAlignment())
     .AddInlineImage(winrt::Windows::Foundation::Uri(L"https://unsplash.it/100?image=883"), ImageCrop::Circle)
     .AddButton(AppNotificationButton()
         .AddArgument(L"videoCall", L"938465")
@@ -346,7 +347,7 @@ AppNotificationContent()
 
 Xml result:
 
-```c#
+```xml
 <toast scenario="incomingCall" useButtonStyle="true">
     <visual>
         <binding template="ToastGeneric">
@@ -402,7 +403,7 @@ AppNotificationContent()
 
 XML output:
 
-```c#
+```xml
 <toast>
   <visual>
     <binding template="ToastGeneric">
@@ -441,7 +442,7 @@ AppNotificationContent()
 
 XML output:
 
-```c#
+```xml
 <toast>
   <visual>
     <binding template="ToastGeneric">
@@ -468,7 +469,7 @@ XML output:
 
 # Image
 
-The Image component API sets up the xml for the \<image\> element. Images are visual elements that
+The Image component API sets up the xml for the `<image>` element. Images are visual elements that
 are used to enhance an AppNotification.
 
 The image source can be pulled using one of these protocol handlers:
@@ -480,7 +481,7 @@ The image source can be pulled using one of these protocol handlers:
 
 **WinAppSDK 1.2 \<image\> Schema**:
 
-```c#
+```xml
 <image src = string
        alt? = string
        placement? = "appLogoOverride" | "hero"
@@ -506,7 +507,7 @@ AppNotificationContent()
 
 XML output:
 
-```c#
+```xml
 <toast>
   <visual>
     <binding template="ToastGeneric">
@@ -534,7 +535,7 @@ AppNotificationContent()
 
 XML output:
 
-```c#
+```xml
 <toast>
   <visual>
     <binding template="ToastGeneric">
@@ -563,7 +564,7 @@ AppNotificationContent()
 
 XML output:
 
-```c#
+```xml
 <toast>
   <visual>
     <binding template="ToastGeneric">
@@ -591,7 +592,7 @@ AppNotificationContent()
 
 XML output:
 
-```c#
+```xml
 <toast>
   <visual>
     <binding template="ToastGeneric">
@@ -610,9 +611,9 @@ The Audio component allows the developer to define a custom audio to play when a
 displayed. The audio file can be defined by string value pointing to an app asset or one of the
 [ms-winsoundevents](https://docs.microsoft.com/en-us/uwp/schemas/tiles/toastschema/element-audio).
 
-**WinAppSDK 1.2 \<audio\> Schema**:
+**WinAppSDK 1.2 `<audio>` Schema**:
 
-```c#
+```xml
 <audio src? = string
        loop? = boolean
        silent? = boolean />
@@ -636,7 +637,7 @@ AppNotificationContent()
 
 XML output:
 
-```c#
+```xml
 <toast>
   <visual>
     <binding template="ToastGeneric">
@@ -658,7 +659,7 @@ AppNotificationContent()
 
 XML output:
 
-```c#
+```xml
 <toast duration="long">
   <visual>
     <binding template="ToastGeneric">
@@ -680,7 +681,7 @@ AppNotificationContent()
 
 XML output:
 
-```c#
+```xml
 <toast duration="long">
   <visual>
     <binding template="ToastGeneric">
@@ -693,11 +694,11 @@ XML output:
 
 # TextBox
 
-TextBox is an \<input\> component that allows users to type custom responses on an AppNotification.
+TextBox is an `<input>` component that allows users to type custom responses on an AppNotification.
 
 **WinAppSDK 1.2 TextBox Schema**:
 
-```c#
+```xml
 <input id = string
         type="text"
         placeHolderContent? = string>
@@ -726,7 +727,7 @@ AppNotificationContent()
 
 XML output:
 
-```c#
+```xml
 <toast>
   <visual>
     <binding template="ToastGeneric">
@@ -748,12 +749,12 @@ order in the result xml will be the order it was added to the builder.
 
 # AppNotificationComboBox
 
-AppNotificationComboBox is an \<input\> component that allows users to pick from a dropdown menu of
+AppNotificationComboBox is an `<input>` component that allows users to pick from a dropdown menu of
 values on an AppNotification.
 
 **WinAppSDK 1.2 AppNotificationComboBox Schema**:
 
-```c#
+```xml
 <input id = string
         type="selection"
         defaultInput? = string>
@@ -787,7 +788,7 @@ AppNotificationContent()
 
 XML output:
 
-```c#
+```xml
 <toast>
   <visual>
     <binding template="ToastGeneric">
@@ -811,14 +812,14 @@ XML output:
 
 # AppNotificationProgressBar
 
-AppNotificationProgressBar is a component that builds the \<progress\> xml.
+AppNotificationProgressBar is a component that builds the `<progress>` xml.
 AppNotificationProgressBar is used to update an AppNotification that is currently displayed. This
 allows developers to inform users about the status of certain operations such as download or
 install.
 
-**WinAppSDK 1.2 \<progress\> Schema**:
+**WinAppSDK 1.2 `<progress>` Schema**:
 
-```c#
+```xml
 <progress title? = string
     status = string
     value = string
@@ -860,7 +861,7 @@ winrt::hstring xmlPayload { AppNotificationContent()
 
 Xml result:
 
-```c#
+```xml
 <toast>
   <visual>
     <binding template="ToastGeneric">
@@ -973,7 +974,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationTextProperties();
 
         AppNotificationTextProperties SetLanguage(String value);
-        AppNotificationTextProperties UsesCallScenarioAlign();
+        AppNotificationTextProperties UseIncomingCallAlignment();
         AppNotificationTextProperties SetMaxLines(Int32 value);
 
         String GetXml();
