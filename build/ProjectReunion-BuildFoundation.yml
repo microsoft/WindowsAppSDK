@@ -135,8 +135,12 @@ jobs:
 - job: BuildAnyCPU
   # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
   # Can be expanded to add any other binary as needed
-  condition:
-    eq(variables['useBuildOutputFromBuildId'],'')
+  condition: |
+    and
+    (
+      eq(variables['useBuildOutputFromBuildId'],''),
+      in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
+    )
   pool: $(ProjectReunionBuildPool)
   timeoutInMinutes: 120
   variables:
@@ -217,6 +221,7 @@ jobs:
 
 - job: BuildMRT
   pool: $(ProjectReunionBuildPool)
+  condition: in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
   strategy:
     maxParallel: 10
     matrix:
