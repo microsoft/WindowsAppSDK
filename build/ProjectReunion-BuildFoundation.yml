@@ -135,6 +135,8 @@ jobs:
 - job: BuildAnyCPU
   # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
   # Can be expanded to add any other binary as needed
+  dependsOn:
+    - VerifyCopyrightHeaders
   condition: |
     and
     (
@@ -221,6 +223,8 @@ jobs:
 
 - job: BuildMRT
   pool: $(ProjectReunionBuildPool)
+  dependsOn:
+    - VerifyCopyrightHeaders
   condition: in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
   strategy:
     maxParallel: 10
