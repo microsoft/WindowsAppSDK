@@ -40,8 +40,18 @@ jobs:
 # This relatively low-cost job is always run, in parallel w/ the Build job.
 - template: AzurePipelinesTemplates\WindowsAppSDK-SourceAnalysis-job.yml
 
-- job: Build
+- job: VerifyCopyrightHeaders
   dependsOn: []
+  pool: $(ProjectReunionBuildPool)
+  - task: powershell@2
+    displayName: 'Verify copyright headers'
+    inputs:
+      targetType: filePath
+      filePath: tools\VerifyCopyrightHeaders.ps1
+
+- job: Build
+  dependsOn:
+    - VerifyCopyrightHeaders
   # Skip the build job if we are reusing the output of a previous build.
   # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
   condition:
@@ -74,12 +84,6 @@ jobs:
   # Required by the Packaged ES SDL Templates.
   - checkout: self
     persistCredentials: true
-
-  - task: powershell@2
-    displayName: 'Verify copyright headers'
-    inputs:
-      targetType: filePath
-      filePath: tools\VerifyCopyrightHeaders.ps1
 
   - task: NuGetAuthenticate@0
     inputs:
