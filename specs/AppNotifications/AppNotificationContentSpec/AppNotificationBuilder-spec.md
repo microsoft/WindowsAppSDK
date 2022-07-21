@@ -34,7 +34,7 @@ winrt::hstring xmlPayload{
     </toast>" };
 
 auto appNotification{ winrt::AppNotification(xmlPayload) };
-winrt::AppNotificationManager::Default().Show(appNotication);
+winrt::AppNotificationManager::Default().Show(appNotification);
 ```
 
 # Description
@@ -59,10 +59,10 @@ AppNotificationContent()
 
 # AppNotificationContent
 
-The AppNotificationContent component sets up the xml for a \<toast\>. This is the wrapper content
+The AppNotificationContent component sets up the xml for a `<toast>`. This is the wrapper content
 that will include any component adding to the AppNotification UI.
 
-**WinAppSDK 1.2 \<toast\> Schema**:
+### WinAppSDK 1.2 `<toast>` Schema
 
 ```c#
 <toast
@@ -216,7 +216,7 @@ AppNotificationContent()
     .AddText(L"Andrew Barnes", AppNotificationTextProperties()
         .UseCallScenarioAlign())
     .AddInlineImage(winrt::Windows::Foundation::Uri(L"https://unsplash.it/100?image=883"), ImageCrop::Circle)
-    .AddButton(Button()
+    .AddButton(AppNotificationButton()
         .SetIcon(winrt::Windows::Foundation::Uri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"))
         .SetButtonColor(ButtonColor::Green)
         .SetToolTip(L"Answer video call"))
@@ -244,6 +244,8 @@ XML output:
               hint-toolTip = "Asnwer video call"/>
 </toast>
 ```
+
+Notice that the text is inserted into the xml the order that it was provided in the builder.
 
 # AppNotificationButton
 
@@ -377,6 +379,8 @@ Xml result:
 </toast>
 ```
 
+Notice that the AppNotificationButtons are inserted into the xml the order that it was provided in the builder.
+
 The ToolTip is useful for buttons with icons and no content. Users can hover over the button with
 the cursor and a text will display describing what the button does.
 
@@ -429,7 +433,7 @@ AppNotificationContent code:
 AppNotificationContent()
     .AddText(L"Content")
     .AddTextBox(L"textBox", L"Reply")
-    .AddButton(Button(L"Modify app settings")
+    .AddButton(AppNotificationButton(L"Modify app settings")
         .AddArgument(L"action", L"textReply")
         .UseContextMenuPlacement())
     .GetXml();
@@ -469,10 +473,10 @@ are used to enhance an AppNotification.
 
 The image source can be pulled using one of these protocol handlers:
 
--   http:// or https:// (A web-based image) (unavailable for unpackageds on build 22000)
+-   http:// or https:// (A web-based image) (unavailable for unpackaged application on build 22000)
 -   ms-appx:/// (An image included in the app package) (only for packaged applications)
 -   ms-appdata:///local/ (An image saved to local storage) (only for packaged applications)
--   file:/// (A local image)
+-   file:/// (A local image) (only for unpackaged)
 
 **WinAppSDK 1.2 \<image\> Schema**:
 
@@ -582,8 +586,7 @@ AppNotificationContent code:
 ```c#
 AppNotificationContent()
     .AddText(L"To the left is a cropped AppLogoOverride")
-    .SetAppLogoOverride(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/64?image=669)"), ImageCrop::Circle)
-    .Show();
+    .SetAppLogoOverride(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/64?image=669)"), ImageCrop::Circle);
 ```
 
 XML output:
@@ -618,16 +621,16 @@ displayed. The audio file can be defined by string value pointing to an app asse
 These attributes are abstracted with the Audio component APIs:
 
 -   SetAudio(Windows.Foundation.Uri audioUri)
--   SetAudio(MSWinSoundEvent winSoundEvent)
+-   SetAudio(AppNotficiationSoundEvent appNotficiationSoundEvent)
 -   SetAudio(Windows.Foundation.Uri audioUri, AppNotificationDuration duration)
--   SetAudio(MSWinSoundEvent winSoundEvent, AppNotificationDuration duration)
+-   SetAudio(AppNotficiationSoundEvent appNotficiationSoundEvent, AppNotificationDuration duration)
 -   MuteAudio()
 
 Below are some example usages:
 
 ```c#
 AppNotificationContent()
-      .SetAudio(MSWinSoundEvent::Reminder)
+      .SetAudio(AppNotficiationSoundEvent::Reminder)
     GetXml();
 ```
 
@@ -649,7 +652,7 @@ which can be short or long.
 ```c#
 AppNotificationContent()
     .AddText(L"Content")
-    .SetAudio(MSWinSoundEvent::Alarm, AppNotificationDuration::Long)
+    .SetAudio(AppNotficiationSoundEvent::Alarm, AppNotificationDuration::Long)
     .GetXml();
 ```
 
@@ -672,8 +675,7 @@ mute the audio.
 ```c#
 AppNotificationContent()
     .AddText(L"Content")
-    .MuteAudio()
-    .Show();
+    .MuteAudio();
 ```
 
 XML output:
@@ -716,7 +718,7 @@ AppNotificationContent code:
 ```c#
 AppNotificationContent()
     .AddTextBox(L"textBox", L"reply")
-    .AddButton(Button(L"Send")
+    .AddButton(AppNotificationButton(L"Send")
         .AddArguments(L"action", L"Send")
         .SetInputId(L"textBox"))
     .GetXml();
@@ -740,6 +742,9 @@ XML output:
   </actions>
 </toast>
 ```
+
+You can have up to 5 input components (TextBox/AppNotificationComboBox) total in the builder. The
+order in the result xml will be the order it was added to the builder.
 
 # AppNotificationComboBox
 
@@ -774,7 +779,7 @@ AppNotificationContent()
         .AddSelection(L"yes", L"Going")
         .AddSelection(L"maybe", L"Maybe")
         .AddSelection(L"no", L"Decline"))
-    .AddButton(Button(L"Send")
+    .AddButton(AppNotificationButton(L"Send")
         .AddArgument(L"action", L"Send"))
         .SetInputId(L"ComboBox")
     .GetXml();
@@ -837,8 +842,8 @@ Every AppNotificationProgressBar component will have the binded status and value
 ValueStringOverride are not required so those constants will not be added unless the developers call
 the AppNotificationProgressBar component APIs
 
+-   UseTitleForLabel(String title)
 -   BindTitleForLabel()
--   StaticTitleForLabel(String title)
 -   BindValueStringOverride()
 
 Below is an example use:
@@ -919,7 +924,7 @@ Below is an example with AppNotificationContent and Button:
 AppNotificationContent()
     .AddArgument(L"action", L"appNotificationBodyTouch")
     .AddArgument(L"user", 938163)
-    .AddButton(Button(L"Send")
+    .AddButton(AppNotificationButton(L"Send")
         .AddArgument(L"action", L"buttonTouch")
         .AddArgument(L"user", 938163));
 ```
@@ -1040,7 +1045,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationProgressBar();
 
         // Adds a static title to the progress bar
-        AppNotificationProgressBar StaticTitleForLabel(String value);
+        AppNotificationProgressBar UseTitleForLabel(String value);
 
         // Adds the title binding value to be used with AppNotificationProgressData
         AppNotificationProgressBar BindTitleForLabel();
@@ -1052,7 +1057,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         String GetXml();
     };
 
-    enum MSWinSoundEvent
+    enum 
     {
         Default,
         IM,
@@ -1142,11 +1147,11 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // SetAudio
         [default_overload]
         AppNotificationContent SetAudio(Windows.Foundation.Uri audioUri);
-        AppNotificationContent SetAudio(MSWinSoundEvent msWinSoundEvent);
+        AppNotificationContent SetAudio(AppNotficiationSoundEvent appNotficiationSoundEvent);
 
         [default_overload]
         AppNotificationContent SetAudio(Windows.Foundation.Uri audioUri, AppNotificationDuration duration);
-        AppNotificationContent SetAudio(MSWinSoundEvent msWinSoundEvent, AppNotificationDuration duration);
+        AppNotificationContent SetAudio(AppNotficiationSoundEvent appNotficiationSoundEvent, AppNotificationDuration duration);
 
         AppNotificationContent MuteAudio();
 
