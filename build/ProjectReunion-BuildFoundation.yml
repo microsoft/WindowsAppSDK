@@ -55,8 +55,12 @@ jobs:
     - VerifyCopyrightHeaders
   # Skip the build job if we are reusing the output of a previous build.
   # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
-  condition:
-    eq(variables['useBuildOutputFromBuildId'],'')
+  condition: |
+    and
+    (
+      eq(variables['useBuildOutputFromBuildId'],''),
+      in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
+    )
   pool: $(ProjectReunionBuildPool)
   timeoutInMinutes: 120
   strategy:
