@@ -43,6 +43,7 @@ jobs:
 - job: VerifyCopyrightHeaders
   dependsOn: []
   pool: $(ProjectReunionBuildPool)
+  steps:
   - task: powershell@2
     displayName: 'Verify copyright headers'
     inputs:

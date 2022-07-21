@@ -26,6 +26,7 @@ if ($errorCount -gt 0) {
         Exit 0
     } else {
         Write-Host "Copyright missing from $errorCount files." -ForegroundColor red
+        Write-Host "Run 'VerifyCopyrightHeaders.ps1 -Fix' locally to update files."
         Exit 1
     }
 }
