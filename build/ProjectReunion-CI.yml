@@ -45,7 +45,19 @@ jobs:
       TSLint: false
       ToolLogsNotFoundAction: 'Standard'
 
+- job: VerifyCopyrightHeaders
+  pool: $(ProjectReunionBuildPool)
+  steps:
+  - task: powershell@2
+    displayName: 'Verify copyright headers'
+    inputs:
+      targetType: filePath
+      filePath: tools\VerifyCopyrightHeaders.ps1
+
 - job: Build
+  dependsOn:
+    - VerifyCopyrightHeaders
+  condition: in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
   pool:
     vmImage: 'windows-2019'
   timeoutInMinutes: 120
@@ -113,6 +125,9 @@ jobs:
       ToolLogsNotFoundAction: 'Standard'
 
 - job: BuildMRT
+  dependsOn:
+    - VerifyCopyrightHeaders
+  condition: in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
   pool:
     vmImage: 'windows-latest'
   strategy:
@@ -189,6 +204,7 @@ jobs:
     publishToMaestro: false
     jobName: CreateNugetPackage
     dependsOn:
+      - VerifyCopyrightHeaders
       - Build
       - PublishMRT
     prereleaseVersionTag: ci
@@ -196,5 +212,6 @@ jobs:
       and
       (
         in(dependencies.PublishMRT.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
-        in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
+        in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
+        in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
       )
