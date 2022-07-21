@@ -87,7 +87,7 @@ These attributes are abstracted away through the AppNotificationContent componen
     -   AppNotificationScenario::IncomingCall
     -   AppNotificationScenario::Urgent
 
-useButtonStyle will only be set if Button::SetButtonColor is used.
+useButtonStyle will only be set if AppNotificationButton::SetButtonStyle is used.
 
 You can append UI components through the AppNotificationContent component APIs:
 
@@ -219,7 +219,7 @@ AppNotificationContent()
     .AddInlineImage(winrt::Windows::Foundation::Uri(L"https://unsplash.it/100?image=883"), ImageCrop::Circle)
     .AddButton(AppNotificationButton()
         .SetIcon(winrt::Windows::Foundation::Uri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"))
-        .SetButtonColor(ButtonColor::Green)
+        .SetButtonStyle(AppNotificationButtonStyle::Success)
         .SetToolTip(L"Answer video call"))
     .GetXml();
 ```
@@ -312,8 +312,8 @@ XML output:
 </toast>
 ```
 
-Developers can change the color of the button using SetButtonColor(ButtonColor). The two button
-styles are ButtonColor::Green and ButtonColor::Red.
+Developers can change the button style of the button using SetButtonStyle(AppNotificationButtonStyle). The two button
+styles are AppNotificationButtonStyle::Success and AppNotificationButtonStyle::Critical.
 
 ![Button Style Example](IncomingCallExample.png)
 
@@ -330,22 +330,22 @@ AppNotificationContent()
     .AddButton(AppNotificationButton()
         .AddArgument(L"videoCall", L"938465")
         .SetIcon(winrt::Windows::Foundation::Uri(L"https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"))
-        .SetButtonColor(ButtonColor::Green)
+        .SetButtonStyle(AppNotificationButtonStyle::Success)
         .SetToolTip(L"Answer video call"))
     .AddButton(AppNotificationButton()
         .AddArgument(L"voiceCall", L"938465")
         .SetIcon(winrt::Windows::Foundation::Uri(L"https://www.nicepng.com/png/full/379-3794777_white-phone-icon-white-phone-call-icon.png"))
-        .SetButtonColor(ButtonColor::Green)
+        .SetButtonStyle(AppNotificationButtonStyle::Success)
         .SetToolTip(L"Answer voice call"))
     .AddButton(AppNotificationButton()
         .AddArgument(L"declineCall", L"938465")
         .SetIcon(winrt::Windows::Foundation::Uri(L"https://static.thenounproject.com/png/5012-200.png"))
-        .SetButtonColor(ButtonColor::Red)
+        .SetButtonStyle(AppNotificationButtonStyle::Critical)
         .SetToolTip(L"Decline all"))
     .GetXml();
 ```
 
-Xml result:
+Xml output:
 
 ```xml
 <toast scenario="incomingCall" useButtonStyle="true">
@@ -861,7 +861,7 @@ winrt::hstring xmlPayload { AppNotificationContent()
     .GetXml() };
 ```
 
-Xml result:
+Xml output:
 
 ```xml
 <toast>
@@ -982,10 +982,10 @@ namespace Microsoft.Windows.AppNotifications.Builder
         String GetXml();
     }
 
-    enum ButtonColor
+    enum AppNotificationButtonStyle
     {
-        Red, // The button will be green
-        Green, // The button will be red
+        Success,
+        Critical,
     };
 
     runtimeclass AppNotificationButton
@@ -1007,8 +1007,8 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // Sets the Button as context menu action.
         AppNotificationButton UseContextMenuPlacement();
 
-        // Sets the ButtonColor to Green or Red
-        AppNotificationButton SetButtonColor(ButtonColor value);
+        // Sets the AppNotificationButtonStyle to Success or Critical
+        AppNotificationButton SetButtonStyle(AppNotificationButtonStyle value);
 
         // Sets the ID of an existing TextBox in order to have this button display to the right of the input.
         AppNotificationButton SetInputId(String value);
