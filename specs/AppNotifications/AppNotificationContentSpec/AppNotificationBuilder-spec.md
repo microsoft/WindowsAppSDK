@@ -108,7 +108,7 @@ Below is an example usage:
 
 AppNotificationContent code:
 
-```c#
+```cpp
 AppNotificationContent()
     .AddArgument(L"action", L"openThread")
     .AddArgument(L"threadId", 92187)
@@ -181,7 +181,7 @@ Below are some example usages:
 
 AppNotificationContent Code:
 
-```c#
+```cpp
 AppNotificationContent()
     .AddText(L"Content")
     .SetAttributionText(L"Attribution Text")
@@ -209,7 +209,7 @@ AppNotificationContent::SetScenario(enum AppNotificationScenario).
 
 AppNotificationContent code:
 
-```c#
+```cpp
 AppNotificationContent()
     .SetScenario(AppNotificationScenario::IncomingCall)
     .AddText(L"Incoming Call", AppNotificationTextProperties()
@@ -280,7 +280,7 @@ Below are some example usages:
 
 AppNotificationContent code:
 
-```c#
+```cpp
 AppNotificationContent()
     .AddText(L"Content")
     .AddTextBox(L"textBox", L"Reply")
@@ -319,7 +319,7 @@ styles are ButtonColor::Green and ButtonColor::Red.
 
 AppNotificationContent code:
 
-```c#
+```cpp
 AppNotificationContent()
     .SetScenario(AppNotificationScenario::IncomingCall)
     .AddText(L"Incoming Call", AppNotificationTextProperties()
@@ -380,7 +380,8 @@ Xml result:
 </toast>
 ```
 
-Notice that the AppNotificationButtons are inserted into the xml the order that it was provided in the builder.
+Notice that the AppNotificationButtons are inserted into the xml the order that it was provided in
+the builder.
 
 The ToolTip is useful for buttons with icons and no content. Users can hover over the button with
 the cursor and a text will display describing what the button does.
@@ -389,7 +390,7 @@ the cursor and a text will display describing what the button does.
 
 AppNotificationContent code:
 
-```c#
+```cpp
 AppNotificationContent()
     .AddText(L"Content")
     .AddTextBox(L"textBox", L"Reply")
@@ -398,7 +399,7 @@ AppNotificationContent()
         .SetInputId(L"textBox")
         .SetToolTip(L"Send")
         .SetIcon(winrt::Windows::Foundation::Uri(LR"(Assets/Icons/message.png)")))
-    GetXml();
+    .GetXml();
 ```
 
 XML output:
@@ -430,7 +431,7 @@ right-clicked. This would typically be used by developers to ask the user for se
 
 AppNotificationContent code:
 
-```c#
+```cpp
 AppNotificationContent()
     .AddText(L"Content")
     .AddTextBox(L"textBox", L"Reply")
@@ -498,7 +499,7 @@ A full-width inline-image that appears when you expand the AppNotification.
 
 AppNotificationContent code:
 
-```c#
+```cpp
 AppNotificationContent()
     .AddText(L"Below is an inline image")
     .SetInlineImage(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/360/202?image=883)"))
@@ -526,11 +527,11 @@ An image that is left-aligned with notification text.
 
 AppNotificationContent code:
 
-```c#
+```cpp
 AppNotificationContent()
     .AddText(L"To the left is an AppLogoOverride")
     .SetAppLogoOverride(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/64?image=669)"))
-  .GetXml();
+    .GetXml();
 ```
 
 XML output:
@@ -555,11 +556,11 @@ Prominently displays image within the AppNotification banner and while inside No
 
 AppNotificationContent code:
 
-```c#
+```cpp
 AppNotificationContent()
     .AddText(Text(L"Above is a Hero image"))
     .SetHeroImage(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/360/180?image=1043)"))
-  .GetXml();
+    .GetXml();
 ```
 
 XML output:
@@ -584,7 +585,7 @@ For both Inline and AppLogoOverride, developers can set how the image will be cr
 
 AppNotificationContent code:
 
-```c#
+```cpp
 AppNotificationContent()
     .AddText(L"To the left is a cropped AppLogoOverride")
     .SetAppLogoOverride(winrt::Windows::Foundation::Uri(LR"(https://unsplash.it/64?image=669)"), ImageCrop::Circle);
@@ -609,7 +610,7 @@ XML output:
 
 The Audio component allows the developer to define a custom audio to play when an AppNotification is
 displayed. The audio file can be defined by string value pointing to an app asset or one of the
-[ms-winsoundevents](https://docs.microsoft.com/en-us/uwp/schemas/tiles/toastschema/element-audio).
+[ms-winsoundevents](https://docs.microsoft.com/uwp/schemas/tiles/toastschema/element-audio).
 
 **WinAppSDK 1.2 `<audio>` Schema**:
 
@@ -629,9 +630,9 @@ These attributes are abstracted with the Audio component APIs:
 
 Below are some example usages:
 
-```c#
+```cpp
 AppNotificationContent()
-      .SetAudio(AppNotficiationSoundEvent::Reminder)
+    .SetAudio(AppNotficiationSoundEvent::Reminder)
     GetXml();
 ```
 
@@ -650,7 +651,7 @@ XML output:
 Developers can define if the audio should be looped using SetAudio(Uri, AppNotificationDuration),
 which can be short or long.
 
-```c#
+```cpp
 AppNotificationContent()
     .AddText(L"Content")
     .SetAudio(AppNotficiationSoundEvent::Alarm, AppNotificationDuration::Long)
@@ -673,10 +674,11 @@ XML output:
 An AppNotification that does not want to play any audio including the default, can use MuteAudio to
 mute the audio.
 
-```c#
+```cpp
 AppNotificationContent()
     .AddText(L"Content")
-    .MuteAudio();
+    .MuteAudio()
+    .GetXml();
 ```
 
 XML output:
@@ -716,7 +718,7 @@ Below is an example use:
 
 AppNotificationContent code:
 
-```c#
+```cpp
 AppNotificationContent()
     .AddTextBox(L"textBox", L"reply")
     .AddButton(AppNotificationButton(L"Send")
@@ -773,7 +775,7 @@ Below is an example use:
 
 ![ComboBox Example](ComboBoxExample.png)
 
-```c#
+```cpp
 AppNotificationContent()
     .AddComboBox(AppNotificationComboBox(L"ComboBox")
         .SetDefaultSelection(L"yes")
@@ -839,8 +841,8 @@ All the attributes have static data binding constants:
 -   Title = "{progressTitle}"
 -   ValueStringOverride = "{progressValueString}
 
-Every AppNotificationProgressBar component will have the binded status and value. Title and
-ValueStringOverride are not required so those constants will not be added unless the developers call
+Every AppNotificationProgressBar component will have the bound status and value. Title and
+ValueStringOverride are not required so those constants will not be added unless you call
 the AppNotificationProgressBar component APIs
 
 -   UseTitleForLabel(String title)
@@ -849,7 +851,7 @@ the AppNotificationProgressBar component APIs
 
 Below is an example use:
 
-```c#
+```cpp
 // Using AppNotificationContent, build the Xml payload with AppNotificationProgressBar.
 winrt::hstring xmlPayload { AppNotificationContent()
     .AddText(L"Downloading this week's new music...")
@@ -878,7 +880,7 @@ Xml result:
 
 Construct an AppNotification with the string xml payload from AppNotificationContent
 
-```c#
+```cpp
 winrt::Microsoft::Windows::AppNotifications::AppNotification notification(xmlPayload);
 notification.Tag(L"Tag");
 notification.Group(L"Group");
@@ -886,7 +888,7 @@ notification.Group(L"Group");
 
 Assign initial values for first notification progress UI:
 
-```c#
+```cpp
 winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData data(1 /* Sequence number */);
 data.Title(L"Katy Perry"); // Binds to {progressTitle} in xml payload
 data.Value(0.5); // Binds to {progressValue} in xml payload
@@ -901,7 +903,7 @@ winrt::AppNotificationManager::Default().Show(notification);
 
 Then update the AppNotificationProgressBar using AppNotificationProgressData:
 
-```c#
+```cpp
 data.SequenceNumber(2);
 data.Title(L"Katy Perry"); // Binds to {progressTitle} in xml payload
 data.Value(1.0); // Binds to {progressValue} in xml payload
@@ -921,7 +923,7 @@ them into a string.
 
 Below is an example with AppNotificationContent and Button:
 
-```c#
+```cpp
 AppNotificationContent()
     .AddArgument(L"action", L"appNotificationBodyTouch")
     .AddArgument(L"user", 938163)
@@ -945,7 +947,7 @@ AppNotificationReceivedEventArgs::Arguments to get the values from the argument 
 
 Below is an example usage:
 
-```c#
+```cpp
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::AppNotifications;
 
@@ -965,7 +967,7 @@ if (kind == ExtendedActivationKind::AppNotification)
 
 # Full API Details
 
-```c#
+```cpp
 namespace Microsoft.Windows.AppNotifications.Builder
 {
     runtimeclass AppNotificationTextProperties
@@ -1058,7 +1060,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         String GetXml();
     };
 
-    enum 
+    enum
     {
         Default,
         IM,
