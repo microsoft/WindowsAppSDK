@@ -1,0 +1,9 @@
+{
+    "instanceUrl": "https://microsoft.visualstudio.com",
+    "projectName": "os",
+    "areaPath": "OS\\WDX\\DXP\\APT-Application Platform and Tools\\BTAD-Base Tools and Developer experiences\\WinAppSDK Engineering System",
+    "iterationPath": "OS",
+    "notificationAliases": [ "WinAppSDK-Build@microsoft.com" ],
+    "ignoreBranchName": true,
+    "codebaseName": "WinAppSDK"
+}

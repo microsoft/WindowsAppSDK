@@ -88,7 +88,7 @@ namespace Test::AccessControl
 
                     DWORD exitCode{};
                     VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(m_processHandle.get(), &exitCode));
-                    VERIFY_ARE_EQUAL(exitCode, 0);
+                    VERIFY_ARE_EQUAL(exitCode, 0u);
                 }
                 // Remove in reverse order to avoid conflicts between inter-dependent packages.
                 ::Test::Packages::RemovePackage(GetTestPackageFamilyName());
@@ -116,7 +116,7 @@ namespace Test::AccessControl
                 VERIFY_IS_TRUE(wil::handle_wait(m_processHandle.get(), 10000));
                 DWORD exitCode{};
                 VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(m_processHandle.get(), &exitCode));
-                VERIFY_ARE_EQUAL(exitCode, 0);
+                VERIFY_ARE_EQUAL(exitCode, 0u);
             }
             VERIFY_IS_TRUE(::Test::Packages::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(::Test::Packages::IsPackageRegistered_DynamicDependencyDataStore());

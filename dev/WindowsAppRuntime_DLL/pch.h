@@ -53,5 +53,6 @@
 #include <microsoft.utf8.h>
 #include <security.integritylevel.h>
 #include <windowsappruntime.selfcontained.h>
+#include <windowsappruntime.versioninfo.h>
 
 #define MIDL_NS_PREFIX

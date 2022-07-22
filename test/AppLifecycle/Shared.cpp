@@ -102,7 +102,7 @@ namespace Test::AppLifecycle
         auto failureEventIndex = WAIT_OBJECT_0 + 1;
         VERIFY_ARE_NOT_EQUAL(waitResult, failureEventIndex);
 
-        VERIFY_ARE_NOT_EQUAL(waitResult, WAIT_TIMEOUT);
+        VERIFY_ARE_NOT_EQUAL(waitResult, static_cast<DWORD>(WAIT_TIMEOUT));
         if (waitResult == WAIT_FAILED)
         {
             auto lastError = GetLastError();
