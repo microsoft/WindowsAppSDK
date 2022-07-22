@@ -2,25 +2,93 @@
 #include "Microsoft.Windows.System.EnvironmentManager.h"
 #include <WindowsAppRuntimeInsights.h>
 
+DECLARE_TRACELOGGING_CLASS(
+EnvironmentManagerTelemetryProvider,
+"Microsoft.Windows.System.EnvironmentManager.Insights",
+(0xfbce41fa, 0xf7bc, 0x538e, 0x11, 0xf2, 0xab, 0xe1, 0xb9, 0xd2, 0xab, 0x23));
+
 class EnvironmentManagerInsights : public wil::TraceLoggingProvider
-
 {
-    IMPLEMENT_TRACELOGGING_CLASS(
-        EnvironmentManagerInsights,
-        "Microsoft.Windows.System.EnvironmentManager.Insights",
-        (0xfbce41fa, 0xf7bc, 0x538e, 0x11, 0xf2, 0xab, 0xe1, 0xb9, 0xd2, 0xab, 0x23));
+    IMPLEMENT_TELEMETRY_CLASS(EnvironmentManagerInsights, EnvironmentManagerTelemetryProvider);
 
-    DEFINE_COMPLIANT_MEASURES_EVENT_STRING(LogMessage,
-        MICROSOFT_KEYWORD_MEASURES, stringvalue);
-
-    static void LogWithScopeAndMessage(winrt::Microsoft::Windows::System::implementation::EnvironmentManager::Scope const& scope,
-        PCWSTR message)
-    {
-        TraceLoggingClassWrite("LogMessageWithScope",
-             _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingValue(ScopeToString(scope), "scope"),
-            TraceLoggingValue(message, "message"));
+    DEFINE_EVENT_METHOD(LogCreateForProcess)() {
+        TraceLoggingClassWriteMeasure(
+            "LogCreateForProcess",
+            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+            _GENERIC_PARTB_FIELDS_ENABLED);
     }
+
+    DEFINE_EVENT_METHOD(LogCreateForUser)() {
+        TraceLoggingClassWriteMeasure(
+            "LogCreateForUser",
+            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+            _GENERIC_PARTB_FIELDS_ENABLED);
+    }
+
+    DEFINE_EVENT_METHOD(LogCreateForMachine)() {
+        TraceLoggingClassWriteMeasure(
+            "LogCreateForMachine",
+            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+            _GENERIC_PARTB_FIELDS_ENABLED);
+    }
+
+    DEFINE_EVENT_METHOD(LogGetEnvironmentVariables)(winrt::Microsoft::Windows::System::implementation::EnvironmentManager::Scope scope) {
+        TraceLoggingClassWriteMeasure(
+            "LogGetEnvironmentVariables",
+            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+            _GENERIC_PARTB_FIELDS_ENABLED,
+            TraceLoggingWideString(ScopeToString(scope), "Scope"));
+    }
+
+    DEFINE_EVENT_METHOD(LogGetEnvironmentVariable)(winrt::Microsoft::Windows::System::implementation::EnvironmentManager::Scope scope) {
+        TraceLoggingClassWriteMeasure(
+            "LogGetEnvironmentVariable",
+            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+            _GENERIC_PARTB_FIELDS_ENABLED,
+            TraceLoggingWideString(ScopeToString(scope), "Scope"));
+    }
+
+    DEFINE_EVENT_METHOD(LogSetEnvironmentVariables)(winrt::Microsoft::Windows::System::implementation::EnvironmentManager::Scope scope) {
+        TraceLoggingClassWriteMeasure(
+            "LogSetEnvironmentVariables",
+            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+            _GENERIC_PARTB_FIELDS_ENABLED,
+            TraceLoggingWideString(ScopeToString(scope), "Scope"));
+    }
+
+    DEFINE_EVENT_METHOD(LogAppendToPath)(winrt::Microsoft::Windows::System::implementation::EnvironmentManager::Scope scope) {
+        TraceLoggingClassWriteMeasure(
+            "LogAppendToPath",
+            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+            _GENERIC_PARTB_FIELDS_ENABLED,
+            TraceLoggingWideString(ScopeToString(scope), "Scope"));
+    }
+
+    DEFINE_EVENT_METHOD(LogRemoveFromPath)(winrt::Microsoft::Windows::System::implementation::EnvironmentManager::Scope scope) {
+        TraceLoggingClassWriteMeasure(
+            "LogRemoveFromPath",
+            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+            _GENERIC_PARTB_FIELDS_ENABLED,
+            TraceLoggingWideString(ScopeToString(scope), "Scope"));
+    }
+
+    DEFINE_EVENT_METHOD(LogAddExecutableFileExtension)(winrt::Microsoft::Windows::System::implementation::EnvironmentManager::Scope scope) {
+        TraceLoggingClassWriteMeasure(
+            "LogAddExecutableFileExtension",
+            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+            _GENERIC_PARTB_FIELDS_ENABLED,
+            TraceLoggingWideString(ScopeToString(scope), "Scope"));
+    }
+
+    DEFINE_EVENT_METHOD(LogRemoveExecutableFileExtension)(winrt::Microsoft::Windows::System::implementation::EnvironmentManager::Scope scope) {
+        TraceLoggingClassWriteMeasure(
+            "LogRemoveExecutableFileExtension",
+            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+            _GENERIC_PARTB_FIELDS_ENABLED,
+            TraceLoggingWideString(ScopeToString(scope), "Scope"));
+    }
+
+
 
     static constexpr PCWSTR ScopeToString(winrt::Microsoft::Windows::System::implementation::EnvironmentManager::Scope scope)
     {

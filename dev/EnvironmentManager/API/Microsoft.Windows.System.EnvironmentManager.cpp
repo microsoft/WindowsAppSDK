@@ -20,7 +20,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForProcess()
     {
-        EnvironmentManagerInsights::LogMessage(L"Making EM for process");
+        EnvironmentManagerInsights::LogCreateForProcess();
 
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Process);
@@ -29,7 +29,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForUser()
     {
-        EnvironmentManagerInsights::LogMessage(L"Making EM for User");
+        EnvironmentManagerInsights::LogCreateForUser();
 
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::User);
@@ -38,7 +38,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForMachine()
     {
-        EnvironmentManagerInsights::LogMessage(L"Making EM for Machine");
+        EnvironmentManagerInsights::LogCreateForMachine();
 
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Machine);
@@ -77,7 +77,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     IMapView<hstring, hstring> EnvironmentManager::GetEnvironmentVariables()
     {
-        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling GetEnvironmentVariables");
+        EnvironmentManagerInsights::LogGetEnvironmentVariables(m_Scope);
         StringMap environmentVariables;
 
         if (!IsSupported())
@@ -99,7 +99,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     hstring EnvironmentManager::GetEnvironmentVariable(hstring const& variableName)
     {
-        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling GetEnvironmentVariable");
+        EnvironmentManagerInsights::LogGetEnvironmentVariable(m_Scope);
 
         if (!IsSupported())
         {
@@ -126,7 +126,8 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::SetEnvironmentVariable(hstring const& name, hstring const& value)
     {
-        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling SetEnvironmentVariable");
+        EnvironmentManagerInsights::LogSetEnvironmentVariable(m_Scope);
+
         if (!IsSupported())
         {
             return;
@@ -202,7 +203,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::AppendToPath(hstring const& path)
     {
-        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling AppendToPath");
+        EnvironmentManagerInsights::LogAppendToPath(m_Scope);
 
         if (!IsSupported())
         {
@@ -270,7 +271,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::RemoveFromPath(hstring const& path)
     {
-        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling RemoveFromPath");
+        EnvironmentManagerInsights::LogRemoveFromPath(m_Scope);
 
         if (!IsSupported())
         {
@@ -372,7 +373,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::AddExecutableFileExtension(hstring const& pathExt)
     {
-        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling AddExecutableFileExtension");
+        EnvironmentManagerInsights::LogAddExecutableFileExtension(m_Scope);
 
         if (!IsSupported())
         {
