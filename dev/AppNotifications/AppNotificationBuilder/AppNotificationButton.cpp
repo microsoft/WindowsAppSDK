@@ -21,7 +21,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetProtocolActivation(winrt::Windows::Foundation::Uri const& protocolUri)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetInvokeUri(winrt::Windows::Foundation::Uri const& protocolUri)
     {
         THROW_HR_IF(E_INVALIDARG, m_arguments.Size() > 0u);
 
@@ -29,7 +29,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetProtocolActivation(winrt::Windows::Foundation::Uri const& protocolUri, winrt::hstring const& targetApplicationPfn)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetInvokeUri(winrt::Windows::Foundation::Uri const& protocolUri, winrt::hstring const& targetApplicationPfn)
     {
         THROW_HR_IF(E_INVALIDARG, m_arguments.Size() > 0u);
 
@@ -56,7 +56,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetButtonStyle(ButtonStyle const& buttonStyle)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetButtonStyle(AppNotificationButtonStyle const& buttonStyle)
     {
         m_buttonStyle = buttonStyle;
         return *this;
@@ -107,11 +107,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
             xml = xml + L" hint-inputId=\"" + m_inputId + L"\"";
         }
 
-        if (m_buttonStyle == ButtonStyle::Success)
+        if (m_buttonStyle == AppNotificationButtonStyle::Success)
         {
             xml = xml + LR"( hint-buttonStyle="Success")";
         }
-        else if (m_buttonStyle == ButtonStyle::Success)
+        else if (m_buttonStyle == AppNotificationButtonStyle::Success)
         {
             xml = xml + LR"( hint-buttonStyle="Critical")";
         }

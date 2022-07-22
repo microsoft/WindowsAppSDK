@@ -12,7 +12,7 @@
         String GetXml();
     }
 
-    enum ButtonStyle
+    enum AppNotificationButtonStyle
     {
         Default, // Button will be the default color
         Success, // The button will be green
@@ -39,29 +39,29 @@
         AppNotificationButton UseContextMenuPlacement();
 
         // Sets the ButtonStyle to Success or Critical
-        AppNotificationButton SetButtonStyle(ButtonStyle buttonStyle);
+        AppNotificationButton SetButtonStyle(AppNotificationButtonStyle buttonStyle);
 
         // Sets the ID of an existing TextBox in order to have this button display to the right of the input.
         AppNotificationButton SetInputId(String inputId);
 
         // Launches the URI passed into the button when activated.
-        AppNotificationButton SetProtocolActivation(Windows.Foundation.Uri protocolUri);
-        AppNotificationButton SetProtocolActivation(Windows.Foundation.Uri protocolUri, String targetApplicationPfn);
+        AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri);
+        AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri, String targetAppId);
 
         // Retrieves the XML content of the button.
         String GetXml();
     };
 
-    enum Scenario
+    enum AppNotificationScenario
     {
-        Default,
+        Default, // The normal AppNotification behavior. The AppNotification appears for a short duration, and then automatically dismisses into Notification Center.
         Reminder, // The notification will stay on screen until the user dismisses it or takes action.
         Alarm,    // Alarms behave like Reminder, but alarms will additionally loop audio with a default alarm sound.
         IncomingCall, // Incoming call notifications are displayed pre-expanded in a special call format and stay on the user's screen till dismissed.
         Urgent, // Important notifications allow users to have more control over what 1st party and 3rd party apps can send them high-priority AppNotifications (urgent/important) that can break through Focus Assist.
     };
 
-    enum MSWinSoundEvent
+    enum AppNotificationSoundEvent
     {
         Default,
         IM,
@@ -90,7 +90,7 @@
         Call10,
     };
 
-    enum Duration
+    enum AppNotificationDuration
     {
         Default,
         Short, // Appears for a short while and then goes into Notification Center.
@@ -103,60 +103,60 @@
         Circle, // Crops the image as a circle.
     };
 
-    runtimeclass AppNotificationContent
+    runtimeclass AppNotificationBuilder
     {
-        AppNotificationContent();
+        AppNotificationBuilder();
 
         // Adds arguments to the launch attribute to return when AppNotification is clicked.
-        AppNotificationContent AddArgument(String key, String value);
+        AppNotificationBuilder AddArgument(String key, String value);
 
         // Sets the timeStamp of the AppNotification to when it was constructed instead of when it was sent.
-        AppNotificationContent SetTimeStamp(Windows.Foundation.DateTime timeStamp);
+        AppNotificationBuilder SetTimeStamp(Windows.Foundation.DateTime timeStamp);
 
         // Sets the scenario of the AppNotification.
-        AppNotificationContent SetScenario(Scenario scenario);
+        AppNotificationBuilder SetScenario(AppNotificationScenario scenario);
 
         // Sets the timeStamp of the AppNotification to when it was constructed instead of when it was sent.
-        AppNotificationContent SetDuration(Duration duration);
+        AppNotificationBuilder SetDuration(AppNotificationDuration duration);
 
         // Adds text to the AppNotification.
-        AppNotificationContent AddText(String text);
-        AppNotificationContent AddText(String text, AppNotificationTextProperties properties);
+        AppNotificationBuilder AddText(String text);
+        AppNotificationBuilder AddText(String text, AppNotificationTextProperties properties);
 
-        AppNotificationContent SetAttributionText(String text);
-        AppNotificationContent SetAttributionText(String text, String language);
+        AppNotificationBuilder SetAttributionText(String text);
+        AppNotificationBuilder SetAttributionText(String text, String language);
 
         // Sets the full-width inline-image that appears when you expand the AppNotification
-        AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri);
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri);
         [default_overload]
-        AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri, ImageCrop imageCrop);
-        AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri, String alternateText);
-        AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri, ImageCrop imageCrop, String alternateText);
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, ImageCrop imageCrop);
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, String alternateText);
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, String alternateText, ImageCrop imageCrop);
 
         // Sets the image that is left-aligned with notification text
-        AppNotificationContent SetAppLogoOverride(Windows.Foundation.Uri imageUri);
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri);
         [default_overload]
-        AppNotificationContent SetAppLogoOverride(Windows.Foundation.Uri imageUri, ImageCrop imageCrop);
-        AppNotificationContent SetAppLogoOverride(Windows.Foundation.Uri imageUri, String alternateText);
-        AppNotificationContent SetAppLogoOverride(Windows.Foundation.Uri imageUri, ImageCrop imageCrop, String alternateText);
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, ImageCrop imageCrop);
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, String alternateText);
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, String alternateText, ImageCrop imageCrop);
 
         // Sets the image that displays within the banner of the AppNotification.
-        AppNotificationContent SetHeroImage(Windows.Foundation.Uri imageUri);
-        AppNotificationContent SetHeroImage(Windows.Foundation.Uri imageUri, String alternateText);
-
-        // Adds a button to the AppNotificationContent
-        AppNotificationContent AddButton(AppNotificationButton button);
+        AppNotificationBuilder SetHeroImage(Windows.Foundation.Uri imageUri);
+        AppNotificationBuilder SetHeroImage(Windows.Foundation.Uri imageUri, String alternateText);
 
         // SetAudio
         [default_overload]
-        AppNotificationContent SetAudio(Windows.Foundation.Uri audioUri);
-        AppNotificationContent SetAudio(MSWinSoundEvent msWinSoundEvent);
+        AppNotificationBuilder SetAudio(Windows.Foundation.Uri audioUri);
+        AppNotificationBuilder SetAudio(AppNotificationSoundEvent soundEvent);
 
         [default_overload]
-        AppNotificationContent SetAudio(Windows.Foundation.Uri audioUri, Duration loopDuration);
-        AppNotificationContent SetAudio(MSWinSoundEvent msWinSoundEvent, Duration loopDuration);
+        AppNotificationBuilder SetAudio(Windows.Foundation.Uri audioUri, AppNotificationDuration loopDuration);
+        AppNotificationBuilder SetAudio(AppNotificationSoundEvent soundEvent, AppNotificationDuration loopDuration);
 
-        AppNotificationContent MuteAudio();
+        AppNotificationBuilder MuteAudio();
+
+        // Adds a button to the AppNotificationBuilder
+        AppNotificationBuilder AddButton(AppNotificationButton button);
 
         // Retrieves the notification XML content so that it can be used with a local
         // AppNotification constructor.
