@@ -8,7 +8,8 @@ $copyrightHeaderText = (
 )
 
 $include = ('*.cs', '*.cpp', '*.h', '*.idl', '*.xaml')
-$files = dir $PSScriptRoot\..\* -recurse -include $include
+$exclude = [RegEx]'\\dev\\Detours\\'
+$files = dir $PSScriptRoot\..\* -recurse -include $include | Where FullName -notmatch $exclude
 
 $errorCount = 0
 foreach ($file in $files) {
