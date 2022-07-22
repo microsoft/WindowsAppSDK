@@ -59,7 +59,7 @@ jobs:
     and
     (
       eq(variables['useBuildOutputFromBuildId'],''),
-      in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
+      in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
     )
   pool: $(ProjectReunionBuildPool)
   timeoutInMinutes: 120
@@ -141,7 +141,7 @@ jobs:
     and
     (
       eq(variables['useBuildOutputFromBuildId'],''),
-      in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
+      in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
     )
   pool: $(ProjectReunionBuildPool)
   timeoutInMinutes: 120
