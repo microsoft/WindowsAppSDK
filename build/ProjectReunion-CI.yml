@@ -46,7 +46,8 @@ jobs:
       ToolLogsNotFoundAction: 'Standard'
 
 - job: VerifyCopyrightHeaders
-  pool: $(ProjectReunionBuildPool)
+  pool:
+    vmImage: 'windows-2019'
   steps:
   - task: powershell@2
     displayName: 'Verify copyright headers'
