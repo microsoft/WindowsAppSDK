@@ -441,7 +441,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::RemoveExecutableFileExtension(hstring const& pathExt)
     {
-        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling RemoveExecutableFileExtension");
+        EnvironmentManagerInsights::LogRemoveExecutableFileExtension(m_Scope);
 
         if (!IsSupported())
         {

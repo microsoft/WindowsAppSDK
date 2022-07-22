@@ -48,7 +48,7 @@ class EnvironmentManagerInsights : public wil::TraceLoggingProvider
             TraceLoggingWideString(ScopeToString(scope), "Scope"));
     }
 
-    DEFINE_EVENT_METHOD(LogSetEnvironmentVariables)(winrt::Microsoft::Windows::System::implementation::EnvironmentManager::Scope scope) {
+    DEFINE_EVENT_METHOD(LogSetEnvironmentVariable)(winrt::Microsoft::Windows::System::implementation::EnvironmentManager::Scope scope) {
         TraceLoggingClassWriteMeasure(
             "LogSetEnvironmentVariables",
             TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
