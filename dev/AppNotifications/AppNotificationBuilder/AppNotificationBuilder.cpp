@@ -139,16 +139,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         return *this;
     }
-#if 0
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& uri, winrt::hstring const& alternateText)
-    {
-        THROW_HR_IF(E_INVALIDARG, !m_inlineImage.empty());
 
-        m_inlineImage = L"<image src=\"" + uri.ToString() + L"\" alt=\"" + alternateText + L"\"/>";
-
-        return *this;
-    }
-#endif
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& uri, ImageCrop const& crop, winrt::hstring const& alternateText)
     {
         THROW_HR_IF(E_INVALIDARG, !m_inlineImage.empty());
@@ -185,16 +176,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         m_appLogoOverride = m_appLogoOverride + L"/>";
         return *this;
     }
-#if 0
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& uri, winrt::hstring const& alternateText)
-    {
-        THROW_HR_IF(E_INVALIDARG, !m_appLogoOverride.empty());
 
-        m_appLogoOverride = L"<image placement=\"appLogoOverride\" src=\"" + uri.ToString() + L"\" alt=\"" + alternateText + L"\"/>";
-
-        return *this;
-    }
-#endif
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& uri, ImageCrop const& crop, winrt::hstring const& alternateText)
     {
         THROW_HR_IF(E_INVALIDARG, !m_appLogoOverride.empty());
