@@ -121,10 +121,10 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationBuilderSetShortDuration)
+        TEST_METHOD(AppNotificationBuilderSetDefaultDuration)
         {
-            auto builder{ AppNotificationBuilder().SetDuration(AppNotificationDuration::Short) };
-            auto expected{ LR"(<toast duration="short"><visual><binding template="ToastGeneric"></binding></visual></toast>)" };
+            auto builder{ AppNotificationBuilder().SetDuration(AppNotificationDuration::Default) };
+            auto expected{ LR"(<toast><visual><binding template="ToastGeneric"></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
@@ -218,7 +218,7 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationBuilderSetInlineImageWithProperties)
         {
-            auto builder{ AppNotificationBuilder().SetInlineImage(c_sampleUri, L"altText", ImageCrop::Circle)};
+            auto builder{ AppNotificationBuilder().SetInlineImage(c_sampleUri, ImageCrop::Circle, L"altText")};
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"><image src="http://www.microsoft.com/" alt="altText" hint-crop="circle"/></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
@@ -234,7 +234,7 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationBuilderSetAppLogoOverrideProperties)
         {
-            auto builder{ AppNotificationBuilder().SetAppLogoOverride(c_sampleUri, L"altText", ImageCrop::Circle) };
+            auto builder{ AppNotificationBuilder().SetAppLogoOverride(c_sampleUri, ImageCrop::Circle, L"altText") };
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"><image placement="appLogoOverride" src="http://www.microsoft.com/" alt="altText" hint-crop="circle"/></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
@@ -272,7 +272,7 @@ namespace Test::AppNotification::Builder
             auto builder{ AppNotificationBuilder()
                 .AddButton(AppNotificationButton(L"content")
                 .AddArgument(L"key", L"value")
-                .UseContextMenuPlacement())
+                .SetContextMenuPlacement())
             };
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"></binding></visual><actions><action content="content" arguments="key=value" placement="contextMenu"/></actions></toast>)" };
 
@@ -339,7 +339,7 @@ namespace Test::AppNotification::Builder
         TEST_METHOD(SetAudioWithUri)
         {
             auto builder{ AppNotificationBuilder()
-                    .SetAudio(c_sampleUri) };
+                    .SetAudioUri(c_sampleUri) };
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"></binding></visual><audio src="http://www.microsoft.com/"/></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
@@ -348,7 +348,7 @@ namespace Test::AppNotification::Builder
         TEST_METHOD(SetAudioWithUriAndDuration)
         {
             auto builder{ AppNotificationBuilder()
-                    .SetAudio(c_sampleUri, AppNotificationDuration::Long) };
+                    .SetAudioUri(c_sampleUri, AppNotificationDuration::Long) };
             auto expected{ LR"(<toast duration="long"><visual><binding template="ToastGeneric"></binding></visual><audio src="http://www.microsoft.com/" loop="true"/></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
@@ -357,7 +357,7 @@ namespace Test::AppNotification::Builder
         TEST_METHOD(SetAudioWithMSWinSoundEvent)
         {
             auto builder{ AppNotificationBuilder()
-                    .SetAudio(AppNotificationSoundEvent::Reminder) };
+                    .SetAudioEvent(AppNotificationSoundEvent::Reminder) };
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"></binding></visual><audio src="ms-winsoundevent:Notification.Reminder"/></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
@@ -366,7 +366,7 @@ namespace Test::AppNotification::Builder
         TEST_METHOD(SetAudioWithMSWinSoundEventAndDuration)
         {
             auto builder{ AppNotificationBuilder()
-                    .SetAudio(AppNotificationSoundEvent::Reminder, AppNotificationDuration::Long) };
+                    .SetAudioEvent(AppNotificationSoundEvent::Reminder, AppNotificationDuration::Long) };
             auto expected{ LR"(<toast duration="long"><visual><binding template="ToastGeneric"></binding></visual><audio src="ms-winsoundevent:Notification.Reminder" loop="true"/></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);

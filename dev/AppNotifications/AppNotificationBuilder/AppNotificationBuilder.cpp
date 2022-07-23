@@ -139,7 +139,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         return *this;
     }
-
+#if 0
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& uri, winrt::hstring const& alternateText)
     {
         THROW_HR_IF(E_INVALIDARG, !m_inlineImage.empty());
@@ -148,8 +148,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         return *this;
     }
-
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& uri, winrt::hstring const& alternateText, ImageCrop const& crop)
+#endif
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& uri, ImageCrop const& crop, winrt::hstring const& alternateText)
     {
         THROW_HR_IF(E_INVALIDARG, !m_inlineImage.empty());
 
@@ -185,7 +185,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         m_appLogoOverride = m_appLogoOverride + L"/>";
         return *this;
     }
-
+#if 0
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& uri, winrt::hstring const& alternateText)
     {
         THROW_HR_IF(E_INVALIDARG, !m_appLogoOverride.empty());
@@ -194,8 +194,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         return *this;
     }
-
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& uri, winrt::hstring const& alternateText, ImageCrop const& crop)
+#endif
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& uri, ImageCrop const& crop, winrt::hstring const& alternateText)
     {
         THROW_HR_IF(E_INVALIDARG, !m_appLogoOverride.empty());
 
@@ -237,7 +237,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudio(winrt::Windows::Foundation::Uri const& uri)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioUri(winrt::Windows::Foundation::Uri const& uri)
     {
         THROW_HR_IF(E_INVALIDARG, !m_audio.empty());
 
@@ -246,7 +246,16 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudio(AppNotificationSoundEvent const& soundEvent)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioUri(winrt::Windows::Foundation::Uri const& uri, AppNotificationDuration const& duration)
+    {
+        THROW_HR_IF(E_INVALIDARG, !m_audio.empty());
+
+        m_audio = L"<audio src=\"" + uri.ToString() + L"\" loop=\"true\"/>";
+        m_duration = duration;
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioEvent(AppNotificationSoundEvent const& soundEvent)
     {
         THROW_HR_IF(E_INVALIDARG, !m_audio.empty());
 
@@ -256,24 +265,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudio(winrt::Windows::Foundation::Uri const& uri, AppNotificationDuration const& loopDuration)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioEvent(AppNotificationSoundEvent const& soundEvent, AppNotificationDuration const& duration)
     {
         THROW_HR_IF(E_INVALIDARG, !m_audio.empty());
-        THROW_HR_IF(E_INVALIDARG, m_duration != AppNotificationDuration::Default);
-
-        m_audio = L"<audio src=\"" + uri.ToString() + L"\" loop=\"true\"/>";
-        m_duration = loopDuration;
-        return *this;
-    }
-
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudio(AppNotificationSoundEvent const& soundEvent, AppNotificationDuration const& loopDuration)
-    {
-        THROW_HR_IF(E_INVALIDARG, !m_audio.empty());
-        THROW_HR_IF(E_INVALIDARG, m_duration != AppNotificationDuration::Default);
 
         // Need to map enums to strings :)
         m_audio = L"<audio src=\"" + GetWinSoundEventString(soundEvent) + L"\" loop=\"true\"/>";
-        m_duration = loopDuration;
+        m_duration = duration;
         return *this;
     }
 
@@ -293,14 +291,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         // Add duration attribute if set
         if (m_duration != AppNotificationDuration::Default)
         {
-            if (m_duration == AppNotificationDuration::Short)
-            {
-                xmlResult = xmlResult + L" duration=\"short\"";
-            }
-            else
-            {
-                xmlResult = xmlResult + L" duration=\"long\"";
-            }
+            xmlResult = xmlResult + L" duration=\"long\"";
         }
 
         // Add scenario attribute if set

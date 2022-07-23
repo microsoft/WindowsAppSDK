@@ -50,7 +50,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::UseContextMenuPlacement()
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetContextMenuPlacement()
     {
         m_useContextMenuPlacement = true;
         return *this;

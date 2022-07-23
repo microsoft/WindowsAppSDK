@@ -14,34 +14,31 @@
 
     enum AppNotificationButtonStyle
     {
-        Default, // Button will be the default color
-        Success, // The button will be green
-        Critical, // The button will be red
+        Default,
+        Success,
+        Critical,
     };
 
     runtimeclass AppNotificationButton
     {
-        // Button can use ToolTip instead of content which requires empty content.
-        // Argument attribute is required and uses the ArgumentSerializer construct
-        // to add arguments to the button.
         AppNotificationButton();
         AppNotificationButton(String content);
 
         AppNotificationButton AddArgument(String key, String value);
 
-        // Sets the IconUri for the button.
+        // Sets the Icon for the button.
         AppNotificationButton SetIconUri(Windows.Foundation.Uri iconUri);
 
         // The tooltip for a button, if the button has an empty content string.
         AppNotificationButton SetToolTip(String toolTip);
 
         // Sets the Button as context menu action.
-        AppNotificationButton UseContextMenuPlacement();
+        AppNotificationButton SetContextMenuPlacement();
 
         // Sets the ButtonStyle to Success or Critical
         AppNotificationButton SetButtonStyle(AppNotificationButtonStyle buttonStyle);
 
-        // Sets the ID of an existing TextBox in order to have this button display to the right of the input.
+        // Specifies the ID of an existing TextBox next to which the button will be placed.
         AppNotificationButton SetInputId(String inputId);
 
         // Launches the URI passed into the button when activated.
@@ -92,9 +89,8 @@
 
     enum AppNotificationDuration
     {
-        Default,
-        Short, // Appears for a short while and then goes into Notification Center.
-        Long, // Stays on-screen for longer, and then goes into Notification Center.
+        Default, // Default value. AppNotification appears for a short while and then goes into Notification Center.
+        Long, // AppNotification stays on-screen for longer, and then goes into Notification Center.
     };
 
     enum ImageCrop
@@ -128,30 +124,24 @@
 
         // Sets the full-width inline-image that appears when you expand the AppNotification
         AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri);
-        [default_overload]
         AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, ImageCrop imageCrop);
-        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, String alternateText);
-        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, String alternateText, ImageCrop imageCrop);
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, ImageCrop imagecrop, String alternateText);
 
-        // Sets the image that is left-aligned with notification text
+        // Sets the image that replaces the app logo
         AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri);
-        [default_overload]
         AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, ImageCrop imageCrop);
-        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, String alternateText);
-        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, String alternateText, ImageCrop imageCrop);
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, ImageCrop imageCrop, String alternateText);
 
         // Sets the image that displays within the banner of the AppNotification.
         AppNotificationBuilder SetHeroImage(Windows.Foundation.Uri imageUri);
         AppNotificationBuilder SetHeroImage(Windows.Foundation.Uri imageUri, String alternateText);
 
         // SetAudio
-        [default_overload]
-        AppNotificationBuilder SetAudio(Windows.Foundation.Uri audioUri);
-        AppNotificationBuilder SetAudio(AppNotificationSoundEvent soundEvent);
+        AppNotificationBuilder SetAudioUri(Windows.Foundation.Uri audioUri);
+        AppNotificationBuilder SetAudioUri(Windows.Foundation.Uri audioUri, AppNotificationDuration duration);
 
-        [default_overload]
-        AppNotificationBuilder SetAudio(Windows.Foundation.Uri audioUri, AppNotificationDuration loopDuration);
-        AppNotificationBuilder SetAudio(AppNotificationSoundEvent soundEvent, AppNotificationDuration loopDuration);
+        AppNotificationBuilder SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent);
+        AppNotificationBuilder SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent, AppNotificationDuration duration);
 
         AppNotificationBuilder MuteAudio();
 

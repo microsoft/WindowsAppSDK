@@ -21,7 +21,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetInvokeUri(winrt::Windows::Foundation::Uri const& protocolUri);
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetInvokeUri(winrt::Windows::Foundation::Uri const& protocolUri, winrt::hstring const& targetApplicationPfn);
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton UseContextMenuPlacement();
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetContextMenuPlacement();
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetButtonStyle(AppNotificationButtonStyle const& buttonStyle);
 
