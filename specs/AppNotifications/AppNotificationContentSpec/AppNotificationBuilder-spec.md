@@ -135,15 +135,15 @@ Result from GetXml():
         <binding template="ToastGeneric">
             <text hint-maxLines="1">Jill Bender</text>
             <text>Check out where we camped last weekend! It was incredible, wish you could have come on the backpacking trip!</text>
-            <image placement="appLogoOverride" hint-crop="circle" src="https://unsplash.it/64?image=1027"/>
-            <image placement="hero" src="https://unsplash.it/360/180?image=1043"/>
+            <image placement="appLogoOverride" hint-crop="circle" src="ms-appx://images/appLogo.png"/>
+            <image placement="hero" src="ms-appx://images/heroImage.png"/>
         </binding>
     </visual>
     <actions>
         <input id="textBox" type="text" placeHolderContent="reply"/>
         <action
           content="Send"
-          imageUri="Assets/Icons/send.png"
+          imageUri="ms-appx://images/Icon.png"
           hint-inputId="textBox"
           arguments="action=reply&amp;threadId=92187"/>
     </actions>
@@ -174,7 +174,7 @@ These attributes are abstracted with the AppNotificationTextProperties component
 
 -   SetLanguage(String language)
 -   SetHintMaxLines(Int32)
--   UseIncomingCallAlignment()
+-   SetIncomingCallAlignment()
 
 Below are some example usages:
 
@@ -202,7 +202,7 @@ XML output:
 </toast>
 ```
 
-Developers can use UseIncomingCallAlignment() to center the text like an incoming call. This feature
+Developers can use SetIncomingCallAlignment() to center the text like an incoming call. This feature
 will be ignored unless the AppNotification scenario is set to IncomingCall using
 AppNotificationContent::SetScenario(enum AppNotificationScenario).
 
@@ -214,9 +214,9 @@ AppNotificationContent code:
 AppNotificationContent()
     .SetScenario(AppNotificationScenario::IncomingCall)
     .AddText(L"Incoming Call", AppNotificationTextProperties()
-        .UseIncomingCallAlignment())
+        .SetIncomingCallAlignment())
     .AddText(L"Andrew Barnes", AppNotificationTextProperties()
-        .UseIncomingCallAlignment())
+        .SetIncomingCallAlignment())
     .AddInlineImage(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/inlineImage.png)"), ImageCrop::Circle)
     .AddButton(AppNotificationButton()
         .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/icon.png)"))
@@ -233,7 +233,7 @@ XML output:
         <binding template="ToastGeneric">
             <text hint-callScenarioCenterAlign = "true">Incoming Call</text>
             <text hint-callScenarioCenterAlign = "true">Andrew Barnes</text>
-            <image hint-crop="circle"  src="https://unsplash.it/100?image=883"/>
+            <image hint-crop="circle"  src="ms-appx://images/inlineImage.png"/>
         </binding>
     </visual>
 
@@ -241,7 +241,7 @@ XML output:
         <action
               arguments="videoCallId"
               content=""
-              imageUri="https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"
+              imageUri="ms-appx://images/icon.png"
               hint-buttonStyle = "Success"
               hint-toolTip = "Answer video call"/>
 </toast>
@@ -272,7 +272,7 @@ These attributes are abstracted with the AppNotificationButton component APIs:
 -   AppNotificationButton(String content)
 -   SetIcon(Windows.Foundation.Uri iconUri)
 -   SetToolTip(String toolTip)
--   UseContextMenuPlacement()
+-   SetContextMenuPlacement()
 -   SetInputId(String inputId)
 
 Below are some example usages:
@@ -306,15 +306,16 @@ XML output:
         <input id="textBox" type="text" placeHolderContent="Reply"/>
         <action
           content="Send"
-          imageUri="Assets/Icons/send.png"
+          imageUri="ms-appx://images/icon.png"
           hint-inputId="textBox"
           arguments="action=textReply"/>
     </actions>
 </toast>
 ```
 
-Developers can change the button style of the button using SetButtonStyle(AppNotificationButtonStyle). The two button
-styles are AppNotificationButtonStyle::Success and AppNotificationButtonStyle::Critical.
+Developers can change the button style of the button using
+SetButtonStyle(AppNotificationButtonStyle). The two button styles are
+AppNotificationButtonStyle::Success and AppNotificationButtonStyle::Critical.
 
 ![Button Style Example](IncomingCallExample.png)
 
@@ -324,9 +325,9 @@ AppNotificationContent code:
 AppNotificationContent()
     .SetScenario(AppNotificationScenario::IncomingCall)
     .AddText(L"Incoming Call", AppNotificationTextProperties()
-        .UseIncomingCallAlignment())
+        .SetIncomingCallAlignment())
     .AddText(L"Andrew Barnes", AppNotificationTextProperties()
-        .UseIncomingCallAlignment())
+        .SetIncomingCallAlignment())
     .AddInlineImage(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/inlineImage.png)"), ImageCrop::Circle)
     .AddButton(AppNotificationButton()
         .AddArgument(L"videoCall", L"938465")
@@ -354,7 +355,7 @@ Xml output:
         <binding template="ToastGeneric">
             <text hint-callScenarioCenterAlign = "true">Incoming Call</text>
             <text hint-callScenarioCenterAlign = "true">Andrew Barnes</text>
-            <image hint-crop="circle"  src="https://unsplash.it/100?image=883"/>
+            <image hint-crop="circle"  src="ms-appx://images/inlineImage.png"/>
         </binding>
     </visual>
 
@@ -362,19 +363,19 @@ Xml output:
         <action
               arguments="videoCall=938465;action=accept"
               content=""
-              imageUri="https://www.shareicon.net/data/256x256/2015/10/17/657571_video_512x512.png"
+              imageUri="ms-appx://images/videoCall.png"
               hint-buttonStyle = "Success"
               hint-toolTip = "Answer video call"/>
         <action
               arguments="voiceCall=938465"
               content=""
-              imageUri="https://www.nicepng.com/png/full/379-3794777_white-phone-icon-white-phone-call-icon.png"
+              imageUri="ms-appx://images/voiceCall.png"
               hint-buttonStyle = "Success"
               hint-toolTip = "Answer voice call"/>
         <action
               arguments="declineCall=938465"
               content=""
-              imageUri="https://static.thenounproject.com/png/5012-200.png"
+              imageUri="ms-appx://images/declineCall.png"
               hint-buttonStyle = "Critical"
               hint-toolTip = "Decline all"/>
       </actions>
@@ -417,7 +418,7 @@ XML output:
             <input id="textBox" type="text" placeHolderContent="Reply"/>
             <action
             content=""
-            imageUri="Assets/Icons/message.png"
+            imageUri="ms-appx://images/icon.png"
             hint-inputId="textBox"
             hint-toolTip="Send"
             arguments="action=textReply"/>
@@ -425,8 +426,11 @@ XML output:
 </toast>
 ```
 
-The placement attribute defines action for a user to interact with when the AppNotification is
-right-clicked. This would typically be used by developers to ask the user for setting changes.
+The context menu is a popup UI that appears when the user right clicks on the 
+AppNotification. The default options are to turn off receiving notifications
+for the application and to launch the notification settings page. Using 
+SetContextMenuPlacement() will add an option to the context menu. The behavior 
+is the same as other buttons and when activated returns the arguments to the app.
 
 ![Button ContextMenu Example](ButtonContextMenuExample.png)
 
@@ -438,7 +442,7 @@ AppNotificationContent()
     .AddTextBox(L"textBox", L"Reply")
     .AddButton(AppNotificationButton(L"Modify app settings")
         .AddArgument(L"action", L"textReply")
-        .UseContextMenuPlacement())
+        .SetContextMenuPlacement())
     .GetXml();
 ```
 
@@ -457,7 +461,6 @@ XML output:
             <action
             placement="contextMenu"
             content="Modify app settings"
-            imageUri="Assets/Icons/message.png"
             arguments="action=textReply"/>
     </actions>
 </toast>
@@ -514,7 +517,7 @@ XML output:
   <visual>
     <binding template="ToastGeneric">
       <text>Below is an inline image</text>
-      <image src="https://unsplash.it/360/202?image=883">
+      <image src="ms-appx://images/inlineImage.png">
     </binding>
   </visual>
 </toast>
@@ -542,7 +545,7 @@ XML output:
   <visual>
     <binding template="ToastGeneric">
       <text>To the left is an AppLogoOverride</text>
-      <image src="https://unsplash.it/64?image=669"
+      <image src="ms-appx://images/appLogo.png"
                 placement="appLogoOverride" />
     </binding>
   </visual>
@@ -571,7 +574,7 @@ XML output:
   <visual>
     <binding template="ToastGeneric">
       <text>Above is a Hero image</text>
-      <image src="https://unsplash.it/360/180?image=1043"
+      <image src="ms-appx://images/heroImage.png"
                 placement="hero" />
     </binding>
   </visual>
@@ -599,7 +602,7 @@ XML output:
   <visual>
     <binding template="ToastGeneric">
       <text>To the left is a cropped AppLogoOverride</text>
-      <image src="https://unsplash.it/64?image=669"
+      <image src="ms-appx://images/appLogo.png"
                 hint-crop="circle"
                 placement="appLogoOverride" />
     </binding>
@@ -630,6 +633,7 @@ These attributes are abstracted with the Audio component APIs:
 -   MuteAudio()
 
 Supported audio file types include:
+
 -   .aac
 -   .flac
 -   .m4a
@@ -638,15 +642,18 @@ Supported audio file types include:
 -   .wma
 
 Supported audio file sources:
+
 -   ms-appx:///
 -   ms-resource
 
 Not supported audio file sources:
+
 -   ms-appdata
 -   http://, https://
 -   C:/, F:/, etc.
 
-More information on custom audio can be found [here](https://docs.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/custom-audio-on-toasts).
+More information on custom audio can be found
+[here](https://docs.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/custom-audio-on-toasts).
 
 Below are some example usages:
 
@@ -691,8 +698,7 @@ XML output:
 </toast>
 ```
 
-An AppNotification that does not want to play any audio can use MuteAudio to
-mute the audio.
+An AppNotification that does not want to play any audio can use MuteAudio to mute the audio.
 
 ```cpp
 AppNotificationContent()
@@ -862,8 +868,8 @@ All the attributes have static data binding constants:
 -   ValueStringOverride = "{progressValueString}
 
 Every AppNotificationProgressBar component will have the bound status and value. Title and
-ValueStringOverride are not required so those constants will not be added unless you call
-the AppNotificationProgressBar component APIs
+ValueStringOverride are not required so those constants will not be added unless you call the
+AppNotificationProgressBar component APIs
 
 -   UseTitleForLabel(String title)
 -   BindTitleForLabel()
@@ -960,7 +966,9 @@ When the user clicks on the Button, the result argument string is:
 
 -   "action=buttonTouch;callId=938163"
 
-Notice that ';' is used as the delimiter between each argument.
+Notice that ';' is used as the delimiter between each argument. The library will escape the ';' if
+it exists as a character in the argument. The ';' will then be unescaped when the arguments are
+retrieved from AppNotificationActivatedEventArgs::Arguments.
 
 To retrieve the arguments from the serialized string, developers will use
 AppNotificationReceivedEventArgs::Arguments to get the values from the argument string as a map.
@@ -1086,7 +1094,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         AppNotificationProgressBar SetStatus(String value);
         AppNotificationProgressBar BindStatus();
-        
+
         AppNotificationProgressBar SetValue(Double value);
         AppNotificationProgressBar BindValue();
 
@@ -1183,8 +1191,8 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationContent SetAudioUri(Windows.Foundation.Uri audioUri, AppNotificationDuration duration);
 
         AppNotificationContent SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent);
-        AppNotificationContent SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent, AppNotificationDuration duration);     
-        
+        AppNotificationContent SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent, AppNotificationDuration duration);
+
         AppNotificationContent MuteAudio();
 
         // Add an input textbox to retrieve user input.
