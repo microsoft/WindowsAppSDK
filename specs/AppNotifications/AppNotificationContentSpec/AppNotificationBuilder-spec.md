@@ -40,11 +40,11 @@ winrt::AppNotificationManager::Default().Show(appNotification);
 # Description
 
 To improve the AppNotification construction experience, the Windows App SDK is introducing
-AppNotificationContent, a builder that constructs simple or rich App Notifications for the
+AppNotificationBuilder, a builder that constructs simple or rich App Notifications for the
 developer.
 
 ```c++
-AppNotificationContent()
+AppNotificationBuilder()
     .AddArgument(L"AppNotificationClick")
     .AddArgument(L"sequence", sequenceId)
     .SetAppLogoOverride(winrt::Windows::Foundation::Uri(pathToImage), ImageCrop::Circle)
@@ -57,9 +57,9 @@ AppNotificationContent()
 
 # API Components
 
-# AppNotificationContent
+# AppNotificationBuilder
 
-The AppNotificationContent component sets up the xml for a `<toast>`. This is the wrapper content
+The AppNotificationBuilder component sets up the xml for a `<toast>`. This is the wrapper content
 that will include any component adding to the AppNotification UI.
 
 ### WinAppSDK 1.2 `<toast>` Schema
@@ -76,9 +76,9 @@ that will include any component adding to the AppNotification UI.
 </toast>
 ```
 
-These attributes are abstracted away through the AppNotificationContent component APIs:
+These attributes are abstracted away through the AppNotificationBuilder component APIs:
 
--   AppNotificationContent();
+-   AppNotificationBuilder();
 -   AddArgument(String key, String value)
 -   SetTimeStamp(Windows.Foundation.DateTime dateTime)
 -   SetScenario(AppNotificationScenario Scenario)
@@ -89,7 +89,7 @@ These attributes are abstracted away through the AppNotificationContent componen
 
 useButtonStyle will only be set if AppNotificationButton::SetButtonStyle is used.
 
-You can append UI components through the AppNotificationContent component APIs:
+You can append UI components through the AppNotificationBuilder component APIs:
 
 -   AddText
 -   AddButton
@@ -107,10 +107,10 @@ Below is an example usage:
 
 ![AppNotification Example](AppNotificationExample.png)
 
-AppNotificationContent code:
+AppNotificationBuilder code:
 
 ```cpp
-AppNotificationContent()
+AppNotificationBuilder()
     .AddArgument(L"action", L"openThread")
     .AddArgument(L"threadId", 92187)
     .SetTimeStamp(DateTime.now())
@@ -124,10 +124,10 @@ AppNotificationContent()
         .AddArgument(L"threadId", 92187)
         .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/Icon.png)"))
         .SetInputId(L"textBox"))
-    .GetXml();
+    .BuildNotification();
 ```
 
-Result from GetXml():
+XML payload:
 
 ```xml
 <toast launch="action=openThread&amp;threadId=92187" displayTimestamp="2022-06-19T08:30:00Z">
@@ -180,16 +180,16 @@ Below are some example usages:
 
 ![Text Example](TextExample.png)
 
-AppNotificationContent Code:
+AppNotificationBuilder Code:
 
 ```cpp
-AppNotificationContent()
+AppNotificationBuilder()
     .AddText(L"Content")
     .SetAttributionText(L"Attribution Text")
-    .GetXml();
+    .BuildNotification();
 ```
 
-XML output:
+XML payload:
 
 ```xml
 <toast>
@@ -204,14 +204,14 @@ XML output:
 
 Developers can use SetIncomingCallAlignment() to center the text like an incoming call. This feature
 will be ignored unless the AppNotification scenario is set to IncomingCall using
-AppNotificationContent::SetScenario(enum AppNotificationScenario).
+AppNotificationBuilder::SetScenario(enum AppNotificationScenario).
 
 ![IncomingCall Simple Example](IncomingCallSimpleExample.png)
 
-AppNotificationContent code:
+AppNotificationBuilder code:
 
 ```cpp
-AppNotificationContent()
+AppNotificationBuilder()
     .SetScenario(AppNotificationScenario::IncomingCall)
     .AddText(L"Incoming Call", AppNotificationTextProperties()
         .SetIncomingCallAlignment())
@@ -222,10 +222,10 @@ AppNotificationContent()
         .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/icon.png)"))
         .SetButtonStyle(AppNotificationButtonStyle::Success)
         .SetToolTip(L"Answer video call"))
-    .GetXml();
+    .BuildNotification();
 ```
 
-XML output:
+XML payload:
 
 ```xml
 <toast scenario="incomingCall" useButtonStyle="true">
@@ -279,20 +279,20 @@ Below are some example usages:
 
 ![Button Example](ButtonExample.png)
 
-AppNotificationContent code:
+AppNotificationBuilder code:
 
 ```cpp
-AppNotificationContent()
+AppNotificationBuilder()
     .AddText(L"Content")
     .AddTextBox(L"textBox", L"Reply")
     .AddButton(AppNotificationButton(L"Send")
         .AddArgument(L"action", L"textReply")
         .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/icon.png)"))
         .SetInputId(L"textBox"))
-    .GetXml();
+    .BuildNotification();
 ```
 
-XML output:
+XML payload:
 
 ```xml
 <toast>
@@ -319,10 +319,10 @@ AppNotificationButtonStyle::Success and AppNotificationButtonStyle::Critical.
 
 ![Button Style Example](IncomingCallExample.png)
 
-AppNotificationContent code:
+AppNotificationBuilder code:
 
 ```cpp
-AppNotificationContent()
+AppNotificationBuilder()
     .SetScenario(AppNotificationScenario::IncomingCall)
     .AddText(L"Incoming Call", AppNotificationTextProperties()
         .SetIncomingCallAlignment())
@@ -344,10 +344,10 @@ AppNotificationContent()
         .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/declineCall.png)"))
         .SetButtonStyle(AppNotificationButtonStyle::Critical)
         .SetToolTip(L"Decline all"))
-    .GetXml();
+    .BuildNotification();
 ```
 
-Xml output:
+XML payload:
 
 ```xml
 <toast scenario="incomingCall" useButtonStyle="true">
@@ -390,10 +390,10 @@ the cursor and a text will display describing what the button does.
 
 ![Button ToolTip Example](ButtonToolTipExample.png)
 
-AppNotificationContent code:
+AppNotificationBuilder code:
 
 ```cpp
-AppNotificationContent()
+AppNotificationBuilder()
     .AddText(L"Content")
     .AddTextBox(L"textBox", L"Reply")
     .AddButton(AppNotificationButton()
@@ -401,10 +401,10 @@ AppNotificationContent()
         .SetInputId(L"textBox")
         .SetToolTip(L"Send")
         .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/icon.png)")))
-    .GetXml();
+    .BuildNotification();
 ```
 
-XML output:
+XML payload:
 
 ```xml
 <toast>
@@ -434,19 +434,19 @@ is the same as other buttons and when activated returns the arguments to the app
 
 ![Button ContextMenu Example](ButtonContextMenuExample.png)
 
-AppNotificationContent code:
+AppNotificationBuilder code:
 
 ```cpp
-AppNotificationContent()
+AppNotificationBuilder()
     .AddText(L"Content")
     .AddTextBox(L"textBox", L"Reply")
     .AddButton(AppNotificationButton(L"Modify app settings")
         .AddArgument(L"action", L"textReply")
         .SetContextMenuPlacement())
-    .GetXml();
+    .BuildNotification();
 ```
 
-XML output:
+XML payload:
 
 ```xml
 <toast>
@@ -501,16 +501,16 @@ A full-width inline-image that appears when you expand the AppNotification.
 
 ![Inline Image Example](InlineImageExample.png)
 
-AppNotificationContent code:
+AppNotificationBuilder code:
 
 ```cpp
-AppNotificationContent()
+AppNotificationBuilder()
     .AddText(L"Below is an inline image")
     .SetInlineImage(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/inlineImage.png)"))
-    .GetXml();
+    .BuildNotification();
 ```
 
-XML output:
+XML payload:
 
 ```xml
 <toast>
@@ -529,16 +529,16 @@ The image replaces your app's logo in the AppNotification.
 
 ![AppLogoOverride Image Example](AppLogoOverrideImageExample.png)
 
-AppNotificationContent code:
+AppNotificationBuilder code:
 
 ```cpp
-AppNotificationContent()
+AppNotificationBuilder()
     .AddText(L"To the left is an AppLogoOverride")
     .SetAppLogoOverride(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/appLogo.png)"))
-    .GetXml();
+    .BuildNotification();
 ```
 
-XML output:
+XML payload:
 
 ```xml
 <toast>
@@ -558,16 +558,16 @@ Prominently displays image within the AppNotification banner and while inside No
 
 ![Hero Image Example](HeroImageExample.png)
 
-AppNotificationContent code:
+AppNotificationBuilder code:
 
 ```cpp
-AppNotificationContent()
+AppNotificationBuilder()
     .AddText(L"Above is a Hero image"))
     .SetHeroImage(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/heroImage.png)"))
-    .GetXml();
+    .BuildNotification();
 ```
 
-XML output:
+XML payload:
 
 ```xml
 <toast>
@@ -587,15 +587,15 @@ For both Inline and AppLogoOverride, developers can set how the image will be cr
 
 ![Cropped AppLogoOverride Image Example](CroppedAppLogoOverrideExample.png)
 
-AppNotificationContent code:
+AppNotificationBuilder code:
 
 ```cpp
-AppNotificationContent()
+AppNotificationBuilder()
     .AddText(L"To the left is a cropped AppLogoOverride")
     .SetAppLogoOverride(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/appLogo.png)"), ImageCrop::Circle);
 ```
 
-XML output:
+XML payload:
 
 ```xml
 <toast>
@@ -658,12 +658,12 @@ More information on custom audio can be found
 Below are some example usages:
 
 ```cpp
-AppNotificationContent()
+AppNotificationBuilder()
     .SetAudioEvent(AppNotificationSoundEvent::Reminder)
-    GetXml();
+    BuildNotification();
 ```
 
-XML output:
+XML payload:
 
 ```xml
 <toast>
@@ -679,13 +679,13 @@ Developers can define if the audio should be looped using SetAudioUri(Uri, AppNo
 which can be default or long.
 
 ```cpp
-AppNotificationContent()
+AppNotificationBuilder()
     .AddText(L"Content")
     .SetAudioEvent(AppNotificationSoundEvent::Alarm, AppNotificationDuration::Long)
-    .GetXml();
+    .BuildNotification();
 ```
 
-XML output:
+XML payload:
 
 ```xml
 <toast duration="long">
@@ -701,13 +701,13 @@ XML output:
 An AppNotification that does not want to play any audio can use MuteAudio to mute the audio.
 
 ```cpp
-AppNotificationContent()
+AppNotificationBuilder()
     .AddText(L"Content")
     .MuteAudio()
-    .GetXml();
+    .BuildNotification();
 ```
 
-XML output:
+XML payload:
 
 ```xml
 <toast duration="long">
@@ -742,18 +742,18 @@ Below is an example use:
 
 ![TextBox Example](TextBoxExample.png)
 
-AppNotificationContent code:
+AppNotificationBuilder code:
 
 ```cpp
-AppNotificationContent()
+AppNotificationBuilder()
     .AddTextBox(L"textBox", L"reply")
     .AddButton(AppNotificationButton(L"Send")
         .AddArguments(L"action", L"Send")
         .SetInputId(L"textBox"))
-    .GetXml();
+    .BuildNotification();
 ```
 
-XML output:
+XML payload:
 
 ```xml
 <toast>
@@ -802,7 +802,7 @@ Below is an example use:
 ![ComboBox Example](ComboBoxExample.png)
 
 ```cpp
-AppNotificationContent()
+AppNotificationBuilder()
     .AddComboBox(AppNotificationComboBox(L"ComboBox")
         .SetDefaultSelection(L"yes")
         .AddSelection(L"yes", L"Going")
@@ -811,10 +811,10 @@ AppNotificationContent()
     .AddButton(AppNotificationButton(L"Send")
         .AddArgument(L"action", L"Send"))
         .SetInputId(L"ComboBox")
-    .GetXml();
+    .BuildNotification();
 ```
 
-XML output:
+XML payload:
 
 ```xml
 <toast>
@@ -878,16 +878,16 @@ AppNotificationProgressBar component APIs
 Below is an example use:
 
 ```cpp
-// Using AppNotificationContent, build the Xml payload with AppNotificationProgressBar.
-winrt::hstring xmlPayload { AppNotificationContent()
+// Using AppNotificationBuilder, build the Xml payload with AppNotificationProgressBar.
+winrt::hstring xmlPayload { AppNotificationBuilder()
     .AddText(L"Downloading this week's new music...")
     .AddProgressBar(AppNotificationProgressBar()
         .BindTitle()
         .BindValueStringOverride())
-    .GetXml() };
+    .BuildNotification() };
 ```
 
-Xml output:
+XML payload:
 
 ```xml
 <toast>
@@ -904,7 +904,7 @@ Xml output:
 </toast>
 ```
 
-Construct an AppNotification with the string xml payload from AppNotificationContent
+Construct an AppNotification with the string xml payload from AppNotificationBuilder
 
 ```cpp
 winrt::Microsoft::Windows::AppNotifications::AppNotification notification(xmlPayload);
@@ -943,14 +943,14 @@ auto result = co_await winrt::Microsoft::Windows::AppNotifications::AppNotificat
 
 # Retrieving Arguments
 
-AppNotificationContent and Button return arguments to the activated application when the user clicks
+AppNotificationBuilder and Button return arguments to the activated application when the user clicks
 on the component. Developers can add multiple key/value pairs and Windows App SDK will serialize
 them into a string.
 
-Below is an example with AppNotificationContent and Button:
+Below is an example with AppNotificationBuilder and Button:
 
 ```cpp
-AppNotificationContent()
+AppNotificationBuilder()
     .AddArgument(L"action", L"appNotificationBodyTouch")
     .AddArgument(L"user", 938163)
     .AddButton(AppNotificationButton(L"Send")
@@ -1152,64 +1152,63 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Circle, // Crops the image as a circle.
     }
 
-    runtimeclass AppNotificationContent
+    runtimeclass AppNotificationBuilder
     {
-        AppNotificationContent();
+        AppNotificationBuilder();
 
         // Adds arguments to the launch attribute to return when AppNotification is clicked.
-        AppNotificationContent AddArgument(String key, String value);
+        AppNotificationBuilder AddArgument(String key, String value);
 
         // Sets the timeStamp of the AppNotification to when it was constructed instead of when it was sent.
-        AppNotificationContent SetTimeStamp(Windows.Foundation.DateTime value);
+        AppNotificationBuilder SetTimeStamp(Windows.Foundation.DateTime value);
 
         // Sets the scenario of the AppNotification.
-        AppNotificationContent SetScenario(AppNotificationScenario value);
+        AppNotificationBuilder SetScenario(AppNotificationScenario value);
 
         // Adds text to the AppNotification.
-        AppNotificationContent AddText(String text);
-        AppNotificationContent AddText(String text, AppNotificationTextProperties properties);
+        AppNotificationBuilder AddText(String text);
+        AppNotificationBuilder AddText(String text, AppNotificationTextProperties properties);
 
-        AppNotificationContent SetAttributionText(String text);
-        AppNotificationContent SetAttributionText(String text, String language);
+        AppNotificationBuilder SetAttributionText(String text);
+        AppNotificationBuilder SetAttributionText(String text, String language);
 
         // Sets the full-width inline-image that appears when you expand the AppNotification
-        AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri);
-        AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri, ImageCrop imageCrop);
-        AppNotificationContent SetInlineImage(Windows.Foundation.Uri imageUri, ImageCrop imagecrop, String alternateText);
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri);
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, ImageCrop imageCrop);
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, ImageCrop imagecrop, String alternateText);
 
         // Sets the image that replaces the app logo
-        AppNotificationContent SetAppLogoOverride(Windows.Foundation.Uri imageUri);
-        AppNotificationContent SetAppLogoOverride(Windows.Foundation.Uri imageUri, String alternateText);
-        AppNotificationContent SetAppLogoOverride(Windows.Foundation.Uri imageUri, ImageCrop imageCrop, String alternateText);
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri);
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, String alternateText);
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, ImageCrop imageCrop, String alternateText);
 
         // Sets the image that displays within the banner of the AppNotification.
-        AppNotificationContent SetHeroImage(Windows.Foundation.Uri imageUri);
-        AppNotificationContent SetHeroImage(Windows.Foundation.Uri imageUri, String alternateText);
+        AppNotificationBuilder SetHeroImage(Windows.Foundation.Uri imageUri);
+        AppNotificationBuilder SetHeroImage(Windows.Foundation.Uri imageUri, String alternateText);
 
         // SetAudio
-        AppNotificationContent SetAudioUri(Windows.Foundation.Uri audioUri);
-        AppNotificationContent SetAudioUri(Windows.Foundation.Uri audioUri, AppNotificationDuration duration);
+        AppNotificationBuilder SetAudioUri(Windows.Foundation.Uri audioUri);
+        AppNotificationBuilder SetAudioUri(Windows.Foundation.Uri audioUri, AppNotificationDuration duration);
 
-        AppNotificationContent SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent);
-        AppNotificationContent SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent, AppNotificationDuration duration);
+        AppNotificationBuilder SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent);
+        AppNotificationBuilder SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent, AppNotificationDuration duration);
 
-        AppNotificationContent MuteAudio();
+        AppNotificationBuilder MuteAudio();
 
         // Add an input textbox to retrieve user input.
-        AppNotificationContent AddTextBox(String id);
-        AppNotificationContent AddTextBox(String id, String placeHolderText, String title);
+        AppNotificationBuilder AddTextBox(String id);
+        AppNotificationBuilder AddTextBox(String id, String placeHolderText, String title);
 
-        // Adds a button to the AppNotificationContent
-        AppNotificationContent AddButton(AppNotificationButton value);
+        // Adds a button to the AppNotificationBuilder
+        AppNotificationBuilder AddButton(AppNotificationButton value);
 
         // Add an input ComboBox to retrieve user input.
-        AppNotificationContent AddComboBox(AppNotificationComboBox value);
+        AppNotificationBuilder AddComboBox(AppNotificationComboBox value);
 
-        AppNotificationContent AddProgressBar(AppNotificationProgressBar value);
+        AppNotificationBuilder AddProgressBar(AppNotificationProgressBar value);
 
-        // Retrieves the notification XML content so that it can be used with a local
-        // AppNotification constructor.
-        String GetXml();
+        // Constructs a WindowsAppSDK AppNotification object with the XML payload
+        AppNotification BuildAppNotification();
     };
 }
 ```
