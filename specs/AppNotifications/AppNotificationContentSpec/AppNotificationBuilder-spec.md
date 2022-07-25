@@ -76,16 +76,17 @@ that will include any component adding to the AppNotification UI.
 </toast>
 ```
 
-These attributes are abstracted away through the AppNotificationBuilder component APIs:
+These attributes are abstracted away by the following AppNotificationBuilder component APIs
+available in the Windows App SDK:
 
 -   AppNotificationBuilder();
 -   AddArgument(String key, String value)
 -   SetTimeStamp(Windows.Foundation.DateTime dateTime)
 -   SetScenario(AppNotificationScenario Scenario)
-    -   AppNotificationScenario::Reminder
-    -   AppNotificationScenario::Alarm
-    -   AppNotificationScenario::IncomingCall
-    -   AppNotificationScenario::Urgent
+    -   AppNotificationScenario.Reminder
+    -   AppNotificationScenario.Alarm
+    -   AppNotificationScenario.IncomingCall
+    -   AppNotificationScenario.Urgent
 
 useButtonStyle will only be set if AppNotificationButton::SetButtonStyle is used.
 
@@ -170,7 +171,8 @@ language, and placement of the text on the AppNotification.
       hint-maxLines? = integer />
 ```
 
-These attributes are abstracted with the AppNotificationTextProperties component APIs:
+These attributes are abstracted with the following AppNotificationTextProperties component APIs
+available in the Windows App SDK:
 
 -   SetLanguage(String language)
 -   SetHintMaxLines(Int32)
@@ -266,7 +268,8 @@ AppNotificationButtons are user-clickable components meant to start an action fr
         hint-toolTip? = string />
 ```
 
-These attributes are abstracted with the AppNotificationButton component APIs:
+These attributes are abstracted with the following AppNotificationButton component APIs available in
+the Windows App SDK:
 
 -   AppNotificationButton()
 -   AppNotificationButton(String content)
@@ -315,7 +318,7 @@ XML payload:
 
 Developers can change the button style of the button using
 SetButtonStyle(AppNotificationButtonStyle). The two button styles are
-AppNotificationButtonStyle::Success and AppNotificationButtonStyle::Critical.
+AppNotificationButtonStyle.Success and AppNotificationButtonStyle.Critical.
 
 ![Button Style Example](IncomingCallExample.png)
 
@@ -426,11 +429,10 @@ XML payload:
 </toast>
 ```
 
-The context menu is a popup UI that appears when the user right clicks on the 
-AppNotification. The default options are to turn off receiving notifications
-for the application and to launch the notification settings page. Using 
-SetContextMenuPlacement() will add an option to the context menu. The behavior 
-is the same as other buttons and when activated returns the arguments to the app.
+The context menu is a popup UI that appears when the user right clicks on the AppNotification. The
+default options are to turn off receiving notifications for the application and to launch the
+notification settings page. Using SetContextMenuPlacement() will add an option to the context menu.
+The behavior is the same as other buttons and when activated returns the arguments to the app.
 
 ![Button ContextMenu Example](ButtonContextMenuExample.png)
 
@@ -624,7 +626,8 @@ displayed. The audio file can be defined by string value pointing to an app asse
        silent? = boolean />
 ```
 
-These attributes are abstracted with the Audio component APIs:
+These attributes are abstracted with the following Audio component APIs available in the Windows App
+SDK:
 
 -   SetAudioUri(Windows.Foundation.Uri)
 -   SetAudioUri(Windows.Foundation.Uri, AppNotificationDuration)
@@ -733,7 +736,8 @@ TextBox is an `<input>` component that allows users to type custom responses on 
 </input>
 ```
 
-These attributes are abstracted with the TextBox component APIs:
+These attributes are abstracted with the following TextBox component APIs available in the Windows
+App SDK:
 
 -   TextBox(String id)
 -   TextBox(String id, String placeHolderContent)
@@ -791,7 +795,8 @@ values on an AppNotification.
 </input>
 ```
 
-These attributes are abstracted with the AppNotificationComboBox component APIs:
+These attributes are abstracted with the following AppNotificationComboBox component APIs available
+in the Windows App SDK:
 
 -   AppNotificationComboBox(String id)
 -   SetDefaultSelection(String id)
@@ -867,13 +872,20 @@ All the attributes have static data binding constants:
 -   Title = "{progressTitle}"
 -   ValueStringOverride = "{progressValueString}
 
-Every AppNotificationProgressBar component will have the bound status and value. Title and
-ValueStringOverride are not required so those constants will not be added unless you call the
-AppNotificationProgressBar component APIs
+By default, status and value use data binding, but you can explicitly bind values of the progress
+bar:
 
--   UseTitleForLabel(String title)
--   BindTitleForLabel()
+-   BindStatus()
+-   BindValue()
+-   BindTitle()
 -   BindValueStringOverride()
+
+You can also set static values of the progress bar by passing in specific values:
+
+-   SetStatus(String status)
+-   SetValue(Double value)
+-   SetTitle(String title)
+-   SetValueStringOverride(String valueStringOverride)
 
 Below is an example use:
 
