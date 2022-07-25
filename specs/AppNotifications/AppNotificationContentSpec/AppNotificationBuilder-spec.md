@@ -879,7 +879,7 @@ Below is an example use:
 
 ```cpp
 // Using AppNotificationBuilder, build the Xml payload with AppNotificationProgressBar.
-winrt::hstring xmlPayload { AppNotificationBuilder()
+AppNotification notification { AppNotificationBuilder()
     .AddText(L"Downloading this week's new music...")
     .AddProgressBar(AppNotificationProgressBar()
         .BindTitle()
@@ -907,7 +907,6 @@ XML payload:
 Construct an AppNotification with the string xml payload from AppNotificationBuilder
 
 ```cpp
-winrt::Microsoft::Windows::AppNotifications::AppNotification notification(xmlPayload);
 notification.Tag(L"Tag");
 notification.Group(L"Group");
 ```
