@@ -348,6 +348,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeploymentAgent", "dev\Depl
 		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppNotificationBuilder", "dev\AppNotifications\AppNotificationBuilder\AppNotificationBuilder.vcxitems", "{E49329F3-5196-4BBA-B5C4-E11CE7EFB07A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppNotificationBuilderTests", "test\AppNotificationBuilderTests\AppNotificationBuilderTests.vcxproj", "{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{08bc78e0-63c6-49a7-81b3-6afc3deac4de}*SharedItemsImports = 4
@@ -379,6 +383,7 @@ Global
 		dev\Deployment\Deployment.vcxitems*{db38fb4d-d04f-4c1d-93e0-f8ae259c5fd6}*SharedItemsImports = 9
 		dev\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems*{e15c3465-9d45-495d-92ce-b91ef45e8623}*SharedItemsImports = 9
 		dev\AppLifecycle\AppLifecycle.vcxitems*{e3a522a3-6635-4a42-bded-1af46a15f63c}*SharedItemsImports = 9
+		dev\AppNotifications\AppNotificationBuilder\AppNotificationBuilder.vcxitems*{e49329f3-5196-4bba-b5c4-e11ce7efb07a}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{e5659a29-fe68-417b-9bc5-613073dd54df}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{e977b1bd-00dc-4085-a105-e0a18e0183d7}*SharedItemsImports = 4
 	EndGlobalSection
@@ -1355,6 +1360,20 @@ Global
 		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Release|x64.Build.0 = Release|x64
 		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Release|x86.ActiveCfg = Release|x86
 		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Release|x86.Build.0 = Release|x86
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|ARM64.Build.0 = Debug|ARM64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|x64.ActiveCfg = Debug|x64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|x64.Build.0 = Debug|x64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|x86.ActiveCfg = Debug|Win32
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|x86.Build.0 = Debug|Win32
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|Any CPU.ActiveCfg = Release|Win32
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|ARM64.ActiveCfg = Release|ARM64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|ARM64.Build.0 = Release|ARM64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|x64.ActiveCfg = Release|x64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|x64.Build.0 = Release|x64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|x86.ActiveCfg = Release|Win32
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1469,6 +1488,8 @@ Global
 		{D9139E3C-8D21-4BD9-84E3-30A03A54D610} = {99C514E4-A6B3-4B09-B870-5511EF9D93AC}
 		{4A74BBED-3B20-44A7-B6FF-3373160DE741} = {99C514E4-A6B3-4B09-B870-5511EF9D93AC}
 		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF} = {E378857C-D22A-4E5E-A6DA-A59C445CF22E}
+		{E49329F3-5196-4BBA-B5C4-E11CE7EFB07A} = {1C9A0791-2BAA-420B-84B6-C0721F22A6E8}
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
