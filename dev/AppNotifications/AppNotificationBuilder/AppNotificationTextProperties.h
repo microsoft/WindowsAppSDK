@@ -8,11 +8,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         AppNotificationTextProperties() = default;
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties SetMaxLines(int const& maxLines);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties SetLanguage(winrt::hstring const& value);
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties SetLanguage(winrt::hstring const& language);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties SetIncomingCallAlignment();
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties UsesCallScenarioAlign();
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties SetMaxLines(int const& value);
 
         winrt::hstring GetXml();
 

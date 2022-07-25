@@ -12,18 +12,18 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AddArgument(winrt::hstring const& key, winrt::hstring const& value);
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetIconUri(winrt::Windows::Foundation::Uri const& iconUri);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetIcon(winrt::Windows::Foundation::Uri const& value);
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetToolTip(winrt::hstring const& toolTip);
-
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetInputId(winrt::hstring const& inputId);
-
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetInvokeUri(winrt::Windows::Foundation::Uri const& protocolUri);
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetInvokeUri(winrt::Windows::Foundation::Uri const& protocolUri, winrt::hstring const& targetApplicationPfn);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetToolTip(winrt::hstring const& value);
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetContextMenuPlacement();
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetButtonStyle(AppNotificationButtonStyle const& buttonStyle);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetButtonStyle(AppNotificationButtonStyle const& value);
+
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetInputId(winrt::hstring const& value);
+
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetInvokeUri(winrt::Windows::Foundation::Uri const& protocolUri);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetInvokeUri(winrt::Windows::Foundation::Uri const& protocolUri, winrt::hstring const& targetAppId);
 
         winrt::hstring GetXml();
 

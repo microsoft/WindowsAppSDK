@@ -5,9 +5,9 @@
         // Contains the set of <text> attributes
         AppNotificationTextProperties();
 
-        AppNotificationTextProperties SetLanguage(String language);
-        AppNotificationTextProperties UsesCallScenarioAlign();
-        AppNotificationTextProperties SetMaxLines(Int32 maxLines);
+        AppNotificationTextProperties SetLanguage(String value);
+        AppNotificationTextProperties SetIncomingCallAlignment();
+        AppNotificationTextProperties SetMaxLines(Int32 value);
 
         String GetXml();
     }
@@ -27,19 +27,19 @@
         AppNotificationButton AddArgument(String key, String value);
 
         // Sets the Icon for the button.
-        AppNotificationButton SetIconUri(Windows.Foundation.Uri iconUri);
+        AppNotificationButton SetIcon(Windows.Foundation.Uri value);
 
         // The tooltip for a button, if the button has an empty content string.
-        AppNotificationButton SetToolTip(String toolTip);
+        AppNotificationButton SetToolTip(String value);
 
         // Sets the Button as context menu action.
         AppNotificationButton SetContextMenuPlacement();
 
         // Sets the ButtonStyle to Success or Critical
-        AppNotificationButton SetButtonStyle(AppNotificationButtonStyle buttonStyle);
+        AppNotificationButton SetButtonStyle(AppNotificationButtonStyle value);
 
         // Specifies the ID of an existing TextBox next to which the button will be placed.
-        AppNotificationButton SetInputId(String inputId);
+        AppNotificationButton SetInputId(String value);
 
         // Launches the URI passed into the button when activated.
         AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri);
@@ -47,15 +47,6 @@
 
         // Retrieves the XML content of the button.
         String GetXml();
-    };
-
-    enum AppNotificationScenario
-    {
-        Default, // The normal AppNotification behavior. The AppNotification appears for a short duration, and then automatically dismisses into Notification Center.
-        Reminder, // The notification will stay on screen until the user dismisses it or takes action.
-        Alarm,    // Alarms behave like Reminder, but alarms will additionally loop audio with a default alarm sound.
-        IncomingCall, // Incoming call notifications are displayed pre-expanded in a special call format and stay on the user's screen till dismissed.
-        Urgent, // Important notifications allow users to have more control over what 1st party and 3rd party apps can send them high-priority AppNotifications (urgent/important) that can break through Focus Assist.
     };
 
     enum AppNotificationSoundEvent
@@ -87,6 +78,15 @@
         Call10,
     };
 
+    enum AppNotificationScenario
+    {
+        Default, // The normal AppNotification behavior. The AppNotification appears for a short duration, and then automatically dismisses into Notification Center.
+        Reminder, // The notification will stay on screen until the user dismisses it or takes action.
+        Alarm,    // Alarms behave like Reminder, but alarms will additionally loop audio with a default alarm sound.
+        IncomingCall, // Incoming call notifications are displayed pre-expanded in a special call format and stay on the user's screen till dismissed.
+        Urgent, // Important notifications allow users to have more control over what 1st party and 3rd party apps can send them high-priority AppNotifications (urgent/important) that can break through Focus Assist.
+    };
+
     enum AppNotificationDuration
     {
         Default, // Default value. AppNotification appears for a short while and then goes into Notification Center.
@@ -107,13 +107,10 @@
         AppNotificationBuilder AddArgument(String key, String value);
 
         // Sets the timeStamp of the AppNotification to when it was constructed instead of when it was sent.
-        AppNotificationBuilder SetTimeStamp(Windows.Foundation.DateTime timeStamp);
+        AppNotificationBuilder SetTimeStamp(Windows.Foundation.DateTime value);
 
         // Sets the scenario of the AppNotification.
-        AppNotificationBuilder SetScenario(AppNotificationScenario scenario);
-
-        // Sets the timeStamp of the AppNotification to when it was constructed instead of when it was sent.
-        AppNotificationBuilder SetDuration(AppNotificationDuration duration);
+        AppNotificationBuilder SetScenario(AppNotificationScenario value);
 
         // Adds text to the AppNotification.
         AppNotificationBuilder AddText(String text);
@@ -146,7 +143,14 @@
         AppNotificationBuilder MuteAudio();
 
         // Adds a button to the AppNotificationBuilder
-        AppNotificationBuilder AddButton(AppNotificationButton button);
+        AppNotificationBuilder AddButton(AppNotificationButton value);
+
+        // Constructs a WindowsAppSDK AppNotification object with the XML payload
+        //AppNotification BuildNotification();
+
+        // AppNotification properties
+        //AppNotificationBuilder SetTag(String value);
+        //AppNotificationBuilder SetGroup(String group);
 
         // Retrieves the notification XML content so that it can be used with a local
         // AppNotification constructor.

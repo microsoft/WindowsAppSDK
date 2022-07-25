@@ -113,22 +113,6 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationBuilderSetLongDuration)
-        {
-            auto builder{ AppNotificationBuilder().SetDuration(AppNotificationDuration::Long) };
-            auto expected{ LR"(<toast duration="long"><visual><binding template="ToastGeneric"></binding></visual></toast>)" };
-
-            VERIFY_ARE_EQUAL(builder.GetXml(), expected);
-        }
-
-        TEST_METHOD(AppNotificationBuilderSetDefaultDuration)
-        {
-            auto builder{ AppNotificationBuilder().SetDuration(AppNotificationDuration::Default) };
-            auto expected{ LR"(<toast><visual><binding template="ToastGeneric"></binding></visual></toast>)" };
-
-            VERIFY_ARE_EQUAL(builder.GetXml(), expected);
-        }
-
         TEST_METHOD(AppNotificationBuilderAddText)
         {
             auto builder{ AppNotificationBuilder().AddText(L"content") };
@@ -163,7 +147,7 @@ namespace Test::AppNotification::Builder
         {
             auto builder{ AppNotificationBuilder()
                             .AddText(L"content", AppNotificationTextProperties()
-                                .UsesCallScenarioAlign())
+                                .SetIncomingCallAlignment())
             };
             auto expected{ LR"(<toast scenario="incomingCall"><visual><binding template="ToastGeneric"><text hint-callScenarioCenterAlign="true">content</text></binding></visual></toast>)" };
 
@@ -176,7 +160,7 @@ namespace Test::AppNotification::Builder
                             .AddText(L"content", AppNotificationTextProperties()
                                 .SetLanguage(L"en-US")
                                 .SetMaxLines(2)
-                                .UsesCallScenarioAlign())
+                                .SetIncomingCallAlignment())
             };
             auto expected{ LR"(<toast scenario="incomingCall"><visual><binding template="ToastGeneric"><text lang="en-US" hint-maxLines="2" hint-callScenarioCenterAlign="true">content</text></binding></visual></toast>)" };
 
@@ -307,7 +291,7 @@ namespace Test::AppNotification::Builder
                 .AddButton(AppNotificationButton(L"content")
                 .AddArgument(L"key", L"value")
                 .SetButtonStyle(AppNotificationButtonStyle::Success)
-                .SetIconUri(c_sampleUri)
+                .SetIcon(c_sampleUri)
                 .SetInputId(L"inputId")
                 .SetToolTip(L"toolTip"))
             };
