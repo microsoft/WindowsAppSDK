@@ -18,21 +18,21 @@ int sequenceId {1234};
 std::wstring pathToImage {LR"(ms-appx://images/appLogo.png)"};
 
 winrt::hstring xmlPayload{
-    L"<toast launch = \"action=AppNotificationClick;sequence=" + to_wstring(sequenceId) + L"\">\
-        <visual>\
-            <binding template = \"ToastGeneric\">\
-                <image placement = \"appLogoOverride\" hint-crop=\"circle\" src = \"" + pathToImage + L"\"/>\
-                <text>App Notification with Avatar Image</text>\
-                <text>This is an example message using XML</text>\
-            </binding>\
-        </visual>\
-        <actions>\
-            <action\
-                content = \"Open App\"\
-                arguments = \"action=OpenApp&amp;sequence=" + to_wstring(sequenceId) + L"\"/>\
-        </actions>\
-    </toast>" };
-
+    fmt::format(LR"(<toast launch = "action=AppNotificationClick;sequence={}">
+        <visual>
+            <binding template="ToastGeneric">
+                <image placement="appLogoOverride" hint-crop="circle" src="{}"/>
+                <text>App Notification with Avatar Image</text>
+                <text>This is an example message using XML</text>
+            </binding>
+        </visual>
+        <actions>
+            <action
+                content="Open App"
+                arguments="action=OpenApp&amp;sequence={}">
+        </actions>
+    </toast>)" , 
+    sequenceId, pathToImage, sequenceId)};
 auto appNotification{ winrt::AppNotification(xmlPayload) };
 winrt::AppNotificationManager::Default().Show(appNotification);
 ```
