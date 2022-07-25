@@ -15,50 +15,50 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetIconUri(winrt::Windows::Foundation::Uri const& iconUri)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetIcon(winrt::Windows::Foundation::Uri const& value)
     {
-        m_iconUri = iconUri;
+        m_iconUri = value;
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetProtocolActivation(winrt::Windows::Foundation::Uri const& protocolUri)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetToolTip(winrt::hstring const& value)
     {
-        THROW_HR_IF(E_INVALIDARG, m_arguments.Size() > 0u);
-
-        m_protocolUri = protocolUri;
+        m_toolTip = value;
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetProtocolActivation(winrt::Windows::Foundation::Uri const& protocolUri, winrt::hstring const& targetApplicationPfn)
-    {
-        THROW_HR_IF(E_INVALIDARG, m_arguments.Size() > 0u);
-
-        m_protocolUri = protocolUri;
-        m_targetApplicationPfn = targetApplicationPfn;
-        return *this;
-    }
-
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetToolTip(winrt::hstring const& toolTip)
-    {
-        m_toolTip = toolTip;
-        return *this;
-    }
-
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetInputId(winrt::hstring const& inputId)
-    {
-        m_inputId = inputId;
-        return *this;
-    }
-
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::UseContextMenuPlacement()
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetContextMenuPlacement()
     {
         m_useContextMenuPlacement = true;
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetButtonStyle(ButtonStyle const& buttonStyle)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetButtonStyle(AppNotificationButtonStyle const& value)
     {
-        m_buttonStyle = buttonStyle;
+        m_buttonStyle = value;
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetInputId(winrt::hstring const& value)
+    {
+        m_inputId = value;
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetInvokeUri(winrt::Windows::Foundation::Uri const& protocolUri)
+    {
+        THROW_HR_IF(E_INVALIDARG, m_arguments.Size() > 0u);
+
+        m_protocolUri = protocolUri;
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetInvokeUri(winrt::Windows::Foundation::Uri const& protocolUri, winrt::hstring const& targetAppId)
+    {
+        THROW_HR_IF(E_INVALIDARG, m_arguments.Size() > 0u);
+
+        m_protocolUri = protocolUri;
+        m_targetApplicationPfn = targetAppId;
         return *this;
     }
 
@@ -107,11 +107,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
             xml = xml + L" hint-inputId=\"" + m_inputId + L"\"";
         }
 
-        if (m_buttonStyle == ButtonStyle::Success)
+        if (m_buttonStyle == AppNotificationButtonStyle::Success)
         {
             xml = xml + LR"( hint-buttonStyle="Success")";
         }
-        else if (m_buttonStyle == ButtonStyle::Success)
+        else if (m_buttonStyle == AppNotificationButtonStyle::Success)
         {
             xml = xml + LR"( hint-buttonStyle="Critical")";
         }

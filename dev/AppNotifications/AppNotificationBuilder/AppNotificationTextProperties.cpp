@@ -4,21 +4,21 @@
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties AppNotificationTextProperties::SetMaxLines(int const& maxLines)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties AppNotificationTextProperties::SetLanguage(winrt::hstring const& value)
     {
-        m_maxLines = maxLines;
+        m_language = value;
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties AppNotificationTextProperties::SetLanguage(winrt::hstring const& language)
-    {
-        m_language = language;
-        return *this;
-    }
-
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties AppNotificationTextProperties::UsesCallScenarioAlign()
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties AppNotificationTextProperties::SetIncomingCallAlignment()
     {
         m_useCallScenarioAlign = true;
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties AppNotificationTextProperties::SetMaxLines(int const& value)
+    {
+        m_maxLines = value;
         return *this;
     }
 
