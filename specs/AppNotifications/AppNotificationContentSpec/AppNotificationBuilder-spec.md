@@ -878,12 +878,14 @@ AppNotificationProgressBar component APIs
 Below is an example use:
 
 ```cpp
-// Using AppNotificationBuilder, build the Xml payload with AppNotificationProgressBar.
+// Using AppNotificationBuilder, build the AppNotification with AppNotificationProgressBar as the xmlPayload.
 AppNotification notification { AppNotificationBuilder()
     .AddText(L"Downloading this week's new music...")
     .AddProgressBar(AppNotificationProgressBar()
         .BindTitle()
         .BindValueStringOverride())
+    .SetTag(L"Tag")
+    .SetGroup(L"Group")
     .BuildNotification() };
 ```
 
@@ -902,13 +904,6 @@ XML payload:
     </binding>
   </visual>
 </toast>
-```
-
-Construct an AppNotification with the string xml payload from AppNotificationBuilder
-
-```cpp
-notification.Tag(L"Tag");
-notification.Group(L"Group");
 ```
 
 Assign initial values for first notification progress UI:
@@ -1207,7 +1202,11 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationBuilder AddProgressBar(AppNotificationProgressBar value);
 
         // Constructs a WindowsAppSDK AppNotification object with the XML payload
-        AppNotification BuildAppNotification();
+        AppNotification BuildNotification();
+
+        // AppNotification properties
+        AppNotificationBuilder SetTag(String value);
+        AppNotificationBuilder SetGroup(String group);
     };
 }
 ```
