@@ -49,6 +49,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         // Adds a button to the AppNotificationContent
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationContent AddButton(AppNotificationButton const& button);
 
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationContent AddProgressBar(AppNotificationProgressBar const& value);
+
         winrt::hstring GetXml();
 
     private:
@@ -66,6 +68,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::hstring m_audio{};
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_arguments{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
         std::vector<winrt::hstring> m_inputList{};
+        AppNotificationProgressBar m_progressBar{};
     };
 }
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::factory_implementation

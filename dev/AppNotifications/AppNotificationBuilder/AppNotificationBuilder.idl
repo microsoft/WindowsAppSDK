@@ -52,6 +52,33 @@
         String GetXml();
     };
 
+    runtimeclass AppNotificationProgressBar
+    {
+        // AppNotificationProgressBar binds to AppNotificationProgressData so the AppNotification will
+        // receive every update to the status and value. In the WinAppSDK, these binding
+        // values are static, so developers won't need to define these binding values
+        // themselves.
+        AppNotificationProgressBar();
+
+        // Setting these properties will remove the data binding with a static value
+        //String Title;
+        //String Status;
+        //Double Value;
+        //String ValueStringOverride;
+
+        AppNotificationProgressBar SetTitle(String value);
+        AppNotificationProgressBar BindTitle();
+
+        AppNotificationProgressBar SetStatus(String value);
+        AppNotificationProgressBar BindStatus();
+
+        AppNotificationProgressBar SetValue(Double value);
+        AppNotificationProgressBar BindValue();
+
+        AppNotificationProgressBar SetValueStringOverride(String value);
+        AppNotificationProgressBar BindValueStringOverride();
+    };
+
     enum Scenario
     {
         Default,
@@ -157,6 +184,8 @@
         AppNotificationContent SetAudio(MSWinSoundEvent msWinSoundEvent, Duration loopDuration);
 
         AppNotificationContent MuteAudio();
+
+        AppNotificationContent AddProgressBar(AppNotificationProgressBar value);
 
         // Retrieves the notification XML content so that it can be used with a local
         // AppNotification constructor.

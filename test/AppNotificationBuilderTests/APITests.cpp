@@ -380,5 +380,19 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
+        TEST_METHOD(ProgressBar)
+        {
+            auto expected{ LR"(<toast><visual><binding template="ToastGeneric"><text>Downloading this week's new music...</text><progress title = "{progressTitle}" valueStringOverride = "{progressValueString}"/></binding></visual></toast>)" };
+
+            auto builder{ AppNotificationContent()
+                .AddText(L"Downloading this week's new music...")
+                .AddProgressBar(AppNotificationProgressBar()
+                    .BindTitle()
+                    .BindValueStringOverride())
+            };
+
+            auto x{ builder.GetXml() };
+            VERIFY_ARE_EQUAL(builder.GetXml(), expected);
+            }
     };
 }

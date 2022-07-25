@@ -2,6 +2,7 @@
 #include "AppNotificationContent.h"
 #include "ITextProperties.h"
 #include "IAppNotificationButton.h"
+#include "IAppNotificationProgressBar.h"
 #include <winrt/Windows.Globalization.h>
 #include <winrt/Windows.Globalization.DateTimeFormatting.h>
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationContent.g.cpp"
@@ -286,6 +287,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationContent AppNotificationContent::AddProgressBar(AppNotificationProgressBar const& value)
+    {
+        m_progressBar = value;
+
+        return *this;
+    }
+    
     winrt::hstring AppNotificationContent::GetXml()
     {
         winrt::hstring xmlResult{ L"<toast" };
@@ -365,6 +373,35 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         // Adds all the image components
         xmlResult = xmlResult + m_inlineImage + m_heroImage + m_appLogoOverride;
+
+        // props.as<ITextProperties>()->GetCallScenarioAlign()
+        // <progress title = "{progressTitle}" value = "{progressValue}" valueStringOverride = "{progressValueString}" status = "{progressStatus}"/>
+        auto progressBar{ m_progressBar.as<IAppNotificationProgressBar>() };
+        auto title{ progressBar->GetTitle() };
+        if (!title.empty())
+        {
+            xmlResult = xmlResult + L"<progress title = \"" + title + L"\"";
+
+            auto value{ progressBar->GetValue() };
+            if (value != 0.0)
+            {
+                xmlResult = xmlResult + L" value = \"" + std::to_wstring(value) + L"\"";
+            }
+
+            auto valueOverride{ progressBar->GetValueStringOverride() };
+            if (!valueOverride.empty())
+            {
+                xmlResult = xmlResult + L" valueStringOverride = \"" + valueOverride + L"\"";
+            }
+
+            auto status{ progressBar->GetStatus() };
+            if (!status.empty())
+            {
+                xmlResult = xmlResult + L" status = \"" + status + L"\"";
+            }
+
+            xmlResult = xmlResult + L"/>";
+        }
 
         // Close the binding/visual tags
         xmlResult = xmlResult + L"</binding></visual>";
