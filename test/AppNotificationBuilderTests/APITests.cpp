@@ -45,101 +45,85 @@ namespace Test::AppNotification::Builder
             return true;
         }
 
-        TEST_METHOD(AppNotificationContentDefault)
+        TEST_METHOD(AppNotificationBuilderDefault)
         {
-            auto builder{ AppNotificationContent() };
+            auto builder{ AppNotificationBuilder() };
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"></binding></visual></toast>)"};
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentAddOneArgument)
+        TEST_METHOD(AppNotificationBuilderAddOneArgument)
         {
-            auto builder{ AppNotificationContent().AddArgument(L"key", L"value") };
+            auto builder{ AppNotificationBuilder().AddArgument(L"key", L"value") };
             auto expected{ LR"(<toast launch="key=value"><visual><binding template="ToastGeneric"></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentAddTwoArguments)
+        TEST_METHOD(AppNotificationBuilderAddTwoArguments)
         {
-            auto builder{ AppNotificationContent().AddArgument(L"key1", L"value1").AddArgument(L"key2", L"value2") };
+            auto builder{ AppNotificationBuilder().AddArgument(L"key1", L"value1").AddArgument(L"key2", L"value2") };
             auto expected{ LR"(<toast launch="key1=value1;key2=value2"><visual><binding template="ToastGeneric"></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentAddArgumentEmptyValue)
+        TEST_METHOD(AppNotificationBuilderAddArgumentEmptyValue)
         {
-            auto builder{ AppNotificationContent().AddArgument(L"key", L"") };
+            auto builder{ AppNotificationBuilder().AddArgument(L"key", L"") };
             auto expected{ LR"(<toast launch="key"><visual><binding template="ToastGeneric"></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentAddArgumentEmptyKey)
+        TEST_METHOD(AppNotificationBuilderAddArgumentEmptyKey)
         {
-            VERIFY_THROWS_HR(AppNotificationContent().AddArgument(L"", L""), E_INVALIDARG);
+            VERIFY_THROWS_HR(AppNotificationBuilder().AddArgument(L"", L""), E_INVALIDARG);
         }
 
-        TEST_METHOD(AppNotificationContentSetReminderScenario)
+        TEST_METHOD(AppNotificationBuilderSetReminderScenario)
         {
-            auto builder{ AppNotificationContent().SetScenario(Scenario::Reminder) };
+            auto builder{ AppNotificationBuilder().SetScenario(AppNotificationScenario::Reminder) };
             auto expected{ LR"(<toast scenario="reminder"><visual><binding template="ToastGeneric"></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentSetAlarmScenario)
+        TEST_METHOD(AppNotificationBuilderSetAlarmScenario)
         {
-            auto builder{ AppNotificationContent().SetScenario(Scenario::Alarm) };
+            auto builder{ AppNotificationBuilder().SetScenario(AppNotificationScenario::Alarm) };
             auto expected{ LR"(<toast scenario="alarm"><visual><binding template="ToastGeneric"></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentSetIncomingCallScenario)
+        TEST_METHOD(AppNotificationBuilderSetIncomingCallScenario)
         {
-            auto builder{ AppNotificationContent().SetScenario(Scenario::IncomingCall) };
+            auto builder{ AppNotificationBuilder().SetScenario(AppNotificationScenario::IncomingCall) };
             auto expected{ LR"(<toast scenario="incomingCall"><visual><binding template="ToastGeneric"></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentSetUrgentScenario)
+        TEST_METHOD(AppNotificationBuilderSetUrgentScenario)
         {
-            auto builder{ AppNotificationContent().SetScenario(Scenario::Urgent) };
+            auto builder{ AppNotificationBuilder().SetScenario(AppNotificationScenario::Urgent) };
             auto expected{ LR"(<toast scenario="urgent"><visual><binding template="ToastGeneric"></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentSetLongDuration)
+        TEST_METHOD(AppNotificationBuilderAddText)
         {
-            auto builder{ AppNotificationContent().SetDuration(Duration::Long) };
-            auto expected{ LR"(<toast duration="long"><visual><binding template="ToastGeneric"></binding></visual></toast>)" };
-
-            VERIFY_ARE_EQUAL(builder.GetXml(), expected);
-        }
-
-        TEST_METHOD(AppNotificationContentSetShortDuration)
-        {
-            auto builder{ AppNotificationContent().SetDuration(Duration::Short) };
-            auto expected{ LR"(<toast duration="short"><visual><binding template="ToastGeneric"></binding></visual></toast>)" };
-
-            VERIFY_ARE_EQUAL(builder.GetXml(), expected);
-        }
-
-        TEST_METHOD(AppNotificationContentAddText)
-        {
-            auto builder{ AppNotificationContent().AddText(L"content") };
+            auto builder{ AppNotificationBuilder().AddText(L"content") };
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"><text>content</text></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentAddTextWithLanguage)
+        TEST_METHOD(AppNotificationBuilderAddTextWithLanguage)
         {
-            auto builder{ AppNotificationContent()
+            auto builder{ AppNotificationBuilder()
                             .AddText(L"content", AppNotificationTextProperties()
                                 .SetLanguage(L"en-US"))
             };
@@ -148,9 +132,9 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentAddTextWithMaxLines)
+        TEST_METHOD(AppNotificationBuilderAddTextWithMaxLines)
         {
-            auto builder{ AppNotificationContent()
+            auto builder{ AppNotificationBuilder()
                             .AddText(L"content", AppNotificationTextProperties()
                                 .SetMaxLines(2))
             };
@@ -159,106 +143,106 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentAddTextWithCallScenarioAlign)
+        TEST_METHOD(AppNotificationBuilderAddTextWithCallScenarioAlign)
         {
-            auto builder{ AppNotificationContent()
+            auto builder{ AppNotificationBuilder()
                             .AddText(L"content", AppNotificationTextProperties()
-                                .UsesCallScenarioAlign())
+                                .SetIncomingCallAlignment())
             };
             auto expected{ LR"(<toast scenario="incomingCall"><visual><binding template="ToastGeneric"><text hint-callScenarioCenterAlign="true">content</text></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentAddTextWithAllProperties)
+        TEST_METHOD(AppNotificationBuilderAddTextWithAllProperties)
         {
-            auto builder{ AppNotificationContent()
+            auto builder{ AppNotificationBuilder()
                             .AddText(L"content", AppNotificationTextProperties()
                                 .SetLanguage(L"en-US")
                                 .SetMaxLines(2)
-                                .UsesCallScenarioAlign())
+                                .SetIncomingCallAlignment())
             };
             auto expected{ LR"(<toast scenario="incomingCall"><visual><binding template="ToastGeneric"><text lang="en-US" hint-maxLines="2" hint-callScenarioCenterAlign="true">content</text></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentAddTextThrows)
+        TEST_METHOD(AppNotificationBuilderAddTextThrows)
         {
-            VERIFY_THROWS_HR(AppNotificationContent()
+            VERIFY_THROWS_HR(AppNotificationBuilder()
                 .AddText(L"content")
                 .AddText(L"content")
                 .AddText(L"content")
                 .AddText(L"content"), E_INVALIDARG);
         }
 
-        TEST_METHOD(AppNotificationContentAddAttributionText)
+        TEST_METHOD(AppNotificationBuilderAddAttributionText)
         {
-            auto builder{ AppNotificationContent().SetAttributionText(L"content") };
+            auto builder{ AppNotificationBuilder().SetAttributionText(L"content") };
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"><text placement="attribution">content</text></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentAddAttributionTextWithLanguage)
+        TEST_METHOD(AppNotificationBuilderAddAttributionTextWithLanguage)
         {
-            auto builder{ AppNotificationContent().SetAttributionText(L"content", L"en-US")};
+            auto builder{ AppNotificationBuilder().SetAttributionText(L"content", L"en-US")};
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"><text placement="attribution" lang="en-US">content</text></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentSetInlineImage)
+        TEST_METHOD(AppNotificationBuilderSetInlineImage)
         {
-            auto builder{ AppNotificationContent().SetInlineImage(c_sampleUri) };
+            auto builder{ AppNotificationBuilder().SetInlineImage(c_sampleUri) };
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"><image src="http://www.microsoft.com/"/></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentSetInlineImageWithProperties)
+        TEST_METHOD(AppNotificationBuilderSetInlineImageWithProperties)
         {
-            auto builder{ AppNotificationContent().SetInlineImage(c_sampleUri, ImageCrop::Circle, L"altText")};
+            auto builder{ AppNotificationBuilder().SetInlineImage(c_sampleUri, ImageCrop::Circle, L"altText")};
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"><image src="http://www.microsoft.com/" alt="altText" hint-crop="circle"/></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentSetAppLogoOverride)
+        TEST_METHOD(AppNotificationBuilderSetAppLogoOverride)
         {
-            auto builder{ AppNotificationContent().SetAppLogoOverride(c_sampleUri) };
+            auto builder{ AppNotificationBuilder().SetAppLogoOverride(c_sampleUri) };
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"><image placement="appLogoOverride" src="http://www.microsoft.com/"/></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentSetAppLogoOverrideProperties)
+        TEST_METHOD(AppNotificationBuilderSetAppLogoOverrideProperties)
         {
-            auto builder{ AppNotificationContent().SetAppLogoOverride(c_sampleUri, ImageCrop::Circle, L"altText") };
+            auto builder{ AppNotificationBuilder().SetAppLogoOverride(c_sampleUri, ImageCrop::Circle, L"altText") };
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"><image placement="appLogoOverride" src="http://www.microsoft.com/" alt="altText" hint-crop="circle"/></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentSetHeroImage)
+        TEST_METHOD(AppNotificationBuilderSetHeroImage)
         {
-            auto builder{ AppNotificationContent().SetHeroImage(c_sampleUri) };
+            auto builder{ AppNotificationBuilder().SetHeroImage(c_sampleUri) };
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"><image placement="hero" src="http://www.microsoft.com/"/></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentSetHeroImageWithAlt)
+        TEST_METHOD(AppNotificationBuilderSetHeroImageWithAlt)
         {
-            auto builder{ AppNotificationContent().SetHeroImage(c_sampleUri, L"altText") };
+            auto builder{ AppNotificationBuilder().SetHeroImage(c_sampleUri, L"altText") };
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"><image placement="hero" src="http://www.microsoft.com/" alt="altText"/></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentAddButton)
+        TEST_METHOD(AppNotificationBuilderAddButton)
         {
-            auto builder{ AppNotificationContent()
+            auto builder{ AppNotificationBuilder()
                 .AddButton(AppNotificationButton(L"content")
                 .AddArgument(L"key", L"value"))
             };
@@ -267,21 +251,21 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentAddButtonWithPlacement)
+        TEST_METHOD(AppNotificationBuilderAddButtonWithPlacement)
         {
-            auto builder{ AppNotificationContent()
+            auto builder{ AppNotificationBuilder()
                 .AddButton(AppNotificationButton(L"content")
                 .AddArgument(L"key", L"value")
-                .UseContextMenuPlacement())
+                .SetContextMenuPlacement())
             };
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"></binding></visual><actions><action content="content" arguments="key=value" placement="contextMenu"/></actions></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentTooManyButtons)
+        TEST_METHOD(AppNotificationBuilderTooManyButtons)
         {
-            VERIFY_THROWS_HR(AppNotificationContent()
+            VERIFY_THROWS_HR(AppNotificationBuilder()
                 .AddButton(AppNotificationButton(L"content").AddArgument(L"key1", L"value1"))
                 .AddButton(AppNotificationButton(L"content").AddArgument(L"key2", L"value2"))
                 .AddButton(AppNotificationButton(L"content").AddArgument(L"key3", L"value3"))
@@ -292,22 +276,22 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AddButtonWithProtocolActivation)
         {
-            auto builder{ AppNotificationContent()
+            auto builder{ AppNotificationBuilder()
                 .AddButton(AppNotificationButton(L"content")
-                .SetProtocolActivation(c_sampleUri))
+                .SetInvokeUri(c_sampleUri))
             };
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"></binding></visual><actions><action content="content" arguments="http://www.microsoft.com/" activationType="protocol"/></actions></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentAddButtonWithProperties)
+        TEST_METHOD(AppNotificationBuilderAddButtonWithProperties)
         {
-            auto builder{ AppNotificationContent()
+            auto builder{ AppNotificationBuilder()
                 .AddButton(AppNotificationButton(L"content")
                 .AddArgument(L"key", L"value")
-                .SetButtonStyle(ButtonStyle::Success)
-                .SetIconUri(c_sampleUri)
+                .SetButtonStyle(AppNotificationButtonStyle::Success)
+                .SetIcon(c_sampleUri)
                 .SetInputId(L"inputId")
                 .SetToolTip(L"toolTip"))
             };
@@ -316,30 +300,30 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
         }
 
-        TEST_METHOD(AppNotificationContentAddButtonWithEmptyKey)
+        TEST_METHOD(AppNotificationBuilderAddButtonWithEmptyKey)
         {
-            VERIFY_THROWS_HR(AppNotificationContent()
+            VERIFY_THROWS_HR(AppNotificationBuilder()
                 .AddButton(AppNotificationButton(L"content")
                     .AddArgument(L"", L"value")), E_INVALIDARG);
         }
 
         TEST_METHOD(AddButtonWithArgumentAndProtocol)
         {
-            VERIFY_THROWS_HR(AppNotificationContent()
+            VERIFY_THROWS_HR(AppNotificationBuilder()
                 .AddButton(AppNotificationButton(L"content")
                     .AddArgument(L"key", L"value")
-                    .SetProtocolActivation(c_sampleUri)), E_INVALIDARG);
+                    .SetInvokeUri(c_sampleUri)), E_INVALIDARG);
 
-            VERIFY_THROWS_HR(AppNotificationContent()
+            VERIFY_THROWS_HR(AppNotificationBuilder()
                 .AddButton(AppNotificationButton(L"content")
-                    .SetProtocolActivation(c_sampleUri)
+                    .SetInvokeUri(c_sampleUri)
                     .AddArgument(L"key", L"value")), E_INVALIDARG);
         }
 
         TEST_METHOD(SetAudioWithUri)
         {
-            auto builder{ AppNotificationContent()
-                    .SetAudio(c_sampleUri) };
+            auto builder{ AppNotificationBuilder()
+                    .SetAudioUri(c_sampleUri) };
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"></binding></visual><audio src="http://www.microsoft.com/"/></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
@@ -347,8 +331,8 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(SetAudioWithUriAndDuration)
         {
-            auto builder{ AppNotificationContent()
-                    .SetAudio(c_sampleUri, Duration::Long) };
+            auto builder{ AppNotificationBuilder()
+                    .SetAudioUri(c_sampleUri, AppNotificationDuration::Long) };
             auto expected{ LR"(<toast duration="long"><visual><binding template="ToastGeneric"></binding></visual><audio src="http://www.microsoft.com/" loop="true"/></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
@@ -356,8 +340,8 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(SetAudioWithMSWinSoundEvent)
         {
-            auto builder{ AppNotificationContent()
-                    .SetAudio(MSWinSoundEvent::Reminder) };
+            auto builder{ AppNotificationBuilder()
+                    .SetAudioEvent(AppNotificationSoundEvent::Reminder) };
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"></binding></visual><audio src="ms-winsoundevent:Notification.Reminder"/></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
@@ -365,8 +349,8 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(SetAudioWithMSWinSoundEventAndDuration)
         {
-            auto builder{ AppNotificationContent()
-                    .SetAudio(MSWinSoundEvent::Reminder, Duration::Long) };
+            auto builder{ AppNotificationBuilder()
+                    .SetAudioEvent(AppNotificationSoundEvent::Reminder, AppNotificationDuration::Long) };
             auto expected{ LR"(<toast duration="long"><visual><binding template="ToastGeneric"></binding></visual><audio src="ms-winsoundevent:Notification.Reminder" loop="true"/></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
@@ -374,7 +358,7 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(MuteAudio)
         {
-            auto builder{ AppNotificationContent().MuteAudio() };
+            auto builder{ AppNotificationBuilder().MuteAudio() };
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"></binding></visual><audio silent="true"/></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.GetXml(), expected);
@@ -384,7 +368,7 @@ namespace Test::AppNotification::Builder
         {
             auto expected{ LR"(<toast><visual><binding template="ToastGeneric"><text>Downloading this week's new music...</text><progress title = "{progressTitle}" valueStringOverride = "{progressValueString}"/></binding></visual></toast>)" };
 
-            auto builder{ AppNotificationContent()
+            auto builder{ AppNotificationBuilder()
                 .AddText(L"Downloading this week's new music...")
                 .AddProgressBar(AppNotificationProgressBar()
                     .BindTitle()

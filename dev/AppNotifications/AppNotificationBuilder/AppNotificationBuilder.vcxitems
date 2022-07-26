@@ -17,13 +17,13 @@
     <Midl Include="$(MSBuildThisFileDirectory)AppNotificationBuilder.idl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationContent.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationBuilder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationButton.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationProgressBar.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationTextProperties.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationContent.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationBuilder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationButton.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationProgressBar.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationTextProperties.h" />

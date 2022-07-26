@@ -12,23 +12,23 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AddArgument(winrt::hstring const& key, winrt::hstring const& value);
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetIconUri(winrt::Windows::Foundation::Uri const& iconUri);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetIcon(winrt::Windows::Foundation::Uri const& value);
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetToolTip(winrt::hstring const& toolTip);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetToolTip(winrt::hstring const& value);
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetInputId(winrt::hstring const& inputId);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetContextMenuPlacement();
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetProtocolActivation(winrt::Windows::Foundation::Uri const& protocolUri);
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetProtocolActivation(winrt::Windows::Foundation::Uri const& protocolUri, winrt::hstring const& targetApplicationPfn);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetButtonStyle(AppNotificationButtonStyle const& value);
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton UseContextMenuPlacement();
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetInputId(winrt::hstring const& value);
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetButtonStyle(ButtonStyle const& buttonStyle);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetInvokeUri(winrt::Windows::Foundation::Uri const& protocolUri);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetInvokeUri(winrt::Windows::Foundation::Uri const& protocolUri, winrt::hstring const& targetAppId);
 
         winrt::hstring GetXml();
 
         // IAppNotificationButton
-        ButtonStyle GetButtonStyle() { return m_buttonStyle; };
+        AppNotificationButtonStyle GetButtonStyle() { return m_buttonStyle; };
 
     private:
         winrt::hstring m_content;
@@ -39,7 +39,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::hstring m_toolTip;
         winrt::hstring m_inputId;
         bool m_useContextMenuPlacement{};
-        ButtonStyle m_buttonStyle { ButtonStyle::Default };
+        AppNotificationButtonStyle m_buttonStyle { AppNotificationButtonStyle::Default };
     };
 }
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::factory_implementation
