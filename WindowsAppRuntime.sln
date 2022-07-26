@@ -352,8 +352,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppNotificationBuilder", "d
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppNotificationBuilderTests", "test\AppNotificationBuilderTests\AppNotificationBuilderTests.vcxproj", "{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.Security.AccessControl.Projection", "dev\Projections\CS\Microsoft.Windows.Security.AccessControl.Projection\Microsoft.Windows.Security.AccessControl.Projection.csproj", "{E6D59245-696F-4D13-ACF6-7ECE6E653367}"
-ndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{08bc78e0-63c6-49a7-81b3-6afc3deac4de}*SharedItemsImports = 4
