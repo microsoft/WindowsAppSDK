@@ -1,11 +1,10 @@
 ﻿#pragma once
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationProgressBar.g.h"
-#include "IAppNotificationProgressBar.h"
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
 
-    struct AppNotificationProgressBar : AppNotificationProgressBarT<AppNotificationProgressBar, IAppNotificationProgressBar>
+    struct AppNotificationProgressBar : AppNotificationProgressBarT<AppNotificationProgressBar, winrt::Windows::Foundation::IStringable>
     {
         AppNotificationProgressBar();
 
@@ -21,11 +20,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationProgressBar SetValueStringOverride(winrt::hstring const& value);
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationProgressBar BindValueStringOverride();
 
+        winrt::hstring ToString();
+
         // IAppNotificationProgressBar
-        winrt::hstring GetTitle() { return m_title; };
-        winrt::hstring GetStatus() { return m_status; };
-        double GetValue() { return m_value; };
-        winrt::hstring GetValueStringOverride() { return m_valueStringOverride; };
+        //winrt::hstring GetTitle() { return m_title; };
+        //winrt::hstring GetStatus() { return m_status; };
+        //double GetValue() { return m_value; };
+        //winrt::hstring GetValueStringOverride() { return m_valueStringOverride; };
 
     private:
         winrt::hstring m_title;

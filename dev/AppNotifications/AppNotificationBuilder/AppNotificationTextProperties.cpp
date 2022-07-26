@@ -22,7 +22,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::hstring AppNotificationTextProperties::GetXml()
+    winrt::hstring AppNotificationTextProperties::ToString()
     {
         winrt::hstring xmlResult{ L"<text"};
         if (!m_language.empty())

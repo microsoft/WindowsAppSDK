@@ -1,15 +1,19 @@
-﻿namespace Microsoft.Windows.AppNotifications.Builder
+﻿import "..\AppNotifications\AppNotifications.idl";
+
+namespace Microsoft.Windows.AppNotifications.Builder
 {
     runtimeclass AppNotificationTextProperties
     {
         // Contains the set of <text> attributes
         AppNotificationTextProperties();
 
+        String Language;
+        Boolean IncomingCallAlignment;
+        Int32 MaxLines;
+
         AppNotificationTextProperties SetLanguage(String value);
         AppNotificationTextProperties SetIncomingCallAlignment();
         AppNotificationTextProperties SetMaxLines(Int32 value);
-
-        String GetXml();
     }
 
     enum AppNotificationButtonStyle
@@ -23,6 +27,16 @@
     {
         AppNotificationButton();
         AppNotificationButton(String content);
+
+        String Content;
+        Windows.Foundation.Collections.IMap<String, String> Arguments;
+        Windows.Foundation.Uri Icon;
+        String ToolTip;
+        Boolean ContextMenuPlacement;
+        AppNotificationButtonStyle ButtonStyle;
+        String InputId;
+        Windows.Foundation.Uri InvokeUri;
+        String TargetAppId;
 
         AppNotificationButton AddArgument(String key, String value);
 
@@ -44,9 +58,6 @@
         // Launches the URI passed into the button when activated.
         AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri);
         AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri, String targetAppId);
-
-        // Retrieves the XML content of the button.
-        String GetXml();
     };
 
     runtimeclass AppNotificationProgressBar
@@ -120,7 +131,7 @@
         Long, // AppNotification stays on-screen for longer, and then goes into Notification Center.
     };
 
-    enum ImageCrop
+    enum AppNotificationImageCrop
     {
         Default, // Uses the default renderer to display the image
         Circle, // Crops the image as a circle.
@@ -148,13 +159,13 @@
 
         // Sets the full-width inline-image that appears when you expand the AppNotification
         AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri);
-        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, ImageCrop imageCrop);
-        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, ImageCrop imagecrop, String alternateText);
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imagecrop, String alternateText);
 
         // Sets the image that replaces the app logo
         AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri);
-        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, ImageCrop imageCrop);
-        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, ImageCrop imageCrop, String alternateText);
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop, String alternateText);
 
         // Sets the image that displays within the banner of the AppNotification.
         AppNotificationBuilder SetHeroImage(Windows.Foundation.Uri imageUri);
@@ -172,17 +183,13 @@
         // Adds a button to the AppNotificationBuilder
         AppNotificationBuilder AddButton(AppNotificationButton value);
 
-        // Constructs a WindowsAppSDK AppNotification object with the XML payload
-        //AppNotification BuildNotification();
-
-        // AppNotification properties
-        //AppNotificationBuilder SetTag(String value);
-        //AppNotificationBuilder SetGroup(String group);
-
         AppNotificationBuilder AddProgressBar(AppNotificationProgressBar value);
 
-        // Retrieves the notification XML content so that it can be used with a local
-        // AppNotification constructor.
-        String GetXml();
+        // AppNotification properties
+        AppNotificationBuilder SetTag(String value);
+        AppNotificationBuilder SetGroup(String group);
+
+        // Constructs a WindowsAppSDK AppNotification object with the XML payload
+        Microsoft.Windows.AppNotifications.AppNotification BuildNotification();
     };
 }

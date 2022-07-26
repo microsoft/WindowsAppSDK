@@ -27,8 +27,5 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationButton.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationProgressBar.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationTextProperties.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)IAppNotificationButton.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)IAppNotificationProgressBar.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ITextProperties.h" />
   </ItemGroup>
 </Project>

@@ -61,4 +61,35 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         return *this;
     }
+
+    winrt::hstring AppNotificationProgressBar::ToString()
+    {
+        winrt::hstring xml{ L"" };
+
+        // props.as<ITextProperties>()->GetCallScenarioAlign()
+        // <progress title = "{progressTitle}" value = "{progressValue}" valueStringOverride = "{progressValueString}" status = "{progressStatus}"/>
+        if (!m_title.empty())
+        {
+            xml = xml + L"<progress title = \"" + m_title + L"\"";
+
+            if (m_value != 0.0)
+            {
+                xml = xml + L" value = \"" + std::to_wstring(m_value) + L"\"";
+            }
+
+            if (!m_valueStringOverride.empty())
+            {
+                xml = xml + L" valueStringOverride = \"" + m_valueStringOverride + L"\"";
+            }
+
+            if (!m_status.empty())
+            {
+                xml = xml + L" status = \"" + xml + L"\"";
+            }
+
+            xml = xml + L"/>";
+        }
+
+        return xml;
+    }
 }
