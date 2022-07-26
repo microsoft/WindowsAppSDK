@@ -202,7 +202,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
             std::wstring eventName = name + c_activatedEventNameSuffix;
             wil::unique_event cleanupEvent;
-            if (cleanupEvent.try_open(eventName.c_str()))
+            cleanupEvent.open(eventName.c_str());
+            if (cleanupEvent)
             {
                 // If the event is missing, it means the waiter gave up.  Ignore the error.
                 cleanupEvent.SetEvent();

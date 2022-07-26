@@ -167,8 +167,7 @@ void WriteHIconToPngFile(wil::unique_hicon const& hIcon, _In_ PCWSTR pszFileName
     THROW_IF_FAILED(spStreamOut->Commit(STGC_DANGEROUSLYCOMMITMERELYTODISKCACHE));
 }
 
-
-bool Microsoft::Windows::AppNotifications::ShellLocalization::IsIconFileExtensionSupported(std::filesystem::path const& iconFilePath)
+bool IsIconFileExtensionSupported(std::filesystem::path const& iconFilePath)
 {
     static PCWSTR c_supportedExtensions[]{ L".bmp", L".ico", L".jpg", L".png" };
 
@@ -259,7 +258,10 @@ HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::DeleteIconFromC
     std::path iconFilePath{ RetrieveLocalFolderPath() / (notificationAppId + c_pngExtension) };
 
     // If DeleteFile returned FALSE, then deletion failed and we should return the corresponding error code.
-    RETURN_IF_WIN32_BOOL_FALSE(DeleteFileW(iconFilePath.c_str()));
+    if (DeleteFile(iconFilePath.c_str()) == FALSE)
+    {
+        THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
+    }
 
     return S_OK;
 }

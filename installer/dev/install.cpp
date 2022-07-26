@@ -62,11 +62,6 @@ namespace WindowsAppRuntimeInstaller
                 RETURN_IF_FAILED(RegisterPackage(packageProperties->fullName.get()));
                 return S_OK;
             }
-            else if (hrAddPackage == ERROR_INSTALL_PACKAGE_DOWNGRADE)
-            {
-                // Higher version of the package already exists so we're good! Nothing to do!
-                return S_OK;
-            }
             else
             {
                 const auto deploymentResult{ deploymentOperation.GetResults() };

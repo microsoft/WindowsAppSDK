@@ -583,40 +583,5 @@ namespace Test::ToastNotifications
         {
             RunTestUnpackaged(L"VerifyIconPathExists_Unpackaged", testWaitTime());
         }
-
-        TEST_METHOD(VerifyRegisterWithNullDisplayNameFail_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyRegisterWithNullDisplayNameFail_Unpackaged", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyRegisterWithNullIconFail_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyRegisterWithNullIconFail_Unpackaged", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyRegisterWithNullDisplayNameAndNullIconFail_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyRegisterWithNullDisplayNameAndNullIconFail_Unpackaged", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyShowToastWithCustomDisplayNameAndIcon_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyShowToastWithCustomDisplayNameAndIcon_Unpackaged", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyRegisterWithDisplayNameAndInvalidIconPathFail_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyRegisterWithDisplayNameAndInvalidIconPathFail_Unpackaged", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyRegisterWithEmptyDisplayNameFail_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyRegisterWithEmptyDisplayNameFail_Unpackaged", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyRegisterWithAssetsFail)
-        {
-            RunTest(L"VerifyRegisterWithAssetsFail", testWaitTime());
-        }
     };
 }

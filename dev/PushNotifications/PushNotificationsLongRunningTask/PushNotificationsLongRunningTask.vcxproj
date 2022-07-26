@@ -197,7 +197,7 @@
     <Import Project="..\..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('..\..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets')" />
     <Import Project="..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
     <Import Project="..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
-    <Import Project="..\..\..\packages\Microsoft.FrameworkUdk.1.0.5-CI-25099.1001.220418-1000.0\build\native\Microsoft.FrameworkUdk.targets" Condition="Exists('..\..\..\packages\Microsoft.FrameworkUdk.1.0.5-CI-25099.1001.220418-1000.0\build\native\Microsoft.FrameworkUdk.targets')" />
+    <Import Project="..\..\..\packages\Microsoft.FrameworkUdk.1.1.2-CI-25087.1001.220410-1342.0\build\native\Microsoft.FrameworkUdk.targets" Condition="Exists('..\..\..\packages\Microsoft.FrameworkUdk.1.1.2-CI-25087.1001.220410-1342.0\build\native\Microsoft.FrameworkUdk.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -212,6 +212,6 @@
     <Error Condition="!Exists('..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
     <Error Condition="!Exists('..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
-    <Error Condition="!Exists('..\..\..\packages\Microsoft.FrameworkUdk.1.0.5-CI-25099.1001.220418-1000.0\build\native\Microsoft.FrameworkUdk.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.FrameworkUdk.1.0.5-CI-25099.1001.220418-1000.0\build\native\Microsoft.FrameworkUdk.targets'))" />
+    <Error Condition="!Exists('..\..\..\packages\Microsoft.FrameworkUdk.1.1.2-CI-25087.1001.220410-1342.0\build\native\Microsoft.FrameworkUdk.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.FrameworkUdk.1.1.2-CI-25087.1001.220410-1342.0\build\native\Microsoft.FrameworkUdk.targets'))" />
   </Target>
 </Project>
