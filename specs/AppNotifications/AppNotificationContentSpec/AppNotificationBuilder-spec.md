@@ -46,13 +46,13 @@ developer.
 ```c++
 AppNotificationBuilder()
     .AddArgument(L"AppNotificationClick")
-    .AddArgument(L"sequence", sequenceId)
+    .AddArgument(L"sequence", winrt::to_hstring(sequenceId))
     .SetAppLogoOverride(winrt::Windows::Foundation::Uri(pathToImage), AppNotificationImageCrop::Circle)
     .AddText(L"App Notification with Avatar Image")
     .AddText(L"This is an example message")
     .AddButton(AppNotificationButton(L"Open App")
-        .AddArgument(L"action", "OpenAppButton")
-        .AddArgument(L"sequence", sequenceId));
+        .AddArgument(L"action", L"OpenAppButton")
+        .AddArgument(L"sequence", winrt::to_hstring(sequenceId)));
 ```
 
 # API Components
@@ -113,16 +113,16 @@ AppNotificationBuilder code:
 ```cpp
 AppNotificationBuilder()
     .AddArgument(L"action", L"openThread")
-    .AddArgument(L"threadId", 92187)
+    .AddArgument(L"threadId", L"92187")
     .SetTimeStamp(DateTime.now())
     .AddText(L"Jill Bender", AppNotificationTextProperties().SetMaxLines(1))
     .AddText(L"Checkout where we camped last weekend")
-    .SetAppLogoOverride(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/appLogo.png)", AppNotificationImageCrop::Circle)
+    .SetAppLogoOverride(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/appLogo.png)"), AppNotificationImageCrop::Circle)
     .SetHeroImage(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/heroImage.png)"))
     .AddTextBox(L"textBox", L"reply")
     .AddButton(AppNotificationButton()
         .AddArgument(L"action", L"reply")
-        .AddArgument(L"threadId", 92187)
+        .AddArgument(L"threadId", L"92187")
         .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/Icon.png)"))
         .SetInputId(L"textBox"))
     .BuildNotification();
@@ -219,7 +219,7 @@ AppNotificationBuilder()
         .SetIncomingCallAlignment())
     .AddText(L"Andrew Barnes", AppNotificationTextProperties()
         .SetIncomingCallAlignment())
-    .AddInlineImage(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/inlineImage.png)"), AppNotificationImageCrop::Circle)
+    .SetInlineImage(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/inlineImage.png)"), AppNotificationImageCrop::Circle)
     .AddButton(AppNotificationButton()
         .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/icon.png)"))
         .SetButtonStyle(AppNotificationButtonStyle::Success)
@@ -331,7 +331,7 @@ AppNotificationBuilder()
         .SetIncomingCallAlignment())
     .AddText(L"Andrew Barnes", AppNotificationTextProperties()
         .SetIncomingCallAlignment())
-    .AddInlineImage(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/inlineImage.png)"), AppNotificationImageCrop::Circle)
+    .SetInlineImage(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/inlineImage.png)"), AppNotificationImageCrop::Circle)
     .AddButton(AppNotificationButton()
         .AddArgument(L"videoCall", L"938465")
         .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/videoCall.png)"))
@@ -564,7 +564,7 @@ AppNotificationBuilder code:
 
 ```cpp
 AppNotificationBuilder()
-    .AddText(L"Above is a Hero image"))
+    .AddText(L"Above is a Hero image")
     .SetHeroImage(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/heroImage.png)"))
     .BuildNotification();
 ```
@@ -663,7 +663,7 @@ Below are some example usages:
 ```cpp
 AppNotificationBuilder()
     .SetAudioEvent(AppNotificationSoundEvent::Reminder)
-    BuildNotification();
+    .BuildNotification();
 ```
 
 XML payload:
@@ -958,10 +958,10 @@ Below is an example with AppNotificationBuilder and Button:
 ```cpp
 AppNotificationBuilder()
     .AddArgument(L"action", L"appNotificationBodyTouch")
-    .AddArgument(L"user", 938163)
+    .AddArgument(L"user", L"938163")
     .AddButton(AppNotificationButton(L"Send")
         .AddArgument(L"action", L"buttonTouch")
-        .AddArgument(L"user", 938163));
+        .AddArgument(L"user", L"938163"));
 ```
 
 When the user clicks on the AppNotification body, the resulting argument string is:
