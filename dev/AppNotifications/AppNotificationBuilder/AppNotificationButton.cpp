@@ -62,10 +62,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::hstring AppNotificationButton::GetXml()
+    winrt::hstring AppNotificationButton::ToString()
     {
         winrt::hstring xml{ L"<action content=\"" + m_content + L"\" arguments=\""};
-
 
         if (m_protocolUri)
         {

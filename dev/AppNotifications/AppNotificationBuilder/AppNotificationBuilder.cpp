@@ -1,10 +1,9 @@
 ﻿#include "pch.h"
 #include "AppNotificationBuilder.h"
-#include "ITextProperties.h"
-#include "IAppNotificationButton.h"
 #include <winrt/Windows.Globalization.h>
 #include <winrt/Windows.Globalization.DateTimeFormatting.h>
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder.g.cpp"
+#include <fmt/core.h>
 
 using namespace winrt::Windows::Globalization;
 using namespace winrt::Windows::Globalization::DateTimeFormatting;
@@ -83,9 +82,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         THROW_HR_IF(E_INVALIDARG, m_textLines.size() == 3u);
 
-        m_textLines.push_back(properties.GetXml() + text + L"</text>");
+        m_textLines.push_back(properties.as<winrt::Windows::Foundation::IStringable>().ToString() + text + L"</text>");
 
-        if (properties.as<ITextProperties>()->GetCallScenarioAlign())
+        if (properties.IncomingCallAlignment())
         {
             m_scenario = AppNotificationScenario::IncomingCall;
         }
@@ -120,12 +119,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, ImageCrop const& imageCrop)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop)
     {
         THROW_HR_IF(E_INVALIDARG, !m_inlineImage.empty());
 
         m_inlineImage = { L"<image src=\"" + imageUri.ToString() + L"\""};
-        if (imageCrop == ImageCrop::Circle)
+        if (imageCrop == AppNotificationImageCrop::Circle)
         {
             m_inlineImage = m_inlineImage + L" hint-crop=\"circle\"";
         }
@@ -134,12 +133,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, ImageCrop const& imageCrop, winrt::hstring const& alternateText)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop, winrt::hstring const& alternateText)
     {
         THROW_HR_IF(E_INVALIDARG, !m_inlineImage.empty());
 
         m_inlineImage = L"<image src=\"" + imageUri.ToString() + L"\" alt=\"" + alternateText + L"\"";
-        if (imageCrop == ImageCrop::Circle)
+        if (imageCrop == AppNotificationImageCrop::Circle)
         {
             m_inlineImage = m_inlineImage + L" hint-crop=\"circle\"";
         }
@@ -157,12 +156,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri, ImageCrop const& imageCrop)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop)
     {
         THROW_HR_IF(E_INVALIDARG, !m_appLogoOverride.empty());
 
         m_appLogoOverride = L"<image placement=\"appLogoOverride\" src=\"" + imageUri.ToString() + L"\"";
-        if (imageCrop == ImageCrop::Circle)
+        if (imageCrop == AppNotificationImageCrop::Circle)
         {
             m_appLogoOverride = m_appLogoOverride + L" hint-crop=\"circle\"";
         }
@@ -171,12 +170,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri, ImageCrop const& imageCrop, winrt::hstring const& alternateText)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop, winrt::hstring const& alternateText)
     {
         THROW_HR_IF(E_INVALIDARG, !m_appLogoOverride.empty());
 
         m_appLogoOverride = L"<image placement=\"appLogoOverride\" src=\"" + imageUri.ToString() + L"\" alt=\"" + alternateText + L"\"";
-        if (imageCrop == ImageCrop::Circle)
+        if (imageCrop == AppNotificationImageCrop::Circle)
         {
             m_appLogoOverride = m_appLogoOverride + L" hint-crop=\"circle\"";
         }
@@ -254,13 +253,25 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         THROW_HR_IF(E_INVALIDARG, m_inputList.size() == 5u);
 
-        m_inputList.push_back(value.GetXml());
-        m_useButtonStyle = value.as<IAppNotificationButton>()->GetButtonStyle() != AppNotificationButtonStyle::Default;
+        m_inputList.push_back(value.as<winrt::Windows::Foundation::IStringable>().ToString());
+        m_useButtonStyle = value.ButtonStyle() != AppNotificationButtonStyle::Default;
 
         return *this;
     }
 
-    winrt::hstring AppNotificationBuilder::GetXml()
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetTag(winrt::hstring const& value)
+    {
+        m_tag = value;
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetGroup(winrt::hstring const& value)
+    {
+        m_group = value;
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::AppNotification AppNotificationBuilder::BuildNotification()
     {
         winrt::hstring xmlResult{ L"<toast" };
 
@@ -349,7 +360,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
             }
             xmlResult = xmlResult + L"</actions>";
         }
+
+        xmlResult = xmlResult + L"</toast>";
+
+        winrt::Microsoft::Windows::AppNotifications::AppNotification appNotification{ xmlResult };
+        appNotification.Tag(m_tag);
+        appNotification.Group(m_group);
         
-        return xmlResult + L"</toast>";
+        return appNotification;
     }
 }

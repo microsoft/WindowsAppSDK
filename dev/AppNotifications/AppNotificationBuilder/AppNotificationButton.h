@@ -1,15 +1,43 @@
 ﻿#pragma once
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationButton.g.h"
-#include "IAppNotificationButton.h"
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
 
-    struct AppNotificationButton : AppNotificationButtonT<AppNotificationButton, IAppNotificationButton>
+    struct AppNotificationButton : AppNotificationButtonT<AppNotificationButton, winrt::Windows::Foundation::IStringable>
     {
         AppNotificationButton() = default;
         AppNotificationButton(winrt::hstring const& content);
 
+        // Properties
+        void Content(winrt::hstring const& value) { m_content = value; };
+        winrt::hstring Content() { return m_content; };
+
+        void Arguments(winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& value) { m_arguments = value; };
+        winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> Arguments() { return m_arguments; };
+
+        void Icon(winrt::Windows::Foundation::Uri const& value) { m_iconUri = value; };
+        winrt::Windows::Foundation::Uri Icon() { return m_iconUri; };
+
+        void ToolTip(winrt::hstring const& value) { m_toolTip = value; };
+        winrt::hstring ToolTip() { return m_toolTip; };
+
+        void ContextMenuPlacement(bool const& value) { m_useContextMenuPlacement = value; };
+        bool ContextMenuPlacement() { return m_useContextMenuPlacement; };
+
+        void ButtonStyle(AppNotificationButtonStyle const& value) { m_buttonStyle = value; };
+        AppNotificationButtonStyle ButtonStyle() { return m_buttonStyle; };
+
+        void InputId(winrt::hstring const& value) { m_inputId = value; };
+        winrt::hstring InputId() { return m_inputId; };
+
+        void InvokeUri(winrt::Windows::Foundation::Uri const& value) { m_protocolUri = value; };
+        winrt::Windows::Foundation::Uri InvokeUri() { return m_protocolUri; };
+
+        void TargetAppId(winrt::hstring const& value) { m_targetApplicationPfn = value; };
+        winrt::hstring TargetAppId() { return m_targetApplicationPfn; };
+
+        // Fluent setters
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AddArgument(winrt::hstring const& key, winrt::hstring const& value);
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetIcon(winrt::Windows::Foundation::Uri const& value);
@@ -25,7 +53,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetInvokeUri(winrt::Windows::Foundation::Uri const& protocolUri);
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetInvokeUri(winrt::Windows::Foundation::Uri const& protocolUri, winrt::hstring const& targetAppId);
 
-        winrt::hstring GetXml();
+        winrt::hstring ToString();
 
         // IAppNotificationButton
         AppNotificationButtonStyle GetButtonStyle() { return m_buttonStyle; };
