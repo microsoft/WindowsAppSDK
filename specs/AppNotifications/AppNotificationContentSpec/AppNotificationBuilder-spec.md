@@ -47,7 +47,7 @@ developer.
 AppNotificationBuilder()
     .AddArgument(L"AppNotificationClick")
     .AddArgument(L"sequence", sequenceId)
-    .SetAppLogoOverride(winrt::Windows::Foundation::Uri(pathToImage), ImageCrop::Circle)
+    .SetAppLogoOverride(winrt::Windows::Foundation::Uri(pathToImage), AppNotificationImageCrop::Circle)
     .AddText(L"App Notification with Avatar Image")
     .AddText(L"This is an example message")
     .AddButton(AppNotificationButton(L"Open App")
@@ -117,7 +117,7 @@ AppNotificationBuilder()
     .SetTimeStamp(DateTime.now())
     .AddText(L"Jill Bender", AppNotificationTextProperties().SetMaxLines(1))
     .AddText(L"Checkout where we camped last weekend")
-    .SetAppLogoOverride(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/appLogo.png)", ImageCrop::Circle)
+    .SetAppLogoOverride(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/appLogo.png)", AppNotificationImageCrop::Circle)
     .SetHeroImage(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/heroImage.png)"))
     .AddTextBox(L"textBox", L"reply")
     .AddButton(AppNotificationButton()
@@ -219,7 +219,7 @@ AppNotificationBuilder()
         .SetIncomingCallAlignment())
     .AddText(L"Andrew Barnes", AppNotificationTextProperties()
         .SetIncomingCallAlignment())
-    .AddInlineImage(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/inlineImage.png)"), ImageCrop::Circle)
+    .AddInlineImage(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/inlineImage.png)"), AppNotificationImageCrop::Circle)
     .AddButton(AppNotificationButton()
         .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/icon.png)"))
         .SetButtonStyle(AppNotificationButtonStyle::Success)
@@ -331,7 +331,7 @@ AppNotificationBuilder()
         .SetIncomingCallAlignment())
     .AddText(L"Andrew Barnes", AppNotificationTextProperties()
         .SetIncomingCallAlignment())
-    .AddInlineImage(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/inlineImage.png)"), ImageCrop::Circle)
+    .AddInlineImage(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/inlineImage.png)"), AppNotificationImageCrop::Circle)
     .AddButton(AppNotificationButton()
         .AddArgument(L"videoCall", L"938465")
         .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/videoCall.png)"))
@@ -594,7 +594,7 @@ AppNotificationBuilder code:
 ```cpp
 AppNotificationBuilder()
     .AddText(L"To the left is a cropped AppLogoOverride")
-    .SetAppLogoOverride(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/appLogo.png)"), ImageCrop::Circle);
+    .SetAppLogoOverride(winrt::Windows::Foundation::Uri(LR"(ms-appx://images/appLogo.png)"), AppNotificationImageCrop::Circle);
 ```
 
 XML payload:
@@ -1152,7 +1152,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Long, // AppNotification stays on-screen for longer, and then goes into Notification Center.
     };
 
-    enum ImageCrop
+    enum AppNotificationImageCrop
     {
         Default, // Uses the default renderer to display the image
         Circle, // Crops the image as a circle.
@@ -1180,13 +1180,13 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Sets the full-width inline-image that appears when you expand the AppNotification
         AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri);
-        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, ImageCrop imageCrop);
-        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, ImageCrop imagecrop, String alternateText);
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imagecrop, String alternateText);
 
         // Sets the image that replaces the app logo
         AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri);
         AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, String alternateText);
-        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, ImageCrop imageCrop, String alternateText);
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop, String alternateText);
 
         // Sets the image that displays within the banner of the AppNotification.
         AppNotificationBuilder SetHeroImage(Windows.Foundation.Uri imageUri);
