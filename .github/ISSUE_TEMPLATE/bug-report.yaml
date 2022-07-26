@@ -40,7 +40,7 @@ body:
         - "1.0.4"
         - "1.0.0-preview3"
         - "1.0.0-experimental1"
-        - "0.8.10"
+        - "0.8.11"
         - "0.5"
   - type: dropdown
     attributes:
