@@ -1,0 +1,41 @@
+# This job is expected to run in parallel with the build task.
+
+jobs:
+- job: SDLSourcesScanning
+  pool: 
+    name: $(buildPool)
+  steps:
+  # Required by the Packaged ES SDL Templates.
+  - checkout: self
+    persistCredentials: true
+
+  - task: NodeTool@0
+    displayName: 'Use Node >=8.6.0'
+    inputs:
+      versionSpec: '>=8.6.0'
+
+  - template: v2/Steps/PackageES/Windows.SDL.Sources.Analysis.OS.Undocked.yml@templates_onebranch
+    parameters:
+      globalsdl:
+        tsa:
+          # Not filing bugs for issues found by the scans just yet.
+          #enabled: true    
+          enabled: false    
+        codeql:
+          tsandjs:
+            enabled: true
+            break: true
+          python:
+            enabled: true
+            break: true
+          psscriptanalyzer:
+            enable: true
+            break: true
+          credscan:
+            enable: true
+            break: true
+          policheck:       
+            # ToDo: Once pre-existing issues have been resolved, set break to true.
+            enable: true
+            break: false
+
