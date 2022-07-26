@@ -40,12 +40,27 @@ jobs:
 # This relatively low-cost job is always run, in parallel w/ the Build job.
 - template: AzurePipelinesTemplates\WindowsAppSDK-SourceAnalysis-job.yml
 
-- job: Build
+- job: VerifyCopyrightHeaders
   dependsOn: []
+  pool: $(ProjectReunionBuildPool)
+  steps:
+  - task: powershell@2
+    displayName: 'Verify copyright headers'
+    inputs:
+      targetType: filePath
+      filePath: tools\VerifyCopyrightHeaders.ps1
+
+- job: Build
+  dependsOn:
+    - VerifyCopyrightHeaders
   # Skip the build job if we are reusing the output of a previous build.
   # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
-  condition:
-    eq(variables['useBuildOutputFromBuildId'],'')
+  condition: |
+    and
+    (
+      eq(variables['useBuildOutputFromBuildId'],''),
+      in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
+    )
   pool: $(ProjectReunionBuildPool)
   timeoutInMinutes: 120
   strategy:
@@ -120,8 +135,14 @@ jobs:
 - job: BuildAnyCPU
   # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
   # Can be expanded to add any other binary as needed
-  condition:
-    eq(variables['useBuildOutputFromBuildId'],'')
+  dependsOn:
+    - VerifyCopyrightHeaders
+  condition: |
+    and
+    (
+      eq(variables['useBuildOutputFromBuildId'],''),
+      in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
+    )
   pool: $(ProjectReunionBuildPool)
   timeoutInMinutes: 120
   variables:
@@ -202,6 +223,9 @@ jobs:
 
 - job: BuildMRT
   pool: $(ProjectReunionBuildPool)
+  dependsOn:
+    - VerifyCopyrightHeaders
+  condition: in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
   strategy:
     maxParallel: 10
     matrix:

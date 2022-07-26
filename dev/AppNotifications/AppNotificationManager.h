@@ -1,4 +1,7 @@
-﻿#pragma once
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#pragma once
 #include "Microsoft.Windows.AppNotifications.AppNotificationManager.g.h"
 #include "NotificationActivationCallback.h"
 #include "AppNotificationUtility.h"
@@ -20,6 +23,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         static winrt::Microsoft::Windows::AppNotifications::AppNotificationManager Default();
         static winrt::Windows::Foundation::IInspectable AppNotificationDeserialize(winrt::Windows::Foundation::Uri const& uri);
         void Register();
+        void Register(hstring const& displayName, winrt::Windows::Foundation::Uri const& iconUri);
         void Unregister();
         void UnregisterAll();
         static bool IsSupported();
