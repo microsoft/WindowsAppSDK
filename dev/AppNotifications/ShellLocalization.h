@@ -22,4 +22,6 @@ namespace Microsoft::Windows::AppNotifications::ShellLocalization
     HRESULT RetrieveAssetsFromShortcut(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& assets) noexcept;
 
     HRESULT DeleteIconFromCache() noexcept;
+
+    bool IsIconFileExtensionSupported(std::filesystem::path const& iconFilePath);
 }
