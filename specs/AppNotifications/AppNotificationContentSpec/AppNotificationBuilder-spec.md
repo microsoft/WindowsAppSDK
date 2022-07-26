@@ -1006,7 +1006,6 @@ namespace Microsoft.Windows.AppNotifications.Builder
 {
     runtimeclass AppNotificationTextProperties
     {
-        // Contains the set of <text> attributes
         AppNotificationTextProperties();
 
         String Language;
@@ -1042,16 +1041,12 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         AppNotificationButton AddArgument(String key, String value);
 
-        // Sets the Icon for the button.
         AppNotificationButton SetIcon(Windows.Foundation.Uri value);
 
-        // The tooltip for a button, if the button has an empty content string.
         AppNotificationButton SetToolTip(String value);
 
-        // Sets the Button as context menu action.
         AppNotificationButton SetContextMenuPlacement();
 
-        // Sets the AppNotificationButtonStyle to Success or Critical
         AppNotificationButton SetButtonStyle(AppNotificationButtonStyle value);
 
         // Specifies the ID of an existing TextBox next to which the button will be placed.
@@ -1168,31 +1163,25 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // Sets the timeStamp of the AppNotification to when it was constructed instead of when it was sent.
         AppNotificationBuilder SetTimeStamp(Windows.Foundation.DateTime value);
 
-        // Sets the scenario of the AppNotification.
         AppNotificationBuilder SetScenario(AppNotificationScenario value);
 
-        // Adds text to the AppNotification.
         AppNotificationBuilder AddText(String text);
         AppNotificationBuilder AddText(String text, AppNotificationTextProperties properties);
 
         AppNotificationBuilder SetAttributionText(String text);
         AppNotificationBuilder SetAttributionText(String text, String language);
 
-        // Sets the full-width inline-image that appears when you expand the AppNotification
         AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri);
         AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
         AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imagecrop, String alternateText);
 
-        // Sets the image that replaces the app logo
         AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri);
         AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, String alternateText);
         AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop, String alternateText);
 
-        // Sets the image that displays within the banner of the AppNotification.
         AppNotificationBuilder SetHeroImage(Windows.Foundation.Uri imageUri);
         AppNotificationBuilder SetHeroImage(Windows.Foundation.Uri imageUri, String alternateText);
 
-        // SetAudio
         AppNotificationBuilder SetAudioUri(Windows.Foundation.Uri audioUri);
         AppNotificationBuilder SetAudioUri(Windows.Foundation.Uri audioUri, AppNotificationDuration duration);
 
@@ -1201,14 +1190,11 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         AppNotificationBuilder MuteAudio();
 
-        // Add an input textbox to retrieve user input.
         AppNotificationBuilder AddTextBox(String id);
         AppNotificationBuilder AddTextBox(String id, String placeHolderText, String title);
 
-        // Adds a button to the AppNotificationBuilder
         AppNotificationBuilder AddButton(AppNotificationButton value);
 
-        // Add an input ComboBox to retrieve user input.
         AppNotificationBuilder AddComboBox(AppNotificationComboBox value);
 
         AppNotificationBuilder AddProgressBar(AppNotificationProgressBar value);
