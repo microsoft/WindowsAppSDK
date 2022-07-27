@@ -3,6 +3,8 @@ parameters:
   displayName: ''
   additionalMsBuildArgs: ''
   WindowsAppSDKCleanIntermediateFiles: 'true'
+  runSDLBinaryAnalysis: false
+  enablePREFast: true
 
 # Note, this template depends on these variables from parent yml:
 # $(buildConfiguration), $(buildPlatform)
@@ -25,6 +27,12 @@ steps:
     configuration: $(buildConfiguration)
     msbuildArgs: /binaryLogger:$(Build.SourcesDirectory)\${{ parameters.displayName }}.$(buildConfiguration).$(buildPlatform).binlog /restore ${{ parameters.additionalMsBuildArgs }} /p:WindowsAppSDKCleanIntermediateFiles=${{ parameters.WindowsAppSDKCleanIntermediateFiles }}
     logProjectEvents: false
+
+- ${{ if eq(parameters.runSDLBinaryAnalysis, 'true') }}:
+  - template: WindowsAppSDK-BinaryAnalysis-steps.yml
+    parameters:
+      outputDirectory: '$(Build.SourcesDirectory)\buildoutput'
+      enablePREFast: ${{ parameters.enablePREFast }}
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish ${{ parameters.displayName }} binlog'

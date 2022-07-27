@@ -2,6 +2,8 @@ name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
+- name: buildPool
+  value: '$(ProjectReunionBuildPool)'
 
 parameters:
   - name: "ReleaseSigning"
@@ -10,7 +12,7 @@ parameters:
   - name: "IgnoreFailures"
     type: boolean
     default: False
-  - name: "PublishToMaestro"
+  - name: "PublishPackage"
     type: boolean
     default: False
   - name: "WindowsAppRuntimeInsightsSourceDirectory"
@@ -19,38 +21,46 @@ parameters:
   - name: "GenerateSBOM"
     type: boolean
     default: False
+  - name: "RunSDLBinaryAnalysis"
+    displayName: "Run SDL's Binary Analysis (PREFast, BinSkim)"
+    type: boolean
+    default: False
+  - name: "enablePREFast"
+    type: boolean
+    default: true
+
+resources:
+  repositories:
+  - repository: templates_onebranch
+    type: git
+    name: OneBranch.Pipelines/GovernedTemplates
+    ref: refs/heads/main
+
 jobs:
-- job: CredScan
+# This relatively low-cost job is always run, in parallel w/ the Build job.
+- template: AzurePipelinesTemplates\WindowsAppSDK-SourceAnalysis-job.yml
+
+- job: VerifyCopyrightHeaders
+  dependsOn: []
   pool: $(ProjectReunionBuildPool)
   steps:
-  # Scans the root source folder for security vulnerability
-  - task: CredScan@2
+  - task: powershell@2
+    displayName: 'Verify copyright headers'
     inputs:
-      toolMajorVersion: 'V2'
-
-  # This PostAnalysis will fail the pipeline if CredScan identifies an issue
-  - task: PostAnalysis@1
-    inputs:
-      AllTools: false
-      APIScan: false
-      BinSkim: false
-      CodesignValidation: false
-      CredScan: true
-      FortifySCA: false
-      FxCop: false
-      ModernCop: false
-      PoliCheck: false
-      RoslynAnalyzers: false
-      SDLNativeRules: false
-      Semmle: false
-      TSLint: false
-      ToolLogsNotFoundAction: 'Standard'
+      targetType: filePath
+      filePath: tools\VerifyCopyrightHeaders.ps1
 
 - job: Build
+  dependsOn:
+    - VerifyCopyrightHeaders
   # Skip the build job if we are reusing the output of a previous build.
   # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
-  condition:
-    eq(variables['useBuildOutputFromBuildId'],'')
+  condition: |
+    and
+    (
+      eq(variables['useBuildOutputFromBuildId'],''),
+      in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
+    )
   pool: $(ProjectReunionBuildPool)
   timeoutInMinutes: 120
   strategy:
@@ -76,6 +86,10 @@ jobs:
     publishDir : $(Build.ArtifactStagingDirectory)
 
   steps:
+  # Required by the Packaged ES SDL Templates.
+  - checkout: self
+    persistCredentials: true
+
   - task: NuGetAuthenticate@0
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
@@ -108,6 +122,8 @@ jobs:
     parameters:
       channel: ${{ variables.channel }}
       enableLicenseInstall: true
+      runSDLBinaryAnalysis: ${{ parameters.RunSDLBinaryAnalysis }}
+      enablePREFast: ${{ parameters.enablePREFast }}
 
 # component detection must happen *within* the build task
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
@@ -116,36 +132,17 @@ jobs:
     parameters:
       GenerateSBOM: true
 
-  - task: BinSkim@3
-    inputs:
-      InputType: 'Basic'
-      Function: 'analyze'
-      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
-      AnalyzeVerbose: true
-
-  - task: PostAnalysis@1
-    inputs:
-      AllTools: false
-      APIScan: false
-      BinSkim: true
-      BinSkimBreakOn: 'Error'
-      CodesignValidation: false
-      CredScan: false
-      FortifySCA: false
-      FxCop: false
-      ModernCop: false
-      PoliCheck: false
-      RoslynAnalyzers: false
-      SDLNativeRules: false
-      Semmle: false
-      TSLint: false
-      ToolLogsNotFoundAction: 'Standard'
-
 - job: BuildAnyCPU
   # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
   # Can be expanded to add any other binary as needed
-  condition:
-    eq(variables['useBuildOutputFromBuildId'],'')
+  dependsOn:
+    - VerifyCopyrightHeaders
+  condition: |
+    and
+    (
+      eq(variables['useBuildOutputFromBuildId'],''),
+      in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
+    )
   pool: $(ProjectReunionBuildPool)
   timeoutInMinutes: 120
   variables:
@@ -183,6 +180,9 @@ jobs:
       publishDir: $(publishDir)
       channel: ${{ variables.channel }}
       enableLicenseInstall: true
+      runSDLBinaryAnalysis: '${{ parameters.RunSDLBinaryAnalysis }}'
+      # We are building non-native code at this point, skip PREFast.
+      enablePREFast: false
 
   - task: CopyFiles@2
     displayName: 'Copy AnyCpu-built binaries to Nuget for staging'
@@ -223,6 +223,9 @@ jobs:
 
 - job: BuildMRT
   pool: $(ProjectReunionBuildPool)
+  dependsOn:
+    - VerifyCopyrightHeaders
+  condition: in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
   strategy:
     maxParallel: 10
     matrix:
@@ -250,30 +253,8 @@ jobs:
     parameters:
       buildJobName: 'BuildMRTCore'
       GenerateSBOM: true
-
-  - task: BinSkim@3
-    inputs:
-      InputType: 'Basic'
-      Function: 'analyze'
-      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
-      AnalyzeVerbose: true
-  - task: PostAnalysis@1
-    inputs:
-      AllTools: false
-      APIScan: false
-      BinSkim: true
-      BinSkimBreakOn: 'Error'
-      CodesignValidation: false
-      CredScan: false
-      FortifySCA: false
-      FxCop: false
-      ModernCop: false
-      PoliCheck: false
-      RoslynAnalyzers: false
-      SDLNativeRules: false
-      Semmle: false
-      TSLint: false
-      ToolLogsNotFoundAction: 'Standard'
+      runSDLBinaryAnalysis: '${{ parameters.RunSDLBinaryAnalysis }}'
+      enablePREFast: ${{ parameters.enablePREFast }}
 
 - job: PublishMRT
   dependsOn:
@@ -513,18 +494,18 @@ jobs:
         itemPattern: |
           **/*.nupkg
 
-    # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
-    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-      displayName: 'NuGet push to ProjectReunion.nuget.internal'
-      inputs:
-        command: 'push'
-        packagesToPush: '$(Build.SourcesDirectory)/FullNuget/*.nupkg;!$(Build.SourcesDirectory)/FullNuget/*.symbols.nupkg'
-        verbosityPush: 'Detailed'
-        nuGetFeedType: 'internal'
-        #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
-        publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
+    - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(parameters.PublishPackage, 'true')) }}:
+      # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
+      - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+        displayName: 'NuGet push to ProjectReunion.nuget.internal'
+        inputs:
+          command: 'push'
+          packagesToPush: '$(Build.SourcesDirectory)/FullNuget/*.nupkg;!$(Build.SourcesDirectory)/FullNuget/*.symbols.nupkg'
+          verbosityPush: 'Detailed'
+          nuGetFeedType: 'internal'
+          #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
+          publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
 
-    - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(parameters.publishToMaestro, 'true')) }}:
       - template: ..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
         parameters:
           AssetNames: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
