@@ -31,7 +31,7 @@ winrt::hstring xmlPayload{
                 content="Open App"
                 arguments="action=OpenApp&amp;sequence={}">
         </actions>
-    </toast>)" , 
+    </toast>)" ,
     sequenceId, pathToImage, sequenceId)};
 auto appNotification{ winrt::AppNotification(xmlPayload) };
 winrt::AppNotificationManager::Default().Show(appNotification);
@@ -153,9 +153,10 @@ XML payload:
 
 ## Limitations
 
--   AppNotificationScenario::Urgent is only supported for to builds 19041 (20H1) and above. Using
+-   AppNotificationScenario.Urgent is only supported for to builds 19041 (20H1) and above. Using
     this attribute on lower builds will not prevent the AppNotification from being constructed, but
-    developers will receive a debug warning that the attribute is not supported.
+    developers can use AppNotificationBuilder.IsUrgentScenarioSupported to check if the feature is
+    available at runtime.
 
 # Text
 
@@ -472,7 +473,8 @@ XML payload:
 
 -   hint-toolTip and hint-buttonStyle are only supported for builds 19041 (20H1) and above. Using
     these attributes on lower builds will not prevent the AppNotification from being constructed,
-    but developers will receive a debug warning that the attributes are not supported.
+    but developers can use AppNotificationButton.IsButtonStyleSupported and
+    AppNotificationButton.IsToolTipSupported to check if the feature is available at runtime.
 
 # Image
 
@@ -1044,10 +1046,12 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationButton SetIcon(Windows.Foundation.Uri value);
 
         AppNotificationButton SetToolTip(String value);
+        static Boolean IsToolTipSupported();
 
         AppNotificationButton SetContextMenuPlacement();
 
         AppNotificationButton SetButtonStyle(AppNotificationButtonStyle value);
+        static Boolean IsButtonStyleSupported();
 
         // Specifies the ID of an existing TextBox next to which the button will be placed.
         AppNotificationButton SetInputId(String value);
@@ -1164,6 +1168,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationBuilder SetTimeStamp(Windows.Foundation.DateTime value);
 
         AppNotificationBuilder SetScenario(AppNotificationScenario value);
+        static Boolean IsUrgentScenarioSupported();
 
         AppNotificationBuilder AddText(String text);
         AppNotificationBuilder AddText(String text, AppNotificationTextProperties properties);
