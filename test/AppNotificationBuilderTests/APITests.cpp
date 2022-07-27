@@ -2,8 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
+#include <chrono>
 
+using namespace std::chrono;
 using namespace winrt::Microsoft::Windows::AppNotifications::Builder;
+using namespace WEX::Logging;
+using namespace WEX::Common;
 
 namespace Test::AppNotification::Builder
 {
@@ -62,7 +66,14 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationBuilderAddTwoArguments)
         {
+            auto start = high_resolution_clock::now();
             auto builder{ AppNotificationBuilder().AddArgument(L"key1", L"value1").AddArgument(L"key2", L"value2") };
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - start);
+
+            // To get the value of duration use the count()
+            // member function on the duration object
+            Log::Comment(winrt::to_hstring(duration.count()).c_str());
             auto expected{ LR"(<toast launch="key1=value1;key2=value2"><visual><binding template="ToastGeneric"></binding></visual></toast>)" };
 
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);

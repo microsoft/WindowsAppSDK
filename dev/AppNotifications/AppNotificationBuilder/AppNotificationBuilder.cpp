@@ -3,7 +3,7 @@
 #include <winrt/Windows.Globalization.h>
 #include <winrt/Windows.Globalization.DateTimeFormatting.h>
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder.g.cpp"
-#include <fmt/core.h>
+#include <sstream>
 
 using namespace winrt::Windows::Globalization;
 using namespace winrt::Windows::Globalization::DateTimeFormatting;
@@ -95,7 +95,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         THROW_HR_IF(E_INVALIDARG, !m_attributionText.empty());
 
-        m_attributionText = L"<text placement=\"attribution\">" + text + L"</text>";
+        m_attributionText = LR"(<text placement="attribution">)" + text + L"</text>";
 
         return *this;
     }
@@ -273,18 +273,19 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::AppNotification AppNotificationBuilder::BuildNotification()
     {
-        winrt::hstring xmlResult{ L"<toast" };
+        std::wstringstream xmlResult{};
+        xmlResult << L"<toast";
 
         // Add duration attribute if set
         if (m_duration != AppNotificationDuration::Default)
         {
-            xmlResult = xmlResult + L" duration=\"long\"";
+            xmlResult << L" duration=\"long\"";
         }
 
         // Add scenario attribute if set
         if (m_scenario != AppNotificationScenario::Default)
         {
-            winrt::hstring scenario{};
+            std::wstring scenario{};
             switch (m_scenario)
             {
             case AppNotificationScenario::Alarm:
@@ -301,69 +302,76 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
                 break;
             }
 
-            xmlResult = xmlResult + L" scenario=" + scenario;
+            xmlResult << L" scenario=" << scenario;
         }
 
         // Add launch arguments if given arguments
         if (m_arguments.Size())
         {
-            xmlResult = xmlResult + L" launch=\"";
+            xmlResult << L" launch=\"";
 
-            std::wstring arguments{};
+            std::wstringstream arguments{};
+
+            int count{ 0 };
             for (auto pair : m_arguments)
             {
-                arguments = arguments + pair.Key();
+                arguments << pair.Key().c_str();
                 if (!pair.Value().empty())
                 {
-                    arguments = arguments + L"=" + pair.Value();
+                    arguments << L"=" << pair.Value().c_str();
                 }
-                arguments = arguments + L";";
+
+                if (count != m_arguments.Size() - 1)
+                {
+                    arguments << L";";
+                }
+                count++;
             }
 
-            xmlResult = xmlResult + arguments.substr(0, arguments.size() - 1) + L"\"";
+            xmlResult << arguments.str() << L"\"";
         }
 
         // Add button style attribute to <toast> element if any button uses a ButtonStyle
         if (m_useButtonStyle)
         {
-            xmlResult = xmlResult + L" useButtonStyle=\"true\"";
+            xmlResult << L" useButtonStyle=\"true\"";
         }
 
         // Add the binding/visual elements to put UI components
-        xmlResult = xmlResult + L"><visual><binding template=\"ToastGeneric\">";
+        xmlResult << L"><visual><binding template=\"ToastGeneric\">";
 
         // Insert all the <text> elements
         for (auto text : m_textLines)
         {
-            xmlResult = xmlResult + text;
+            xmlResult << text.c_str();
         }
 
         // Add the attribution text
-        xmlResult = xmlResult + m_attributionText;
+        xmlResult << m_attributionText.c_str();
 
         // Adds all the image components
-        xmlResult = xmlResult + m_inlineImage + m_heroImage + m_appLogoOverride;
+        xmlResult << m_inlineImage.c_str() << m_heroImage.c_str() << m_appLogoOverride.c_str();
 
         // Close the binding/visual tags
-        xmlResult = xmlResult + L"</binding></visual>";
+        xmlResult << L"</binding></visual>";
 
         // Set the audio
-        xmlResult = xmlResult + m_audio;
+        xmlResult << m_audio.c_str();
 
         // Add the inputs
         if (m_inputList.size())
         {
-            xmlResult = xmlResult + L"<actions>";
+            xmlResult << L"<actions>";
             for (auto input : m_inputList)
             {
-                xmlResult = xmlResult + input;
+                xmlResult << input.c_str();
             }
-            xmlResult = xmlResult + L"</actions>";
+            xmlResult << L"</actions>";
         }
 
-        xmlResult = xmlResult + L"</toast>";
+        xmlResult << L"</toast>";
 
-        winrt::Microsoft::Windows::AppNotifications::AppNotification appNotification{ xmlResult };
+        winrt::Microsoft::Windows::AppNotifications::AppNotification appNotification{ xmlResult.str() };
         appNotification.Tag(m_tag);
         appNotification.Group(m_group);
         
