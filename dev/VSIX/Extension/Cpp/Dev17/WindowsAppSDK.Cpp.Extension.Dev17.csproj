@@ -10,8 +10,8 @@
     <BaseAssemblyName>WindowsAppSDK.Cpp.Extension.Dev17</BaseAssemblyName>
     <AssemblyName Condition="'$(EnableExperimentalVSIXFeatures)'!='true'">$(BaseAssemblyName)</AssemblyName>
     <AssemblyName Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">$(BaseAssemblyName).Experimental</AssemblyName>
-	<JsonName Condition="'$(EnableExperimentalVSIXFeatures)'!='true'">Microsoft.WindowsAppSDK.Cpp.Dev17.json</JsonName>
-	<JsonName Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">Microsoft.WindowsAppSDK.Cpp.Dev17.Experimental.json</JsonName>
+    <JsonName Condition="'$(EnableExperimentalVSIXFeatures)'!='true'">Microsoft.WindowsAppSDK.Cpp.Dev17.json</JsonName>
+    <JsonName Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">Microsoft.WindowsAppSDK.Cpp.Dev17.Experimental.json</JsonName>
     <TargetFramework>net472</TargetFramework>
     <!-- This project may not have any C# source files, so suppress that compiler warning. -->
     <NoWarn>2008</NoWarn>
