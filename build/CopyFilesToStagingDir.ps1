@@ -45,8 +45,10 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windo
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.System.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.System.Power.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Security.AccessControl.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\MsixDynamicDependency.h $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\wil_msixdynamicdependency.h $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Security.AccessControl.h $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\RestartAgent\RestartAgent.exe $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\DeploymentAgent\DeploymentAgent.exe $FullPublishDir\Microsoft.WindowsAppRuntime\
 
@@ -97,6 +99,8 @@ PublishFile $FullBuildOutput\Microsoft.Windows.System.Projection\Microsoft.Windo
 PublishFile $FullBuildOutput\Microsoft.Windows.System.Projection\Microsoft.Windows.System.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.System.Power.Projection\Microsoft.Windows.System.Power.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.System.Power.Projection\Microsoft.Windows.System.Power.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.Security.AccessControl.Projection\Microsoft.Windows.Security.AccessControl.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.Security.AccessControl.Projection\Microsoft.Windows.Security.AccessControl.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
 #
 # Dynamic Dependency build overrides
 PublishFile $OverrideDir\DynamicDependency-Override.json $NugetDir\runtimes\win10-$Platform\native
@@ -109,6 +113,7 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrap.h $Nuge
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\MsixDynamicDependency.h $NugetDir\include
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\wil_msixdynamicdependency.h $NugetDir\include
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\WindowsAppRuntimeInsights.h $NugetDir\include\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Security.AccessControl.h $NugetDir\include\
 #
 # Libraries (*.lib)
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.lib $NugetDir\lib\win10-$Platform
@@ -159,6 +164,7 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windo
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.System.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.System.Power.winmd $NugetDir\lib\uap10.0
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Security.AccessControl.winmd $NugetDir\lib\uap10.0
 #
 # Bootstrap Auto-Initializer Files
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cpp $NugetDir\include
