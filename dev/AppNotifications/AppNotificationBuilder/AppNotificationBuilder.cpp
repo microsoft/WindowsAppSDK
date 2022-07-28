@@ -6,7 +6,6 @@
 #include <winrt/Windows.Globalization.h>
 #include <winrt/Windows.Globalization.DateTimeFormatting.h>
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder.g.cpp"
-#include <fmt/core.h>
 
 using namespace winrt::Windows::Globalization;
 using namespace winrt::Windows::Globalization::DateTimeFormatting;
