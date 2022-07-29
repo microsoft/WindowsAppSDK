@@ -56,6 +56,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         winrt::Microsoft::Windows::AppNotifications::AppNotification BuildNotification();
 
+        static bool IsUrgentScenarioSupported();
+
     private:
         std::wstring GetDuration();
         std::wstring GetScenario();
