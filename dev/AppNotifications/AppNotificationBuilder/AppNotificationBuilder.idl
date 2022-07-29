@@ -197,13 +197,16 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // Adds a button to the AppNotificationBuilder
         AppNotificationBuilder AddButton(AppNotificationButton value);
 
+
         AppNotificationBuilder AddProgressBar(AppNotificationProgressBar value);
 
         // AppNotification properties
         AppNotificationBuilder SetTag(String value);
         AppNotificationBuilder SetGroup(String group);
 
+
         // Constructs a WindowsAppSDK AppNotification object with the XML payload
         Microsoft.Windows.AppNotifications.AppNotification BuildNotification();
+
     };
 }
