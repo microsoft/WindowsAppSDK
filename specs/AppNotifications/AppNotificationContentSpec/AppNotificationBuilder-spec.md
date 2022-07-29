@@ -614,6 +614,12 @@ XML payload:
 </toast>
 ```
 
+Supported image file types include:
+
+-   .png
+-   .jpg
+-   .svg
+
 # Audio
 
 The Audio component allows the developer to define a custom audio to play when an AppNotification is
@@ -632,9 +638,9 @@ These attributes are abstracted with the following Audio component APIs availabl
 SDK:
 
 -   SetAudioUri(Windows.Foundation.Uri)
--   SetAudioUri(Windows.Foundation.Uri, AppNotificationDuration)
+-   SetAudioUri(Windows.Foundation.Uri, AppNotificationAudioLooping)
 -   SetAudioEvent(AppNotificationSoundEvent)
--   SetAudioEvent(AppNotificationSoundEvent, AppNotificationDuration)
+-   SetAudioEvent(AppNotificationSoundEvent, AppNotificationAudioLooping)
 -   MuteAudio()
 
 Supported audio file types include:
@@ -680,13 +686,13 @@ XML payload:
 </toast>
 ```
 
-Developers can define if the audio should be looped using SetAudioUri(Uri, AppNotificationDuration),
-which can be default or long.
+Developers can define if the audio should be looped using SetAudioUri(Uri,
+AppNotificationAudioLooping), which can be default or long.
 
 ```cpp
 AppNotificationBuilder()
     .AddText(L"Content")
-    .SetAudioEvent(AppNotificationSoundEvent::Alarm, AppNotificationDuration::Long)
+    .SetAudioEvent(AppNotificationSoundEvent::Alarm, AppNotificationAudioLooping::Loop)
     .BuildNotification();
 ```
 
@@ -1145,6 +1151,12 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Urgent, // Important notifications allow users to have more control over what 1st party and 3rd party apps can send them high-priority AppNotifications (urgent/important) that can break through Focus Assist.
     };
 
+    enum AppNotificationAudioLooping
+    {
+        None, // Audio will not loop
+        Loop, // Audio will loop for the duration of the AppNotification
+    }
+
     enum AppNotificationDuration
     {
         Default, // Default value. AppNotification appears for a short while and then goes into Notification Center.
@@ -1188,10 +1200,10 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationBuilder SetHeroImage(Windows.Foundation.Uri imageUri, String alternateText);
 
         AppNotificationBuilder SetAudioUri(Windows.Foundation.Uri audioUri);
-        AppNotificationBuilder SetAudioUri(Windows.Foundation.Uri audioUri, AppNotificationDuration duration);
+        AppNotificationBuilder SetAudioUri(Windows.Foundation.Uri audioUri, AppNotificationAudioLooping loop);
 
         AppNotificationBuilder SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent);
-        AppNotificationBuilder SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent, AppNotificationDuration duration);
+        AppNotificationBuilder SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent, AppNotificationAudioLooping loop);
 
         AppNotificationBuilder MuteAudio();
 
