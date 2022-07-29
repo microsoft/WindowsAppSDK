@@ -6,50 +6,16 @@
 #include <winrt/Windows.Globalization.h>
 #include <winrt/Windows.Globalization.DateTimeFormatting.h>
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder.g.cpp"
+#include "AppNotificationBuilderUtility.h"
+#include <iomanip>
+#include <ctime>
+#include <sstream>
 
 using namespace winrt::Windows::Globalization;
 using namespace winrt::Windows::Globalization::DateTimeFormatting;
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
-    inline const size_t c_maxAppNotificationPayload{ 5120 };
-    inline const uint8_t c_maxTextElements{ 3 };
-    inline const uint8_t c_maxButtonElements{ 5 };
-
-    std::wstring AppNotificationBuilder::GetWinSoundEventString(AppNotificationSoundEvent soundEvent)
-    {
-        static std::map<AppNotificationSoundEvent, std::wstring> c_soundEventMap
-        {
-            { AppNotificationSoundEvent::Default, L"ms-winsoundevent:Notification.Default"},
-            { AppNotificationSoundEvent::IM, L"ms-winsoundevent:Notification.IM"},
-            { AppNotificationSoundEvent::Mail, L"ms-winsoundevent:Notification.Mail"},
-            { AppNotificationSoundEvent::Reminder, L"ms-winsoundevent:Notification.Reminder"},
-            { AppNotificationSoundEvent::SMS, L"ms-winsoundevent:Notification.SMS"},
-            { AppNotificationSoundEvent::Alarm, L"ms-winsoundevent:Notification.Looping.Alarm"},
-            { AppNotificationSoundEvent::Alarm2, L"ms-winsoundevent:Notification.Looping.Alarm2"},
-            { AppNotificationSoundEvent::Alarm3, L"ms-winsoundevent:Notification.Looping.Alarm3"},
-            { AppNotificationSoundEvent::Alarm4, L"ms-winsoundevent:Notification.Looping.Alarm4"},
-            { AppNotificationSoundEvent::Alarm5, L"ms-winsoundevent:Notification.Looping.Alarm5"},
-            { AppNotificationSoundEvent::Alarm6, L"ms-winsoundevent:Notification.Looping.Alarm6"},
-            { AppNotificationSoundEvent::Alarm7, L"ms-winsoundevent:Notification.Looping.Alarm7"},
-            { AppNotificationSoundEvent::Alarm8, L"ms-winsoundevent:Notification.Looping.Alarm8"},
-            { AppNotificationSoundEvent::Alarm9, L"ms-winsoundevent:Notification.Looping.Alarm9"},
-            { AppNotificationSoundEvent::Alarm10, L"ms-winsoundevent:Notification.Looping.Alarm10"},
-            { AppNotificationSoundEvent::Call, L"ms-winsoundevent:Notification.Looping.Call"},
-            { AppNotificationSoundEvent::Call2, L"ms-winsoundevent:Notification.Looping.Call2"},
-            { AppNotificationSoundEvent::Call3, L"ms-winsoundevent:Notification.Looping.Call3"},
-            { AppNotificationSoundEvent::Call4, L"ms-winsoundevent:Notification.Looping.Call4"},
-            { AppNotificationSoundEvent::Call5, L"ms-winsoundevent:Notification.Looping.Call5"},
-            { AppNotificationSoundEvent::Call6, L"ms-winsoundevent:Notification.Looping.Call6"},
-            { AppNotificationSoundEvent::Call7, L"ms-winsoundevent:Notification.Looping.Call7"},
-            { AppNotificationSoundEvent::Call8, L"ms-winsoundevent:Notification.Looping.Call8"},
-            { AppNotificationSoundEvent::Call9, L"ms-winsoundevent:Notification.Looping.Call9"},
-            { AppNotificationSoundEvent::Call10, L"ms-winsoundevent:Notification.Looping.Call10"},
-        };
-
-        return c_soundEventMap[soundEvent];
-    }
-
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddArgument(hstring const& key, hstring const& value)
     {
         THROW_HR_IF_MSG(E_INVALIDARG, key.empty(), "You must provide a key when adding an argument.");
@@ -60,18 +26,26 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetTimeStamp(winrt::Windows::Foundation::DateTime const& value)
     {
-        
-        //winrt::std::wstring currentLanguage { ApplicationLanguages::Languages().First().Current() };
-        //// DateTimeFormatter dateTimeFormatter{ "longtime" };
-        //winrt::Windows::Foundation::DateTime::
-        //winrt::Windows::Foundation::DateTime { 2022, 1, 13, 16, 25, 30,  }
-        //m_timeStamp = timeStamp;
+        auto seconds{ winrt::clock::to_time_t(value) };
+        struct tm buf;
+        gmtime_s(&buf, &seconds);
+
+        std::wstringstream buffer;
+        buffer << std::put_time(&buf, L"%FT%T");
+
+        m_timeStamp = wil::str_printf<std::wstring>(L" displayTimestamp='%wsZ'", buffer.str().c_str());
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetScenario(AppNotificationScenario const& value)
     {
         m_scenario = value;
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetDuration(AppNotificationDuration const& value)
+    {
+        m_duration = value;
         return *this;
     }
 
@@ -191,11 +165,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioUri(winrt::Windows::Foundation::Uri const& audioUri, AppNotificationDuration const& duration)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioUri(winrt::Windows::Foundation::Uri const& audioUri, AppNotificationAudioLooping const& loop)
     {
-        m_audio = wil::str_printf<std::wstring>(L"<audio src='%ws' loop='true'/>", audioUri.ToString().c_str());
-        m_duration = duration;
-
+        m_audio = wil::str_printf<std::wstring>(L"<audio src='%ws' loop='%ws'/>", audioUri.ToString().c_str(), loop == AppNotificationAudioLooping::Loop ? L"true" : L"false");
         return *this;
     }
 
@@ -205,11 +177,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioEvent(AppNotificationSoundEvent const& soundEvent, AppNotificationDuration const& duration)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioEvent(AppNotificationSoundEvent const& soundEvent, AppNotificationAudioLooping const& loop)
     {
-        m_audio = wil::str_printf<std::wstring>(L"<audio src='%ws' loop='true'/>", GetWinSoundEventString(soundEvent).c_str());
-        m_duration = duration;
-
+        m_audio = wil::str_printf<std::wstring>(L"<audio src='%ws' loop='%ws'/>", GetWinSoundEventString(soundEvent).c_str(), loop == AppNotificationAudioLooping::Loop ? L"true" : L"false");
         return *this;
     }
 
@@ -350,6 +320,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::wstring buttons{ GetButtons() };
 
         xmlResult.append(L"<toast");
+        xmlResult.append(m_timeStamp);
         xmlResult.append(GetDuration());
         xmlResult.append(GetScenario());
         xmlResult.append(GetArguments());
