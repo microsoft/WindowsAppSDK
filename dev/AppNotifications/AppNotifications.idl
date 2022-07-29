@@ -52,6 +52,7 @@ namespace Microsoft.Windows.AppNotifications
         DisabledForUser, // Notification is blocked by a user defined Global Setting
         DisabledByGroupPolicy, // Notification is blocked by Group Policy
         DisabledByManifest, // Notification is blocked by a setting in the manifest. Only for packaged applications.
+        [contract(AppNotificationsContract, 2)]
         Unsupported, // The current operation was called when AppNotifications are not supported
     };
 
@@ -61,6 +62,7 @@ namespace Microsoft.Windows.AppNotifications
     {
         Succeeded, // The progress operation succeeded
         AppNotificationNotFound, // The progress operation failed to find a Notification to process updates
+        [contract(AppNotificationsContract, 2)]
         Unsupported, // The current operation was called when AppNotifications are not supported
     };
 
@@ -111,10 +113,6 @@ namespace Microsoft.Windows.AppNotifications
     [contract(AppNotificationsContract, 1)]
     runtimeclass AppNotificationManager
     {
-        // Checks to see if the APIs are supported for the Desktop app
-        // Certain scenarios are unsupported by AppNotifications
-        static Boolean IsSupported();
-
         // Gets a Default instance of a AppNotificationManager
         static AppNotificationManager Default{ get; };
 
@@ -165,5 +163,10 @@ namespace Microsoft.Windows.AppNotifications
 
         // Gets all the Notifications for the App from Action Centre
         Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVector<AppNotification> > GetAllAsync();
+    
+        // Checks to see if the APIs are supported for the Desktop app
+        // Certain scenarios are unsupported by AppNotifications
+        [contract(AppNotificationsContract, 2)]
+        static Boolean IsSupported();
     }
 }
