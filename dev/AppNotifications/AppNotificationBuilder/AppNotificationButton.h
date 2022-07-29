@@ -46,10 +46,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetIcon(winrt::Windows::Foundation::Uri const& value);
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetToolTip(winrt::hstring const& value);
+        static bool IsToolTipSupported();
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetContextMenuPlacement();
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetButtonStyle(AppNotificationButtonStyle const& value);
+        static bool IsButtonStyleSupported();
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetInputId(winrt::hstring const& value);
 

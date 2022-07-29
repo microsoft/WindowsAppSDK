@@ -48,12 +48,14 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // The tooltip for a button, if the button has an empty content string.
         AppNotificationButton SetToolTip(String value);
+        static Boolean IsToolTipSupported();
 
         // Sets the Button as context menu action.
         AppNotificationButton SetContextMenuPlacement();
 
         // Sets the ButtonStyle to Success or Critical
         AppNotificationButton SetButtonStyle(AppNotificationButtonStyle value);
+        static Boolean IsButtonStyleSupported();
 
         // Specifies the ID of an existing TextBox next to which the button will be placed.
         AppNotificationButton SetInputId(String value);
@@ -160,6 +162,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Sets the scenario of the AppNotification.
         AppNotificationBuilder SetScenario(AppNotificationScenario value);
+        static Boolean IsUrgentScenarioSupported();
 
         // Adds text to the AppNotification.
         AppNotificationBuilder AddText(String text);
