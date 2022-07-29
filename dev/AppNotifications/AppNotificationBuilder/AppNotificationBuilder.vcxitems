@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationBuilder.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationBuilderUtility.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationButton.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationTextProperties.h" />
   </ItemGroup>

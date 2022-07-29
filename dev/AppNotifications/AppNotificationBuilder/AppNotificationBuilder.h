@@ -16,6 +16,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetScenario(AppNotificationScenario const& value);
 
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetDuration(AppNotificationDuration const& value);
+
         // Text component APIs
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddText(hstring const& text);
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddText(hstring const& text, AppNotificationTextProperties const& properties);
@@ -39,10 +41,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         // SetAudio
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetAudioUri(winrt::Windows::Foundation::Uri const& audioUri);
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetAudioUri(winrt::Windows::Foundation::Uri const& audioUri, AppNotificationDuration const& duration);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetAudioUri(winrt::Windows::Foundation::Uri const& audioUri, AppNotificationAudioLooping const& loop);
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetAudioEvent(AppNotificationSoundEvent const& soundEvent);
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetAudioEvent(AppNotificationSoundEvent const& soundEvent, AppNotificationDuration const& duration);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetAudioEvent(AppNotificationSoundEvent const& soundEvent, AppNotificationAudioLooping const& loop);
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder MuteAudio();
 
@@ -55,7 +57,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::Microsoft::Windows::AppNotifications::AppNotification BuildNotification();
 
     private:
-        std::wstring GetWinSoundEventString(AppNotificationSoundEvent soundEvent);
         std::wstring GetDuration();
         std::wstring GetScenario();
         std::wstring GetArguments();
@@ -64,8 +65,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::wstring GetImages();
         std::wstring GetButtons();
 
-
-        winrt::Windows::Foundation::DateTime m_timeStamp{};
+        std::wstring m_timeStamp{};
         AppNotificationDuration m_duration{ AppNotificationDuration::Default };
         AppNotificationScenario m_scenario{ AppNotificationScenario::Default };
         bool m_useButtonStyle{};
