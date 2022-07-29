@@ -348,13 +348,14 @@ namespace Test::AppNotification::Builder
         TEST_METHOD(SetAudioWithUriAndDuration)
         {
             auto builder{ AppNotificationBuilder()
-                    .SetAudioUri(c_sampleUri, AppNotificationDuration::Long) };
+                    .SetDuration(AppNotificationDuration::Long)
+                    .SetAudioUri(c_sampleUri, AppNotificationAudioLooping::Loop) };
             auto expected{ L"<toast duration='long'><visual><binding template='ToastGeneric'></binding></visual><audio src='http://www.microsoft.com/' loop='true'/></toast>" };
 
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
-        TEST_METHOD(SetAudioWithMSWinSoundEvent)
+        TEST_METHOD(SetAudioWithSoundEvent)
         {
             auto builder{ AppNotificationBuilder()
                     .SetAudioEvent(AppNotificationSoundEvent::Reminder) };
@@ -363,10 +364,11 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
-        TEST_METHOD(SetAudioWithMSWinSoundEventAndDuration)
+        TEST_METHOD(SetAudioWithSoundEventAndDuration)
         {
             auto builder{ AppNotificationBuilder()
-                    .SetAudioEvent(AppNotificationSoundEvent::Reminder, AppNotificationDuration::Long) };
+                    .SetDuration(AppNotificationDuration::Long)
+                    .SetAudioEvent(AppNotificationSoundEvent::Reminder, AppNotificationAudioLooping::Loop) };
             auto expected{ L"<toast duration='long'><visual><binding template='ToastGeneric'></binding></visual><audio src='ms-winsoundevent:Notification.Reminder' loop='true'/></toast>" };
 
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
