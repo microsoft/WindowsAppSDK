@@ -6,50 +6,13 @@
 #include <winrt/Windows.Globalization.h>
 #include <winrt/Windows.Globalization.DateTimeFormatting.h>
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder.g.cpp"
+#include "AppNotificationBuilderUtility.h"
 
 using namespace winrt::Windows::Globalization;
 using namespace winrt::Windows::Globalization::DateTimeFormatting;
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
-    inline const size_t c_maxAppNotificationPayload{ 5120 };
-    inline const uint8_t c_maxTextElements{ 3 };
-    inline const uint8_t c_maxButtonElements{ 5 };
-
-    std::wstring AppNotificationBuilder::GetWinSoundEventString(AppNotificationSoundEvent soundEvent)
-    {
-        static std::map<AppNotificationSoundEvent, std::wstring> c_soundEventMap
-        {
-            { AppNotificationSoundEvent::Default, L"ms-winsoundevent:Notification.Default"},
-            { AppNotificationSoundEvent::IM, L"ms-winsoundevent:Notification.IM"},
-            { AppNotificationSoundEvent::Mail, L"ms-winsoundevent:Notification.Mail"},
-            { AppNotificationSoundEvent::Reminder, L"ms-winsoundevent:Notification.Reminder"},
-            { AppNotificationSoundEvent::SMS, L"ms-winsoundevent:Notification.SMS"},
-            { AppNotificationSoundEvent::Alarm, L"ms-winsoundevent:Notification.Looping.Alarm"},
-            { AppNotificationSoundEvent::Alarm2, L"ms-winsoundevent:Notification.Looping.Alarm2"},
-            { AppNotificationSoundEvent::Alarm3, L"ms-winsoundevent:Notification.Looping.Alarm3"},
-            { AppNotificationSoundEvent::Alarm4, L"ms-winsoundevent:Notification.Looping.Alarm4"},
-            { AppNotificationSoundEvent::Alarm5, L"ms-winsoundevent:Notification.Looping.Alarm5"},
-            { AppNotificationSoundEvent::Alarm6, L"ms-winsoundevent:Notification.Looping.Alarm6"},
-            { AppNotificationSoundEvent::Alarm7, L"ms-winsoundevent:Notification.Looping.Alarm7"},
-            { AppNotificationSoundEvent::Alarm8, L"ms-winsoundevent:Notification.Looping.Alarm8"},
-            { AppNotificationSoundEvent::Alarm9, L"ms-winsoundevent:Notification.Looping.Alarm9"},
-            { AppNotificationSoundEvent::Alarm10, L"ms-winsoundevent:Notification.Looping.Alarm10"},
-            { AppNotificationSoundEvent::Call, L"ms-winsoundevent:Notification.Looping.Call"},
-            { AppNotificationSoundEvent::Call2, L"ms-winsoundevent:Notification.Looping.Call2"},
-            { AppNotificationSoundEvent::Call3, L"ms-winsoundevent:Notification.Looping.Call3"},
-            { AppNotificationSoundEvent::Call4, L"ms-winsoundevent:Notification.Looping.Call4"},
-            { AppNotificationSoundEvent::Call5, L"ms-winsoundevent:Notification.Looping.Call5"},
-            { AppNotificationSoundEvent::Call6, L"ms-winsoundevent:Notification.Looping.Call6"},
-            { AppNotificationSoundEvent::Call7, L"ms-winsoundevent:Notification.Looping.Call7"},
-            { AppNotificationSoundEvent::Call8, L"ms-winsoundevent:Notification.Looping.Call8"},
-            { AppNotificationSoundEvent::Call9, L"ms-winsoundevent:Notification.Looping.Call9"},
-            { AppNotificationSoundEvent::Call10, L"ms-winsoundevent:Notification.Looping.Call10"},
-        };
-
-        return c_soundEventMap[soundEvent];
-    }
-
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddArgument(hstring const& key, hstring const& value)
     {
         THROW_HR_IF_MSG(E_INVALIDARG, key.empty(), "You must provide a key when adding an argument.");
