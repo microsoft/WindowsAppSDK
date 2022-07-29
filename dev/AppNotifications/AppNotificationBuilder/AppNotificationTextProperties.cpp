@@ -27,21 +27,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::hstring AppNotificationTextProperties::ToString()
     {
-        winrt::hstring xmlResult{ L"<text"};
-        if (!m_language.empty())
-        {
-            xmlResult = xmlResult + L" lang=\"" + m_language + L"\"";
-        }
+        std::wstring language{ !m_language.empty() ? wil::str_printf<std::wstring>(L" lang='%ws'", m_language.c_str()) : L""};
+        std::wstring callScenarioAlign{ m_useCallScenarioAlign ? L" hint-callScenarioCenterAlign='true'" : L""};
+        std::wstring hintMaxLines{ m_maxLines ? wil::str_printf<std::wstring>(L" hint-maxLines='%d'", m_maxLines) : L"" };
 
-        if (m_maxLines)
-        {
-            xmlResult = xmlResult + L" hint-maxLines=\"" + winrt::to_hstring(m_maxLines) + L"\"";
-        }
-
-        if (m_useCallScenarioAlign)
-        {
-            xmlResult = xmlResult + L" hint-callScenarioCenterAlign=\"true\"";
-        }
-        return xmlResult + L">";
+        return wil::str_printf<std::wstring>(L"<text%ws%ws%ws>", language.c_str(), hintMaxLines.c_str(), callScenarioAlign.c_str()).c_str();
     }
 }

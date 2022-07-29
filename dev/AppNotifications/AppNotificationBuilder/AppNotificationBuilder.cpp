@@ -12,7 +12,9 @@ using namespace winrt::Windows::Globalization::DateTimeFormatting;
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
-    
+    inline const size_t c_maxAppNotificationPayload{ 5120 };
+    inline const uint8_t c_maxTextElements{ 3 };
+    inline const uint8_t c_maxButtonElements{ 5 };
 
     std::wstring AppNotificationBuilder::GetWinSoundEventString(AppNotificationSoundEvent soundEvent)
     {
@@ -50,7 +52,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddArgument(hstring const& key, hstring const& value)
     {
-        THROW_HR_IF(E_INVALIDARG, key.empty());
+        THROW_HR_IF_MSG(E_INVALIDARG, key.empty(), "You must provide a key when adding an argument.");
 
         m_arguments.Insert(key, value);
         return *this;
@@ -58,7 +60,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetTimeStamp(winrt::Windows::Foundation::DateTime const& value)
     {
-        //winrt::hstring currentLanguage { ApplicationLanguages::Languages().First().Current() };
+        
+        //winrt::std::wstring currentLanguage { ApplicationLanguages::Languages().First().Current() };
         //// DateTimeFormatter dateTimeFormatter{ "longtime" };
         //winrt::Windows::Foundation::DateTime::
         //winrt::Windows::Foundation::DateTime { 2022, 1, 13, 16, 25, 30,  }
@@ -74,18 +77,18 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddText(hstring const& text)
     {
-        THROW_HR_IF(E_INVALIDARG, m_textLines.size() == 3u);
+        THROW_HR_IF_MSG(E_INVALIDARG, m_textLines.size() >= c_maxTextElements, "Maximum number of text elements added.");
 
-        m_textLines.push_back(L"<text>" + text + L"</text>");
-
+        m_textLines.push_back(wil::str_printf<std::wstring>(L"<text>%ws</text>", text.c_str()).c_str());
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddText(hstring const& text, AppNotificationTextProperties const& properties)
     {
-        THROW_HR_IF(E_INVALIDARG, m_textLines.size() == 3u);
+        THROW_HR_IF_MSG(E_INVALIDARG, m_textLines.size() >= c_maxTextElements, "Maximum number of text elements added.");
 
-        m_textLines.push_back(properties.as<winrt::Windows::Foundation::IStringable>().ToString() + text + L"</text>");
+        std::wstring props{ properties.as<winrt::Windows::Foundation::IStringable>().ToString() };
+        m_textLines.push_back(wil::str_printf<std::wstring>(L"%ws%ws</text>", props.c_str(), text.c_str()).c_str());
 
         if (properties.IncomingCallAlignment())
         {
@@ -96,275 +99,262 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAttributionText(hstring const& text)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_attributionText.empty());
-
-        m_attributionText = L"<text placement=\"attribution\">" + text + L"</text>";
-
+        m_attributionText = wil::str_printf<std::wstring>(L"<text placement='attribution'>%ws</text>", text.c_str());
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAttributionText(hstring const& text, hstring const& language)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_attributionText.empty());
-        THROW_HR_IF(E_INVALIDARG, language.empty());
+        THROW_HR_IF_MSG(E_INVALIDARG, language.empty(), "You must provide a language calling SetAttributionText.");
 
-        m_attributionText = L"<text placement=\"attribution\" lang=\"" + language + L"\">" + text + L"</text>";
-
+        m_attributionText = wil::str_printf<std::wstring>(L"<text placement='attribution' lang='%ws'>%ws</text>", language.c_str(), text.c_str());
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_inlineImage.empty());
-
-        m_inlineImage = L"<image src=\"" + imageUri.ToString() + L"\"/>";
-
+        m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ws'/>", imageUri.ToString().c_str());
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_inlineImage.empty());
-
-        m_inlineImage = { L"<image src=\"" + imageUri.ToString() + L"\""};
         if (imageCrop == AppNotificationImageCrop::Circle)
         {
-            m_inlineImage = m_inlineImage + L" hint-crop=\"circle\"";
+            m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ws' hint-crop='circle'/>", imageUri.ToString().c_str());
         }
-        m_inlineImage = m_inlineImage + L"/>";
+        else
+        {
+            SetInlineImage(imageUri);
+        }
 
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop, winrt::hstring const& alternateText)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop, hstring const& alternateText)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_inlineImage.empty());
+        THROW_HR_IF_MSG(E_INVALIDARG, alternateText.empty(), "You must provide an alternate text string calling SetInlineImage.");
 
-        m_inlineImage = L"<image src=\"" + imageUri.ToString() + L"\" alt=\"" + alternateText + L"\"";
-        if (imageCrop == AppNotificationImageCrop::Circle)
-        {
-            m_inlineImage = m_inlineImage + L" hint-crop=\"circle\"";
-        }
-        m_inlineImage = m_inlineImage + L"/>";
+        std::wstring hintCrop { imageCrop == AppNotificationImageCrop::Circle ? L" hint-crop='circle'" : L"" };
+        m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ws' alt='%ws'%ws/>", imageUri.ToString().c_str(), alternateText.c_str(), hintCrop.c_str());
 
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_appLogoOverride.empty());
-
-        m_appLogoOverride = L"<image placement=\"appLogoOverride\" src=\"" + imageUri.ToString() + L"\"/>";
-
+        m_appLogoOverride = wil::str_printf<std::wstring>(L"<image placement='appLogoOverride' src='%ws'/>", imageUri.ToString().c_str());
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_appLogoOverride.empty());
-
-        m_appLogoOverride = L"<image placement=\"appLogoOverride\" src=\"" + imageUri.ToString() + L"\"";
         if (imageCrop == AppNotificationImageCrop::Circle)
         {
-            m_appLogoOverride = m_appLogoOverride + L" hint-crop=\"circle\"";
+            m_appLogoOverride = wil::str_printf<std::wstring>(L"<image placement='appLogoOverride' src='%ws' hint-crop='circle'/>", imageUri.ToString().c_str());
+        }
+        else
+        {
+            SetAppLogoOverride(imageUri);
         }
 
-        m_appLogoOverride = m_appLogoOverride + L"/>";
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop, winrt::hstring const& alternateText)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop, hstring const& alternateText)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_appLogoOverride.empty());
+        THROW_HR_IF_MSG(E_INVALIDARG, alternateText.empty(), "You must provide an alternate text string calling SetAppLogoOverride.");
 
-        m_appLogoOverride = L"<image placement=\"appLogoOverride\" src=\"" + imageUri.ToString() + L"\" alt=\"" + alternateText + L"\"";
-        if (imageCrop == AppNotificationImageCrop::Circle)
-        {
-            m_appLogoOverride = m_appLogoOverride + L" hint-crop=\"circle\"";
-        }
+        std::wstring hintCrop{ imageCrop == AppNotificationImageCrop::Circle ? L" hint-crop='circle'" : L"" };
+        m_appLogoOverride = wil::str_printf<std::wstring>(L"<image placement='appLogoOverride' src='%ws' alt='%ws'%ws/>", imageUri.ToString().c_str(), alternateText.c_str(), hintCrop.c_str());
 
-        m_appLogoOverride = m_appLogoOverride + L"/>";
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetHeroImage(winrt::Windows::Foundation::Uri const& imageUri)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_heroImage.empty());
-
-        m_heroImage = L"<image placement=\"hero\" src=\"" + imageUri.ToString() + L"\"/>";
-
+        m_heroImage = wil::str_printf<std::wstring>(L"<image placement='hero' src='%ws'/>", imageUri.ToString().c_str());
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetHeroImage(winrt::Windows::Foundation::Uri const& imageUri, winrt::hstring const& alternateText)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetHeroImage(winrt::Windows::Foundation::Uri const& imageUri, hstring const& alternateText)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_heroImage.empty());
+        THROW_HR_IF_MSG(E_INVALIDARG, alternateText.empty(), "You must provide an alternate text string calling SetHeroImage.");
 
-        m_heroImage = L"<image placement=\"hero\" src=\"" + imageUri.ToString() + L"\" alt=\"" + alternateText + L"\"/>";
-
+        m_heroImage = wil::str_printf<std::wstring>(L"<image placement='hero' src='%ws' alt='%ws'/>", imageUri.ToString().c_str(), alternateText.c_str());
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioUri(winrt::Windows::Foundation::Uri const& audioUri)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_audio.empty());
-
-        m_audio = L"<audio src=\"" + audioUri.ToString() + L"\"/>";
-
+        m_audio = wil::str_printf<std::wstring>(L"<audio src='%ws'/>", audioUri.ToString().c_str());
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioUri(winrt::Windows::Foundation::Uri const& audioUri, AppNotificationDuration const& duration)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_audio.empty());
-
-        m_audio = L"<audio src=\"" + audioUri.ToString() + L"\" loop=\"true\"/>";
+        m_audio = wil::str_printf<std::wstring>(L"<audio src='%ws' loop='true'/>", audioUri.ToString().c_str());
         m_duration = duration;
+
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioEvent(AppNotificationSoundEvent const& soundEvent)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_audio.empty());
-
-        // Need to map enums to strings :)
-        m_audio = L"<audio src=\"" + GetWinSoundEventString(soundEvent) + L"\"/>";
-
+        m_audio = wil::str_printf<std::wstring>(L"<audio src='%ws'/>", GetWinSoundEventString(soundEvent).c_str());
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioEvent(AppNotificationSoundEvent const& soundEvent, AppNotificationDuration const& duration)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_audio.empty());
-
-        // Need to map enums to strings :)
-        m_audio = L"<audio src=\"" + GetWinSoundEventString(soundEvent) + L"\" loop=\"true\"/>";
+        m_audio = wil::str_printf<std::wstring>(L"<audio src='%ws' loop='true'/>", GetWinSoundEventString(soundEvent).c_str());
         m_duration = duration;
+
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::MuteAudio()
     {
-        THROW_HR_IF(E_INVALIDARG, !m_audio.empty());
-
-        m_audio = L"<audio silent=\"true\"/>";
-
+        m_audio = L"<audio silent='true'/>";
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddButton(AppNotificationButton const& value)
     {
-        THROW_HR_IF(E_INVALIDARG, m_inputList.size() == 5u);
+        THROW_HR_IF_MSG(E_INVALIDARG, m_buttonList.size() >= c_maxButtonElements, "Maximum number of buttons added.");
 
-        m_inputList.push_back(value.as<winrt::Windows::Foundation::IStringable>().ToString());
-        m_useButtonStyle = value.ButtonStyle() != AppNotificationButtonStyle::Default;
-
+        m_buttonList.push_back(value);
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetTag(winrt::hstring const& value)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetTag(hstring const& value)
     {
         m_tag = value;
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetGroup(winrt::hstring const& value)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetGroup(hstring const& value)
     {
         m_group = value;
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::AppNotification AppNotificationBuilder::BuildNotification()
+    std::wstring AppNotificationBuilder::GetDuration()
     {
-        winrt::hstring xmlResult{ L"<toast" };
+        return m_duration == AppNotificationDuration::Default ? L"" : L" duration='long'";
+    }
 
-        // Add duration attribute if set
-        if (m_duration != AppNotificationDuration::Default)
-        {
-            xmlResult = xmlResult + L" duration=\"long\"";
-        }
-
+    std::wstring AppNotificationBuilder::GetScenario()
+    {
         // Add scenario attribute if set
-        if (m_scenario != AppNotificationScenario::Default)
+        switch (m_scenario)
         {
-            winrt::hstring scenario{};
-            switch (m_scenario)
-            {
-            case AppNotificationScenario::Alarm:
-                scenario = L"\"alarm\"";
-                break;
-            case AppNotificationScenario::Reminder:
-                scenario = L"\"reminder\"";
-                break;
-            case AppNotificationScenario::IncomingCall:
-                scenario = L"\"incomingCall\"";
-                break;
-            case AppNotificationScenario::Urgent:
-                scenario = L"\"urgent\"";
-                break;
-            }
-
-            xmlResult = xmlResult + L" scenario=" + scenario;
+        case AppNotificationScenario::Alarm:
+            return L" scenario='alarm'";
+        case AppNotificationScenario::Reminder:
+            return L" scenario='reminder'";
+        case AppNotificationScenario::IncomingCall:
+            return L" scenario='incomingCall'";
+        case AppNotificationScenario::Urgent:
+            return L" scenario='urgent'";
+        default:
+            return {};
         }
+    }
 
+    std::wstring AppNotificationBuilder::GetArguments()
+    {
         // Add launch arguments if given arguments
         if (m_arguments.Size())
         {
-            xmlResult = xmlResult + L" launch=\"";
-
-            std::wstring arguments{};
+            std::wstring arguments{ };
             for (auto pair : m_arguments)
             {
-                arguments = arguments + pair.Key();
                 if (!pair.Value().empty())
                 {
-                    arguments = arguments + L"=" + pair.Value();
+                    arguments.append(wil::str_printf<std::wstring>(L"%ws=%ws;", pair.Key().c_str(), pair.Value().c_str()));
                 }
-                arguments = arguments + L";";
+                else
+                {
+                    arguments.append(wil::str_printf<std::wstring>(L"%ws;", pair.Key().c_str()));
+                }
             }
+            arguments.pop_back();
 
-            xmlResult = xmlResult + arguments.substr(0, arguments.size() - 1) + L"\"";
+            return wil::str_printf<std::wstring>(L" launch='%ws'", arguments.c_str());
         }
-
-        // Add button style attribute to <toast> element if any button uses a ButtonStyle
-        if (m_useButtonStyle)
+        else
         {
-            xmlResult = xmlResult + L" useButtonStyle=\"true\"";
+            return {};
         }
+    }
 
-        // Add the binding/visual elements to put UI components
-        xmlResult = xmlResult + L"><visual><binding template=\"ToastGeneric\">";
-
-        // Insert all the <text> elements
+    std::wstring AppNotificationBuilder::GetText()
+    {
+        std::wstring result{};
         for (auto text : m_textLines)
         {
-            xmlResult = xmlResult + text;
+            result.append(text);
         }
 
-        // Add the attribution text
-        xmlResult = xmlResult + m_attributionText;
+        return result;
+    }
 
-        // Adds all the image components
-        xmlResult = xmlResult + m_inlineImage + m_heroImage + m_appLogoOverride;
+    std::wstring AppNotificationBuilder::GetImages()
+    {
+        return wil::str_printf<std::wstring>(L"%ws%ws%ws", m_inlineImage.c_str(), m_heroImage.c_str(), m_appLogoOverride.c_str());
+    }
 
-        // Close the binding/visual tags
-        xmlResult = xmlResult + L"</binding></visual>";
-
-        // Set the audio
-        xmlResult = xmlResult + m_audio;
-
-        // Add the inputs
-        if (m_inputList.size())
+    std::wstring AppNotificationBuilder::GetButtons()
+    {
+        if (m_buttonList.size())
         {
-            xmlResult = xmlResult + L"<actions>";
-            for (auto input : m_inputList)
+            std::wstring result{};
+            for (auto input : m_buttonList)
             {
-                xmlResult = xmlResult + input;
-            }
-            xmlResult = xmlResult + L"</actions>";
-        }
+                if (input.ButtonStyle() != AppNotificationButtonStyle::Default)
+                {
+                    m_useButtonStyle = true;
+                }
 
-        xmlResult = xmlResult + L"</toast>";
+                result.append(input.as<winrt::Windows::Foundation::IStringable>().ToString().c_str());
+            }
+
+            return wil::str_printf<std::wstring>(L"<actions>%ws</actions>", result.c_str());
+        }
+        else
+        {
+            return {};
+        }
+    }
+
+    // You must call GetButtons first to retrieve this value.
+    std::wstring AppNotificationBuilder::GetButtonStyle()
+    {
+        return m_useButtonStyle ? L" useButtonStyle='true'" : L"";
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::AppNotification AppNotificationBuilder::BuildNotification()
+    {
+        std::wstring xmlResult{};
+        xmlResult.reserve(c_maxAppNotificationPayload);
+
+        // Build the button string and fill m_useButtonStyle
+        std::wstring buttons{ GetButtons() };
+
+        xmlResult.append(L"<toast");
+        xmlResult.append(GetDuration());
+        xmlResult.append(GetScenario());
+        xmlResult.append(GetArguments());
+        xmlResult.append(GetButtonStyle());
+        xmlResult.append(L"><visual><binding template='ToastGeneric'>");
+        xmlResult.append(GetText());
+        xmlResult.append(m_attributionText);
+        xmlResult.append(GetImages());
+        xmlResult.append(L"</binding></visual>");
+        xmlResult.append(m_audio.c_str());
+        xmlResult.append(buttons);
+        xmlResult.append(L"</toast>");
 
         winrt::Microsoft::Windows::AppNotifications::AppNotification appNotification{ xmlResult };
         appNotification.Tag(m_tag);
