@@ -16,6 +16,11 @@ using namespace winrt::Windows::Globalization::DateTimeFormatting;
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
+    bool AppNotificationBuilder::IsUrgentScenarioSupported()
+    {
+        return GetBuildNumber() >= 19041;
+    }
+
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddArgument(hstring const& key, hstring const& value)
     {
         THROW_HR_IF_MSG(E_INVALIDARG, key.empty(), "You must provide a key when adding an argument.");
