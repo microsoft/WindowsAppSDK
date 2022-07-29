@@ -58,6 +58,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     private:
         std::wstring GetWinSoundEventString(AppNotificationSoundEvent soundEvent);
+        std::wstring GetDuration();
+        std::wstring GetScenario();
+        std::wstring GetArguments();
+        std::wstring GetButtonStyle();
+        std::wstring GetText();
+        std::wstring GetImages();
+        std::wstring GetButtons();
+
 
         winrt::Windows::Foundation::DateTime m_timeStamp{};
         AppNotificationDuration m_duration{ AppNotificationDuration::Default };
@@ -70,7 +78,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::hstring m_heroImage{};
         winrt::hstring m_audio{};
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_arguments{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
-        std::vector<winrt::hstring> m_inputList{};
+        std::vector<AppNotificationButton> m_buttonList{};
         AppNotificationProgressBar m_progressBar{};
         winrt::hstring m_tag{};
         winrt::hstring m_group{};
