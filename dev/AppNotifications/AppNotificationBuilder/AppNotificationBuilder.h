@@ -56,6 +56,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     private:
         std::wstring GetWinSoundEventString(AppNotificationSoundEvent soundEvent);
+        std::wstring GetDuration();
+        std::wstring GetScenario();
+        std::wstring GetArguments();
+        std::wstring GetButtonStyle();
+        std::wstring GetText();
+        std::wstring GetImages();
+        std::wstring GetInput();
+
 
         winrt::Windows::Foundation::DateTime m_timeStamp{};
         AppNotificationDuration m_duration{ AppNotificationDuration::Default };

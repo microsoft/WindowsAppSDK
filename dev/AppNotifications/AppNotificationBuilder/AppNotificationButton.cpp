@@ -65,65 +65,55 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::hstring AppNotificationButton::ToString()
+    std::wstring AppNotificationButton::GetActivationArguments()
     {
-        winrt::hstring xml{ L"<action content=\"" + m_content + L"\" arguments=\""};
-
         if (m_protocolUri)
         {
-            xml = xml + m_protocolUri.ToString() + LR"(" activationType="protocol")";
-            if (!m_targetApplicationPfn.empty())
-            {
-                xml = xml + L" protocolActivationTargetApplicationPfn=\"" + m_targetApplicationPfn + L"\"";
-            }
+            std::wstring protocolTargetPfn{ !m_targetApplicationPfn.empty() ? wil::str_printf<std::wstring>(L" protocolActivationTargetApplicationPfn='%ws'", m_targetApplicationPfn.c_str()) : L"" };
+            return wil::str_printf<std::wstring>(L" arguments='%ws' activationType='protocol'%ws", m_protocolUri.ToString().c_str(), protocolTargetPfn.c_str());
         }
         else
         {
             std::wstring arguments{};
             for (auto pair : m_arguments)
             {
-                arguments = arguments + pair.Key();
                 if (!pair.Value().empty())
                 {
-                    arguments = arguments + L"=" + pair.Value();
+                    arguments.append(wil::str_printf<std::wstring>(L"%ws=%ws;", pair.Key().c_str(), pair.Value().c_str()));
                 }
-                arguments = arguments + L";";
+                else
+                {
+                    arguments.append(wil::str_printf<std::wstring>(L"%ws;", pair.Key().c_str()));
+                }
             }
+            arguments.pop_back();
 
-            xml = xml + arguments.substr(0, arguments.size() - 1) + L"\"";
+            return wil::str_printf<std::wstring>(L" arguments='%ws'", arguments.c_str());
         }
-        
+    }
 
-        if (m_useContextMenuPlacement)
+    std::wstring AppNotificationButton::GetButtonStyle()
+    {
+        if (m_buttonStyle == AppNotificationButtonStyle::Default)
         {
-            xml = xml + LR"( placement="contextMenu")";
+            return L"";
         }
 
-        if (m_iconUri)
-        {
-            xml = xml + L" imageUri=\"" + m_iconUri.ToString() + L"\"";
-        }
+        std::wstring style{ m_buttonStyle == AppNotificationButtonStyle::Success ? L"Success" : L"Critical" };
+        return wil::str_printf<std::wstring>(L" hint-buttonStyle='%ws'", style.c_str());
+    }
 
-        if (!m_inputId.empty())
-        {
-            xml = xml + L" hint-inputId=\"" + m_inputId + L"\"";
-        }
+    winrt::hstring AppNotificationButton::ToString()
+    {
+        std::wstring xmlResult{ wil::str_printf<std::wstring>(L"<action content='%ws'%ws%ws%ws%ws%ws%ws/>",
+            m_content.c_str(),
+            GetActivationArguments().c_str(),
+            m_useContextMenuPlacement ? L" placement='contextMenu'" : L"",
+            m_iconUri ? wil::str_printf<std::wstring>(L" imageUri='%ws'", m_iconUri.ToString().c_str()).c_str() : L"",
+            !m_inputId.empty() ? wil::str_printf<std::wstring>(L" hint-inputId='%ws'", m_inputId.c_str()).c_str() : L"",
+            GetButtonStyle().c_str(),
+            !m_toolTip.empty() ? wil::str_printf<std::wstring>(L" hint-toolTip='%ws'", m_toolTip.c_str()).c_str() : L"") };
 
-        if (m_buttonStyle == AppNotificationButtonStyle::Success)
-        {
-            xml = xml + LR"( hint-buttonStyle="Success")";
-        }
-        else if (m_buttonStyle == AppNotificationButtonStyle::Success)
-        {
-            xml = xml + LR"( hint-buttonStyle="Critical")";
-        }
-
-        if (!m_toolTip.empty())
-        {
-            xml = xml + L" hint-toolTip=\"" + m_toolTip + L"\"";
-        }
-
-        xml = xml + L"/>";
-        return xml;
+        return xmlResult.c_str();
     }
 }
