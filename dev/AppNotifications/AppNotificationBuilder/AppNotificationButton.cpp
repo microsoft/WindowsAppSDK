@@ -11,8 +11,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::AddArgument(winrt::hstring const& key, winrt::hstring const& value)
     {
-        THROW_HR_IF(E_INVALIDARG, key.empty());
-        THROW_HR_IF(E_INVALIDARG, m_protocolUri);
+        THROW_HR_IF_MSG(E_INVALIDARG, key.empty(), "You must provide a key when adding an argument.");
+        THROW_HR_IF_MSG(E_INVALIDARG, m_protocolUri, "You cannot add an argument after calling SetInvokeUri.");
 
         m_arguments.Insert(key, value);
         return *this;
@@ -50,7 +50,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetInvokeUri(winrt::Windows::Foundation::Uri const& protocolUri)
     {
-        THROW_HR_IF(E_INVALIDARG, m_arguments.Size() > 0u);
+        THROW_HR_IF_MSG(E_INVALIDARG, m_arguments.Size() > 0u, "You cannot add a protocol activation uri after calling AddArgument.");
 
         m_protocolUri = protocolUri;
         return *this;
@@ -58,7 +58,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetInvokeUri(winrt::Windows::Foundation::Uri const& protocolUri, winrt::hstring const& targetAppId)
     {
-        THROW_HR_IF(E_INVALIDARG, m_arguments.Size() > 0u);
+        THROW_HR_IF_MSG(E_INVALIDARG, m_arguments.Size() > 0u, "You cannot add a protocol activation uri after calling AddArgument.");
 
         m_protocolUri = protocolUri;
         m_targetApplicationPfn = targetAppId;

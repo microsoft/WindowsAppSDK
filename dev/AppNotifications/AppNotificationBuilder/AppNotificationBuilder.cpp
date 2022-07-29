@@ -14,7 +14,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
     inline const size_t c_maxAppNotificationPayload{ 5120 };
     inline const uint8_t c_maxTextElements{ 3 };
-    inline const uint8_t c_maxInputElements{ 5 };
+    inline const uint8_t c_maxButtonElements{ 5 };
 
     std::wstring AppNotificationBuilder::GetWinSoundEventString(AppNotificationSoundEvent soundEvent)
     {
@@ -52,7 +52,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddArgument(hstring const& key, hstring const& value)
     {
-        THROW_HR_IF(E_INVALIDARG, key.empty());
+        THROW_HR_IF_MSG(E_INVALIDARG, key.empty(), "You must provide a key when adding an argument.");
 
         m_arguments.Insert(key, value);
         return *this;
@@ -77,16 +77,15 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddText(hstring const& text)
     {
-        THROW_HR_IF(E_INVALIDARG, m_textLines.size() >= c_maxTextElements);
+        THROW_HR_IF_MSG(E_INVALIDARG, m_textLines.size() >= c_maxTextElements, "Maximum number of text elements added.");
 
         m_textLines.push_back(wil::str_printf<std::wstring>(L"<text>%ws</text>", text.c_str()).c_str());
-
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddText(hstring const& text, AppNotificationTextProperties const& properties)
     {
-        THROW_HR_IF(E_INVALIDARG, m_textLines.size() >= c_maxTextElements);
+        THROW_HR_IF_MSG(E_INVALIDARG, m_textLines.size() >= c_maxTextElements, "Maximum number of text elements added.");
 
         std::wstring props{ properties.as<winrt::Windows::Foundation::IStringable>().ToString() };
         m_textLines.push_back(wil::str_printf<std::wstring>(L"%ws%ws</text>", props.c_str(), text.c_str()).c_str());
@@ -100,36 +99,26 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAttributionText(hstring const& text)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_attributionText.empty());
-
         m_attributionText = wil::str_printf<std::wstring>(L"<text placement='attribution'>%ws</text>", text.c_str());
-
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAttributionText(hstring const& text, hstring const& language)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_attributionText.empty());
-        THROW_HR_IF(E_INVALIDARG, language.empty());
+        THROW_HR_IF_MSG(E_INVALIDARG, language.empty(), "You must provide a language calling SetAttributionText.");
 
         m_attributionText = wil::str_printf<std::wstring>(L"<text placement='attribution' lang='%ws'>%ws</text>", language.c_str(), text.c_str());
-
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_inlineImage.empty());
-
         m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ws'/>", imageUri.ToString().c_str());
-
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_inlineImage.empty());
-
         if (imageCrop == AppNotificationImageCrop::Circle)
         {
             m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ws' hint-crop='circle'/>", imageUri.ToString().c_str());
@@ -144,7 +133,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop, hstring const& alternateText)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_inlineImage.empty());
+        THROW_HR_IF_MSG(E_INVALIDARG, alternateText.empty(), "You must provide an alternate text string calling SetInlineImage.");
 
         std::wstring hintCrop { imageCrop == AppNotificationImageCrop::Circle ? L" hint-crop='circle'" : L"" };
         m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ws' alt='%ws'%ws/>", imageUri.ToString().c_str(), alternateText.c_str(), hintCrop.c_str());
@@ -154,17 +143,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_appLogoOverride.empty());
-
         m_appLogoOverride = wil::str_printf<std::wstring>(L"<image placement='appLogoOverride' src='%ws'/>", imageUri.ToString().c_str());
-
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_appLogoOverride.empty());
-
         if (imageCrop == AppNotificationImageCrop::Circle)
         {
             m_appLogoOverride = wil::str_printf<std::wstring>(L"<image placement='appLogoOverride' src='%ws' hint-crop='circle'/>", imageUri.ToString().c_str());
@@ -179,7 +163,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop, hstring const& alternateText)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_appLogoOverride.empty());
+        THROW_HR_IF_MSG(E_INVALIDARG, alternateText.empty(), "You must provide an alternate text string calling SetAppLogoOverride.");
 
         std::wstring hintCrop{ imageCrop == AppNotificationImageCrop::Circle ? L" hint-crop='circle'" : L"" };
         m_appLogoOverride = wil::str_printf<std::wstring>(L"<image placement='appLogoOverride' src='%ws' alt='%ws'%ws/>", imageUri.ToString().c_str(), alternateText.c_str(), hintCrop.c_str());
@@ -189,35 +173,26 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetHeroImage(winrt::Windows::Foundation::Uri const& imageUri)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_heroImage.empty());
-
         m_heroImage = wil::str_printf<std::wstring>(L"<image placement='hero' src='%ws'/>", imageUri.ToString().c_str());
-
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetHeroImage(winrt::Windows::Foundation::Uri const& imageUri, hstring const& alternateText)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_heroImage.empty());
+        THROW_HR_IF_MSG(E_INVALIDARG, alternateText.empty(), "You must provide an alternate text string calling SetHeroImage.");
 
         m_heroImage = wil::str_printf<std::wstring>(L"<image placement='hero' src='%ws' alt='%ws'/>", imageUri.ToString().c_str(), alternateText.c_str());
-
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioUri(winrt::Windows::Foundation::Uri const& audioUri)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_audio.empty());
-
         m_audio = wil::str_printf<std::wstring>(L"<audio src='%ws'/>", audioUri.ToString().c_str());
-
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioUri(winrt::Windows::Foundation::Uri const& audioUri, AppNotificationDuration const& duration)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_audio.empty());
-
         m_audio = wil::str_printf<std::wstring>(L"<audio src='%ws' loop='true'/>", audioUri.ToString().c_str());
         m_duration = duration;
 
@@ -226,17 +201,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioEvent(AppNotificationSoundEvent const& soundEvent)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_audio.empty());
-
         m_audio = wil::str_printf<std::wstring>(L"<audio src='%ws'/>", GetWinSoundEventString(soundEvent).c_str());
-
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioEvent(AppNotificationSoundEvent const& soundEvent, AppNotificationDuration const& duration)
     {
-        THROW_HR_IF(E_INVALIDARG, !m_audio.empty());
-
         m_audio = wil::str_printf<std::wstring>(L"<audio src='%ws' loop='true'/>", GetWinSoundEventString(soundEvent).c_str());
         m_duration = duration;
 
@@ -245,20 +215,15 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::MuteAudio()
     {
-        THROW_HR_IF(E_INVALIDARG, !m_audio.empty());
-
         m_audio = L"<audio silent='true'/>";
-
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddButton(AppNotificationButton const& value)
     {
-        THROW_HR_IF(E_INVALIDARG, m_inputList.size() >= c_maxInputElements);
+        THROW_HR_IF_MSG(E_INVALIDARG, m_buttonList.size() >= c_maxButtonElements, "Maximum number of buttons added.");
 
-        m_inputList.push_back(value.as<winrt::Windows::Foundation::IStringable>().ToString().c_str());
-        m_useButtonStyle = value.ButtonStyle() != AppNotificationButtonStyle::Default;
-
+        m_buttonList.push_back(value);
         return *this;
     }
 
@@ -324,11 +289,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         }
     }
 
-    std::wstring AppNotificationBuilder::GetButtonStyle()
-    {
-        return m_useButtonStyle ? L" useButtonStyle='true'" : L"";
-    }
-
     std::wstring AppNotificationBuilder::GetText()
     {
         std::wstring result{};
@@ -345,14 +305,19 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return wil::str_printf<std::wstring>(L"%ws%ws%ws", m_inlineImage.c_str(), m_heroImage.c_str(), m_appLogoOverride.c_str());
     }
 
-    std::wstring AppNotificationBuilder::GetInput()
+    std::wstring AppNotificationBuilder::GetButtons()
     {
-        if (m_inputList.size())
+        if (m_buttonList.size())
         {
             std::wstring result{};
-            for (auto input : m_inputList)
+            for (auto input : m_buttonList)
             {
-                result.append(input);
+                if (input.ButtonStyle() != AppNotificationButtonStyle::Default)
+                {
+                    m_useButtonStyle = true;
+                }
+
+                result.append(input.as<winrt::Windows::Foundation::IStringable>().ToString().c_str());
             }
 
             return wil::str_printf<std::wstring>(L"<actions>%ws</actions>", result.c_str());
@@ -363,10 +328,19 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         }
     }
 
+    // You must call GetButtons first to retrieve this value.
+    std::wstring AppNotificationBuilder::GetButtonStyle()
+    {
+        return m_useButtonStyle ? L" useButtonStyle='true'" : L"";
+    }
+
     winrt::Microsoft::Windows::AppNotifications::AppNotification AppNotificationBuilder::BuildNotification()
     {
         std::wstring xmlResult{};
         xmlResult.reserve(c_maxAppNotificationPayload);
+
+        // Build the button string and fill m_useButtonStyle
+        std::wstring buttons{ GetButtons() };
 
         xmlResult.append(L"<toast");
         xmlResult.append(GetDuration());
@@ -379,7 +353,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         xmlResult.append(GetImages());
         xmlResult.append(L"</binding></visual>");
         xmlResult.append(m_audio.c_str());
-        xmlResult.append(GetInput());
+        xmlResult.append(buttons);
         xmlResult.append(L"</toast>");
 
         winrt::Microsoft::Windows::AppNotifications::AppNotification appNotification{ xmlResult };
