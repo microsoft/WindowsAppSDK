@@ -52,6 +52,22 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
+        TEST_METHOD(AppNotificationBuilderSetTimeStamp)
+        {
+            std::wstring dateTimeFormat{ L"%d/%m/%Y %H:%M:%S" };
+            std::wistringstream ss(L"22/12/2016 01:12:10");
+
+            struct tm dateTime {};
+            ss >> std::get_time(&dateTime, dateTimeFormat.c_str());
+            std::time_t time{ mktime(&dateTime) };
+            auto timeStamp{ winrt::clock::from_time_t(time) };
+
+            auto builder{ AppNotificationBuilder().SetTimeStamp(timeStamp) };
+            auto expected{ L"<toast displayTimestamp='2016-12-22T09:12:10Z'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
         TEST_METHOD(AppNotificationBuilderAddOneArgument)
         {
             auto builder{ AppNotificationBuilder().AddArgument(L"key", L"value") };

@@ -7,6 +7,9 @@
 #include <winrt/Windows.Globalization.DateTimeFormatting.h>
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder.g.cpp"
 #include "AppNotificationBuilderUtility.h"
+#include <iomanip>
+#include <ctime>
+#include <sstream>
 
 using namespace winrt::Windows::Globalization;
 using namespace winrt::Windows::Globalization::DateTimeFormatting;
@@ -23,12 +26,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetTimeStamp(winrt::Windows::Foundation::DateTime const& value)
     {
-        
-        //winrt::std::wstring currentLanguage { ApplicationLanguages::Languages().First().Current() };
-        //// DateTimeFormatter dateTimeFormatter{ "longtime" };
-        //winrt::Windows::Foundation::DateTime::
-        //winrt::Windows::Foundation::DateTime { 2022, 1, 13, 16, 25, 30,  }
-        //m_timeStamp = timeStamp;
+        auto seconds{ winrt::clock::to_time_t(value) };
+        struct tm buf;
+        gmtime_s(&buf, &seconds);
+
+        std::wstringstream buffer;
+        buffer << std::put_time(&buf, L"%FT%T");
+
+        m_timeStamp = wil::str_printf<std::wstring>(L" displayTimestamp='%wsZ'", buffer.str().c_str());
         return *this;
     }
 
@@ -306,6 +311,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::wstring buttons{ GetButtons() };
 
         xmlResult.append(L"<toast");
+        xmlResult.append(m_timeStamp);
         xmlResult.append(GetDuration());
         xmlResult.append(GetScenario());
         xmlResult.append(GetArguments());

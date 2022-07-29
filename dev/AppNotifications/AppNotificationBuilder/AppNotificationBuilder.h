@@ -63,7 +63,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::wstring GetImages();
         std::wstring GetButtons();
 
-        winrt::Windows::Foundation::DateTime m_timeStamp{};
+        std::wstring m_timeStamp{};
         AppNotificationDuration m_duration{ AppNotificationDuration::Default };
         AppNotificationScenario m_scenario{ AppNotificationScenario::Default };
         bool m_useButtonStyle{};
