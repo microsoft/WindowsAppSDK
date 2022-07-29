@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import "..\AppNotifications\AppNotifications.idl";
@@ -101,6 +101,12 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Urgent, // Important notifications allow users to have more control over what 1st party and 3rd party apps can send them high-priority AppNotifications (urgent/important) that can break through Focus Assist.
     };
 
+    enum AppNotificationAudioLooping
+    {
+        None, // Audio will not loop
+        Loop, // Audio will loop for the duration of the AppNotification
+    };
+
     enum AppNotificationDuration
     {
         Default, // Default value. AppNotification appears for a short while and then goes into Notification Center.
@@ -122,6 +128,8 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Sets the timeStamp of the AppNotification to when it was constructed instead of when it was sent.
         AppNotificationBuilder SetTimeStamp(Windows.Foundation.DateTime value);
+
+        AppNotificationBuilder SetDuration(AppNotificationDuration duration);
 
         // Sets the scenario of the AppNotification.
         AppNotificationBuilder SetScenario(AppNotificationScenario value);
@@ -149,10 +157,10 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // SetAudio
         AppNotificationBuilder SetAudioUri(Windows.Foundation.Uri audioUri);
-        AppNotificationBuilder SetAudioUri(Windows.Foundation.Uri audioUri, AppNotificationDuration duration);
+        AppNotificationBuilder SetAudioUri(Windows.Foundation.Uri audioUri, AppNotificationAudioLooping loop);
 
         AppNotificationBuilder SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent);
-        AppNotificationBuilder SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent, AppNotificationDuration duration);
+        AppNotificationBuilder SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent, AppNotificationAudioLooping loop);
 
         AppNotificationBuilder MuteAudio();
 

@@ -19,6 +19,8 @@
 #include <WexTestClass.h>
 
 #include <string>
+#include <sstream>
+#include <iomanip>
 
 #include <wil/result_macros.h>
 #include <wil/com.h>
