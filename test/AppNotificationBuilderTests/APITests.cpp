@@ -408,7 +408,6 @@ namespace Test::AppNotification::Builder
                 .AddTextBox(L"some input id", L"Some placeholder text", L"A Title")};
             auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><input id='some input id' type='text' placeHolderContent='Some placeholder text' title='A Title'/></actions></toast>" };
 
-            auto x{ builder.BuildNotification().Payload() };
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
     };
