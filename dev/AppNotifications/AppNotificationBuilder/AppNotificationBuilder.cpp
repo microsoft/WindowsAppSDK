@@ -303,7 +303,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
             std::wstring result{};
             for (auto input : m_textBoxList)
             {
-                auto placeHolderTextAndTitle = input.hasPlaceHolderTextAndTitle ? wil::str_printf<std::wstring>(L" placeHolderContent='%ls' title='%ls'", input.placeHolderText.c_str(), input.title.c_str()) : L"";
+                auto placeHolderTextAndTitle = input.hasPlaceHolderTextAndTitle
+                    ? wil::str_printf<std::wstring>(L" placeHolderContent='%ls' title='%ls'", input.placeHolderText.c_str(), input.title.c_str())
+                    : L"";
 
                 result.append(wil::str_printf<std::wstring>(L"<input id='%ls' type='text'%ls/>", input.id.c_str(), placeHolderTextAndTitle.c_str()));
             }
