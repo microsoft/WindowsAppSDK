@@ -218,6 +218,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddComboBox(AppNotificationComboBox const& value)
+    {
+        m_comboBoxList.push_back(value);
+
+        return *this;
+    }
+
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetTag(hstring const& value)
     {
         m_tag = value;
@@ -298,7 +305,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     std::wstring AppNotificationBuilder::GetActions()
     {
-        if (!m_buttonList.empty() || !m_textBoxList.empty())
+        if (m_buttonList.empty() && m_textBoxList.empty() && m_comboBoxList.empty())
+        {
+            return {};
+        }
+        else
         {
             std::wstring result{};
             for (auto input : m_textBoxList)
@@ -308,6 +319,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
                     : L"";
 
                 result.append(wil::str_printf<std::wstring>(L"<input id='%ls' type='text'%ls/>", input.id.c_str(), placeHolderTextAndTitle.c_str()));
+            }
+
+            for (auto input : m_comboBoxList)
+            {
+                result.append(input.as<winrt::Windows::Foundation::IStringable>().ToString().c_str());
             }
 
             for (auto input : m_buttonList)
@@ -321,10 +337,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
             }
 
             return wil::str_printf<std::wstring>(L"<actions>%ws</actions>", result.c_str());
-        }
-        else
-        {
-            return {};
         }
     }
 

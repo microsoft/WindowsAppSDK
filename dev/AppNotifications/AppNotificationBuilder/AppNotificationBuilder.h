@@ -54,6 +54,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         // Adds a button to the AppNotificationBuilder
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddButton(AppNotificationButton const& value);
 
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddComboBox(AppNotificationComboBox const& value);
+
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetTag(winrt::hstring const& value);
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetGroup(winrt::hstring const& value);
 
@@ -91,6 +93,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_arguments{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
         std::vector<AppNotificationButton> m_buttonList{};
         std::vector<TextBox> m_textBoxList{};
+        std::vector<AppNotificationComboBox> m_comboBoxList{};
         winrt::hstring m_tag{};
         winrt::hstring m_group{};
     };
