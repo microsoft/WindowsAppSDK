@@ -48,6 +48,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder MuteAudio();
 
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddTextBox(hstring id);
+
         // Adds a button to the AppNotificationBuilder
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddButton(AppNotificationButton const& value);
 
@@ -65,7 +67,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::wstring GetButtonStyle();
         std::wstring GetText();
         std::wstring GetImages();
-        std::wstring GetButtons();
+        std::wstring GetActions();
 
         std::wstring m_timeStamp{};
         AppNotificationDuration m_duration{ AppNotificationDuration::Default };
@@ -79,6 +81,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::hstring m_audio{};
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_arguments{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
         std::vector<AppNotificationButton> m_buttonList{};
+        std::vector<hstring> m_textBoxList{};
         winrt::hstring m_tag{};
         winrt::hstring m_group{};
     };

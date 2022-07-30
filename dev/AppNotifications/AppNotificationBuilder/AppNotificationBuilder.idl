@@ -167,6 +167,8 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         AppNotificationBuilder MuteAudio();
 
+        AppNotificationBuilder AddTextBox(String id);
+
         // Adds a button to the AppNotificationBuilder
         AppNotificationBuilder AddButton(AppNotificationButton value);
 

@@ -382,5 +382,25 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
+        TEST_METHOD(AppNotificationBuilderAddTextBox)
+        {
+            auto builder{ AppNotificationBuilder()
+                .AddTextBox(L"input1") };
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><input id='input1' type='text'/></actions></toast>" };
+
+            auto x{ builder.BuildNotification().Payload() };
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderAddTooManyTextBoxes)
+        {
+            VERIFY_THROWS_HR(AppNotificationBuilder()
+                .AddTextBox(L"input1")
+                .AddTextBox(L"input2")
+                .AddTextBox(L"input3")
+                .AddTextBox(L"input4")
+                .AddTextBox(L"input5")
+                .AddTextBox(L"input6"), E_INVALIDARG);
+        }
     };
 }

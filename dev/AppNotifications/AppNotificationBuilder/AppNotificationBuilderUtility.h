@@ -8,6 +8,7 @@
 inline const size_t c_maxAppNotificationPayload{ 5120 };
 inline const uint8_t c_maxTextElements{ 3 };
 inline const uint8_t c_maxButtonElements{ 5 };
+constexpr uint8_t c_maxTextInputElements{ 5 };
 
 namespace AppNotificationBuilder
 {
