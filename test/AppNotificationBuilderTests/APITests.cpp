@@ -391,7 +391,20 @@ namespace Test::AppNotification::Builder
                     .BindValueStringOverride()) };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'><text>Downloading this week's new music...</text><progress title='{progressTitle}' status='{progressStatus}' value='{progressValue}' valueStringOverride='{progressValueString}'/></binding></visual></toast>" };
 
-            auto x{ builder.BuildNotification().Payload() };
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationAddMoreThanOneProgressBar)
+        {
+            auto builder{ AppNotificationBuilder()
+                .AddText(L"Downloading this week's new music...")
+                .AddProgressBar(AppNotificationProgressBar()
+                    .BindTitle()
+                    .BindValueStringOverride())
+                .AddProgressBar(AppNotificationProgressBar()
+                    .SetValue(0.8)
+                    .SetStatus(L"Still downloading..."))};
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'><text>Downloading this week's new music...</text><progress title='{progressTitle}' status='{progressStatus}' value='{progressValue}' valueStringOverride='{progressValueString}'/><progress status='Still downloading...' value='0.8'/></binding></visual></toast>" };
 
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }

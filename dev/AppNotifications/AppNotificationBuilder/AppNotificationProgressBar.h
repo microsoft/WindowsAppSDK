@@ -12,21 +12,16 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         AppNotificationProgressBar();
 
         // Properties
-        void Title(winrt::hstring const& value) { m_title = value; m_titleStatus = Status1::value; };
+        void Title(winrt::hstring const& value);
         winrt::hstring Title() { return m_title; };
 
-        void Status(winrt::hstring const& value) { m_status = value; m_statusStatus = Status1::value; };
+        void Status(winrt::hstring const& value);
         winrt::hstring Status() { return m_status; };
 
-        void Value(double value)
-        {
-            THROW_HR_IF_MSG(E_INVALIDARG, value < 0.0 || value > 1.0, "You must provide a value between 0.0 and 1.0");
-
-            m_value = value; m_valueStatus = Status1::value;
-        };
+        void Value(double value);
         double Value() { return m_value; };
 
-        void ValueStringOverride(winrt::hstring const& value) { m_valueStringOverride = value; m_valueStringOverrideStatus = Status1::value; };
+        void ValueStringOverride(winrt::hstring const& value);
         winrt::hstring ValueStringOverride() { return m_valueStringOverride; };
 
         // Fluent setters
@@ -46,15 +41,15 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::hstring ToString();
 
     private:
-        enum class Status1 {notset, bind, value};
+        enum class BindMode {NotSet, Bind, Value};
 
-        Status1 m_titleStatus;
+        BindMode m_titleStatus;
         winrt::hstring m_title;
-        Status1 m_statusStatus;
+        BindMode m_statusStatus;
         winrt::hstring m_status;
-        Status1 m_valueStatus;
+        BindMode m_valueStatus;
         double m_value;
-        Status1 m_valueStringOverrideStatus;
+        BindMode m_valueStringOverrideStatus;
         winrt::hstring m_valueStringOverride;
     };
 }
