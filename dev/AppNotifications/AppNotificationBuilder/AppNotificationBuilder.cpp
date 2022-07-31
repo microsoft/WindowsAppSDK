@@ -196,7 +196,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddProgressBar(AppNotificationProgressBar const& value)
     {
-        m_progressBar = value;
+        m_progressBarList.push_back(value);
 
         return *this;
     }
@@ -316,6 +316,18 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return m_useButtonStyle ? L" useButtonStyle='true'" : L"";
     }
 
+    std::wstring AppNotificationBuilder::GetProgressBars()
+    {
+        std::wstring result{};
+
+        for (auto progressBar : m_progressBarList)
+        {
+            result.append(progressBar.as<winrt::Windows::Foundation::IStringable>().ToString());
+        }
+
+        return result;
+    }
+
     winrt::Microsoft::Windows::AppNotifications::AppNotification AppNotificationBuilder::BuildNotification()
     {
         std::wstring xmlResult{};
@@ -334,7 +346,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         xmlResult.append(GetText());
         xmlResult.append(m_attributionText);
         xmlResult.append(GetImages());
-        xmlResult.append(m_progressBar.as<winrt::Windows::Foundation::IStringable>().ToString());
+        xmlResult.append(GetProgressBars());
         xmlResult.append(L"</binding></visual>");
         xmlResult.append(m_audio.c_str());
         xmlResult.append(buttons);

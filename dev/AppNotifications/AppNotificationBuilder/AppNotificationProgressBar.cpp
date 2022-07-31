@@ -7,18 +7,24 @@
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
-    AppNotificationProgressBar::AppNotificationProgressBar() {};
+    AppNotificationProgressBar::AppNotificationProgressBar()
+        :m_titleStatus{ Status1::notset},
+         m_statusStatus{ Status1::notset },
+         m_valueStatus{ Status1::notset },
+         m_valueStringOverrideStatus{ Status1::notset }
+    {};
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationProgressBar AppNotificationProgressBar::SetTitle(winrt::hstring const& value)
     {
         m_title = value;
+        m_titleStatus = Status1::value;
 
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationProgressBar AppNotificationProgressBar::BindTitle()
     {
-        m_title = L"{progressTitle}";
+        m_titleStatus = Status1::bind;
 
         return *this;
     }
@@ -26,27 +32,31 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationProgressBar AppNotificationProgressBar::SetStatus(winrt::hstring const& value)
     {
         m_status = value;
+        m_statusStatus = Status1::value;
 
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationProgressBar AppNotificationProgressBar::BindStatus()
     {
-        m_status = L"{progressStatus}";
+        m_statusStatus = Status1::bind;
 
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationProgressBar AppNotificationProgressBar::SetValue(double value)
     {
+        THROW_HR_IF_MSG(E_INVALIDARG, value < 0.0 || value > 1.0, "You must provide a value between 0.0 and 1.0");
+
         m_value = value;
+        m_valueStatus = Status1::value;
 
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationProgressBar AppNotificationProgressBar::BindValue()
     {
-        m_value = 1.0;
+        m_valueStatus = Status1::bind;
 
         return *this;
     }
@@ -54,45 +64,30 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationProgressBar AppNotificationProgressBar::SetValueStringOverride(winrt::hstring const& value)
     {
         m_valueStringOverride = value;
+        m_valueStringOverrideStatus = Status1::value;
 
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationProgressBar AppNotificationProgressBar::BindValueStringOverride()
     {
-        m_valueStringOverride = L"{progressValueString}";
+        m_valueStringOverrideStatus = Status1::bind;
 
         return *this;
     }
 
     winrt::hstring AppNotificationProgressBar::ToString()
     {
-        winrt::hstring xml{ L"" };
+        std::wstring title1{ m_titleStatus == Status1::value ? m_title : L"{progressTitle}" };
+        std::wstring status1{ m_statusStatus == Status1::value ? m_status : L"{progressStatus}" };
+        std::wstring value1{ m_valueStatus == Status1::value ? wil::str_printf<std::wstring>(L"%g", m_value) : L"{progressValue}" };
+        std::wstring valueStringOverride1{ m_valueStringOverrideStatus == Status1::value ? m_valueStringOverride : L"{progressValueString}" };
 
-        // props.as<ITextProperties>()->GetCallScenarioAlign()
-        // <progress title = "{progressTitle}" value = "{progressValue}" valueStringOverride = "{progressValueString}" status = "{progressStatus}"/>
-        if (!m_title.empty())
-        {
-            xml = xml + L"<progress title = \"" + m_title + L"\"";
+        std::wstring title{ m_titleStatus == Status1::notset ? L"" : L" title='" + title1 + L"'" };
+        std::wstring status{ L" status='" + status1 + L"'" };
+        std::wstring value{ L" value='" + value1 + L"'" };
+        std::wstring valueStringOverride{ m_valueStringOverrideStatus == Status1::notset ? L"" : L" valueStringOverride='" + valueStringOverride1 + L"'" };
 
-            if (m_value != 0.0)
-            {
-                xml = xml + L" value = \"" + std::to_wstring(m_value) + L"\"";
-            }
-
-            if (!m_valueStringOverride.empty())
-            {
-                xml = xml + L" valueStringOverride = \"" + m_valueStringOverride + L"\"";
-            }
-
-            if (!m_status.empty())
-            {
-                xml = xml + L" status = \"" + xml + L"\"";
-            }
-
-            xml = xml + L"/>";
-        }
-
-        return xml;
+        return wil::str_printf<std::wstring>(L"<progress%ls%ls%ls%ls/>", title.c_str(), status.c_str(), value.c_str(), valueStringOverride.c_str()).c_str();
     }
 }

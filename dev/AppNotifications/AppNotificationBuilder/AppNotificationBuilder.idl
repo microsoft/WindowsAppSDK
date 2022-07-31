@@ -74,10 +74,10 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationProgressBar();
 
         // Setting these properties will remove the data binding with a static value
-        //String Title;
-        //String Status;
-        //Double Value;
-        //String ValueStringOverride;
+        String Title;
+        String Status;
+        Double Value;
+        String ValueStringOverride;
 
         AppNotificationProgressBar SetTitle(String value);
         AppNotificationProgressBar BindTitle();
