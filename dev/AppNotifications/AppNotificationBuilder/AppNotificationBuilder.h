@@ -73,14 +73,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::wstring GetImages();
         std::wstring GetActions();
 
-        struct TextBox
-        {
-            hstring id;
-            bool hasPlaceHolderTextAndTitle;
-            hstring placeHolderText;
-            hstring title;
-        };
-
         std::wstring m_timeStamp{};
         AppNotificationDuration m_duration{ AppNotificationDuration::Default };
         AppNotificationScenario m_scenario{ AppNotificationScenario::Default };
@@ -93,7 +85,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::hstring m_audio{};
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_arguments{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
         std::vector<AppNotificationButton> m_buttonList{};
-        std::vector<TextBox> m_textBoxList{};
+        std::vector<std::wstring> m_textBoxList{};
         std::vector<AppNotificationComboBox> m_comboBoxList{};
         winrt::hstring m_tag{};
         winrt::hstring m_group{};

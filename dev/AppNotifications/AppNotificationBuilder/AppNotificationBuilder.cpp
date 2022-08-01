@@ -203,7 +203,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         ThrowIfMaxInputItemsExceeded();
 
-        m_textBoxList.push_back(TextBox{ id });
+        m_textBoxList.push_back(wil::str_printf<std::wstring>(L"<input id='%ls' type='text'/>", id.c_str()));
         return *this;
     }
 
@@ -211,7 +211,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         ThrowIfMaxInputItemsExceeded();
 
-        m_textBoxList.push_back(TextBox{ id, true, placeHolderText, title });
+        m_textBoxList.push_back(wil::str_printf<std::wstring>(L"<input id='%ls' type='text' placeHolderContent='%ls' title='%ls'/>", id.c_str(), placeHolderText.c_str(), title.c_str()));
         return *this;
     }
 
@@ -321,11 +321,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
             std::wstring result{};
             for (auto input : m_textBoxList)
             {
-                auto placeHolderTextAndTitle = input.hasPlaceHolderTextAndTitle
-                    ? wil::str_printf<std::wstring>(L" placeHolderContent='%ls' title='%ls'", input.placeHolderText.c_str(), input.title.c_str())
-                    : L"";
-
-                result.append(wil::str_printf<std::wstring>(L"<input id='%ls' type='text'%ls/>", input.id.c_str(), placeHolderTextAndTitle.c_str()));
+                result.append(input.c_str());
             }
 
             for (auto input : m_comboBoxList)
