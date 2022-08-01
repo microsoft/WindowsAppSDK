@@ -4,7 +4,7 @@
 #include "pch.h"
 #include "AppNotificationComboBox.h"
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationComboBox.g.cpp"
-//#include "AppNotificationBuilderUtility.h"
+#include "AppNotificationBuilderUtility.h"
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
@@ -12,6 +12,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationComboBox AppNotificationComboBox::AddItem(winrt::hstring const& id, winrt::hstring const& content)
     {
+        THROW_HR_IF_MSG(E_INVALIDARG, m_items.Size() >= c_maxSelectionElements, "Maximum number of items added");
+        THROW_HR_IF_MSG(E_INVALIDARG, id.empty(), "You must provide an id when adding an argument");
+
         m_items.Insert(id, content);
 
         return *this;
@@ -45,9 +48,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::hstring AppNotificationComboBox::ToString()
     {
-        std::wstring xmlResult{ wil::str_printf<std::wstring>(L"<input id='%ls' type='selection' defaultInput='%ls'>%ls</input>",
+        std::wstring xmlResult{ wil::str_printf<std::wstring>(L"<input id='%ls' type='selection'%ls%ls>%ls</input>",
             m_id.c_str(),
-            m_selectedItem.c_str(),
+            m_title.empty() ? L"" : wil::str_printf<std::wstring>(L" title='%ls'", m_title.c_str()).c_str(),
+            m_selectedItem.empty() ? L"" : wil::str_printf<std::wstring>(L" defaultInput='%ls'", m_selectedItem.c_str()).c_str(),
             GetSelectionItems().c_str()) };
 
         return xmlResult.c_str();

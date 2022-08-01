@@ -418,11 +418,51 @@ namespace Test::AppNotification::Builder
                     .AddItem(L"item1", L"item1 text")
                     .AddItem(L"item2", L"item2 text")
                     .AddItem(L"item3", L"item3 text")
-                    .SetTitle(L"Slection Title")
+                    .SetTitle(L"ComboBox Title")
                     .SetSelectedItem(L"item2"))};
-            auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><input id='comboBox1' type='selection' defaultInput='item2'><selection id='item1' content='item1 text'/><selection id='item2' content='item2 text'/><selection id='item3' content='item3 text'/></input></actions></toast>" };
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><input id='comboBox1' type='selection' title='ComboBox Title' defaultInput='item2'><selection id='item1' content='item1 text'/><selection id='item2' content='item2 text'/><selection id='item3' content='item3 text'/></input></actions></toast>" };
 
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationComboBoxAddTooManySelectionItems)
+        {
+            VERIFY_THROWS_HR(AppNotificationComboBox(L"comboBox1")
+                    .AddItem(L"item1", L"item1 text")
+                    .AddItem(L"item2", L"item2 text")
+                    .AddItem(L"item3", L"item3 text")
+                    .AddItem(L"item4", L"item4 text")
+                    .AddItem(L"item5", L"item5 text")
+                    .AddItem(L"item6", L"item6 text"), E_INVALIDARG);
+        }
+
+        TEST_METHOD(AppNotificationComboBoxAddFiveSelectionItems)
+        {
+            auto comboBox{ AppNotificationComboBox(L"comboBox1")
+                    .AddItem(L"item1", L"item1 text")
+                    .AddItem(L"item2", L"item2 text")
+                    .AddItem(L"item3", L"item3 text")
+                    .AddItem(L"item4", L"item4 text")
+                    .AddItem(L"item5", L"item5 text") };
+            auto expected{ L"<input id='comboBox1' type='selection'><selection id='item1' content='item1 text'/><selection id='item2' content='item2 text'/><selection id='item3' content='item3 text'/><selection id='item4' content='item4 text'/><selection id='item5' content='item5 text'/></input>" };
+
+            VERIFY_ARE_EQUAL(comboBox.as<winrt::Windows::Foundation::IStringable>().ToString(), expected);
+        }
+
+        TEST_METHOD(AppNotificationComboBoxAddSelectionItemWithoutAnId)
+        {
+            VERIFY_THROWS_HR(AppNotificationComboBox(L"comboBox1")
+                .AddItem(L"", L"item text"), E_INVALIDARG);
+        }
+
+        TEST_METHOD(AppNotificationComboBoxAddTwoSelectionItemsWithSameId)
+        {
+            auto comboBox{ AppNotificationComboBox(L"comboBox1")
+                    .AddItem(L"item1", L"item1 text")
+                    .AddItem(L"item1", L"item2 text") };
+            auto expected{ L"<input id='comboBox1' type='selection'><selection id='item1' content='item2 text'/></input>" };
+
+            VERIFY_ARE_EQUAL(comboBox.as<winrt::Windows::Foundation::IStringable>().ToString(), expected);
         }
     };
 }
