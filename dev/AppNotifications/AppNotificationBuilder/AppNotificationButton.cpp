@@ -4,7 +4,7 @@
 #include "pch.h"
 #include "AppNotificationButton.h"
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationButton.g.cpp"
-#include "AppNotificationBuilderUtility.h"
+#include <IsWindowsVersion.h>
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
@@ -12,12 +12,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     bool AppNotificationButton::IsToolTipSupported()
     {
-        return GetBuildNumber() >= 19041;
+        return WindowsVersion::IsWindows10_20H1OrGreater();
     }
 
     bool AppNotificationButton::IsButtonStyleSupported()
     {
-        return GetBuildNumber() >= 19041;
+        return WindowsVersion::IsWindows10_20H1OrGreater();
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::AddArgument(winrt::hstring const& key, winrt::hstring const& value)

@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <ctime>
 #include <sstream>
+#include <IsWindowsVersion.h>
 
 using namespace winrt::Windows::Globalization;
 using namespace winrt::Windows::Globalization::DateTimeFormatting;
@@ -18,7 +19,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
     bool AppNotificationBuilder::IsUrgentScenarioSupported()
     {
-        return GetBuildNumber() >= 19041;
+        return WindowsVersion::IsWindows10_20H1OrGreater();
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddArgument(hstring const& key, hstring const& value)
