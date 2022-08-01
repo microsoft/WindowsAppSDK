@@ -25,7 +25,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         THROW_HR_IF_MSG(E_INVALIDARG, key.empty(), "You must provide a key when adding an argument.");
         THROW_HR_IF_MSG(E_INVALIDARG, m_protocolUri, "You cannot add an argument after calling SetInvokeUri.");
 
-        m_arguments.Insert(key, value);
+        m_arguments.Insert(Encode(key), Encode(value));
         return *this;
     }
 

@@ -4,6 +4,7 @@
 #pragma once
 #include "pch.h"
 #include "winrt/Microsoft.Windows.AppNotifications.Builder.h"
+#include <algorithm>
 
 inline const size_t c_maxAppNotificationPayload{ 5120 };
 inline const uint8_t c_maxTextElements{ 3 };
@@ -69,6 +70,28 @@ inline std::wstring GetWinSoundEventString(AppNotificationBuilder::AppNotificati
     default:
         return L"ms-winsoundevent:Notification.Default";
     }
+}
+
+inline std::wstring Encode(winrt::hstring const& value)
+{
+    std::wstring encodedValue{};
+    for (auto ch : value)
+    {
+        switch (ch) {
+        case '%':
+            encodedValue.append(L"%25");
+            break;
+        case ';':
+            encodedValue.append(L"%3B");
+            break;
+        case '=':
+            encodedValue.append(L"%3D");
+            break;
+        default:
+            encodedValue.push_back(ch);
+        }
+    }
+    return encodedValue;
 }
 
 inline int GetBuildNumber()
