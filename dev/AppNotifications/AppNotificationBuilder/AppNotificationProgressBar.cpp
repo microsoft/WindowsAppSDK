@@ -97,15 +97,15 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::hstring AppNotificationProgressBar::ToString()
     {
-        std::wstring titleValue{ m_titleStatus == BindMode::Value ? m_title : L"{progressTitle}" };
-        std::wstring statusValue{ m_statusStatus == BindMode::Value ? m_status : L"{progressStatus}" };
-        std::wstring valueValue{ m_valueStatus == BindMode::Value ? wil::str_printf<std::wstring>(L"%g", m_value) : L"{progressValue}" };
-        std::wstring valueStringOverrideValue{ m_valueStringOverrideStatus == BindMode::Value ? m_valueStringOverride : L"{progressValueString}" };
+        auto titleValue{ m_titleStatus == BindMode::Value ? m_title : L"{progressTitle}" };
+        auto statusValue{ m_statusStatus == BindMode::Value ? m_status : L"{progressStatus}" };
+        auto valueValue{ m_valueStatus == BindMode::Value ? wil::str_printf<std::wstring>(L"%g", m_value) : L"{progressValue}" };
+        auto valueStringOverrideValue{ m_valueStringOverrideStatus == BindMode::Value ? m_valueStringOverride : L"{progressValueString}" };
 
-        std::wstring title{ m_titleStatus == BindMode::NotSet ? L"" : L" title='" + titleValue + L"'" };
-        std::wstring status{ L" status='" + statusValue + L"'" };
-        std::wstring value{ L" value='" + valueValue + L"'" };
-        std::wstring valueStringOverride{ m_valueStringOverrideStatus == BindMode::NotSet ? L"" : L" valueStringOverride='" + valueStringOverrideValue + L"'" };
+        auto title{ m_titleStatus == BindMode::NotSet ? L"" : wil::str_printf<std::wstring>(L" title='%ls'", titleValue.c_str()) };
+        auto status{ wil::str_printf<std::wstring>(L" status='%ls'", statusValue.c_str()) };
+        auto value{ wil::str_printf<std::wstring>(L" value='%ls'", valueValue.c_str()) };
+        auto valueStringOverride{ m_valueStringOverrideStatus == BindMode::NotSet ? L"" : wil::str_printf < std::wstring>(L" valueStringOverride='%ls'", valueStringOverrideValue.c_str()) };
 
         return wil::str_printf<std::wstring>(L"<progress%ls%ls%ls%ls/>", title.c_str(), status.c_str(), value.c_str(), valueStringOverride.c_str()).c_str();
     }
