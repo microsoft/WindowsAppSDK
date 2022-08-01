@@ -32,7 +32,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetTimeStamp(winrt::Windows::Foundation::DateTime const& value)
     {
         auto seconds{ winrt::clock::to_time_t(value) };
-        struct tm buf;
+        struct tm buf {};
         gmtime_s(&buf, &seconds);
 
         std::wstringstream buffer;
@@ -178,13 +178,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioEvent(AppNotificationSoundEvent const& soundEvent)
     {
-        m_audio = wil::str_printf<std::wstring>(L"<audio src='%ls'/>", GetWinSoundEventString(soundEvent).c_str());
+        m_audio = wil::str_printf<std::wstring>(L"<audio src='%ls'/>", GetWinSoundEventString(soundEvent));
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAudioEvent(AppNotificationSoundEvent const& soundEvent, AppNotificationAudioLooping const& loop)
     {
-        m_audio = wil::str_printf<std::wstring>(L"<audio src='%ls' loop='%ls'/>", GetWinSoundEventString(soundEvent).c_str(), loop == AppNotificationAudioLooping::Loop ? L"true" : L"false");
+        m_audio = wil::str_printf<std::wstring>(L"<audio src='%ls' loop='%ls'/>", GetWinSoundEventString(soundEvent), loop == AppNotificationAudioLooping::Loop ? L"true" : L"false");
         return *this;
     }
 

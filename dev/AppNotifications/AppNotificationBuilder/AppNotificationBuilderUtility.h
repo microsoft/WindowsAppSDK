@@ -14,7 +14,7 @@ namespace AppNotificationBuilder
     using namespace winrt::Microsoft::Windows::AppNotifications::Builder;
 }
 
-inline std::wstring GetWinSoundEventString(AppNotificationBuilder::AppNotificationSoundEvent soundEvent)
+inline PCWSTR GetWinSoundEventString(AppNotificationBuilder::AppNotificationSoundEvent soundEvent)
 {
     switch (soundEvent)
     {
