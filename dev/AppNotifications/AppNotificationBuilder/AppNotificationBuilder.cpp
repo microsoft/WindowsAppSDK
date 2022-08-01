@@ -16,7 +16,10 @@ using namespace winrt::Windows::Globalization::DateTimeFormatting;
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
-    void AppNotificationBuilder::ThrowIfMaxInputItemsExceeded() { THROW_HR_IF_MSG(E_INVALIDARG, m_textBoxList.size() + m_comboBoxList.size() >= c_maxTextInputElements, "Maximum number of input elements added"); };
+    void AppNotificationBuilder::ThrowIfMaxInputItemsExceeded()
+    {
+        THROW_HR_IF_MSG(E_INVALIDARG, m_textBoxList.size() + m_comboBoxList.size() >= c_maxTextInputElements, "Maximum number of input elements added");
+    }
 
     bool AppNotificationBuilder::IsUrgentScenarioSupported()
     {
