@@ -64,6 +64,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         static bool IsUrgentScenarioSupported();
 
     private:
+        void ThrowIfMaxInputItemsExceeded();
         std::wstring GetDuration();
         std::wstring GetScenario();
         std::wstring GetArguments();

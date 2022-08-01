@@ -425,6 +425,37 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
+        TEST_METHOD(AppNotificationBuilderAddTooManyComboBox)
+        {
+            VERIFY_THROWS_HR(AppNotificationBuilder()
+                .AddTextBox(L"input1")
+                .AddTextBox(L"input2")
+                .AddTextBox(L"input3")
+                .AddComboBox(AppNotificationComboBox(L"comboBox1")
+                    .AddItem(L"item1", L"item1 text"))
+                .AddComboBox(AppNotificationComboBox(L"comboBox2")
+                    .AddItem(L"item1", L"item1 text"))
+                .AddComboBox(AppNotificationComboBox(L"comboBox3")
+                    .AddItem(L"item1", L"item1 text")), E_INVALIDARG);
+        }
+
+        TEST_METHOD(AppNotificationBuilderAddTooManyInputElements)
+        {
+            VERIFY_THROWS_HR(AppNotificationBuilder()
+                .AddComboBox(AppNotificationComboBox(L"comboBox1")
+                    .AddItem(L"item1", L"item1 text"))
+                .AddComboBox(AppNotificationComboBox(L"comboBox2")
+                    .AddItem(L"item1", L"item1 text"))
+                .AddComboBox(AppNotificationComboBox(L"comboBox3")
+                    .AddItem(L"item1", L"item1 text"))
+                .AddComboBox(AppNotificationComboBox(L"comboBox4")
+                    .AddItem(L"item1", L"item1 text"))
+                .AddComboBox(AppNotificationComboBox(L"comboBox5")
+                    .AddItem(L"item1", L"item1 text"))
+                .AddComboBox(AppNotificationComboBox(L"comboBox6")
+                    .AddItem(L"item1", L"item1 text")), E_INVALIDARG);
+        }
+
         TEST_METHOD(AppNotificationComboBoxAddTooManySelectionItems)
         {
             VERIFY_THROWS_HR(AppNotificationComboBox(L"comboBox1")
