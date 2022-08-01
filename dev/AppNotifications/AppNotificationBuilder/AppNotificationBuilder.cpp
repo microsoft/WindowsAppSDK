@@ -33,7 +33,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetTimeStamp(winrt::Windows::Foundation::DateTime const& value)
     {
         auto seconds{ winrt::clock::to_time_t(value) };
-        struct tm buf {};
+        struct tm buf{};
         gmtime_s(&buf, &seconds);
 
         std::wstringstream buffer;
