@@ -18,7 +18,7 @@ namespace AppNotificationBuilder
     using namespace winrt::Microsoft::Windows::AppNotifications::Builder;
 }
 
-inline std::wstring GetWinSoundEventString(AppNotificationBuilder::AppNotificationSoundEvent soundEvent)
+inline PCWSTR GetWinSoundEventString(AppNotificationBuilder::AppNotificationSoundEvent soundEvent)
 {
     switch (soundEvent)
     {
@@ -125,21 +125,4 @@ std::wstring Decode(std::wstring const& value)
     result = DecodeString(result, c_encodedEquals, L'=');
 
     return result;
-}
-
-inline int GetBuildNumber()
-{
-    wchar_t regString[MAX_PATH]{ L"\0" };
-    DWORD length{ MAX_PATH };
-    const LSTATUS regResult{ ::RegGetValue(
-        HKEY_LOCAL_MACHINE,
-        L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
-        L"CurrentBuild",
-        RRF_RT_REG_SZ,
-        nullptr,
-        regString,
-        &length) };
-
-    THROW_IF_FAILED_MSG(regResult, "Failed to retrieve Windows build number.");
-    return _wtoi(regString);
 }
