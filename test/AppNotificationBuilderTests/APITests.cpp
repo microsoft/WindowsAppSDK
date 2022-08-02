@@ -92,6 +92,29 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
+        TEST_METHOD(AppNotificationBuilderAddArgumentWithPercentChar)
+        {
+            auto builder{ AppNotificationBuilder().AddArgument(L"k%ey", L"") };
+            auto expected{ L"<toast launch='k%25ey'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderAddArgumentWithEqualChar)
+        {
+            auto builder{ AppNotificationBuilder().AddArgument(L"k=ey", L"") };
+            auto expected{ L"<toast launch='k%3Dey'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderAddArgumentWithSemicolonChar)
+        {
+            auto builder{ AppNotificationBuilder().AddArgument(L"k;ey", L"") };
+            auto expected{ L"<toast launch='k%3Bey'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
         TEST_METHOD(AppNotificationBuilderAddArgumentEmptyKey)
         {
             VERIFY_THROWS_HR(AppNotificationBuilder().AddArgument(L"", L""), E_INVALIDARG);

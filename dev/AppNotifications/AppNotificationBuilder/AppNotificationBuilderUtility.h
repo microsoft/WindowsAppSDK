@@ -9,6 +9,9 @@
 inline const size_t c_maxAppNotificationPayload{ 5120 };
 inline const uint8_t c_maxTextElements{ 3 };
 inline const uint8_t c_maxButtonElements{ 5 };
+constexpr PCWSTR c_encodedPercent{ L"%25" };
+constexpr PCWSTR c_encodedSemicolon{ L"%3B" };
+constexpr PCWSTR c_encodedEquals{ L"%3D" };
 
 namespace AppNotificationBuilder
 {
@@ -79,19 +82,49 @@ inline std::wstring Encode(winrt::hstring const& value)
     {
         switch (ch) {
         case '%':
-            encodedValue.append(L"%25");
+            encodedValue.append(c_encodedPercent);
             break;
         case ';':
-            encodedValue.append(L"%3B");
+            encodedValue.append(c_encodedSemicolon);
             break;
         case '=':
-            encodedValue.append(L"%3D");
+            encodedValue.append(c_encodedEquals);
             break;
         default:
             encodedValue.push_back(ch);
         }
     }
     return encodedValue;
+}
+
+// This function replaces the encoded values with the actual values
+inline std::wstring DecodeString(std::wstring value, std::wstring const& encodedValue, char ch)
+{
+    std::wstring result{};
+    size_t pos{};
+    while ((pos = value.find(encodedValue)) != std::wstring::npos)
+    {
+        result.append(value.substr(0, pos));
+        result.push_back(ch);
+        value.erase(0, pos + encodedValue.size());
+    }
+    result.append(value);
+
+    return result;
+}
+
+// Decoding process based off the Windows Community Toolkit:
+// https://github.com/CommunityToolkit/WindowsCommunityToolkit/blob/rel/7.1.0/Microsoft.Toolkit.Uwp.Notifications/Toasts/ToastArguments.cs#L389inline
+std::wstring Decode(std::wstring const& value)
+{
+    std::wstring result{ value };
+
+    // Need to unescape special characters
+    result = DecodeString(result, c_encodedPercent, L'%');
+    result = DecodeString(result, c_encodedSemicolon, L';');
+    result = DecodeString(result, c_encodedEquals, L'=');
+
+    return result;
 }
 
 inline int GetBuildNumber()
