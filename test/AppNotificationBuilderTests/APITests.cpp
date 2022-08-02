@@ -290,7 +290,7 @@ namespace Test::AppNotification::Builder
                 .AddButton(AppNotificationButton(L"content").AddArgument(L"key6", L"value6")), E_INVALIDARG);
         }
 
-        TEST_METHOD(AddButtonWithProtocolActivation)
+        TEST_METHOD(AppNotificationBuilderAddButtonWithProtocolActivation)
         {
             auto builder{ AppNotificationBuilder()
                 .AddButton(AppNotificationButton(L"content")
@@ -323,7 +323,7 @@ namespace Test::AppNotification::Builder
                     .AddArgument(L"", L"value")), E_INVALIDARG);
         }
 
-        TEST_METHOD(AddButtonWithArgumentAndProtocol)
+        TEST_METHOD(AppNotificationBuilderAddButtonWithArgumentAndProtocol)
         {
             VERIFY_THROWS_HR(AppNotificationBuilder()
                 .AddButton(AppNotificationButton(L"content")
@@ -336,7 +336,7 @@ namespace Test::AppNotification::Builder
                     .AddArgument(L"key", L"value")), E_INVALIDARG);
         }
 
-        TEST_METHOD(SetAudioWithUri)
+        TEST_METHOD(AppNotificationBuilderSetAudioWithUri)
         {
             auto builder{ AppNotificationBuilder()
                     .SetAudioUri(c_sampleUri) };
@@ -345,7 +345,7 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
-        TEST_METHOD(SetAudioWithUriAndDuration)
+        TEST_METHOD(AppNotificationBuilderSetAudioWithUriAndDuration)
         {
             auto builder{ AppNotificationBuilder()
                     .SetDuration(AppNotificationDuration::Long)
@@ -355,7 +355,7 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
-        TEST_METHOD(SetAudioWithSoundEvent)
+        TEST_METHOD(AppNotificationBuilderSetAudioWithSoundEvent)
         {
             auto builder{ AppNotificationBuilder()
                     .SetAudioEvent(AppNotificationSoundEvent::Reminder) };
@@ -364,7 +364,7 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
-        TEST_METHOD(SetAudioWithSoundEventAndDuration)
+        TEST_METHOD(AppNotificationBuilderSetAudioWithSoundEventAndDuration)
         {
             auto builder{ AppNotificationBuilder()
                     .SetDuration(AppNotificationDuration::Long)
@@ -374,7 +374,7 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
-        TEST_METHOD(MuteAudio)
+        TEST_METHOD(AppNotificationBuilderMuteAudio)
         {
             auto builder{ AppNotificationBuilder().MuteAudio() };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><audio silent='true'/></toast>" };
