@@ -8,12 +8,15 @@
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
-    AppNotificationComboBox::AppNotificationComboBox(hstring const& id) : m_id(id) { };
+    AppNotificationComboBox::AppNotificationComboBox(hstring const& id) : m_id(id)
+    {
+        THROW_HR_IF_MSG(E_INVALIDARG, id.empty(), "You must provide an id for the ComboBox");
+    };
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationComboBox AppNotificationComboBox::AddItem(winrt::hstring const& id, winrt::hstring const& content)
     {
         THROW_HR_IF_MSG(E_INVALIDARG, m_items.Size() >= c_maxSelectionElements, "Maximum number of items added");
-        THROW_HR_IF_MSG(E_INVALIDARG, id.empty(), "You must provide an id when adding an argument");
+        THROW_HR_IF_MSG(E_INVALIDARG, id.empty(), "You must provide an id for the item");
 
         m_items.Insert(id, content);
 
@@ -29,6 +32,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationComboBox AppNotificationComboBox::SetSelectedItem(winrt::hstring const& id)
     {
+        THROW_HR_IF_MSG(E_INVALIDARG, id.empty(), "You must provide an id for the selected item");
+
         m_selectedItem = id;
 
         return *this;

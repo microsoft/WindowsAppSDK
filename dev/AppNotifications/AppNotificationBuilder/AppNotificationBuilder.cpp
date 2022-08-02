@@ -203,6 +203,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddTextBox(hstring id)
     {
         ThrowIfMaxInputItemsExceeded();
+        THROW_HR_IF_MSG(E_INVALIDARG, id.empty(), "You must provide an id for the TextBox");
+
 
         m_textBoxList.push_back(wil::str_printf<std::wstring>(L"<input id='%ls' type='text'/>", id.c_str()));
         return *this;
@@ -211,6 +213,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddTextBox(hstring id, hstring placeHolderText, hstring title)
     {
         ThrowIfMaxInputItemsExceeded();
+        THROW_HR_IF_MSG(E_INVALIDARG, id.empty(), "You must provide an id for the TextBox");
 
         m_textBoxList.push_back(wil::str_printf<std::wstring>(L"<input id='%ls' type='text' placeHolderContent='%ls' title='%ls'/>", id.c_str(), placeHolderText.c_str(), title.c_str()));
         return *this;

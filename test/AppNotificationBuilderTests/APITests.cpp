@@ -391,6 +391,18 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
+        TEST_METHOD(AppNotificationBuilderAddTextBoxWithEmptyId)
+        {
+            VERIFY_THROWS_HR(AppNotificationBuilder()
+                .AddTextBox(L""), E_INVALIDARG);
+        }
+
+        TEST_METHOD(AppNotificationBuilderAddTextBoxWithEmptyIdAndPlaceHolderTextAndTitle)
+        {
+            VERIFY_THROWS_HR(AppNotificationBuilder()
+                .AddTextBox(L"", L"placeholder text", L"title"), E_INVALIDARG);
+        }
+
         TEST_METHOD(AppNotificationBuilderAddTooManyTextBoxes)
         {
             VERIFY_THROWS_HR(AppNotificationBuilder()
@@ -494,6 +506,17 @@ namespace Test::AppNotification::Builder
             auto expected{ L"<input id='comboBox1' type='selection'><selection id='item1' content='item2 text'/></input>" };
 
             VERIFY_ARE_EQUAL(comboBox.as<winrt::Windows::Foundation::IStringable>().ToString(), expected);
+        }
+
+        TEST_METHOD(AppNotificationComboBoxSetSelectedItemWithoutAnId)
+        {
+            VERIFY_THROWS_HR(AppNotificationComboBox(L"comboBox1")
+                .SetSelectedItem(L""), E_INVALIDARG);
+        }
+
+        TEST_METHOD(AppNotificationCreateComboBoxWithoutAnId)
+        {
+            VERIFY_THROWS_HR(AppNotificationComboBox(L""), E_INVALIDARG);
         }
     };
 }
