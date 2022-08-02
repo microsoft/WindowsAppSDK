@@ -5,6 +5,7 @@
 #include "AppNotificationButton.h"
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationButton.g.cpp"
 #include <IsWindowsVersion.h>
+#include "AppNotificationBuilderUtility.h"
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {

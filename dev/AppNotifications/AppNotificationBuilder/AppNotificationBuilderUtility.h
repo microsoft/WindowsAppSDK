@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#pragma once
 #include "pch.h"
 #include "winrt/Microsoft.Windows.AppNotifications.Builder.h"
 #include <algorithm>
@@ -115,7 +114,7 @@ inline std::wstring DecodeString(std::wstring value, std::wstring const& encoded
 
 // Decoding process based off the Windows Community Toolkit:
 // https://github.com/CommunityToolkit/WindowsCommunityToolkit/blob/rel/7.1.0/Microsoft.Toolkit.Uwp.Notifications/Toasts/ToastArguments.cs#L389inline
-std::wstring Decode(std::wstring const& value)
+inline std::wstring Decode(std::wstring const& value)
 {
     std::wstring result{ value };
 
