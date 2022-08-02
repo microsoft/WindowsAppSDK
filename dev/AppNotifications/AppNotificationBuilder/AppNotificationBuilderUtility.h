@@ -4,17 +4,22 @@
 #include "pch.h"
 #include "winrt/Microsoft.Windows.AppNotifications.Builder.h"
 #include <algorithm>
+#include <regex>
+#include <map>
 
 constexpr size_t c_maxAppNotificationPayload{ 5120 };
 constexpr uint8_t c_maxTextElements{ 3 };
 constexpr uint8_t c_maxButtonElements{ 5 };
-constexpr PCWSTR c_encodedPercent{ L"%25" };
-constexpr PCWSTR c_encodedSemicolon{ L"%3B" };
-constexpr PCWSTR c_encodedEquals{ L"%3D" };
 
 namespace AppNotificationBuilder
 {
     using namespace winrt::Microsoft::Windows::AppNotifications::Builder;
+}
+
+inline std::map<PCWSTR, PCWSTR> GetCharacterEncodings()
+{
+    static std::map<PCWSTR, PCWSTR> encodings = { { L"%", L"%25"}, { L";", L"%3B"}, {L"=", L"%3D"} };
+    return encodings;
 }
 
 inline PCWSTR GetWinSoundEventString(AppNotificationBuilder::AppNotificationSoundEvent soundEvent)
@@ -77,39 +82,25 @@ inline PCWSTR GetWinSoundEventString(AppNotificationBuilder::AppNotificationSoun
 inline std::wstring Encode(winrt::hstring const& value)
 {
     std::wstring encodedValue{};
+
+    auto encodings{ GetCharacterEncodings() };
     for (auto ch : value)
     {
         switch (ch) {
         case '%':
-            encodedValue.append(c_encodedPercent);
+            encodedValue.append(encodings[L"%"]);
             break;
         case ';':
-            encodedValue.append(c_encodedSemicolon);
+            encodedValue.append(encodings[L";"]);
             break;
         case '=':
-            encodedValue.append(c_encodedEquals);
+            encodedValue.append(encodings[L"="]);
             break;
         default:
             encodedValue.push_back(ch);
         }
     }
     return encodedValue;
-}
-
-// This function replaces the encoded values with the actual values
-inline std::wstring DecodeString(std::wstring value, std::wstring const& encodedValue, char ch)
-{
-    std::wstring result{};
-    size_t pos{};
-    while ((pos = value.find(encodedValue)) != std::wstring::npos)
-    {
-        result.append(value.substr(0, pos));
-        result.push_back(ch);
-        value.erase(0, pos + encodedValue.size());
-    }
-    result.append(value);
-
-    return result;
 }
 
 // Decoding process based off the Windows Community Toolkit:
@@ -119,9 +110,10 @@ inline std::wstring Decode(std::wstring const& value)
     std::wstring result{ value };
 
     // Need to unescape special characters
-    result = DecodeString(result, c_encodedPercent, L'%');
-    result = DecodeString(result, c_encodedSemicolon, L';');
-    result = DecodeString(result, c_encodedEquals, L'=');
+    for (auto encoding : GetCharacterEncodings())
+    {
+        result = std::regex_replace(result, std::wregex(encoding.second), encoding.first);
+    }
 
     return result;
 }

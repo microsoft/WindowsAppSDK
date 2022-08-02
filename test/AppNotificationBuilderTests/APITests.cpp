@@ -125,6 +125,8 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(Decode(L"key%3D"), L"key=");
             VERIFY_ARE_EQUAL(Decode(L"key%25"), L"key%");
             VERIFY_ARE_EQUAL(Decode(L"key%3B%3D%25"), L"key;=%");
+            VERIFY_ARE_EQUAL(Decode(L"%25%25%25"), L"%%%");
+
         }
 
         TEST_METHOD(AppNotificationBuilderAddArgumentEmptyKey)
