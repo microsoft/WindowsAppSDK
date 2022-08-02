@@ -5,9 +5,9 @@
 #include "winrt/Microsoft.Windows.AppNotifications.Builder.h"
 #include <algorithm>
 
-inline const size_t c_maxAppNotificationPayload{ 5120 };
-inline const uint8_t c_maxTextElements{ 3 };
-inline const uint8_t c_maxButtonElements{ 5 };
+constexpr size_t c_maxAppNotificationPayload{ 5120 };
+constexpr uint8_t c_maxTextElements{ 3 };
+constexpr uint8_t c_maxButtonElements{ 5 };
 constexpr PCWSTR c_encodedPercent{ L"%25" };
 constexpr PCWSTR c_encodedSemicolon{ L"%3B" };
 constexpr PCWSTR c_encodedEquals{ L"%3D" };
