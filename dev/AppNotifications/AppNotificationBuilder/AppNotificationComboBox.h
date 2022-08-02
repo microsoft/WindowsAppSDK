@@ -31,10 +31,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::hstring ToString();
 
     private:
-        winrt::hstring m_id;
+        winrt::hstring m_id{};
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_items{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
-        winrt::hstring m_title;
-        winrt::hstring m_selectedItem;
+        winrt::hstring m_title{};
+        winrt::hstring m_selectedItem{};
 
         std::wstring GetSelectionItems();
     };

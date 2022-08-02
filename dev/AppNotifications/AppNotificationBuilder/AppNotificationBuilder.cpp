@@ -313,35 +313,29 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     std::wstring AppNotificationBuilder::GetActions()
     {
-        if (m_buttonList.empty() && m_textBoxList.empty() && m_comboBoxList.empty())
+
+        std::wstring result{};
+        for (auto input : m_textBoxList)
         {
-            return {};
+            result.append(input.c_str());
         }
-        else
+
+        for (auto input : m_comboBoxList)
         {
-            std::wstring result{};
-            for (auto input : m_textBoxList)
-            {
-                result.append(input.c_str());
-            }
-
-            for (auto input : m_comboBoxList)
-            {
-                result.append(input.as<winrt::Windows::Foundation::IStringable>().ToString().c_str());
-            }
-
-            for (auto input : m_buttonList)
-            {
-                if (input.ButtonStyle() != AppNotificationButtonStyle::Default)
-                {
-                    m_useButtonStyle = true;
-                }
-
-                result.append(input.as<winrt::Windows::Foundation::IStringable>().ToString().c_str());
-            }
-
-            return wil::str_printf<std::wstring>(L"<actions>%ls</actions>", result.c_str());
+            result.append(input.as<winrt::Windows::Foundation::IStringable>().ToString().c_str());
         }
+
+        for (auto input : m_buttonList)
+        {
+            if (input.ButtonStyle() != AppNotificationButtonStyle::Default)
+            {
+                m_useButtonStyle = true;
+            }
+
+            result.append(input.as<winrt::Windows::Foundation::IStringable>().ToString().c_str());
+        }
+
+        return (result.empty()) ? result : wil::str_printf<std::wstring>(L"<actions>%ls</actions>", result.c_str());
     }
 
     // You must call GetActions first to retrieve this value.
