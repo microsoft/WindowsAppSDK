@@ -6,9 +6,9 @@
 #include "winrt/Microsoft.Windows.AppNotifications.Builder.h"
 #include <algorithm>
 
-inline const size_t c_maxAppNotificationPayload{ 5120 };
-inline const uint8_t c_maxTextElements{ 3 };
-inline const uint8_t c_maxButtonElements{ 5 };
+constexpr size_t c_maxAppNotificationPayload{ 5120 };
+constexpr uint8_t c_maxTextElements{ 3 };
+constexpr uint8_t c_maxButtonElements{ 5 };
 constexpr PCWSTR c_encodedPercent{ L"%25" };
 constexpr PCWSTR c_encodedSemicolon{ L"%3B" };
 constexpr PCWSTR c_encodedEquals{ L"%3D" };
@@ -18,7 +18,7 @@ namespace AppNotificationBuilder
     using namespace winrt::Microsoft::Windows::AppNotifications::Builder;
 }
 
-inline std::wstring GetWinSoundEventString(AppNotificationBuilder::AppNotificationSoundEvent soundEvent)
+inline PCWSTR GetWinSoundEventString(AppNotificationBuilder::AppNotificationSoundEvent soundEvent)
 {
     switch (soundEvent)
     {
@@ -125,21 +125,4 @@ std::wstring Decode(std::wstring const& value)
     result = DecodeString(result, c_encodedEquals, L'=');
 
     return result;
-}
-
-inline int GetBuildNumber()
-{
-    wchar_t regString[MAX_PATH]{ L"\0" };
-    DWORD length{ MAX_PATH };
-    const LSTATUS regResult{ ::RegGetValue(
-        HKEY_LOCAL_MACHINE,
-        L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
-        L"CurrentBuild",
-        RRF_RT_REG_SZ,
-        nullptr,
-        regString,
-        &length) };
-
-    THROW_IF_FAILED_MSG(regResult, "Failed to retrieve Windows build number.");
-    return _wtoi(regString);
 }

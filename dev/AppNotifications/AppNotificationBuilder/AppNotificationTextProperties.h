@@ -32,7 +32,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     private:
         int m_maxLines{ 0 };
-        winrt::hstring m_language;
+        winrt::hstring m_language{};
         bool m_useCallScenarioAlign{};
     };
 }
