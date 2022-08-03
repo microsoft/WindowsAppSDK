@@ -409,47 +409,6 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
-        TEST_METHOD(AppNotificationBuilderAddTextBox)
-        {
-            auto builder{ AppNotificationBuilder()
-                .AddTextBox(L"input1") };
-            auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><input id='input1' type='text'/></actions></toast>" };
-
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
-        }
-
-        TEST_METHOD(AppNotificationBuilderAddTextBoxWithEmptyId)
-        {
-            VERIFY_THROWS_HR(AppNotificationBuilder()
-                .AddTextBox(L""), E_INVALIDARG);
-        }
-
-        TEST_METHOD(AppNotificationBuilderAddTextBoxWithEmptyIdAndPlaceHolderTextAndTitle)
-        {
-            VERIFY_THROWS_HR(AppNotificationBuilder()
-                .AddTextBox(L"", L"placeholder text", L"title"), E_INVALIDARG);
-        }
-
-        TEST_METHOD(AppNotificationBuilderAddTooManyTextBoxes)
-        {
-            VERIFY_THROWS_HR(AppNotificationBuilder()
-                .AddTextBox(L"input1")
-                .AddTextBox(L"input2")
-                .AddTextBox(L"input3")
-                .AddTextBox(L"input4")
-                .AddTextBox(L"input5")
-                .AddTextBox(L"input6"), E_INVALIDARG);
-        }
-
-        TEST_METHOD(AppNotificationBuilderAddTextBoxWithPlaceHolderTextAndTitle)
-        {
-            auto builder{ AppNotificationBuilder()
-                .AddTextBox(L"some input id", L"Some placeholder text", L"A Title")};
-            auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><input id='some input id' type='text' placeHolderContent='Some placeholder text' title='A Title'/></actions></toast>" };
-
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
-        }
-
         TEST_METHOD(AppNotificationProgressBarDefaults)
         {
             auto progressBar{ AppNotificationProgressBar() };
@@ -501,6 +460,47 @@ namespace Test::AppNotification::Builder
             auto expected{ L"<progress title='Specific title' status='{progressStatus}' value='{progressValue}'/>" };
 
             VERIFY_ARE_EQUAL(progressBar.as<winrt::Windows::Foundation::IStringable>().ToString(), expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderAddTextBox)
+        {
+            auto builder{ AppNotificationBuilder()
+                .AddTextBox(L"input1") };
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><input id='input1' type='text'/></actions></toast>" };
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderAddTextBoxWithEmptyId)
+        {
+            VERIFY_THROWS_HR(AppNotificationBuilder()
+                .AddTextBox(L""), E_INVALIDARG);
+        }
+
+        TEST_METHOD(AppNotificationBuilderAddTextBoxWithEmptyIdAndPlaceHolderTextAndTitle)
+        {
+            VERIFY_THROWS_HR(AppNotificationBuilder()
+                .AddTextBox(L"", L"placeholder text", L"title"), E_INVALIDARG);
+        }
+
+        TEST_METHOD(AppNotificationBuilderAddTooManyTextBoxes)
+        {
+            VERIFY_THROWS_HR(AppNotificationBuilder()
+                .AddTextBox(L"input1")
+                .AddTextBox(L"input2")
+                .AddTextBox(L"input3")
+                .AddTextBox(L"input4")
+                .AddTextBox(L"input5")
+                .AddTextBox(L"input6"), E_INVALIDARG);
+        }
+
+        TEST_METHOD(AppNotificationBuilderAddTextBoxWithPlaceHolderTextAndTitle)
+        {
+            auto builder{ AppNotificationBuilder()
+                .AddTextBox(L"some input id", L"Some placeholder text", L"A Title")};
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><input id='some input id' type='text' placeHolderContent='Some placeholder text' title='A Title'/></actions></toast>" };
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddComboBox)
