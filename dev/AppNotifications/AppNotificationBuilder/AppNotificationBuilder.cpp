@@ -320,7 +320,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     std::wstring AppNotificationBuilder::GetProgressBars()
     {
         std::wstring result{};
-
         for (auto progressBar : m_progressBarList)
         {
             result.append(progressBar.as<winrt::Windows::Foundation::IStringable>().ToString());
