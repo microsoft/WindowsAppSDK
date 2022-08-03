@@ -16,9 +16,9 @@ namespace AppNotificationBuilder
     using namespace winrt::Microsoft::Windows::AppNotifications::Builder;
 }
 
-inline std::map<wchar_t, PCWSTR> GetCharacterEncodings()
+inline std::map<PCWSTR, PCWSTR> GetCharacterEncodings()
 {
-    static std::map<wchar_t, PCWSTR> encodings = { { L'%', L"%25"}, { L';', L"%3B"}, { L'=', L"%3D"}};
+    static std::map<PCWSTR, PCWSTR> encodings = { { L"%", L"%25"}, {L";", L"%3B"}, {L"=", L"%3D"}};
     return encodings;
 }
 
@@ -81,20 +81,15 @@ inline PCWSTR GetWinSoundEventString(AppNotificationBuilder::AppNotificationSoun
 
 inline std::wstring Encode(std::wstring const& value)
 {
-    std::wstring encodedValue{};
+    std::wstring encodedValue{ value };
 
     auto encodings{ GetCharacterEncodings() };
-    for (auto ch : value)
+    for (auto encoding : encodings)
     {
-        if(encodings.find(ch) != encodings.end())
-        {
-            encodedValue.append(encodings[ch]);
-        }
-        else
-        {
-            encodedValue.push_back(ch);
-        }
+        // Replace literal special chars with encoding
+        encodedValue = std::regex_replace(encodedValue, std::wregex(encoding.first), encoding.second);
     }
+
     return encodedValue;
 }
 
@@ -107,8 +102,8 @@ inline std::wstring Decode(std::wstring const& value)
     // Need to unescape special characters
     for (auto encoding : GetCharacterEncodings())
     {
-        std::wstring specialCharacter{ encoding.first };
-        result = std::regex_replace(result, std::wregex(encoding.second), specialCharacter);
+        // Replace encoding with literal special chars
+        result = std::regex_replace(result, std::wregex(encoding.second), encoding.first);
     }
 
     return result;
