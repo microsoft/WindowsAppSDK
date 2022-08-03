@@ -38,13 +38,15 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetTimeStamp(winrt::Windows::Foundation::DateTime const& value)
     {
         auto seconds{ winrt::clock::to_time_t(value) };
-        struct tm buf{};
-        gmtime_s(&buf, &seconds);
+        struct tm buf {};
+        localtime_s(&buf, &seconds);
 
         std::wstringstream buffer;
-        buffer << std::put_time(&buf, L"%FT%T");
+        buffer << std::put_time(&buf, L"%FT%T%z");
 
-        m_timeStamp = wil::str_printf<std::wstring>(L" displayTimestamp='%lsZ'", buffer.str().c_str());
+        std::wstring expectedTimestamp{ buffer.str() };
+        expectedTimestamp.insert(expectedTimestamp.size() - c_offsetIndexValue, L":");
+        m_timeStamp = wil::str_printf<std::wstring>(L" displayTimestamp='%ls'", expectedTimestamp.c_str());
         return *this;
     }
 

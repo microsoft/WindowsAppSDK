@@ -54,16 +54,19 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationBuilderSetTimeStamp)
         {
-            std::wstring dateTimeFormat{ L"%d/%m/%Y %H:%M:%S" };
-            std::wistringstream ss(L"22/12/2016 01:12:10");
+            auto time{ winrt::Windows::Foundation::DateTime::clock::now() };
+            auto builder{ AppNotificationBuilder().SetTimeStamp(time) };
 
             struct tm dateTime {};
-            ss >> std::get_time(&dateTime, dateTimeFormat.c_str());
-            std::time_t time{ mktime(&dateTime) };
-            auto timeStamp{ winrt::clock::from_time_t(time) };
+            auto timeAsTimeT{ winrt::clock::to_time_t(time) };
+            localtime_s(&dateTime, &timeAsTimeT);
 
-            auto builder{ AppNotificationBuilder().SetTimeStamp(timeStamp) };
-            auto expected{ L"<toast displayTimestamp='2016-12-22T09:12:10Z'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
+            std::wstringstream buffer;
+            buffer << std::put_time(&dateTime, L"%FT%T%z");
+
+            std::wstring expectedTimestamp{ buffer.str() };
+            expectedTimestamp.insert(expectedTimestamp.size() - 2 /* offset center index */, L":");
+            std::wstring expected{ wil::str_printf<std::wstring>(L"<toast displayTimestamp='%ls'><visual><binding template='ToastGeneric'></binding></visual></toast>", expectedTimestamp.c_str()) };
 
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
