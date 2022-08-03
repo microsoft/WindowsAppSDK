@@ -338,7 +338,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
             result.append(input.as<winrt::Windows::Foundation::IStringable>().ToString().c_str());
         }
 
-        return (result.empty()) ? result : wil::str_printf<std::wstring>(L"<actions>%ls</actions>", result.c_str());
+        return result.empty() ? result : wil::str_printf<std::wstring>(L"<actions>%ls</actions>", result.c_str());
     }
 
     // You must call GetActions first to retrieve this value.
@@ -352,7 +352,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::wstring xmlResult{};
         xmlResult.reserve(c_maxAppNotificationPayload);
 
-        // Build the button string and fill m_useButtonStyle
+        // Build the actions string and fill m_useButtonStyle
         std::wstring actions{ GetActions() };
 
         xmlResult.append(L"<toast");
