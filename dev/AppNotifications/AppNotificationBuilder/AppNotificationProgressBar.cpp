@@ -8,7 +8,7 @@
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
     AppNotificationProgressBar::AppNotificationProgressBar()
-        :m_titleStatus{ BindMode::NotSet},
+        :m_titleStatus{ BindMode::NotSet },
          m_statusStatus{ BindMode::NotSet },
          m_valueStatus{ BindMode::NotSet },
          m_valueStringOverrideStatus{ BindMode::NotSet }
