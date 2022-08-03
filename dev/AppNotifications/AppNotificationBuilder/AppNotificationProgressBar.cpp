@@ -97,16 +97,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::hstring AppNotificationProgressBar::ToString()
     {
-        auto titleValue{ m_titleStatus == BindMode::Value ? m_title : L"{progressTitle}" };
-        auto statusValue{ m_statusStatus == BindMode::Value ? m_status : L"{progressStatus}" };
-        auto valueValue{ m_valueStatus == BindMode::Value ? wil::str_printf<std::wstring>(L"%g", m_value) : L"{progressValue}" };
-        auto valueStringOverrideValue{ m_valueStringOverrideStatus == BindMode::Value ? m_valueStringOverride : L"{progressValueString}" };
-
-        auto title{ m_titleStatus == BindMode::NotSet ? L"" : wil::str_printf<std::wstring>(L" title='%ls'", titleValue.c_str()) };
-        auto status{ wil::str_printf<std::wstring>(L" status='%ls'", statusValue.c_str()) };
-        auto value{ wil::str_printf<std::wstring>(L" value='%ls'", valueValue.c_str()) };
-        auto valueStringOverride{ m_valueStringOverrideStatus == BindMode::NotSet ? L"" : wil::str_printf < std::wstring>(L" valueStringOverride='%ls'", valueStringOverrideValue.c_str()) };
-
-        return wil::str_printf<std::wstring>(L"<progress%ls%ls%ls%ls/>", title.c_str(), status.c_str(), value.c_str(), valueStringOverride.c_str()).c_str();
+        return wil::str_printf<std::wstring>(L"<progress%ls%ls%ls%ls/>",
+            m_titleStatus == BindMode::NotSet ? L"" : wil::str_printf<std::wstring>(L" title='%ls'", m_titleStatus == BindMode::Value ? m_title.c_str() : L"{progressTitle}").c_str(),
+            wil::str_printf<std::wstring>(L" status='%ls'", m_statusStatus == BindMode::Value ? m_status.c_str() : L"{progressStatus}").c_str(),
+            wil::str_printf<std::wstring>(L" value='%ls'", m_valueStatus == BindMode::Value ? wil::str_printf<std::wstring>(L"%g", m_value).c_str() : L"{progressValue}").c_str(),
+            m_valueStringOverrideStatus == BindMode::NotSet ? L"" : wil::str_printf < std::wstring>(L" valueStringOverride='%ls'", m_valueStringOverrideStatus == BindMode::Value ? m_valueStringOverride.c_str() : L"{progressValueString}").c_str()).c_str();
     }
 }
