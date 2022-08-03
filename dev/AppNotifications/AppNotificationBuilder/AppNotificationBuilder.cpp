@@ -17,6 +17,11 @@ using namespace winrt::Windows::Globalization::DateTimeFormatting;
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
+    void AppNotificationBuilder::ThrowIfMaxInputItemsExceeded()
+    {
+        THROW_HR_IF_MSG(E_INVALIDARG, m_textBoxList.size() + m_comboBoxList.size() >= c_maxTextInputElements, "Maximum number of input elements added");
+    }
+
     bool AppNotificationBuilder::IsUrgentScenarioSupported()
     {
         return WindowsVersion::IsWindows10_20H1OrGreater();
@@ -202,11 +207,39 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
     
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddTextBox(hstring id)
+    {
+        ThrowIfMaxInputItemsExceeded();
+        THROW_HR_IF_MSG(E_INVALIDARG, id.empty(), "You must provide an id for the TextBox");
+
+
+        m_textBoxList.push_back(wil::str_printf<std::wstring>(L"<input id='%ls' type='text'/>", id.c_str()));
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddTextBox(hstring id, hstring placeHolderText, hstring title)
+    {
+        ThrowIfMaxInputItemsExceeded();
+        THROW_HR_IF_MSG(E_INVALIDARG, id.empty(), "You must provide an id for the TextBox");
+
+        m_textBoxList.push_back(wil::str_printf<std::wstring>(L"<input id='%ls' type='text' placeHolderContent='%ls' title='%ls'/>", id.c_str(), placeHolderText.c_str(), title.c_str()));
+        return *this;
+    }
+
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddButton(AppNotificationButton const& value)
     {
         THROW_HR_IF_MSG(E_INVALIDARG, m_buttonList.size() >= c_maxButtonElements, "Maximum number of buttons added");
 
         m_buttonList.push_back(value);
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddComboBox(AppNotificationComboBox const& value)
+    {
+        ThrowIfMaxInputItemsExceeded();
+
+        m_comboBoxList.push_back(value);
+
         return *this;
     }
 
@@ -288,30 +321,34 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return wil::str_printf<std::wstring>(L"%ls%ls%ls", m_inlineImage.c_str(), m_heroImage.c_str(), m_appLogoOverride.c_str());
     }
 
-    std::wstring AppNotificationBuilder::GetButtons()
+    std::wstring AppNotificationBuilder::GetActions()
     {
-        if (m_buttonList.size())
-        {
-            std::wstring result{};
-            for (auto input : m_buttonList)
-            {
-                if (input.ButtonStyle() != AppNotificationButtonStyle::Default)
-                {
-                    m_useButtonStyle = true;
-                }
 
-                result.append(input.as<winrt::Windows::Foundation::IStringable>().ToString().c_str());
+        std::wstring result{};
+        for (auto input : m_textBoxList)
+        {
+            result.append(input.c_str());
+        }
+
+        for (auto input : m_comboBoxList)
+        {
+            result.append(input.as<winrt::Windows::Foundation::IStringable>().ToString().c_str());
+        }
+
+        for (auto input : m_buttonList)
+        {
+            if (input.ButtonStyle() != AppNotificationButtonStyle::Default)
+            {
+                m_useButtonStyle = true;
             }
 
-            return wil::str_printf<std::wstring>(L"<actions>%ls</actions>", result.c_str());
+            result.append(input.as<winrt::Windows::Foundation::IStringable>().ToString().c_str());
         }
-        else
-        {
-            return {};
-        }
+
+        return (result.empty()) ? result : wil::str_printf<std::wstring>(L"<actions>%ls</actions>", result.c_str());
     }
 
-    // You must call GetButtons first to retrieve this value.
+    // You must call GetActions first to retrieve this value.
     std::wstring AppNotificationBuilder::GetButtonStyle()
     {
         return m_useButtonStyle ? L" useButtonStyle='true'" : L"";
@@ -334,7 +371,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         xmlResult.reserve(c_maxAppNotificationPayload);
 
         // Build the button string and fill m_useButtonStyle
-        std::wstring buttons{ GetButtons() };
+        std::wstring actions{ GetActions() };
 
         xmlResult.append(L"<toast");
         xmlResult.append(m_timeStamp);
@@ -349,7 +386,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         xmlResult.append(GetProgressBars());
         xmlResult.append(L"</binding></visual>");
         xmlResult.append(m_audio.c_str());
-        xmlResult.append(buttons);
+        xmlResult.append(actions);
         xmlResult.append(L"</toast>");
 
         winrt::Microsoft::Windows::AppNotifications::AppNotification appNotification{ xmlResult };

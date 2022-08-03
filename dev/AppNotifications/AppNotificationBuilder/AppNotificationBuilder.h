@@ -48,10 +48,15 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder MuteAudio();
 
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddTextBox(hstring id);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddTextBox(hstring id, hstring placeHolderText, hstring title);
+
         // Adds a button to the AppNotificationBuilder
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddButton(AppNotificationButton const& value);
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddProgressBar(AppNotificationProgressBar const& value);
+
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddComboBox(AppNotificationComboBox const& value);
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetTag(winrt::hstring const& value);
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetGroup(winrt::hstring const& value);
@@ -61,13 +66,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         static bool IsUrgentScenarioSupported();
 
     private:
+        void ThrowIfMaxInputItemsExceeded();
         std::wstring GetDuration();
         std::wstring GetScenario();
         std::wstring GetArguments();
         std::wstring GetButtonStyle();
         std::wstring GetText();
         std::wstring GetImages();
-        std::wstring GetButtons();
+        std::wstring GetActions();
         std::wstring GetProgressBars();
 
         std::wstring m_timeStamp{};
@@ -83,6 +89,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_arguments{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
         std::vector<AppNotificationButton> m_buttonList{};
         std::vector<AppNotificationProgressBar> m_progressBarList{};
+        std::vector<std::wstring> m_textBoxList{};
+        std::vector<AppNotificationComboBox> m_comboBoxList{};
         winrt::hstring m_tag{};
         winrt::hstring m_group{};
     };
