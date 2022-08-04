@@ -382,6 +382,13 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
+        TEST_METHOD(AppNotificationBuilderBuildNotificationWithTooLargePayload)
+        {
+            VERIFY_THROWS_HR(AppNotificationBuilder()
+                .AddText(std::wstring(5120, 'A').c_str())
+                .BuildNotification(), E_INVALIDARG);
+        }
+
         TEST_METHOD(AppNotificationAddProgressBar)
         {
             auto builder{ AppNotificationBuilder()

@@ -43,13 +43,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     private:
         enum class BindMode {NotSet, Bind, Value};
 
-        BindMode m_titleStatus;
+        BindMode m_titleBindMode;
         winrt::hstring m_title;
-        BindMode m_statusStatus;
+        BindMode m_statusBindMode;
         winrt::hstring m_status;
-        BindMode m_valueStatus;
+        BindMode m_valueBindMode;
         double m_value;
-        BindMode m_valueStringOverrideStatus;
+        BindMode m_valueStringOverrideBindMode;
         winrt::hstring m_valueStringOverride;
     };
 }
