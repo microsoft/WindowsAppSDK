@@ -4,7 +4,7 @@ import "..\AppLifecycle\AppLifecycle.idl";
 
 namespace Microsoft.Windows.AppNotifications
 {
-    [contractversion(2)]
+    [contractversion(3)]
     apicontract AppNotificationsContract {}
 
     // Event args for the Notification Activation
@@ -16,6 +16,10 @@ namespace Microsoft.Windows.AppNotifications
 
         // The data from the input elements of a Notification like a TextBox
         Windows.Foundation.Collections.IMap<String, String> UserInput{ get; };
+
+        // Arguments from the invoked button built from AppNotificationBuilder
+        [contract(AppNotificationsContract, 3)]
+        Windows.Foundation.Collections.IMap<String, String> Arguments{ get; };
     }
 
     // Notification Progress Data
