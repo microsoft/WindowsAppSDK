@@ -388,6 +388,93 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
+        TEST_METHOD(AppNotificationBuilderBuildNotificationWithTooLargePayload)
+        {
+            VERIFY_THROWS_HR(AppNotificationBuilder()
+                .AddText(std::wstring(5120, 'A').c_str())
+                .BuildNotification(), E_INVALIDARG);
+        }
+
+        TEST_METHOD(AppNotificationAddProgressBar)
+        {
+            auto builder{ AppNotificationBuilder()
+                .AddText(L"Downloading this week's new music...")
+                .AddProgressBar(AppNotificationProgressBar()
+                    .BindTitle()
+                    .BindValueStringOverride()) };
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'><text>Downloading this week's new music...</text><progress title='{progressTitle}' status='{progressStatus}' value='{progressValue}' valueStringOverride='{progressValueString}'/></binding></visual></toast>" };
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationAddMoreThanOneProgressBar)
+        {
+            auto builder{ AppNotificationBuilder()
+                .AddText(L"Downloading this week's new music...")
+                .AddProgressBar(AppNotificationProgressBar()
+                    .BindTitle()
+                    .BindValueStringOverride())
+                .AddProgressBar(AppNotificationProgressBar()
+                    .SetValue(0.8)
+                    .SetStatus(L"Still downloading...")) };
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'><text>Downloading this week's new music...</text><progress title='{progressTitle}' status='{progressStatus}' value='{progressValue}' valueStringOverride='{progressValueString}'/><progress status='Still downloading...' value='0.8'/></binding></visual></toast>" };
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationProgressBarDefaults)
+        {
+            auto progressBar{ AppNotificationProgressBar() };
+            auto expected{ L"<progress status='{progressStatus}' value='{progressValue}'/>" };
+
+            VERIFY_ARE_EQUAL(progressBar.as<winrt::Windows::Foundation::IStringable>().ToString(), expected);
+        }
+
+        TEST_METHOD(AppNotificationProgressBarSetSpecificValue)
+        {
+            auto progressBar{ AppNotificationProgressBar() };
+            progressBar.Value(0.8);
+            auto expected{ L"<progress status='{progressStatus}' value='0.8'/>" };
+
+            VERIFY_ARE_EQUAL(progressBar.as<winrt::Windows::Foundation::IStringable>().ToString(), expected);
+        }
+
+        TEST_METHOD(AppNotificationProgressBarSetValueLargerThanOne)
+        {
+            auto progressBar{ AppNotificationProgressBar() };
+            VERIFY_THROWS_HR(progressBar.Value(1.01), E_INVALIDARG);
+
+            VERIFY_THROWS_HR(AppNotificationProgressBar().SetValue(1.01), E_INVALIDARG);
+        }
+
+        TEST_METHOD(AppNotificationProgressBarSetValueSmallerThanZero)
+        {
+            auto progressBar{ AppNotificationProgressBar() };
+            VERIFY_THROWS_HR(progressBar.Value(-0.1), E_INVALIDARG);
+
+            VERIFY_THROWS_HR(AppNotificationProgressBar().SetValue(-0.1), E_INVALIDARG);
+        }
+
+        TEST_METHOD(AppNotificationProgressBarSetSpecificValueThenChangeToBind)
+        {
+            auto progressBar{ AppNotificationProgressBar() };
+            progressBar.Value(0.8);
+            progressBar.BindValue();
+            auto expected{ L"<progress status='{progressStatus}' value='{progressValue}'/>" };
+
+            VERIFY_ARE_EQUAL(progressBar.as<winrt::Windows::Foundation::IStringable>().ToString(), expected);
+        }
+
+        TEST_METHOD(AppNotificationProgressBarBindTitleThenChangeToSpecificText)
+        {
+            auto progressBar{ AppNotificationProgressBar()
+                .BindTitle()
+                .SetTitle(L"Specific title") };
+            auto expected{ L"<progress title='Specific title' status='{progressStatus}' value='{progressValue}'/>" };
+
+            VERIFY_ARE_EQUAL(progressBar.as<winrt::Windows::Foundation::IStringable>().ToString(), expected);
+        }
+
         TEST_METHOD(AppNotificationBuilderAddTextBox)
         {
             auto builder{ winrt::AppNotificationBuilder()

@@ -54,6 +54,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         // Adds a button to the AppNotificationBuilder
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddButton(AppNotificationButton const& value);
 
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddProgressBar(AppNotificationProgressBar const& value);
+
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddComboBox(AppNotificationComboBox const& value);
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetTag(winrt::hstring const& value);
@@ -72,6 +74,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::wstring GetText();
         std::wstring GetImages();
         std::wstring GetActions();
+        std::wstring GetProgressBars();
 
         std::wstring m_timeStamp{};
         AppNotificationDuration m_duration{ AppNotificationDuration::Default };
@@ -85,6 +88,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::hstring m_audio{};
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_arguments{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
         std::vector<AppNotificationButton> m_buttonList{};
+        std::vector<AppNotificationProgressBar> m_progressBarList{};
         std::vector<std::wstring> m_textBoxList{};
         std::vector<AppNotificationComboBox> m_comboBoxList{};
         winrt::hstring m_tag{};
