@@ -46,10 +46,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize()
     {
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Start(false,
-                                                                                      Security::IntegrityLevel::IsElevated(),
-                                                                                      AppModel::Identity::IsPackagedProcess(),
-                                                                                      Security::IntegrityLevel::GetIntegrityLevel());
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetActivity(WindowsAppRuntimeDeployment_TraceLogger::Initialize::Start(false,
+                                                                                        Security::IntegrityLevel::IsElevated(),
+                                                                                        AppModel::Identity::IsPackagedProcess(),
+                                                                                        Security::IntegrityLevel::GetIntegrityLevel()));
 
         FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
         return Initialize(GetCurrentFrameworkPackageFullName());
@@ -57,10 +57,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions)
     {
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Start(deploymentInitializeOptions.ForceDeployment(),
-                                                                                      Security::IntegrityLevel::IsElevated(),
-                                                                                      AppModel::Identity::IsPackagedProcess(),
-                                                                                      Security::IntegrityLevel::GetIntegrityLevel());
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetActivity(WindowsAppRuntimeDeployment_TraceLogger::Initialize::Start(
+                                                                                        deploymentInitializeOptions.ForceDeployment(),
+                                                                                        Security::IntegrityLevel::IsElevated(),
+                                                                                        AppModel::Identity::IsPackagedProcess(),
+                                                                                        Security::IntegrityLevel::GetIntegrityLevel()));
 
         FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
         return Initialize(GetCurrentFrameworkPackageFullName(), deploymentInitializeOptions);
