@@ -16,7 +16,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         size_t pos{ 0 };
 
         // Separate the key/value pairs by ';' as the delimiter
-        while ((pos = arguments.find(L';')) != std::wstring::npos) {
+        while ((pos = arguments.find(L';')) != std::wstring::npos)
+        {
             pairs.push_back(arguments.substr(0, pos));
             arguments.erase(0, pos + 1);
         }

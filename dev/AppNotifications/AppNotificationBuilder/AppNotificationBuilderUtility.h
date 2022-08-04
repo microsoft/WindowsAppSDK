@@ -6,25 +6,32 @@
 #include <algorithm>
 #include <regex>
 #include <map>
+#include <iostream>
 
 constexpr size_t c_maxAppNotificationPayload{ 5120 };
 constexpr uint8_t c_maxTextElements{ 3 };
 constexpr uint8_t c_maxButtonElements{ 5 };
-
+constexpr size_t c_maxEncodingSize{ 3 };
 namespace AppNotificationBuilder
 {
     using namespace winrt::Microsoft::Windows::AppNotifications::Builder;
 }
 
-inline std::unordered_map<wchar_t, PCWSTR> GetXmlEscapeEncodings()
+inline std::unordered_map<wchar_t, std::wstring> GetXmlEscapeEncodings()
 {
-    static std::unordered_map<wchar_t, PCWSTR> encodings = { { L'&', L"&amp;"}, { L'\"', L"&quot;"}, {L'<', L"&lt;"}, {L'>', L"&gt;"}, {L'\'', L"&apos;"}};
+    static std::unordered_map<wchar_t, std::wstring> encodings = { { L'&', L"&amp;"}, { L'\"', L"&quot;"}, {L'<', L"&lt;"}, {L'>', L"&gt;"}, {L'\'', L"&apos;"}};
     return encodings;
 }
 
-inline std::unordered_map<wchar_t, PCWSTR> GetPercentEncodings()
+inline std::unordered_map<wchar_t, std::wstring> GetPercentEncodings()
 {
-    static std::unordered_map<wchar_t, PCWSTR> encodings = {{ L'%', L"%25"}, {L';', L"%3B"}, {L'=', L"%3D"} };
+    static std::unordered_map<wchar_t, std::wstring> encodings = {{ L'%', L"%25"}, {L';', L"%3B"}, {L'=', L"%3D"} };
+    return encodings;
+}
+
+inline std::unordered_map<std::wstring, wchar_t> GetPercentEncodingsReverse()
+{
+    static std::unordered_map<std::wstring, wchar_t> encodings = { { L"%25", L'%' }, {L"%3B", L';' }, { L"%3D", L'=' } };
     return encodings;
 }
 
@@ -106,6 +113,8 @@ inline std::wstring EncodeArgument(std::wstring const& value)
             encodedValue.push_back(ch);
         }
     }
+
+    return encodedValue;
 }
 
 inline std::wstring EncodeXml(std::wstring const& value)
@@ -124,20 +133,31 @@ inline std::wstring EncodeXml(std::wstring const& value)
             encodedValue.push_back(ch);
         }
     }
+
+    return encodedValue;
 }
 
 // Decoding process based off the Windows Community Toolkit:
 // https://github.com/CommunityToolkit/WindowsCommunityToolkit/blob/rel/7.1.0/Microsoft.Toolkit.Uwp.Notifications/Toasts/ToastArguments.cs#L389inline
 inline std::wstring Decode(std::wstring const& value)
 {
-    std::wstring result{ value };
+    std::wstring result{};
+    auto percentEncodings{ GetPercentEncodingsReverse() };
 
     // Need to unescape special characters
-    for (auto encoding : GetCharacterEncodings())
+    for (size_t index = 0; index < value.size();)
     {
-        // Replace encoding with literal special chars
-        result = std::regex_replace(result, std::wregex(encoding.second), encoding.first);
+        std::wstring curr{ value.substr(index, c_maxEncodingSize) };
+        if (percentEncodings.find(curr) != percentEncodings.end())
+        {
+            result.push_back(percentEncodings[curr]);
+            index += c_maxEncodingSize;
+        }
+        else
+        {
+            result.push_back(value.at(index));
+            index++;
+        }
     }
-
     return result;
 }
