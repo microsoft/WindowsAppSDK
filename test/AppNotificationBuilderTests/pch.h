@@ -46,6 +46,7 @@
 
 #include <winrt/Microsoft.Windows.AppNotifications.h>
 #include <winrt/Microsoft.Windows.AppNotifications.Builder.h>
+#include <AppNotificationBuilderUtility.h>
 #include <WindowsAppRuntime.SelfContained.h>
 #include <WindowsAppRuntime.VersionInfo.h>
 

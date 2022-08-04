@@ -44,9 +44,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::wstringstream buffer;
         buffer << std::put_time(&buf, L"%FT%T%z");
 
-        std::wstring expectedTimestamp{ buffer.str() };
-        expectedTimestamp.insert(expectedTimestamp.size() - c_offsetIndexValue, L":");
-        m_timeStamp = wil::str_printf<std::wstring>(L" displayTimestamp='%ls'", expectedTimestamp.c_str());
+        std::wstring timestamp{ buffer.str() };
+        timestamp.insert(timestamp.size() - c_offsetIndexValue, L":");
+        m_timeStamp = wil::str_printf<std::wstring>(L" displayTimestamp='%ls'", timestamp.c_str());
         return *this;
     }
 
