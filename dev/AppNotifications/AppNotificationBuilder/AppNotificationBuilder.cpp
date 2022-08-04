@@ -200,6 +200,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddProgressBar(AppNotificationProgressBar const& value)
+    {
+        m_progressBarList.push_back(value);
+
+        return *this;
+    }
+    
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddTextBox(hstring id)
     {
         ThrowIfMaxInputItemsExceeded();
@@ -347,28 +354,40 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return m_useButtonStyle ? L" useButtonStyle='true'" : L"";
     }
 
+    std::wstring AppNotificationBuilder::GetProgressBars()
+    {
+        std::wstring result{};
+        for (auto progressBar : m_progressBarList)
+        {
+            result.append(progressBar.as<winrt::Windows::Foundation::IStringable>().ToString());
+        }
+
+        return result;
+    }
+
     winrt::Microsoft::Windows::AppNotifications::AppNotification AppNotificationBuilder::BuildNotification()
     {
-        std::wstring xmlResult{};
-        xmlResult.reserve(c_maxAppNotificationPayload);
-
         // Build the button string and fill m_useButtonStyle
         std::wstring actions{ GetActions() };
 
-        xmlResult.append(L"<toast");
-        xmlResult.append(m_timeStamp);
-        xmlResult.append(GetDuration());
-        xmlResult.append(GetScenario());
-        xmlResult.append(GetArguments());
-        xmlResult.append(GetButtonStyle());
-        xmlResult.append(L"><visual><binding template='ToastGeneric'>");
-        xmlResult.append(GetText());
-        xmlResult.append(m_attributionText);
-        xmlResult.append(GetImages());
-        xmlResult.append(L"</binding></visual>");
-        xmlResult.append(m_audio.c_str());
-        xmlResult.append(actions);
-        xmlResult.append(L"</toast>");
+        auto xmlResult{ wil::str_printf<std::wstring>(L"%ls%ls%ls%ls%ls%ls%ls%ls%ls%ls%ls%ls%ls%ls%ls",
+            L"<toast",
+            m_timeStamp.c_str(),
+            GetDuration().c_str(),
+            GetScenario().c_str(),
+            GetArguments().c_str(),
+            GetButtonStyle().c_str(),
+            L"><visual><binding template='ToastGeneric'>",
+            GetText().c_str(),
+            m_attributionText.c_str(),
+            GetImages().c_str(),
+            GetProgressBars().c_str(),
+            L"</binding></visual>",
+            m_audio.c_str(),
+            actions.c_str(),
+            L"</toast>") };
+
+        THROW_HR_IF_MSG(E_INVALIDARG, xmlResult.size() > c_maxAppNotificationPayload, "Maximum payload size exceeded");
 
         winrt::Microsoft::Windows::AppNotifications::AppNotification appNotification{ xmlResult };
         appNotification.Tag(m_tag);
