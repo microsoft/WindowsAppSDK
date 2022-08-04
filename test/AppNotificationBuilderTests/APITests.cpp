@@ -524,7 +524,7 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
-        TEST_METHOD(AppNotificationBuilderAddTooManyComboBox)
+        TEST_METHOD(AppNotificationBuilderAddTooManyComboBoxes)
         {
             VERIFY_THROWS_HR(AppNotificationBuilder()
                 .AddTextBox(L"input1")
