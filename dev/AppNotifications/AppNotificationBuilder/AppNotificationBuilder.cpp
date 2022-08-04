@@ -370,22 +370,18 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         // Build the actions string and fill m_useButtonStyle
         std::wstring actions{ GetActions() };
 
-        auto xmlResult{ wil::str_printf<std::wstring>(L"%ls%ls%ls%ls%ls%ls%ls%ls%ls%ls%ls%ls%ls%ls%ls",
-            L"<toast",
+        auto xmlResult{ wil::str_printf<std::wstring>(L"<toast%ls%ls%ls%ls%ls><visual><binding template='ToastGeneric'>%ls%ls%ls%ls</binding></visual>%ls%ls</toast>",
             m_timeStamp.c_str(),
             GetDuration().c_str(),
             GetScenario().c_str(),
             GetArguments().c_str(),
             GetButtonStyle().c_str(),
-            L"><visual><binding template='ToastGeneric'>",
             GetText().c_str(),
             m_attributionText.c_str(),
             GetImages().c_str(),
             GetProgressBars().c_str(),
-            L"</binding></visual>",
             m_audio.c_str(),
-            actions.c_str(),
-            L"</toast>") };
+            actions.c_str()) };
 
         THROW_HR_IF_MSG(E_INVALIDARG, xmlResult.size() > c_maxAppNotificationPayload, "Maximum payload size exceeded");
 
