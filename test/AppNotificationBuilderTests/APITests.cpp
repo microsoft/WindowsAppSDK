@@ -434,7 +434,7 @@ namespace Test::AppNotification::Builder
                     .BindTitle()
                     .BindValueStringOverride()) };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'><text>Downloading this week&apos;s new music...</text><progress title='{progressTitle}' status='{progressStatus}' value='{progressValue}' valueStringOverride='{progressValueString}'/></binding></visual></toast>" };
-            WEX::Logging::Log::Comment(builder.BuildNotification().Payload().c_str());
+
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
@@ -641,6 +641,27 @@ namespace Test::AppNotification::Builder
         TEST_METHOD(AppNotificationCreateComboBoxWithoutAnId)
         {
             VERIFY_THROWS_HR(winrt::AppNotificationComboBox(L""), E_INVALIDARG);
+        }
+
+        TEST_METHOD(AppNotificationBuilderEscapeXmlCharacters)
+        {
+            auto builder{ winrt::AppNotificationBuilder().AddText(LR"(&"'<>)") };
+            std::wstring expected{ L"<toast><visual><binding template='ToastGeneric'><text>&amp;&quot;&apos;&lt;&gt;</text></binding></visual></toast>"};
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderArgumentsWithXmlCharacters)
+        {
+            auto builder{ winrt::AppNotificationBuilder()
+                            .AddArgument(LR"(&;"='%<>)", L"")
+                            .AddArgument(LR"(&"'<>)", L";=%")};
+
+            std::wstring expected{ L"<toast launch='&amp;%3B&quot;%3D&apos;%25&lt;&gt;;&amp;&quot;&apos;&lt;&gt;=%3B%3D%25'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+
+            VERIFY_ARE_EQUAL(Decode(LR"(&%3B"%3D'%25<>)"), LR"(&;"='%<>)");
+            VERIFY_ARE_EQUAL(Decode(L"%3B%3D%25"), L";=%");
         }
     };
 }

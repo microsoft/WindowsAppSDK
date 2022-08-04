@@ -120,7 +120,7 @@ inline std::wstring EncodeArgument(std::wstring const& value)
     return encodedValue;
 }
 
-inline std::wstring EncodeXml(std::wstring const& value)
+inline std::wstring EncodeXml(winrt::hstring const& value)
 {
     std::wstring encodedValue{};
 
