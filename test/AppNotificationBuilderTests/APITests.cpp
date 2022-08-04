@@ -386,7 +386,7 @@ namespace Test::AppNotification::Builder
         {
             VERIFY_THROWS_HR(AppNotificationBuilder()
                 .AddText(std::wstring(5120, 'A').c_str())
-                .BuildNotification(), E_INVALIDARG);
+                .BuildNotification(), E_FAIL);
         }
 
         TEST_METHOD(AppNotificationAddProgressBar)

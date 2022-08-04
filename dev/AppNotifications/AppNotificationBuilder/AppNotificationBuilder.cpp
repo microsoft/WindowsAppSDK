@@ -383,7 +383,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
             m_audio.c_str(),
             actions.c_str()) };
 
-        THROW_HR_IF_MSG(E_INVALIDARG, xmlResult.size() > c_maxAppNotificationPayload, "Maximum payload size exceeded");
+        THROW_HR_IF_MSG(E_FAIL, xmlResult.size() > c_maxAppNotificationPayload, "Maximum payload size exceeded");
 
         winrt::Microsoft::Windows::AppNotifications::AppNotification appNotification{ xmlResult };
         appNotification.Tag(m_tag);
