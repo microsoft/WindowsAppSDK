@@ -421,41 +421,41 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationBuilderBuildNotificationWithTooLargePayload)
         {
-            VERIFY_THROWS_HR(AppNotificationBuilder()
+            VERIFY_THROWS_HR(winrt::AppNotificationBuilder()
                 .AddText(std::wstring(5120, 'A').c_str())
                 .BuildNotification(), E_INVALIDARG);
         }
 
         TEST_METHOD(AppNotificationAddProgressBar)
         {
-            auto builder{ AppNotificationBuilder()
+            auto builder{ winrt::AppNotificationBuilder()
                 .AddText(L"Downloading this week's new music...")
-                .AddProgressBar(AppNotificationProgressBar()
+                .AddProgressBar(winrt::AppNotificationProgressBar()
                     .BindTitle()
                     .BindValueStringOverride()) };
-            auto expected{ L"<toast><visual><binding template='ToastGeneric'><text>Downloading this week's new music...</text><progress title='{progressTitle}' status='{progressStatus}' value='{progressValue}' valueStringOverride='{progressValueString}'/></binding></visual></toast>" };
-
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'><text>Downloading this week&apos;s new music...</text><progress title='{progressTitle}' status='{progressStatus}' value='{progressValue}' valueStringOverride='{progressValueString}'/></binding></visual></toast>" };
+            WEX::Logging::Log::Comment(builder.BuildNotification().Payload().c_str());
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
         TEST_METHOD(AppNotificationAddMoreThanOneProgressBar)
         {
-            auto builder{ AppNotificationBuilder()
+            auto builder{ winrt::AppNotificationBuilder()
                 .AddText(L"Downloading this week's new music...")
-                .AddProgressBar(AppNotificationProgressBar()
+                .AddProgressBar(winrt::AppNotificationProgressBar()
                     .BindTitle()
                     .BindValueStringOverride())
-                .AddProgressBar(AppNotificationProgressBar()
+                .AddProgressBar(winrt::AppNotificationProgressBar()
                     .SetValue(0.8)
                     .SetStatus(L"Still downloading...")) };
-            auto expected{ L"<toast><visual><binding template='ToastGeneric'><text>Downloading this week's new music...</text><progress title='{progressTitle}' status='{progressStatus}' value='{progressValue}' valueStringOverride='{progressValueString}'/><progress status='Still downloading...' value='0.8'/></binding></visual></toast>" };
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'><text>Downloading this week&apos;s new music...</text><progress title='{progressTitle}' status='{progressStatus}' value='{progressValue}' valueStringOverride='{progressValueString}'/><progress status='Still downloading...' value='0.8'/></binding></visual></toast>" };
 
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
         TEST_METHOD(AppNotificationProgressBarDefaults)
         {
-            auto progressBar{ AppNotificationProgressBar() };
+            auto progressBar{ winrt::AppNotificationProgressBar() };
             auto expected{ L"<progress status='{progressStatus}' value='{progressValue}'/>" };
 
             VERIFY_ARE_EQUAL(progressBar.as<winrt::Windows::Foundation::IStringable>().ToString(), expected);
@@ -463,7 +463,7 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationProgressBarSetSpecificValue)
         {
-            auto progressBar{ AppNotificationProgressBar() };
+            auto progressBar{ winrt::AppNotificationProgressBar() };
             progressBar.Value(0.8);
             auto expected{ L"<progress status='{progressStatus}' value='0.8'/>" };
 
@@ -472,23 +472,23 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationProgressBarSetValueLargerThanOne)
         {
-            auto progressBar{ AppNotificationProgressBar() };
+            auto progressBar{ winrt::AppNotificationProgressBar() };
             VERIFY_THROWS_HR(progressBar.Value(1.01), E_INVALIDARG);
 
-            VERIFY_THROWS_HR(AppNotificationProgressBar().SetValue(1.01), E_INVALIDARG);
+            VERIFY_THROWS_HR(winrt::AppNotificationProgressBar().SetValue(1.01), E_INVALIDARG);
         }
 
         TEST_METHOD(AppNotificationProgressBarSetValueSmallerThanZero)
         {
-            auto progressBar{ AppNotificationProgressBar() };
+            auto progressBar{ winrt::AppNotificationProgressBar() };
             VERIFY_THROWS_HR(progressBar.Value(-0.1), E_INVALIDARG);
 
-            VERIFY_THROWS_HR(AppNotificationProgressBar().SetValue(-0.1), E_INVALIDARG);
+            VERIFY_THROWS_HR(winrt::AppNotificationProgressBar().SetValue(-0.1), E_INVALIDARG);
         }
 
         TEST_METHOD(AppNotificationProgressBarSetSpecificValueThenChangeToBind)
         {
-            auto progressBar{ AppNotificationProgressBar() };
+            auto progressBar{ winrt::AppNotificationProgressBar() };
             progressBar.Value(0.8);
             progressBar.BindValue();
             auto expected{ L"<progress status='{progressStatus}' value='{progressValue}'/>" };
@@ -498,7 +498,7 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationProgressBarBindTitleThenChangeToSpecificText)
         {
-            auto progressBar{ AppNotificationProgressBar()
+            auto progressBar{ winrt::AppNotificationProgressBar()
                 .BindTitle()
                 .SetTitle(L"Specific title") };
             auto expected{ L"<progress title='Specific title' status='{progressStatus}' value='{progressValue}'/>" };
@@ -508,7 +508,7 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationBuilderAddTextBox)
         {
-            auto builder{ AppNotificationBuilder()
+            auto builder{ winrt::AppNotificationBuilder()
                 .AddTextBox(L"input1") };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><input id='input1' type='text'/></actions></toast>" };
 
@@ -517,19 +517,19 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationBuilderAddTextBoxWithEmptyId)
         {
-            VERIFY_THROWS_HR(AppNotificationBuilder()
+            VERIFY_THROWS_HR(winrt::AppNotificationBuilder()
                 .AddTextBox(L""), E_INVALIDARG);
         }
 
         TEST_METHOD(AppNotificationBuilderAddTextBoxWithEmptyIdAndPlaceHolderTextAndTitle)
         {
-            VERIFY_THROWS_HR(AppNotificationBuilder()
+            VERIFY_THROWS_HR(winrt::AppNotificationBuilder()
                 .AddTextBox(L"", L"placeholder text", L"title"), E_INVALIDARG);
         }
 
         TEST_METHOD(AppNotificationBuilderAddTooManyTextBoxes)
         {
-            VERIFY_THROWS_HR(AppNotificationBuilder()
+            VERIFY_THROWS_HR(winrt::AppNotificationBuilder()
                 .AddTextBox(L"input1")
                 .AddTextBox(L"input2")
                 .AddTextBox(L"input3")
@@ -540,7 +540,7 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationBuilderAddTextBoxWithPlaceHolderTextAndTitle)
         {
-            auto builder{ AppNotificationBuilder()
+            auto builder{ winrt::AppNotificationBuilder()
                 .AddTextBox(L"some input id", L"Some placeholder text", L"A Title")};
             auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><input id='some input id' type='text' placeHolderContent='Some placeholder text' title='A Title'/></actions></toast>" };
 
@@ -549,8 +549,8 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationBuilderAddComboBox)
         {
-            auto builder{ AppNotificationBuilder()
-                .AddComboBox(AppNotificationComboBox(L"comboBox1")
+            auto builder{ winrt::AppNotificationBuilder()
+                .AddComboBox(winrt::AppNotificationComboBox(L"comboBox1")
                     .AddItem(L"item1", L"item1 text")
                     .AddItem(L"item2", L"item2 text")
                     .AddItem(L"item3", L"item3 text")
@@ -563,38 +563,38 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationBuilderAddTooManyComboBox)
         {
-            VERIFY_THROWS_HR(AppNotificationBuilder()
+            VERIFY_THROWS_HR(winrt::AppNotificationBuilder()
                 .AddTextBox(L"input1")
                 .AddTextBox(L"input2")
                 .AddTextBox(L"input3")
-                .AddComboBox(AppNotificationComboBox(L"comboBox1")
+                .AddComboBox(winrt::AppNotificationComboBox(L"comboBox1")
                     .AddItem(L"item1", L"item1 text"))
-                .AddComboBox(AppNotificationComboBox(L"comboBox2")
+                .AddComboBox(winrt::AppNotificationComboBox(L"comboBox2")
                     .AddItem(L"item1", L"item1 text"))
-                .AddComboBox(AppNotificationComboBox(L"comboBox3")
+                .AddComboBox(winrt::AppNotificationComboBox(L"comboBox3")
                     .AddItem(L"item1", L"item1 text")), E_INVALIDARG);
         }
 
         TEST_METHOD(AppNotificationBuilderAddTooManyInputElements)
         {
-            VERIFY_THROWS_HR(AppNotificationBuilder()
-                .AddComboBox(AppNotificationComboBox(L"comboBox1")
+            VERIFY_THROWS_HR(winrt::AppNotificationBuilder()
+                .AddComboBox(winrt::AppNotificationComboBox(L"comboBox1")
                     .AddItem(L"item1", L"item1 text"))
-                .AddComboBox(AppNotificationComboBox(L"comboBox2")
+                .AddComboBox(winrt::AppNotificationComboBox(L"comboBox2")
                     .AddItem(L"item1", L"item1 text"))
-                .AddComboBox(AppNotificationComboBox(L"comboBox3")
+                .AddComboBox(winrt::AppNotificationComboBox(L"comboBox3")
                     .AddItem(L"item1", L"item1 text"))
-                .AddComboBox(AppNotificationComboBox(L"comboBox4")
+                .AddComboBox(winrt::AppNotificationComboBox(L"comboBox4")
                     .AddItem(L"item1", L"item1 text"))
-                .AddComboBox(AppNotificationComboBox(L"comboBox5")
+                .AddComboBox(winrt::AppNotificationComboBox(L"comboBox5")
                     .AddItem(L"item1", L"item1 text"))
-                .AddComboBox(AppNotificationComboBox(L"comboBox6")
+                .AddComboBox(winrt::AppNotificationComboBox(L"comboBox6")
                     .AddItem(L"item1", L"item1 text")), E_INVALIDARG);
         }
 
         TEST_METHOD(AppNotificationComboBoxAddTooManySelectionItems)
         {
-            VERIFY_THROWS_HR(AppNotificationComboBox(L"comboBox1")
+            VERIFY_THROWS_HR(winrt::AppNotificationComboBox(L"comboBox1")
                     .AddItem(L"item1", L"item1 text")
                     .AddItem(L"item2", L"item2 text")
                     .AddItem(L"item3", L"item3 text")
@@ -605,7 +605,7 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationComboBoxAddFiveSelectionItems)
         {
-            auto comboBox{ AppNotificationComboBox(L"comboBox1")
+            auto comboBox{ winrt::AppNotificationComboBox(L"comboBox1")
                     .AddItem(L"item1", L"item1 text")
                     .AddItem(L"item2", L"item2 text")
                     .AddItem(L"item3", L"item3 text")
@@ -618,13 +618,13 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationComboBoxAddSelectionItemWithoutAnId)
         {
-            VERIFY_THROWS_HR(AppNotificationComboBox(L"comboBox1")
+            VERIFY_THROWS_HR(winrt::AppNotificationComboBox(L"comboBox1")
                 .AddItem(L"", L"item text"), E_INVALIDARG);
         }
 
         TEST_METHOD(AppNotificationComboBoxAddTwoSelectionItemsWithSameId)
         {
-            auto comboBox{ AppNotificationComboBox(L"comboBox1")
+            auto comboBox{ winrt::AppNotificationComboBox(L"comboBox1")
                     .AddItem(L"item1", L"item1 text")
                     .AddItem(L"item1", L"item2 text") };
             auto expected{ L"<input id='comboBox1' type='selection'><selection id='item1' content='item2 text'/></input>" };
@@ -634,13 +634,13 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationComboBoxSetSelectedItemWithoutAnId)
         {
-            VERIFY_THROWS_HR(AppNotificationComboBox(L"comboBox1")
+            VERIFY_THROWS_HR(winrt::AppNotificationComboBox(L"comboBox1")
                 .SetSelectedItem(L""), E_INVALIDARG);
         }
 
         TEST_METHOD(AppNotificationCreateComboBoxWithoutAnId)
         {
-            VERIFY_THROWS_HR(AppNotificationComboBox(L""), E_INVALIDARG);
+            VERIFY_THROWS_HR(winrt::AppNotificationComboBox(L""), E_INVALIDARG);
         }
     };
 }
