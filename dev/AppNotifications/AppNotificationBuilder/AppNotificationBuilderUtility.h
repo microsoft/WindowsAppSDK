@@ -16,9 +16,15 @@ namespace AppNotificationBuilder
     using namespace winrt::Microsoft::Windows::AppNotifications::Builder;
 }
 
-inline std::map<PCWSTR, PCWSTR> GetCharacterEncodings()
+inline std::unordered_map<wchar_t, PCWSTR> GetXmlEscapeEncodings()
 {
-    static std::map<PCWSTR, PCWSTR> encodings = { { L"%", L"%25"}, {L";", L"%3B"}, {L"=", L"%3D"}};
+    static std::unordered_map<wchar_t, PCWSTR> encodings = { { L'&', L"&amp;"}, { L'\"', L"&quot;"}, {L'<', L"&lt;"}, {L'>', L"&gt;"}, {L'\'', L"&apos;"}};
+    return encodings;
+}
+
+inline std::unordered_map<wchar_t, PCWSTR> GetPercentEncodings()
+{
+    static std::unordered_map<wchar_t, PCWSTR> encodings = {{ L'%', L"%25"}, {L';', L"%3B"}, {L'=', L"%3D"} };
     return encodings;
 }
 
@@ -79,18 +85,45 @@ inline PCWSTR GetWinSoundEventString(AppNotificationBuilder::AppNotificationSoun
     }
 }
 
-inline std::wstring Encode(std::wstring const& value)
+inline std::wstring EncodeArgument(std::wstring const& value)
 {
-    std::wstring encodedValue{ value };
+    std::wstring encodedValue{};
 
-    auto encodings{ GetCharacterEncodings() };
-    for (auto encoding : encodings)
+    auto percentEncodings{ GetPercentEncodings() };
+    auto xmlEncodings{ GetXmlEscapeEncodings() };
+    for (auto ch : value)
     {
-        // Replace literal special chars with encoding
-        encodedValue = std::regex_replace(encodedValue, std::wregex(encoding.first), encoding.second);
+        if (percentEncodings.find(ch) != percentEncodings.end())
+        {
+            encodedValue.append(percentEncodings[ch]);
+        }
+        else if (xmlEncodings.find(ch) != xmlEncodings.end())
+        {
+            encodedValue.append(xmlEncodings[ch]);
+        }
+        else
+        {
+            encodedValue.push_back(ch);
+        }
     }
+}
 
-    return encodedValue;
+inline std::wstring EncodeXml(std::wstring const& value)
+{
+    std::wstring encodedValue{};
+
+    auto xmlEncodings{ GetXmlEscapeEncodings() };
+    for (auto ch : value)
+    {
+        if (xmlEncodings.find(ch) != xmlEncodings.end())
+        {
+            encodedValue.append(xmlEncodings[ch]);
+        }
+        else
+        {
+            encodedValue.push_back(ch);
+        }
+    }
 }
 
 // Decoding process based off the Windows Community Toolkit:
