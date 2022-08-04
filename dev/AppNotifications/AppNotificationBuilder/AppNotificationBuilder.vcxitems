@@ -19,6 +19,7 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationBuilder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationButton.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationProgressBar.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationComboBox.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationTextProperties.cpp" />
   </ItemGroup>
@@ -26,6 +27,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationBuilder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationBuilderUtility.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationButton.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationProgressBar.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationComboBox.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationTextProperties.h" />
   </ItemGroup>
