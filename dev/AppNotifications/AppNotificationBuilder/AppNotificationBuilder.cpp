@@ -31,20 +31,23 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         THROW_HR_IF_MSG(E_INVALIDARG, key.empty(), "You must provide a key when adding an argument");
 
-        m_arguments.Insert(key, value);
+        m_arguments.Insert(EncodeArgument(key.c_str()), EncodeArgument(value.c_str()));
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetTimeStamp(winrt::Windows::Foundation::DateTime const& value)
     {
         auto seconds{ winrt::clock::to_time_t(value) };
-        struct tm buf{};
-        gmtime_s(&buf, &seconds);
+        struct tm buf {};
+        localtime_s(&buf, &seconds);
 
         std::wstringstream buffer;
-        buffer << std::put_time(&buf, L"%FT%T");
+        buffer << std::put_time(&buf, L"%FT%T%z");
 
-        m_timeStamp = wil::str_printf<std::wstring>(L" displayTimestamp='%lsZ'", buffer.str().c_str());
+        std::wstring timestamp{ buffer.str() };
+        timestamp.insert(timestamp.size() - c_offsetIndexValue, L":");
+        m_timeStamp = wil::str_printf<std::wstring>(L" displayTimestamp='%ls'", timestamp.c_str());
+
         return *this;
     }
 
@@ -64,7 +67,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         THROW_HR_IF_MSG(E_INVALIDARG, m_textLines.size() >= c_maxTextElements, "Maximum number of text elements added");
 
-        m_textLines.push_back(wil::str_printf<std::wstring>(L"<text>%ls</text>", text.c_str()).c_str());
+        m_textLines.push_back(wil::str_printf<std::wstring>(L"<text>%ls</text>", EncodeXml(text).c_str()).c_str());
         return *this;
     }
 
@@ -73,8 +76,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         THROW_HR_IF_MSG(E_INVALIDARG, m_textLines.size() >= c_maxTextElements, "Maximum number of text elements added");
 
         std::wstring props{ properties.as<winrt::Windows::Foundation::IStringable>().ToString() };
-        m_textLines.push_back(wil::str_printf<std::wstring>(L"%ls%ls</text>", props.c_str(), text.c_str()).c_str());
-
+        m_textLines.push_back(wil::str_printf<std::wstring>(L"%ls%ls</text>", props.c_str(), EncodeXml(text).c_str()).c_str());
+           
         if (properties.IncomingCallAlignment())
         {
             m_scenario = AppNotificationScenario::IncomingCall;
@@ -84,7 +87,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAttributionText(hstring const& text)
     {
-        m_attributionText = wil::str_printf<std::wstring>(L"<text placement='attribution'>%ls</text>", text.c_str());
+        m_attributionText = wil::str_printf<std::wstring>(L"<text placement='attribution'>%ls</text>", EncodeXml(text).c_str());
         return *this;
     }
 
@@ -92,7 +95,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         THROW_HR_IF_MSG(E_INVALIDARG, language.empty(), "You must provide a language calling SetAttributionText");
 
-        m_attributionText = wil::str_printf<std::wstring>(L"<text placement='attribution' lang='%ls'>%ls</text>", language.c_str(), text.c_str());
+        m_attributionText = wil::str_printf<std::wstring>(L"<text placement='attribution' lang='%ls'>%ls</text>", language.c_str(), EncodeXml(text).c_str());
         return *this;
     }
 
@@ -121,7 +124,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         THROW_HR_IF_MSG(E_INVALIDARG, alternateText.empty(), "You must provide an alternate text string calling SetInlineImage");
 
         std::wstring hintCrop { imageCrop == AppNotificationImageCrop::Circle ? L" hint-crop='circle'" : L"" };
-        m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ls' alt='%ls'%ls/>", imageUri.ToString().c_str(), alternateText.c_str(), hintCrop.c_str());
+        m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ls' alt='%ls'%ls/>", imageUri.ToString().c_str(), EncodeXml(alternateText).c_str(), hintCrop.c_str());
 
         return *this;
     }
@@ -151,7 +154,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         THROW_HR_IF_MSG(E_INVALIDARG, alternateText.empty(), "You must provide an alternate text string calling SetAppLogoOverride");
 
         std::wstring hintCrop{ imageCrop == AppNotificationImageCrop::Circle ? L" hint-crop='circle'" : L"" };
-        m_appLogoOverride = wil::str_printf<std::wstring>(L"<image placement='appLogoOverride' src='%ls' alt='%ls'%ls/>", imageUri.ToString().c_str(), alternateText.c_str(), hintCrop.c_str());
+        m_appLogoOverride = wil::str_printf<std::wstring>(L"<image placement='appLogoOverride' src='%ls' alt='%ls'%ls/>", imageUri.ToString().c_str(), EncodeXml(alternateText).c_str(), hintCrop.c_str());
 
         return *this;
     }
@@ -166,7 +169,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         THROW_HR_IF_MSG(E_INVALIDARG, alternateText.empty(), "You must provide an alternate text string calling SetHeroImage");
 
-        m_heroImage = wil::str_printf<std::wstring>(L"<image placement='hero' src='%ls' alt='%ls'/>", imageUri.ToString().c_str(), alternateText.c_str());
+        m_heroImage = wil::str_printf<std::wstring>(L"<image placement='hero' src='%ls' alt='%ls'/>", imageUri.ToString().c_str(), EncodeXml(alternateText).c_str());
         return *this;
     }
 
@@ -212,8 +215,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         ThrowIfMaxInputItemsExceeded();
         THROW_HR_IF_MSG(E_INVALIDARG, id.empty(), "You must provide an id for the TextBox");
 
-
-        m_textBoxList.push_back(wil::str_printf<std::wstring>(L"<input id='%ls' type='text'/>", id.c_str()));
+        m_textBoxList.push_back(wil::str_printf<std::wstring>(L"<input id='%ls' type='text'/>", EncodeXml(id).c_str()));
         return *this;
     }
 
@@ -222,7 +224,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         ThrowIfMaxInputItemsExceeded();
         THROW_HR_IF_MSG(E_INVALIDARG, id.empty(), "You must provide an id for the TextBox");
 
-        m_textBoxList.push_back(wil::str_printf<std::wstring>(L"<input id='%ls' type='text' placeHolderContent='%ls' title='%ls'/>", id.c_str(), placeHolderText.c_str(), title.c_str()));
+        m_textBoxList.push_back(wil::str_printf<std::wstring>(L"<input id='%ls' type='text' placeHolderContent='%ls' title='%ls'/>", EncodeXml(id).c_str(), EncodeXml(placeHolderText).c_str(), EncodeXml(title).c_str()));
         return *this;
     }
 
@@ -345,7 +347,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
             result.append(input.as<winrt::Windows::Foundation::IStringable>().ToString().c_str());
         }
 
-        return result.empty() ? result : wil::str_printf<std::wstring>(L"<actions>%ls</actions>", result.c_str());
+        return (result.empty()) ? result : wil::str_printf<std::wstring>(L"<actions>%ls</actions>", result.c_str());
     }
 
     // You must call GetActions first to retrieve this value.

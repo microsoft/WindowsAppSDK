@@ -11,14 +11,17 @@
 #include <sddl.h>
 #include <appmodel.h>
 
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <wil/resource.h>
+#include <wil/stl.h>
 #include <wil/result.h>
 #include <wil/cppwinrt.h>
 #include <wil/token_helpers.h>
-#include <wil/resource.h>
 #include <wrl.h>
 #include <WexTestClass.h>
 
-#include <string>
 #include <sstream>
 #include <iomanip>
 
@@ -43,6 +46,7 @@
 
 #include <winrt/Microsoft.Windows.AppNotifications.h>
 #include <winrt/Microsoft.Windows.AppNotifications.Builder.h>
+#include <AppNotificationBuilderUtility.h>
 #include <WindowsAppRuntime.SelfContained.h>
 #include <WindowsAppRuntime.VersionInfo.h>
 
