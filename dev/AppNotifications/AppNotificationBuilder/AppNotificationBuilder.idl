@@ -17,7 +17,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationTextProperties SetLanguage(String value);
         AppNotificationTextProperties SetIncomingCallAlignment();
         AppNotificationTextProperties SetMaxLines(Int32 value);
-    }
+    };
 
     enum AppNotificationButtonStyle
     {
@@ -63,6 +63,51 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // Launches the URI passed into the button when activated.
         AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri);
         AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri, String targetAppId);
+    };
+
+    runtimeclass AppNotificationProgressBar
+    {
+        // AppNotificationProgressBar binds to AppNotificationProgressData so the AppNotification will
+        // receive every update to the status and value. In the WinAppSDK, these binding
+        // values are static, so developers won't need to define these binding values
+        // themselves.
+        AppNotificationProgressBar();
+
+        // Setting these properties will remove the data binding with a static value
+        String Title;
+        String Status;
+        Double Value;
+        String ValueStringOverride;
+
+        AppNotificationProgressBar SetTitle(String value);
+        AppNotificationProgressBar BindTitle();
+
+        AppNotificationProgressBar SetStatus(String value);
+        AppNotificationProgressBar BindStatus();
+
+        AppNotificationProgressBar SetValue(Double value);
+        AppNotificationProgressBar BindValue();
+
+        AppNotificationProgressBar SetValueStringOverride(String value);
+        AppNotificationProgressBar BindValueStringOverride();
+    };
+
+    runtimeclass AppNotificationComboBox
+    {
+        AppNotificationComboBox(String id);
+
+        Windows.Foundation.Collections.IMap<String, String> Items;
+        String Title;
+        String SelectedItem;
+
+        // Add a selection to the AppNotificationComboBox. The id parameter identifies the item the user selected.
+        AppNotificationComboBox AddItem(String id, String content);
+
+        // Adds a title to display on top
+        AppNotificationComboBox SetTitle(String value);
+
+        // Sets the default selection to be displayed by the AppNotificationComboBox
+        AppNotificationComboBox SetSelectedItem(String id);
     };
 
     enum AppNotificationSoundEvent
@@ -167,8 +212,15 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         AppNotificationBuilder MuteAudio();
 
+        AppNotificationBuilder AddTextBox(String id);
+        AppNotificationBuilder AddTextBox(String id, String placeHolderText, String title);
+
         // Adds a button to the AppNotificationBuilder
         AppNotificationBuilder AddButton(AppNotificationButton value);
+
+        AppNotificationBuilder AddComboBox(AppNotificationComboBox value);
+
+        AppNotificationBuilder AddProgressBar(AppNotificationProgressBar value);
 
         // Constructs a WindowsAppSDK AppNotification object with the XML payload
         Microsoft.Windows.AppNotifications.AppNotification BuildNotification();

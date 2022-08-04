@@ -12,6 +12,9 @@ constexpr size_t c_maxAppNotificationPayload{ 5120 };
 constexpr uint8_t c_maxTextElements{ 3 };
 constexpr uint8_t c_maxButtonElements{ 5 };
 constexpr size_t c_maxEncodingSize{ 3 };
+constexpr uint8_t c_maxTextInputElements{ 5 };
+constexpr uint8_t c_maxSelectionElements{ 5 };
+
 namespace AppNotificationBuilder
 {
     using namespace winrt::Microsoft::Windows::AppNotifications::Builder;
