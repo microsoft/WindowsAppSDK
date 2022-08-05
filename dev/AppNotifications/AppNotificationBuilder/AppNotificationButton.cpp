@@ -26,7 +26,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         THROW_HR_IF_MSG(E_INVALIDARG, key.empty(), "You must provide a key when adding an argument");
         THROW_HR_IF_MSG(E_INVALIDARG, m_protocolUri, "You cannot add an argument after calling SetInvokeUri");
 
-        m_arguments.Insert(EncodeArgument(key), EncodeArgument(value));
+        m_arguments.Insert(Encode(key, EncodingType::Argument), Encode(value, EncodingType::Argument));
         return *this;
     }
 
@@ -38,7 +38,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetToolTip(winrt::hstring const& value)
     {
-        m_toolTip = EncodeXml(value).c_str();
+        m_toolTip = Encode(value, EncodingType::Xml).c_str();
         return *this;
     }
 
@@ -56,7 +56,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetInputId(winrt::hstring const& value)
     {
-        m_inputId = EncodeXml(value).c_str();
+        m_inputId = Encode(value, EncodingType::Xml).c_str();
         return *this;
     }
 

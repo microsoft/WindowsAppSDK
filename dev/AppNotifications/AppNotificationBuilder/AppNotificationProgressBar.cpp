@@ -17,13 +17,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     void AppNotificationProgressBar::Title(winrt::hstring const& value)
     {
-        m_title = EncodeXml(value).c_str();
+        m_title = Encode(value, EncodingType::Xml).c_str();
         m_titleBindMode = BindMode::Value;
     }
 
     void AppNotificationProgressBar::Status(winrt::hstring const& value)
     {
-        m_status = EncodeXml(value).c_str();
+        m_status = Encode(value, EncodingType::Xml).c_str();
         m_statusBindMode = BindMode::Value;
     }
 
@@ -37,7 +37,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     void AppNotificationProgressBar::ValueStringOverride(winrt::hstring const& value)
     {
-        m_valueStringOverride = EncodeXml(value).c_str();
+        m_valueStringOverride = Encode(value, EncodingType::Xml).c_str();
         m_valueStringOverrideBindMode = BindMode::Value;
     }
 

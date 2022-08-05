@@ -78,14 +78,26 @@ inline PCWSTR GetWinSoundEventString(AppNotificationBuilder::AppNotificationSoun
     }
 }
 
-inline std::wstring GetArgumentEncoding(wchar_t const& ch)
+enum EncodingType
 {
-    static std::unordered_map<wchar_t, std::wstring> encodings = { { L'&', L"&amp;"}, { L'\"', L"&quot;"}, {L'<', L"&lt;"},
+    Xml,
+    Argument,
+};
+
+inline std::wstring GetEncoding(wchar_t const& ch, EncodingType const& type)
+{
+    static std::unordered_map<wchar_t, std::wstring> argumentEncodings = { { L'&', L"&amp;"}, { L'\"', L"&quot;"}, {L'<', L"&lt;"},
                                                                         {L'>', L"&gt;"}, {L'\'', L"&apos;"}, { L'%', L"%25"},
                                                                             {L';', L"%3B"}, {L'=', L"%3D"} };
-    if (encodings.find(ch) != encodings.end())
+    static std::unordered_map<wchar_t, std::wstring> xmlEncodings = { { L'&', L"&amp;"}, { L'\"', L"&quot;"}, {L'<', L"&lt;"},
+                                                                    {L'>', L"&gt;"}, {L'\'', L"&apos;"} };
+    if (type == EncodingType::Xml && xmlEncodings.find(ch) != xmlEncodings.end())
     {
-        return encodings[ch];
+        return xmlEncodings[ch];
+    }
+    else if (type == EncodingType::Argument && argumentEncodings.find(ch) != argumentEncodings.end())
+    {
+        return argumentEncodings[ch];
     }
     else
     {
@@ -93,37 +105,12 @@ inline std::wstring GetArgumentEncoding(wchar_t const& ch)
     }
 }
 
-inline std::wstring GetXmlEncoding(wchar_t const& ch)
-{
-    static std::unordered_map<wchar_t, std::wstring> encodings = { { L'&', L"&amp;"}, { L'\"', L"&quot;"}, {L'<', L"&lt;"},
-                                                                        {L'>', L"&gt;"}, {L'\'', L"&apos;"} };
-    if (encodings.find(ch) != encodings.end())
-    {
-        return encodings[ch];
-    }
-    else
-    {
-        return std::wstring(1, ch);
-    }
-}
-
-inline std::wstring EncodeArgument(winrt::hstring const& value)
+inline std::wstring Encode(winrt::hstring const& value, EncodingType const& type)
 {
     std::wstring encodedValue{};
     for (auto ch : value)
     {
-        encodedValue.append(GetArgumentEncoding(ch));
-    }
-
-    return encodedValue;
-}
-
-inline std::wstring EncodeXml(winrt::hstring const& value)
-{
-    std::wstring encodedValue{};
-    for (auto ch : value)
-    {
-        encodedValue.append(GetXmlEncoding(ch));
+        encodedValue.append(GetEncoding(ch, type));
     }
 
     return encodedValue;

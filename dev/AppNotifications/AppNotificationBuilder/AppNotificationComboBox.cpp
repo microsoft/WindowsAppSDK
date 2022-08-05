@@ -11,7 +11,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     AppNotificationComboBox::AppNotificationComboBox(hstring const& id)
     {
         THROW_HR_IF_MSG(E_INVALIDARG, id.empty(), "You must provide an id for the ComboBox");
-        m_id = EncodeXml(id).c_str();
+        m_id = Encode(id, EncodingType::Xml).c_str();
     };
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationComboBox AppNotificationComboBox::AddItem(winrt::hstring const& id, winrt::hstring const& content)
@@ -19,14 +19,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         THROW_HR_IF_MSG(E_INVALIDARG, m_items.Size() >= c_maxSelectionElements, "Maximum number of items added");
         THROW_HR_IF_MSG(E_INVALIDARG, id.empty(), "You must provide an id for the item");
 
-        m_items.Insert(EncodeXml(id).c_str(), EncodeXml(content).c_str());
+        m_items.Insert(Encode(id, EncodingType::Xml).c_str(), Encode(content, EncodingType::Xml).c_str());
 
         return *this;
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationComboBox AppNotificationComboBox::SetTitle(winrt::hstring const& value)
     {
-        m_title = EncodeXml(value).c_str();
+        m_title = Encode(value, EncodingType::Xml).c_str();
 
         return *this;
     }
@@ -35,7 +35,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         THROW_HR_IF_MSG(E_INVALIDARG, id.empty(), "You must provide an id for the selected item");
 
-        m_selectedItem = EncodeXml(id).c_str();
+        m_selectedItem = Encode(id, EncodingType::Xml).c_str();
 
         return *this;
     }

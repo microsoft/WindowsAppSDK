@@ -20,7 +20,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         LPWSTR context{};
         auto token{ wcstok_s(arguments.data(), &delimiter, &context) };
         // Separate the key/value pairs by ';' as the delimiter
-        while (token != nullptr)
+        while (token)
         {
             pairs.push_back(token);
             token = wcstok_s(nullptr, &delimiter, &context);
