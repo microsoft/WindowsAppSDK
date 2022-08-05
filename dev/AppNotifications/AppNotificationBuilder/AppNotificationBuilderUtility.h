@@ -95,7 +95,7 @@ inline PCWSTR GetWinSoundEventString(AppNotificationBuilder::AppNotificationSoun
     }
 }
 
-inline std::wstring EncodeArgument(std::wstring const& value)
+inline std::wstring EncodeArgument(winrt::hstring const& value)
 {
     std::wstring encodedValue{};
 

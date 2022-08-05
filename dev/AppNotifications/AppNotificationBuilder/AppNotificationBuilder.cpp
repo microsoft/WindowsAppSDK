@@ -31,7 +31,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         THROW_HR_IF_MSG(E_INVALIDARG, key.empty(), "You must provide a key when adding an argument");
 
-        m_arguments.Insert(EncodeArgument(key.c_str()), EncodeArgument(value.c_str()));
+        m_arguments.Insert(EncodeArgument(key), EncodeArgument(value));
         return *this;
     }
 
@@ -64,7 +64,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         THROW_HR_IF_MSG(E_INVALIDARG, m_textLines.size() >= c_maxTextElements, "Maximum number of text elements added");
 
-        m_textLines.push_back(wil::str_printf<std::wstring>(L"<text>%ls</text>", EncodeXml(text).c_str()).c_str());
+        m_textLines.push_back(wil::str_printf<std::wstring>(L"<text>%ls</text>", EncodeXml(text).c_str()));
         return *this;
     }
 
@@ -73,7 +73,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         THROW_HR_IF_MSG(E_INVALIDARG, m_textLines.size() >= c_maxTextElements, "Maximum number of text elements added");
 
         std::wstring props{ properties.as<winrt::Windows::Foundation::IStringable>().ToString() };
-        m_textLines.push_back(wil::str_printf<std::wstring>(L"%ls%ls</text>", props.c_str(), EncodeXml(text).c_str()).c_str());
+        m_textLines.push_back(wil::str_printf<std::wstring>(L"%ls%ls</text>", props.c_str(), EncodeXml(text).c_str()));
 
         if (properties.IncomingCallAlignment())
         {

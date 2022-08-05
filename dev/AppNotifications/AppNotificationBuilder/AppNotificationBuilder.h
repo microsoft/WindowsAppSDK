@@ -80,7 +80,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         AppNotificationDuration m_duration{ AppNotificationDuration::Default };
         AppNotificationScenario m_scenario{ AppNotificationScenario::Default };
         bool m_useButtonStyle{};
-        std::vector<winrt::hstring> m_textLines{};
+        std::vector<std::wstring> m_textLines{};
         winrt::hstring m_attributionText{};
         winrt::hstring m_inlineImage{};
         winrt::hstring m_appLogoOverride{};

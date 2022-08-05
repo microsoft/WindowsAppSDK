@@ -30,11 +30,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             size_t pos{ pair.find(L'=') };
             if (pos == std::wstring::npos)
             {
-                result.Insert(Decode(pair).c_str(), L"");
+                result.Insert(Decode(pair), L"");
             }
             else
             {
-                result.Insert(Decode(pair.substr(0, pos)).c_str(), Decode(pair.substr(pos + 1)).c_str());
+                result.Insert(Decode(pair.substr(0, pos)), Decode(pair.substr(pos + 1)));
             }
         }
         return result;
