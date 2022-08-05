@@ -105,7 +105,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         auto valueStringOverride{ wil::str_printf < std::wstring>(L" valueStringOverride='%ls'", m_valueStringOverrideBindMode == BindMode::Value ? m_valueStringOverride.c_str() : L"{progressValueString}") };
 
         return wil::str_printf<std::wstring>(L"<progress%ls%ls%ls%ls/>",
-            m_titleBindMode == BindMode::NotSet ? L"" :title.c_str(),
+            m_titleBindMode == BindMode::NotSet ? L"" : title.c_str(),
             status.c_str(),
             value.c_str(),
             m_valueStringOverrideBindMode == BindMode::NotSet ? L"" : valueStringOverride.c_str()).c_str();
