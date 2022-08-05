@@ -13,22 +13,21 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         auto result{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
 
         std::vector<std::wstring> pairs{};
-        size_t pos{ 0 };
 
+        wchar_t delimiter{ L';'};
+        LPWSTR context{};
+        auto token{ wcstok_s(arguments.data(), &delimiter, &context) };
         // Separate the key/value pairs by ';' as the delimiter
-        while ((pos = arguments.find(L';')) != std::wstring::npos)
+        while (token != nullptr)
         {
-            pairs.push_back(arguments.substr(0, pos));
-            arguments.erase(0, pos + 1);
+            pairs.push_back(token);
+            token = wcstok_s(nullptr, &delimiter, &context);
         }
-
-        // Need to push back final string
-        pairs.push_back(arguments);
 
         for (auto pair : pairs)
         {
             // Get the key/value individual values separated by '='
-            pos = pair.find(L'=');
+            size_t pos{ pair.find(L'=') };
             if (pos == std::wstring::npos)
             {
                 result.Insert(Decode(pair).c_str(), L"");
