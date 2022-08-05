@@ -79,6 +79,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().AddArgument(L"key", L"value") };
             auto expected{ L"<toast launch='key=value'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
 
+            WEX::Logging::Log::Comment(builder.BuildNotification().Payload().c_str());
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 

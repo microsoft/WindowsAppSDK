@@ -21,24 +21,6 @@ namespace AppNotificationBuilder
     using namespace winrt::Microsoft::Windows::AppNotifications::Builder;
 }
 
-inline std::unordered_map<wchar_t, std::wstring> GetXmlEscapeEncodings()
-{
-    static std::unordered_map<wchar_t, std::wstring> encodings = { { L'&', L"&amp;"}, { L'\"', L"&quot;"}, {L'<', L"&lt;"}, {L'>', L"&gt;"}, {L'\'', L"&apos;"}};
-    return encodings;
-}
-
-inline std::unordered_map<wchar_t, std::wstring> GetPercentEncodings()
-{
-    static std::unordered_map<wchar_t, std::wstring> encodings = {{ L'%', L"%25"}, {L';', L"%3B"}, {L'=', L"%3D"} };
-    return encodings;
-}
-
-inline std::unordered_map<std::wstring, wchar_t> GetPercentEncodingsReverse()
-{
-    static std::unordered_map<std::wstring, wchar_t> encodings = { { L"%25", L'%' }, {L"%3B", L';' }, { L"%3D", L'=' } };
-    return encodings;
-}
-
 inline PCWSTR GetWinSoundEventString(AppNotificationBuilder::AppNotificationSoundEvent soundEvent)
 {
     switch (soundEvent)
@@ -96,26 +78,41 @@ inline PCWSTR GetWinSoundEventString(AppNotificationBuilder::AppNotificationSoun
     }
 }
 
+inline std::wstring GetArgumentEncoding(wchar_t const& ch)
+{
+    static std::unordered_map<wchar_t, std::wstring> encodings = { { L'&', L"&amp;"}, { L'\"', L"&quot;"}, {L'<', L"&lt;"},
+                                                                        {L'>', L"&gt;"}, {L'\'', L"&apos;"}, { L'%', L"%25"},
+                                                                            {L';', L"%3B"}, {L'=', L"%3D"} };
+    if (encodings.find(ch) != encodings.end())
+    {
+        return encodings[ch];
+    }
+    else
+    {
+        return std::wstring(1, ch);
+    }
+}
+
+inline std::wstring GetXmlEncoding(wchar_t const& ch)
+{
+    static std::unordered_map<wchar_t, std::wstring> encodings = { { L'&', L"&amp;"}, { L'\"', L"&quot;"}, {L'<', L"&lt;"},
+                                                                        {L'>', L"&gt;"}, {L'\'', L"&apos;"} };
+    if (encodings.find(ch) != encodings.end())
+    {
+        return encodings[ch];
+    }
+    else
+    {
+        return std::wstring(1, ch);
+    }
+}
+
 inline std::wstring EncodeArgument(winrt::hstring const& value)
 {
     std::wstring encodedValue{};
-
-    auto percentEncodings{ GetPercentEncodings() };
-    auto xmlEncodings{ GetXmlEscapeEncodings() };
     for (auto ch : value)
     {
-        if (percentEncodings.find(ch) != percentEncodings.end())
-        {
-            encodedValue.append(percentEncodings[ch]);
-        }
-        else if (xmlEncodings.find(ch) != xmlEncodings.end())
-        {
-            encodedValue.append(xmlEncodings[ch]);
-        }
-        else
-        {
-            encodedValue.push_back(ch);
-        }
+        encodedValue.append(GetArgumentEncoding(ch));
     }
 
     return encodedValue;
@@ -124,18 +121,9 @@ inline std::wstring EncodeArgument(winrt::hstring const& value)
 inline std::wstring EncodeXml(winrt::hstring const& value)
 {
     std::wstring encodedValue{};
-
-    auto xmlEncodings{ GetXmlEscapeEncodings() };
     for (auto ch : value)
     {
-        if (xmlEncodings.find(ch) != xmlEncodings.end())
-        {
-            encodedValue.append(xmlEncodings[ch]);
-        }
-        else
-        {
-            encodedValue.push_back(ch);
-        }
+        encodedValue.append(GetXmlEncoding(ch));
     }
 
     return encodedValue;
@@ -145,16 +133,16 @@ inline std::wstring EncodeXml(winrt::hstring const& value)
 // https://github.com/CommunityToolkit/WindowsCommunityToolkit/blob/rel/7.1.0/Microsoft.Toolkit.Uwp.Notifications/Toasts/ToastArguments.cs#L389inline
 inline std::wstring Decode(std::wstring const& value)
 {
-    std::wstring result{};
-    auto percentEncodings{ GetPercentEncodingsReverse() };
+    static std::unordered_map<std::wstring, wchar_t> encodings = { { L"%25", L'%' }, {L"%3B", L';' }, { L"%3D", L'=' } };
 
-    // Need to unescape special characters
+    std::wstring result{};
+    // Check every 3 chars for a percent encoding
     for (size_t index = 0; index < value.size();)
     {
         std::wstring curr{ value.substr(index, c_maxEncodingSize) };
-        if (percentEncodings.find(curr) != percentEncodings.end())
+        if (encodings.find(curr) != encodings.end())
         {
-            result.push_back(percentEncodings[curr]);
+            result.push_back(encodings[curr]);
             index += c_maxEncodingSize;
         }
         else
