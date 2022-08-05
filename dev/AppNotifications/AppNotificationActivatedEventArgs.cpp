@@ -8,6 +8,8 @@
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
+    // Input without special chars: "key1=value1;key2=value2" -> output: { {key1, value1}, {key2, value2} }
+    // Input with special chars: "key%3B=value%3D;key%25=value%3D" -> output: { key;, value=}, {key%, value=} }
     winrt::Windows::Foundation::Collections::IMap<hstring, hstring> AppNotificationActivatedEventArgs::DecodeArguments(std::wstring arguments)
     {
         auto result{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
