@@ -4,6 +4,13 @@
 #include <Windows.h>
 #include <stdlib.h>
 
+#include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.Foundation.Collections.h>
+
+#include <winrt/Windows.Management.Deployment.h>
+#include <winrt/Windows.System.h>
+#include <winrt/Microsoft.Windows.ApplicationModel.WindowsAppRuntime.h>
+
 // If any options are defined use them, else use the default
 #if !defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_DEFAULT)
 // Default isn't defined. Define it if no options are defined
@@ -30,12 +37,12 @@ namespace Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentMan
 
         ~AutoInitialize() = default;
 
-        constexpr static ::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions Options()
+        static ::winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions Options()
         {
-            ::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions options;
+            ::winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions options;
 #if defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_DEFAULT)
             // Use the default options
-            options.OnNoMatch_ShowUI(true);
+            options.OnError_ShowUI(true);
 #elif defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_NONE)
             // No options!
 #else
@@ -50,10 +57,10 @@ namespace Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentMan
             options.OnError_FailFast(true);
 #endif
 #if defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_SHOWUI)
-            options.OnNoMatch_ShowUI(true);
+            options.OnError_ShowUI(true);
 #endif
 #if defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONNOPACKAGEIDENTITY_NOOP)
-            options.OnPackageIdentity_NOOP(true);
+            options.OnNoPackageIdentity_NOOP(true);
 #endif
 #endif
             return options;
@@ -62,8 +69,8 @@ namespace Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentMan
         static void Initialize()
         {
             auto options{ Options() };
-            auto deploymentResult{ ::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentManager::Initialize(options) };
-            if (deploymentResult.Status() != DeploymentStatus::Ok)
+            auto deploymentResult{ ::winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentManager::Initialize(options) };
+            if (deploymentResult.Status() != ::winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Ok)
             {
                 const HRESULT hr{ deploymentResult.ExtendedError().value };
                 exit(hr);

@@ -24,7 +24,7 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager
+namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManagerCS
 {
     class AutoInitialize
     {
@@ -32,41 +32,41 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager
         internal static void AccessWindowsAppSDK()
         {
             var options = Options;
-            var initializeTask = Task.Run(() => global::Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.Initialize(options));
-            initializeTask.Wait();
-            if (initializeTask.Result.Status != DeploymentStatus.Ok)
+            global::Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult deploymentResult = global::Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.Initialize(options);
+            if (deploymentResult.Status != global::Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentStatus.Ok)
             {
-                var hr = initializeTask.Result.ExtendedError;
+                int hr = deploymentResult.ExtendedError.HResult;
                 global::System.Environment.Exit(hr);
+                global::System.Environment.FailFast("WindowsAppRuntime.DeploymentManager.Initialize error 0x{hr:X}");
             }
         }
 
-        internal static global::Microsoft.Windows.ApplicationModel.DynamicDependency.Bootstrap.InitializeOptions Options
+        internal static global::Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions Options
         {
             get
             {
                 var options = new global::Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions();
-#if defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_DEFAULT)
+#if MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_DEFAULT
                 // Use the default options
-                options.OnNoMatch_ShowUI = true;
-#elif defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_NONE)
+                options.OnError_ShowUI = true;
+#elif MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_NONE
                 // No options!
 #else
                 // Use the specified options
-#if defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK)
+#if MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK
                 options.OnError_DebugBreak = true;
 #endif
-#if defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK_IFDEBUGGERATTACHED)
+#if MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK_IFDEBUGGERATTACHED
                 options.OnError_DebugBreak_IfDebuggerAttached = true;
 #endif
-#if defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_FAILFAST)
+#if MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_FAILFAST
                 options.OnError_FailFast = true;
 #endif
-#if defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_SHOWUI)
-                options.OnNoMatch_ShowUI = true;
+#if MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_SHOWUI
+                options.OnError_ShowUI = true;
 #endif
-#if defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONNOPACKAGEIDENTITY_NOOP)
-                options.OnPackageIdentity_NOOP = true;
+#if MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONNOPACKAGEIDENTITY_NOOP
+                options.OnNoPackageIdentity_NOOP = true;
 #endif
 #endif
                 return options;
