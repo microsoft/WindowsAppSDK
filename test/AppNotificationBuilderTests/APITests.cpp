@@ -3,7 +3,7 @@
 
 #include "pch.h"
 
- namespace winrt
+namespace winrt
 {
     using namespace winrt::Microsoft::Windows::AppNotifications::Builder;
 }
