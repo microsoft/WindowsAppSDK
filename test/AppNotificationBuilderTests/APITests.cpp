@@ -7,7 +7,7 @@
 {
     using namespace winrt::Microsoft::Windows::AppNotifications::Builder;
 }
-                            
+
 namespace Test::AppNotification::Builder
 {
     inline const winrt::Windows::Foundation::Uri c_sampleUri{ L"http://www.microsoft.com" };
@@ -57,7 +57,7 @@ namespace Test::AppNotification::Builder
 
         TEST_METHOD(AppNotificationBuilderSetTimeStamp)
         {
-              auto time{ winrt::Windows::Foundation::DateTime::clock::now() };
+            auto time{ winrt::Windows::Foundation::DateTime::clock::now() };
             auto builder{ winrt::AppNotificationBuilder().SetTimeStamp(time) };
 
             struct tm dateTime {};

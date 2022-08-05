@@ -77,7 +77,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         std::wstring props{ properties.as<winrt::Windows::Foundation::IStringable>().ToString() };
         m_textLines.push_back(wil::str_printf<std::wstring>(L"%ls%ls</text>", props.c_str(), EncodeXml(text).c_str()).c_str());
-           
+
         if (properties.IncomingCallAlignment())
         {
             m_scenario = AppNotificationScenario::IncomingCall;
