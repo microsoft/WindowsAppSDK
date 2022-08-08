@@ -165,7 +165,7 @@
     <Import Project="..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.targets" Condition="Exists('..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.targets')" />
     <Import Project="..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.targets')" />
     <Import Project="..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets')" />
-    <Import Project="..\..\packages\Microsoft.FrameworkUdk.1.1.2-CI-25087.1001.220410-1342.0\build\native\Microsoft.FrameworkUdk.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.1.1.2-CI-25087.1001.220410-1342.0\build\native\Microsoft.FrameworkUdk.targets')" />
+    <Import Project="..\..\packages\Microsoft.FrameworkUdk.1.0.5-CI-25099.1001.220418-1000.0\build\native\Microsoft.FrameworkUdk.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.1.0.5-CI-25099.1001.220418-1000.0\build\native\Microsoft.FrameworkUdk.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -179,6 +179,6 @@
     <Error Condition="!Exists('..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.props'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.1.1.2-CI-25087.1001.220410-1342.0\build\native\Microsoft.FrameworkUdk.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.1.1.2-CI-25087.1001.220410-1342.0\build\native\Microsoft.FrameworkUdk.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.1.0.5-CI-25099.1001.220418-1000.0\build\native\Microsoft.FrameworkUdk.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.1.0.5-CI-25099.1001.220418-1000.0\build\native\Microsoft.FrameworkUdk.targets'))" />
   </Target>
 </Project>

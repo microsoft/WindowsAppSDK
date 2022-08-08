@@ -46,10 +46,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize()
     {
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Start(false,
-                                                                                      Security::IntegrityLevel::IsElevated(),
-                                                                                      AppModel::Identity::IsPackagedProcess(),
-                                                                                      Security::IntegrityLevel::GetIntegrityLevel());
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetActivity(WindowsAppRuntimeDeployment_TraceLogger::Initialize::Start(false,
+                                                                                        Security::IntegrityLevel::IsElevated(),
+                                                                                        AppModel::Identity::IsPackagedProcess(),
+                                                                                        Security::IntegrityLevel::GetIntegrityLevel()));
 
         FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
         return Initialize(GetCurrentFrameworkPackageFullName());
@@ -57,10 +57,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions)
     {
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Start(deploymentInitializeOptions.ForceDeployment(),
-                                                                                      Security::IntegrityLevel::IsElevated(),
-                                                                                      AppModel::Identity::IsPackagedProcess(),
-                                                                                      Security::IntegrityLevel::GetIntegrityLevel());
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetActivity(WindowsAppRuntimeDeployment_TraceLogger::Initialize::Start(
+                                                                                        deploymentInitializeOptions.ForceDeployment(),
+                                                                                        Security::IntegrityLevel::IsElevated(),
+                                                                                        AppModel::Identity::IsPackagedProcess(),
+                                                                                        Security::IntegrityLevel::GetIntegrityLevel()));
 
         FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
         return Initialize(GetCurrentFrameworkPackageFullName(), deploymentInitializeOptions);
@@ -68,6 +69,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus(hstring const& packageFullName)
     {
+        // Get PackageInfo for WinAppSDK framework package
         std::wstring frameworkPackageFullName{ packageFullName };
         auto frameworkPackageInfo{ GetPackageInfoForPackage(frameworkPackageFullName) };
 
@@ -96,7 +98,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             packageNameVersionTag = packageNameVersionIdentifier.substr(versionTagPos);
         }
 
-        // Loop through all of the target packages and validate.
+        // Loop through all of the target packages (i.e. main, signleton packages) and capture whether they are all installed or not
+        // (i.e. if any of the target packages is not installed, GetStatus should return PackageInstallRequired).
         HRESULT verifyResult{};
         for (const auto& package : c_targetPackages)
         {
@@ -104,13 +107,15 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             std::wstring packageFamilyName{};
             if (package.versionType == PackageVersionType::Versioned)
             {
-                // Prefix + SubTypeName + VersionIdentifier + Suffix
-                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionIdentifier + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+                // PackageFamilyName = Prefix + SubTypeName + VersionIdentifier + Suffix
+                // Main and Singleton packages are sharing same Package Name Prefix.
+                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionIdentifier + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
             }
             else if (package.versionType == PackageVersionType::Unversioned)
             {
-                // Prefix + Subtypename + VersionTag + Suffix
-                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionTag + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+                // PackageFamilyName = Prefix + Subtypename + VersionTag + Suffix
+                // Main and Singleton packages are sharing same Package Name Prefix.
+                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionTag + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
             }
             else
             {
