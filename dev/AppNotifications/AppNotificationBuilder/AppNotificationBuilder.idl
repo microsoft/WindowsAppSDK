@@ -223,10 +223,11 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationBuilder AddProgressBar(AppNotificationProgressBar value);
 
         // Constructs a WindowsAppSDK AppNotification object with the XML payload
-        Microsoft.Windows.AppNotifications.AppNotification BuildNotification();
+        //Microsoft.Windows.AppNotifications.AppNotification BuildNotification();
+        String GetXmlPayload();
 
         // AppNotification properties
-        AppNotificationBuilder SetTag(String value);
-        AppNotificationBuilder SetGroup(String group);
+        //AppNotificationBuilder SetTag(String value);
+        //AppNotificationBuilder SetGroup(String group);
     };
 }

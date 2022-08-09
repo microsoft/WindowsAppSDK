@@ -52,7 +52,7 @@ namespace Test::AppNotification::Builder
         {
             auto builder{ winrt::AppNotificationBuilder() };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual></toast>"};
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderSetTimeStamp)
@@ -71,7 +71,7 @@ namespace Test::AppNotification::Builder
             expectedTimestamp.insert(expectedTimestamp.size() - c_offsetIndexValue, L":");
             std::wstring expected{ wil::str_printf<std::wstring>(L"<toast displayTimestamp='%ls'><visual><binding template='ToastGeneric'></binding></visual></toast>", expectedTimestamp.c_str()) };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddOneArgument)
@@ -79,7 +79,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().AddArgument(L"key", L"value") };
             auto expected{ L"<toast launch='key=value'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddTwoArguments)
@@ -87,7 +87,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().AddArgument(L"key1", L"value1").AddArgument(L"key2", L"value2") };
             auto expected{ L"<toast launch='key1=value1;key2=value2'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddArgumentEmptyValue)
@@ -95,7 +95,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().AddArgument(L"key", L"") };
             auto expected{ L"<toast launch='key'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddArgumentWithPercentChar)
@@ -103,7 +103,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().AddArgument(L"k%ey", L"v%alue") };
             auto expected{ L"<toast launch='k%25ey=v%25alue'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddArgumentWithEqualChar)
@@ -111,7 +111,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().AddArgument(L"k=ey", L"v=alue") };
             auto expected{ L"<toast launch='k%3Dey=v%3Dalue'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddArgumentWithSemicolonChar)
@@ -119,7 +119,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().AddArgument(L"k;ey", L"v;alue") };
             auto expected{ L"<toast launch='k%3Bey=v%3Balue'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(DecodeArguments)
@@ -142,7 +142,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().SetScenario(winrt::AppNotificationScenario::Reminder) };
             auto expected{ L"<toast scenario='reminder'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderSetAlarmScenario)
@@ -150,7 +150,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().SetScenario(winrt::AppNotificationScenario::Alarm) };
             auto expected{ L"<toast scenario='alarm'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderSetIncomingCallScenario)
@@ -158,7 +158,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().SetScenario(winrt::AppNotificationScenario::IncomingCall) };
             auto expected{ L"<toast scenario='incomingCall'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderSetUrgentScenario)
@@ -166,7 +166,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().SetScenario(winrt::AppNotificationScenario::Urgent) };
             auto expected{ L"<toast scenario='urgent'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddText)
@@ -174,7 +174,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().AddText(L"content") };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'><text>content</text></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddTextWithLanguage)
@@ -185,7 +185,7 @@ namespace Test::AppNotification::Builder
             };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'><text lang='en-US'>content</text></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddTextWithMaxLines)
@@ -196,7 +196,7 @@ namespace Test::AppNotification::Builder
             };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'><text hint-maxLines='2'>content</text></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddTextWithCallScenarioAlign)
@@ -207,7 +207,7 @@ namespace Test::AppNotification::Builder
             };
             auto expected{ L"<toast scenario='incomingCall'><visual><binding template='ToastGeneric'><text hint-callScenarioCenterAlign='true'>content</text></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddTextWithAllProperties)
@@ -220,7 +220,7 @@ namespace Test::AppNotification::Builder
             };
             auto expected{ L"<toast scenario='incomingCall'><visual><binding template='ToastGeneric'><text lang='en-US' hint-maxLines='2' hint-callScenarioCenterAlign='true'>content</text></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddTextThrows)
@@ -237,7 +237,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().SetAttributionText(L"content") };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'><text placement='attribution'>content</text></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddAttributionTextWithLanguage)
@@ -245,7 +245,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().SetAttributionText(L"content", L"en-US")};
             auto expected{ L"<toast><visual><binding template='ToastGeneric'><text placement='attribution' lang='en-US'>content</text></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderSetInlineImage)
@@ -253,7 +253,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().SetInlineImage(c_sampleUri) };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'><image src='http://www.microsoft.com/'/></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderSetInlineImageWithProperties)
@@ -261,7 +261,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().SetInlineImage(c_sampleUri, winrt::AppNotificationImageCrop::Circle, L"altText")};
             auto expected{ L"<toast><visual><binding template='ToastGeneric'><image src='http://www.microsoft.com/' alt='altText' hint-crop='circle'/></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderSetAppLogoOverride)
@@ -269,7 +269,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().SetAppLogoOverride(c_sampleUri) };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'><image placement='appLogoOverride' src='http://www.microsoft.com/'/></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderSetAppLogoOverrideProperties)
@@ -277,7 +277,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().SetAppLogoOverride(c_sampleUri, winrt::AppNotificationImageCrop::Circle, L"altText") };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'><image placement='appLogoOverride' src='http://www.microsoft.com/' alt='altText' hint-crop='circle'/></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderSetHeroImage)
@@ -285,7 +285,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().SetHeroImage(c_sampleUri) };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'><image placement='hero' src='http://www.microsoft.com/'/></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderSetHeroImageWithAlt)
@@ -293,7 +293,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().SetHeroImage(c_sampleUri, L"altText") };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'><image placement='hero' src='http://www.microsoft.com/' alt='altText'/></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddButton)
@@ -304,7 +304,7 @@ namespace Test::AppNotification::Builder
             };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><action content='content' arguments='key=value'/></actions></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddButtonWithPlacement)
@@ -316,7 +316,7 @@ namespace Test::AppNotification::Builder
             };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><action content='content' arguments='key=value' placement='contextMenu'/></actions></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderTooManyButtons)
@@ -338,7 +338,7 @@ namespace Test::AppNotification::Builder
             };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><action content='content' arguments='http://www.microsoft.com/' activationType='protocol'/></actions></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddButtonWithProperties)
@@ -353,7 +353,7 @@ namespace Test::AppNotification::Builder
             };
             auto expected{ L"<toast useButtonStyle='true'><visual><binding template='ToastGeneric'></binding></visual><actions><action content='content' arguments='key=value' imageUri='http://www.microsoft.com/' hint-inputId='inputId' hint-buttonStyle='Success' hint-toolTip='toolTip'/></actions></toast>"};
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddButtonWithEmptyKey)
@@ -382,7 +382,7 @@ namespace Test::AppNotification::Builder
                     .SetAudioUri(c_sampleUri) };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><audio src='http://www.microsoft.com/'/></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderSetAudioWithUriAndDuration)
@@ -392,7 +392,7 @@ namespace Test::AppNotification::Builder
                     .SetAudioUri(c_sampleUri, winrt::AppNotificationAudioLooping::Loop) };
             auto expected{ L"<toast duration='long'><visual><binding template='ToastGeneric'></binding></visual><audio src='http://www.microsoft.com/' loop='true'/></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderSetAudioWithSoundEvent)
@@ -401,7 +401,7 @@ namespace Test::AppNotification::Builder
                     .SetAudioEvent(winrt::AppNotificationSoundEvent::Reminder) };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><audio src='ms-winsoundevent:Notification.Reminder'/></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderSetAudioWithSoundEventAndDuration)
@@ -411,7 +411,7 @@ namespace Test::AppNotification::Builder
                     .SetAudioEvent(winrt::AppNotificationSoundEvent::Reminder, winrt::AppNotificationAudioLooping::Loop) };
             auto expected{ L"<toast duration='long'><visual><binding template='ToastGeneric'></binding></visual><audio src='ms-winsoundevent:Notification.Reminder' loop='true'/></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderMuteAudio)
@@ -419,14 +419,14 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().MuteAudio() };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><audio silent='true'/></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderBuildNotificationWithTooLargePayload)
         {
             VERIFY_THROWS_HR(winrt::AppNotificationBuilder()
                 .AddText(std::wstring(5120, 'A').c_str())
-                .BuildNotification(), E_FAIL);
+                .GetXmlPayload(), E_FAIL);
         }
 
         TEST_METHOD(AppNotificationAddProgressBar)
@@ -438,7 +438,7 @@ namespace Test::AppNotification::Builder
                     .BindValueStringOverride()) };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'><text>Downloading this week&apos;s new music...</text><progress title='{progressTitle}' status='{progressStatus}' value='{progressValue}' valueStringOverride='{progressValueString}'/></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationAddMoreThanOneProgressBar)
@@ -453,7 +453,7 @@ namespace Test::AppNotification::Builder
                     .SetStatus(L"Still downloading...")) };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'><text>Downloading this week&apos;s new music...</text><progress title='{progressTitle}' status='{progressStatus}' value='{progressValue}' valueStringOverride='{progressValueString}'/><progress status='Still downloading...' value='0.8'/></binding></visual></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationProgressBarDefaults)
@@ -515,7 +515,7 @@ namespace Test::AppNotification::Builder
                 .AddTextBox(L"input1") };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><input id='input1' type='text'/></actions></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddTextBoxWithEmptyId)
@@ -547,7 +547,7 @@ namespace Test::AppNotification::Builder
                 .AddTextBox(L"some input id", L"Some placeholder text", L"A Title")};
             auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><input id='some input id' type='text' placeHolderContent='Some placeholder text' title='A Title'/></actions></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddComboBox)
@@ -561,7 +561,7 @@ namespace Test::AppNotification::Builder
                     .SetSelectedItem(L"item2"))};
             auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><input id='comboBox1' type='selection' title='ComboBox Title' defaultInput='item2'><selection id='item1' content='item1 text'/><selection id='item2' content='item2 text'/><selection id='item3' content='item3 text'/></input></actions></toast>" };
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddTooManyComboBox)
@@ -651,7 +651,7 @@ namespace Test::AppNotification::Builder
             auto builder{ winrt::AppNotificationBuilder().AddText(LR"(&"'<>)") };
             std::wstring expected{ L"<toast><visual><binding template='ToastGeneric'><text>&amp;&quot;&apos;&lt;&gt;</text></binding></visual></toast>"};
 
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderArgumentsWithXmlCharacters)
@@ -661,7 +661,7 @@ namespace Test::AppNotification::Builder
                             .AddArgument(LR"(&"'<>)", L";=%")};
 
             std::wstring expected{ L"<toast launch='&amp;%3B&quot;%3D&apos;%25&lt;&gt;;&amp;&quot;&apos;&lt;&gt;=%3B%3D%25'><visual><binding template='ToastGeneric'></binding></visual></toast>" };
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            VERIFY_ARE_EQUAL(builder.GetXmlPayload(), expected);
 
             VERIFY_ARE_EQUAL(Decode(LR"(&%3B"%3D'%25<>)"), LR"(&;"='%<>)");
             VERIFY_ARE_EQUAL(Decode(L"%3B%3D%25"), L";=%");

@@ -120,16 +120,18 @@ winrt::AppNotification CreateToastNotification()
 
 bool PostToastHelper(std::wstring const& tag, std::wstring const& group)
 {
-    winrt::AppNotification toast{ CreateToastNotification() };
+    //winrt::AppNotification toast{ CreateToastNotification() };
 
-    toast.Tag(tag.c_str());
-    toast.Group(group.c_str());
+    //toast.Tag(tag.c_str());
+    //toast.Group(group.c_str());
 
-    auto builder{ winrt::AppNotificationBuilder().AddArgument(L"key", L"value").AddArgument(L"key", L"value").SetTag(tag.c_str()).SetGroup(group.c_str())};
+    auto builder{ winrt::AppNotificationBuilder().AddArgument(L"key", L"value").AddArgument(L"key", L"value") };
+    auto appNotification{ winrt::AppNotification(builder.GetXmlPayload()) };
+    appNotification.Tag(tag.c_str());
+    appNotification.Group(group.c_str());
+    winrt::AppNotificationManager::Default().Show(appNotification);
 
-    winrt::AppNotificationManager::Default().Show(builder.BuildNotification());
-
-    if (toast.Id() == 0)
+    if (appNotification.Id() == 0)
     {
         return false;
     }

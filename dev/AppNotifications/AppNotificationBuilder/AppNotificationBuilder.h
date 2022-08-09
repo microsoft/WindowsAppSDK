@@ -58,10 +58,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddComboBox(AppNotificationComboBox const& value);
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetTag(winrt::hstring const& value);
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetGroup(winrt::hstring const& value);
+        //winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetTag(winrt::hstring const& value);
+        //winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetGroup(winrt::hstring const& value);
 
-        winrt::Microsoft::Windows::AppNotifications::AppNotification BuildNotification();
+        //winrt::Microsoft::Windows::AppNotifications::AppNotification BuildNotification();
+        hstring GetXmlPayload();
 
         static bool IsUrgentScenarioSupported();
 
@@ -91,8 +92,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::vector<AppNotificationProgressBar> m_progressBarList{};
         std::vector<std::wstring> m_textBoxList{};
         std::vector<AppNotificationComboBox> m_comboBoxList{};
-        winrt::hstring m_tag{};
-        winrt::hstring m_group{};
+        //winrt::hstring m_tag{};
+        //winrt::hstring m_group{};
     };
 }
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::factory_implementation

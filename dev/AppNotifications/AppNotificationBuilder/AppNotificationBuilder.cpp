@@ -244,7 +244,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         return *this;
     }
-
+#if 0
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetTag(hstring const& value)
     {
         m_tag = value;
@@ -256,7 +256,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         m_group = value;
         return *this;
     }
-
+#endif
     std::wstring AppNotificationBuilder::GetDuration()
     {
         return m_duration == AppNotificationDuration::Default ? L"" : L" duration='long'";
@@ -366,7 +366,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         return result;
     }
-
+#if 0
     winrt::Microsoft::Windows::AppNotifications::AppNotification AppNotificationBuilder::BuildNotification()
     {
         // Build the actions string and fill m_useButtonStyle
@@ -392,5 +392,30 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         appNotification.Group(m_group);
         
         return appNotification;
+    }
+#endif
+
+    hstring AppNotificationBuilder::GetXmlPayload()
+    {
+        // Build the actions string and fill m_useButtonStyle
+        std::wstring actions{ GetActions() };
+
+        auto xmlResult{ wil::str_printf<std::wstring>(L"<toast%ls%ls%ls%ls%ls><visual><binding template='ToastGeneric'>%ls%ls%ls%ls</binding></visual>%ls%ls</toast>",
+            m_timeStamp.c_str(),
+            GetDuration().c_str(),
+            GetScenario().c_str(),
+            GetArguments().c_str(),
+            GetButtonStyle().c_str(),
+            GetText().c_str(),
+            m_attributionText.c_str(),
+            GetImages().c_str(),
+            GetProgressBars().c_str(),
+            m_audio.c_str(),
+            actions.c_str()) };
+
+        THROW_HR_IF_MSG(E_FAIL, xmlResult.size() > c_maxAppNotificationPayload, "Maximum payload size exceeded");
+
+        return xmlResult.c_str();
+
     }
 }
