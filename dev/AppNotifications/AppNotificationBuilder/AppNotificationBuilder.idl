@@ -5,6 +5,10 @@ import "..\AppNotifications\AppNotifications.idl";
 
 namespace Microsoft.Windows.AppNotifications.Builder
 {
+    [contractversion(1)]
+    apicontract AppNotificationBuilderContract {}
+
+    [contract(AppNotificationBuilderContract, 1)]
     runtimeclass AppNotificationTextProperties
     {
         // Contains the set of <text> attributes
@@ -19,6 +23,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationTextProperties SetMaxLines(Int32 value);
     };
 
+    [contract(AppNotificationBuilderContract, 1)]
     enum AppNotificationButtonStyle
     {
         Default,
@@ -26,6 +31,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Critical,
     };
 
+    [contract(AppNotificationBuilderContract, 1)]
     runtimeclass AppNotificationButton
     {
         AppNotificationButton();
@@ -65,6 +71,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri, String targetAppId);
     };
 
+    [contract(AppNotificationBuilderContract, 1)]
     runtimeclass AppNotificationProgressBar
     {
         // AppNotificationProgressBar binds to AppNotificationProgressData so the AppNotification will
@@ -92,6 +99,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationProgressBar BindValueStringOverride();
     };
 
+    [contract(AppNotificationBuilderContract, 1)]
     runtimeclass AppNotificationComboBox
     {
         AppNotificationComboBox(String id);
@@ -110,6 +118,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationComboBox SetSelectedItem(String id);
     };
 
+    [contract(AppNotificationBuilderContract, 1)]
     enum AppNotificationSoundEvent
     {
         Default,
@@ -139,6 +148,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Call10,
     };
 
+    [contract(AppNotificationBuilderContract, 1)]
     enum AppNotificationScenario
     {
         Default, // The normal AppNotification behavior. The AppNotification appears for a short duration, and then automatically dismisses into Notification Center.
@@ -148,24 +158,28 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Urgent, // Important notifications allow users to have more control over what 1st party and 3rd party apps can send them high-priority AppNotifications (urgent/important) that can break through Focus Assist.
     };
 
+    [contract(AppNotificationBuilderContract, 1)]
     enum AppNotificationAudioLooping
     {
         None, // Audio will not loop
         Loop, // Audio will loop for the duration of the AppNotification
     };
 
+    [contract(AppNotificationBuilderContract, 1)]
     enum AppNotificationDuration
     {
         Default, // Default value. AppNotification appears for a short while and then goes into Notification Center.
         Long, // AppNotification stays on-screen for longer, and then goes into Notification Center.
     };
 
+    [contract(AppNotificationBuilderContract, 1)]
     enum AppNotificationImageCrop
     {
         Default, // Uses the default renderer to display the image
         Circle, // Crops the image as a circle.
     };
 
+    [contract(AppNotificationBuilderContract, 1)]
     runtimeclass AppNotificationBuilder
     {
         AppNotificationBuilder();
