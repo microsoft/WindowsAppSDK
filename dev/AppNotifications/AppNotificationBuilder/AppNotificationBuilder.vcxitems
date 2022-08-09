@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{e49329f3-5196-4bba-b5c4-e11ce7efb07a}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="$(MSBuildThisFileDirectory)AppNotificationBuilder.idl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationBuilder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationButton.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationProgressBar.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationComboBox.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationTextProperties.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationBuilder.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationBuilderUtility.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationButton.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationProgressBar.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationComboBox.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationTextProperties.h" />
+  </ItemGroup>
+</Project>
