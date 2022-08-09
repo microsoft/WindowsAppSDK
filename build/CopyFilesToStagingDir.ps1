@@ -94,8 +94,8 @@ PublishFile $FullBuildOutput\Microsoft.Windows.AppLifecycle.Projection\Microsoft
 PublishFile $FullBuildOutput\Microsoft.Windows.AppLifecycle.Projection\Microsoft.Windows.AppLifecycle.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Projection\Microsoft.Windows.AppNotifications.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Projection\Microsoft.Windows.AppNotifications.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
-PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.BuilderProjection\Microsoft.Windows.AppNotifications.Builder.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
-PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.BuilderProjection\Microsoft.Windows.AppNotifications.Builder.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Builder.Projection\Microsoft.Windows.AppNotifications.Builder.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Builder.Projection\Microsoft.Windows.AppNotifications.Builder.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.PushNotifications.Projection\Microsoft.Windows.PushNotifications.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.PushNotifications.Projection\Microsoft.Windows.PushNotifications.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.System.Projection\Microsoft.Windows.System.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
