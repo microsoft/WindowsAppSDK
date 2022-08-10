@@ -49,7 +49,7 @@ namespace WindowsAppRuntimeInstaller
             winrt::Windows::Management::Deployment::DeploymentOptions::None };
 
         PackageManager packageManager;
-        const auto deploymentOperation{ packageManager.AddPackageAsync(packageUri, nullptr, DeploymentOptions::None) };
+        const auto deploymentOperation{ packageManager.AddPackageAsync(packageUri, nullptr, deploymentOptions) };
         deploymentOperation.get();
         if (deploymentOperation.Status() != AsyncStatus::Completed)
         {
@@ -81,8 +81,6 @@ namespace WindowsAppRuntimeInstaller
         WindowsAppRuntimeInstaller::InstallActivity::Context& installActivityContext,
         const Uri& packageUri)
     {
-        const auto deploymentOptions{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
-
         PackageManager packageManager;
         const auto deploymentOperation{ packageManager.StagePackageAsync(packageUri, nullptr, DeploymentOptions::None) };
         deploymentOperation.get();
@@ -191,9 +189,22 @@ namespace WindowsAppRuntimeInstaller
             return true;
         }
 
-        // On Arm64 systems, all current package architectures are applicable.
+        // On Windows 11 (i.e. builds 22000+) ARM64 systems, all framework package architectures are applicable.
+        // On Windows 10 (i.e. builds 17763-190**) ARM64 systems (which don't support X64 apps), all but x64 framework package architecture is not applicable.
         if (systemArchitecture == ProcessorArchitecture::Arm64)
         {
+            if (packageProperties->architecture == ProcessorArchitecture::X64)
+            {
+                if (WindowsVersion::IsWindows11_21H2OrGreater())
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 

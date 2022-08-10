@@ -32,6 +32,7 @@
 #include <Security.IntegrityLevel.h>
 #include <Security.User.h>
 #include <PushNotifications-Constants.h>
+#include <IsWindowsVersion.h>
 
 #include "tracelogging.h"
 #include "InstallActivityContext.h"
