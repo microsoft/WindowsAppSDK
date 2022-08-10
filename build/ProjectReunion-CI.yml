@@ -9,7 +9,7 @@ variables:
 jobs:
 - job: PreChecks
   pool:
-    vmImage: 'windows-2019'
+    vmImage: 'windows-2022'
   steps:
   - task: PowerShell@2
     displayName: 'Smoke test props and targets in \build\NuSpecs'
@@ -47,7 +47,7 @@ jobs:
 
 - job: Build
   pool:
-    vmImage: 'windows-2019'
+    vmImage: 'windows-2022'
   timeoutInMinutes: 120
   strategy:
     maxParallel: 10
@@ -114,7 +114,7 @@ jobs:
 
 - job: BuildMRT
   pool:
-    vmImage: 'windows-latest'
+    vmImage: 'windows-2022'
   strategy:
     maxParallel: 10
     matrix:
@@ -171,7 +171,7 @@ jobs:
     - BuildMRT
   condition: in(dependencies.BuildMRT.result, 'Succeeded')
   pool:
-    vmImage: 'windows-latest'
+    vmImage: 'windows-2022'
   steps:
   - template: publish-mrt.yml
 
