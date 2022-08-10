@@ -190,19 +190,12 @@ namespace WindowsAppRuntimeInstaller
         }
 
         // On Windows 11 (i.e. builds 22000+) ARM64 systems, all framework package architectures are applicable.
-        // On Windows 10 (i.e. builds 17763-190**) ARM64 systems (which don't support X64 apps), all but x64 framework package architecture is not applicable.
+        // On Windows 10 (i.e. builds 17763-190**) ARM64 systems (which don't support X64 apps), all x64 framework package architectures, except x64, are applicable.
         if (systemArchitecture == ProcessorArchitecture::Arm64)
         {
             if (packageProperties->architecture == ProcessorArchitecture::X64)
             {
-                if (WindowsVersion::IsWindows11_21H2OrGreater())
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return WindowsVersion::IsWindows11_21H2OrGreater();
             }
 
             return true;
