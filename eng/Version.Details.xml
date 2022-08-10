@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.1.0-stable.20220518.4">
+    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.2.0-main.20220810.1">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionClosed</Uri>
-      <Sha>0f4add1a10caa92e635919b81a678d2f1bcf229b</Sha>
+      <Sha>1261bb31992442bf7e560330524002ea3a3e9d85</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
