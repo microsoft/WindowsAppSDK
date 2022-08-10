@@ -17,7 +17,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" />
   </ItemGroup>
-
+  <PropertyGroup>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+  </PropertyGroup>
   <PropertyGroup>
     <CSWinRTIncludes>Microsoft.Windows.AppNotifications</CSWinRTIncludes>
     <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
