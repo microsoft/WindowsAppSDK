@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "packages.h"
 #include "install.h"
+#include "MachineTypeAttributes.h"
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
@@ -195,7 +196,7 @@ namespace WindowsAppRuntimeInstaller
         {
             if (packageProperties->architecture == ProcessorArchitecture::X64)
             {
-                return WindowsVersion::IsWindows11_21H2OrGreater();
+                return MachineTypeAttributes::IsWindows11_IsArchitectureSupportedInUserMode(IMAGE_FILE_MACHINE_AMD64);
             }
 
             return true;
