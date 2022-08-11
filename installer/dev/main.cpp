@@ -68,6 +68,14 @@ int wmain(int argc, wchar_t *argv[])
         {
             WI_ClearFlag(options, WindowsAppRuntimeInstaller::Options::ForceDeployment);
         }
+        else if ((arg == L"-r") || (arg == L"--repair"))
+        {
+            WI_SetFlag(options, WindowsAppRuntimeInstaller::Options::RepairPackages);
+        }
+        else if ((arg == L"-r-") || (arg == L"--repair-"))
+        {
+            WI_ClearFlag(options, WindowsAppRuntimeInstaller::Options::RepairPackages);
+        }
         else if ((arg == L"-?") || (arg == L"--help"))
         {
             DisplayHelp();

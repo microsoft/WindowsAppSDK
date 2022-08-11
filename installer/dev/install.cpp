@@ -277,6 +277,23 @@ namespace WindowsAppRuntimeInstaller
             return;
         }
 
+        PackageManager packageManager;
+        const auto package{ packageManager.FindPackageForUser(L"",packageProperties->fullName.get()) };
+        if (package)
+        {
+            if (WI_IsFlagClear(options, WindowsAppRuntimeInstaller::Options::RepairPackages))
+            {
+                std::wcout << packageProperties->fullName.get() << " package is already installed. Skipping re-installing it." << std::endl;
+                std::cout << "INFO: If WinAppSDK MSIX package(s) need a repair, try -r or --repair option of the Installer)" << std::endl;
+                return;
+            }
+        }
+        else if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::RepairPackages))
+        {
+            std::wcout << "ERROR: " << packageProperties->fullName.get() << " package is not installed yet. Repair cant be performed on it." << std::endl;
+            THROW_HR(HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+        }
+
         PCWSTR c_windowsAppRuntimeTempDirectoryPrefix{ L"MSIX" };
         wchar_t packageFilename[MAX_PATH];
         THROW_LAST_ERROR_IF(0 == GetTempFileName(std::filesystem::temp_directory_path().c_str(), c_windowsAppRuntimeTempDirectoryPrefix, 0u, packageFilename));
@@ -417,7 +434,7 @@ namespace WindowsAppRuntimeInstaller
                 const auto hr{ licenseInstaller.InstallLicense(thisModule, license.id) };
                 if (!quiet)
                 {
-                    std::wcout << "Install result : 0x" << std::hex << hr << " ";
+                    std::wcout << "Install License result : 0x" << std::hex << hr << " ";
                     DisplayError(hr);
                 }
                 RETURN_IF_FAILED_MSG(hr, "License:%ls", license.id.c_str());
