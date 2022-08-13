@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -394,6 +394,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         winrt::AppNotificationActivatedEventArgs activatedEventArgs = winrt::make<implementation::AppNotificationActivatedEventArgs>(invokedArgs, userInput);
 
         // Need to store the first notification in the case of ToastActivation
+
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationTelemetry::LogActivated(S_OK, m_appId, invokedArgs);
+        }) };
 
         auto lock{ m_lock.lock_exclusive() };
         if (!m_firstNotificationReceived)
