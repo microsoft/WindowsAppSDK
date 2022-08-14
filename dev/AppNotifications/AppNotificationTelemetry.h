@@ -253,7 +253,9 @@ public:
     DEFINE_EVENT_METHOD(LogActivated)(
         winrt::hresult hr,
         std::wstring const& appId,
-        winrt::hstring const& arguments) noexcept try
+        winrt::hstring const& arguments,
+        bool firstNotificationReceived,
+        bool hasNotificationHandlers) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -263,7 +265,9 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
-                TraceLoggingUInt32(arguments.size(), "argumentsSize"),
+                TraceLoggingUInt32(arguments.size(), "ArgumentsSize"),
+                TraceLoggingBool(firstNotificationReceived, "firstNotificationReceived"),
+                TraceLoggingBool(hasNotificationHandlers, "HasNotificationHandlers"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }

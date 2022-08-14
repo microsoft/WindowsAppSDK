@@ -693,7 +693,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             return;
         }
 
-        hresult hr = S_OK;
+        hresult hr{ S_OK };
 
         auto logTelemetry{ wil::scope_exit([&]() {
             PushNotificationTelemetry::LogUnregisterAll(hr);
@@ -801,18 +801,33 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         auto args { winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length) };
 
-        auto lock{ m_lock.lock_shared() };
-        if (m_foregroundHandlers)
+        HRESULT hr{ S_OK };
+
+        auto logTelemetry{ wil::scope_exit([&]() {
+            PushNotificationTelemetry::LogActivated(hr);
+        }) };
+
+        try
         {
-            m_foregroundHandlers(*this, args);
-            *foregroundHandled = true;
+            auto lock{ m_lock.lock_shared() };
+            if (m_foregroundHandlers)
+            {
+                m_foregroundHandlers(*this, args);
+                *foregroundHandled = true;
+            }
+            else
+            {
+                *foregroundHandled = false;
+            }
+
+            return hr;
+
         }
-        else
+        catch (...)
         {
-            *foregroundHandled = false;
-        }   
-        
-        return S_OK;
+            hr = wil::ResultFromCaughtException();
+            throw;
+        }
     }
     CATCH_RETURN()
 
