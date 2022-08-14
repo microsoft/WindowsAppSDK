@@ -801,43 +801,42 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         auto args { winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length) };
 
+        auto lock{ m_lock.lock_shared() };
+        if (m_foregroundHandlers)
+        {
+            m_foregroundHandlers(*this, args);
+            *foregroundHandled = true;
+        }
+        else
+        {
+            *foregroundHandled = false;
+        }
+
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    IFACEMETHODIMP PushNotificationManager::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept try
+    {
         HRESULT hr{ S_OK };
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            PushNotificationTelemetry::LogActivated(hr);
+            PushNotificationTelemetry::LogOnRawNotificationReceived(hr, WindowsGetStringRawBuffer(correlationVector, nullptr));
         }) };
 
         try
         {
-            auto lock{ m_lock.lock_shared() };
-            if (m_foregroundHandlers)
-            {
-                m_foregroundHandlers(*this, args);
-                *foregroundHandled = true;
-            }
-            else
-            {
-                *foregroundHandled = false;
-            }
+            BOOL foregroundHandled = true;
+            THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
+            THROW_HR_IF(E_UNEXPECTED, !foregroundHandled);
 
             return hr;
-
         }
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
             throw;
         }
-    }
-    CATCH_RETURN()
-
-    IFACEMETHODIMP PushNotificationManager::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept try
-    {
-        BOOL foregroundHandled = true;
-        THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
-        THROW_HR_IF(E_UNEXPECTED, !foregroundHandled);
-
-        return S_OK;
     }
     CATCH_RETURN();
 

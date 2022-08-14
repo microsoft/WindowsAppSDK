@@ -54,7 +54,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri);
         
         // INotificationListener
-        IFACEMETHODIMP OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept;
+        IFACEMETHODIMP OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept;
 
         // INotificationListener2
         IFACEMETHODIMP OnToastNotificationReceived(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* notificationProperties,

@@ -98,16 +98,18 @@ public:
     }
     CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(LogActivated)(
-            winrt::hresult hr) noexcept try
+    DEFINE_EVENT_METHOD(LogOnRawNotificationReceived)(
+            winrt::hresult hr,
+            std::wstring const& correlationVector) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
             TraceLoggingClassWriteMeasure(
-                "Activated",
+                "OnRawNotificationReceived",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(correlationVector.c_str(), "CorrelationVector"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
