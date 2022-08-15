@@ -73,10 +73,9 @@ public:
         }
         else
         {
-            TraceLoggingClassWriteStop(Install,
+            TraceLoggingClassWriteStop(Initialize,
                 _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingValue(preInitializeStatus, "preInitializeStatus"),
-                TraceLoggingValue(isFullTrustPackage, "isFullTrustPackage"));
+                TraceLoggingValue(preInitializeStatus, "preInitializeStatus"));
         }
     }
     END_ACTIVITY_CLASS();

@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#pragma once
 #include "Microsoft.Windows.AppNotifications.AppNotificationActivatedEventArgs.g.h"
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
@@ -7,12 +10,17 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     {
         AppNotificationActivatedEventArgs() = default;
 
-        AppNotificationActivatedEventArgs(winrt::hstring const& arguments, winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& userInput) : m_arguments(arguments), m_userInput(userInput) {};
-        winrt::hstring Argument() { return m_arguments; };
+        AppNotificationActivatedEventArgs(winrt::hstring const& argument, winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& userInput)
+            : m_argument(argument), m_userInput(userInput), m_arguments(DecodeArguments(argument.c_str())) {};
+        winrt::hstring Argument() { return m_argument; };
         winrt::Windows::Foundation::Collections::IMap<hstring, hstring> UserInput() { return m_userInput; };
+        winrt::Windows::Foundation::Collections::IMap<hstring, hstring> Arguments() { return m_arguments; };
 
     private:
-        winrt::hstring m_arguments;
+        winrt::Windows::Foundation::Collections::IMap<hstring, hstring> DecodeArguments(std::wstring arguments);
+
+        winrt::hstring m_argument;
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_userInput;
+        winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_arguments{ nullptr };
     };
 }

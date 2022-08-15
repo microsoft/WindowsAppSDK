@@ -1,4 +1,7 @@
-﻿#include "pch.h"
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#include "pch.h"
 #include <iostream>
 #include <sstream>
 #include <wil/win32_helpers.h>
@@ -16,7 +19,7 @@ using namespace winrt::Windows::Storage::Streams;
 
 winrt::guid remoteId1(L"a2e4a323-b518-4799-9e80-0b37aeb0d225"); // Generated from ms.portal.azure.com
 winrt::guid remoteId2(L"CA1A4AB2-AC1D-4EFC-A132-E5A191CA285A"); // Dummy guid from visual studio guid tool generator
-constexpr auto timeout{ std::chrono::seconds(300) };
+constexpr auto c_timeout{ std::chrono::seconds(300) };
 inline const winrt::hstring c_rawNotificationPayload = L"<toast></toast>";
 
 
@@ -35,7 +38,7 @@ bool ChannelRequestUsingNullRemoteId()
 
 HRESULT ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& channelOperation)
 {
-    if (channelOperation.wait_for(timeout) != AsyncStatus::Completed)
+    if (channelOperation.wait_for(c_timeout) != AsyncStatus::Completed)
     {
         channelOperation.Cancel();
         return HRESULT_FROM_WIN32(ERROR_TIMEOUT); // timed out or failed
@@ -64,7 +67,7 @@ bool ChannelRequestUsingRemoteId()
 bool MultipleChannelClose()
 {
     auto channelOperation = PushNotificationManager::Default().CreateChannelAsync(remoteId1);
-    if (channelOperation.wait_for(timeout) != AsyncStatus::Completed)
+    if (channelOperation.wait_for(c_timeout) != AsyncStatus::Completed)
     {
         channelOperation.Cancel();
         return false; // timed out or failed
@@ -237,7 +240,7 @@ bool VerifyForegroundHandlerSucceeds()
     PushNotificationManager::Default().UnregisterAll();
     try
     {
-        PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args) {});
+        PushNotificationManager::Default().PushReceived([](const auto& /*sender*/, PushNotificationReceivedEventArgs const& /*args*/) {});
         PushNotificationManager::Default().Register();
     }
     catch (...)
@@ -252,7 +255,7 @@ bool VerifyForegroundHandlerFails()
     try
     {
         // Register is already called in main
-        PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args) {});
+        PushNotificationManager::Default().PushReceived([](const auto& /*sender*/, PushNotificationReceivedEventArgs const& /*args*/) {});
     }
     catch (...)
     {
@@ -319,7 +322,8 @@ int main() try
 
 
     // Test hook to ensure that the app is not self-contained
-    WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName);
+    WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
+                                                   ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
 
     auto scope_exit = wil::scope_exit([&] {
         ::WindowsAppRuntime::VersionInfo::TestShutdown();

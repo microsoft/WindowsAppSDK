@@ -17,3 +17,4 @@
 #include <winrt/Microsoft.Windows.AppLifecycle.h>
 #include <winrt/Microsoft.Windows.PushNotifications.h>
 #include <winrt/Microsoft.Windows.AppNotifications.h>
+#include <winrt/Microsoft.Windows.AppNotifications.Builder.h>
