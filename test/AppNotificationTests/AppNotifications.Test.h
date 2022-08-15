@@ -148,36 +148,44 @@ namespace AppNotifications::Test
         bool result{ false };
         for (int i { 0 }; i < 5; i++)
         {
-            auto getAllAsync{ winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::Default().GetAllAsync() };
-            auto scopeExitGetAll = wil::scope_exit(
-                [&] {
-                    getAllAsync.Cancel();
-                });
-
-            VERIFY_ARE_EQUAL(getAllAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
-            scopeExitGetAll.release();
-
-            auto actualToastVector{ getAllAsync.GetResults() };
-            if (actualToastVector.Size() == expectedToastVector.size())
+            const auto start{ GetTickCount() };
+            auto elapsed{ start };
+            for (;;)
             {
-                for (uint32_t actualToastIndex{ 0 }; actualToastIndex < actualToastVector.Size(); actualToastIndex++)
+                auto getAllAsync{ winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::Default().GetAllAsync() };
+                auto scopeExitGetAll = wil::scope_exit(
+                    [&] {
+                        getAllAsync.Cancel();
+                    });
+
+                VERIFY_ARE_EQUAL(getAllAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
+                scopeExitGetAll.release();
+
+                auto actualToastVector{ getAllAsync.GetResults() };
+                if (actualToastVector.Size() == expectedToastVector.size())
                 {
-                    for (uint32_t expectedToastIndex{ 0 }; expectedToastIndex < expectedToastVector.size(); expectedToastIndex++)
+                    for (uint32_t actualToastIndex{ 0 }; actualToastIndex < actualToastVector.Size(); actualToastIndex++)
                     {
-                        if (actualToastVector.GetAt(actualToastIndex).Id() == expectedToastVector[expectedToastIndex].Id())
+                        for (uint32_t expectedToastIndex{ 0 }; expectedToastIndex < expectedToastVector.size(); expectedToastIndex++)
                         {
-                            VERIFY_ARE_EQUAL(actualToastVector.GetAt(actualToastIndex).Payload(), expectedToastVector[expectedToastIndex].Payload());
-                            break;
+                            if (actualToastVector.GetAt(actualToastIndex).Id() == expectedToastVector[expectedToastIndex].Id())
+                            {
+                                VERIFY_ARE_EQUAL(actualToastVector.GetAt(actualToastIndex).Payload(), expectedToastVector[expectedToastIndex].Payload());
+                                break;
+                            }
                         }
                     }
+
+                    result = true;
+                    break;
+                }
+                else if (elapsed > c_sleepTimeout.count())
+                {
+                    break;
                 }
 
-                result = true;
-                break;
+                Sleep(static_cast<DWORD>(c_delay.count()));
             }
-
-            // Give enough time for AppNotifications to be added to Action Center
-            Sleep(1000);
         }
         return result;
     }
@@ -200,24 +208,32 @@ namespace AppNotifications::Test
         bool result{ false };
         for (int i{ 0 }; i < 5; i++)
         {
-            auto getAllAsync{ winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::Default().GetAllAsync() };
-            auto scopeExitGetAll = wil::scope_exit(
-                [&] {
-                    getAllAsync.Cancel();
-                });
-
-            VERIFY_ARE_EQUAL(getAllAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
-            scopeExitGetAll.release();
-
-            auto actualToastVector{ getAllAsync.GetResults() };
-            if (actualToastVector.Size() == 0u)
+            const auto start{ GetTickCount() };
+            auto elapsed{ start };
+            for (;;)
             {
-                result = true;
-                break;
-            }
+                auto getAllAsync{ winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::Default().GetAllAsync() };
+                auto scopeExitGetAll = wil::scope_exit(
+                    [&] {
+                        getAllAsync.Cancel();
+                    });
 
-            // Give enough time for AppNotifications to be removed from Action Center
-            Sleep(1000);
+                VERIFY_ARE_EQUAL(getAllAsync.wait_for(c_timeout), winrt::Windows::Foundation::AsyncStatus::Completed);
+                scopeExitGetAll.release();
+
+                auto actualToastVector{ getAllAsync.GetResults() };
+                if (actualToastVector.Size() == 0u)
+                {
+                    result = true;
+                    break;
+                }
+                else if (elapsed > c_sleepTimeout.count())
+                {
+                    break;
+                }
+
+                Sleep(static_cast<DWORD>(c_delay.count()));
+            }
         }
         return result;
     }
