@@ -32,7 +32,7 @@ bool ForegroundSinkManager::InvokeForegroundHandlers(std::wstring const& appId, 
     if (it != m_foregroundMap.end())
     {
         BOOL foregroundHandled = true;
-        if (FAILED(it->second->InvokeAll(payloadSize, payload.data(), correlationVector, &foregroundHandled)))
+        if (FAILED(it->second->InvokeAll(payloadSize, payload.data(), WindowsGetStringRawBuffer(correlationVector, nullptr), &foregroundHandled)))
         {
             m_foregroundMap.erase(appId);
             return false;

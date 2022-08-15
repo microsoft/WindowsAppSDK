@@ -39,7 +39,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         void PushReceived(winrt::event_token const& token) noexcept;
 
         // IWpnForegroundSink
-        IFACEMETHODIMP InvokeAll(_In_ ULONG length, _In_ byte* payload, _In_ HSTRING correlationVector, _Out_ BOOL* foregroundHandled) noexcept;
+        IFACEMETHODIMP InvokeAll(_In_ ULONG length, _In_ byte* payload, _In_ LPCWSTR correlationVector, _Out_ BOOL* foregroundHandled) noexcept;
 
         // IBackgroundTask
         void Run(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const& taskInstance);

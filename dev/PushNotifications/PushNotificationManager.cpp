@@ -797,12 +797,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
-    IFACEMETHODIMP PushNotificationManager::InvokeAll(_In_ ULONG length, _In_ byte* payload, _In_ HSTRING correlationVector, _Out_ BOOL* foregroundHandled) noexcept try
+    IFACEMETHODIMP PushNotificationManager::InvokeAll(_In_ ULONG length, _In_ byte* payload, _In_ LPCWSTR correlationVector, _Out_ BOOL* foregroundHandled) noexcept try
     {
         HRESULT hr{ S_OK };
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            PushNotificationTelemetry::LogInvokeAll(hr, WindowsGetStringRawBuffer(correlationVector, nullptr));
+            PushNotificationTelemetry::LogInvokeAll(hr, correlationVector);
         }) };
 
         auto args { winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length) };
@@ -833,7 +833,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         try
         {
             BOOL foregroundHandled = true;
-            THROW_IF_FAILED(InvokeAll(payloadLength, payload, correlationVector, &foregroundHandled));
+            THROW_IF_FAILED(InvokeAll(payloadLength, payload, WindowsGetStringRawBuffer(correlationVector, nullptr), &foregroundHandled));
             THROW_HR_IF(E_UNEXPECTED, !foregroundHandled);
 
             return hr;
