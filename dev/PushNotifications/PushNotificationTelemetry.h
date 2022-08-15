@@ -116,6 +116,24 @@ public:
     }
     CATCH_LOG()
 
+        DEFINE_EVENT_METHOD(LogInvokeAll)(
+            winrt::hresult hr,
+            std::wstring const& correlationVector) noexcept try
+    {
+        if (c_maxEventLimit >= UpdateLogEventCount())
+        {
+            TraceLoggingClassWriteMeasure(
+                "InvokeAll",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(correlationVector.c_str(), "CorrelationVector"),
+                TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
+        }
+    }
+    CATCH_LOG()
+
 private:
     wil::srwlock m_lock;
     ULONGLONG m_lastFiredTick = 0;

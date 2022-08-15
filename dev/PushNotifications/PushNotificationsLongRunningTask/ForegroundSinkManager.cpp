@@ -22,7 +22,7 @@ void ForegroundSinkManager::Remove(std::wstring const& appId)
     m_foregroundMap.erase(appId);
 }
 
-bool ForegroundSinkManager::InvokeForegroundHandlers(std::wstring const& appId, winrt::com_array<uint8_t> const& payload, ULONG const& payloadSize)
+bool ForegroundSinkManager::InvokeForegroundHandlers(std::wstring const& appId, winrt::com_array<uint8_t> const& payload, ULONG const& payloadSize, HSTRING correlationVector)
 {
     PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(3);
 
@@ -32,7 +32,7 @@ bool ForegroundSinkManager::InvokeForegroundHandlers(std::wstring const& appId, 
     if (it != m_foregroundMap.end())
     {
         BOOL foregroundHandled = true;
-        if (FAILED(it->second->InvokeAll(payloadSize, payload.data(), &foregroundHandled)))
+        if (FAILED(it->second->InvokeAll(payloadSize, payload.data(), correlationVector, &foregroundHandled)))
         {
             m_foregroundMap.erase(appId);
             return false;
