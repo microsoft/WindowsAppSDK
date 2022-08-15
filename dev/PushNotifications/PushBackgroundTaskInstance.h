@@ -1,4 +1,7 @@
-﻿#include <winrt/Windows.ApplicationModel.background.h>
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#include <winrt/Windows.ApplicationModel.background.h>
 
 // Mocks IBackgroundTaskInstance to send raw payloads to packaged apps in
 // PushNotificationBackgroundTask::Run by com activation from PushNotificationsLongRunningProcess

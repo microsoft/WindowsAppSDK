@@ -46,10 +46,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize()
     {
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Start(false,
-                                                                                      Security::IntegrityLevel::IsElevated(),
-                                                                                      AppModel::Identity::IsPackagedProcess(),
-                                                                                      Security::IntegrityLevel::GetIntegrityLevel());
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetActivity(WindowsAppRuntimeDeployment_TraceLogger::Initialize::Start(false,
+                                                                                        Security::IntegrityLevel::IsElevated(),
+                                                                                        AppModel::Identity::IsPackagedProcess(),
+                                                                                        Security::IntegrityLevel::GetIntegrityLevel()));
 
         FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
         return Initialize(GetCurrentFrameworkPackageFullName());
@@ -57,10 +57,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions)
     {
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Start(deploymentInitializeOptions.ForceDeployment(),
-                                                                                      Security::IntegrityLevel::IsElevated(),
-                                                                                      AppModel::Identity::IsPackagedProcess(),
-                                                                                      Security::IntegrityLevel::GetIntegrityLevel());
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetActivity(WindowsAppRuntimeDeployment_TraceLogger::Initialize::Start(
+                                                                                        deploymentInitializeOptions.ForceDeployment(),
+                                                                                        Security::IntegrityLevel::IsElevated(),
+                                                                                        AppModel::Identity::IsPackagedProcess(),
+                                                                                        Security::IntegrityLevel::GetIntegrityLevel()));
 
         FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
         return Initialize(GetCurrentFrameworkPackageFullName(), deploymentInitializeOptions);
@@ -68,6 +69,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus(hstring const& packageFullName)
     {
+        // Get PackageInfo for WinAppSDK framework package
         std::wstring frameworkPackageFullName{ packageFullName };
         auto frameworkPackageInfo{ GetPackageInfoForPackage(frameworkPackageFullName) };
 
@@ -96,7 +98,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             packageNameVersionTag = packageNameVersionIdentifier.substr(versionTagPos);
         }
 
-        // Loop through all of the target packages and validate.
+        // Loop through all of the target packages (i.e. main, signleton packages) and capture whether they are all installed or not
+        // (i.e. if any of the target packages is not installed, GetStatus should return PackageInstallRequired).
         HRESULT verifyResult{};
         for (const auto& package : c_targetPackages)
         {
@@ -104,13 +107,15 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             std::wstring packageFamilyName{};
             if (package.versionType == PackageVersionType::Versioned)
             {
-                // Prefix + SubTypeName + VersionIdentifier + Suffix
-                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionIdentifier + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+                // PackageFamilyName = Prefix + SubTypeName + VersionIdentifier + Suffix
+                // Main and Singleton packages are sharing same Package Name Prefix.
+                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionIdentifier + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
             }
             else if (package.versionType == PackageVersionType::Unversioned)
             {
-                // Prefix + Subtypename + VersionTag + Suffix
-                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionTag + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+                // PackageFamilyName = Prefix + Subtypename + VersionTag + Suffix
+                // Main and Singleton packages are sharing same Package Name Prefix.
+                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionTag + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
             }
             else
             {
@@ -174,7 +179,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                 deployPackagesResult,
                 static_cast<UINT32>(initializeActivityContext.GetLastFailure().type),
                 initializeActivityContext.GetLastFailure().file.c_str(),
-                initializeActivityContext.GetLastFailure().lineNumer,
+                initializeActivityContext.GetLastFailure().lineNumber,
                 initializeActivityContext.GetLastFailure().message.c_str(),
                 initializeActivityContext.GetLastFailure().module.c_str(),
                 static_cast<UINT32>(status),
@@ -295,7 +300,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                 deploymentResult.ActivityId());
         }
 
-        return hrAddPackage;
+        return deploymentResult.ExtendedErrorCode();
     }
     CATCH_RETURN()
 
@@ -332,10 +337,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         THROW_IF_WIN32_BOOL_FALSE(InitializeProcThreadAttributeList(attributeList, attributeCount, 0, &attributeListSize));
         auto freeAttributeList{ wil::scope_exit([&] { DeleteProcThreadAttributeList(attributeList); }) };
 
-        // Desktop Bridge applications by default have their child processes break away from the parent process.
-        // In order to recreate the calling process' environment correctly, we must prevent child breakaway semantics
-        // when calling the agent. Additionally the agent must do the same when restarting the caller.
-        DWORD policy{ PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_OVERRIDE };
+        // https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute
+        // The process being created will create any child processes outside of the desktop app runtime environment.
+        // This behavior is the default for processes for which no policy has been set
+        DWORD policy{ PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_ENABLE_PROCESS_TREE };
         THROW_IF_WIN32_BOOL_FALSE(UpdateProcThreadAttribute(attributeList, 0, PROC_THREAD_ATTRIBUTE_DESKTOP_APP_POLICY, &policy, sizeof(policy), nullptr, nullptr));
 
         STARTUPINFOEX info{};
@@ -343,12 +348,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         info.lpAttributeList = attributeList;
 
         wil::unique_process_information processInfo;
-        THROW_IF_WIN32_BOOL_FALSE(CreateProcess(nullptr, cmdLine.get(), nullptr, nullptr, TRUE, CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr,
-                                                &info.StartupInfo, &processInfo));
-
-        // Transfer foreground rights to the new process before resuming it.
-        AllowSetForegroundWindow(processInfo.dwProcessId);
-        ResumeThread(processInfo.hThread);
+        THROW_IF_WIN32_BOOL_FALSE(CreateProcess(nullptr, cmdLine.get(), nullptr, nullptr, FALSE, EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, &info.StartupInfo, &processInfo));
 
         // This API is designed to only return to the caller on failure, otherwise block until process termination.
         // Wait for the agent to exit.  If the agent succeeds, it will terminate this process.  If the agent fails,

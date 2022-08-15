@@ -8,6 +8,7 @@
 #include "WindowsAppRuntime.VersionInfo.h"
 
 static std::wstring g_test_frameworkPackageFamilyName;
+static std::wstring g_test_mainPackageFamilyName;
 
 namespace Microsoft::WindowsAppRuntime::VersionInfo
 {
@@ -24,6 +25,18 @@ public:
         const uint32_t c_frameworkPackageFamilyNameResourceId{ 10002 };
         static std::wstring frameworkPackageFamilyName{ LoadStringWFromResource(c_frameworkPackageFamilyNameResourceId) };
         return frameworkPackageFamilyName;
+    }
+
+    static const std::wstring& GetMainPackageFamilyName()
+    {
+        if (!g_test_mainPackageFamilyName.empty())
+        {
+            return g_test_mainPackageFamilyName;
+        }
+
+        const uint32_t c_mainPackageFamilyNameResourceId{ 10002 };
+        static std::wstring mainPackageFamilyName{ LoadStringWFromResource(c_mainPackageFamilyNameResourceId) };
+        return mainPackageFamilyName;
     }
 
 private:
@@ -65,18 +78,39 @@ STDAPI WindowsAppRuntime_VersionInfo_MSIX_Framework_PackageFamilyName_Get(
 }
 CATCH_RETURN();
 
-STDAPI WindowsAppRuntime_VersionInfo_TestInitialize(
-    PCWSTR frameworkPackageFamilyName) noexcept try
+STDAPI WindowsAppRuntime_VersionInfo_MSIX_Main_PackageFamilyName_Get(
+    PCWSTR* packageFamilyName) noexcept try
 {
-    if (!frameworkPackageFamilyName || (*frameworkPackageFamilyName == L'0'))
+    *packageFamilyName = nullptr;
+    const auto& mainPackageFamilyName{ ::Microsoft::WindowsAppRuntime::VersionInfo::RuntimeInformation::GetMainPackageFamilyName() };
+    *packageFamilyName = mainPackageFamilyName.c_str();
+    RETURN_HR_IF_MSG(E_UNEXPECTED, mainPackageFamilyName.empty(), "WindowsAppSDK main PackageFamilyName resource not valid (\"\")");
+    return S_OK;
+}
+CATCH_RETURN();
+
+STDAPI WindowsAppRuntime_VersionInfo_TestInitialize(
+    PCWSTR frameworkPackageFamilyName,
+    PCWSTR mainPackageFamilyName) noexcept try
+{
+    // Both or neither must be valued
+    const bool frameworkPackageFamilyNameIsEmpty{ !frameworkPackageFamilyName || (*frameworkPackageFamilyName == L'0') };
+    const bool mainPackageFamilyNameIsEmpty{ !mainPackageFamilyName || (*mainPackageFamilyName == L'0') };
+    FAIL_FAST_HR_IF(E_UNEXPECTED, frameworkPackageFamilyNameIsEmpty && !mainPackageFamilyNameIsEmpty);
+    FAIL_FAST_HR_IF(E_UNEXPECTED, !frameworkPackageFamilyNameIsEmpty && mainPackageFamilyNameIsEmpty);
+
+    // Update our state
+    if (frameworkPackageFamilyNameIsEmpty)
     {
         // Shutdown test support
         g_test_frameworkPackageFamilyName.clear();
+        g_test_mainPackageFamilyName.clear();
     }
     else
     {
         // Initialize test support
         g_test_frameworkPackageFamilyName = frameworkPackageFamilyName;
+        g_test_mainPackageFamilyName = mainPackageFamilyName;
     }
     return S_OK;
 }

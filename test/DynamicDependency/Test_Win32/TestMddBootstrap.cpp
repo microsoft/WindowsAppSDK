@@ -10,20 +10,31 @@ namespace TP = ::Test::Packages;
 
 namespace Test::DynamicDependency
 {
+    HMODULE LoadBootstrapDll()
+    {
+        // We need to find Microsoft.WindowsAppRuntime.Bootstrap.dll.
+        // Normally it's colocated with the application (i.e. same dir as the exe)
+        // but that's not true of our test project (a dll) in our build environment
+        // (different directories). So we'll explicitly find and load it so the
+        // rest of our test is fine
+        auto bootstrapDllAbsoluteFilename{ TF::GetBootstrapAbsoluteFilename() };
+        wil::unique_hmodule bootstrapDll{ LoadLibrary(bootstrapDllAbsoluteFilename.c_str()) };
+        const auto lastError{ GetLastError() };
+        VERIFY_IS_NOT_NULL(bootstrapDll.get());
+        return bootstrapDll.release();
+    }
+
     class BootstrapFixtures
     {
     public:
+        static void SaveBootstrapDll(HMODULE bootstrapDll)
+        {
+            m_bootstrapDll.reset(bootstrapDll);
+        }
+
         static bool Setup()
         {
-            // We need to find Microsoft.WindowsAppRuntime.Bootstrap.dll.
-            // Normally it's colocated with the application (i.e. same dir as the exe)
-            // but that's not true of our test project (a dll) in our build environment
-            // (different directories). So we'll explicitly find and load it so the
-            // rest of our test is fine
-            auto bootstrapDllAbsoluteFilename{ TF::GetBootstrapAbsoluteFilename() };
-            wil::unique_hmodule bootstrapDll(LoadLibrary(bootstrapDllAbsoluteFilename.c_str()));
-            const auto lastError{ GetLastError() };
-            VERIFY_IS_NOT_NULL(bootstrapDll.get());
+            wil::unique_hmodule bootstrapDll{ LoadBootstrapDll() };
 
             TP::RemovePackage_DynamicDependencyLifetimeManagerGC1010();
             TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
@@ -34,18 +45,20 @@ namespace Test::DynamicDependency
             TP::RemovePackage_FrameworkMathMultiply();
             TP::RemovePackage_FrameworkMathAdd();
             TP::AddPackage_WindowsAppRuntimeFramework();
+            TP::AddPackage_DynamicDependencyDataStore();
             TP::AddPackage_DynamicDependencyLifetimeManager();
 
-            m_bootstrapDll = std::move(bootstrapDll);
+            SaveBootstrapDll(bootstrapDll.release());
 
             return true;
         }
 
         static bool Cleanup()
         {
-            m_bootstrapDll.reset();
+            SaveBootstrapDll(nullptr);
 
             TP::RemovePackage_DynamicDependencyLifetimeManager();
+            TP::RemovePackage_DynamicDependencyDataStore();
             TP::RemovePackage_WindowsAppRuntimeFramework();
 
             return true;
@@ -69,11 +82,14 @@ namespace Test::DynamicDependency
         TEST_METHOD(Initialize_Elevated)
         {
             BootstrapFixtures::Setup();
-            auto cleanup = wil::scope_exit([&]{
+            auto cleanup = wil::scope_exit([&] {
                 BootstrapFixtures::Cleanup();
             });
 
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix,
+                                                              Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                                                              Test::Packages::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                                                              Test::Packages::WindowsAppRuntimeMain::c_PackageNamePrefix));
 
             // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
@@ -105,7 +121,10 @@ namespace Test::DynamicDependency
 
         TEST_METHOD(Initialize_DDLMNotFound)
         {
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix,
+                                                              Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                                                              Test::Packages::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                                                              Test::Packages::WindowsAppRuntimeMain::c_PackageNamePrefix));
 
             // Major.Minor = 0.0 == No such framework package
             const UINT32 doesNotExist{};
@@ -115,7 +134,10 @@ namespace Test::DynamicDependency
 
         TEST_METHOD(Initialize_DDLMMinVersionNoMatch)
         {
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix,
+                                                              Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                                                              Test::Packages::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                                                              Test::Packages::WindowsAppRuntimeMain::c_PackageNamePrefix));
 
             // Version <major>.65535.65535.65535 to find framework packages for the major.minor version but none meeting this minVersion criteria
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
@@ -125,7 +147,10 @@ namespace Test::DynamicDependency
 
         TEST_METHOD(Initialize)
         {
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix,
+                                                              Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                                                              Test::Packages::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                                                              Test::Packages::WindowsAppRuntimeMain::c_PackageNamePrefix));
 
             // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
@@ -137,7 +162,10 @@ namespace Test::DynamicDependency
 
         TEST_METHOD(Initialize2x)
         {
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix,
+                                                              Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                                                              Test::Packages::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                                                              Test::Packages::WindowsAppRuntimeMain::c_PackageNamePrefix));
 
             // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
@@ -151,7 +179,10 @@ namespace Test::DynamicDependency
 
         TEST_METHOD(Initialize2xIncompatible)
         {
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix,
+                                                              Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                                                              Test::Packages::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                                                              Test::Packages::WindowsAppRuntimeMain::c_PackageNamePrefix));
 
             // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
@@ -171,7 +202,10 @@ namespace Test::DynamicDependency
 
         TEST_METHOD(InitializeShutdownMultiple)
         {
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix,
+                                                              Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                                                              Test::Packages::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                                                              Test::Packages::WindowsAppRuntimeMain::c_PackageNamePrefix));
 
             // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
             const UINT32 c_Version_MajorMinor1{ Test::Packages::WindowsAppRuntimeFramework::c_Version_MajorMinor };
@@ -258,7 +292,10 @@ namespace Test::DynamicDependency
             winrt::hstring packageFamilyName{ Test::Packages::DynamicDependencyLifetimeManager::c_PackageFamilyName };
             auto applicationData{ winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(packageFamilyName) };
 
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix,
+                                                              Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                                                              Test::Packages::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                                                              Test::Packages::WindowsAppRuntimeMain::c_PackageNamePrefix));
 
             // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
@@ -282,7 +319,10 @@ namespace Test::DynamicDependency
             winrt::hstring packageFamilyName{ Test::Packages::DynamicDependencyLifetimeManager::c_PackageFamilyName };
             auto applicationData{ winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(packageFamilyName) };
 
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix,
+                                                              Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                                                              Test::Packages::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                                                              Test::Packages::WindowsAppRuntimeMain::c_PackageNamePrefix));
 
             // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
@@ -397,7 +437,10 @@ namespace Test::DynamicDependency
 
         TEST_METHOD(Initialize_Packaged_NotSupported)
         {
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix,
+                                                              Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                                                              Test::Packages::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                                                              Test::Packages::WindowsAppRuntimeMain::c_PackageNamePrefix));
 
             // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
@@ -407,7 +450,10 @@ namespace Test::DynamicDependency
 
         TEST_METHOD(Initialize_Packaged_NOP)
         {
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix,
+                                                              Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                                                              Test::Packages::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                                                              Test::Packages::WindowsAppRuntimeMain::c_PackageNamePrefix));
 
             // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
@@ -420,7 +466,10 @@ namespace Test::DynamicDependency
 
         TEST_METHOD(Initialize_Packaged_NOP_Multiple)
         {
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix,
+                                                              Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                                                              Test::Packages::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                                                              Test::Packages::WindowsAppRuntimeMain::c_PackageNamePrefix));
 
             // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
@@ -436,6 +485,87 @@ namespace Test::DynamicDependency
             VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize2(c_Version_MajorMinor, nullptr, c_minVersion, c_options));
 
             MddBootstrapShutdown();
+        }
+    };
+
+    class BootstrapRuntimeNotInstalledTests : BootstrapFixtures
+    {
+    public:
+        BEGIN_TEST_CLASS(BootstrapRuntimeNotInstalledTests)
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(Setup)
+        {
+            wil::unique_hmodule bootstrapDll{ LoadBootstrapDll() };
+
+            BootstrapFixtures::Cleanup();
+
+            SaveBootstrapDll(bootstrapDll.release());
+            return true;
+        }
+
+        TEST_CLASS_CLEANUP(Cleanup)
+        {
+            SaveBootstrapDll(nullptr);
+            return true;
+        }
+
+        TEST_METHOD(Initialize_RuntimeNotFound)
+        {
+            PCWSTR c_doesNotExist{ L"DoesNotExist" };
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(c_doesNotExist,
+                                                              Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                                                              Test::Packages::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                                                              Test::Packages::WindowsAppRuntimeMain::c_PackageNamePrefix));
+
+            // Major.Minor = 0.0 == No such framework package
+            const UINT32 doesNotExist{};
+            const PACKAGE_VERSION minVersionMatchAny{};
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(doesNotExist, nullptr, minVersionMatchAny));
+        }
+    };
+
+    class BootstrapRuntimeNotInstalledTests_Elevated : BootstrapFixtures
+    {
+    public:
+        BEGIN_TEST_CLASS(BootstrapRuntimeNotInstalledTests_Elevated)
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(Setup)
+        {
+            wil::unique_hmodule bootstrapDll{ LoadBootstrapDll() };
+
+            BootstrapFixtures::Cleanup();
+
+            SaveBootstrapDll(bootstrapDll.release());
+            return true;
+        }
+
+        TEST_CLASS_CLEANUP(Cleanup)
+        {
+            SaveBootstrapDll(nullptr);
+            return true;
+        }
+
+        TEST_METHOD(Initialize_RuntimeNotFound)
+        {
+            PCWSTR c_doesNotExist{ L"DoesNotExist" };
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(c_doesNotExist,
+                                                              Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                                                              Test::Packages::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                                                              Test::Packages::WindowsAppRuntimeMain::c_PackageNamePrefix));
+
+            // Major.Minor = 0.0 == No such framework package
+            const UINT32 doesNotExist{};
+            const PACKAGE_VERSION minVersionMatchAny{};
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(doesNotExist, nullptr, minVersionMatchAny));
         }
     };
 }

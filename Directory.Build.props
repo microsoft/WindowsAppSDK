@@ -48,11 +48,8 @@
     </Midl>
   </ItemDefinitionGroup>
 
-  <!-- Build with the hybrid CRT (Universal CRT + Static VS CRT (for what little the Universal CRT doesn't cover) -->
-  <Import Project="$(MSBuildThisFileDirectory)HybridCRT.props" />
-
-  <!-- Build with APIscan-friendly compiler+linker options -->
-  <Import Project="$(MSBuildThisFileDirectory)ApiScan.Cpp.props" />
+  <!-- Define our standardardized options for C/C++ builds -->
+  <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK.Build.Cpp.props" />
 
   <!-- Load the test certificate's password (so we do it once for reuse across projects) -->
   <PropertyGroup Condition="'$(RepoTestCertificatePFX)' == ''">

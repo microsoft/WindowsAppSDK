@@ -1,4 +1,7 @@
-﻿#include "pch.h"
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#include "pch.h"
 #include <iostream>
 #include <wil/win32_helpers.h>
 #include "WindowsAppRuntime.Test.AppModel.h"
@@ -26,6 +29,7 @@ namespace winrt
 const std::wstring c_localWindowsAppSDKFolder{ LR"(\Microsoft\WindowsAppSDK\)" };
 const std::wstring c_pngExtension{ LR"(.png)" };
 const std::wstring c_appUserModelId{ LR"(TaefTestAppId)" };
+const std::wstring c_iconFilepath{ std::filesystem::current_path() / "icon1.ico" };
 
 bool BackgroundActivationTest() // Activating application for background test.
 {
@@ -348,7 +352,7 @@ bool VerifyFailedMultipleRegisterActivator()
     {
         return winrt::to_hresult() == E_INVALIDARG;
     }
-    
+
     return false;
 }
 
@@ -678,6 +682,7 @@ bool VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup()
         winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", 1);
 
         auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateAsync(progressData, L"", L"Group").get();
+        (void)progressResultOperation;  // Unused local, exists for debugging, optimized away in Release builds
     }
     catch (...)
     {
@@ -701,6 +706,7 @@ bool VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup()
         winrt::AppNotificationProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%", 1);
 
         auto progressResultOperation = winrt::AppNotificationManager::Default().UpdateAsync(progressData, L"", L"").get();
+        (void)progressResultOperation;  // Unused local, exists for debugging, optimized away in Release builds
     }
     catch (...)
     {
@@ -1322,6 +1328,122 @@ bool VerifyIconPathExists_Unpackaged()
     return true;
 }
 
+bool VerifyRegisterWithNullDisplayNameFail_Unpackaged()
+{
+    // Register is already called in main with an explicit appusermodelId
+    winrt::AppNotificationManager::Default().UnregisterAll();
+    try
+    {
+        winrt::AppNotificationManager::Default().Register(winrt::hstring{}, winrt::Uri{ c_iconFilepath });
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_INVALIDARG;
+    }
+
+    return false;
+}
+
+bool VerifyRegisterWithNullIconFail_Unpackaged()
+{
+    // Register is already called in main with an explicit appusermodelId
+    winrt::AppNotificationManager::Default().UnregisterAll();
+    try
+    {
+        winrt::AppNotificationManager::Default().Register(L"AppNotificationApp", nullptr);
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_INVALIDARG;
+    }
+
+    return false;
+}
+
+bool VerifyRegisterWithNullDisplayNameAndNullIconFail_Unpackaged()
+{
+    // Register is already called in main with an explicit appusermodelId
+    winrt::AppNotificationManager::Default().UnregisterAll();
+    try
+    {
+        winrt::AppNotificationManager::Default().Register(winrt::hstring{}, nullptr);
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_INVALIDARG;
+    }
+
+    return true;
+}
+
+bool VerifyShowToastWithCustomDisplayNameAndIcon_Unpackaged()
+{
+    // Register is already called in main with an explicit appusermodelId
+    winrt::AppNotificationManager::Default().UnregisterAll();
+    try
+    {
+          winrt::AppNotificationManager::Default().Register(L"AppNotificationApp", winrt::Uri{ c_iconFilepath });
+
+          winrt::check_bool(VerifyShowToast_Unpackaged());
+    }
+    catch (...)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool VerifyRegisterWithDisplayNameAndInvalidIconPathFail_Unpackaged()
+{
+    // Register is already called in main with an explicit appusermodelId
+    winrt::AppNotificationManager::Default().UnregisterAll();
+    try
+    {
+        winrt::AppNotificationManager::Default().Register(L"AppNotificationApp", winrt::Uri{ LR"(C:\InvalidPath\)" });
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
+    }
+
+    return false;
+}
+
+bool VerifyRegisterWithEmptyDisplayNameFail_Unpackaged()
+{
+    // Register is already called in main with an explicit appusermodelId
+    winrt::AppNotificationManager::Default().UnregisterAll();
+    try
+    {
+        // hstring treats L"" as assigning nullptr
+        winrt::AppNotificationManager::Default().Register(L"", winrt::Uri{ c_iconFilepath });
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_INVALIDARG;
+    }
+
+    return false;
+}
+
+bool VerifyRegisterWithAssetsFail()
+{
+    // Register is already called in main with an explicit appusermodelId
+    winrt::AppNotificationManager::Default().UnregisterAll();
+    try
+    {
+        // API fails for Packaged Scenario
+        winrt::AppNotificationManager::Default().Register(L"AppNotificationApp", winrt::Uri{ LR"(C:\InvalidPath\)" });
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_ILLEGAL_METHOD_CALL;
+    }
+
+    return false;
+}
+
 std::map<std::string, bool(*)()> const& GetSwitchMapping()
 {
     static std::map<std::string, bool(*)()> switchMapping = {
@@ -1380,6 +1502,14 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyToastProgressDataSequence0Fail", &VerifyToastProgressDataSequence0Fail },
         { "VerifyToastUpdateZeroSequenceFail_Unpackaged", &VerifyToastUpdateZeroSequenceFail_Unpackaged },
         { "VerifyIconPathExists_Unpackaged", &VerifyIconPathExists_Unpackaged},
+
+        { "VerifyRegisterWithNullDisplayNameFail_Unpackaged", &VerifyRegisterWithNullDisplayNameFail_Unpackaged},
+        { "VerifyRegisterWithNullIconFail_Unpackaged", &VerifyRegisterWithNullIconFail_Unpackaged},
+        { "VerifyRegisterWithNullDisplayNameAndNullIconFail_Unpackaged", &VerifyRegisterWithNullDisplayNameAndNullIconFail_Unpackaged},
+        { "VerifyShowToastWithCustomDisplayNameAndIcon_Unpackaged", &VerifyShowToastWithCustomDisplayNameAndIcon_Unpackaged},
+        { "VerifyRegisterWithDisplayNameAndInvalidIconPathFail_Unpackaged", &VerifyRegisterWithDisplayNameAndInvalidIconPathFail_Unpackaged},
+        { "VerifyRegisterWithEmptyDisplayNameFail_Unpackaged", &VerifyRegisterWithEmptyDisplayNameFail_Unpackaged},
+        { "VerifyRegisterWithAssetsFail", &VerifyRegisterWithAssetsFail},
       };
 
     return switchMapping;

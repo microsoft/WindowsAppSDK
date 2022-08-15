@@ -17,14 +17,6 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|ARM">
-      <Configuration>Debug</Configuration>
-      <Platform>ARM</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|ARM">
-      <Configuration>Release</Configuration>
-      <Platform>ARM</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|ARM64">
       <Configuration>Debug</Configuration>
       <Platform>ARM64</Platform>
@@ -54,7 +46,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -69,16 +60,26 @@
   <PropertyGroup Label="UseOneCoreLibs">
     <LibraryPath Condition="'$(Platform)'=='Win32'">$(VCInstallDir)lib\onecore;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Platform)'=='x64'">$(VCInstallDir)lib\onecore\amd64;$(LibraryPath)</LibraryPath>
-    <LibraryPath Condition="'$(Platform)'=='ARM'">$(VCInstallDir)lib\onecore\arm;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Platform)'=='ARM64'">$(VCInstallDir)lib\onecore\arm64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <LinkIncremental>true</LinkIncremental>
-    <!-- Under Razzle Microsoft.Build.Cpp.props automatically sets LinkerDebugOptions to /debugtype which is incompatible with LinkIncremental so reset it back here. -->
-    <LinkerDebugOptions>
-    </LinkerDebugOptions>
-  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <!-- This project has numerous compilation errors if read-only string pooling is enabled
+           due to intermixing PWSTR and PCWSTR e.g. StringResult_C.UnitTest.cpp lines 534 + 590
+                PWSTR aStuff = L"asdfaeaef";
+                ...
+                VERIFY_FAILED(DefStringResult_SetContents(&selfValid, aStuff, 0));
+           due to the prototype declares the 2nd parameter as non-const and will be written to?
+                DefStringResult_SetContents(_Inout_ DEFSTRINGRESULT* pSelf, _Inout_ PWSTR pBuffer, _In_ size_t cchBuffer)
+           This pattern is extensively repeated and will require more than a small tweak to correct.
+           Disabling StringPooling and /Zc:stringStrings for now and filing a bug for an MRTCore dev to follow up.
+           https://task.ms/40017890 filed to remove this ItemDefinitionGroup and fix the errors.
+        -->
+      <StringPooling>false</StringPooling>
+      <AdditionalOptions>%(AdditionalOptions) /Zc:strictStrings-</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Label="OneCoreCompileOptions">
     <ClCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);_WIN32_WINNT=_WIN32_WINNT_WIN10;INLINE_TEST_METHOD_MARKUP;UNICODE;_UNICODE;</PreprocessorDefinitions>
@@ -92,31 +93,17 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
-      <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\..\..\WindowsAppRuntime_Insights;..\include;..\mrmmin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4309;4838;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
-    <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>..\..\..\..\WindowsAppRuntime_Insights;..\include;..\mrmmin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4309;4838;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -247,14 +234,14 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <!--additional imports-->
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210930.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210930.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
+    <Import Project="..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
     <Import Project="..\..\packages\Microsoft.Taef.10.58.210222006-develop\build\Microsoft.Taef.targets" Condition="Exists('..\..\packages\Microsoft.Taef.10.58.210222006-develop\build\Microsoft.Taef.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210930.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210930.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.Taef.10.58.210222006-develop\build\Microsoft.Taef.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Taef.10.58.210222006-develop\build\Microsoft.Taef.targets'))" />
   </Target>
 </Project>

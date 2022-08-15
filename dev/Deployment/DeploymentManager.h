@@ -40,4 +40,3 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::factor
     {
     };
 }
-

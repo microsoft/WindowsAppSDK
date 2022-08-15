@@ -19,7 +19,7 @@
 
 using namespace Microsoft::Resources;
 
-typedef struct
+typedef struct _MrmObjects
 {
     CoreProfile* profile = nullptr;
     UnifiedResourceView* unifiedView = nullptr;
@@ -65,7 +65,7 @@ static HRESULT BlobResultReleaseOwnershipBuffer(
 static HRESULT GetQualifierInfoFromCandidateImpl(
     _In_ MrmObjects* resourceManager,
     _In_ const ResourceCandidateResult* candidate,
-    _Out_ UINT32* qualifierCount, 
+    _Out_ UINT32* qualifierCount,
     _Outptr_result_buffer_(*qualifierCount) PWSTR** qualifierNames,
     _Outptr_result_buffer_(*qualifierCount) PWSTR** qualifierValues)
 {
@@ -93,7 +93,7 @@ static HRESULT GetQualifierInfoFromCandidateImpl(
     *qualifierValues = reinterpret_cast<PWSTR*>(MrmAllocateBuffer(bufferSize));
     RETURN_IF_NULL_ALLOC(*qualifierValues);
     ZeroMemory(*qualifierValues, bufferSize);
-    
+
     PWSTR* oneName = *qualifierNames;
     PWSTR* oneValue = *qualifierValues;
     for (int i = 0; i < count; i++)
@@ -134,7 +134,7 @@ static HRESULT GetQualifierInfoFromCandidateImpl(
 static HRESULT GetQualifierInfoFromCandidate(
     _In_ MrmObjects* resourceManager,
     const ResourceCandidateResult* candidate,
-    _Out_ UINT32* qualifierCount, 
+    _Out_ UINT32* qualifierCount,
     _Outptr_result_buffer_(*qualifierCount) PWSTR** qualifierNames,
     _Outptr_result_buffer_(*qualifierCount) PWSTR** qualifierValues)
 {
@@ -143,7 +143,7 @@ static HRESULT GetQualifierInfoFromCandidate(
     {
         MrmFreeQualifierNamesOrValues(*qualifierCount, *qualifierNames);
         *qualifierNames = nullptr;
-        
+
         MrmFreeQualifierNamesOrValues(*qualifierCount, *qualifierValues);
         *qualifierValues = nullptr;
 
@@ -160,7 +160,7 @@ static HRESULT LoadResourceCandidate(
     _In_opt_ PCWSTR resourceIdOrUri,
     _Out_ ResourceCandidateResult* resourceCandidate,
     _Outptr_opt_result_maybenull_ PWSTR* resourceName,
-    _Out_opt_ UINT32* qualifierCount, 
+    _Out_opt_ UINT32* qualifierCount,
     _Outptr_opt_result_buffer_(*qualifierCount) PWSTR** qualifierNames,
     _Outptr_opt_result_buffer_(*qualifierCount) PWSTR** qualifierValues)
 {
@@ -388,7 +388,7 @@ static HRESULT LoadStringOrEmbeddedResource(
     _Outptr_result_maybenull_ PWSTR* resourceString,
     _Out_ MrmResourceData* data,
     _Outptr_opt_result_maybenull_ PWSTR* resourceName,
-    _Out_opt_ UINT32* qualifierCount, 
+    _Out_opt_ UINT32* qualifierCount,
     _Outptr_opt_result_buffer_(*qualifierCount) PWSTR** qualifierNames,
     _Outptr_opt_result_buffer_(*qualifierCount) PWSTR** qualifierValues)
 {
@@ -398,16 +398,16 @@ static HRESULT LoadStringOrEmbeddedResource(
     ResourceCandidateResult candidate;
     PWSTR localName = nullptr;
     RETURN_IF_FAILED_WITH_EXPECTED(LoadResourceCandidate(
-        resourceManager, 
-        resourceContext, 
-        resourceMap, 
-        index, 
-        resourceIdOrUri, 
-        &candidate, 
+        resourceManager,
+        resourceContext,
+        resourceMap,
+        index,
+        resourceIdOrUri,
+        &candidate,
         &localName,
         qualifierCount,
         qualifierNames,
-        qualifierValues), 
+        qualifierValues),
         HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
     std::unique_ptr<wchar_t[], decltype(&MrmFreeResource)> name(localName, MrmFreeResource);
 
@@ -775,22 +775,22 @@ STDAPI MrmLoadStringOrEmbeddedResourceWithQualifierValues(
     _Out_ MrmType* resourceType,
     _Outptr_result_maybenull_ PWSTR* resourceString,
     _Out_ MrmResourceData* data,
-    _Out_ UINT32* qualifierCount, 
+    _Out_ UINT32* qualifierCount,
     _Outptr_result_buffer_(*qualifierCount) PWSTR** qualifierNames,
     _Outptr_result_buffer_(*qualifierCount) PWSTR** qualifierValues)
 {
     RETURN_IF_FAILED_WITH_EXPECTED(LoadStringOrEmbeddedResource(
-        resourceManager, 
-        resourceContext, 
-        resourceMap, 
-        INDEX_RESOURCE_ID, 
-        resourceId, 
-        resourceType, 
-        resourceString, 
-        data, 
-        nullptr, 
-        qualifierCount, 
-        qualifierNames, 
+        resourceManager,
+        resourceContext,
+        resourceMap,
+        INDEX_RESOURCE_ID,
+        resourceId,
+        resourceType,
+        resourceString,
+        data,
+        nullptr,
+        qualifierCount,
+        qualifierNames,
         qualifierValues),
         HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
     return S_OK;
@@ -834,22 +834,22 @@ STDAPI MrmLoadStringOrEmbeddedResourceByIndexWithQualifierValues(
     _Outptr_ PWSTR* resourceName,
     _Outptr_result_maybenull_ PWSTR* resourceString,
     _Out_ MrmResourceData* data,
-    _Out_ UINT32* qualifierCount, 
+    _Out_ UINT32* qualifierCount,
     _Outptr_result_buffer_(*qualifierCount) PWSTR** qualifierNames,
     _Outptr_result_buffer_(*qualifierCount) PWSTR** qualifierValues)
 {
     RETURN_IF_FAILED(LoadStringOrEmbeddedResource(
-        resourceManager, 
-        resourceContext, 
-        resourceMap, 
-        index, 
-        nullptr, 
-        resourceType, 
-        resourceString, 
-        data, 
-        resourceName, 
-        qualifierCount, 
-        qualifierNames, 
+        resourceManager,
+        resourceContext,
+        resourceMap,
+        index,
+        nullptr,
+        resourceType,
+        resourceString,
+        data,
+        resourceName,
+        qualifierCount,
+        qualifierNames,
         qualifierValues));
     return S_OK;
 }
@@ -878,10 +878,10 @@ STDAPI_(void) MrmFreeResource(_In_opt_ void* resource)
 // For unpackaged app, the built resource name is [modulename].pri. We still search resources.pri
 // because that is a supported scenario for inbox MRT (Xaml islands).
 //
-// A file path is always returned even if none of the files under the above mentioned searching 
+// A file path is always returned even if none of the files under the above mentioned searching
 // criteria exists. In that case, we will return filename (if provided) or resources.pri (if name not
-// provided) under module file path. The reason is that we don't want to fail the creation of 
-// ResourceManager even if an app doesn't have PRI file. 
+// provided) under module file path. The reason is that we don't want to fail the creation of
+// ResourceManager even if an app doesn't have PRI file.
 STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath)
 {
     *filePath = nullptr;

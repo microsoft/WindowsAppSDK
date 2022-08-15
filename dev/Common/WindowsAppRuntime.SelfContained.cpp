@@ -18,7 +18,7 @@ STDAPI WindowsAppRuntime_IsSelfContained(
     const PACKAGE_INFO* packageInfo{};
     wil::unique_cotaskmem_ptr<BYTE[]> buffer;
     RETURN_IF_FAILED(::AppModel::PackageGraph::GetCurrentPackageGraph(flags, packageInfoCount, packageInfo, buffer));
-    const auto frameworkPackageFamilyName{ ::WindowsAppRuntime::VersionInfo::GetPackageFamilyName() };
+    const auto frameworkPackageFamilyName{ ::WindowsAppRuntime::VersionInfo::Framework::GetPackageFamilyName() };
     for (uint32_t index=0; index < packageInfoCount; ++index)
     {
         if (CompareStringOrdinal(packageInfo[index].packageFamilyName, -1, frameworkPackageFamilyName.c_str(), -1, TRUE) == CSTR_EQUAL)

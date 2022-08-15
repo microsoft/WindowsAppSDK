@@ -19,10 +19,12 @@ void WindowsAppRuntimeInstaller::InstallActivity::Context::Reset()
 }
 
 void WindowsAppRuntimeInstaller::InstallActivity::Context::SetDeploymentErrorInfo(
+    const HRESULT& deploymentErrorHresult,
     const HRESULT& deploymentErrorExtendedHresult,
     const std::wstring& deploymentErrorText,
     const GUID& deploymentErrorActivityId)
 {
+    m_deploymentErrorHresult = deploymentErrorHresult;
     m_deploymentErrorExtendedHresult = deploymentErrorExtendedHresult;
     m_deploymentErrorText = deploymentErrorText;
     SetDeploymentErrorActivityId(deploymentErrorActivityId);
@@ -42,7 +44,7 @@ void WindowsAppRuntimeInstaller::InstallActivity::Context::SetLastFailure(const 
         m_lastFailure.file.clear();
     }
 
-    m_lastFailure.lineNumer = failure.uLineNumber;
+    m_lastFailure.lineNumber = failure.uLineNumber;
 
     if (failure.pszMessage)
     {
@@ -127,6 +129,21 @@ BOOL WindowsAppRuntimeInstaller::InstallActivity::Context::LogInstallerFailureEv
                 auto customProvisionMessageFormat{ L"Provisioning Package %s (Activity Id:%s)" };
                 FAIL_FAST_IF_FAILED(StringCchPrintfW(customProvisionMessage, ARRAYSIZE(customProvisionMessage), customProvisionMessageFormat, provisionActivityId));
                 THROW_IF_WIN32_BOOL_FALSE(LogInstallerFailureEventWithResourceId(EVENTLOG_WARNING_TYPE, hresult, customProvisionMessage));
+                break;
+            }
+            case InstallStage::StagePackage:
+            {
+                WCHAR customMessage[1024]{};
+                auto deploymentActivityId{ winrt::to_hstring(*m_activity.Id()) };
+                auto customMessageFormat{ L"Staging Package %s with DeploymentExtendedError: 0x%08X, DeploymentExtendedText:%s, DeploymentActivityId: %s" };
+                FAIL_FAST_IF_FAILED(StringCchPrintfW(customMessage,
+                                                     ARRAYSIZE(customMessage),
+                                                     customMessageFormat,
+                                                     m_currentResourceId,
+                                                     m_deploymentErrorExtendedHresult,
+                                                     m_deploymentErrorText,
+                                                     m_deploymentErrorActivityId));
+                THROW_IF_WIN32_BOOL_FALSE(LogInstallerFailureEventWithResourceId(EVENTLOG_ERROR_TYPE, hresult, customMessage));
                 break;
             }
             default:

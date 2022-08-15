@@ -122,7 +122,10 @@ namespace Test::Bootstrap
         }
 
         // Initialize the bootstrapper (for testing purposes)
-        VERIFY_SUCCEEDED(MddBootstrapTestInitialize(TP::DynamicDependencyLifetimeManager::c_PackageNamePrefix, TP::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+        VERIFY_SUCCEEDED(MddBootstrapTestInitialize(TP::DynamicDependencyLifetimeManager::c_PackageNamePrefix,
+                                                    TP::DynamicDependencyLifetimeManager::c_PackagePublisherId,
+                                                    TP::WindowsAppRuntimeFramework::c_PackageNamePrefix,
+                                                    TP::WindowsAppRuntimeMain::c_PackageNamePrefix));
 
         // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
         const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
