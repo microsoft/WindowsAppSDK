@@ -1,13 +1,16 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
+#include "PushNotificationLongRunningTaskTelemetry.h"
 
 using namespace Microsoft::WRL;
 using namespace ::ABI::Microsoft::Internal::PushNotifications;
 
 void NotificationListenerManager::Initialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager, std::shared_ptr<ToastRegistrationManager> toastRegistrationManager)
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(4);
+
     m_foregroundSinkManager = foregroundSinkManager;
     m_toastRegistrationManager = toastRegistrationManager;
 }
@@ -15,6 +18,8 @@ void NotificationListenerManager::Initialize(std::shared_ptr<ForegroundSinkManag
 // The mapping setup here is appId -> (processName, comServerClsid)
 void NotificationListenerManager::SetAppIdMapping(std::map<std::wstring, std::pair<std::wstring, winrt::guid>>& appIdList)
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(5);
+
     for (auto appData : appIdList)
     {
         AddListener(appData.first /* appId */, appData.second.first /* processName */, appData.second.second /* comServerClsid */);
@@ -23,6 +28,8 @@ void NotificationListenerManager::SetAppIdMapping(std::map<std::wstring, std::pa
 
 void NotificationListenerManager::AddListener(std::wstring const& appId, std::wstring const& processName, winrt::guid const& comServerClsid)
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(6);
+
     THROW_HR_IF(E_INVALIDARG, appId.empty());
     THROW_HR_IF(E_INVALIDARG, processName.empty());    
 
@@ -44,6 +51,8 @@ void NotificationListenerManager::AddListener(std::wstring const& appId, std::ws
 
 void NotificationListenerManager::RemoveListener(std::wstring appId)
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(7);
+
     THROW_HR_IF(E_INVALIDARG, appId.empty());
 
     LOG_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appId.c_str()));
@@ -54,6 +63,8 @@ void NotificationListenerManager::RemoveListener(std::wstring appId)
 
 bool NotificationListenerManager::IsEmpty()
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(8);
+
     auto lock{ m_lock.lock_shared() };
     return m_notificationListeners.empty();
 }

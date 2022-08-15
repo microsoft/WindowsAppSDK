@@ -6,6 +6,7 @@
 // include notifications constants file here
 
 #include <NotificationsLongRunningProcess_h.h>
+#include "PushNotificationLongRunningTaskTelemetry.h"
 
 // Temporarily disable C4324 because WRL generates a false (well, irrelevant) warning
 //   'Microsoft::WRL::Details::StaticStorage<Microsoft::WRL::Details::OutOfProcModuleBase<ModuleT>::GenericReleaseNotifier<T>,Microsoft::WRL::Details::StorageInstance::OutOfProcCallbackBuffer1,ModuleT>': structure was padded due to alignment specifier
@@ -21,6 +22,8 @@ using namespace Microsoft::WRL;
 
 int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(31);
+
     auto coInitialize = wil::CoInitializeEx();
 
     ComPtr<NotificationsLongRunningProcessFactory> platformFactory;
@@ -58,6 +61,8 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
 
 STDAPI_(BOOL) DllMain(_In_opt_ HINSTANCE hinst, DWORD reason, _In_opt_ void*)
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(32);
+
     if (reason == DLL_PROCESS_ATTACH)
     {
         DisableThreadLibraryCalls(hinst);

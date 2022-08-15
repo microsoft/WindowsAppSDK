@@ -15,6 +15,22 @@ class PushNotificationLongRunningTaskTelemetry : public wil::TraceLoggingProvide
     IMPLEMENT_TELEMETRY_CLASS(PushNotificationLongRunningTaskTelemetry, PushNotificationLongRunningTaskTelemetryProvider);
 
 public:
+    DEFINE_EVENT_METHOD(LogSomethingSomething)(
+        uint32_t id) noexcept try
+    {
+        //if (c_maxEventLimit >= UpdateLogEventCount())
+        {
+            TraceLoggingClassWriteMeasure(
+                "LogSomethingSomething",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(id, "Id"));
+            //    TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"));
+            //                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
+        }
+    }
+    CATCH_LOG()
+
     DEFINE_EVENT_METHOD(LogOnRawNotificationReceived)(
             winrt::hresult hr,
             std::wstring const& correlationVector) noexcept try
@@ -26,8 +42,8 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
-                TraceLoggingWideString(correlationVector.c_str(), "CorrelationVector"),
-                TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"));
+                TraceLoggingWideString(correlationVector.c_str(), "CorrelationVector"));
+//                TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"));
 //                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
@@ -58,13 +74,14 @@ private:
 
         return m_eventCount;
     }
-
+#if 0
     inline bool IsPackagedApp() const
     {
         static const bool isPackagedApp{ AppModel::Identity::IsPackagedProcess() };
 
         return isPackagedApp;
     }
+#endif
 #if 0
     inline const std::wstring& GetAppName() const
     {

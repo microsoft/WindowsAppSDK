@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -6,11 +6,14 @@
 #include "platform.h"
 #include "platformfactory.h"
 #include <FrameworkUdk/PushNotifications.h>
+#include "PushNotificationLongRunningTaskTelemetry.h"
 
 using namespace winrt::Windows;
 
 void NotificationsLongRunningPlatformImpl::Initialize()
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(9);
+
     auto lock = m_lock.lock_exclusive();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
@@ -49,6 +52,8 @@ void NotificationsLongRunningPlatformImpl::Initialize()
 
 void NotificationsLongRunningPlatformImpl::Shutdown() noexcept
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(10);
+
     auto lock = m_lock.lock_exclusive();
     if (m_shutdown)
     {
@@ -66,6 +71,8 @@ void NotificationsLongRunningPlatformImpl::WaitForLifetimeEvent()
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication(
     _In_ PCWSTR processName, GUID remoteId, _Out_ PWSTR* appId) noexcept try
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(11);
+
     auto lock = m_lock.lock_exclusive();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
@@ -82,6 +89,8 @@ CATCH_RETURN()
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterFullTrustApplication(
     _In_ PCWSTR processName) noexcept try
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(12);
+
     auto lock = m_lock.lock_exclusive();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
@@ -100,6 +109,8 @@ CATCH_RETURN()
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterLongRunningActivator(_In_ PCWSTR processName) noexcept try
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(13);
+
     auto lock = m_lock.lock_shared();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
@@ -110,6 +121,8 @@ CATCH_RETURN()
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterLongRunningActivatorWithClsid(_In_ PCWSTR processName, GUID comServerClsid) noexcept try
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(14);
+
     auto lock = m_lock.lock_shared();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
@@ -120,6 +133,8 @@ CATCH_RETURN()
 
 void NotificationsLongRunningPlatformImpl::RegisterLongRunningActivatorHelper(PCWSTR processName, GUID comServerClsid)
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(15);
+
     // NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication should be called before this or we ignore the call
     const std::wstring appId{ GetAppIdentifier(processName) };
     if (appId.empty())
@@ -136,6 +151,8 @@ void NotificationsLongRunningPlatformImpl::RegisterLongRunningActivatorHelper(PC
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterLongRunningActivator(_In_ PCWSTR processName) noexcept try
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(16);
+
     auto lock = m_lock.lock_shared();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
@@ -162,6 +179,8 @@ CATCH_RETURN()
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterForegroundActivator(_In_ IWpnForegroundSink* sink, _In_ PCWSTR processName) noexcept try
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(17);
+
     auto lock = m_lock.lock_exclusive();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
@@ -182,6 +201,8 @@ CATCH_RETURN()
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterForegroundActivator(_In_ PCWSTR processName) noexcept try
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(18);
+
     auto lock = m_lock.lock_exclusive();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
@@ -199,6 +220,8 @@ CATCH_RETURN()
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::AddToastRegistrationMapping(_In_ PCWSTR processName, _In_ PCWSTR toastAppId) noexcept try
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(19);
+
     auto lock{ m_lock.lock_exclusive() };
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
@@ -214,6 +237,8 @@ CATCH_RETURN()
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RemoveToastRegistrationMapping(_In_ PCWSTR processName) noexcept try
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(20);
+
     auto lock{ m_lock.lock_exclusive() };
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
@@ -226,6 +251,8 @@ CATCH_RETURN()
 // It should only be called by Initialize(), which already acquired a lock.
 std::map<std::wstring, std::pair<std::wstring, winrt::guid>> NotificationsLongRunningPlatformImpl::GetFullTrustApps()
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(21);
+
     std::map<std::wstring, std::pair<std::wstring, winrt::guid>> mapOfFullTrustApps;
 
     // Get list of full trust apps with valid channels from wpncore
@@ -251,6 +278,8 @@ std::map<std::wstring, std::pair<std::wstring, winrt::guid>> NotificationsLongRu
 // Assumes the caller is under lock
 const std::wstring NotificationsLongRunningPlatformImpl::GetAppIdentifier(std::wstring const& processName)
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(22);
+
     auto values{ m_rawStorage.Values() };
 
     for (auto it = values.begin(); it != values.end(); it++)
@@ -267,6 +296,8 @@ const std::wstring NotificationsLongRunningPlatformImpl::GetAppIdentifier(std::w
 // Assumes the caller is under lock
 const std::wstring NotificationsLongRunningPlatformImpl::BuildAppIdentifier(std::wstring const& processName)
 {
+    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(23);
+
     const std::wstring appId{ GetAppIdentifier(processName) };
     if (!appId.empty())
     {
