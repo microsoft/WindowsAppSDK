@@ -35,6 +35,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Foundation.String.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NotificationTelemetryHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.SelfContained.cpp">
