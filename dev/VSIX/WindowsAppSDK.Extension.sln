@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31619.372
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsAppSDK.Extension", "Extension\Original\WindowsAppSDK.Extension.csproj", "{EBAC2D3E-B3DB-428A-9A9D-3607FB6D9C17}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.UWP.Cs.BlankApp", "ProjectTemplates\UWP\CSharp\BlankApp\WinUI.UWP.Cs.BlankApp.csproj", "{93ABC6A8-319A-4291-B8E2-607D3272A4B4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Neutral.Cs.BlankPage", "ItemTemplates\Neutral\CSharp\BlankPage\WinUI.Neutral.Cs.BlankPage.csproj", "{2D9BD73D-5A5E-4113-AEA9-53D059A79A41}"
@@ -104,14 +102,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EBAC2D3E-B3DB-428A-9A9D-3607FB6D9C17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EBAC2D3E-B3DB-428A-9A9D-3607FB6D9C17}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EBAC2D3E-B3DB-428A-9A9D-3607FB6D9C17}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{EBAC2D3E-B3DB-428A-9A9D-3607FB6D9C17}.Debug|x64.Build.0 = Debug|Any CPU
-		{EBAC2D3E-B3DB-428A-9A9D-3607FB6D9C17}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EBAC2D3E-B3DB-428A-9A9D-3607FB6D9C17}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EBAC2D3E-B3DB-428A-9A9D-3607FB6D9C17}.Release|x64.ActiveCfg = Release|Any CPU
-		{EBAC2D3E-B3DB-428A-9A9D-3607FB6D9C17}.Release|x64.Build.0 = Release|Any CPU
 		{93ABC6A8-319A-4291-B8E2-607D3272A4B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{93ABC6A8-319A-4291-B8E2-607D3272A4B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93ABC6A8-319A-4291-B8E2-607D3272A4B4}.Debug|x64.ActiveCfg = Debug|Any CPU

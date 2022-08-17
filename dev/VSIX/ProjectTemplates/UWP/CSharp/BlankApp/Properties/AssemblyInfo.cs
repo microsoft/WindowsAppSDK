@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -10,7 +13,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("$registeredorganization$")]
 [assembly: AssemblyProduct("$projectname$")]
-[assembly: AssemblyCopyright("Copyright © $registeredorganization$ $year$")]
+[assembly: AssemblyCopyright("Copyright � $registeredorganization$ $year$")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
