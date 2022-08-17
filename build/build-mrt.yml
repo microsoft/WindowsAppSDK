@@ -131,7 +131,7 @@ steps:
     platform: '$(buildPlatform)'
     solution: '${{ parameters.MRTSourcesDirectory }}\mrt\MrtCore.sln'
     configuration: '$(buildConfiguration)'
-    msbuildArguments: '/restore /experimental:deterministic	/binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+    msbuildArguments: '/restore	/binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
 - ${{ if eq(parameters.runSDLBinaryAnalysis, 'true') }}:
   - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml

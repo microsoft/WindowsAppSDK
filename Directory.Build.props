@@ -9,6 +9,7 @@
   <Import Project="$(MSBuildThisFileDirectory)build\EnsureOutputLayout.props" Condition="$(EnsureOutputLayoutPropsIncluded) == ''" />
 
   <PropertyGroup>
+    <Deterministic>true</Deterministic>
     <IsTDPConfiguration>false</IsTDPConfiguration>
 
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)Generated Files\</GeneratedFilesDir>
