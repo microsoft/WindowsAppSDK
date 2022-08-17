@@ -12,7 +12,7 @@
 
     <Target Name="GenerateDeploymentManagerCS" BeforeTargets="BeforeCompile">
         <ItemGroup>
-            <Compile Include="$(MSBuildThisFileDirectory)..\include\MddDeploymentManagerAutoInitializer.cs" />
+            <Compile Include="$(MSBuildThisFileDirectory)..\include\DeploymentManagerAutoInitializer.cs" />
             <Compile Include="$(MSBuildThisFileDirectory)..\include\WindowsAppSDK-VersionInfo.cs" />
         </ItemGroup>
     </Target>
