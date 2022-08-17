@@ -9,7 +9,6 @@
   <Import Project="$(MSBuildThisFileDirectory)build\EnsureOutputLayout.props" Condition="$(EnsureOutputLayoutPropsIncluded) == ''" />
 
   <PropertyGroup>
-    <Deterministic>true</Deterministic>
     <IsTDPConfiguration>false</IsTDPConfiguration>
 
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)Generated Files\</GeneratedFilesDir>
@@ -47,6 +46,12 @@
       <PreprocessorDefinitions>WINDOWSAPPSDK_BUILD_PIPELINE=1;%(PreprocessorDefinitions);</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)\build\override;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </Midl>
+  </ItemDefinitionGroup>
+
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalOptions>/Brepro %(AdditionalOptions)</AdditionalOptions>
+    </Link>
   </ItemDefinitionGroup>
 
   <!-- Define our standardardized options for C/C++ builds -->
