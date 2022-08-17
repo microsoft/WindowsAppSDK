@@ -2,7 +2,7 @@
 
     <Target Name="GenerateDeploymentManagerCpp" BeforeTargets="ClCompile">
         <ItemGroup>
-            <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\MddDeploymentManagerAutoInitializer.cpp">
+            <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\DeploymentManagerAutoInitializer.cpp">
                 <PrecompiledHeader>NotUsing</PrecompiledHeader>
                 <PreprocessorDefinitions Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_Default)'=='true'">MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_DEFAULT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
                 <PreprocessorDefinitions Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_None)'=='true'">MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_NONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
