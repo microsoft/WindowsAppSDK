@@ -1,6 +1,6 @@
 Param(
-    [string]$Platform = "x86,x64,arm64",
-    [string]$Configuration = "release,debug",
+    [string]$Platform,
+    [string]$Configuration,
     [string]$LocalPackagesPath = $null,
     [string]$UpdateVersionDetailsPath = $null
 )
