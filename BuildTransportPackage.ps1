@@ -1,11 +1,23 @@
 Param(
-    [string]$Platforms,
-    [string]$Configurations,
+    [string]$Platform,
+    [string]$Configuration,
     [string]$LocalPackagesPath = $null,
     [string]$UpdateVersionDetailsPath = $null
 )
 
 # do all the directory making before any building.
+if(-not (test-path ".nuget"))
+{
+	 new-item -path ".nuget" -itemtype directory
+}
+
+if(-not (test-path ".nuget\nuget.exe"))
+{
+	Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile .nuget\nuget.exe
+}
+
+& .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile nuget.config
+
 $nuSpecsPath = "build\NuSpecs"
 $fullNugetPath = "build\fullnuget"
 $buildOverridePath = "build\override"
@@ -22,7 +34,7 @@ if(-not (test-path "$windowsAppSdkBinariesPath"))
 }
 
 if(-not (test-path "$fullNugetPath"))
-{
+{	
 	new-item -path "$fullNugetPath" -itemtype "directory"
 }
 
@@ -32,11 +44,12 @@ if(-not (test-path "$fullNugetPath\native"))
 }
 
 # Build the solution
-foreach($configuration in $configurations)
+
+foreach($configurationToRun in $configuration.Split(","))
 {
-	foreach($platform in $platforms)
+	foreach($platformToRun in $platform.Split(","))
 	{
-		msbuild /m /p:Configuration=$Configuration,Platform=$Platform WindowsAppRuntime.sln
+		msbuild /m /p:Configuration=$configurationToRun,Platform=$platformToRun WindowsAppRuntime.sln
 	}
 }
 
@@ -44,9 +57,10 @@ foreach($configuration in $configurations)
 .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
 .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
 
-foreach($configuration in $configurations)
+
+foreach($configurationToRun in $configuration.Split(","))
 {
-	foreach($platform in $platforms)
+	foreach($platformToRun in $platform.Split(","))
 	{
 		.\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$fullNugetPath" -Platform $Platform -Configuration $Configuration
 	}
