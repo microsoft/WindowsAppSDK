@@ -12,7 +12,7 @@ parameters:
   - name: "IgnoreFailures"
     type: boolean
     default: False
-  - name: "PublishToMaestro"
+  - name: "PublishPackage"
     type: boolean
     default: False
   - name: "WindowsAppRuntimeInsightsSourceDirectory"
@@ -494,18 +494,18 @@ jobs:
         itemPattern: |
           **/*.nupkg
 
-    # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
-    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-      displayName: 'NuGet push to ProjectReunion.nuget.internal'
-      inputs:
-        command: 'push'
-        packagesToPush: '$(Build.SourcesDirectory)/FullNuget/*.nupkg;!$(Build.SourcesDirectory)/FullNuget/*.symbols.nupkg'
-        verbosityPush: 'Detailed'
-        nuGetFeedType: 'internal'
-        #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
-        publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
+    - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(parameters.PublishPackage, 'true')) }}:
+      # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
+      - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+        displayName: 'NuGet push to ProjectReunion.nuget.internal'
+        inputs:
+          command: 'push'
+          packagesToPush: '$(Build.SourcesDirectory)/FullNuget/*.nupkg;!$(Build.SourcesDirectory)/FullNuget/*.symbols.nupkg'
+          verbosityPush: 'Detailed'
+          nuGetFeedType: 'internal'
+          #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
+          publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
 
-    - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(parameters.publishToMaestro, 'true')) }}:
       - template: ..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
         parameters:
           AssetNames: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'

@@ -348,6 +348,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeploymentAgent", "dev\Depl
 		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppNotificationBuilder", "dev\AppNotifications\AppNotificationBuilder\AppNotificationBuilder.vcxitems", "{E49329F3-5196-4BBA-B5C4-E11CE7EFB07A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppNotificationBuilderTests", "test\AppNotificationBuilderTests\AppNotificationBuilderTests.vcxproj", "{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.Security.AccessControl.Projection", "dev\Projections\CS\Microsoft.Windows.Security.AccessControl.Projection\Microsoft.Windows.Security.AccessControl.Projection.csproj", "{E6D59245-696F-4D13-ACF6-7ECE6E653367}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{0D6B1FF3-A075-4194-9FC0-AF7BB89D0519}"
@@ -400,6 +404,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_DeploymentManagerAutoI
 	ProjectSection(ProjectDependencies) = postProject
 		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
 	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.AppNotifications.Builder.Projection", "dev\Projections\CS\Microsoft.Windows.AppNotifications.Builder.Projection\Microsoft.Windows.AppNotifications.Builder.Projection.csproj", "{50BF3E96-3050-4053-B012-BF6993483DA5}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -432,6 +437,7 @@ Global
 		dev\Deployment\Deployment.vcxitems*{db38fb4d-d04f-4c1d-93e0-f8ae259c5fd6}*SharedItemsImports = 9
 		dev\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems*{e15c3465-9d45-495d-92ce-b91ef45e8623}*SharedItemsImports = 9
 		dev\AppLifecycle\AppLifecycle.vcxitems*{e3a522a3-6635-4a42-bded-1af46a15f63c}*SharedItemsImports = 9
+		dev\AppNotifications\AppNotificationBuilder\AppNotificationBuilder.vcxitems*{e49329f3-5196-4bba-b5c4-e11ce7efb07a}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{e5659a29-fe68-417b-9bc5-613073dd54df}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{e977b1bd-00dc-4085-a105-e0a18e0183d7}*SharedItemsImports = 4
 	EndGlobalSection
@@ -1408,6 +1414,20 @@ Global
 		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Release|x64.Build.0 = Release|x64
 		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Release|x86.ActiveCfg = Release|x86
 		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Release|x86.Build.0 = Release|x86
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|ARM64.Build.0 = Debug|ARM64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|x64.ActiveCfg = Debug|x64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|x64.Build.0 = Debug|x64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|x86.ActiveCfg = Debug|Win32
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|x86.Build.0 = Debug|Win32
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|Any CPU.ActiveCfg = Release|Win32
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|ARM64.ActiveCfg = Release|ARM64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|ARM64.Build.0 = Release|ARM64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|x64.ActiveCfg = Release|x64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|x64.Build.0 = Release|x64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|x86.ActiveCfg = Release|Win32
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|x86.Build.0 = Release|Win32
 		{E6D59245-696F-4D13-ACF6-7ECE6E653367}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{E6D59245-696F-4D13-ACF6-7ECE6E653367}.Debug|ARM64.ActiveCfg = Debug|arm64
 		{E6D59245-696F-4D13-ACF6-7ECE6E653367}.Debug|ARM64.Build.0 = Debug|arm64
@@ -1542,6 +1562,20 @@ Global
 		{5A4FBF6D-04A2-4061-B11F-1A0E64129610}.Release|x64.Build.0 = Release|x64
 		{5A4FBF6D-04A2-4061-B11F-1A0E64129610}.Release|x86.ActiveCfg = Release|x86
 		{5A4FBF6D-04A2-4061-B11F-1A0E64129610}.Release|x86.Build.0 = Release|x86
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Debug|ARM64.ActiveCfg = Debug|arm64
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Debug|ARM64.Build.0 = Debug|arm64
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Debug|x64.ActiveCfg = Debug|x64
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Debug|x64.Build.0 = Debug|x64
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Debug|x86.ActiveCfg = Debug|x86
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Debug|x86.Build.0 = Debug|x86
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Release|Any CPU.ActiveCfg = Release|x86
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Release|ARM64.ActiveCfg = Release|arm64
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Release|ARM64.Build.0 = Release|arm64
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Release|x64.ActiveCfg = Release|x64
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Release|x64.Build.0 = Release|x64
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Release|x86.ActiveCfg = Release|x86
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1656,6 +1690,8 @@ Global
 		{D9139E3C-8D21-4BD9-84E3-30A03A54D610} = {99C514E4-A6B3-4B09-B870-5511EF9D93AC}
 		{4A74BBED-3B20-44A7-B6FF-3373160DE741} = {99C514E4-A6B3-4B09-B870-5511EF9D93AC}
 		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF} = {E378857C-D22A-4E5E-A6DA-A59C445CF22E}
+		{E49329F3-5196-4BBA-B5C4-E11CE7EFB07A} = {1C9A0791-2BAA-420B-84B6-C0721F22A6E8}
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{E6D59245-696F-4D13-ACF6-7ECE6E653367} = {716C26A0-E6B0-4981-8412-D14A4D410531}
 		{0D6B1FF3-A075-4194-9FC0-AF7BB89D0519} = {68E63911-6283-4212-BFFE-3F972AF8F835}
 		{2B653A15-2482-40E5-9509-C531E69D0749} = {68E63911-6283-4212-BFFE-3F972AF8F835}
@@ -1670,6 +1706,7 @@ Global
 		{608A8D5A-A839-45F6-98E6-766FC096104A} = {3A37083C-AA67-461E-BA78-0E0A65FE0C22}
 		{676BA502-4220-465A-A9ED-ED22CDE4A24B} = {3A37083C-AA67-461E-BA78-0E0A65FE0C22}
 		{5A4FBF6D-04A2-4061-B11F-1A0E64129610} = {3A37083C-AA67-461E-BA78-0E0A65FE0C22}
+		{50BF3E96-3050-4053-B012-BF6993483DA5} = {716C26A0-E6B0-4981-8412-D14A4D410531}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
