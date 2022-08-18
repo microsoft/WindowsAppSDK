@@ -6,9 +6,9 @@ This is the spec for proposal
 The Windows App SDK (WinAppSDK) for packaged apps involves the framework, main, and singleton
 packages, which are all signed and published by Microsoft. The framework package contains the
 WinAppSDK binaries used at run time, and it is installed with the application. The main package
-contains out-of-process services that are brokered between apps, such as push notifications, and it
-is also needed for the framework to be serviced by the Microsoft Store. The singleton package
-supports a single long-running process that is brokered between apps for features like push
+contains out-of-process services that are brokered between apps, such as Dynamic Dependency data
+store, and it is also needed for the framework to be serviced by the Microsoft Store. The singleton
+package supports a single long-running process that is brokered between apps for features like push
 notifications.
 
 Currently, packaged apps can only declare dependencies on WinAppSDK framework package. In order to
@@ -42,12 +42,13 @@ are already present on the system, or that the version present is the minimum ve
 the application. Instead, the Deployment API should be used to validate that the WinAppSDK is at the
 correct version and that all required packages are present.
 
-The Deployment API addresses the following two developer scenarios:
+The Deployment API addresses the following three developer scenarios:
 
 1. Does this system have the min version of the WinAppSDK main and singleton packages required by my
    app?
 2. How do I install the WinAppSDK main and singleton packages, if they are not already present on
    the system?
+3. How do I repair the already installed WinAppSDK main and singleton pacakges, if needed ?
 
 The API addresses #1 by a simple query of the version needed and a check for OS updates.
 
@@ -59,6 +60,14 @@ The API addresses #1 by a simple query of the version needed and a check for OS 
 -   Alternatively, unpackaged apps that are full trust or MSIX packaged apps that have the
     packageManagement restricted capability can use the Deployment API to get these packages
     installed.
+
+#3 has two possible answers.
+
+-   First, the developer can repair these packages directly through the app by reinstalling them, if
+    possible. These MSIX packages can be acquired through
+    [Downloads page](https://docs.microsoft.com/windows/apps/windows-app-sdk/downloads).
+-   Alternatively, unpackaged apps that are full trust or MSIX packaged apps that have the
+    packageManagement restricted capability can use the Deployment API to get these packages repair.
 
 # Examples
 
@@ -143,10 +152,8 @@ by using DeploymentInitializeOptions object and setting ForceDeployment option b
 this API. This option when set will shut down the application(s) associated with WinAppSDK packages,
 update the WinAppSDK packages and restart the application(s).
 
-// OPENISSUE: If this option is set when updating main package, then whether the out of process com
-server from the main package such as push Notifications needs to be explicitly restarted needs to be
-understood. If restart it is needed, then the API will handle explicitly restarting it. This is
-under investigation.
+If this option is set when updating singleton package, then the out of process com server from the
+singleton package such as push Notifications is explicitly restarted.
 
 When the API is updating framework package and ForceDeployment option is set, then all dependent
 packages that are NOT currently in use will be immediately re-installed to refer to the updated
@@ -179,12 +186,43 @@ they shut down, to refer to the updated framework package.
     }
 ```
 
+## Repair
+
+This API performs a status check, and if the main and singleton packages are already installed at
+the required version, it will attempt to repair those packages. All information about the version,
+channel, and architecture needed are derived from the current WinAppSDK framework package.
+
+Since both the main _and_ the singleton packages may need to be repaired, it is possible that one
+package is repaired successfully but not the other. If so, the returned WindowsAppRuntimeStatus will
+contain the error, if one occurs during package install.
+
+```C#
+    if (DeploymentManager.GetStatus().Status != DeploymentStatus.Ok)
+    {
+        // Repair does a status check, and if the status is OK it will attempt to get
+        // the WindowsAppRuntime into a good state by deploying packages. Unlike a simple
+        // status check, Repair can sometimes take several seconds to deploy the packages.
+        // These should be run on a separate thread so as not to hang your app while the
+        // packages deploy.
+        var repairTask = Task.Run(() => DeploymentManager.Repair());
+        repairTask.Wait();
+
+        // Check the result.
+        if (repairTask.Result.Status != DeploymentStatus.Ok)
+        {
+            // The WindowsAppRuntime is in a bad state which Repair() did not fix.
+            // Do error reporting or gather information for submitting a bug.
+            // Gracefully exit the program or carry on without using the WindowsAppRuntime.
+        }
+    }
+```
+
 # API Details
 
 ```C# (but really MIDL3)
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
-    [contractversion(2)]
+    [contractversion(3)]
     apicontract DeploymentContract{};
 
     /// Represents the current Deployment status of the WindowsAppRuntime
@@ -241,6 +279,11 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         [contract(DeploymentContract, 2)]
         [overload("Initialize")]
         static DeploymentResult Initialize(Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions deploymentInitializeOptions);
+
+        /// Checks the status of the WindowsAppRuntime of the current package and attempts to
+        /// repair already installed WinAppSDK packages.
+        [contract(DeploymentContract, 3)]
+        static DeploymentResult Repair();
     };
 }
 ```
