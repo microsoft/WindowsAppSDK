@@ -5,6 +5,9 @@ Param(
     [string]$UpdateVersionDetailsPath = $null
 )
 
+write-host "Configuration: $Configuration"
+write-host "Platform: $Platform"
+
 # do all the directory making before any building.
 $nuSpecsPath = "build\NuSpecs"
 $fullNugetPath = "build\fullnuget"
