@@ -1,12 +1,9 @@
 Param(
-    [string]$Platform,
-    [string]$Configuration,
+    [string]$Platforms,
+    [string]$Configurations,
     [string]$LocalPackagesPath = $null,
     [string]$UpdateVersionDetailsPath = $null
 )
-
-write-host "Configuration: $Configuration"
-write-host "Platform: $Platform"
 
 # do all the directory making before any building.
 $nuSpecsPath = "build\NuSpecs"
@@ -35,13 +32,25 @@ if(-not (test-path "$fullNugetPath\native"))
 }
 
 # Build the solution
-msbuild /m /p:Configuration=$Configuration,Platform=$Platform WindowsAppRuntime.sln
+foreach($configuration in $configurations)
+{
+	foreach($platform in $platforms)
+	{
+		msbuild /m /p:Configuration=$Configuration,Platform=$Platform WindowsAppRuntime.sln
+	}
+}
 
 #generate overrides
 .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
 .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
 
-.\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$fullNugetPath" -Platform $Platform -Configuration $Configuration
+foreach($configuration in $configurations)
+{
+	foreach($platform in $platforms)
+	{
+		.\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$fullNugetPath" -Platform $Platform -Configuration $Configuration
+	}
+}
 
  
 Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.targets" -Destination "$fullNugetPath\build\native\Microsoft.WindowsAppSDK.Foundation.targets" -force
