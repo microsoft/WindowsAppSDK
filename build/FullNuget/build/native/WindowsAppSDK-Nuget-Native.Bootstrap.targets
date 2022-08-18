@@ -1,0 +1,18 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <Target Name="GenerateBootstrapCpp" BeforeTargets="ClCompile">
+        <ItemGroup>
+            <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\MddBootstrapAutoInitializer.cpp">
+                <PrecompiledHeader>NotUsing</PrecompiledHeader>
+                <PreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_Default)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_DEFAULT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+                <PreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_None)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_NONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+                <PreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnError_DebugBreak)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+                <PreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnError_DebugBreak_IfDebuggerAttached)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK_IFDEBUGGERATTACHED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+                <PreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnError_FailFast)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_FAILFAST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+                <PreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnNoMatch_ShowUI)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONNOMATCH_SHOWUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+                <PreprocessorDefinitions Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnPackageIdentity_NoOp)'=='true'">MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONPACKAGEIDENTITY_NOOP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            </ClCompile>
+        </ItemGroup>
+    </Target>
+
+</Project>

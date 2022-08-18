@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1" xmlns:ms="http://schemas.microsoft.com/appx/manifest/foundation/windows10">
+  <file name="Microsoft.Windows.ApplicationModel.Resources.dll">
+    <activatableClass name="Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.ApplicationModel.Resources.ResourceLoader" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.ApplicationModel.Resources.ResourceManager" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+  </file>
+  <file name="Microsoft.WindowsAppRuntime.dll">
+    <activatableClass name="Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContext" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyRank" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.System.EnvironmentManager" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.AppLifecycle.ActivationRegistrationManager" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.AppLifecycle.AppInstance" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.PushNotifications.PushNotificationChannel" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.PushNotifications.PushNotificationCreateChannelResult" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.PushNotifications.PushNotificationActivationInfo" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.PushNotifications.PushNotificationRegistrationToken" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.PushNotifications.PushNotificationManager" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.System.Power.PowerManager" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.AppNotifications.AppNotificationManager" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.AppNotifications.AppNotification" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.AppNotifications.AppNotificationProgressData" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.AppNotifications.AppNotificationActivatedEventArgs" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass name="Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers" threadingModel="both" xmlns="urn:schemas-microsoft-com:winrt.v1" />
+  </file>
+</assembly>

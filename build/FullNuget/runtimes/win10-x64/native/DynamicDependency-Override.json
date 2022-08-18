@@ -1,0 +1,14 @@
+{
+    "LIBID": "1BF712E5-41ED-46a5-8402-2D40725F691E",
+    "DataStore": {
+        "CLSID": {
+            "UUID": "D1AD16C7-EC59-4765-BF95-9A243EB00507"
+        }
+    },
+    "LifetimeManager": {
+        "CLSID": {
+            "UUID": "ee4bf2b4-0d61-436c-9b19-238f2fef7755",
+            "GUID": "0xee4bf2b4, 0x0d61, 0x436c, { 0x9b, 0x19, 0x23, 0x8f, 0x2f, 0xef, 0x77, 0x55 }"
+        }
+    }
+}
