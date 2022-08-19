@@ -457,25 +457,26 @@ jobs:
     useReleaseTag: '$(WindowsAppSDKFinalRelease)'
     buildPool: $(ProjectReunionBuildPool)
 
-# Build WinAppSDK and Run Integration Test from TestAll.ps1
-- job: WinAppSDKIntegrationBuildAndTest
-  dependsOn: ['CreateNugetPackage']
-  condition: succeeded()
-  pool: $(ProjectReunionBuildPool)
-  variables:
-    WindowsAppSDKTransportPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
-    VersionWithDevTag: $[format('{0}.{1}.{2}-{3}.{4}.{5}', variables['major'], variables['minor'], variables['patch'], 'dev', variables['versionDate'], variables['versionCounter'])]
-  steps:
-    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
-      parameters:
-        WindowsAppSDKPackageVersion: $(VersionWithDevTag)
-        TestSelection: '*Foundation_*'
-        TransportPackageArtifactName: 'FullNuget'
-        BuildType: 'stable'
-        TransportPackages: 
-          FoundationPackage:
-            Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
-            Version: $(WindowsAppSDKTransportPackageVersion)
+# TODO: Reenable, Appx-Install currently does not work on 2022 images
+# # Build WinAppSDK and Run Integration Test from TestAll.ps1
+# - job: WinAppSDKIntegrationBuildAndTest
+#   dependsOn: ['CreateNugetPackage']
+#   condition: succeeded()
+#   pool: $(ProjectReunionBuildPool)
+#   variables:
+#     WindowsAppSDKTransportPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
+#     VersionWithDevTag: $[format('{0}.{1}.{2}-{3}.{4}.{5}', variables['major'], variables['minor'], variables['patch'], 'dev', variables['versionDate'], variables['versionCounter'])]
+#   steps:
+#     - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
+#       parameters:
+#         WindowsAppSDKPackageVersion: $(VersionWithDevTag)
+#         TestSelection: '*Foundation_*'
+#         TransportPackageArtifactName: 'FullNuget'
+#         BuildType: 'stable'
+#         TransportPackages: 
+#           FoundationPackage:
+#             Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
+#             Version: $(WindowsAppSDKTransportPackageVersion)
 
 # Publish
 - job: Publish
