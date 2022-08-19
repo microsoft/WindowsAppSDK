@@ -28,11 +28,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
 inline void Initialize_StopSuccessActivity(
     ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
-    const winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus& deploymentStatus,
-    const HRESULT hr = S_OK)
+    const winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus& deploymentStatus)
 {
     initializeActivityContext.GetActivity().StopWithResult(
-        hr,
+        S_OK,
         static_cast <UINT32>(0),
         static_cast<PCSTR>(nullptr),
         static_cast <unsigned int>(0),
@@ -225,7 +224,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                                  release.c_str(),
                                  version.Major, version.Minor, version.Build, version.Revision);
             }
-            Initialize_StopSuccessActivity(initializeActivityContext, deploymentResult.Status(), hr);
+
             THROW_HR(hr);
         }
 
