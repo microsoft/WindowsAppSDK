@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 #define WINDOWSAPPSDK_RELEASE_MAJORMINOR        0x00040001u
 #define WINDOWSAPPSDK_RELEASE_VERSION_TAG_W     L"experimental1"
