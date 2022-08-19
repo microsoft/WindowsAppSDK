@@ -47,13 +47,6 @@
 					<uap:DisplayName>Windows App Runtime TestProtocol</uap:DisplayName>
 				</uap:Protocol>
 			</uap:Extension>
-			<com:Extension Category="windows.comServer">
-				<com:ComServer>
-					<com:ExeServer Executable="PushNotificationsTestApp\PushNotificationsTestApp.exe" DisplayName="SampleBackgroundApp" Arguments="----WindowsAppRuntimePushServer:">
-						<com:Class Id="ccd2ae3f-764f-4ae3-be45-9804761b28b2" DisplayName="Windows App Runtime Push" />
-					</com:ExeServer>
-				</com:ComServer>
-			</com:Extension>
 		</Extensions>
     </Application>
   </Applications>

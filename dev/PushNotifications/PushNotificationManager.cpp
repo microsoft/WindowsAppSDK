@@ -418,6 +418,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 winrt::hstring backgroundTaskFullName;
                 {
                     auto lock{ m_lock.lock_shared() };
+                    THROW_HR_IF_MSG(E_FAIL, (const winrt::guid&)m_registeredClsid == (const winrt::guid &)GUID_NULL, "No COM servers are registered for this app");
                     backgroundTaskFullName = c_backgroundTaskName + winrt::to_hstring(m_registeredClsid);
                 }
 
@@ -434,6 +435,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     auto builder5{ builder.as<winrt::IBackgroundTaskBuilder5>() };
                     {
                         auto lock{ m_lock.lock_exclusive() };
+                        THROW_HR_IF_MSG(E_FAIL, (const winrt::guid&)m_registeredClsid == (const winrt::guid&)GUID_NULL, "No COM servers are registered for this app");
                         builder5.SetTaskEntryPointClsid(m_registeredClsid);
                         m_pushTriggerRegistration = builder.Register();
                     }
@@ -486,6 +488,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 {
                     auto lock{ m_lock.lock_exclusive() };
+                    THROW_HR_IF_MSG(E_FAIL, (const winrt::guid&)m_registeredClsid == (const winrt::guid&)GUID_NULL, "No COM servers are registered for this app");
+
                     m_waitHandleForArgs.create();
 
                     // Check if the caller has registered event handlers, if so the REGCLS_MULTIPLEUSE flag will cause COM to ensure that all activators
@@ -576,6 +580,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 if (AppModel::Identity::IsPackagedProcess())
                 {
                     auto lock{ m_lock.lock_exclusive() };
+                    THROW_HR_IF_MSG(E_FAIL, (const winrt::guid&)m_registeredClsid == (const winrt::guid&)GUID_NULL, "No COM servers are registered for this app");
+
                     m_waitHandleForArgs.create();
 
                     // Check if the caller has registered event handlers, if so the REGCLS_MULTIPLEUSE flag will cause COM to ensure that all activators

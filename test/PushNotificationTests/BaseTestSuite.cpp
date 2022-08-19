@@ -26,7 +26,7 @@ void BaseTestSuite::ClassSetup()
 
 void BaseTestSuite::ClassCleanup()
 {
-    ::Test::Bootstrap::CleanupPackages();
+    //::Test::Bootstrap::CleanupPackages();
 }
 
 void BaseTestSuite::MethodSetup()
@@ -79,7 +79,8 @@ HRESULT BaseTestSuite::ChannelRequestHelper(IAsyncOperationWithProgress<PushNoti
 
 void BaseTestSuite::RegisterWithPushNotificationManager()
 {
-    PushNotificationManager::Default().Register();
+    //PushNotificationManager::Default().Register();
+    PushNotificationManager::Default().CreateChannelAsync(winrt::guid());
     m_unregisteredFully = false;
 }
 
