@@ -1,0 +1,20 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <PropertyGroup>
+        <DefineConstants Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_Default)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_DEFAULT</DefineConstants>
+        <DefineConstants Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_None)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_NONE</DefineConstants>
+        <DefineConstants Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_OnError_DebugBreak)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK</DefineConstants>
+        <DefineConstants Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_OnError_DebugBreak_IfDebuggerAttached)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK_IFDEBUGGERATTACHED</DefineConstants>
+        <DefineConstants Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_OnError_FailFast)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_FAILFAST</DefineConstants>
+        <DefineConstants Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_OnNoMatch_ShowUI)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONNOMATCH_SHOWUI</DefineConstants>
+        <DefineConstants Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_OnPackageIdentity_NoOp)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONPACKAGEIDENTITY_NOOP</DefineConstants>
+    </PropertyGroup>
+
+    <Target Name="GenerateDeploymentManagerCS" BeforeTargets="BeforeCompile">
+        <ItemGroup>
+            <Compile Include="$(MSBuildThisFileDirectory)..\include\DeploymentManagerAutoInitializer.cs" />
+            <Compile Include="$(MSBuildThisFileDirectory)..\include\WindowsAppSDK-VersionInfo.cs" />
+        </ItemGroup>
+    </Target>
+
+</Project>

@@ -19,7 +19,7 @@
 #include <shlwapi.h>
 #include <WinBase.h>
 #include <AppxPackaging.h>
-
+#include <processthreadsapi.h>
 #include <string_view>
 
 #include <winrt/Windows.ApplicationModel.h>
