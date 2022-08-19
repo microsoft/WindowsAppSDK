@@ -10,4 +10,7 @@
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" />
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.targets" Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)' == 'true'"/>
 
+  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.DeploymentManagerCommon.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.DeploymentManager.CS.targets" Condition="'$(WindowsAppSdkDeploymentManagerInitialize)' == 'true'"/>
+
 </Project>

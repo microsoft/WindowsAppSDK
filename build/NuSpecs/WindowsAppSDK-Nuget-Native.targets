@@ -74,4 +74,7 @@
   <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" />
   <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.targets" Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)' == 'true'"/>
 
+  <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.DeploymentManagerCommon.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK-Nuget-Native.DeploymentManager.targets" Condition="'$(WindowsAppSdkDeploymentManagerInitialize)' == 'true'"/>
+
 </Project>
