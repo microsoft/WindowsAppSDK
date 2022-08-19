@@ -1,0 +1,21 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <!-- Targets file common to both managed and native projects -->
+
+    <PropertyGroup Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='' and '$(WindowsAppSDKSelfContained)'!='true' and '$(WindowsPackageType)'=='None' and ('$(OutputType)'=='Exe' or '$(OutputType)'=='Winexe')">
+        <!--Allows GenerateDeploymentManagerCS/GenerateDeploymentManagerCpp to run-->
+<!--
+    TODO Uncomment when ready to enable default
+    Franken-builds giving weird results after way too much manual hackery
+    so can't get a reliable read on if it's good or what's wrong. Enable
+    it all but inert unless explicitly requested (which no one does today)
+    to have viable packages for testing.
+        <WindowsAppSdkDeploymentManagerInitialize>true</WindowsAppSdkDeploymentManagerInitialize>
+-->
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'== 'true'">
+        <PublishAppxPackage>false</PublishAppxPackage>
+    </PropertyGroup>
+
+</Project>
