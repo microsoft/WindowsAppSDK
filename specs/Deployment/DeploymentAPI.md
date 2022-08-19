@@ -179,12 +179,57 @@ they shut down, to refer to the updated framework package.
     }
 ```
 
+#### OnError_*
+
+Additional behavior is available if an error occurs in `DeploymentManager.Initialize()`,
+per the following logic:
+
+```c++
+DeploymentManager::Initialize(...)
+{
+    HRESULT hr = S_OK
+
+    // Only supported in packaged processes
+    if IsPackagedProcess()
+    {
+        // Do the initialization work
+        hr = _Initialize(...)
+    }
+    else
+    {
+        // We're not a packaged process. Is calling Initialize an error or ignore it?
+        if options.OnNoPackageIdentity_NOOP
+            return OK
+        else
+            hr = HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED)
+    }
+    if FAILED(hr)
+    {
+        LogToEventLog(hr, ...)
+
+        // Should we pop the debugger?
+        if options.OnError_DebugBreak or (options.OnError_DebugBreak_IfDebuggerAttached and IsDebuggerPresent())
+            DebugBreak()
+
+        // Should we pop some UI?
+        if options.OnError_ShowUI
+            MessageBox(...)
+
+        // Should we FailFast?
+        if options.OnError_FailFast
+            FAIL_FAST_HR_MSG(hr, ...)
+    }
+
+    return OK
+}
+```
+
 # API Details
 
 ```C# (but really MIDL3)
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
-    [contractversion(2)]
+    [contractversion(3)]
     apicontract DeploymentContract{};
 
     /// Represents the current Deployment status of the WindowsAppRuntime
@@ -221,6 +266,26 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         /// WindowsAppSDK main and singleton packages will be shut down forcibly if they are
         /// currently in use, when registering the WinAppSDK packages.
         Boolean ForceDeployment;
+
+        /// If not successful call DebugBreak()
+        [contract(DeploymentContract, 3)]
+        Boolean OnError_DebugBreak;
+
+        /// If not successful call DebugBreak() if a debugger is attached to the process
+        [contract(DeploymentContract, 3)]
+        Boolean OnError_DebugBreak_IfDebuggerAttached;
+
+        /// If not successful perform a fail-fast
+        [contract(DeploymentContract, 3)]
+        Boolean OnError_FailFast;
+
+        /// If not successful show UI
+        [contract(DeploymentContract, 3)]
+        Boolean OnError_ShowUI;
+
+        /// Do nothing (do not error) if the process lacks package identity
+        [contract(DeploymentContract, 3)]
+        Boolean OnNoPackageIdentity_NOOP;
     };
 
     /// Used to query deployment information for WindowsAppRuntime
