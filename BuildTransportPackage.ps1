@@ -62,7 +62,11 @@ foreach($configurationToRun in $configuration.Split(","))
 {
 	foreach($platformToRun in $platform.Split(","))
 	{
+<<<<<<< HEAD
 		.\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$fullNugetPath" -Platform $PlatformToRun -Configuration $ConfigurationToRun
+=======
+		.\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$fullNugetPath" -Platform $Platform -Configuration $Configuration
+>>>>>>> 387d0298cd70b1691349b09bdfba175a68192ae8
 	}
 }
 
