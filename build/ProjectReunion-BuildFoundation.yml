@@ -482,7 +482,7 @@ jobs:
 - job: Publish
   dependsOn: 
   - CreateNugetPackage
-  - WinAppSDKIntegrationBuildAndTest
+  # - WinAppSDKIntegrationBuildAndTest
   condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
   pool: $(ProjectReunionBuildPool)
   variables:
