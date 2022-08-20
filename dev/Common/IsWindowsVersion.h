@@ -35,6 +35,11 @@ inline bool IsWindows10_20H1OrGreater()
     // GetPackageInfo3() added to kernelbase.dll in NTDDI_WIN10_VB (aka 20H1)
     return IsExportPresent(L"kernelbase.dll", "GetPackageInfo3");
 }
+inline bool IsWindows11_21H2OrGreater()
+{
+    // GetMachineTypeAttributes() added to kernelbase.dll in NTDDI_WIN10_CO (aka Windows 11 21H2)
+    return IsExportPresent(L"kernelbase.dll", "GetMachineTypeAttributes");
+}
 }
 
 #endif // __ISWINDOWSVERSION_H
