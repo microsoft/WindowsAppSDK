@@ -1,0 +1,61 @@
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo
+{
+    [contractversion(1)]
+    apicontract VersionInfoContract{};
+
+    /// Version information for the Windows App SDK release.
+    [contract(VersionInfoContract, 1)]
+    runtimeclass ReleaseInfo : Windows.Foundation.IStringable
+    {
+        ReleaseInfo();
+
+        /// Return the current release information.
+        static ReleaseInfo Current{ get; };
+
+        /// The major version of the Windows App SDK release.
+        UInt16 Major{ get; };
+
+        /// The minor version of the Windows App SDK release.
+        UInt16 Minor{ get; };
+
+        /// The patch version of the Windows App SDK release.
+        UInt16 Patch{ get; };
+
+        /// The major and minor version of the Windows App SDK release, encoded as a 32-bit integer (0xMMMMNNNN where M=major, N=minor).
+        UInt32 MajorMinor{ get; };
+
+        /// The Windows App SDK release's channel; for example, "preview", or empty string for stable.
+        String Channel{ get; };
+
+        /// The Windows App SDK release's version tag; for example, "preview2", or empty string for stable.
+        String VersionTag{ get; };
+
+        /// The Windows App SDK release's short-form version tag; for example, "p2", or empty string for stable.
+        String VersionShortTag{ get; };
+
+        /// The Windows App SDK release's version tag, formatted for concatenation when constructing identifiers; for example, "-preview2", or empty string for stable.
+        String FormattedVersionTag{ get; };
+
+        /// The Windows App SDK release's short-form version tag, formatted for concatenation when constructing identifiers; for example, "-p2", or empty string for stable.
+        String FormattedVersionShortTag{ get; };
+    };
+
+    /// Version information for the Windows App SDK runtime.
+    [contract(VersionInfoContract, 1)]
+    runtimeclass RuntimeInfo : Windows.Foundation.IStringable
+    {
+        RuntimeInfo();
+
+        /// Return the current runtime information.
+        static RuntimeInfo Current { get; };
+
+        /// The version of the Windows App SDK runtime; for example, { Major=1000, Minor=446, Build=804, Revision=0 }
+        Windows.ApplicationModel.PackageVersion Version{ get; };
+
+        /// The version of the Windows App SDK runtime, as an unsigned 64-bit integer; for example, 0x03E801BE03240000.
+        UInt64 VersionUInt64{ get; };
+    };
+}
