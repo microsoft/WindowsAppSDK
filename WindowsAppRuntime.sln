@@ -405,7 +405,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VersionInfo", "VersionInfo"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VersionInfo", "dev\VersionInfo\VersionInfo.vcxitems", "{E3EDEC7F-A24E-4766-BB1D-6BDFBA157C51}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo.Projection", "dev\Projections\CS\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo.Projection.csproj", "{D69754DA-6533-436C-AFCB-BC71F89501C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo.Projection", "dev\Projections\CS\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo\M.W.AM.WindowsAppRuntime.VersionInfo.Projection.csproj", "{D69754DA-6533-436C-AFCB-BC71F89501C2}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
