@@ -12,18 +12,27 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Versio
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::VersionInfo::RuntimeInfo RuntimeInfo::Current()
     {
         const ::Microsoft::WindowsAppSDK::VersionInfo* versionInfo{ ::Microsoft::WindowsAppSDK::GetVersionInfo() };
-        return winrt::make<implementation::RuntimeInfo>(*versionInfo);
+        return winrt::make<implementation::RuntimeInfo>(versionInfo);
     }
     winrt::Windows::ApplicationModel::PackageVersion RuntimeInfo::Version()
     {
-        throw hresult_not_implemented();
+        const auto& version{ m_versionInfo->Runtime.Version };
+        return winrt::Windows::ApplicationModel::PackageVersion{ version.Major, version.Minor, version.Build, version.Revision };
     }
     uint64_t RuntimeInfo::VersionUInt64()
     {
-        throw hresult_not_implemented();
+        return m_versionInfo->Runtime.Version.UInt64;
     }
     hstring RuntimeInfo::ToString()
     {
-        throw hresult_not_implemented();
+        PCWSTR dotQuadString{ m_versionInfo->Runtime.Version.DotQuadString };
+        if (dotQuadString && (dotQuadString[0] != '\0'))
+        {
+            return winrt::hstring{ dotQuadString };
+        }
+        else
+        {
+            return winrt::hstring{};
+        }
     }
 }

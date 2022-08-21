@@ -139,7 +139,7 @@ namespace Microsoft::WindowsAppSDK
                 /// The version of the Windows App SDK runtime, as a string (const wchar_t*); for example, "1000.446.804.0".
                 PCWSTR DotQuadString;
             } Version;
-        };
+        } Runtime;
     };
 
     /// Return the version information

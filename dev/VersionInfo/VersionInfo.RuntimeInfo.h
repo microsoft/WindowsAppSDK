@@ -11,20 +11,18 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Versio
     {
         RuntimeInfo() = default;
 
-        RuntimeInfo(const ::Microsoft::WindowsAppSDK::VersionInfo& versionInfo) :
+        RuntimeInfo(const ::Microsoft::WindowsAppSDK::VersionInfo* versionInfo) :
             m_versionInfo(versionInfo)
         {
         }
 
         static winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::VersionInfo::RuntimeInfo Current();
         winrt::Windows::ApplicationModel::PackageVersion Version();
-        void Version(winrt::Windows::ApplicationModel::PackageVersion const& value);
         uint64_t VersionUInt64();
-        void VersionUInt64(uint64_t value);
         hstring ToString();
 
     private:
-        const ::Microsoft::WindowsAppSDK::VersionInfo& m_versionInfo{};
+        const ::Microsoft::WindowsAppSDK::VersionInfo* m_versionInfo{};
     };
 }
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::VersionInfo::factory_implementation

@@ -30,30 +30,58 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Versio
     }
     uint32_t ReleaseInfo::MajorMinor()
     {
-        throw hresult_not_implemented();
+        return m_versionInfo->Release.MajorMinor;
     }
     hstring ReleaseInfo::Channel()
     {
-        throw hresult_not_implemented();
+        return m_versionInfo->Release.Channel;
     }
     hstring ReleaseInfo::VersionTag()
     {
-        throw hresult_not_implemented();
+        return m_versionInfo->Release.VersionTag;
     }
     hstring ReleaseInfo::VersionShortTag()
     {
-        throw hresult_not_implemented();
+        return m_versionInfo->Release.VersionShortTag;
     }
     hstring ReleaseInfo::FormattedVersionTag()
     {
-        throw hresult_not_implemented();
+        PCWSTR versionTag{ m_versionInfo->Release.VersionTag };
+        if (!versionTag || (versionTag[0] == L'\0'))
+        {
+            return winrt::hstring();
+        }
+        else
+        {
+            return winrt::hstring{ L"-" } + versionTag;
+        }
     }
     hstring ReleaseInfo::FormattedVersionShortTag()
     {
-        throw hresult_not_implemented();
+        PCWSTR versionShortTag{ m_versionInfo->Release.VersionShortTag };
+        if (!versionShortTag || (versionShortTag[0] == L'\0'))
+        {
+            return winrt::hstring();
+        }
+        else
+        {
+            return winrt::hstring{ L"-" } + versionShortTag;
+        }
     }
     hstring ReleaseInfo::ToString()
     {
-        throw hresult_not_implemented();
+        WCHAR s[64]{};
+
+        const auto& release{ m_versionInfo->Release };
+        PCWSTR channel{ release.Channel };
+        if (channel && (channel[0] != L'\0'))
+        {
+            THROW_IF_FAILED(StringCchPrintfW(s, ARRAYSIZE(s), L"%hu.%hu-%s", release.Major, release.Minor, channel));
+        }
+        else
+        {
+            THROW_IF_FAILED(StringCchPrintfW(s, ARRAYSIZE(s), L"%hu.%hu.%hu", release.Major, release.Minor, release.Patch));
+        }
+        return winrt::hstring{ s };
     }
 }
