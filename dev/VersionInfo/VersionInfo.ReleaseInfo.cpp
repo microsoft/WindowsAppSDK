@@ -14,39 +14,39 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Versio
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::VersionInfo::ReleaseInfo ReleaseInfo::Current()
     {
         const ::Microsoft::WindowsAppSDK::VersionInfo* versionInfo{ ::Microsoft::WindowsAppSDK::GetVersionInfo() };
-        return winrt::make<implementation::ReleaseInfo>(versionInfo);
+        return winrt::make<implementation::ReleaseInfo>(*versionInfo);
     }
     uint16_t ReleaseInfo::Major()
     {
-        return m_versionInfo->Release.Major;
+        return m_versionInfo.Release.Major;
     }
     uint16_t ReleaseInfo::Minor()
     {
-        return m_versionInfo->Release.Minor;
+        return m_versionInfo.Release.Minor;
     }
     uint16_t ReleaseInfo::Patch()
     {
-        return m_versionInfo->Release.Patch;
+        return m_versionInfo.Release.Patch;
     }
     uint32_t ReleaseInfo::MajorMinor()
     {
-        return m_versionInfo->Release.MajorMinor;
+        return m_versionInfo.Release.MajorMinor;
     }
     hstring ReleaseInfo::Channel()
     {
-        return m_versionInfo->Release.Channel;
+        return m_versionInfo.Release.Channel;
     }
     hstring ReleaseInfo::VersionTag()
     {
-        return m_versionInfo->Release.VersionTag;
+        return m_versionInfo.Release.VersionTag;
     }
     hstring ReleaseInfo::VersionShortTag()
     {
-        return m_versionInfo->Release.VersionShortTag;
+        return m_versionInfo.Release.VersionShortTag;
     }
     hstring ReleaseInfo::FormattedVersionTag()
     {
-        PCWSTR versionTag{ m_versionInfo->Release.VersionTag };
+        PCWSTR versionTag{ m_versionInfo.Release.VersionTag };
         if (!versionTag || (versionTag[0] == L'\0'))
         {
             return winrt::hstring();
@@ -58,7 +58,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Versio
     }
     hstring ReleaseInfo::FormattedVersionShortTag()
     {
-        PCWSTR versionShortTag{ m_versionInfo->Release.VersionShortTag };
+        PCWSTR versionShortTag{ m_versionInfo.Release.VersionShortTag };
         if (!versionShortTag || (versionShortTag[0] == L'\0'))
         {
             return winrt::hstring();
@@ -72,7 +72,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Versio
     {
         WCHAR s[64]{};
 
-        const auto& release{ m_versionInfo->Release };
+        const auto& release{ m_versionInfo.Release };
         PCWSTR channel{ release.Channel };
         if (channel && (channel[0] != L'\0'))
         {
