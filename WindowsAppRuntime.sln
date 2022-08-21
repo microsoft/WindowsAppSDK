@@ -405,6 +405,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VersionInfo", "VersionInfo"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VersionInfo", "dev\VersionInfo\VersionInfo.vcxitems", "{E3EDEC7F-A24E-4766-BB1D-6BDFBA157C51}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo.Projection", "dev\Projections\CS\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo.Projection.csproj", "{D69754DA-6533-436C-AFCB-BC71F89501C2}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{08bc78e0-63c6-49a7-81b3-6afc3deac4de}*SharedItemsImports = 4
@@ -1547,6 +1549,20 @@ Global
 		{5A4FBF6D-04A2-4061-B11F-1A0E64129610}.Release|x64.Build.0 = Release|x64
 		{5A4FBF6D-04A2-4061-B11F-1A0E64129610}.Release|x86.ActiveCfg = Release|x86
 		{5A4FBF6D-04A2-4061-B11F-1A0E64129610}.Release|x86.Build.0 = Release|x86
+		{D69754DA-6533-436C-AFCB-BC71F89501C2}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{D69754DA-6533-436C-AFCB-BC71F89501C2}.Debug|ARM64.ActiveCfg = Debug|arm64
+		{D69754DA-6533-436C-AFCB-BC71F89501C2}.Debug|ARM64.Build.0 = Debug|arm64
+		{D69754DA-6533-436C-AFCB-BC71F89501C2}.Debug|x64.ActiveCfg = Debug|x64
+		{D69754DA-6533-436C-AFCB-BC71F89501C2}.Debug|x64.Build.0 = Debug|x64
+		{D69754DA-6533-436C-AFCB-BC71F89501C2}.Debug|x86.ActiveCfg = Debug|x86
+		{D69754DA-6533-436C-AFCB-BC71F89501C2}.Debug|x86.Build.0 = Debug|x86
+		{D69754DA-6533-436C-AFCB-BC71F89501C2}.Release|Any CPU.ActiveCfg = Release|x86
+		{D69754DA-6533-436C-AFCB-BC71F89501C2}.Release|ARM64.ActiveCfg = Release|arm64
+		{D69754DA-6533-436C-AFCB-BC71F89501C2}.Release|ARM64.Build.0 = Release|arm64
+		{D69754DA-6533-436C-AFCB-BC71F89501C2}.Release|x64.ActiveCfg = Release|x64
+		{D69754DA-6533-436C-AFCB-BC71F89501C2}.Release|x64.Build.0 = Release|x64
+		{D69754DA-6533-436C-AFCB-BC71F89501C2}.Release|x86.ActiveCfg = Release|x86
+		{D69754DA-6533-436C-AFCB-BC71F89501C2}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1677,6 +1693,7 @@ Global
 		{5A4FBF6D-04A2-4061-B11F-1A0E64129610} = {3A37083C-AA67-461E-BA78-0E0A65FE0C22}
 		{2A2D1131-273C-4E17-BCD3-8812170A4B95} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{E3EDEC7F-A24E-4766-BB1D-6BDFBA157C51} = {2A2D1131-273C-4E17-BCD3-8812170A4B95}
+		{D69754DA-6533-436C-AFCB-BC71F89501C2} = {716C26A0-E6B0-4981-8412-D14A4D410531}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}

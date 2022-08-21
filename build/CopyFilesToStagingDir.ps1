@@ -43,6 +43,7 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windo
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.PushNotifications.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.System.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.System.Power.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Security.AccessControl.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
@@ -89,6 +90,8 @@ PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.DynamicDependenc
 PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.AppLifecycle.Projection\Microsoft.Windows.AppLifecycle.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.AppLifecycle.Projection\Microsoft.Windows.AppLifecycle.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Projection\Microsoft.Windows.AppNotifications.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
@@ -162,6 +165,7 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windo
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.PushNotifications.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd $NugetDir\lib\uap10.0
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.System.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.System.Power.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Security.AccessControl.winmd $NugetDir\lib\uap10.0
