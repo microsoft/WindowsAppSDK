@@ -32,6 +32,70 @@ public:
     }
     CATCH_LOG()
 
+    DEFINE_EVENT_METHOD(LogButtonToString)(
+        winrt::hresult hr) noexcept try
+    {
+        if (m_helper.ShouldLogEvent())
+        {
+            TraceLoggingClassWriteMeasure(
+                "ButtonToString",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingBool(m_helper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_helper.GetAppName().c_str(), "AppName"));
+        }
+    }
+    CATCH_LOG()
+
+    DEFINE_EVENT_METHOD(LogComboBoxToString)(
+        winrt::hresult hr) noexcept try
+    {
+        if (m_helper.ShouldLogEvent())
+        {
+            TraceLoggingClassWriteMeasure(
+                "ComboBoxToString",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingBool(m_helper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_helper.GetAppName().c_str(), "AppName"));
+        }
+    }
+    CATCH_LOG()
+
+    DEFINE_EVENT_METHOD(LogProgressBarToString)(
+        winrt::hresult hr) noexcept try
+    {
+        if (m_helper.ShouldLogEvent())
+        {
+            TraceLoggingClassWriteMeasure(
+                "ProgressBarToString",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingBool(m_helper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_helper.GetAppName().c_str(), "AppName"));
+        }
+    }
+    CATCH_LOG()
+
+    DEFINE_EVENT_METHOD(LogTextPropertiesToString)(
+        winrt::hresult hr) noexcept try
+    {
+        if (m_helper.ShouldLogEvent())
+        {
+            TraceLoggingClassWriteMeasure(
+                "TextPropertiesToString",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingBool(m_helper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_helper.GetAppName().c_str(), "AppName"));
+        }
+    }
+    CATCH_LOG()
+
 private:
     NotificationTelemetryHelper m_helper;
 };
