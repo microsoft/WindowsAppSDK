@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 #ifndef __ISWINDOWSVERSION_H
 #define __ISWINDOWSVERSION_H
@@ -34,6 +34,11 @@ inline bool IsWindows10_20H1OrGreater()
 {
     // GetPackageInfo3() added to kernelbase.dll in NTDDI_WIN10_VB (aka 20H1)
     return IsExportPresent(L"kernelbase.dll", "GetPackageInfo3");
+}
+inline bool IsWindows11_21H2OrGreater()
+{
+    // GetMachineTypeAttributes() added to kernelbase.dll in NTDDI_WIN10_CO (aka Windows 11 21H2)
+    return IsExportPresent(L"kernelbase.dll", "GetMachineTypeAttributes");
 }
 }
 

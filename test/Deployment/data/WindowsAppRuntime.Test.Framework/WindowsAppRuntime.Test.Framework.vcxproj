@@ -103,7 +103,7 @@
     <Xml Include="appxmanifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\dev\WindowsAppRuntime_DLL\WindowsAppRuntime_DLL.vcxproj">
+    <ProjectReference Include="$(RepoRoot)\dev\WindowsAppRuntime_DLL\WindowsAppRuntime_DLL.vcxproj">
       <Project>{b73ad907-6164-4294-88fb-f3c9c10da1f1}</Project>
     </ProjectReference>
     <ProjectReference Include="..\WindowsAppRuntime.Test.Main\WindowsAppRuntime.Test.Main.vcxproj">

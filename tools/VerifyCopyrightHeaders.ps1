@@ -3,8 +3,8 @@ Param(
 )
 
 $copyrightHeaderText = (
-    "Copyright (c) Microsoft Corporation. All rights reserved.",
-    "Licensed under the MIT License. See LICENSE in the project root for license information."
+    "Copyright (c) Microsoft Corporation.",
+    "Licensed under the MIT License."
 )
 
 $include = ('*.cs', '*.cpp', '*.h', '*.idl', '*.xaml')
@@ -39,7 +39,7 @@ if ($errorCount -gt 0) {
         Exit 0
     } else {
         Write-Host "Copyright missing from $errorCount files." -ForegroundColor red
-        Write-Host "Run 'VerifyCopyrightHeaders.ps1 -Fix' locally to update files."
+        Write-Host "Run 'tools\\VerifyCopyrightHeaders.cmd -Fix' locally to update files."
         Exit 1
     }
 }
