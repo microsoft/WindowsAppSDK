@@ -1253,7 +1253,13 @@ STDAPI MddGetIdForPackageDependencyContext(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId) noexcept;
 
-/// Return the package graph's current generation id.
+/// Return the package graph's current revision id.
+STDAPI_(UINT32) MddGetPackageGraphRevisionId() noexcept;
+
+/// Return the package graph's current revision id.
+///
+/// @note This API is deprecated and will be removed in a future release.
+///       Use MddGetPackageGraphRevisionId().
 STDAPI_(UINT32) MddGetGenerationId() noexcept;
 ```
 
@@ -1565,10 +1571,14 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
 ```c# (but really MIDL3)
 namespace Microsoft.Windows.ApplicationModel.DynamicDependency
 {
+[contractversion(2)]
+apicontract DynamicDependencyContract{};
+
 /// CPU architectures to optionally filter available packages against a package dependency.
 /// These generally correspond to processor architecture types supported by MSIX.
 /// @see Windows.System.ProcessorArchitecture
 [flags]
+[contract(DynamicDependencyContract, 1)]
 enum PackageDependencyProcessorArchitectures
 {
     None       = 0,
@@ -1580,6 +1590,7 @@ enum PackageDependencyProcessorArchitectures
     X86OnArm64 = 0x00000020,
 };
 
+[contract(DynamicDependencyContract, 1)]
 enum PackageDependencyLifetimeArtifactKind
 {
     /// The current process is the lifetime artifact. The package dependency
@@ -1597,6 +1608,7 @@ enum PackageDependencyLifetimeArtifactKind
 };
 
 /// Options when 'pinning' a package dependency
+[contract(DynamicDependencyContract, 1)]
 runtimeclass CreatePackageDependencyOptions
 {
     CreatePackageDependencyOptions();
@@ -1613,8 +1625,9 @@ runtimeclass CreatePackageDependencyOptions
 
     /// The lifetime artifact when pinning a package dependency. The value depends on the LifetimeArtifactKind value.
     String LifetimeArtifact;
-}
+};
 
+[contract(DynamicDependencyContract, 1)]
 static runtimeclass PackageDependencyRank
 {
     /// The default value is zero (0).
@@ -1622,29 +1635,44 @@ static runtimeclass PackageDependencyRank
 };
 
 /// Options when adding a package dependency
+[contract(DynamicDependencyContract, 1)]
 runtimeclass AddPackageDependencyOptions
 {
     AddPackageDependencyOptions();
 
     /// The rank when adding the package dependency to a a package graph.
     /// @note A package graph is sorted in ascending order from -infinity...0...+infinity
-    /// @note The default value is PackageDepedencyRank.Default
+    /// @note The default value is PackageDependencyRank.Default
     Int32 Rank;
 
     /// If a package dependency is added to a package graph with a package of the same rank (aka a collision on rank)
-    /// and this option is true the resolve package dependency is prepended to the set of packages of the same rank.
-    /// By default resolve package dependencies are appended to the set of packages with the same rank.
+    /// and this option is true the resolved package dependency is prepended to the set of packages of the same rank.
+    /// By default resolved package dependencies are appended to the set of packages with the same rank.
     Boolean PrependIfRankCollision;
-}
+};
 
-/// TBD
+[contract(DynamicDependencyContract, 1)]
 runtimeclass PackageDependency
 {
-    /// Create an intstance of the package dependency identified by id.
-    static PackageDependencyGetFromId(String id);
+    /// Create an intstance of the package dependency identified by id defined for the current user.
+    ///
+    /// @return null if the package dependency cannot be found for the user.
+    ///
+    /// @see Create(String, PackageVersion)
+    /// @see Create(String, PackageVersion, CreatePackageDependencyOptions)
+    /// @see GetFromIdForSystem()
+    static PackageDependency GetFromId(String id);
+
+    /// Create an intstance of the package dependency identified by id defined for the system.
+    ///
+    /// @return null if the package dependency cannot be found for the system.
+    ///
+    /// @see CreateForSystem()
+    /// @see GetFromId()
+    static PackageDependency GetFromIdForSystem(String id);
 
     /// Return the package dependency id.
-    String Id { get; }
+    String Id { get; };
 
     /// Define a package dependency for the current user. The criteria for a PackageDependency
     /// (package family name, minimum version, etc) may match multiple
@@ -1676,7 +1704,7 @@ runtimeclass PackageDependency
     /// @see CreateForSystem()
     static PackageDependency Create(
         String packageFamilyName,
-        PackageVersion minVersion);
+        Windows.ApplicationModel.PackageVersion minVersion);
 
     /// Define a package dependency for the current user. The criteria for a PackageDependency
     /// (package family name, minimum version, etc) may match multiple
@@ -1712,7 +1740,7 @@ runtimeclass PackageDependency
     /// @see CreateForSystem()
     static PackageDependency Create(
         String packageFamilyName,
-        PackageVersion minVersion,
+        Windows.ApplicationModel.PackageVersion minVersion,
         CreatePackageDependencyOptions options);
 
     /// Define a package dependency for the system (i.e. all users). The criteria for a PackageDependency
@@ -1749,7 +1777,7 @@ runtimeclass PackageDependency
     /// @see Create(String, PackageVersion, CreatePackageDependencyOptions)
     static PackageDependency CreateForSystem(
         String packageFamilyName,
-        PackageVersion minVersion,
+        Windows.ApplicationModel.PackageVersion minVersion,
         CreatePackageDependencyOptions options);
 
     /// Delete a defined package dependency.
@@ -1772,7 +1800,7 @@ runtimeclass PackageDependency
     /// The package dependency Id must match a package dependency defined
     /// for the calling user or the system (via CreateForSystem) or an exception is raised.
     ///
-    /// Each successful call adds the resolve packaged to the
+    /// Each successful call adds the resolved packaged to the
     /// calling process' package graph, even if already present. There is no
     /// duplicate 'detection' or 'filtering' applied by the API (multiple
     /// references to a package is not harmful). Once resolution is complete
@@ -1783,9 +1811,9 @@ runtimeclass PackageDependency
     /// Calls to Add() can be balanced by a PackageDependencyContext.Remove()
     /// to remove the entry from the package graph.
     ///
-    /// Successful calls change the package graph's current generation id.
+    /// Successful calls change the package graph's current revision id.
     ///
-    /// @see GenerationId
+    /// @see PackageGraphRevisionId
     PackageDependencyContext Add();
 
     /// Resolve a previously pinned PackageDependency to a specific package and
@@ -1804,7 +1832,7 @@ runtimeclass PackageDependency
     /// The package dependency Id must match a package dependency defined
     /// for the calling user or the system (via CreateForSystem) or an exception is raised.
     ///
-    /// Each successful call adds the resolve packaged to the
+    /// Each successful call adds the resolved packaged to the
     /// calling process' package graph, even if already present. There is no
     /// duplicate 'detection' or 'filtering' applied by the API (multiple
     /// references to a package is not harmful). Once resolution is complete
@@ -1822,16 +1850,24 @@ runtimeclass PackageDependency
     /// Calls to Add() can be balanced by a PackageDependencyContext.Remove() (or object destruction)
     /// to remove the entry from the package graph.
     ///
-    /// Successful calls change the package graph's current generation id.
+    /// Successful calls change the package graph's current revision id.
     ///
-    /// @see GenerationId
+    /// @see PackageGraphRevisionId
     PackageDependencyContext Add(AddPackageDependencyOptions options);
 
-    /// Return the package graph's current generation id.
+    /// Return the package graph's current revision id.
+    [contract(DynamicDependencyContract, 2)]
+    static UInt32 PackageGraphRevisionId{ get; };
+
+    /// Return the package graph's current revision id.
+    ///
+    /// @note This API is deprecated and will be removed in a future release.
+    ///       Use the PackageGraphRevisionId property.
     static UInt32 GenerationId{ get; };
-}
+};
 
 /// A unique identifier for a resolved package dependency
+[contract(DynamicDependencyContract, 1)]
 struct PackageDependencyContextId
 {
     UInt64 Id;
@@ -1847,24 +1883,28 @@ struct PackageDependencyContextId
 ///        a package dependency any files loaded from the package can continue
 ///        to be used; future package dependency resolution (via new calls to
 ///        PackageDependency.Add) will fail to see the removed package dependency.
+[contract(DynamicDependencyContract, 1)]
 runtimeclass PackageDependencyContext
 {
     /// Create an intstance of the package dependency context identified by context
     PackageDependencyContext(PackageDependencyContextId contextId);
 
     /// Returns the package dependency context id
-    PackageDependencyContextId ContextId { get; }
+    PackageDependencyContextId ContextId { get; };
+
+    /// Return the package dependency id.
+    String PackageDependencyId{ get; };
 
     /// Returns the package full name of the resolved package for this context
-    String PackageFullName { get; }
+    String PackageFullName { get; };
 
     /// Remove from the package graph a package dependency previously added via PackageDependency.Add().
     ///
-    /// Successful calls change the package graph's current generation id.
+    /// Successful calls change the package graph's current revision id.
     ///
-    /// @see PackageDependency.GenerationId
+    /// @see PackageDependency.RevisionId
     void Remove();
-}
+};
 }
 ```
 # 7. Static Package Dependency Resolution Algorithm
