@@ -36,6 +36,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentActivityContext.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)DeploymentManagerAutoInitializer.cs" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)DeploymentManagerAutoInitializer.cpp" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)..\common\TerminalVelocityFeatures-DeploymentAPI.h" />
   </ItemGroup>
 </Project>
