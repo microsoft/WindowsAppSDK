@@ -99,13 +99,6 @@ namespace WindowsAppRuntimeSingleton
     constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.Singleton_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 
-namespace PushNotificationsLongRunningTask
-{
-    constexpr PCWSTR c_PackageDirName = L"PushNotificationsLongRunningTask";
-    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.PushNotificationsTask_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
-    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.PushNotificationsTask_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
-}
-
 namespace DeploymentWindowsAppRuntimeFramework
 {
     constexpr PCWSTR c_PackageDirName = L"Deployment.WindowsAppRuntime.Test.Framework";
@@ -303,27 +296,6 @@ inline void RemovePackage_WindowsAppRuntimeSingleton()
 inline bool IsPackageRegistered_WindowsAppRuntimeSingleton()
 {
     return IsPackageRegistered(Test::Packages::WindowsAppRuntimeSingleton::c_PackageFullName);
-}
-
-inline void AddPackage_PushNotificationsLongRunningTask()
-{
-    AddPackage(Test::Packages::PushNotificationsLongRunningTask::c_PackageDirName, Test::Packages::PushNotificationsLongRunningTask::c_PackageFullName);
-}
-
-inline void RemovePackage_PushNotificationsLongRunningTask()
-{
-    // Best-effort removal. PackageManager.RemovePackage errors if the package
-    // is not registered, but if it's not registered we're good. "'Tis the destination
-    // that matters, not the journey" so regardless how much or little work
-    // we need do, we're happy as long as the package isn't registered when we're done
-    //
-    // Thus, do a *IfNecessary removal
-    RemovePackageIfNecessary(Test::Packages::PushNotificationsLongRunningTask::c_PackageFullName);
-}
-
-inline bool IsPackageRegistered_PushNotificationsLongRunningTask()
-{
-    return IsPackageRegistered(Test::Packages::PushNotificationsLongRunningTask::c_PackageFullName);
 }
 
 inline void AddPackage_DeploymentWindowsAppRuntimeFramework()

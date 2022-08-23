@@ -1,23 +1,29 @@
-﻿// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #ifndef PCH_H
 #define PCH_H
 
 #include <unknwn.h>
 
+#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 #include <sddl.h>
 #include <appmodel.h>
 
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <wil/resource.h>
+#include <wil/stl.h>
 #include <wil/result.h>
 #include <wil/cppwinrt.h>
 #include <wil/token_helpers.h>
-#include <wil/resource.h>
 #include <wrl.h>
 #include <WexTestClass.h>
 
-#include <string>
+#include <sstream>
+#include <iomanip>
 
 #include <wil/result_macros.h>
 #include <wil/com.h>
@@ -37,6 +43,14 @@
 #include <windows.applicationmodel.h>
 #include <windows.applicationmodel.background.h>
 #include <ShObjIdl_core.h>
+
+#define VERIFY_THROWS_HR(expression, hr)        \
+            VERIFY_THROWS_SPECIFIC(expression,          \
+                winrt::hresult_error,                   \
+                [&](winrt::hresult_error e) -> bool     \
+                {                                       \
+                    return (e.code() == hr);    \
+                })
 
 namespace TP = ::Test::Packages;
 namespace TAEF = ::Test::TAEF;
