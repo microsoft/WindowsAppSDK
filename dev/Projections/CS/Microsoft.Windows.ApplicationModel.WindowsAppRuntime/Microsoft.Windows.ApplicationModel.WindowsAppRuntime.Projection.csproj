@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <PropertyGroup>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     <CSWinRTIncludes>Microsoft.Windows.ApplicationModel.WindowsAppRuntime</CSWinRTIncludes>
     <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
     <WindowsSdkPackageVersion>10.0.17763.$(CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion)</WindowsSdkPackageVersion>
