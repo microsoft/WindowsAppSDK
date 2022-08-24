@@ -1,3 +1,14 @@
+<#
+.SYNOPSIS
+    Verify copyright headers exist for Windows App SDK source files
+
+.PARAMETER Fix
+    Add copyright headers to files that are missing them
+
+.EXAMPLE
+    VerifyCopyrightHeaders -Fix
+#>
+
 Param(
     [switch]$Fix = $false
 )
