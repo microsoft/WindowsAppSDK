@@ -19,27 +19,20 @@ namespace MachineTypeAttributes
         {
             THROW_LAST_ERROR();
         }
-        else
+
+        auto getMachineTypeAttributes{ GetProcAddressByFunctionDeclaration(kernelbaseDll.get(), GetMachineTypeAttributes) };
+        if (!getMachineTypeAttributes)
         {
-            auto getMachineTypeAttributes{ GetProcAddressByFunctionDeclaration(kernelbaseDll.get(), GetMachineTypeAttributes) };
-            if (!getMachineTypeAttributes)
-            {
-                DWORD getProcAddressError = GetLastError();
-                if (getProcAddressError != ERROR_PROC_NOT_FOUND)
-                {
-                    THROW_HR(HRESULT_FROM_WIN32(getProcAddressError));
-                }
-                // If execution comes here, it means the current system is not running Windows 11.
-                return false;
-            }
-            else
-            {
-                // If execution entered this block, it means that the current system is running Windows 11
-                // For defense against such possible future changes, also check explicitly if given architecture is supported on the current system.
-                MACHINE_ATTRIBUTES machineAttributes{};
-                THROW_IF_FAILED(getMachineTypeAttributes(architecture, &machineAttributes));
-                return WI_IsFlagSet(machineAttributes, MACHINE_ATTRIBUTES::UserEnabled);
-            }
+            DWORD getProcAddressError = GetLastError();
+            THROW_HR_IF(HRESULT_FROM_WIN32(getProcAddressError), getProcAddressError != ERROR_PROC_NOT_FOUND);
+            // If execution comes here, it means the current system is not running Windows 11.
+            return false;
         }
+
+        // If execution comes here, it means that the current system is running Windows 11
+        // For defense against such possible future changes, also check explicitly if given architecture is supported on the current system.
+        MACHINE_ATTRIBUTES machineAttributes{};
+        THROW_IF_FAILED(getMachineTypeAttributes(architecture, &machineAttributes));
+        return WI_IsFlagSet(machineAttributes, MACHINE_ATTRIBUTES::UserEnabled);
     }
 }
