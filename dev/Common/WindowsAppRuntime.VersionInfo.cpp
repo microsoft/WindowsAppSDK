@@ -57,7 +57,6 @@ public:
             THROW_LAST_ERROR_IF_NULL(getVersionInfo);
 
             g_versionInfo = static_cast<const ::Microsoft::WindowsAppSDK::VersionInfo*>(getVersionInfo());
-
         }
         return g_versionInfo;
     }
