@@ -1,0 +1,246 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+import "..\AppNotifications\AppNotifications.idl";
+
+namespace Microsoft.Windows.AppNotifications.Builder
+{
+    [contractversion(1)]
+    apicontract AppNotificationBuilderContract {}
+
+    [contract(AppNotificationBuilderContract, 1)]
+    runtimeclass AppNotificationTextProperties
+    {
+        // Contains the set of <text> attributes
+        AppNotificationTextProperties();
+
+        String Language;
+        Boolean IncomingCallAlignment;
+        Int32 MaxLines;
+
+        AppNotificationTextProperties SetLanguage(String value);
+        AppNotificationTextProperties SetIncomingCallAlignment();
+        AppNotificationTextProperties SetMaxLines(Int32 value);
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
+    enum AppNotificationButtonStyle
+    {
+        Default,
+        Success,
+        Critical,
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
+    runtimeclass AppNotificationButton
+    {
+        AppNotificationButton();
+        AppNotificationButton(String content);
+
+        String Content;
+        Windows.Foundation.Collections.IMap<String, String> Arguments;
+        Windows.Foundation.Uri Icon;
+        String ToolTip;
+        Boolean ContextMenuPlacement;
+        AppNotificationButtonStyle ButtonStyle;
+        String InputId;
+        Windows.Foundation.Uri InvokeUri;
+        String TargetAppId;
+
+        AppNotificationButton AddArgument(String key, String value);
+
+        // Sets the Icon for the button.
+        AppNotificationButton SetIcon(Windows.Foundation.Uri value);
+
+        // The tooltip for a button, if the button has an empty content string.
+        AppNotificationButton SetToolTip(String value);
+        static Boolean IsToolTipSupported();
+
+        // Sets the Button as context menu action.
+        AppNotificationButton SetContextMenuPlacement();
+
+        // Sets the ButtonStyle to Success or Critical
+        AppNotificationButton SetButtonStyle(AppNotificationButtonStyle value);
+        static Boolean IsButtonStyleSupported();
+
+        // Specifies the ID of an existing TextBox next to which the button will be placed.
+        AppNotificationButton SetInputId(String value);
+
+        // Launches the URI passed into the button when activated.
+        AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri);
+        AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri, String targetAppId);
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
+    runtimeclass AppNotificationProgressBar
+    {
+        // AppNotificationProgressBar binds to AppNotificationProgressData so the AppNotification will
+        // receive every update to the status and value. In the WinAppSDK, these binding
+        // values are static, so developers won't need to define these binding values
+        // themselves.
+        AppNotificationProgressBar();
+
+        // Setting these properties will remove the data binding with a static value
+        String Title;
+        String Status;
+        Double Value;
+        String ValueStringOverride;
+
+        AppNotificationProgressBar SetTitle(String value);
+        AppNotificationProgressBar BindTitle();
+
+        AppNotificationProgressBar SetStatus(String value);
+        AppNotificationProgressBar BindStatus();
+
+        AppNotificationProgressBar SetValue(Double value);
+        AppNotificationProgressBar BindValue();
+
+        AppNotificationProgressBar SetValueStringOverride(String value);
+        AppNotificationProgressBar BindValueStringOverride();
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
+    runtimeclass AppNotificationComboBox
+    {
+        AppNotificationComboBox(String id);
+
+        Windows.Foundation.Collections.IMap<String, String> Items;
+        String Title;
+        String SelectedItem;
+
+        // Add a selection to the AppNotificationComboBox. The id parameter identifies the item the user selected.
+        AppNotificationComboBox AddItem(String id, String content);
+
+        // Adds a title to display on top
+        AppNotificationComboBox SetTitle(String value);
+
+        // Sets the default selection to be displayed by the AppNotificationComboBox
+        AppNotificationComboBox SetSelectedItem(String id);
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
+    enum AppNotificationSoundEvent
+    {
+        Default,
+        IM,
+        Mail,
+        Reminder,
+        SMS,
+        Alarm,
+        Alarm2,
+        Alarm3,
+        Alarm4,
+        Alarm5,
+        Alarm6,
+        Alarm7,
+        Alarm8,
+        Alarm9,
+        Alarm10,
+        Call,
+        Call2,
+        Call3,
+        Call4,
+        Call5,
+        Call6,
+        Call7,
+        Call8,
+        Call9,
+        Call10,
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
+    enum AppNotificationScenario
+    {
+        Default, // The normal AppNotification behavior. The AppNotification appears for a short duration, and then automatically dismisses into Notification Center.
+        Reminder, // The notification will stay on screen until the user dismisses it or takes action.
+        Alarm,    // Alarms behave like Reminder, but alarms will additionally loop audio with a default alarm sound.
+        IncomingCall, // Incoming call notifications are displayed pre-expanded in a special call format and stay on the user's screen till dismissed.
+        Urgent, // Important notifications allow users to have more control over what 1st party and 3rd party apps can send them high-priority AppNotifications (urgent/important) that can break through Focus Assist.
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
+    enum AppNotificationAudioLooping
+    {
+        None, // Audio will not loop
+        Loop, // Audio will loop for the duration of the AppNotification
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
+    enum AppNotificationDuration
+    {
+        Default, // Default value. AppNotification appears for a short while and then goes into Notification Center.
+        Long, // AppNotification stays on-screen for longer, and then goes into Notification Center.
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
+    enum AppNotificationImageCrop
+    {
+        Default, // Uses the default renderer to display the image
+        Circle, // Crops the image as a circle.
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
+    runtimeclass AppNotificationBuilder
+    {
+        AppNotificationBuilder();
+
+        // Adds arguments to the launch attribute to return when AppNotification is clicked.
+        AppNotificationBuilder AddArgument(String key, String value);
+
+        // Sets the timeStamp of the AppNotification to when it was constructed instead of when it was sent.
+        AppNotificationBuilder SetTimeStamp(Windows.Foundation.DateTime value);
+
+        AppNotificationBuilder SetDuration(AppNotificationDuration duration);
+
+        // Sets the scenario of the AppNotification.
+        AppNotificationBuilder SetScenario(AppNotificationScenario value);
+        static Boolean IsUrgentScenarioSupported();
+
+        // Adds text to the AppNotification.
+        AppNotificationBuilder AddText(String text);
+        AppNotificationBuilder AddText(String text, AppNotificationTextProperties properties);
+
+        AppNotificationBuilder SetAttributionText(String text);
+        AppNotificationBuilder SetAttributionText(String text, String language);
+
+        // Sets the full-width inline-image that appears when you expand the AppNotification
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri);
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imagecrop, String alternateText);
+
+        // Sets the image that replaces the app logo
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri);
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop, String alternateText);
+
+        // Sets the image that displays within the banner of the AppNotification.
+        AppNotificationBuilder SetHeroImage(Windows.Foundation.Uri imageUri);
+        AppNotificationBuilder SetHeroImage(Windows.Foundation.Uri imageUri, String alternateText);
+
+        // SetAudio
+        AppNotificationBuilder SetAudioUri(Windows.Foundation.Uri audioUri);
+        AppNotificationBuilder SetAudioUri(Windows.Foundation.Uri audioUri, AppNotificationAudioLooping loop);
+
+        AppNotificationBuilder SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent);
+        AppNotificationBuilder SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent, AppNotificationAudioLooping loop);
+
+        AppNotificationBuilder MuteAudio();
+
+        AppNotificationBuilder AddTextBox(String id);
+        AppNotificationBuilder AddTextBox(String id, String placeHolderText, String title);
+
+        // Adds a button to the AppNotificationBuilder
+        AppNotificationBuilder AddButton(AppNotificationButton value);
+
+        AppNotificationBuilder AddComboBox(AppNotificationComboBox value);
+
+        AppNotificationBuilder AddProgressBar(AppNotificationProgressBar value);
+
+        // Constructs a WindowsAppSDK AppNotification object with the XML payload
+        Microsoft.Windows.AppNotifications.AppNotification BuildNotification();
+
+        // AppNotification properties
+        AppNotificationBuilder SetTag(String value);
+        AppNotificationBuilder SetGroup(String group);
+    };
+}

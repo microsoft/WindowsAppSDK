@@ -26,6 +26,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ShellLocalization.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationActivatedEventArgs.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotification.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationProgressData.cpp" />
