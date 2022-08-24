@@ -18,17 +18,17 @@ if(-not (test-path ".nuget\nuget.exe"))
 
 $MRTSourcesDirectory = "dev\MRTCore"
 $MRTBinariesDirectory = "BuildOutput"
-& .\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1 -versionDetailsPath "eng\Version.Details.xml" -packageConfigPath "build\packages.config"
+# & .\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1 -versionDetailsPath "eng\Version.Details.xml" -packageConfigPath "build\packages.config"
 
-& .\.nuget\nuget.exe restore "build\packages.config" -PackagesDirectory packages -ConfigFile "build\licensing.nuget.config"
-& .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile nuget.config
-& .\.nuget\nuget.exe restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" -configfile nuget.config
-& .\.nuget\nuget.exe restore "dev\WindowsAppRuntime_Insights\packages.config" -ConfigFile "dev\WindowsAppRuntime_Insights\nuget.config" -PackagesDirectory "dev\WindowsAppRuntime_Insights\packages"
-& .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\core\src\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
-& .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
-& .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
-& .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmmin\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
-& .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\unittests\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
+# & .\.nuget\nuget.exe restore "build\packages.config" -PackagesDirectory packages -ConfigFile "build\licensing.nuget.config"
+# & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile nuget.config
+# & .\.nuget\nuget.exe restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" -configfile nuget.config
+# & .\.nuget\nuget.exe restore "dev\WindowsAppRuntime_Insights\packages.config" -ConfigFile "dev\WindowsAppRuntime_Insights\nuget.config" -PackagesDirectory "dev\WindowsAppRuntime_Insights\packages"
+# & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\core\src\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
+# & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
+# & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
+# & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmmin\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
+# & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\unittests\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
 
 $nuSpecsPath = "build\NuSpecs"
 $fullNugetPath = "build\fullnuget"
@@ -74,7 +74,7 @@ write-host "VCToolsInstallDir: $VCToolsInstallDir"
 
  foreach($platformToRun in $platform.Split(","))
  {
-   # & $MRTSourcesDirectory\build\init.cmd /envonly $platformToRun\fre
+   & $MRTSourcesDirectory\build\init.cmd /envonly $platformToRun\fre
  }
 
  # Build the solution
@@ -83,7 +83,8 @@ write-host "VCToolsInstallDir: $VCToolsInstallDir"
     foreach($platformToRun in $platform.Split(","))
     {
         # adding /m gives a circular depdency.  Keep the /m out until fixed.
-        msbuild WindowsAppSDk.sln /restore /p:Configuration=$configurationToRun,Platform=$platformToRun /p:AppxSymbolPackageEnabled=false /p:WindowsAppSDKVersionBuild=$builddate_yymm /p:WindowsAppSDKVersionRevision=$builddate_dd$buildrevision /p:VCToolsInstallDir=$VCToolsInstallDir
+        msbuild /restore WindowsAppRuntime.sln /p:Configuration=$configurationToRun,Platform=$platformToRun
+		#,AppxSymbolPackageEnabled=false,WindowsAppSDKVersionBuild=$builddate_yymm,WindowsAppSDKVersionRevision=$builddate_dd$buildrevision,VCToolsInstallDir=$VCToolsInstallDir
         msbuild "$MRTSourcesDirectory\mrt\MrtCore.sln" /restore /p:Configuration=$configurationToRun,Platform=$platformToRun
     }
  }
