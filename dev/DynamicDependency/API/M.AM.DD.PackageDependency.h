@@ -20,6 +20,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implem
         static winrt::PackageDependency Create(hstring const& packageFamilyName, winrt::Windows::ApplicationModel::PackageVersion const& minVersion);
         static winrt::PackageDependency Create(hstring const& packageFamilyName, winrt::Windows::ApplicationModel::PackageVersion const& minVersion, winrt::CreatePackageDependencyOptions const& options);
         static winrt::PackageDependency CreateForSystem(hstring const& packageFamilyName, winrt::Windows::ApplicationModel::PackageVersion const& minVersion, winrt::CreatePackageDependencyOptions const& options);
+        static uint32_t PackageGraphRevisionId();
         static uint32_t GenerationId();
         hstring Id();
         void Delete();

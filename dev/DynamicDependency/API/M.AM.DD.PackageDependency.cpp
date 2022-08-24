@@ -76,9 +76,14 @@ namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implem
         return Create(nullptr, packageFamilyName.c_str(), mddMinVersion, mddArchitectures, mddLifetimeKind, mddLifetimeArtifact, mddOptions);
     }
 
+    uint32_t PackageDependency::PackageGraphRevisionId()
+    {
+        return MddGetPackageGraphRevisionId();
+    }
+
     uint32_t PackageDependency::GenerationId()
     {
-        return MddGetGenerationId();
+        return PackageGraphRevisionId();
     }
 
     hstring PackageDependency::Id()
