@@ -49,7 +49,7 @@
 
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalOptions>/Brepro /d1trimfile:$(MSBuildThisFileDirectory) %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Brepro /d1trimfile:D:\a\_work\1\s\ %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
 
