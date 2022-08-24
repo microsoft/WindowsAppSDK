@@ -50,7 +50,7 @@
 
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalOptions>/Brepro %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Brepro /d1trimfile:$(RepoRoot) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
 
