@@ -8,6 +8,9 @@ using namespace winrt::Windows::Foundation;
 
 int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
 {
+    _CrtDbgBreak();
+    DWORD sleepTime = 15 * 1000;
+    Sleep(sleepTime);
     int argc{};
     const std::wstring cmdLine{ GetCommandLineW() };
     const wil::unique_hlocal_ptr<PWSTR[]> argv{ CommandLineToArgvW(cmdLine.c_str(), &argc) };
