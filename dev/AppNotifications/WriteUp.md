@@ -1,3 +1,13 @@
+# Constraints
+Time and DCR Process.
+
+## In Scope
+* Telemetry for Push Notification.
+
+## Not In Scope
+* Telemtry for the LRP.
+* AppNotification Telemetry for received notifications.
+
 # Current
 * **Note:** in all the table bellow, time information comes from various test runs and is only used to order the events. The event are ordered by time received, which do not necessarilly represent the call order. Most logging happens at scope exit, (usually when a function exits).
 ## Receiving Push Notification in the Foreground
@@ -88,6 +98,10 @@ LogProcessedNFY | Wpnprv | 157.277766700
 NotificationCallBack | WpncoreTelemetry | 157.403984300
 PushNotificationDelivered | WpnCore | 157.404006100
 
+Requires adding a new Provider to the LRP and logging the events in OnRawNotificationReceived in the LRP.
+It also requires adding logging to InvokeAll in the WindowsAppSDK and changing the API to InvokeALl to receive the CV from OnRawNotificationReceived.
+Since the InvokeAll API is publish it may have broader impact.
+
 ### Packaged App
 Event | Provider | Time
 --- | --- | ---
@@ -103,6 +117,9 @@ LogProcessedNFY | Wpnprv | 132.257064400
 **OnRawNotificationReceived** | **PushNotificationTelemetry** | **132.394111800**
 NotificationCallBack | WpncoreTelemetry | 132.394308200
 PushNotificationDelivered | WpnCore | 132.394327800
+
+Requires adding logs to OnRawNotificationReceived and InvokeAll.
+Since both functions are part of PushNotifications, they can use the existing PusNotificationTelemetryProvider.
 
 ## Receiving Push Notification in the Background
 ### Unpackaged App
@@ -121,6 +138,8 @@ LogProcessedNFY | Wpnprv | 90.245056900
 **OnRawNotificationReceived** | **PushNotificationLongRunningTaskTelemetry** | **90.400255200**
 NotificationCallBack | WpncoreTelemetry | 90.400729900
 PushNotificationDelivered | WpnCore | 90.400757000
+
+Requires adding logging to OnRawNotificationReceived in the LRP and using the new provider ddiscussed previously in the xxx section.
 
 ### Packaged App
 There are no changes required when receiving Push Notifications in the background for a packaged app as it is delivered directly to the app by WNPCore.
