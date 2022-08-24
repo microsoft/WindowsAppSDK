@@ -10,7 +10,6 @@
 
   <PropertyGroup>
     <IsTDPConfiguration>false</IsTDPConfiguration>
-
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)Generated Files\</GeneratedFilesDir>
     <GenerateProjectSpecificOutputFolder>True</GenerateProjectSpecificOutputFolder>
     <ForceImportAfterCppTargets>$(BuildRoot)AfterCpp.targets</ForceImportAfterCppTargets>
@@ -50,7 +49,7 @@
 
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalOptions>/Brepro /d1trimfile:$(RepoRoot) %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Brepro /d1trimfile:$(MSBuildThisFileDirectory) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
 
