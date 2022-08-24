@@ -17,7 +17,9 @@ namespace MachineTypeAttributes
         wil::unique_hmodule kernelbaseDll{ LoadLibraryExW(L"kernelbase.dll", nullptr, 0) };
         if (!kernelbaseDll)
         {
-            THROW_LAST_ERROR();
+            DWORD getLoadLibraryError = GetLastError();
+            THROW_HR_IF(HRESULT_FROM_WIN32(getLoadLibraryError), getLoadLibraryError != ERROR_MOD_NOT_FOUND);
+            return false;
         }
 
         auto getMachineTypeAttributes{ GetProcAddressByFunctionDeclaration(kernelbaseDll.get(), GetMachineTypeAttributes) };

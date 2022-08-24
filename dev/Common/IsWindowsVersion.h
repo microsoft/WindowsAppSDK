@@ -15,7 +15,9 @@ inline bool IsExportPresent(
     wil::unique_hmodule dll{ LoadLibraryExW(filename, nullptr, 0) };
     if (!dll)
     {
-        THROW_LAST_ERROR();
+        DWORD getLoadLibraryError = GetLastError();
+        THROW_HR_IF(HRESULT_FROM_WIN32(getLoadLibraryError), getLoadLibraryError != ERROR_MOD_NOT_FOUND);
+        return false;
     }
 
     auto function{ GetProcAddress(dll.get(), functionName) };
