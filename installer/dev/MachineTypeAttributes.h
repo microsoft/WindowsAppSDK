@@ -24,20 +24,22 @@ namespace MachineTypeAttributes
             auto getMachineTypeAttributes{ GetProcAddressByFunctionDeclaration(kernelbaseDll.get(), GetMachineTypeAttributes) };
             if (!getMachineTypeAttributes)
             {
-                // For now, GetMachineTypeAttributes API is available only on Windows 11 (i.e. builds 22000+).
-                THROW_LAST_ERROR();
+                DWORD getProcAddressError = GetLastError();
+                if (getProcAddressError != ERROR_PROC_NOT_FOUND)
+                {
+                    THROW_HR(HRESULT_FROM_WIN32(getProcAddressError));
+                }
+                // If execution comes here, it means the current system is not running Windows 11.
                 return false;
             }
             else
             {
                 // If execution entered this block, it means that the current system is running Windows 11
-                // until if and when GetMachineTypeAttributes API is serviced down level Windows versions (ex: Windows 10).
                 // For defense against such possible future changes, also check explicitly if given architecture is supported on the current system.
                 MACHINE_ATTRIBUTES machineAttributes{};
                 THROW_IF_FAILED(getMachineTypeAttributes(architecture, &machineAttributes));
                 return WI_IsFlagSet(machineAttributes, MACHINE_ATTRIBUTES::UserEnabled);
             }
         }
-        return false;
     }
 }

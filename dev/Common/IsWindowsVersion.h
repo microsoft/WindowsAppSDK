@@ -20,8 +20,17 @@ inline bool IsExportPresent(
         {
             return true;
         }
+        else
+        {
+            DWORD getProcAddressError = GetLastError();
+            if (getProcAddressError != ERROR_PROC_NOT_FOUND)
+            {
+                THROW_HR(HRESULT_FROM_WIN32(getProcAddressError));
+            }
+            return false;
+        }
     }
-    return false;
+    THROW_LAST_ERROR();
 }
 
 inline bool IsWindows10_19H1OrGreater()
