@@ -457,7 +457,7 @@ jobs:
     useReleaseTag: '$(WindowsAppSDKFinalRelease)'
     buildPool: ProjectReunionESPool-2022
 
-# TODO: Reenable, Appx-Install currently does not work on 2022 images
+# TODO: Reenable, Add-AppxPackage currently does not work on 2022 images. See issue #2908
 # # Build WinAppSDK and Run Integration Test from TestAll.ps1
 # - job: WinAppSDKIntegrationBuildAndTest
 #   dependsOn: ['CreateNugetPackage']
