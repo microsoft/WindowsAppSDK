@@ -47,7 +47,7 @@ jobs:
 
 - job: VerifyCopyrightHeaders
   pool:
-    vmImage: 'windows-2019'
+    vmImage: 'windows-2022'
   steps:
   - task: powershell@2
     displayName: 'Verify copyright headers'
