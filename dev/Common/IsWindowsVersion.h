@@ -15,16 +15,16 @@ inline bool IsExportPresent(
     wil::unique_hmodule dll{ LoadLibraryExW(filename, nullptr, 0) };
     if (!dll)
     {
-        DWORD getLoadLibraryError = GetLastError();
-        THROW_HR_IF(HRESULT_FROM_WIN32(getLoadLibraryError), getLoadLibraryError != ERROR_MOD_NOT_FOUND);
+        const DWORD rcLoadLibraryError = GetLastError();
+        THROW_HR_IF(HRESULT_FROM_WIN32(rcLoadLibraryError), rcLoadLibraryError != ERROR_MOD_NOT_FOUND);
         return false;
     }
 
     auto function{ GetProcAddress(dll.get(), functionName) };
     if (!function)
     {
-        DWORD getProcAddressError = GetLastError();
-        THROW_HR_IF(HRESULT_FROM_WIN32(getProcAddressError), getProcAddressError != ERROR_PROC_NOT_FOUND);
+        const DWORD rcGetProcAddressError = GetLastError();
+        THROW_HR_IF(HRESULT_FROM_WIN32(rcGetProcAddressError), rcGetProcAddressError != ERROR_PROC_NOT_FOUND);
         return false;
     }
 

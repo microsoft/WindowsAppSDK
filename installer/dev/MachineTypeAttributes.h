@@ -17,16 +17,16 @@ namespace MachineTypeAttributes
         wil::unique_hmodule kernelbaseDll{ LoadLibraryExW(L"kernelbase.dll", nullptr, 0) };
         if (!kernelbaseDll)
         {
-            DWORD getLoadLibraryError = GetLastError();
-            THROW_HR_IF(HRESULT_FROM_WIN32(getLoadLibraryError), getLoadLibraryError != ERROR_MOD_NOT_FOUND);
+            const DWORD rcLoadLibraryError = GetLastError();
+            THROW_HR_IF(HRESULT_FROM_WIN32(rcLoadLibraryError), rcLoadLibraryError != ERROR_MOD_NOT_FOUND);
             return false;
         }
 
         auto getMachineTypeAttributes{ GetProcAddressByFunctionDeclaration(kernelbaseDll.get(), GetMachineTypeAttributes) };
         if (!getMachineTypeAttributes)
         {
-            DWORD getProcAddressError = GetLastError();
-            THROW_HR_IF(HRESULT_FROM_WIN32(getProcAddressError), getProcAddressError != ERROR_PROC_NOT_FOUND);
+            const DWORD rcGetProcAddressError = GetLastError();
+            THROW_HR_IF(HRESULT_FROM_WIN32(rcGetProcAddressError), rcGetProcAddressError != ERROR_PROC_NOT_FOUND);
             // If execution comes here, it means the current system is not running Windows 11.
             return false;
         }
