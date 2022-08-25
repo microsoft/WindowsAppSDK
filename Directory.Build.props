@@ -49,8 +49,11 @@
 
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalOptions>/Brepro /d1trimfile:D:\a\_work\1\s=BASEDIR %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Brepro %(AdditionalOptions)</AdditionalOptions>
     </Link>
+    <ClCompile>
+      <AdditionalOptions>/d1trimfile:E:\WindowsAppSDK\WindowsAppSDK\BuildOutput\Release\x64\WindowsAppRuntime_DLL %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
   </ItemDefinitionGroup>
 
   <!-- Define our standardardized options for C/C++ builds -->
