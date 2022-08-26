@@ -182,24 +182,6 @@ jobs:
       TSLint: false
       ToolLogsNotFoundAction: 'Standard'
 
-- job: TestMRT
-  pool:
-    vmImage: 'windows-2022'
-  dependsOn:
-    - BuildMRT
-  condition: in(dependencies.BuildMRT.result, 'Succeeded')
-  strategy:
-    maxParallel: 10
-    matrix:
-      Release_x86:
-        buildPlatform: 'x86'
-        buildConfiguration: 'Release'
-      Release_x64:
-        buildPlatform: 'x64'
-        buildConfiguration: 'Release'
-  steps:
-  - template: test-mrt.yml
-
 - job: PublishMRT
   dependsOn:
     - TestMRT
