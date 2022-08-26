@@ -52,7 +52,8 @@ namespace Test::NotificationActivation
             ::Test::Bootstrap::SetupPackages();
             TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs NotificationActivationPackage.msix
 
-            m_testAppLauncher = winrt::create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL);
+            m_testAppLauncher = winrt::try_create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL);
+            VERIFY_IS_NOT_NULL(m_testAppLauncher);
             return true;
         }
 
@@ -77,7 +78,9 @@ namespace Test::NotificationActivation
         void RunTest(const PCWSTR& testName, const int& waitTime)
         {
             DWORD processId{};
-            VERIFY_SUCCEEDED(m_testAppLauncher->ActivateApplication(L"NotificationActivationPackage_8wekyb3d8bbwe!App", testName, AO_NONE, &processId));
+            HRESULT hr{ m_testAppLauncher->ActivateApplication(L"NotificationActivationPackage_8wekyb3d8bbwe!App", testName, AO_NONE, &processId) };
+            VERIFY_SUCCEEDED(hr);
+            //VERIFY_SUCCEEDED();
 
             m_processHandle.reset(OpenProcess(SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION, FALSE, processId));
             VERIFY_IS_TRUE(m_processHandle.is_valid());
