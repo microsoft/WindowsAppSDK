@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
 
 #ifndef __WINDOWSAPPRUNTIME_LICENSE_H
 #define __WINDOWSAPPRUNTIME_LICENSE_H
