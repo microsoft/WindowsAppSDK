@@ -103,7 +103,7 @@ public:
             winrt::hresult hr,
             std::wstring const& correlationVector) noexcept try
     {
-        if (c_maxEventLimit >= UpdateLogEventCount())
+        if (m_telemetryHelper.ShouldLogEvent())
         {
             TraceLoggingClassWriteMeasure(
                 "OnRawNotificationReceived",
@@ -111,8 +111,8 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(correlationVector.c_str(), "CorrelationVector"),
-                TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -121,7 +121,7 @@ public:
             winrt::hresult hr,
             std::wstring const& correlationVector) noexcept try
     {
-        if (c_maxEventLimit >= UpdateLogEventCount())
+        if (m_telemetryHelper.ShouldLogEvent())
         {
             TraceLoggingClassWriteMeasure(
                 "InvokeAll",
@@ -129,13 +129,12 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(correlationVector.c_str(), "CorrelationVector"),
-                TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
 
 private:
     NotificationTelemetryHelper m_telemetryHelper;
-
 };

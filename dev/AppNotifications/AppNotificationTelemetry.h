@@ -258,7 +258,7 @@ public:
         bool firstNotificationReceived,
         bool hasNotificationHandlers) noexcept try
     {
-        if (c_maxEventLimit >= UpdateLogEventCount())
+        if (m_telemetryHelper.ShouldLogEvent())
         {
             TraceLoggingClassWriteMeasure(
                 "Activated",
@@ -269,8 +269,8 @@ public:
                 TraceLoggingUInt32(arguments.size(), "ArgumentsSize"),
                 TraceLoggingBool(firstNotificationReceived, "firstNotificationReceived"),
                 TraceLoggingBool(hasNotificationHandlers, "HasNotificationHandlers"),
-                TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
