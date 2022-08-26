@@ -1,22 +1,9 @@
+parameters:
+  MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
 steps:
 - task: DownloadBuildArtifacts@0
   inputs:
-    artifactName: "MrtCoreManagedTest-$(buildPlatform)-$(buildConfiguration)"
-    downloadPath: '$(Build.SourcesDirectory)'
-
-- task: DownloadBuildArtifacts@0
-  inputs:
-    artifactName:  "MrmUnitTest-$(buildPlatform)-$(buildConfiguration)"
-    downloadPath: '$(Build.SourcesDirectory)'
-
-- task: DownloadBuildArtifacts@0
-  inputs:
-    artifactName: "MrmBaseUnitTests-$(buildPlatform)-$(buildConfiguration)"
-    downloadPath: '$(Build.SourcesDirectory)'
-
-- task: DownloadBuildArtifacts@0
-  inputs:
-    artifactName: "MrtCoreUnpackagedTests-$(buildPlatform)-$(buildConfiguration)"
+    artifactName: BuildOutput
     downloadPath: '$(Build.SourcesDirectory)'
   
 # Run the test locally on the Azure VM.
@@ -25,7 +12,7 @@ steps:
   inputs:
     testSelector: 'testAssemblies'
     testAssemblyVer2: '**\MrtCoreManagedTest.build.appxrecipe'
-    searchFolder: '$(Build.SourcesDirectory)\MrtCoreManagedTest-$(buildPlatform)-$(buildConfiguration)'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrtCoreManagedTest'
     testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
@@ -35,7 +22,7 @@ steps:
   inputs:
     testSelector: 'testAssemblies'
     testAssemblyVer2: '**\MrmUnitTest.dll'
-    searchFolder: '$(Build.SourcesDirectory)\MrmUnitTest-$(buildPlatform)-$(buildConfiguration)'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest'
     testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
@@ -45,7 +32,7 @@ steps:
   inputs:
     testSelector: 'testAssemblies'
     testAssemblyVer2: '**\MrmBaseUnitTests.dll'
-    searchFolder: '$(Build.SourcesDirectory)\MrmBaseUnitTests-$(buildPlatform)-$(buildConfiguration)'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests'
     testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
@@ -55,7 +42,7 @@ steps:
   inputs:
     testSelector: 'testAssemblies'
     testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
-    searchFolder: '$(Build.SourcesDirectory)\MrtCoreUnpackagedTests-$(buildPlatform)-$(buildConfiguration)'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests'
     testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
