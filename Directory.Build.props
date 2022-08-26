@@ -49,10 +49,10 @@
 
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalOptions>/Brepro %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Brepro /PDBALTPATH:$(TargetName).pdb %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <ClCompile>
-      <AdditionalOptions>/d1trimfile:E:\WindowsAppSDK\WindowsAppSDK\BuildOutput\Release\x64\WindowsAppRuntime_DLL %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/d1trimfile:$(RepoRoot) %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
 
