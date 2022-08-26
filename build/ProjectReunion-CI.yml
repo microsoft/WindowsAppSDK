@@ -150,9 +150,10 @@ jobs:
       GenerateSBOM: false
       # This pipeline is unable to access OneBranch, so skip running BinaryAnalysis.
       runSDLBinaryAnalysis: false
-  
+
   - template: test-mrt.yml
 
+  - task: PublishBuildArtifacts@1
     displayName: 'Publish BuildOutput'
     inputs:
       artifactName: BuildOutput
