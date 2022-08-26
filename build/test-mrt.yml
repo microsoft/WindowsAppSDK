@@ -1,0 +1,73 @@
+steps:
+- task: DownloadBuildArtifacts@0
+  condition:
+    eq(variables['useBuildOutputFromBuildId'],'')
+  inputs:
+    artifactName: MrtCoreManagedTest
+    downloadPath: '$(Build.SourcesDirectory)'
+
+- task: DownloadBuildArtifacts@0
+  condition:
+    eq(variables['useBuildOutputFromBuildId'],'')
+  inputs:
+    artifactName: MrmUnitTest
+    downloadPath: '$(Build.SourcesDirectory)'
+
+- task: DownloadBuildArtifacts@0
+  condition:
+    eq(variables['useBuildOutputFromBuildId'],'')
+  inputs:
+    artifactName: MrmBaseUnitTests
+    downloadPath: '$(Build.SourcesDirectory)'
+
+- task: DownloadBuildArtifacts@0
+  condition:
+    eq(variables['useBuildOutputFromBuildId'],'')
+  inputs:
+    artifactName: MrtCoreUnpackagedTests
+    downloadPath: '$(Build.SourcesDirectory)'
+  
+# Run the test locally on the Azure VM.
+- task: VSTest@2
+  displayName: 'test MRT: ManagedTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\MrtCoreManagedTest.build.appxrecipe'
+    searchFolder: '$(Build.SourcesDirectory)\MrtCoreManagedTest'
+    testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  displayName: 'test MRT: UnitTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\MrmUnitTest.dll'
+    searchFolder: '$(Build.SourcesDirectory)\MrmUnitTest'
+    testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  displayName: 'test MRT: BaseUnitTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\MrmBaseUnitTests.dll'
+    searchFolder: '$(Build.SourcesDirectory)\MrmBaseUnitTests'
+    testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  displayName: 'test MRT: UnpackagedTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
+    searchFolder: '$(Build.SourcesDirectory)\MrtCoreUnpackagedTests'
+    testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'

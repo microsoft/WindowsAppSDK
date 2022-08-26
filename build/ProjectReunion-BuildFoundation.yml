@@ -256,10 +256,31 @@ jobs:
       runSDLBinaryAnalysis: '${{ parameters.RunSDLBinaryAnalysis }}'
       enablePREFast: ${{ parameters.enablePREFast }}
 
-- job: PublishMRT
+- job: TestMRT
+  pool:
+    vmImage: 'windows-2022'
   dependsOn:
     - BuildMRT
   condition: in(dependencies.BuildMRT.result, 'Succeeded')
+  strategy:
+    maxParallel: 10
+    matrix:
+      Release_x86:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Release'
+      Release_x64:
+        buildPlatform: 'x64'
+        buildConfiguration: 'Release'
+      Release_Arm64:
+        buildPlatform: 'ARM64'
+        buildConfiguration: 'Release'
+  steps:
+  - template: test-mrt.yml
+
+- job: PublishMRT
+  dependsOn:
+    - TestMRT
+  condition: in(dependencies.TestMRT.result, 'Succeeded')
   pool: ProjectReunionESPool-2022
   steps:
   - template: publish-mrt.yml

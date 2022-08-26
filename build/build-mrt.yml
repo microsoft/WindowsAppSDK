@@ -146,50 +146,33 @@ steps:
     PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
     artifactName: binlogs
 
-# Run the test locally on the Azure VM.
-- task: VSTest@2
-  displayName: 'test MRT: ManagedTests'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish mrtcore binaries'
+  condition: succeededOrFailed()
   inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MrtCoreManagedTest.build.appxrecipe'
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrtCoreManagedTest'
-    testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    PathtoPublish: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrtCoreManagedTest
+    artifactName: MrtCoreManagedTest
 
-- task: VSTest@2
-  displayName: 'test MRT: UnitTests'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish mrtcore binaries'
+  condition: succeededOrFailed()
   inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MrmUnitTest.dll'
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest'
-    testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    PathtoPublish: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest
+    artifactName: MrmUnitTest
 
-- task: VSTest@2
-  displayName: 'test MRT: BaseUnitTests'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish mrtcore binaries'
+  condition: succeededOrFailed()
   inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MrmBaseUnitTests.dll'
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests'
-    testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    PathtoPublish: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests
+    artifactName: MrmBaseUnitTests
 
-- task: VSTest@2
-  displayName: 'test MRT: UnpackagedTests'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish mrtcore binaries'
+  condition: succeededOrFailed()
   inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests'
-    testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    PathtoPublish: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests
+    artifactName: MrtCoreUnpackagedTests
 
 - task: ComponentGovernanceComponentDetection@0
   inputs:
