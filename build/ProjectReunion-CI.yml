@@ -184,8 +184,8 @@ jobs:
 
 - job: PublishMRT
   dependsOn:
-    - TestMRT
-  condition: in(dependencies.TestMRT.result, 'Succeeded')
+    - BuildMRT
+  condition: in(dependencies.BuildMRT.result, 'Succeeded')
   pool:
     vmImage: 'windows-2022'
   steps:

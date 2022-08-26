@@ -258,8 +258,8 @@ jobs:
 
 - job: PublishMRT
   dependsOn:
-    - TestMRT
-  condition: in(dependencies.TestMRT.result, 'Succeeded')
+    - BuildMRT
+  condition: in(dependencies.BuildMRT.result, 'Succeeded')
   pool: Windows-2022
   steps:
   - template: publish-mrt.yml
