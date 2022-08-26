@@ -3,7 +3,7 @@ variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
 - name: buildPool
-  value: 'windows-2022'
+  value: 'ProjectReunionESPool-2022'
 
 parameters:
   - name: "ReleaseSigning"
@@ -42,7 +42,7 @@ jobs:
 
 - job: VerifyCopyrightHeaders
   dependsOn: []
-  pool: windows-2022
+  pool: ProjectReunionESPool-2022
   steps:
   - task: powershell@2
     displayName: 'Verify copyright headers'
@@ -61,7 +61,7 @@ jobs:
       eq(variables['useBuildOutputFromBuildId'],''),
       in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
     )
-  pool: windows-2022
+  pool: ProjectReunionESPool-2022
   timeoutInMinutes: 120
   strategy:
     maxParallel: 10
@@ -143,7 +143,7 @@ jobs:
       eq(variables['useBuildOutputFromBuildId'],''),
       in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
     )
-  pool: windows-2022
+  pool: ProjectReunionESPool-2022
   timeoutInMinutes: 120
   variables:
     buildPlatform: 'anycpu'
@@ -222,7 +222,8 @@ jobs:
       artifactName: FullNuget
 
 - job: BuildMRT
-  pool: windows-2022
+  pool:
+    vmImage: 'windows-2022'
   dependsOn:
     - VerifyCopyrightHeaders
   condition: in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
@@ -260,7 +261,7 @@ jobs:
   dependsOn:
     - BuildMRT
   condition: in(dependencies.BuildMRT.result, 'Succeeded')
-  pool: windows-2022
+  pool: ProjectReunionESPool-2022
   steps:
   - template: publish-mrt.yml
 
@@ -279,7 +280,7 @@ jobs:
       in(dependencies.PublishMRT.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
       in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
     )
-  pool: windows-2022
+  pool: ProjectReunionESPool-2022
 
   steps:
   - task: DownloadBuildArtifacts@0
@@ -455,14 +456,14 @@ jobs:
     dependsOn: SignBinariesAndPublishSymbols
     signConfigPattern: 'Microsoft.WindowsAppSDK*.nupkg'
     useReleaseTag: '$(WindowsAppSDKFinalRelease)'
-    buildPool: windows-2022
+    buildPool: ProjectReunionESPool-2022
 
 # TODO: Reenable, Add-AppxPackage currently does not work on 2022 images. See issue #2908
 # # Build WinAppSDK and Run Integration Test from TestAll.ps1
 # - job: WinAppSDKIntegrationBuildAndTest
 #   dependsOn: ['CreateNugetPackage']
 #   condition: succeeded()
-#   pool: windows-2022
+#   pool: ProjectReunionESPool-2022
 #   variables:
 #     WindowsAppSDKTransportPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
 #     VersionWithDevTag: $[format('{0}.{1}.{2}-{3}.{4}.{5}', variables['major'], variables['minor'], variables['patch'], 'dev', variables['versionDate'], variables['versionCounter'])]
@@ -484,7 +485,7 @@ jobs:
   - CreateNugetPackage
   # - WinAppSDKIntegrationBuildAndTest
   condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
-  pool: windows-2022
+  pool: ProjectReunionESPool-2022
   variables:
     WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
   steps:
