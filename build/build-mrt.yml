@@ -148,28 +148,28 @@ steps:
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish mrtcore binaries'
-  condition: succeededOrFailed()
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     PathtoPublish: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrtCoreManagedTest
     artifactName: MrtCoreManagedTest
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish mrtcore binaries'
-  condition: succeededOrFailed()
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     PathtoPublish: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest
     artifactName: MrmUnitTest
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish mrtcore binaries'
-  condition: succeededOrFailed()
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     PathtoPublish: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests
     artifactName: MrmBaseUnitTests
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish mrtcore binaries'
-  condition: succeededOrFailed()
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     PathtoPublish: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests
     artifactName: MrtCoreUnpackagedTests

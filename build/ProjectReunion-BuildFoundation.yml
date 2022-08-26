@@ -271,9 +271,6 @@ jobs:
       Release_x64:
         buildPlatform: 'x64'
         buildConfiguration: 'Release'
-      Release_Arm64:
-        buildPlatform: 'ARM64'
-        buildConfiguration: 'Release'
   steps:
   - template: test-mrt.yml
 
