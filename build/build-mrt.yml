@@ -123,6 +123,10 @@ steps:
         }
       }
 
+      whoami /user
+
+      net users
+
 - task: MSBuild@1
   displayName: 'build MrtCore'
   inputs:
