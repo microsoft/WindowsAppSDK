@@ -80,7 +80,7 @@ int wmain(int argc, wchar_t *argv[])
         }
         else
         {
-            if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet))
+            if (WI_IsFlagClear(options, WindowsAppRuntimeInstaller::Options::Quiet))
             {
                 std::wcerr << "Unknown argument: " << arg.data() << std::endl;
                 DisplayHelp();
@@ -100,19 +100,17 @@ int wmain(int argc, wchar_t *argv[])
     LOG_IF_WIN32_BOOL_FALSE(installActivityContext.LogInstallerCommandLineArgs(args.str().c_str()));
     args.clear();
 
-    if (!isElevated)
+    const bool quiet{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet) };
+    if (!isElevated && !quiet)
     {
-        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet))
-        {
-            std::wcout << "INFO: Provisioning of WindowsAppSDK packages will be skipped as it requires elevation." << std::endl;
-        }
+        std::wcout << "INFO: Provisioning of WindowsAppSDK packages will be skipped as it requires elevation." << std::endl;
     }
 
     const HRESULT deployPackagesResult{ WindowsAppRuntimeInstaller::Deploy(options) };
 
     if (SUCCEEDED(deployPackagesResult))
     {
-        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet))
+        if (!quiet)
         {
             std::wcout << "All install operations successful." << std::endl;
         }
@@ -132,7 +130,7 @@ int wmain(int argc, wchar_t *argv[])
     }
     else
     {
-        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet))
+        if (!quiet)
         {
             std::wcerr << "One or more install operations failed. Result: 0x" << std::hex << deployPackagesResult << std::endl;
         }
