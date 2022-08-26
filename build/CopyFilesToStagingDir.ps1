@@ -170,6 +170,10 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windo
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cpp $NugetDir\include
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cs $NugetDir\include
 #
+# DeploymentManager Auto-Initializer Files
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\DeploymentManagerAutoInitializer.cpp $NugetDir\include
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\DeploymentManagerAutoInitializer.cs $NugetDir\include
+#
 # UndockedRegFreeWinRT (URFW) Auto-Initializer Files
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\UndockedRegFreeWinRT-AutoInitializer.cpp $NugetDir\include
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\UndockedRegFreeWinRT-AutoInitializer.cs $NugetDir\include

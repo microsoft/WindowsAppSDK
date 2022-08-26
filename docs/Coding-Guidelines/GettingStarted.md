@@ -4,27 +4,54 @@
 
 Development requires the following installed tools...
 
-* Visual Studio 2019 with the following components
-  * .NET 5.0 Runtime
-  * .NET SDK
-  * Git for Windows
-  * GitHub extension for Visual Studio
-  * NuGet package manager
-  * NuGet targets and build tasks
-  * C# and Visual Basic Roslyn compilers
-  * C++ Universal Windows Platform support for v142 build tools (ARM64)
-  * MSBuild
-  * MSVC v142 0 VS 2019 C++ ARM64 build tools (Latest)
-  * MSVC v142 0 VS 2019 C++ x64/x86 build tools (Latest)
-  * Windows Universal CRT SDK
-  * .NET profiling tools
-  * C++ profiling tools
-  * C# and Visual Basic
-  * C++ core features
-  * Visual Studio SDK
-  * Windows 10 SDK (10.0.17763.0)
-  * Windows 10 SDK (10.0.18362.0)
-  * Windos UUniversal C Runtime
+1. Windows 10 SDK 10.0.17763.0 (RS5)
+   a. Browse to https://go.microsoft.com/fwlink/p/?LinkID=2033908
+   b. Save the offered download `winsdksetup.exe`
+   c. Run winsdksetup.exe
+
+**NOTE:** Visual Studio 2022 doesn't include this SDK but will use it if installed on the machine.
+
+2. Visual Studio 2022 with...
+   a. Workloads
+      * .NET desktop development
+      * Desktop development with C++
+      * Universal Windows Platform development
+   b. Individual components
+      * .NET 6.0 Runtime (LTS)
+      * .NET SDK
+      * Git for Windows
+      * ??? GitHub extension for Visual Studio
+      * NuGet package manager
+      * NuGet targets and build tasks
+      * C# and Visual Basic Roslyn compilers
+      * C++ Universal Windows Platform support for v143 build tools (ARM64)
+      * MSBuild
+      * MSVC v143 - VS 2022 C++ ARM64 build tools (Latest)
+      * MSVC v143 - VS 2022 C++ x64/x86 build tools (Latest)
+      * Windows Universal CRT SDK
+      * .NET profiling tools
+      * C++ profiling tools
+      * C# and Visual Basic
+      * C++ core features
+      * C++/WinRT
+      * Visual Studio SDK
+      * Windows 10 SDK (10.0.17763.0)
+      * Windows 10 SDK (10.0.18362.0)
+      * Windows 10 SDK (10.0.19041.0)
+      * Windows 10 SDK (10.0.20348.0)
+      * Windows 10 SDK (10.0.22000.0)
+      * Windows 10 SDK (10.0.22621.0)
+      * Windows Universal C Runtime
+
+**NOTE:** You can tell the Visual Studio Installer to do the heavy lifting for you
+via `More` / `Import configuration` and select `docs\Coding-Guidelines\VisualStudio2022.vsconfig`.
+
+3. Run NuGet Restore
+   a. Download nuget.exe version >= 6.2.1 from https://www.nuget.org/downloads
+      e.g. https://dist.nuget.org/win-x86-commandline/v6.2.1/nuget.exe
+   b. Open a command prompt
+   c. CD to the project root e.g. `cd c:\source\repos\windowsappsdk`
+   d. Run `nuget.exe restore`
 
 # One-Time Setup
 
