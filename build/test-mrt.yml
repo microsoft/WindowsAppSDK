@@ -25,7 +25,7 @@ steps:
   inputs:
     testSelector: 'testAssemblies'
     testAssemblyVer2: '**\MrtCoreManagedTest.build.appxrecipe'
-    searchFolder: '$(Build.SourcesDirectory)\MrtCoreManagedTest'
+    searchFolder: '$(Build.SourcesDirectory)\MrtCoreManagedTest-$(buildPlatform)-$(buildConfiguration)'
     testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
@@ -35,7 +35,7 @@ steps:
   inputs:
     testSelector: 'testAssemblies'
     testAssemblyVer2: '**\MrmUnitTest.dll'
-    searchFolder: '$(Build.SourcesDirectory)\MrmUnitTest'
+    searchFolder: '$(Build.SourcesDirectory)\MrmUnitTest-$(buildPlatform)-$(buildConfiguration)'
     testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
@@ -45,7 +45,7 @@ steps:
   inputs:
     testSelector: 'testAssemblies'
     testAssemblyVer2: '**\MrmBaseUnitTests.dll'
-    searchFolder: '$(Build.SourcesDirectory)\MrmBaseUnitTests'
+    searchFolder: '$(Build.SourcesDirectory)\MrmBaseUnitTests-$(buildPlatform)-$(buildConfiguration)'
     testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
@@ -55,7 +55,7 @@ steps:
   inputs:
     testSelector: 'testAssemblies'
     testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
-    searchFolder: '$(Build.SourcesDirectory)\MrtCoreUnpackagedTests'
+    searchFolder: '$(Build.SourcesDirectory)\MrtCoreUnpackagedTests-$(buildPlatform)-$(buildConfiguration)'
     testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
