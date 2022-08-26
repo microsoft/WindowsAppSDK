@@ -17,6 +17,7 @@ namespace Test::LRP
 {
     static const PCWSTR c_processName = L"TAEF.exe";
     static const PCWSTR c_appId = L"toastAppId";
+    inline IID c_remoteId = winrt::guid("A7652901-313C-4EFA-A303-95C371A00DAB");
 
     class LRPTests
     {

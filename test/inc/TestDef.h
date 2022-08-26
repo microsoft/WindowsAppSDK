@@ -22,7 +22,9 @@ static const std::wstring c_testRequestRestartNowRestartedPhaseEventName = L"Win
 static const std::wstring c_testRequestRestartNowRestartedPhasePackagedEventName = L"WindowsAppRuntimeTestRequestRestartNowRestartedPhasePackagedEventName";
 
 static const std::wstring c_testPushPhaseEventName = L"WindowsAppRuntimeTestPushPhaseEventName";
-inline IID c_remoteId = winrt::guid("A7652901-313C-4EFA-A303-95C371A00DAB");
+
+static const std::wstring c_rawNotificationPayload = L"rawNotificationValue";
+static const std::wstring c_appNotificationArgument = L"Argument";
 
 #ifndef WIDEN2
 #define WIDEN2(x) L ## x
