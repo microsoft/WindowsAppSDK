@@ -17,27 +17,24 @@ namespace MachineTypeAttributes
         wil::unique_hmodule kernelbaseDll{ LoadLibraryExW(L"kernelbase.dll", nullptr, 0) };
         if (!kernelbaseDll)
         {
-            THROW_LAST_ERROR();
+            const DWORD rcLoadLibraryError = GetLastError();
+            THROW_HR_IF(HRESULT_FROM_WIN32(rcLoadLibraryError), rcLoadLibraryError != ERROR_MOD_NOT_FOUND);
+            return false;
         }
-        else
+
+        auto getMachineTypeAttributes{ GetProcAddressByFunctionDeclaration(kernelbaseDll.get(), GetMachineTypeAttributes) };
+        if (!getMachineTypeAttributes)
         {
-            auto getMachineTypeAttributes{ GetProcAddressByFunctionDeclaration(kernelbaseDll.get(), GetMachineTypeAttributes) };
-            if (!getMachineTypeAttributes)
-            {
-                // For now, GetMachineTypeAttributes API is available only on Windows 11 (i.e. builds 22000+).
-                THROW_LAST_ERROR();
-                return false;
-            }
-            else
-            {
-                // If execution entered this block, it means that the current system is running Windows 11
-                // until if and when GetMachineTypeAttributes API is serviced down level Windows versions (ex: Windows 10).
-                // For defense against such possible future changes, also check explicitly if given architecture is supported on the current system.
-                MACHINE_ATTRIBUTES machineAttributes{};
-                THROW_IF_FAILED(getMachineTypeAttributes(architecture, &machineAttributes));
-                return WI_IsFlagSet(machineAttributes, MACHINE_ATTRIBUTES::UserEnabled);
-            }
+            const DWORD rcGetProcAddressError = GetLastError();
+            THROW_HR_IF(HRESULT_FROM_WIN32(rcGetProcAddressError), rcGetProcAddressError != ERROR_PROC_NOT_FOUND);
+            // If execution comes here, it means the current system is not running Windows 11.
+            return false;
         }
-        return false;
+
+        // If execution comes here, it means that the current system is running Windows 11
+        // For defense against such possible future changes, also check explicitly if given architecture is supported on the current system.
+        MACHINE_ATTRIBUTES machineAttributes{};
+        THROW_IF_FAILED(getMachineTypeAttributes(architecture, &machineAttributes));
+        return WI_IsFlagSet(machineAttributes, MACHINE_ATTRIBUTES::UserEnabled);
     }
 }
