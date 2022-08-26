@@ -10,12 +10,13 @@ namespace WindowsAppRuntimeInstaller {
 
     enum class Options
     {
-        InstallPackages     = 0x0001,
+        Install             = 0x0001,
         InstallLicenses     = 0x0002,
         Quiet               = 0x0004,
         DryRun              = 0x0008,
         ForceDeployment     = 0x0010,
-        RepairPackages      = 0x0020,
+        InstallPackages     = 0x0020,
+        Repair              = 0x0040,
     };
     DEFINE_ENUM_FLAG_OPERATORS(Options)
 

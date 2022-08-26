@@ -277,21 +277,48 @@ namespace WindowsAppRuntimeInstaller
             return;
         }
 
+        // Correct WindowsAppSDK MSIX package is considered installed if it's version is same or higher than that from the installer.
+        // Check if a higher version of the package is already installed.
         PackageManager packageManager;
-        const auto package{ packageManager.FindPackageForUser(L"",packageProperties->fullName.get()) };
-        if (package)
+        winrt::hstring currentUserSID;
+        const auto installedPackages = packageManager.FindPackagesForUser(currentUserSID, packageProperties->familyName.get());
+        winrt::hstring installedHigherVersionPackage;
+        bool installedPackageStatusIsOK{};
+
+        // installedPackages can contain only one version of the packagefamily.
+        // installedPackages can contain different architectures of same package version.
+        for (auto installedPackage : installedPackages)
         {
-            if (WI_IsFlagClear(options, WindowsAppRuntimeInstaller::Options::RepairPackages))
+            // For the already installed package of same WindowsAppSDK Major.Minor version with matching architecture, compare version
+            if (installedPackage.Id().Architecture() == packageProperties->architecture)
             {
-                std::wcout << packageProperties->fullName.get() << " package is already installed. Skipping re-installing it." << std::endl;
-                std::cout << "INFO: If WinAppSDK MSIX package(s) need a repair, try -r or --repair option of the Installer)" << std::endl;
-                return;
+                UINT64 installedPackageVersion = (static_cast<UINT64>(installedPackage.Id().Version().Major) << 24 +
+                    static_cast<UINT64>(installedPackage.Id().Version().Minor) << 16 +
+                    static_cast<UINT64>(installedPackage.Id().Version().Build) << 8 +
+                    static_cast<UINT64>(installedPackage.Id().Version().Revision));
+
+                if (installedPackageVersion > packageProperties->version)
+                {
+                    installedHigherVersionPackage = installedPackage.Id().FullName();
+                    installedPackageStatusIsOK = installedPackage.Status().VerifyIsOK();
+                }
+                else if (installedPackageVersion == packageProperties->version)
+                {
+                    installedPackageStatusIsOK = installedPackage.Status().VerifyIsOK();
+                }
             }
         }
-        else if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::RepairPackages))
+
+        // Install option should install the applicable WindowsAppSDK MSIX package only if it is not already installed or if it's status is not OK.
+        // Repair option should install the applicable WindowsAppSDK MSIX package independent of it's state.
+        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallPackages) ||
+            WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Install))
         {
-            std::wcout << "ERROR: " << packageProperties->fullName.get() << " package is not installed yet. Repair cant be performed on it." << std::endl;
-            THROW_HR(HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+            if (installedPackageStatusIsOK)
+            {
+                // If currently installed Package (either same or higher version than the version from the installer) is in good state, do nothing and return.
+                return;
+            }
         }
 
         PCWSTR c_windowsAppRuntimeTempDirectoryPrefix{ L"MSIX" };
@@ -307,7 +334,7 @@ namespace WindowsAppRuntimeInstaller
 
         if (!quiet)
         {
-            std::wcout << "Deploying package: " << packageProperties->fullName.get() << std::endl;
+            std::wcout << L"Deploying package: " << packageProperties->fullName.get() << std::endl;
         }
 
         // DryRun = Don't do the work
@@ -316,25 +343,33 @@ namespace WindowsAppRuntimeInstaller
             return;
         }
 
-        installActivityContext.SetInstallStage(InstallStage::CreatePackageURI);
-
-        // Write the package to a temp file. The PackageManager APIs require a Uri.
-        wil::com_ptr<IStream> outStream{ OpenFileStream(packageFilename) };
-        ULARGE_INTEGER streamSize{};
-        THROW_IF_FAILED(::IStream_Size(packageStream.get(), &streamSize));
-        THROW_IF_FAILED(packageStream->CopyTo(outStream.get(), streamSize, nullptr, nullptr));
-        THROW_IF_FAILED(outStream->Commit(STGC_OVERWRITE));
-        outStream.reset();
-
-        // Add-or-Stage the package
-        Uri packageUri{ packageFilename };
-        auto hrAddResult{ AddOrStagePackage(installActivityContext, packageUri, packageProperties, forceDeployment) };
-        if (!quiet)
+        if (installedHigherVersionPackage.size())
         {
-            std::wcout << "Package deployment result : 0x" << std::hex << hrAddResult << " ";
-            DisplayError(hrAddResult);
+            // Re-register higher version of the package that is already installed.
+            RegisterPackage(installedHigherVersionPackage.c_str());
         }
-        THROW_IF_FAILED(hrAddResult);
+        else
+        {
+            installActivityContext.SetInstallStage(InstallStage::CreatePackageURI);
+
+            // Write the package to a temp file. The PackageManager APIs require a Uri.
+            wil::com_ptr<IStream> outStream{ OpenFileStream(packageFilename) };
+            ULARGE_INTEGER streamSize{};
+            THROW_IF_FAILED(::IStream_Size(packageStream.get(), &streamSize));
+            THROW_IF_FAILED(packageStream->CopyTo(outStream.get(), streamSize, nullptr, nullptr));
+            THROW_IF_FAILED(outStream->Commit(STGC_OVERWRITE));
+            outStream.reset();
+
+            // Add-or-Stage the package
+            Uri packageUri{ packageFilename };
+            auto hrAddResult{ AddOrStagePackage(installActivityContext, packageUri, packageProperties, forceDeployment) };
+            if (!quiet)
+            {
+                std::wcout << "Package deployment result : 0x" << std::hex << hrAddResult << " ";
+                DisplayError(hrAddResult);
+            }
+            THROW_IF_FAILED(hrAddResult);
+        }
 
         // Framework provisioning is not supported by the PackageManager ProvisionPackageForAllUsersAsync API.
         // Hence, skip attempting to provision framework package.
@@ -408,7 +443,9 @@ namespace WindowsAppRuntimeInstaller
 #if defined(MSIX_PROCESS_LICENSES)
         const auto quiet{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet) };
 
-        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallLicenses))
+        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallLicenses) ||
+            WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Install) ||
+            WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Repair))
         {
             auto& installActivityContext{ WindowsAppRuntimeInstaller::InstallActivity::Context::Get() };
             installActivityContext.SetInstallStage(InstallStage::InstallLicense);
@@ -446,7 +483,9 @@ namespace WindowsAppRuntimeInstaller
 
     HRESULT DeployPackages(const WindowsAppRuntimeInstaller::Options options)
     {
-        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallPackages))
+        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallPackages) ||
+            WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Install) ||
+            WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Repair))
         {
             for (const auto& package : WindowsAppRuntimeInstaller::c_packages)
             {
@@ -454,6 +493,7 @@ namespace WindowsAppRuntimeInstaller
                 DeployPackageFromResource(package, options);
 
                 // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
+                // Comparing package Id with any of the MSIX Singleton ID while leaving out architecture portion of it which 
                 if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment) &&
                     CompareStringOrdinal(package.id.c_str(), static_cast<int>(package.id.size() - 3), MSIX_SINGLETON_X86_ID, static_cast<int>(package.id.size() - 3), TRUE) == CSTR_EQUAL)
                 {
