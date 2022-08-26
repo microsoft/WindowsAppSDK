@@ -8,7 +8,7 @@
     Review the current environment and fix or warn if anything is amiss. This includes...
     * TAEF service is installed and running
     * Test certificate to sign test MSIX packages is installed
-    * Visual Studio 2019 is installed and properly configured
+    * Visual Studio 2022 is installed and properly configured
 
 .PARAMETER CertPassword
     Password for new certificates
@@ -216,30 +216,30 @@ function Run-Process([string]$exe, [string]$arguments, [Ref][string]$stderr)
 }
 
 $vspath = ''
-function Get-VisualStudio2019InstallPath
+function Get-VisualStudio2022InstallPath
 {
     if ([string]::IsNullOrEmpty($global:vspath))
     {
-        Write-Verbose "Detecting VisualStudio 2019..."
+        Write-Verbose "Detecting VisualStudio 2022..."
         $vswhere = Get-VSWhere
-        $args = " -latest -products * -version [16.0,17.0) -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath"
+        $args = " -latest -products * -version [17.0,18.0) -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath"
         Write-Verbose "Executing $vswhere $args"
         $path = Run-Process $vswhere $args
         $path = $path -replace [environment]::NewLine, ''
-        Write-Verbose "Visual Studio 2019 detected at $path"
+        Write-Verbose "Visual Studio 2022 detected at $path"
         $global:vspath = $path
     }
     return $global:vspath
 }
 
-function Test-VisualStudio2019Install
+function Test-VisualStudio2022Install
 {
-    $path = Get-VisualStudio2019InstallPath
+    $path = Get-VisualStudio2022InstallPath
     if ([string]::IsNullOrEmpty($path))
     {
         $global:issues++
     }
-    Write-Host "VisualStudio 2019...$path"
+    Write-Host "VisualStudio 2022...$path"
 }
 
 function Test-DevTestPfx
@@ -577,7 +577,7 @@ Write-Output "Windows App SDK location...$project_root"
 
 if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
 {
-    Test-VisualStudio2019Install
+    Test-VisualStudio2022Install
 }
 
 if (($CheckAll -ne $false) -Or ($CheckTestPfx -ne $false))
