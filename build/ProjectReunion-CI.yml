@@ -151,7 +151,7 @@ jobs:
       # This pipeline is unable to access OneBranch, so skip running BinaryAnalysis.
       runSDLBinaryAnalysis: false
 
-  ${{ if ne(variables['buildPlatform'], 'ARM64') }}:
+  - ${{ if ne(variables['buildPlatform'], 'ARM64') }}:
     - template: test-mrt.yml
 
   - task: PublishBuildArtifacts@1
