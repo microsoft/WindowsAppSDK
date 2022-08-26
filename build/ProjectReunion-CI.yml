@@ -151,9 +151,6 @@ jobs:
       # This pipeline is unable to access OneBranch, so skip running BinaryAnalysis.
       runSDLBinaryAnalysis: false
 
-  - ${{ if ne(variables['buildPlatform'], 'ARM64') }}:
-    - template: test-mrt.yml
-
   - task: PublishBuildArtifacts@1
     displayName: 'Publish BuildOutput'
     inputs:
@@ -185,10 +182,28 @@ jobs:
       TSLint: false
       ToolLogsNotFoundAction: 'Standard'
 
-- job: PublishMRT
+- job: TestMRT
+  pool:
+    vmImage: 'windows-2022'
   dependsOn:
     - BuildMRT
   condition: in(dependencies.BuildMRT.result, 'Succeeded')
+  strategy:
+    maxParallel: 10
+    matrix:
+      Release_x86:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Release'
+      Release_x64:
+        buildPlatform: 'x64'
+        buildConfiguration: 'Release'
+  steps:
+  - template: test-mrt.yml
+
+- job: PublishMRT
+  dependsOn:
+    - TestMRT
+  condition: in(dependencies.TestMRT.result, 'Succeeded')
   pool:
     vmImage: 'windows-2022'
   steps:
