@@ -147,32 +147,32 @@ steps:
     artifactName: binlogs
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish mrtcore binaries'
+  displayName: 'Publish MrtCoreManagedTest binaries'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     PathtoPublish: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrtCoreManagedTest
-    artifactName: MrtCoreManagedTest
+    artifactName: "MrtCoreManagedTest-$(buildPlatform)-$(buildConfiguration)"
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish mrtcore binaries'
+  displayName: 'Publish MrmUnitTest binaries'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     PathtoPublish: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest
-    artifactName: MrmUnitTest
+    artifactName: "MrmUnitTest-$(buildPlatform)-$(buildConfiguration)"
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish mrtcore binaries'
+  displayName: 'Publish MrmBaseUnitTests binaries'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     PathtoPublish: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests
-    artifactName: MrmBaseUnitTests
+    artifactName: "MrmBaseUnitTests-$(buildPlatform)-$(buildConfiguration)"
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish mrtcore binaries'
+  displayName: 'Publish MrtCoreUnpackagedTests binaries'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     PathtoPublish: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests
-    artifactName: MrtCoreUnpackagedTests
+    artifactName: "MrtCoreUnpackagedTests-$(buildPlatform)-$(buildConfiguration)"
 
 - task: ComponentGovernanceComponentDetection@0
   inputs:

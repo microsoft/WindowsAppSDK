@@ -1,22 +1,22 @@
 steps:
 - task: DownloadBuildArtifacts@0
   inputs:
-    artifactName: MrtCoreManagedTest
+    artifactName: "MrtCoreManagedTest-$(buildPlatform)-$(buildConfiguration)"
     downloadPath: '$(Build.SourcesDirectory)'
 
 - task: DownloadBuildArtifacts@0
   inputs:
-    artifactName: MrmUnitTest
+    artifactName:  "MrmUnitTest-$(buildPlatform)-$(buildConfiguration)"
     downloadPath: '$(Build.SourcesDirectory)'
 
 - task: DownloadBuildArtifacts@0
   inputs:
-    artifactName: MrmBaseUnitTests
+    artifactName: "MrmBaseUnitTests-$(buildPlatform)-$(buildConfiguration)"
     downloadPath: '$(Build.SourcesDirectory)'
 
 - task: DownloadBuildArtifacts@0
   inputs:
-    artifactName: MrtCoreUnpackagedTests
+    artifactName: "MrtCoreUnpackagedTests-$(buildPlatform)-$(buildConfiguration)"
     downloadPath: '$(Build.SourcesDirectory)'
   
 # Run the test locally on the Azure VM.
