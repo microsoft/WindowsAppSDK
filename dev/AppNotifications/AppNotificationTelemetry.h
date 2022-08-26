@@ -21,7 +21,7 @@ public:
         winrt::hresult hr,
         std::wstring const& appId) noexcept try
     {
-        if (m_helper.ShouldLogEvent())
+        if (m_telemetryHelper.ShouldLogEvent())
         {
             TraceLoggingClassWriteMeasure(
                 "Register",
@@ -29,8 +29,8 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
-                TraceLoggingBool(m_helper.IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(m_helper.GetAppName().c_str(), "AppName"));
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -39,7 +39,7 @@ public:
         winrt::hresult hr,
         std::wstring const& appId) noexcept try
     {
-        if (m_helper.ShouldLogEvent())
+        if (m_telemetryHelper.ShouldLogEvent())
         {
             TraceLoggingClassWriteMeasure(
                 "Unregister",
@@ -47,8 +47,8 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
-                TraceLoggingBool(m_helper.IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(m_helper.GetAppName().c_str(), "AppName"));
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -57,7 +57,7 @@ public:
         winrt::hresult hr,
         std::wstring const& appId) noexcept try
     {
-        if (m_helper.ShouldLogEvent())
+        if (m_telemetryHelper.ShouldLogEvent())
         {
             TraceLoggingClassWriteMeasure(
                 "UnregisterAll",
@@ -65,8 +65,8 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
-                TraceLoggingBool(m_helper.IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(m_helper.GetAppName().c_str(), "AppName"));
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -78,7 +78,7 @@ public:
         winrt::hstring const& tag,
         winrt::hstring const& group) noexcept try
     {
-        if (m_helper.ShouldLogEvent())
+        if (m_telemetryHelper.ShouldLogEvent())
         {
             TraceLoggingClassWriteMeasure(
                 "Show",
@@ -89,8 +89,8 @@ public:
                 TraceLoggingUInt32(payload.size(), "PayloadSize"),
                 TraceLoggingUInt32(tag.size(), "TagSize"),
                 TraceLoggingUInt32(group.size(), "GroupSize"),
-                TraceLoggingBool(m_helper.IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(m_helper.GetAppName().c_str(), "AppName"));
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -101,7 +101,7 @@ public:
             winrt::hstring const& tag,
             winrt::hstring const& group) noexcept try
     {
-        if (m_helper.ShouldLogEvent())
+        if (m_telemetryHelper.ShouldLogEvent())
         {
             TraceLoggingClassWriteMeasure(
                 "UpdateAsync",
@@ -111,8 +111,8 @@ public:
                 TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingUInt32(tag.size(), "TagSize"),
                 TraceLoggingUInt32(group.size(), "GroupSize"),
-                TraceLoggingBool(m_helper.IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(m_helper.GetAppName().c_str(), "AppName"));
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -121,7 +121,7 @@ public:
         winrt::hresult hr,
         std::wstring const& appId) noexcept try
     {
-        if (m_helper.ShouldLogEvent())
+        if (m_telemetryHelper.ShouldLogEvent())
         {
             TraceLoggingClassWriteMeasure(
                 "Setting",
@@ -129,8 +129,8 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
-                TraceLoggingBool(m_helper.IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(m_helper.GetAppName().c_str(), "AppName"));
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -140,7 +140,7 @@ public:
         std::wstring const& appId,
         uint32_t notificationId) noexcept try
     {
-        if (m_helper.ShouldLogEvent())
+        if (m_telemetryHelper.ShouldLogEvent())
         {
             TraceLoggingClassWriteMeasure(
                 "RemoveByIdAsync",
@@ -149,8 +149,8 @@ public:
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingHexUInt32(notificationId, "NotificationId"),
-                TraceLoggingBool(m_helper.IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(m_helper.GetAppName().c_str(), "AppName"));
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -160,7 +160,7 @@ public:
         std::wstring const& appId,
         winrt::hstring const& tag) noexcept try
     {
-        if (m_helper.ShouldLogEvent())
+        if (m_telemetryHelper.ShouldLogEvent())
         {
             TraceLoggingClassWriteMeasure(
                 "RemoveByTagAsync",
@@ -169,8 +169,8 @@ public:
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingUInt32(tag.size(), "TagSize"),
-                TraceLoggingBool(m_helper.IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(m_helper.GetAppName().c_str(), "AppName"));
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -181,7 +181,7 @@ public:
         winrt::hstring const& tag,
         winrt::hstring const& group) noexcept try
     {
-        if (m_helper.ShouldLogEvent())
+        if (m_telemetryHelper.ShouldLogEvent())
         {
             TraceLoggingClassWriteMeasure(
                 "RemoveByTagAndGroupAsync",
@@ -191,8 +191,8 @@ public:
                 TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingUInt32(tag.size(), "TagSize"),
                 TraceLoggingUInt32(group.size(), "GroupSize"),
-                TraceLoggingBool(m_helper.IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(m_helper.GetAppName().c_str(), "AppName"));
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -201,7 +201,7 @@ public:
         winrt::hresult hr,
         std::wstring const& appId) noexcept try
     {
-        if (m_helper.ShouldLogEvent())
+        if (m_telemetryHelper.ShouldLogEvent())
         {
             TraceLoggingClassWriteMeasure(
                 "RemoveByGroupAsync",
@@ -209,8 +209,8 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
-                TraceLoggingBool(m_helper.IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(m_helper.GetAppName().c_str(), "AppName"));
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -219,7 +219,7 @@ public:
         winrt::hresult hr,
         std::wstring const& appId) noexcept try
     {
-        if (m_helper.ShouldLogEvent())
+        if (m_telemetryHelper.ShouldLogEvent())
         {
             TraceLoggingClassWriteMeasure(
                 "RemoveAllAsync",
@@ -227,8 +227,8 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
-                TraceLoggingBool(m_helper.IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(m_helper.GetAppName().c_str(), "AppName"));
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -237,7 +237,7 @@ public:
         winrt::hresult hr,
         std::wstring const& appId) noexcept try
     {
-        if (m_helper.ShouldLogEvent())
+        if (m_telemetryHelper.ShouldLogEvent())
         {
             TraceLoggingClassWriteMeasure(
                 "GetAllAsync",
@@ -245,12 +245,12 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
-                TraceLoggingBool(m_helper.IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(m_helper.GetAppName().c_str(), "AppName"));
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
 
 private:
-    NotificationTelemetryHelper m_helper;
+    NotificationTelemetryHelper m_telemetryHelper;
 };
