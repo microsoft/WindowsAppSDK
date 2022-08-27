@@ -3,12 +3,13 @@
 
 #include "pch.h"
 #include "tracelogging.h"
+#include <debugapi.h>
 
 using namespace winrt::Windows::Foundation;
 
 int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
 {
-    _CrtDbgBreak();
+    DebugBreak();
     DWORD sleepTime = 15 * 1000;
     Sleep(sleepTime);
     int argc{};
