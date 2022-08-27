@@ -7,7 +7,7 @@
 
 using namespace winrt::Windows::Foundation;
 
-int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
+int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int) try
 {
     DebugBreak();
     DWORD sleepTime = 15 * 1000;
@@ -72,3 +72,4 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
         callerActivityId);
     return S_OK;
 }
+CATCH_RETURN();
