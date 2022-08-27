@@ -45,7 +45,7 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int) try
             winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
             winrt::Windows::Management::Deployment::DeploymentOptions::None };
 
-    const auto packagePathUri{ winrt::Windows::Foundation::Uri(packagePath.c_str()) };
+    const auto packagePathUri{ winrt::Windows::Foundation::Uri(L"C:\\Users\\AppxTest\\Main.msix")};
     const auto deploymentOperation{ packageManager.AddPackageAsync(packagePathUri, nullptr, options) };
     deploymentOperation.get();
     const auto deploymentResult{ deploymentOperation.GetResults() };
