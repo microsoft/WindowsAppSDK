@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -20,7 +20,7 @@ namespace Test::DynamicDependency
         auto bootstrapDllAbsoluteFilename{ TF::GetBootstrapAbsoluteFilename() };
         wil::unique_hmodule bootstrapDll{ LoadLibrary(bootstrapDllAbsoluteFilename.c_str()) };
         const auto lastError{ GetLastError() };
-        VERIFY_IS_NOT_NULL(bootstrapDll.get());
+        VERIFY_IS_NOT_NULL(bootstrapDll.get(), WEX::Common::String().Format(L"LastError: %d (0x%X)", lastError, lastError));
         return bootstrapDll.release();
     }
 

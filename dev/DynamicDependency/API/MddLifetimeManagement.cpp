@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -178,12 +178,10 @@ STDAPI MddLifetimeManagementGC() noexcept try
                         break;
                     }
                 }
-                const auto keeperIndex{ keeper - ddlmPackages.begin() };
 
                 // Remove all older packages (best effort)
                 for (++keeper; keeper != ddlmPackages.end(); ++keeper)
                 {
-                    const auto n{ keeper - ddlmPackages.begin() };
                     keeper->RemovePackage(packageManager);
                 }
             }
