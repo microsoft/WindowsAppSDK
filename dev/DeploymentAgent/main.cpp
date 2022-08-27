@@ -6,7 +6,7 @@
 
 using namespace winrt::Windows::Foundation;
 
-// argv[1] tells whether to use AddPackageAsync (argv[1] == 0) or RegisterPackageAsync (argv[1] == 1) on the path passed in argv[2].
+// argv[1] tells whether to use AddPackageAsync (argv[1] == "0") or RegisterPackageAsync (argv[1] == "1") on the path passed in argv[2].
 int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int) try
 {
     int argc{};
@@ -17,6 +17,15 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int) try
     {
         WindowsAppRuntimeDeploymentAgent_TraceLogger::FailedDueToBadArguments(argc);
         return HRESULT_FROM_WIN32(ERROR_BAD_ARGUMENTS);
+    }
+
+    bool useExistingPackageIfHigherVersion{};
+    if (argc >= 2)
+    {
+        if (CompareStringOrdinal(argv[1], -1, L"1", -1, TRUE) == CSTR_EQUAL)
+        {
+            useExistingPackageIfHigherVersion = true;
+        }
     }
 
     bool forceDeployment{};
@@ -44,7 +53,7 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int) try
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Windows::Management::Deployment::DeploymentResult,
         winrt::Windows::Management::Deployment::DeploymentProgress> deploymentOperation;
     const auto pathUri{ winrt::Windows::Foundation::Uri(argv[2]) };
-    if (argv[1])
+    if (useExistingPackageIfHigherVersion)
     {
         deploymentOperation = packageManager.RegisterPackageAsync(pathUri, nullptr, options);    }
     else

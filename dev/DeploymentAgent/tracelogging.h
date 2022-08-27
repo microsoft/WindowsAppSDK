@@ -18,7 +18,7 @@ public:
     DEFINE_COMPLIANT_CRITICAL_DATA_EVENT_PARAM4(
         Success,
         PDT_ProductAndServicePerformance,
-        bool, isRegisterHigherVersion,
+        bool, useExistingPackageIfHigherVersion,
         PCWSTR, path,
         bool, forceDeployment,
         GUID, callerActivityId);
@@ -32,7 +32,7 @@ public:
         FailedInDeployment,
         PDT_ProductAndServicePerformance,
         HRESULT, hresult,
-        bool, isRegisterHigherVersion,
+        bool, useExistingPackageIfHigherVersion,
         PCWSTR, path,
         bool, forceDeployment,
         GUID, callerActivityId,

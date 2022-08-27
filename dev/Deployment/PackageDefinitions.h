@@ -50,5 +50,6 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         { WINDOWSAPPRUNTIME_PACKAGE_NAME_SINGLETONPREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, PackageVersionType::Unversioned },
     };
 
-    static std::wstring g_higherVersionInstalledPackage[2];
+    // Record existing target package full name(s) to deploy (specifically, re-register) if it's higher version than that of the current framework package version, in this global map.
+    static std::map<std::wstring, std::wstring> g_existingTargetPackagesIfHigherVersion;
 }

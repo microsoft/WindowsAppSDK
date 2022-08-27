@@ -107,21 +107,21 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         // (i.e. if any of the target packages is not installed, GetStatus should return PackageInstallRequired).
         HRESULT verifyResult{};
 
-        for (int i = 0; i < *(&c_targetPackages + 1) - c_targetPackages ; i++)
+        for (auto package : c_targetPackages)
         {
             // Build package family name based on the framework naming scheme.
             std::wstring packageFamilyName{};
-            if (c_targetPackages[i].versionType == PackageVersionType::Versioned)
+            if (package.versionType == PackageVersionType::Versioned)
             {
                 // PackageFamilyName = Prefix + SubTypeName + VersionIdentifier + Suffix
                 // On WindowsAppSDK 1.1+, Main and Singleton packages are sharing same Package Name Prefix.
-                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + c_targetPackages[i].identifier + packageNameVersionIdentifier + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionIdentifier + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
             }
-            else if (c_targetPackages[i].versionType == PackageVersionType::Unversioned)
+            else if (package.versionType == PackageVersionType::Unversioned)
             {
                 // PackageFamilyName = Prefix + Subtypename + VersionTag + Suffix
                 // On WindowsAppSDK 1.1+, Main and Singleton packages are sharing same Package Name Prefix.
-                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + c_targetPackages[i].identifier + packageNameVersionTag + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionTag + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
             }
             else
             {
@@ -132,7 +132,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             // Get target version based on the framework.
             auto targetPackageVersion{ frameworkPackageInfo.Package(0).packageId.version };
 
-            verifyResult = VerifyPackage(packageFamilyName, targetPackageVersion, g_higherVersionInstalledPackage[i]);
+            verifyResult = VerifyPackage(packageFamilyName, targetPackageVersion, package.identifier);
             if (FAILED(verifyResult))
             {
                 break;
@@ -192,7 +192,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
         try
         {
-            deploymentResult = _Initialize(initializeActivityContext, packageFullName, deploymentInitializeOptions);
+            deploymentResult = _Initialize(initializeActivityContext, packageFullName, deploymentInitializeOptions, isRepair);
         }
         catch (winrt::hresult_error const& e)
         {
@@ -325,7 +325,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
 
     HRESULT DeploymentManager::VerifyPackage(const std::wstring& packageFamilyName, const PACKAGE_VERSION targetVersion,
-        __out std::wstring& matchedPackageFullName_IfHigherVersion) try
+        __out std::wstring& packageIdentifier) try
     {
         auto packageFullNames{ FindPackagesByFamily(packageFamilyName) };
         bool match{};
@@ -343,7 +343,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                 match = true;
                 if (packageId.Version().Version > targetVersion.Version)
                 {
-                    matchedPackageFullName_IfHigherVersion = packageFullName;
+                    g_existingTargetPackagesIfHigherVersion.insert(std::make_pair(packageIdentifier, packageFullName));
                 }
                 break;
             }
@@ -533,43 +533,50 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName, const bool forceDeployment)
     {
         auto initializeActivity{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
+
         initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::GetPackagePath);
         const auto frameworkPath{ std::filesystem::path(GetPackagePath(frameworkPackageFullName)) };
 
         initializeActivity.SetInstallStage(::WindowsAppRuntime::Deployment::Activity::DeploymentStage::AddPackage);
-        for (int i = 0; i < *(&c_targetPackages + 1) - c_targetPackages; i++)
+        for (auto package : c_targetPackages)
         {
             initializeActivity.Reset();
-            initializeActivity.SetCurrentResourceId(c_targetPackages[i].identifier);
+            initializeActivity.SetCurrentResourceId(package.identifier);
 
-            // Build path for the packages.
             std::filesystem::path packagePath{};
-            if (g_higherVersionInstalledPackage[i].empty())
+
+            // If there is exisiting target package version higher than that of framework current version package, then re-register it.
+            // Otherwise, deploy the target msix package from the current framework package version.
+            auto existingPackageIfHigherVersion = g_existingTargetPackagesIfHigherVersion.find(package.identifier);
+            auto useExistingPackageIfHigherVersion { existingPackageIfHigherVersion != g_existingTargetPackagesIfHigherVersion.end() };
+            if (useExistingPackageIfHigherVersion)
+            {
+                initializeActivity.SetUseExistingPackageIfHigherVersion();
+                packagePath = std::filesystem::path(GetPackagePath(existingPackageIfHigherVersion->second));
+                packagePath /= WINDOWSAPPRUNTIME_PACKAGE_MANIFEST_FILE;
+            }
+            else
             {
                 packagePath = frameworkPath;
                 packagePath /= WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER;
-                packagePath /= c_targetPackages[i].identifier + WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FILE_EXTENSION;
-            }
-            else
-            {
-                packagePath = std::filesystem::path(GetPackagePath(g_higherVersionInstalledPackage[i]));
-                packagePath /= WINDOWSAPPRUNTIME_PACKAGE_MANIFEST_FILE;
+                packagePath /= package.identifier + WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FILE_EXTENSION;
             }
 
+            // If the current application has runFullTrust capability, then Deploy the target package in a Breakaway process.
+            // Otherwise, call PackageManager API to deploy the target package.
             if (initializeActivity.GetIsFullTrustPackage())
             {
 
-                RETURN_IF_FAILED(AddOrRegisterPackageInBreakAwayProcess(packagePath, !(g_higherVersionInstalledPackage[i].empty()), forceDeployment));
+                RETURN_IF_FAILED(AddOrRegisterPackageInBreakAwayProcess(packagePath, useExistingPackageIfHigherVersion, forceDeployment));
             }
             else
             {
-                // Deploy package.
-                RETURN_IF_FAILED(AddOrRegisterPackage(packagePath, !(g_higherVersionInstalledPackage[i].empty()), forceDeployment));
+                RETURN_IF_FAILED(AddOrRegisterPackage(packagePath, useExistingPackageIfHigherVersion, forceDeployment));
             }
 
             // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
             if (forceDeployment &&
-                CompareStringOrdinal(c_targetPackages[i].identifier.c_str(), -1, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, -1, TRUE) == CSTR_EQUAL)
+                CompareStringOrdinal(package.identifier.c_str(), -1, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, -1, TRUE) == CSTR_EQUAL)
             {
                 // wil callback is set up to log telemetry events for Push Notifications LRP.
                 LOG_IF_FAILED_MSG(StartupNotificationsLongRunningPlatform(), "Restarting Notifications LRP failed in all 3 attempts.");
