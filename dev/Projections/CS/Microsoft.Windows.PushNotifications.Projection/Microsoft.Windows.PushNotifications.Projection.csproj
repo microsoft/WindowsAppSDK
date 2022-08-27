@@ -22,6 +22,7 @@
     <CSWinRTIncludes>Microsoft.Windows.PushNotifications</CSWinRTIncludes>
     <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
     <WindowsSdkPackageVersion>10.0.17763.$(CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion)</WindowsSdkPackageVersion>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
   </PropertyGroup>
 
   <!-- Configure the release build binary to be as required by internal API scanning tools. -->
