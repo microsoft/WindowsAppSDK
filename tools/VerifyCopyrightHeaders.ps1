@@ -1,14 +1,25 @@
+<#
+.SYNOPSIS
+    Verify copyright headers exist for Windows App SDK source files
+
+.PARAMETER Fix
+    Add copyright headers to files that are missing them
+
+.EXAMPLE
+    VerifyCopyrightHeaders -Fix
+#>
+
 Param(
     [switch]$Fix = $false
 )
 
 $copyrightHeaderText = (
-    "Copyright (c) Microsoft Corporation.",
+    "Copyright (c) Microsoft Corporation and Contributors.",
     "Licensed under the MIT License."
 )
 
 $include = ('*.cs', '*.cpp', '*.h', '*.idl', '*.xaml')
-$exclude = [RegEx]'\\dev\\Detours\\'
+$exclude = [RegEx]'\\dev\\Detours\\|\\BuildOutput\\|\\obj\\|\\localpackages\\|\\packages\\|\\specs\\|\\temp\\|\\Debug\\|\\Release\\'
 $files = dir $PSScriptRoot\..\* -recurse -include $include | Where FullName -notmatch $exclude
 
 $errorCount = 0

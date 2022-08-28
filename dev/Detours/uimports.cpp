@@ -1,10 +1,10 @@
-//////////////////////////////////////////////////////////////////////////////
+﻿//////////////////////////////////////////////////////////////////////////////
 //
 //  Add DLLs to a module import table (uimports.cpp of detours.lib)
 //
 //  Microsoft Research Detours Package, Version 4.0.1
 //
-//  Copyright (c) Microsoft Corporation.  All rights reserved.
+//  Copyright (c) Microsoft Corporation and Contributors.  All rights reserved.
 //
 //  Note that this file is included into creatwth.cpp one or more times
 //  (once for each supported module format).
