@@ -9,9 +9,6 @@ using namespace winrt::Windows::Foundation;
 
 int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int) try
 {
-    DebugBreak();
-    DWORD sleepTime = 15 * 1000;
-    Sleep(sleepTime);
     int argc{};
     const std::wstring cmdLine{ GetCommandLineW() };
     const wil::unique_hlocal_ptr<PWSTR[]> argv{ CommandLineToArgvW(cmdLine.c_str(), &argc) };
@@ -45,7 +42,7 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int) try
             winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
             winrt::Windows::Management::Deployment::DeploymentOptions::None };
 
-    const auto packagePathUri{ winrt::Windows::Foundation::Uri(L"C:\\Users\\AppxTest\\Main.msix")};
+    const auto packagePathUri{ winrt::Windows::Foundation::Uri(packagePath.c_str())};
     const auto deploymentOperation{ packageManager.AddPackageAsync(packagePathUri, nullptr, options) };
     deploymentOperation.get();
     const auto deploymentResult{ deploymentOperation.GetResults() };
