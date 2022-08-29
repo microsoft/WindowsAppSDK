@@ -1,14 +1,11 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
 #include "pch.h"
-#include "PushNotificationLongRunningTaskTelemetry.h"
 
 ToastRegistrationManager::ToastRegistrationManager()
 {
-    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(27);
-
     m_toastStorage = winrt::Windows::Storage::ApplicationData::Current().LocalSettings().CreateContainer(
         L"Toast", winrt::Windows::Storage::ApplicationDataCreateDisposition::Always);
 
@@ -20,8 +17,6 @@ ToastRegistrationManager::ToastRegistrationManager()
 
 void ToastRegistrationManager::Add(std::wstring const& processName, std::wstring const& toastAppId)
 {
-    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(28);
-
     auto lock = m_lock.lock_exclusive();
     m_registrationMap[processName] = toastAppId;
 
@@ -30,8 +25,6 @@ void ToastRegistrationManager::Add(std::wstring const& processName, std::wstring
 
 void ToastRegistrationManager::Remove(std::wstring const& processName)
 {
-    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(29);
-
     auto lock = m_lock.lock_exclusive();
     m_registrationMap.erase(processName);
 
@@ -40,8 +33,6 @@ void ToastRegistrationManager::Remove(std::wstring const& processName)
 
 std::wstring ToastRegistrationManager::GetToastRegistration(std::wstring const& processName)
 {
-    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(30);
-
     auto lock = m_lock.lock_shared();
     return m_registrationMap[processName];
 }

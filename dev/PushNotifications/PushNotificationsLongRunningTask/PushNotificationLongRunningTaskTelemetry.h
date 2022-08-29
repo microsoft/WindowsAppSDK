@@ -15,22 +15,6 @@ class PushNotificationLongRunningTaskTelemetry : public wil::TraceLoggingProvide
     IMPLEMENT_TELEMETRY_CLASS(PushNotificationLongRunningTaskTelemetry, PushNotificationLongRunningTaskTelemetryProvider);
 
 public:
-    DEFINE_EVENT_METHOD(LogSomethingSomething)(
-        uint32_t id) noexcept try
-    {
-        //if (c_maxEventLimit >= UpdateLogEventCount())
-        {
-            TraceLoggingClassWriteMeasure(
-                "LogSomethingSomething",
-                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
-                _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingHexUInt32(id, "Id"));
-            //    TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"));
-            //                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
-        }
-    }
-    CATCH_LOG()
-
     DEFINE_EVENT_METHOD(LogOnRawNotificationReceived)(
             winrt::hresult hr,
             std::wstring const& correlationVector) noexcept try
@@ -43,8 +27,6 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(correlationVector.c_str(), "CorrelationVector"));
-//                TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"));
-//                TraceLoggingWideString(GetAppName().c_str(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -74,45 +56,4 @@ private:
 
         return m_eventCount;
     }
-#if 0
-    inline bool IsPackagedApp() const
-    {
-        static const bool isPackagedApp{ AppModel::Identity::IsPackagedProcess() };
-
-        return isPackagedApp;
-    }
-#endif
-#if 0
-    inline const std::wstring& GetAppName() const
-    {
-        static const std::wstring appName{ IsPackagedApp() ? GetAppNamePackaged() : GetAppNameUnpackaged() };
-
-        return appName;
-    }
-#endif
-    std::wstring GetAppNamePackaged() const
-    {
-        wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH]{};
-
-        UINT32 appUserModelIdSize{ ARRAYSIZE(appUserModelId) };
-        THROW_IF_WIN32_ERROR(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
-
-        return appUserModelId;
-    }
-#if 0
-    std::wstring CensorFilePath(const std::wstring& filepath) const
-    {
-        return { !PathIsFileSpecW(filepath.c_str()) ? PathFindFileNameW(filepath.c_str()) : filepath };
-    }
-
-    std::wstring GetAppNameUnpackaged() const
-    {
-        std::wstring appName;
-
-        wil::unique_cotaskmem_string processName;
-        THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processName));
-
-        return CensorFilePath(processName.get());
-    }
-#endif
 };

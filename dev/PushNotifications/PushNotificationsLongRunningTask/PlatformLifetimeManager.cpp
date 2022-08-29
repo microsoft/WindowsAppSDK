@@ -1,15 +1,12 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
 
 #include "PlatformLifetimeManager.h"
-#include "PushNotificationLongRunningTaskTelemetry.h"
 
 void PlatformLifetimeManager::Setup()
 {
-    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(24);
-
     auto lock = m_lock.lock_exclusive();
 
     m_timer.reset(CreateThreadpoolTimer(
@@ -34,8 +31,6 @@ void PlatformLifetimeManager::Setup()
 
 void PlatformLifetimeManager::Cancel()
 {
-    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(25);
-
     auto lock = m_lock.lock_exclusive();
     m_timer.reset();
 }
@@ -47,7 +42,5 @@ void PlatformLifetimeManager::Wait()
 
 void PlatformLifetimeManager::SignalEvent()
 {
-    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(26);
-
     m_event.SetEvent();
 }

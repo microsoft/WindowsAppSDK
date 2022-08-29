@@ -1,31 +1,24 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
 
 #include "pch.h"
-#include "PushNotificationLongRunningTaskTelemetry.h"
 
 void ForegroundSinkManager::Add(std::wstring const& appId, IWpnForegroundSink* const& sink)
 {
-    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(1);
-
     auto lock = m_lock.lock_exclusive();
     m_foregroundMap[appId] = sink;
 }
 
 void ForegroundSinkManager::Remove(std::wstring const& appId)
 {
-    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(2);
-
     auto lock = m_lock.lock_exclusive();
     m_foregroundMap.erase(appId);
 }
 
 bool ForegroundSinkManager::InvokeForegroundHandlers(std::wstring const& appId, winrt::com_array<uint8_t> const& payload, ULONG const& payloadSize, HSTRING correlationVector)
 {
-    PushNotificationLongRunningTaskTelemetry::LogSomethingSomething(3);
-
     auto lock = m_lock.lock_exclusive();
 
     auto it = m_foregroundMap.find(appId);
