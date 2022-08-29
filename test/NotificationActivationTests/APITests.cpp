@@ -23,8 +23,6 @@ namespace Test::NotificationActivation
 
     private:
         wil::unique_event m_failed;
-        wil::unique_process_handle m_processHandle;
-        winrt::com_ptr<IApplicationActivationManager> m_testAppLauncher;
 
     public:
         BEGIN_TEST_CLASS(ActivationTests)
@@ -51,9 +49,6 @@ namespace Test::NotificationActivation
         {
             ::Test::Bootstrap::SetupPackages();
             TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs NotificationActivationPackage.msix
-
-            m_testAppLauncher = winrt::try_create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL);
-            VERIFY_IS_NOT_NULL(m_testAppLauncher);
             return true;
         }
 
@@ -71,24 +66,23 @@ namespace Test::NotificationActivation
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
-            m_processHandle.reset();
             return true;
         }
 
         void RunTest(const PCWSTR& testName, const int& waitTime)
         {
             DWORD processId{};
-            HRESULT hr{ m_testAppLauncher->ActivateApplication(L"NotificationActivationPackage_8wekyb3d8bbwe!App", testName, AO_NONE, &processId) };
-            VERIFY_SUCCEEDED(hr);
-            //VERIFY_SUCCEEDED();
+            winrt::com_ptr<IApplicationActivationManager> testAppLauncher{ winrt::try_create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL) };
+            VERIFY_SUCCEEDED(testAppLauncher->ActivateApplication(L"NotificationActivationPackage_8wekyb3d8bbwe!App", testName, AO_NONE, &processId));
 
-            m_processHandle.reset(OpenProcess(SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION, FALSE, processId));
-            VERIFY_IS_TRUE(m_processHandle.is_valid());
+            wil::unique_process_handle processHandle;
+            processHandle.reset(OpenProcess(SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION, FALSE, processId));
+            VERIFY_IS_TRUE(processHandle.is_valid());
 
-            VERIFY_IS_TRUE(wil::handle_wait(m_processHandle.get(), waitTime));
+            VERIFY_IS_TRUE(wil::handle_wait(processHandle.get(), waitTime));
 
             DWORD exitCode{};
-            VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(m_processHandle.get(), &exitCode));
+            VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(processHandle.get(), &exitCode));
             VERIFY_ARE_EQUAL(exitCode, 0u);
         }
 
@@ -121,7 +115,28 @@ namespace Test::NotificationActivation
 
         TEST_METHOD(AppNotificationForeground)
         {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"NotificationActivation-AppxManifest.xml")
+                END_TEST_METHOD_PROPERTIES();
 
+            bool notificationReceived{};
+            winrt::event_token appNotificationToken{ AppNotificationManager::Default().NotificationInvoked([&](const auto&, AppNotificationActivatedEventArgs const& toastArgs)
+            {
+                winrt::hstring argument{ toastArgs.Argument() };
+                // IMap<hstring, hstring> userInput { toastArgs.UserInput() };
+                VERIFY_ARE_EQUAL(argument, c_appNotificationArgument);
+
+                notificationReceived = true;
+            }) };
+
+            AppNotificationManager::Default().Register();
+
+            auto toastActivationCallback{ winrt::create_instance<INotificationActivationCallback>(c_taefAppNotificationComServerId, CLSCTX_ALL) };
+            // Returns after payload delivered to foreground handler
+            VERIFY_SUCCEEDED(toastActivationCallback->Activate(c_appNotificationFakeAUMID.c_str(), c_appNotificationArgument.c_str(), nullptr, 0));
+
+            VERIFY_IS_TRUE(notificationReceived);
         }
 
         TEST_METHOD(AppNotificationBackground)
