@@ -49,7 +49,7 @@
 
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalOptions>/Brepro /PDBALTPATH:$(TargetName).pdb %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Brepro %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <ClCompile>
       <AdditionalOptions>/d1trimfile:$(RepoRoot) %(AdditionalOptions)</AdditionalOptions>
