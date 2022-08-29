@@ -7,6 +7,7 @@
 #include <wil/win32_helpers.h>
 #include <winrt/Windows.ApplicationModel.Background.h> // we need this for BackgroundTask APIs
 #include "WindowsAppRuntime.Test.AppModel.h"
+#include "TestDef.h"
 
 using namespace winrt;
 using namespace winrt::Microsoft::Windows::AppLifecycle;
@@ -20,7 +21,15 @@ using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 
 constexpr auto c_timeout{ std::chrono::seconds(300) };
-inline const winrt::hstring c_rawNotificationPayload = L"rawNotificationValue";
+
+void SignalPhase(const std::wstring& phaseEventName)
+{
+    wil::unique_event phaseEvent;
+    if (phaseEvent.try_open(phaseEventName.c_str(), EVENT_MODIFY_STATE, false))
+    {
+        phaseEvent.SetEvent();
+    }
+}
 
 HRESULT ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& channelOperation)
 {
@@ -53,48 +62,37 @@ int main() try
     auto scope_exit = wil::scope_exit([&] {
         ::WindowsAppRuntime::VersionInfo::TestShutdown();
         ::Test::Bootstrap::CleanupBootstrap();
-        });
-
-    event_token pushToken{ PushNotificationManager::Default().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
-    {
-        auto payload = args.Payload();
-
-        // Do stuff to process the raw payload
-        std::wstring payloadString(payload.begin(), payload.end());
-        return c_rawNotificationPayload == payloadString;
-    }) };
-
-    event_token appNotificationToken{ AppNotificationManager::Default().NotificationInvoked([](const auto&, AppNotificationActivatedEventArgs const& toastArgs)
-    {
-        hstring argument{ toastArgs.Argument() };
-        IMap<hstring, hstring> userInput { toastArgs.UserInput() };
-        return 0;
-    }) };
+    });
 
     PushNotificationManager::Default().Register();
     AppNotificationManager::Default().Register();
 
-    auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
-    auto kind = args.Kind();
+    auto args{ AppInstance::GetCurrent().GetActivatedEventArgs() };
+    auto kind{ args.Kind() };
 
     if (kind == ExtendedActivationKind::Push)
     {
-        PushNotificationReceivedEventArgs pushArgs = args.Data().as<PushNotificationReceivedEventArgs>();
-        auto payload = pushArgs.Payload();
+        PushNotificationReceivedEventArgs pushArgs{ args.Data().as<PushNotificationReceivedEventArgs>() };
+        auto payload{ pushArgs.Payload() };
         std::wstring payloadString(payload.begin(), payload.end());
 
-        testResult = payloadString == c_rawNotificationPayload;
-        return testResult;
+        if (payloadString == c_rawNotificationPayload)
+        {
+            SignalPhase(c_testNotificationPhaseEventName);
+        }
     }
     else if (kind == ExtendedActivationKind::AppNotification)
     {
         AppNotificationActivatedEventArgs appNotificationArgs{ args.Data().as<AppNotificationActivatedEventArgs>() };
         hstring argument{ appNotificationArgs.Argument() };
         IMap<hstring, hstring> arguments{ appNotificationArgs.Arguments() };
-        return 0;
+        if (argument == c_appNotificationArgument)
+        {
+            SignalPhase(c_testNotificationPhaseEventName);
+        }
     }
 
-    return testResult ? 0 : 1; // We want 0 to be success and 1 failure
+    return 0;
 }
 catch (...)
 {

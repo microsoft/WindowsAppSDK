@@ -54,6 +54,9 @@ namespace Test::NotificationActivation
 
             m_testAppLauncher = winrt::try_create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL);
             VERIFY_IS_NOT_NULL(m_testAppLauncher);
+
+            m_failed = CreateTestEvent(c_testFailureEventName);
+
             return true;
         }
 
@@ -75,12 +78,64 @@ namespace Test::NotificationActivation
             return true;
         }
 
+        void SignalPhase(const std::wstring& phaseEventName)
+        {
+            wil::unique_event phaseEvent;
+            if (phaseEvent.try_open(phaseEventName.c_str(), EVENT_MODIFY_STATE, false))
+            {
+                phaseEvent.SetEvent();
+            }
+        }
+
+        wil::unique_event CreateTestEvent(const std::wstring& eventName)
+        {
+            bool alreadyExists = false;
+            SECURITY_ATTRIBUTES attributes = {};
+            wil::unique_hlocal_security_descriptor descriptor;
+
+            // Grant access to world and appcontainer.
+            THROW_IF_WIN32_BOOL_FALSE(ConvertStringSecurityDescriptorToSecurityDescriptor(
+                L"D:(A;;GA;;;WD)(A;;GA;;;AC)", SDDL_REVISION_1, &descriptor, nullptr));
+            attributes.nLength = sizeof(SECURITY_ATTRIBUTES);
+            attributes.lpSecurityDescriptor = descriptor.get();
+
+            wil::unique_event event;
+            event.create(wil::EventOptions::None, eventName.c_str(), &attributes, &alreadyExists);
+            return event;
+        }
+
+        void WaitForEvent(const wil::unique_event& successEvent, const wil::unique_event& failedEvent)
+        {
+            //WEX::Logging::Log::Comment(L"Setting up event arr...");
+
+            HANDLE waitEvents[2] = { successEvent.get(), failedEvent.get() };
+            auto waitResult = WaitForMultipleObjects(_countof(waitEvents), waitEvents, FALSE,
+                c_phaseTimeout);
+
+            // If waitResult == failureEventIndex, it means the remote test process signaled a
+            // failure event while we were waiting for a different event.
+            auto failureEventIndex = WAIT_OBJECT_0 + 1;
+            VERIFY_ARE_NOT_EQUAL(waitResult, failureEventIndex);
+
+            VERIFY_ARE_NOT_EQUAL(waitResult, static_cast<DWORD>(WAIT_TIMEOUT));
+            if (waitResult == WAIT_FAILED)
+            {
+                auto lastError = GetLastError();
+                VERIFY_WIN32_FAILED(lastError);
+            }
+
+            //WEX::Logging::Log::Comment(L"About to reset event...");
+            successEvent.ResetEvent();
+            //WEX::Logging::Log::Comment(L"successEvent Reset");
+            failedEvent.ResetEvent();
+            //WEX::Logging::Log::Comment(L"failureEvent Reset");
+        }
+
         void RunTest(const PCWSTR& testName, const int& waitTime)
         {
             DWORD processId{};
-            HRESULT hr{ m_testAppLauncher->ActivateApplication(L"NotificationActivationPackage_8wekyb3d8bbwe!App", testName, AO_NONE, &processId) };
-            VERIFY_SUCCEEDED(hr);
-            //VERIFY_SUCCEEDED();
+            auto result = m_testAppLauncher->ActivateApplication(L"NotificationActivationPackage_8wekyb3d8bbwe!App", testName, AO_NONE, &processId);
+            VERIFY_SUCCEEDED(result);
 
             m_processHandle.reset(OpenProcess(SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION, FALSE, processId));
             VERIFY_IS_TRUE(m_processHandle.is_valid());
@@ -112,24 +167,42 @@ namespace Test::NotificationActivation
             return process;
         }
 
-        const std::wstring GetDeploymentDir()
-        {
-            WEX::Common::String deploymentDir;
-            WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", deploymentDir);
-            return reinterpret_cast<PCWSTR>(deploymentDir.GetBuffer());
-        }
-
         TEST_METHOD(AppNotificationForeground)
         {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"NotificationActivation-AppxManifest.xml")
+            END_TEST_METHOD_PROPERTIES();
 
+            bool notificationReceived{};
+            winrt::event_token appNotificationToken{ AppNotificationManager::Default().NotificationInvoked([&](const auto&, AppNotificationActivatedEventArgs const& toastArgs)
+            {
+                winrt::hstring argument{ toastArgs.Argument() };
+                // IMap<hstring, hstring> userInput { toastArgs.UserInput() };
+                VERIFY_ARE_EQUAL(argument, c_appNotificationArgument);
+
+                notificationReceived = true;
+            }) };
+
+            AppNotificationManager::Default().Register();
+
+            auto toastActivationCallback{ winrt::create_instance<INotificationActivationCallback>(c_taefAppNotificationComServerId, CLSCTX_ALL) };
+            // Returns after payload delivered to foreground handler
+            VERIFY_SUCCEEDED(toastActivationCallback->Activate(c_appNotificationFakeAUMID.c_str(), c_appNotificationArgument.c_str(), nullptr, 0));
+
+            VERIFY_IS_TRUE(notificationReceived);
         }
 
         TEST_METHOD(AppNotificationBackground)
         {
-            RunTest(L"BackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
+            RunTest(L"AppNotificationBackground", testWaitTime()); // Need to launch one time to enable background activation.
 
-            auto toastActivationCallback = winrt::create_instance<INotificationActivationCallback>(c_appNotificationComServerId, CLSCTX_ALL);
+            auto event{ CreateTestEvent(c_testNotificationPhaseEventName) };
+
+            auto toastActivationCallback{ winrt::create_instance<INotificationActivationCallback>(c_appNotificationComServerId, CLSCTX_ALL) };
             VERIFY_SUCCEEDED(toastActivationCallback->Activate(c_appNotificationFakeAUMID.c_str(), c_appNotificationArgument.c_str(), nullptr, 0));
+
+            WaitForEvent(event, m_failed);
         }
 
         TEST_METHOD(PushNotificationForeground)
