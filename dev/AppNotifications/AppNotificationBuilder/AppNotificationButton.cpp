@@ -122,7 +122,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         auto logTelemetry{ wil::scope_exit([&]() {
             AppNotificationBuilderTelemetry::LogButtonToString(hr);
-
         }) };
 
         try
