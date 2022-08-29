@@ -458,26 +458,42 @@ jobs:
     useReleaseTag: '$(WindowsAppSDKFinalRelease)'
     buildPool: ProjectReunionESPool-2022
 
-# TODO: Reenable, Add-AppxPackage currently does not work on 2022 images. See issue #2908
-# # Build WinAppSDK and Run Integration Test from TestAll.ps1
-# - job: WinAppSDKIntegrationBuildAndTest
-#   dependsOn: ['CreateNugetPackage']
-#   condition: succeeded()
-#   pool: ProjectReunionESPool-2022
-#   variables:
-#     WindowsAppSDKTransportPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
-#     VersionWithDevTag: $[format('{0}.{1}.{2}-{3}.{4}.{5}', variables['major'], variables['minor'], variables['patch'], 'dev', variables['versionDate'], variables['versionCounter'])]
-#   steps:
-#     - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
-#       parameters:
-#         WindowsAppSDKPackageVersion: $(VersionWithDevTag)
-#         TestSelection: '*Foundation_*'
-#         TransportPackageArtifactName: 'FullNuget'
-#         BuildType: 'stable'
-#         TransportPackages: 
-#           FoundationPackage:
-#             Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
-#             Version: $(WindowsAppSDKTransportPackageVersion)
+# Build WinAppSDK and Run Integration Test from TestAll.ps1
+- job: WinAppSDKIntegrationBuildAndTest
+  dependsOn: ['CreateNugetPackage']
+  condition: succeeded()
+  pool: ProjectReunionESPool-2022
+  variables:
+    WindowsAppSDKTransportPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
+    VersionWithDevTag: $[format('{0}.{1}.{2}-{3}.{4}.{5}', variables['major'], variables['minor'], variables['patch'], 'dev', variables['versionDate'], variables['versionCounter'])]
+  steps:
+    #TODO: Remove the two template calls once Add-AppxPackage has been resolved
+    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
+      parameters:
+        AzureSubscriptionServiceConnection: 'ProjectReunion Resource Manager'
+        NuGetServiceConnectionName: 'ProjectReunionInternal'
+
+    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
+      parameters:
+        TransportPackageArtifactName: 'FullNuget'
+        WindowsAppSDKPackageVersion: $(VersionWithDevTag)
+        BuildType:  'stable'
+        TransportPackages: 
+          FoundationPackage:
+            Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
+            Version: $(WindowsAppSDKTransportPackageVersion)
+
+    # TODO: Reenable, Add-AppxPackage currently does not work on 2022 images. See issue #2908
+    # - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
+    #   parameters:
+    #     WindowsAppSDKPackageVersion: $(VersionWithDevTag)
+    #     TestSelection: '*Foundation_*'
+    #     TransportPackageArtifactName: 'FullNuget'
+    #     BuildType: 'stable'
+    #     TransportPackages: 
+    #       FoundationPackage:
+    #         Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
+    #         Version: $(WindowsAppSDKTransportPackageVersion)
 
 # Publish
 - job: Publish
