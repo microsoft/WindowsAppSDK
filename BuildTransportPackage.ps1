@@ -5,6 +5,20 @@ Param(
     [string]$UpdateVersionDetailsPath = $null
 )
 
+$MRTSourcesDirectory = "dev\MRTCore"
+$MRTBinariesDirectory = "BuildOutput"
+$nuSpecsPath = "build\NuSpecs"
+$fullNugetPath = "build\fullnuget"
+$buildOverridePath = "build\override"
+$windowsAppSdkBinariesPath = "build\windowsappsdk_binaries"
+
+$builddate_yymm = Get-Date -Format "yyMM"
+$builddate_dd = Get-Date -Format "dd"
+$revision = Get-Date -Format "HHMM"
+
+$VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath
+write-host "VCToolsInstallDir: $VCToolsInstallDir"
+
 # do all the directory making before any building.
 if(-not (test-path ".nuget"))
 {
@@ -15,25 +29,6 @@ if(-not (test-path ".nuget\nuget.exe"))
 {
 	Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile .nuget\nuget.exe
 }
-
-$MRTSourcesDirectory = "dev\MRTCore"
-$MRTBinariesDirectory = "BuildOutput"
-# & .\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1 -versionDetailsPath "eng\Version.Details.xml" -packageConfigPath "build\packages.config"
-
-# & .\.nuget\nuget.exe restore "build\packages.config" -PackagesDirectory packages -ConfigFile "build\licensing.nuget.config"
-# & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile nuget.config
-# & .\.nuget\nuget.exe restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" -configfile nuget.config
-# & .\.nuget\nuget.exe restore "dev\WindowsAppRuntime_Insights\packages.config" -ConfigFile "dev\WindowsAppRuntime_Insights\nuget.config" -PackagesDirectory "dev\WindowsAppRuntime_Insights\packages"
-# & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\core\src\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
-# & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
-# & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
-# & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmmin\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
-# & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\unittests\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
-
-$nuSpecsPath = "build\NuSpecs"
-$fullNugetPath = "build\fullnuget"
-$buildOverridePath = "build\override"
-$windowsAppSdkBinariesPath = "build\windowsappsdk_binaries"
 
 if(-not (test-path "$buildOverridePath"))
 {
@@ -65,30 +60,36 @@ if(-not (test-path "$fullNugetPath\mrt_raw\lib"))
 	new-item -path "$fullNugetPath\mrt_raw\lib" -itemtype "directory"
 }
 
-$builddate_yymm = Get-Date -Format "yyMM"
-$builddate_dd = Get-Date -Format "dd"
-$revision = Get-Date -Format "HHMM"
+# Restore any nuget packages.
+& .\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1 -versionDetailsPath "eng\Version.Details.xml" -packageConfigPath "build\packages.config"
 
-$VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath
-write-host "VCToolsInstallDir: $VCToolsInstallDir"
+& .\.nuget\nuget.exe restore "build\packages.config" -PackagesDirectory packages -ConfigFile "build\licensing.nuget.config"
+& .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile nuget.config
+& .\.nuget\nuget.exe restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" -configfile nuget.config
+& .\.nuget\nuget.exe restore "dev\WindowsAppRuntime_Insights\packages.config" -ConfigFile "dev\WindowsAppRuntime_Insights\nuget.config" -PackagesDirectory "dev\WindowsAppRuntime_Insights\packages"
+& .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\core\src\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
+& .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
+& .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
+& .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmmin\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
+& .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\unittests\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
 
+# init MRT
  foreach($platformToRun in $platform.Split(","))
  {
    & $MRTSourcesDirectory\build\init.cmd /envonly $platformToRun\fre
  }
 
- # Build the solution
+ # Build windows app runtime and mrt
  foreach($configurationToRun in $configuration.Split(","))
  {
     foreach($platformToRun in $platform.Split(","))
     {
-        # adding /m gives a circular depdency.  Keep the /m out until fixed.
-        msbuild /restore WindowsAppRuntime.sln /p:Configuration=$configurationToRun,Platform=$platformToRun
-		#,AppxSymbolPackageEnabled=false,WindowsAppSDKVersionBuild=$builddate_yymm,WindowsAppSDKVersionRevision=$builddate_dd$buildrevision,VCToolsInstallDir=$VCToolsInstallDir
-        msbuild "$MRTSourcesDirectory\mrt\MrtCore.sln" /restore /p:Configuration=$configurationToRun,Platform=$platformToRun
+        msbuild /restore /m WindowsAppRuntime.sln /p:Configuration=$configurationToRun,Platform=$platformToRun
+        msbuild /restore /m "$MRTSourcesDirectory\mrt\MrtCore.sln" /p:Configuration=$configurationToRun,Platform=$platformToRun
     }
  }
 
+# Copy over platform files
 foreach($platformToRun in $platform.Split(","))
 {
     copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\mrm\mrm.dll" -destination "$fullNugetPath\mrt_raw\lib\$platformToRun" -force
@@ -106,14 +107,16 @@ foreach($platformToRun in $platform.Split(","))
 }
 
 # build AnyCPU
-msbuild /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=release,Platform=anycpu
+msbuild /restore /m "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=release,Platform=anycpu
+
+# If AnyCPU generates another dll it needs to be added here.
 copy-item -path "buildoutput\release\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$fullNugetPath\lib\net5.0-windows10.0.17763.0"
 
-#generate overrides
+# Generate overrides
 .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
 .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
 
-
+# Copy more files.
 foreach($configurationToRun in $configuration.Split(","))
 {
 	foreach($platformToRun in $platform.Split(","))
@@ -140,23 +143,28 @@ Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon
 Copy-Item -Path "$nuSpecsPath\AppxManifest.xml" -Destination "$fullNugetPath"
 Copy-Item -Path "LICENSE" -Destination "$fullNugetPath" -force
 
+# for some reason xslt.load changes the working directory to C:\windows\system32.
+# store the current working directory here.
 $workingDirectory = get-location
 $manifestPath = "$fullNugetPath\manifests"
+
+# Make Microsoft.WindowsAppSDK.Foundation.manifest.
 $newitem = New-Item -ItemType Directory -Force -Path $manifestPath
 $xslt = New-Object System.Xml.Xsl.XslCompiledTransform
 $xslt.Load("$workingDirectory\build\TransformAppxManifest.xslt")
 $xslt.Transform("$workingDirectory\$fullNugetPath\AppxManifest.xml", "$workingDirectory\$manifestPath\Microsoft.WindowsAppSdk.Foundation.manifest")
 
+# any version will do here.
 $packageVersion = '1.1.1.1'
-Write-Host $packageVersion
+
+# Add the version to the nuspec.
 [xml]$publicNuspec = Get-Content -Path ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec"
 $publicNuspec.package.metadata.version = $packageVersion
 Set-Content -Value $publicNuspec.OuterXml ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec"
 
-Copy-Item -Path "license" -destination "$fullNugetPath" -force
+# Make the foundation transport package.
 nuget pack ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec" -BasePath $fullNugetPath -OutputDirectory $LocalPackagesPath
 
+# Update the details in eng/version.details.xml
 $packageName = "Microsoft.WindowsAppSDK.Foundation.TransportPackage"
 &"$UpdateVersionDetailsPath" -dependencyName $packageName -dependencyVersion $packageVersion
-
-& .\.nuget\nuget.exe pack "$workingDirectory\$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.nuspec" -outputdirectory "$workingDirectory\$fullNugetPath" -BasePath "$workingDirectory\$fullNugetPath"
