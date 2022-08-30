@@ -1,3 +1,19 @@
+<#
+This script is to build the framework transport package that will be used to generate the windows app sdk framework package.
+This script is called from BuildAll.ps1 from the aggregator repo and should not be called directly.
+
+Platform: Comma delimited string of platforms to run.
+Configuration: Comma delimited string of configurations to run.
+LocalPackagesPath: The path that the generated transport package needs to be saved.
+UpdateVersionDetailsPath: Path to a ps1 or cmd that updates version.details.xml.
+
+Note about building in different environments.
+The feed the nuget.config points to changes depending on the branch.
+Develop branch points to the internal feed.
+Main branch points to the external feed.
+
+#>
+
 Param(
     [string]$Platform,
     [string]$Configuration,
@@ -22,42 +38,42 @@ write-host "VCToolsInstallDir: $VCToolsInstallDir"
 # do all the directory making before any building.
 if(-not (test-path ".nuget"))
 {
-	 new-item -path ".nuget" -itemtype directory
+    new-item -path ".nuget" -itemtype directory
 }
 
 if(-not (test-path ".nuget\nuget.exe"))
 {
-	Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile .nuget\nuget.exe
+    Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile .nuget\nuget.exe
 }
 
 if(-not (test-path "$buildOverridePath"))
 {
-	new-item -path "$buildOverridePath" -itemtype "directory"
+    new-item -path "$buildOverridePath" -itemtype "directory"
 }
 
 if(-not (test-path "$windowsAppSdkBinariesPath"))
 {
-	new-item -path "$windowsAppSdkBinariesPath" -itemtype "directory"	
+    new-item -path "$windowsAppSdkBinariesPath" -itemtype "directory"    
 }
 
 if(-not (test-path "$fullNugetPath"))
-{	
-	new-item -path "$fullNugetPath" -itemtype "directory"
+{    
+    new-item -path "$fullNugetPath" -itemtype "directory"
 }
 
 if(-not (test-path "$fullNugetPath\build\native"))
 {
-	new-item -path "$fullNugetPath\build\native" -itemtype "directory"
+    new-item -path "$fullNugetPath\build\native" -itemtype "directory"
 }
 
 if(-not (test-path "$fullNugetPath\mrt_raw"))
 {
-	new-item -path "$fullNugetPath\mrt_raw" -itemtype "directory"
+    new-item -path "$fullNugetPath\mrt_raw" -itemtype "directory"
 }
 
 if(-not (test-path "$fullNugetPath\mrt_raw\lib"))
 {
-	new-item -path "$fullNugetPath\mrt_raw\lib" -itemtype "directory"
+    new-item -path "$fullNugetPath\mrt_raw\lib" -itemtype "directory"
 }
 
 # Restore any nuget packages.
@@ -93,17 +109,17 @@ if(-not (test-path "$fullNugetPath\mrt_raw\lib"))
 foreach($platformToRun in $platform.Split(","))
 {
     copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\mrm\mrm.dll" -destination "$fullNugetPath\mrt_raw\lib\$platformToRun" -force
-	copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\mrm\mrm.lib" -destination "$fullNugetPath\mrt_raw\lib\$platformToRun" -force
-	copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\mrm\mrm.pdb" -destination "$fullNugetPath\mrt_raw\lib\$platformToRun" -force
-	copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.dll" -destination "$fullNugetPath\mrt_raw\lib\$platformToRun" -force
-	copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb" -destination "$fullNugetPath\mrt_raw\lib\$platformToRun" -force
+    copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\mrm\mrm.lib" -destination "$fullNugetPath\mrt_raw\lib\$platformToRun" -force
+    copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\mrm\mrm.pdb" -destination "$fullNugetPath\mrt_raw\lib\$platformToRun" -force
+    copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.dll" -destination "$fullNugetPath\mrt_raw\lib\$platformToRun" -force
+    copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb" -destination "$fullNugetPath\mrt_raw\lib\$platformToRun" -force
 
-	if($ploatformToRun -eq "x86")
-	{
-		copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.dll" -destination "$fullNugetPath\mrt_raw\lib\anycpu\net5.0" -force
-		copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.pdb" -destination "$fullNugetPath\mrt_raw\lib\anycpu\net5.0" -force
-		copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.winmd" -destination "$fullNugetPath\mrt_raw\lib\anycpu" -force
-	}
+    if($ploatformToRun -eq "x86")
+    {
+        copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.dll" -destination "$fullNugetPath\mrt_raw\lib\anycpu\net5.0" -force
+        copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.pdb" -destination "$fullNugetPath\mrt_raw\lib\anycpu\net5.0" -force
+        copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.winmd" -destination "$fullNugetPath\mrt_raw\lib\anycpu" -force
+    }
 }
 
 # build AnyCPU
@@ -119,10 +135,10 @@ copy-item -path "buildoutput\release\anycpu\Microsoft.WindowsAppRuntime.Bootstra
 # Copy more files.
 foreach($configurationToRun in $configuration.Split(","))
 {
-	foreach($platformToRun in $platform.Split(","))
-	{
-		.\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$fullNugetPath" -Platform $PlatformToRun -Configuration $ConfigurationToRun
-	}
+    foreach($platformToRun in $platform.Split(","))
+    {
+        .\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$fullNugetPath" -Platform $PlatformToRun -Configuration $ConfigurationToRun
+    }
 }
 
 Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.targets" -Destination "$fullNugetPath\build\native"
