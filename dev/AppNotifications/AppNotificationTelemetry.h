@@ -267,7 +267,7 @@ public:
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(appId.c_str(), "AppId"),
                 TraceLoggingUInt32(arguments.size(), "ArgumentsSize"),
-                TraceLoggingBool(firstNotificationReceived, "firstNotificationReceived"),
+                TraceLoggingBool(firstNotificationReceived, "FirstNotificationReceived"),
                 TraceLoggingBool(hasNotificationHandlers, "HasNotificationHandlers"),
                 TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));

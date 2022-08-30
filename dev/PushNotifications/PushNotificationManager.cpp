@@ -833,7 +833,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         try
         {
             BOOL foregroundHandled = true;
-            THROW_IF_FAILED(InvokeAll(payloadLength, payload, WindowsGetStringRawBuffer(correlationVector, nullptr), &foregroundHandled));
+            THROW_IF_FAILED(InvokeAll(payloadLength, payload, wil::str_raw_ptr(correlationVector), &foregroundHandled));
             THROW_HR_IF(E_UNEXPECTED, !foregroundHandled);
 
             return hr;
