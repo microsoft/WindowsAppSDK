@@ -16,8 +16,8 @@ class PushNotificationLongRunningTaskTelemetry : public wil::TraceLoggingProvide
 
 public:
     DEFINE_EVENT_METHOD(LogOnRawNotificationReceived)(
-            winrt::hresult hr,
-            std::wstring const& correlationVector) noexcept try
+        winrt::hresult hr,
+        std::wstring const& correlationVector) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
