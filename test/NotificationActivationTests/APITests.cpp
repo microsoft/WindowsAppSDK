@@ -5,6 +5,7 @@
 #include <TestDef.h>
 #include <TlHelp32.h>
 #include "NotificationActivationCallback.h"
+#include "NotificationActivation.Test.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -12,17 +13,16 @@ using namespace WEX::TestExecution;
 
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::System;
+using namespace NotificationActivation::TestFunctions;
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::PushNotifications;
 using namespace winrt::Microsoft::Windows::AppNotifications;
+
 
 namespace Test::NotificationActivation
 {
     class ActivationTests
     {
-
-    private:
-        wil::unique_event m_failed;
 
     public:
         BEGIN_TEST_CLASS(ActivationTests)
@@ -69,50 +69,6 @@ namespace Test::NotificationActivation
             return true;
         }
 
-        void RunTest(const PCWSTR& testName, const int& waitTime)
-        {
-            DWORD processId{};
-            winrt::com_ptr<IApplicationActivationManager> testAppLauncher{ winrt::try_create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL) };
-            VERIFY_SUCCEEDED(testAppLauncher->ActivateApplication(L"NotificationActivationPackage_8wekyb3d8bbwe!App", testName, AO_NONE, &processId));
-
-            wil::unique_process_handle processHandle;
-            processHandle.reset(OpenProcess(SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION, FALSE, processId));
-            VERIFY_IS_TRUE(processHandle.is_valid());
-
-            VERIFY_IS_TRUE(wil::handle_wait(processHandle.get(), waitTime));
-
-            DWORD exitCode{};
-            VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(processHandle.get(), &exitCode));
-            VERIFY_ARE_EQUAL(exitCode, 0u);
-        }
-
-        wil::unique_handle RunUnpackaged(const std::wstring& command, const std::wstring& args, const std::wstring& directory)
-        {
-            SHELLEXECUTEINFO ei{};
-            ei.cbSize = sizeof(SHELLEXECUTEINFO);
-            ei.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_DOENVSUBST;
-            ei.lpFile = command.c_str();
-            ei.lpParameters = args.c_str();
-            ei.lpDirectory = directory.c_str();
-            ei.nShow = SW_NORMAL;
-
-            if (!ShellExecuteEx(&ei))
-            {
-                auto lastError = GetLastError();
-                VERIFY_WIN32_SUCCEEDED(lastError);
-            }
-
-            wil::unique_handle process{ ei.hProcess };
-            return process;
-        }
-
-        const std::wstring GetDeploymentDir()
-        {
-            WEX::Common::String deploymentDir;
-            WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", deploymentDir);
-            return reinterpret_cast<PCWSTR>(deploymentDir.GetBuffer());
-        }
-
         TEST_METHOD(AppNotificationForeground)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
@@ -141,20 +97,33 @@ namespace Test::NotificationActivation
 
         TEST_METHOD(AppNotificationBackground)
         {
-            RunTest(L"BackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
+            RunTest(L"AppNotificationBackgroundTest", testWaitTime()); // Need to launch one time to enable background activation.
 
-            auto toastActivationCallback = winrt::create_instance<INotificationActivationCallback>(c_appNotificationComServerId, CLSCTX_ALL);
+            auto event{ CreateTestEvent(c_testNotificationPhaseEventName) };
+            auto toastActivationCallback{ winrt::create_instance<INotificationActivationCallback>(c_appNotificationComServerId, CLSCTX_ALL) };
             VERIFY_SUCCEEDED(toastActivationCallback->Activate(c_appNotificationFakeAUMID.c_str(), c_appNotificationArgument.c_str(), nullptr, 0));
+
+            wil::unique_event failed{ CreateTestEvent(c_testFailureEventName) };
+            WaitForEvent(event, failed);
         }
 
         TEST_METHOD(PushNotificationForeground)
         {
-            
+            // Need to incorporate COM server work for PushNotification foreground handling.
         }
 
         TEST_METHOD(PushNotificationBackground)
         {
+            RunTest(L"PushNotificationBackgroundTest", testWaitTime()); // Need to launch one time to enable background activation.
 
+            auto event{ CreateTestEvent(c_testNotificationPhaseEventName) };
+
+            auto localBackgroundTask{ winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_pushNotificationComServerId, CLSCTX_ALL) };
+            auto mockBackgroundTaskInstance{ winrt::make<MockBackgroundTaskInstance>() };
+            VERIFY_NO_THROW(localBackgroundTask.Run(mockBackgroundTaskInstance));
+
+            wil::unique_event failed{ CreateTestEvent(c_testFailureEventName) };
+            WaitForEvent(event, failed);
         }
     };
 }

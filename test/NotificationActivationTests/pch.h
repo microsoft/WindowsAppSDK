@@ -45,6 +45,8 @@
 #include "NotificationActivation-Test-Constants.h"
 #include <WindowsAppRuntime.SelfContained.h>
 #include <WindowsAppRuntime.VersionInfo.h>
+#include "MockBackgroundTaskInstance.h"
+#include "MockRawNotification.h"
 
 #define VERIFY_THROWS_HR(expression, hr)        \
             VERIFY_THROWS_SPECIFIC(expression,          \

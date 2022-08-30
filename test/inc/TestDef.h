@@ -23,6 +23,7 @@ static const std::wstring c_testRequestRestartNowRestartedPhasePackagedEventName
 
 static const std::wstring c_testPushPhaseEventName = L"WindowsAppRuntimeTestPushPhaseEventName";
 
+static const std::wstring c_testNotificationPhaseEventName = L"WindowsAppRuntimeTestNotificationPhaseEventName";
 static const std::wstring c_rawNotificationPayload = L"rawNotificationValue";
 static const std::wstring c_appNotificationArgument = L"Argument";
 

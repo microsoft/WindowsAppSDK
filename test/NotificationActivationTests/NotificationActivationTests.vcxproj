@@ -116,13 +116,18 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MockBackgroundTaskInstance.cpp" />
+    <ClCompile Include="MockRawNotification.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="APITests.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MockBackgroundTaskInstance.h" />
+    <ClInclude Include="MockRawNotification.h" />
     <ClInclude Include="NotificationActivation-Test-Constants.h" />
+    <ClInclude Include="NotificationActivation.Test.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>

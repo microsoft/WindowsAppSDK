@@ -21,6 +21,15 @@
     <ClInclude Include="NotificationActivation-Test-Constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MockRawNotification.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MockBackgroundTaskInstance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NotificationActivation.Test.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -29,12 +38,22 @@
     <ClCompile Include="APITests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MockRawNotification.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MockBackgroundTaskInstance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="$(TargetDir)..\NotificationActivation\NotificationActivation.exe" />
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
+    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="NotificationActivation-AppxManifest.xml" />
   </ItemGroup>
 </Project>
