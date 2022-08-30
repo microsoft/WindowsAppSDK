@@ -13,9 +13,9 @@ to enumerate **all** DisplayAreas using the static method
 and then compare each DisplayArea returned with the DisplayId for the display they were interested in.
 
 This feature is remedying that complexity by introducing another static method on the DisplayArea
-class that gets the DisplayArea for a given DisplayId if available.
-`DisplayArea.GetFromDisplayId(DisplayId)` returns **null** if the **DisplayId** cannot be matched
-to a valid displayArea.
+class. `DisplayArea.GetFromDisplayId(DisplayId)` returns a DisplayArea that corresponds to the
+specified DisplayId, if one exists. If more than one such DisplayArea exists, the system chooses
+one to return. This choice will remain consistent until the next display topology change.
 
 This matches the pattern we already have in place for the following apis:
 1. DisplayArea given a WindowId -
@@ -32,6 +32,7 @@ This is the new static method added to WinAppSdk 1.2.
 
 The following example shows how an AppWindow could be configured to fully occupy the DisplayArea
 associated with the passed hmonitor/displayId:
+
 ```csharp
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
