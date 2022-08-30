@@ -103,7 +103,7 @@ jobs:
     inputs:
       InputType: 'Basic'
       Function: 'analyze'
-      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
+      AnalyzeTarget: '$(buildOutputDir)\*.dll;$(buildOutputDir)\*.exe'
       AnalyzeVerbose: true
     condition: ne(variables['buildConfiguration'], 'Debug')
 
