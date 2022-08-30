@@ -39,7 +39,4 @@
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)AppNotifications.idl" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)WriteUp.md" />
-  </ItemGroup>
 </Project>
