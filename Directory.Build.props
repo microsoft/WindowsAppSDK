@@ -47,15 +47,6 @@
     </Midl>
   </ItemDefinitionGroup>
 
-  <ItemDefinitionGroup>
-    <Link>
-      <AdditionalOptions>/Brepro /PDBALTPATH:$(TargetName).pdb %(AdditionalOptions)</AdditionalOptions>
-    </Link>
-    <ClCompile>
-      <AdditionalOptions>/d1trimfile:$(RepoRoot) %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-  </ItemDefinitionGroup>
-
   <!-- Define our standardardized options for C/C++ builds -->
   <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK.Build.Cpp.props" />
 
