@@ -28,21 +28,33 @@ inline bool IsDllOnSystemAndRegistered()
 {
     constexpr std::wstring_view frameworkPackageFamily{ L"Microsoft.WindowsAppRuntime.8wekyb3d8bbwe" };
 
-    UINT32 count{};
-    UINT32 bufferLength{};
-    THROW_HR_IF(E_UNEXPECTED, ERROR_INSUFFICIENT_BUFFER != FindPackagesByPackageFamily(frameworkPackageFamily.data(), PACKAGE_INFORMATION_BASIC, &count, nullptr, &bufferLength, nullptr, nullptr));
+    UINT32 packageCount = 0;
+    UINT32 packageNameLength = 0;
+    LONG returnCode{ FindPackagesByPackageFamily(frameworkPackageFamily.data(), PACKAGE_FILTER_HEAD, &packageCount, nullptr, &packageNameLength, nullptr, nullptr) };
 
-    // dll for reverting tracking is registered and on the system for the current user.
-    if (count > 0)
+    if (returnCode == ERROR_SUCCESS)
     {
         return true;
     }
 
-    std::unique_ptr<wchar_t> buffer{ new wchar_t[bufferLength] };
-    std::unique_ptr<wchar_t> fullNames{ new wchar_t[count] };
+    // dll for reverting tracking is registered and on the system for the current user.
+    //if (packageCount > 0)
+    //{
+    //    return true;
+    //}
 
-    THROW_HR_IF(E_UNEXPECTED, ERROR_SUCCESS != FindPackagesByPackageFamily(frameworkPackageFamily.data(), PACKAGE_INFORMATION_BASIC, &count, reinterpret_cast<PWSTR*>(fullNames.get()), &bufferLength, buffer.get(), nullptr));
+    //std::vector<wchar_t> packageFullNamesBuffer(packageNameLength);
+    //std::vector<wchar_t*> packageFullNames(packageCount);
+    //returnCode = FindPackagesByPackageFamily(frameworkPackageFamily.data(), PACKAGE_FILTER_HEAD, // Look for the application package.
+    //    &packageCount, packageFullNames.data(), &packageNameLength, packageFullNamesBuffer.data(), nullptr);
 
+    //if (FAILED(HRESULT_FROM_WIN32(returnCode)))
+    //{
+    //    LOG_WIN32_MSG(returnCode, "Error with getting packages by package family.");
+    //    return false;
+    //}
+
+    return true;
 }
 
 inline bool ShouldChangesBeTracked(EnvironmentManager::Scope scope)
@@ -51,6 +63,18 @@ inline bool ShouldChangesBeTracked(EnvironmentManager::Scope scope)
     {
         return false;
     }
+
+    if (!DoesChangeTrackingKeyExist())
+    {
+        return false;
+    }
+
+    if (!IsDllOnSystemAndRegistered())
+    {
+        return false;
+    }
+
+    return true;
 
     
     //auto isUserOrMachineScope{ scope != EnvironmentManager::Scope::Process };
