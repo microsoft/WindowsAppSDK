@@ -50,7 +50,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
 
         winrt::com_array<uint8_t> payloadArray{ payload, payload + (payloadLength * sizeof(uint8_t)) };
 
-        if (!m_foregroundSinkManager->InvokeForegroundHandlers(m_appId, payloadArray, payloadLength, correlationVector))
+        if (!m_foregroundSinkManager->InvokeForegroundHandlers(m_appId, payloadArray, payloadLength))
         {
             if (m_comServerClsid == winrt::guid())
             {
@@ -61,6 +61,8 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
                 THROW_IF_FAILED(PushNotificationHelpers::PackagedAppLauncherByClsid(m_comServerClsid, payloadLength, payload));
             }
         }
+
+        return hr;
     }
     catch (...)
     {

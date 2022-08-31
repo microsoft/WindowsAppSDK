@@ -818,7 +818,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             *foregroundHandled = false;
         }
 
-        return S_OK;
+        return hr;
     }
     CATCH_RETURN()
 
@@ -835,7 +835,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             BOOL foregroundHandled = true;
             THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
             THROW_HR_IF(E_UNEXPECTED, !foregroundHandled);
-
             return hr;
         }
         catch (...)
