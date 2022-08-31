@@ -11,7 +11,7 @@ import "ocidl.idl";
 [pointer_default(unique)]
 interface IWpnForegroundSink : IUnknown
 {
-    HRESULT InvokeAll([in] ULONG length, [in, size_is(length)] byte* data, [in] LPCWSTR correlationVector, [out] BOOL* foregroundHandled);
+    HRESULT InvokeAll([in] ULONG length, [in, size_is(length)] byte* data, [out] BOOL* foregroundHandled);
 };
 
 [object]

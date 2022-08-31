@@ -118,8 +118,7 @@ public:
     CATCH_LOG()
 
         DEFINE_EVENT_METHOD(LogInvokeAll)(
-            winrt::hresult hr,
-            std::wstring const& correlationVector) noexcept try
+            winrt::hresult hr) noexcept try
     {
         if (m_telemetryHelper.ShouldLogEvent())
         {
@@ -128,7 +127,6 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
-                TraceLoggingWideString(correlationVector.c_str(), "CorrelationVector"),
                 TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
         }
