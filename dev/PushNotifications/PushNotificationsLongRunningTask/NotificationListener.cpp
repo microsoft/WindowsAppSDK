@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -61,6 +61,8 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
                 THROW_IF_FAILED(PushNotificationHelpers::PackagedAppLauncherByClsid(m_comServerClsid, payloadLength, payload));
             }
         }
+
+        return hr;
     }
     catch (...)
     {

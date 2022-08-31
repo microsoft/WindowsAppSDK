@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -161,6 +161,26 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::Unregiste
 CATCH_RETURN()
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterForegroundActivator(_In_ IWpnForegroundSink* sink, _In_ PCWSTR processName) noexcept try
+{
+    auto lock = m_lock.lock_exclusive();
+    THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+
+    // NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication should be called before this or we ignore the call
+    const std::wstring appId{ GetAppIdentifier(processName) };
+    if (appId.empty())
+    {
+        return S_OK;
+    }
+
+    m_foregroundSinkManager->Add(appId, sink);
+
+    m_lifetimeManager.Cancel();
+
+    return S_OK;
+}
+CATCH_RETURN()
+
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterForegroundActivator2(_In_ IWpnForegroundSink2* sink, _In_ PCWSTR processName) noexcept try
 {
     auto lock = m_lock.lock_exclusive();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);

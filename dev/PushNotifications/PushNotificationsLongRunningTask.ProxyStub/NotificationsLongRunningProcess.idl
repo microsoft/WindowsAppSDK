@@ -11,7 +11,16 @@ import "ocidl.idl";
 [pointer_default(unique)]
 interface IWpnForegroundSink : IUnknown
 {
-    HRESULT InvokeAll([in] ULONG length, [in, size_is(length)] byte* data, [in] LPCWSTR correlationVector, [out] BOOL* foregroundHandled);
+    HRESULT InvokeAll([in] ULONG length, [in, size_is(length)] byte* data, [out] BOOL* foregroundHandled);
+};
+
+[object]
+[uuid(PUSHNOTIFICATIONS_FOREGROUNDSINK2_CLSID_UUID)]
+[pointer_default(unique)]
+interface IWpnForegroundSink2 : IUnknown
+{
+    HRESULT InvokeAll([in] ULONG length, [in, size_is(length)] byte* data, [out] BOOL* foregroundHandled);
+    HRESULT InvokeAllWithCorrelationVector([in] ULONG length, [in, size_is(length)] byte* data, [in] LPCWSTR correlationVector, [out] BOOL* foregroundHandled);
 };
 
 [object]
@@ -30,6 +39,30 @@ interface INotificationsLongRunningPlatform : IUnknown
     HRESULT UnregisterFullTrustApplication([in] LPCWSTR processName);
 
     HRESULT RegisterForegroundActivator([in] IWpnForegroundSink* sink, [in] LPCWSTR processName);
+
+    HRESULT UnregisterForegroundActivator([in] LPCWSTR processName);
+
+    HRESULT AddToastRegistrationMapping([in] LPCWSTR processName, [in] LPCWSTR toastAppId);
+
+    HRESULT RemoveToastRegistrationMapping([in] LPCWSTR processName);
+};
+
+[object]
+[uuid(PUSHNOTIFICATIONS_LRP2_CLSID_UUID)]
+[pointer_default(unique)]
+interface INotificationsLongRunningPlatform2 : IUnknown
+{
+    HRESULT RegisterLongRunningActivator([in] LPCWSTR processName);
+
+    HRESULT RegisterLongRunningActivatorWithClsid([in] LPCWSTR processName, [in] GUID comServerClsid);
+
+    HRESULT UnregisterLongRunningActivator([in] LPCWSTR processName);
+
+    HRESULT RegisterFullTrustApplication([in] LPCWSTR processName, [in] GUID remoteId, [out] LPWSTR* appId);
+
+    HRESULT UnregisterFullTrustApplication([in] LPCWSTR processName);
+
+    HRESULT RegisterForegroundActivator2([in] IWpnForegroundSink2* sink, [in] LPCWSTR processName);
 
     HRESULT UnregisterForegroundActivator([in] LPCWSTR processName);
 

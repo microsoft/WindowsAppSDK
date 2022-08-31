@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -27,6 +27,8 @@ struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) NotificationsLongRu
     STDMETHOD(UnregisterLongRunningActivator)(_In_ PCWSTR processName) noexcept;
 
     STDMETHOD(RegisterForegroundActivator)(_In_ IWpnForegroundSink* sink, _In_ PCWSTR processName) noexcept;
+
+    STDMETHOD(RegisterForegroundActivator2)(_In_ IWpnForegroundSink2* sink, _In_ PCWSTR processName) noexcept;
 
     STDMETHOD(UnregisterForegroundActivator)(_In_ PCWSTR processName) noexcept;
 
