@@ -35,6 +35,8 @@ $revision = Get-Date -Format "HHMM"
 $VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath
 write-host "VCToolsInstallDir: $VCToolsInstallDir"
 
+$msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
+
 # do all the directory making before any building.
 if(-not (test-path ".nuget"))
 {
@@ -66,15 +68,11 @@ if(-not (test-path "$fullNugetPath\build\native"))
     new-item -path "$fullNugetPath\build\native" -itemtype "directory"
 }
 
-if(-not (test-path "$fullNugetPath\mrt_raw"))
+if(-not (test-path "$fullNugetPath\lib\net5.0-windows10.0.17763.0"))
 {
-    new-item -path "$fullNugetPath\mrt_raw" -itemtype "directory"
+    new-item -path "$fullNugetPath\lib\net5.0-windows10.0.17763.0" -itemtype "directory"
 }
 
-if(-not (test-path "$fullNugetPath\mrt_raw\lib"))
-{
-    new-item -path "$fullNugetPath\mrt_raw\lib" -itemtype "directory"
-}
 
 # Restore any nuget packages.
 & .\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1 -versionDetailsPath "eng\Version.Details.xml" -packageConfigPath "build\packages.config"
@@ -92,6 +90,7 @@ if(-not (test-path "$fullNugetPath\mrt_raw\lib"))
 # init MRT
  foreach($platformToRun in $platform.Split(","))
  {
+   write-host "Intilizing MRT for $platformToRun"
    & $MRTSourcesDirectory\build\init.cmd /envonly $platformToRun\fre
  }
 
@@ -100,33 +99,61 @@ if(-not (test-path "$fullNugetPath\mrt_raw\lib"))
  {
     foreach($platformToRun in $platform.Split(","))
     {
-        msbuild /restore /m WindowsAppRuntime.sln /p:Configuration=$configurationToRun,Platform=$platformToRun
-        msbuild /restore /m "$MRTSourcesDirectory\mrt\MrtCore.sln" /p:Configuration=$configurationToRun,Platform=$platformToRun
+        write-host "Building windowsappruntime.sln for Configuration:$configurationToRun and Platform:$platformToRun"
+        & $msBuildPath /restore /p:Configuration=$configurationToRun,Platform=$platformToRun WindowsAppRuntime.sln
+        
+        write-host "Building $MRTSourcesDirectory\mrt\MrtCore.sln for Configuration:$configurationToRun and Platform:$platformToRun"
+        & $msBuildPath /restore /p:Configuration=$configurationToRun,Platform=$platformToRun "$MRTSourcesDirectory\mrt\MrtCore.sln"
     }
+ }
+
+$mrtConfiguration = "Release"
+ foreach($configurationToRun in $configuration.Split(","))
+ {
+     if($configurationToRun -eq "debug")
+     {
+         $mrtConfiguration = "debug"
+     }
  }
 
 # Copy over platform files
 foreach($platformToRun in $platform.Split(","))
 {
-    copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\mrm\mrm.dll" -destination "$fullNugetPath\mrt_raw\lib\$platformToRun" -force
-    copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\mrm\mrm.lib" -destination "$fullNugetPath\mrt_raw\lib\$platformToRun" -force
-    copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\mrm\mrm.pdb" -destination "$fullNugetPath\mrt_raw\lib\$platformToRun" -force
-    copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.dll" -destination "$fullNugetPath\mrt_raw\lib\$platformToRun" -force
-    copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb" -destination "$fullNugetPath\mrt_raw\lib\$platformToRun" -force
+    write-host "Copying platform files for Platform:$platformToRun and for configuration:$mrtConfiguration"
+    write-host "Copying $MRTBinariesDirectory\$mrtConfiguration\$platformToRun\mrm\mrm.dll to $fullNugetPath\runtimes\win10-$platformToRun\native"
+    copy-item -path "$MRTBinariesDirectory\$mrtConfiguration\$platformToRun\mrm\mrm.dll" -destination "$fullNugetPath\runtimes\win10-$platformToRun\native"
+    
+    write-host "Copying $MRTBinariesDirectory\$mrtConfiguration\$platformToRun\mrm\mrm.lib to $fullNugetPath\runtimes\win10-$platformToRun\native"
+    copy-item -path "$MRTBinariesDirectory\$mrtConfiguration\$platformToRun\mrm\mrm.lib" -destination "$fullNugetPath\runtimes\win10-$platformToRun\native"
+    
+    write-host "Copying $MRTBinariesDirectory\$mrtConfiguration\$platformToRun\mrm\mrm.pdb to $fullNugetPath\runtimes\win10-$platformToRun\native"
+    copy-item -path "$MRTBinariesDirectory\$mrtConfiguration\$platformToRun\mrm\mrm.pdb" -destination "$fullNugetPath\runtimes\win10-$platformToRun\native"
+    
+    write-host "Copying $MRTBinariesDirectory\$mrtConfiguration\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.dll to $fullNugetPath\runtimes\win10-$platformToRun\native"
+    copy-item -path "$MRTBinariesDirectory\$mrtConfiguration\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.dll" -destination "$fullNugetPath\runtimes\win10-$platformToRun\native"
+    
+    write-host "Copying $MRTBinariesDirectory\$mrtConfiguration\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb to $fullNugetPath\runtimes\win10-$platformToRun\nativen"
+    copy-item -path "$MRTBinariesDirectory\$mrtConfiguration\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb" -destination "$fullNugetPath\runtimes\win10-$platformToRun\native"
 
     if($ploatformToRun -eq "x86")
     {
-        copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.dll" -destination "$fullNugetPath\mrt_raw\lib\anycpu\net5.0" -force
-        copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.pdb" -destination "$fullNugetPath\mrt_raw\lib\anycpu\net5.0" -force
-        copy-item -path "$MRTBinariesDirectory\Release\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.winmd" -destination "$fullNugetPath\mrt_raw\lib\anycpu" -force
+        write-host "Copying $MRTBinariesDirectory\$mrtConfiguration\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.dll to $fullNugetPath\lib\net5.0-windows10.0.17763.0"
+        copy-item -path    "$MRTBinariesDirectory\$mrtConfiguration\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.dll" -destination "$fullNugetPath\lib\net5.0-windows10.0.17763.0"
+        
+        write-host "Copying $MRTBinariesDirectory\$mrtConfiguration\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.pdb to $fullNugetPath\lib\net5.0-windows10.0.17763.0"
+        copy-item -path "$MRTBinariesDirectory\$mrtConfiguration\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.pdb" -destination "$fullNugetPath\lib\net5.0-windows10.0.17763.0"
+        
+        write-host "Copying $MRTBinariesDirectory\$mrtConfiguration\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.winmd to $fullNugetPath\lib\net5.0-windows10.0.17763.0"
+        copy-item -path "$MRTBinariesDirectory\$mrtConfiguration\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.winmd" -destination "$fullNugetPath\lib\net5.0-windows10.0.17763.0"
     }
 }
 
 # build AnyCPU
-msbuild /restore /m "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=release,Platform=anycpu
+write-host "Building anyCPU"
+& $msBuildPath /restore /p:Configuration=release,Platform=anycpu "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj"
 
 # If AnyCPU generates another dll it needs to be added here.
-copy-item -path "buildoutput\release\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$fullNugetPath\lib\net5.0-windows10.0.17763.0"
+copy-item -path "buildoutput\release\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$fullNugetPath\lib\net5.0-windows10.0.17763.0" -recurse
 
 # Generate overrides
 .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
@@ -137,6 +164,7 @@ foreach($configurationToRun in $configuration.Split(","))
 {
     foreach($platformToRun in $platform.Split(","))
     {
+        write-host "Moving items to staging directory for Configuration:$configurationToRun and Platform:$platformToRun"
         .\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$fullNugetPath" -Platform $PlatformToRun -Configuration $ConfigurationToRun
     }
 }
@@ -157,7 +185,7 @@ Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.ta
 Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.targets" -Destination "$fullNugetPath\build"
 Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" -Destination "$fullNugetPath\build"
 Copy-Item -Path "$nuSpecsPath\AppxManifest.xml" -Destination "$fullNugetPath"
-Copy-Item -Path "LICENSE" -Destination "$fullNugetPath" -force
+Copy-Item -Path "LICENSE" -Destination "$fullNugetPath" -recurse
 
 # for some reason xslt.load changes the working directory to C:\windows\system32.
 # store the current working directory here.
@@ -184,3 +212,7 @@ nuget pack ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec" -BasePath
 # Update the details in eng/version.details.xml
 $packageName = "Microsoft.WindowsAppSDK.Foundation.TransportPackage"
 &"$UpdateVersionDetailsPath" -dependencyName $packageName -dependencyVersion $packageVersion
+
+# Remove the directory.  If the directory is not removed then nuget restore won't restore the transport package because the versions are the same.
+write-host "Removing $env:Build_SourcesDirectory\build\packages\Microsoft.WindowsAppSDK.Foundation.TransportPackage.$packageVersion"
+remove-item "$env:Build_SourcesDirectory\build\packages\Microsoft.WindowsAppSDK.Foundation.TransportPackage.$packageVersion" -recurse -force
