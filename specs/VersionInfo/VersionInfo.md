@@ -92,8 +92,8 @@ public class MyInfo
     {
         var build_release = Microsoft.WindowsAppSDK.Release;
         var build_version = Microsoft.WindowsAppSDK.Runtime.Version;
-        var release = VersionInfo.ReleaseInfo.Current();
-        var runtime = .VersionInfo.RuntimeInfo.Current();
+        var release = ReleaseInfo.Current();
+        var runtime = RuntimeInfo.Current();
         var message = $"Built with Windows App SDK ${build_release.Major}.${build_release.Minor}.${build_release.Patch}${build_release.FormattedVersionTag}\n"
                       $"Minimum Windows App Runtime version ${build_version.Major}.${build_version.Minor}.${build_version.Build}.${build_version.Revision}\n"
                       "\n" +
@@ -113,62 +113,40 @@ information via an internal API.
 # 6. API Details
 
 ```c# (but really MIDL3)
-namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo
+namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
     [contractversion(1)]
     apicontract VersionInfoContract{};
 
     /// Version information for the Windows App SDK release.
     [contract(VersionInfoContract, 1)]
-    runtimeclass ReleaseInfo : Windows.Foundation.IStringable
+    static runtimeclass ReleaseInfo
     {
-        ReleaseInfo();
-
-        /// Return the current release information.
-        static ReleaseInfo Current{ get; };
-
         /// The major version of the Windows App SDK release.
-        UInt16 Major{ get; };
+        static UInt16 Major{ get; };
 
         /// The minor version of the Windows App SDK release.
-        UInt16 Minor{ get; };
+        static UInt16 Minor{ get; };
 
         /// The patch version of the Windows App SDK release.
-        UInt16 Patch{ get; };
-
-        /// The major and minor version of the Windows App SDK release, encoded as a 32-bit integer (0xMMMMNNNN where M=major, N=minor).
-        UInt32 MajorMinor{ get; };
-
-        /// The Windows App SDK release's channel; for example, "preview", or empty string for stable.
-        String Channel{ get; };
+        static UInt16 Patch{ get; };
 
         /// The Windows App SDK release's version tag; for example, "preview2", or empty string for stable.
-        String VersionTag{ get; };
+        static String VersionTag{ get; };
 
-        /// The Windows App SDK release's short-form version tag; for example, "p2", or empty string for stable.
-        String VersionShortTag{ get; };
-
-        /// The Windows App SDK release's version tag, formatted for concatenation when constructing identifiers; for example, "-preview2", or empty string for stable.
-        String FormattedVersionTag{ get; };
-
-        /// The Windows App SDK release's short-form version tag, formatted for concatenation when constructing identifiers; for example, "-p2", or empty string for stable.
-        String FormattedVersionShortTag{ get; };
+        /// The version of the Windows App SDK runtime; for example, "1.1-preview2" or "1.2.3".
+        static String ToString{ get; };
     };
 
     /// Version information for the Windows App SDK runtime.
     [contract(VersionInfoContract, 1)]
-    runtimeclass RuntimeInfo : Windows.Foundation.IStringable
+    static runtimeclass RuntimeInfo
     {
-        RuntimeInfo();
-
-        /// Return the current runtime information.
-        static RuntimeInfo Current { get; };
-
         /// The version of the Windows App SDK runtime; for example, { Major=1000, Minor=446, Build=804, Revision=0 }
-        Windows.ApplicationModel.PackageVersion Version{ get; };
+        static Windows.ApplicationModel.PackageVersion Version{ get; };
 
-        /// The version of the Windows App SDK runtime, as an unsigned 64-bit integer; for example, 0x03E801BE03240000.
-        UInt64 VersionUInt64{ get; };
+        /// The version of the Windows App SDK runtime; for example, "1000.446.804.0"
+        static String ToString{ get; };
     };
 }
 ```
