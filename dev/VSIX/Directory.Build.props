@@ -7,7 +7,7 @@
             https://pkgs.dev.azure.com/microsoft/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/index.json
         </RestoreSources>
         <CppWinRTVersion Condition="'$(CppWinRTVersion)' == ''">2.0.210806.1</CppWinRTVersion>
-        <WindowsSDKBuildToolsVersion Condition="'$(WindowsSDKBuildToolsVersion)' == ''">10.0.22000.194</WindowsSDKBuildToolsVersion>
+        <WindowsSDKBuildToolsVersion Condition="'$(WindowsSDKBuildToolsVersion)' == ''">10.0.22621.1</WindowsSDKBuildToolsVersion>
         <WILVersion Condition="'$(WILVersion)' == ''">1.0.211019.2</WILVersion>
         <!-- Provides a default package version in order to simplify dev inner loop testing -->
         <WindowsAppSdkVersion Condition="'$(WindowsAppSdkVersion)' == ''">1.0.0-preview1</WindowsAppSdkVersion>
