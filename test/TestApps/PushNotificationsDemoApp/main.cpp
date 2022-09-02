@@ -28,7 +28,7 @@ winrt::IAsyncOperation<winrt::PushNotificationChannel> RequestChannelAsync()
     // To obtain an AAD RemoteIdentifier for your app,
     // follow the instructions on https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app
     auto channelOperation = winrt::PushNotificationManager::Default().CreateChannelAsync(
-        winrt::guid("cea1342d-8293-4acb-b18a-ed8b0d6f7d6c"));
+        winrt::guid("c1936908-ff8f-40b2-ab83-3e48788cc0bd"));
 
     // Setup the inprogress event handler
     channelOperation.Progress(

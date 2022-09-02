@@ -9,6 +9,7 @@
 #include "wil/stl.h"
 #include "wil/win32_helpers.h"
 #include "PushBackgroundTaskInstance.h"
+
 #include <filesystem>
 
 namespace winrt
@@ -119,9 +120,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
     inline HRESULT PackagedAppLauncherByClsid(winrt::guid const& comServerClsid, unsigned int payloadLength, _In_reads_(payloadLength) byte* payload) noexcept try
     {
         auto payloadAsWideString{ Utf8BytesToWideString(payloadLength, payload) };
-        auto pushBackgroundTaskInstance{ winrt::make_self<PushBackgroundTaskInstance>(payloadAsWideString) };
 
+        auto rawNotification{ winrt::make_self<PushRawNotification>(payloadAsWideString) };
+        auto pushBackgroundTaskInstance{ winrt::make_self<PushBackgroundTaskInstance>(rawNotification) };
         auto localBackgroundTask = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(comServerClsid, CLSCTX_ALL);
+
         localBackgroundTask.Run(*pushBackgroundTaskInstance);
         return S_OK;
     }
@@ -140,7 +143,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 
     inline bool IsPackagedAppScenario()
     {
-        return AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable();
+        return false;
     }
 
     inline HRESULT GetPackageFullName(wil::unique_cotaskmem_string& packagedFullName) noexcept try
