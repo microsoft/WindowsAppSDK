@@ -12,7 +12,6 @@ namespace Test::VersionInfo
     {
     public:
         BEGIN_TEST_CLASS(VersionInfoTests)
-            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
@@ -33,7 +32,7 @@ namespace Test::VersionInfo
         {
             try
             {
-                auto release{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::VersionInfo::ReleaseInfo::Current() };
+                auto release{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::ReleaseInfo::ToString() };
                 VERIFY_FAIL(L"Success is not expected without Microsoft.WindowsAppRuntime.Insights.Resource.dll");
             }
             catch (winrt::hresult_error& e)
@@ -46,7 +45,7 @@ namespace Test::VersionInfo
         {
             try
             {
-                auto runtime{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::VersionInfo::RuntimeInfo::Current() };
+                auto runtime{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeInfo::ToString() };
                 VERIFY_FAIL(L"Success is not expected without Microsoft.WindowsAppRuntime.Insights.Resource.dll");
             }
             catch (winrt::hresult_error& e)

@@ -3,36 +3,25 @@
 
 #pragma once
 
-#include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo.ReleaseInfo.g.h>
+#include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.ReleaseInfo.g.h>
 
-namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::VersionInfo::implementation
+namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
-    struct ReleaseInfo : ReleaseInfoT<ReleaseInfo>
+    struct ReleaseInfo
     {
         ReleaseInfo() = default;
 
-        ReleaseInfo(const ::Microsoft::WindowsAppSDK::VersionInfo& versionInfo) :
-            m_versionInfo(versionInfo)
-        {
-        }
-
-        static winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::VersionInfo::ReleaseInfo Current();
-        uint16_t Major();
-        uint16_t Minor();
-        uint16_t Patch();
-        uint32_t MajorMinor();
-        hstring Channel();
-        hstring VersionTag();
-        hstring VersionShortTag();
-        hstring FormattedVersionTag();
-        hstring FormattedVersionShortTag();
-        hstring ToString();
+        static uint16_t Major();
+        static uint16_t Minor();
+        static uint16_t Patch();
+        static hstring VersionTag();
+        static hstring ToString();
 
     private:
-        const ::Microsoft::WindowsAppSDK::VersionInfo& m_versionInfo{};
+        static const ::Microsoft::WindowsAppSDK::VersionInfo& GetVersionInfo();
     };
 }
-namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::VersionInfo::factory_implementation
+namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::factory_implementation
 {
     struct ReleaseInfo : ReleaseInfoT<ReleaseInfo, implementation::ReleaseInfo>
     {

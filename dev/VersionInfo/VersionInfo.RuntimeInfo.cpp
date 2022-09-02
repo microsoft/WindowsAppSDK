@@ -5,27 +5,18 @@
 
 #include "VersionInfo.RuntimeInfo.h"
 
-#include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo.RuntimeInfo.g.cpp>
+#include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.RuntimeInfo.g.cpp>
 
-namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::VersionInfo::implementation
+namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
-    winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::VersionInfo::RuntimeInfo RuntimeInfo::Current()
-    {
-        const ::Microsoft::WindowsAppSDK::VersionInfo* versionInfo{ ::Microsoft::WindowsAppSDK::GetVersionInfo() };
-        return winrt::make<implementation::RuntimeInfo>(*versionInfo);
-    }
     winrt::Windows::ApplicationModel::PackageVersion RuntimeInfo::Version()
     {
-        const auto& version{ m_versionInfo.Runtime.Version };
+        const auto& version{ GetVersionInfo().Runtime.Version };
         return winrt::Windows::ApplicationModel::PackageVersion{ version.Major, version.Minor, version.Build, version.Revision };
-    }
-    uint64_t RuntimeInfo::VersionUInt64()
-    {
-        return m_versionInfo.Runtime.Version.UInt64;
     }
     hstring RuntimeInfo::ToString()
     {
-        PCWSTR dotQuadString{ m_versionInfo.Runtime.Version.DotQuadString };
+        PCWSTR dotQuadString{ GetVersionInfo().Runtime.Version.DotQuadString };
         if (dotQuadString && (dotQuadString[0] != '\0'))
         {
             return winrt::hstring{ dotQuadString };
@@ -34,5 +25,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Versio
         {
             return winrt::hstring{};
         }
+    }
+
+    const ::Microsoft::WindowsAppSDK::VersionInfo& RuntimeInfo::GetVersionInfo()
+    {
+        const ::Microsoft::WindowsAppSDK::VersionInfo* versionInfo{ ::Microsoft::WindowsAppSDK::GetVersionInfo() };
+        return *versionInfo;
     }
 }

@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 #ifndef PCH_H
@@ -11,7 +11,7 @@
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 
-#include <winrt/Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo.h>
+#include <winrt/Microsoft.Windows.ApplicationModel.WindowsAppRuntime.h>
 
 #include <WexTestClass.h>
 

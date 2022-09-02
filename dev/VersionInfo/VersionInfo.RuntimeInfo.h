@@ -3,29 +3,22 @@
 
 #pragma once
 
-#include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.VersionInfo.RuntimeInfo.g.h>
+#include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.RuntimeInfo.g.h>
 
-namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::VersionInfo::implementation
+namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
-    struct RuntimeInfo : RuntimeInfoT<RuntimeInfo>
+    struct RuntimeInfo
     {
         RuntimeInfo() = default;
 
-        RuntimeInfo(const ::Microsoft::WindowsAppSDK::VersionInfo& versionInfo) :
-            m_versionInfo(versionInfo)
-        {
-        }
-
-        static winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::VersionInfo::RuntimeInfo Current();
-        winrt::Windows::ApplicationModel::PackageVersion Version();
-        uint64_t VersionUInt64();
-        hstring ToString();
+        static winrt::Windows::ApplicationModel::PackageVersion Version();
+        static hstring ToString();
 
     private:
-        const ::Microsoft::WindowsAppSDK::VersionInfo& m_versionInfo{};
+        static const ::Microsoft::WindowsAppSDK::VersionInfo& GetVersionInfo();
     };
 }
-namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::VersionInfo::factory_implementation
+namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::factory_implementation
 {
     struct RuntimeInfo : RuntimeInfoT<RuntimeInfo, implementation::RuntimeInfo>
     {
