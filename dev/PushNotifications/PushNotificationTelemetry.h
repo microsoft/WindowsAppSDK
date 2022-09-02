@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT license.
 
 #pragma once
@@ -99,7 +99,40 @@ public:
     }
     CATCH_LOG()
 
+    DEFINE_EVENT_METHOD(LogOnRawNotificationReceived)(
+            winrt::hresult hr,
+            std::wstring const& correlationVector) noexcept try
+    {
+        if (m_telemetryHelper.ShouldLogEvent())
+        {
+            TraceLoggingClassWriteMeasure(
+                "OnRawNotificationReceived",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(correlationVector.c_str(), "CorrelationVector"),
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
+    }
+    CATCH_LOG()
+
+        DEFINE_EVENT_METHOD(LogInvokeAll)(
+            winrt::hresult hr) noexcept try
+    {
+        if (m_telemetryHelper.ShouldLogEvent())
+        {
+            TraceLoggingClassWriteMeasure(
+                "InvokeAll",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
+    }
+    CATCH_LOG()
+
 private:
     NotificationTelemetryHelper m_telemetryHelper;
-
 };
