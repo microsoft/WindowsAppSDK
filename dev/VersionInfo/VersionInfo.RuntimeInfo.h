@@ -12,7 +12,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         RuntimeInfo() = default;
 
         static winrt::Windows::ApplicationModel::PackageVersion Version();
-        static hstring ToString();
+        static hstring AsString();
 
     private:
         static const ::Microsoft::WindowsAppSDK::VersionInfo& GetVersionInfo();

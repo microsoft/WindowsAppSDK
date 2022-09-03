@@ -14,7 +14,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         const auto& version{ GetVersionInfo().Runtime.Version };
         return winrt::Windows::ApplicationModel::PackageVersion{ version.Major, version.Minor, version.Build, version.Revision };
     }
-    hstring RuntimeInfo::ToString()
+    hstring RuntimeInfo::AsString()
     {
         PCWSTR dotQuadString{ GetVersionInfo().Runtime.Version.DotQuadString };
         if (dotQuadString && (dotQuadString[0] != '\0'))

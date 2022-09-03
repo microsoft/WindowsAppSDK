@@ -15,7 +15,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         static uint16_t Minor();
         static uint16_t Patch();
         static hstring VersionTag();
-        static hstring ToString();
+        static hstring AsString();
 
     private:
         static const ::Microsoft::WindowsAppSDK::VersionInfo& GetVersionInfo();

@@ -135,7 +135,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         static String VersionTag{ get; };
 
         /// The version of the Windows App SDK runtime; for example, "1.1-preview2" or "1.2.3".
-        static String ToString{ get; };
+        static String AsString{ get; };
     };
 
     /// Version information for the Windows App SDK runtime.
@@ -146,7 +146,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         static Windows.ApplicationModel.PackageVersion Version{ get; };
 
         /// The version of the Windows App SDK runtime; for example, "1000.446.804.0"
-        static String ToString{ get; };
+        static String AsString{ get; };
     };
 }
 ```

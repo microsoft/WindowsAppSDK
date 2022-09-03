@@ -32,7 +32,7 @@ namespace Test::VersionInfo
         {
             try
             {
-                auto release{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::ReleaseInfo::ToString() };
+                auto release{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::ReleaseInfo::AsString() };
                 VERIFY_FAIL(L"Success is not expected without Microsoft.WindowsAppRuntime.Insights.Resource.dll");
             }
             catch (winrt::hresult_error& e)
@@ -45,7 +45,7 @@ namespace Test::VersionInfo
         {
             try
             {
-                auto runtime{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeInfo::ToString() };
+                auto runtime{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeInfo::AsString() };
                 VERIFY_FAIL(L"Success is not expected without Microsoft.WindowsAppRuntime.Insights.Resource.dll");
             }
             catch (winrt::hresult_error& e)

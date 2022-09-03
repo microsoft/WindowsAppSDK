@@ -27,7 +27,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     {
         return GetVersionInfo().Release.VersionTag;
     }
-    hstring ReleaseInfo::ToString()
+    hstring ReleaseInfo::AsString()
     {
         WCHAR s[64]{};
 
