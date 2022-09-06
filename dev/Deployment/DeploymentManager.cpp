@@ -1,12 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include <pch.h>
 #include <DeploymentManager.h>
 #include <DeploymentResult.h>
 #include <DeploymentActivityContext.h>
 #include <PackageInfo.h>
-#include <PackageId.h>
 #include <TerminalVelocityFeatures-DeploymentAPI.h>
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
 #include <PushNotificationsLongRunningPlatform-Startup.h>
@@ -15,12 +14,25 @@
 using namespace winrt;
 using namespace Windows::Foundation;
 
+namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
+{
+    HRESULT Initialize_Log(
+        HRESULT hrInitialize,
+        const AppModel::Identity::PackageIdentity& packageIdentity,
+        const std::wstring& release) noexcept;
+
+    HRESULT Initialize_ShowUI_OnError(
+        const AppModel::Identity::PackageIdentity& packageIdentity,
+        const std::wstring& release);
+}
+
 inline void Initialize_StopSuccessActivity(
     ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
-    const winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus& deploymentStatus)
+    const winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus& deploymentStatus,
+    const HRESULT hr = S_OK)
 {
     initializeActivityContext.GetActivity().StopWithResult(
-        S_OK,
+        hr,
         static_cast <UINT32>(0),
         static_cast<PCSTR>(nullptr),
         static_cast <unsigned int>(0),
@@ -46,24 +58,12 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize()
     {
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetActivity(WindowsAppRuntimeDeployment_TraceLogger::Initialize::Start(false,
-                                                                                        Security::IntegrityLevel::IsElevated(),
-                                                                                        AppModel::Identity::IsPackagedProcess(),
-                                                                                        Security::IntegrityLevel::GetIntegrityLevel()));
-
-        FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
-        return Initialize(GetCurrentFrameworkPackageFullName());
+        winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions options{};
+        return Initialize(options);
     }
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions)
     {
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetActivity(WindowsAppRuntimeDeployment_TraceLogger::Initialize::Start(
-                                                                                        deploymentInitializeOptions.ForceDeployment(),
-                                                                                        Security::IntegrityLevel::IsElevated(),
-                                                                                        AppModel::Identity::IsPackagedProcess(),
-                                                                                        Security::IntegrityLevel::GetIntegrityLevel()));
-
-        FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
         return Initialize(GetCurrentFrameworkPackageFullName(), deploymentInitializeOptions);
     }
 
@@ -155,7 +155,89 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(hstring const& packageFullName, winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions)
     {
         auto& initializeActivityContext{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
+        const bool isPackagedProcess{ AppModel::Identity::IsPackagedProcess() };
+        initializeActivityContext.GetActivity().Start(deploymentInitializeOptions.ForceDeployment(),
+                                                      Security::IntegrityLevel::IsElevated(),
+                                                      isPackagedProcess,
+                                                      Security::IntegrityLevel::GetIntegrityLevel());
 
+        // DeploymentManager API requires a packaged process?
+        HRESULT hr{};
+        winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult deploymentResult{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Unknown, S_OK };
+        if (!isPackagedProcess)
+        {
+            if (deploymentInitializeOptions.OnNoPackageIdentity_NOOP())
+            {
+                // The process lacks package identity but that's OK. Do nothing
+                const auto c_status{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Ok };
+                return winrt::make<implementation::DeploymentResult>(c_status, S_OK);
+            }
+            hr = LOG_HR_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), "DeploymentManager.Initialize called in a process without package identity");
+        }
+        else
+        {
+            try
+            {
+                deploymentResult = _Initialize(initializeActivityContext, packageFullName, deploymentInitializeOptions);
+            }
+            catch (winrt::hresult_error const& e)
+            {
+                hr = e.code();
+            }
+        }
+        if (FAILED(hr))
+        {
+            auto packageIdentity{ AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.c_str()) };
+            PCWSTR c_packageNamePrefix{ L"microsoft.windowsappruntime." };
+            const size_t c_packageNamePrefixLength{ ARRAYSIZE(L"microsoft.windowsappruntime.") - 1 };
+            std::wstring release;
+            if (CompareStringOrdinal(packageIdentity.Name(), -1, c_packageNamePrefix, -1, TRUE) == CSTR_EQUAL)
+            {
+                release =  packageIdentity.Name() + c_packageNamePrefixLength;
+            }
+            else
+            {
+                release = std::wstring{ L"??? (" } + std::wstring(packageFullName.c_str()) + L")";
+            }
+            LOG_IF_FAILED(Initialize_Log(hr, packageIdentity, release));
+
+            // NOTE: IsDebuggerPresent()=TRUE if running under a debugger context.
+            //       IsDebuggerPresent()=FALSE if not running under a debugger context, even if AEDebug is set.
+            if (deploymentInitializeOptions.OnError_DebugBreak() ||
+                (deploymentInitializeOptions.OnError_DebugBreak_IfDebuggerAttached() && IsDebuggerPresent()) ||
+                ::Microsoft::Configuration::IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_DEPLOYMENT_INITIALIZE_DEBUGBREAK"))
+            {
+                DebugBreak();
+            }
+
+            if (deploymentInitializeOptions.OnError_ShowUI() ||
+                ::Microsoft::Configuration::IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_DEPLOYMENT_INITIALIZE_SHOWUI"))
+            {
+                LOG_IF_FAILED(Initialize_ShowUI_OnError(packageIdentity, release));
+            }
+
+            if (deploymentInitializeOptions.OnError_FailFast() ||
+                ::Microsoft::Configuration::IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_DEPLOYMENT_INITIALIZE_FAILFAST"))
+            {
+                const PACKAGE_VERSION version{ packageIdentity.Version() };
+                FAIL_FAST_HR_MSG(hr,
+                                 "DeploymentManager initialize for release %ls (MSIX package version %hu.%hu.%hu.%hu)",
+                                 release.c_str(),
+                                 version.Major, version.Minor, version.Build, version.Revision);
+            }
+            Initialize_StopSuccessActivity(initializeActivityContext, deploymentResult.Status(), hr);
+            THROW_HR(hr);
+        }
+
+        // Success!
+        return deploymentResult;
+    }
+
+    winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::_Initialize(
+        ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
+        hstring const& packageFullName,
+        winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions)
+    {
         auto getStatusResult{ DeploymentManager::GetStatus(packageFullName) };
         if (getStatusResult.Status() == DeploymentStatus::Ok)
         {
@@ -242,7 +324,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                 continue;
             }
 
-            auto packageId{ MddCore::PackageId::FromPackageFullName(packageFullName.c_str()) };
+            auto packageId{ AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.c_str()) };
             if (packageId.Version().Version >= targetVersion.Version)
             {
                 match = true;
@@ -504,5 +586,97 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
 
         THROW_WIN32(ERROR_NOT_FOUND);
+    }
+
+    HRESULT Initialize_Log(
+        HRESULT hrInitialize,
+        const AppModel::Identity::PackageIdentity& packageIdentity,
+        const std::wstring& release) noexcept try
+    {
+        HANDLE hEventLog{ RegisterEventSourceW(nullptr, L"Windows App Runtime") };
+        RETURN_LAST_ERROR_IF_NULL(hEventLog);
+
+        const DWORD c_eventId{ static_cast<DWORD>(hrInitialize) };
+        PCWSTR message1{ L"Windows App Runtime" };
+        WCHAR message2[1024]{};
+        PCWSTR message2Format{ L"ERROR 0x%08X: DeploymentManager initialization failed for version %s (MSIX package version %hu.%hu.%hu.%hu)" };
+        const PACKAGE_VERSION version{ packageIdentity.Version() };
+        FAIL_FAST_IF_FAILED(StringCchPrintfW(message2, ARRAYSIZE(message2), message2Format,
+                                             hrInitialize, release.c_str(),
+                                             version.Major, version.Minor, version.Build, version.Revision));
+        PCWSTR strings[2]{ message1, message2 };
+        LOG_IF_WIN32_BOOL_FALSE(ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, 0, c_eventId, nullptr, ARRAYSIZE(strings), 0, strings, nullptr));
+
+        DeregisterEventSource(hEventLog);
+
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    HRESULT Initialize_ShowUI_OnError(
+        const AppModel::Identity::PackageIdentity& packageIdentity,
+        const std::wstring& release)
+    {
+        // Get the message caption
+        PCWSTR caption{};
+        wil::unique_cotaskmem_string captionString;
+        WCHAR captionOnError[100]{};
+        try
+        {
+            PCWSTR executable{};
+            wil::unique_cotaskmem_string module;
+            auto hr{ LOG_IF_FAILED(wil::GetModuleFileNameW(nullptr, module)) };
+            if (SUCCEEDED(hr))
+            {
+                auto delimiter{ wcsrchr(module.get(), L'\\') };
+                if (delimiter)
+                {
+                    executable = delimiter + 1;
+                }
+                else
+                {
+                    executable = module.get();
+                }
+                PCWSTR captionSuffix{ L"This application could not be started" };
+                captionString = wil::str_printf<wil::unique_cotaskmem_string>(L"%s - %s", executable, captionSuffix);
+                caption = captionString.get();
+            }
+        }
+        catch (...)
+        {
+        }
+        if (!caption)
+        {
+            LOG_IF_FAILED(StringCchPrintfW(captionOnError, ARRAYSIZE(captionOnError),
+                                           L"<Process %d> - This application could not be started",
+                                           GetCurrentProcessId()));
+            caption = captionOnError;
+        }
+
+        // Get the message body
+        WCHAR text[1024]{};
+        PCWSTR textFormat{ L"This application requires the Windows App Runtime\n"
+                           L"    Version %s\n"
+                           L"    (MSIX package version %hu.%hu.%hu.%hu)\n"
+                           L"\n"
+                           L"Do you want to install a compatible Windows App Runtime now?"
+                         };
+        const PACKAGE_VERSION version{ packageIdentity.Version() };
+        FAIL_FAST_IF_FAILED(StringCchPrintfW(text, ARRAYSIZE(text), textFormat,
+                                             release.c_str(),
+                                             version.Major, version.Minor, version.Build, version.Revision));
+
+        // Show the prompt
+        const auto yesno{ MessageBoxW(nullptr, text, caption, MB_YESNO | MB_ICONERROR) };
+        if (yesno == IDYES)
+        {
+            SHELLEXECUTEINFOW sei{};
+            sei.cbSize = sizeof(sei);
+            sei.lpVerb = L"open";
+            sei.lpFile = L"https://docs.microsoft.com/windows/apps/windows-app-sdk/downloads";
+            sei.nShow = SW_SHOWNORMAL;
+            LOG_IF_WIN32_BOOL_FALSE(ShellExecuteExW(&sei));
+        }
+        return S_OK;
     }
 }

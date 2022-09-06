@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include "pch.h"
 
@@ -107,9 +107,6 @@ HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo3(
     // Do we need Static and/or Dynamic items? NOTE: If neither are specified we need both
     const bool filterStatic{ WI_IsFlagSet(flags, PACKAGE_FILTER_STATIC) };
     const bool filterDynamic{ WI_IsFlagSet(flags, PACKAGE_FILTER_DYNAMIC) };
-    const bool staticAndDynamicFlagsNotSpecified{ !filterStatic && !filterDynamic };
-    const bool needStatic{ staticAndDynamicFlagsNotSpecified || filterStatic };
-    const bool needDynamic{ staticAndDynamicFlagsNotSpecified || filterDynamic };
 
     // If an unpackaged process has no dynamic packages in its package graph
     // Then GetCurrentPackageInfo3() always returns APPMODEL_ERROR_NO_PACKAGE.

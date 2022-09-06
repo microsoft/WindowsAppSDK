@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #define WINDOWSAPPSDK_RELEASE_MAJORMINOR        0x00040001u
 #define WINDOWSAPPSDK_RELEASE_VERSION_TAG_W     L"experimental1"
@@ -59,13 +59,21 @@ HRESULT TestCompile()
     auto t8 = B::Initialize(0x12345678, L"versiontag", pv0, opt2);
 
     const auto h1{ B::InitializeNoThrow() };
+    (void)h1; // Ignore 'warning C4189:...: local variable is initialized but not referenced
     const auto h2{ B::InitializeNoThrow(0x12345678) };
+    (void)h2; // Ignore 'warning C4189:...: local variable is initialized but not referenced
     const auto h3{ B::InitializeNoThrow(0x12345678, L"versiontag") };
+    (void)h3; // Ignore 'warning C4189:...: local variable is initialized but not referenced
     const auto h4{ B::InitializeNoThrow(0x12345678, L"versiontag", AM::PackageVersion(WINDOWSAPPSDK_RUNTIME_VERSION_UINT64)) };
+    (void)h4; // Ignore 'warning C4189:...: local variable is initialized but not referenced
     const auto h5{ B::InitializeNoThrow(0x12345678, L"versiontag", pv0) };
+    (void)h5; // Ignore 'warning C4189:...: local variable is initialized but not referenced
     const auto h6{ B::InitializeNoThrow(0x12345678, L"versiontag", pv0, opt0) };
+    (void)h6; // Ignore 'warning C4189:...: local variable is initialized but not referenced
     const auto h7{ B::InitializeNoThrow(0x12345678, L"versiontag", pv0, opt1) };
+    (void)h7; // Ignore 'warning C4189:...: local variable is initialized but not referenced
     const auto h8{ B::InitializeNoThrow(0x12345678, L"versiontag", pv0, opt2) };
+    (void)h8; // Ignore 'warning C4189:...: local variable is initialized but not referenced
 
     return S_OK;
 }

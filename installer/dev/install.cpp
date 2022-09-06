@@ -1,9 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include "pch.h"
 #include "packages.h"
 #include "install.h"
+#include "MachineTypeAttributes.h"
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
@@ -49,7 +50,7 @@ namespace WindowsAppRuntimeInstaller
             winrt::Windows::Management::Deployment::DeploymentOptions::None };
 
         PackageManager packageManager;
-        const auto deploymentOperation{ packageManager.AddPackageAsync(packageUri, nullptr, DeploymentOptions::None) };
+        const auto deploymentOperation{ packageManager.AddPackageAsync(packageUri, nullptr, deploymentOptions) };
         deploymentOperation.get();
         if (deploymentOperation.Status() != AsyncStatus::Completed)
         {
@@ -81,8 +82,6 @@ namespace WindowsAppRuntimeInstaller
         WindowsAppRuntimeInstaller::InstallActivity::Context& installActivityContext,
         const Uri& packageUri)
     {
-        const auto deploymentOptions{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
-
         PackageManager packageManager;
         const auto deploymentOperation{ packageManager.StagePackageAsync(packageUri, nullptr, DeploymentOptions::None) };
         deploymentOperation.get();
@@ -143,31 +142,12 @@ namespace WindowsAppRuntimeInstaller
         return S_OK;
     }
 
-    bool IsPackageApplicable(const std::unique_ptr<PackageProperties>& packageProperties, DeploymentBehavior deploymentBehavior)
+    bool IsPackageApplicable(const std::unique_ptr<PackageProperties>& packageProperties, const DeploymentBehavior& deploymentBehavior, const ProcessorArchitecture& systemArchitecture)
     {
         // Neutral package architecture is applicable on all systems.
         if (packageProperties->architecture == ProcessorArchitecture::Neutral)
         {
             return true;
-        }
-
-        USHORT processMachine{ IMAGE_FILE_MACHINE_UNKNOWN };
-        USHORT nativeMachine{ IMAGE_FILE_MACHINE_UNKNOWN };
-        THROW_IF_WIN32_BOOL_FALSE(::IsWow64Process2(::GetCurrentProcess(), &processMachine, &nativeMachine));
-        ProcessorArchitecture systemArchitecture{};
-        switch (nativeMachine)
-        {
-        case IMAGE_FILE_MACHINE_I386:
-            systemArchitecture = ProcessorArchitecture::X86;
-            break;
-        case IMAGE_FILE_MACHINE_AMD64:
-            systemArchitecture = ProcessorArchitecture::X64;
-            break;
-        case IMAGE_FILE_MACHINE_ARM64:
-            systemArchitecture = ProcessorArchitecture::Arm64;
-            break;
-        default:
-            THROW_HR_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), "nativeMachine=%hu", nativeMachine);
         }
 
         // Same-arch is always applicable for any package type.
@@ -191,9 +171,15 @@ namespace WindowsAppRuntimeInstaller
             return true;
         }
 
-        // On Arm64 systems, all current package architectures are applicable.
+        // On Windows 11 (i.e. builds 22000+) ARM64 systems, all framework package architectures are applicable.
+        // On Windows 10 (i.e. builds 17763-190**) ARM64 systems (which don't support X64 apps), all x64 framework package architectures, except x64, are applicable.
         if (systemArchitecture == ProcessorArchitecture::Arm64)
         {
+            if (packageProperties->architecture == ProcessorArchitecture::X64)
+            {
+                return MachineTypeAttributes::IsWindows11_IsArchitectureSupportedInUserMode(IMAGE_FILE_MACHINE_AMD64);
+            }
+
             return true;
         }
 
@@ -257,7 +243,42 @@ namespace WindowsAppRuntimeInstaller
         return outstream;
     }
 
-    void DeployPackageFromResource(const WindowsAppRuntimeInstaller::ResourcePackageInfo& resource, const WindowsAppRuntimeInstaller::Options options)
+    // RestartPushNotificationsLRP is best effort and non-blocking to Installer functionality.
+    // Any failures in this helper method will be logged in Telemetry but will not return error to the caller.
+    void RestartPushNotificationsLRP()
+    {
+        WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetInstallStage(WindowsAppRuntimeInstaller::InstallActivity::InstallStage::RestartPushNotificationsLRP);
+
+        IID pushNotificationsIMPL_CLSID;
+        LOG_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_IMPL_CLSID_WSTRING, &pushNotificationsIMPL_CLSID));
+
+        IID pushNotificationsLRP_IID;
+        LOG_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_LRP_CLSID_WSTRING, &pushNotificationsLRP_IID));
+
+        wil::com_ptr<::IUnknown> pNotificationsLRP{};
+
+        unsigned int retries{ 0 };
+        HRESULT hr{ S_OK };
+        while (retries < 3)
+        {
+            hr = CoCreateInstance(pushNotificationsIMPL_CLSID,
+                NULL,
+                CLSCTX_LOCAL_SERVER,
+                pushNotificationsLRP_IID,
+                reinterpret_cast<LPVOID*>(pNotificationsLRP.put()));
+
+            if (SUCCEEDED(hr))
+            {
+                break;
+            }
+            retries++;
+        }
+        // wil call back is setup to log telemetry event for any failure in restarting Notifications LRP
+        LOG_IF_FAILED_MSG(hr, "Restarting Push Notifications LRP failed after 3 attempts.");
+    }
+
+    void DeployPackageFromResource(const WindowsAppRuntimeInstaller::ResourcePackageInfo& resource, const WindowsAppRuntimeInstaller::Options& options,
+        const ProcessorArchitecture& systemArchitecture, const std::wstring& applicableSingletonResourceID)
     {
         const auto quiet{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet) };
         const auto forceDeployment{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment) };
@@ -272,7 +293,7 @@ namespace WindowsAppRuntimeInstaller
         installActivityContext.SetCurrentResourceId(packageProperties->fullName.get());
 
         // Skip non-applicable packages.
-        if (!IsPackageApplicable(packageProperties, resource.deploymentBehavior))
+        if (!IsPackageApplicable(packageProperties, resource.deploymentBehavior, systemArchitecture))
         {
             return;
         }
@@ -319,6 +340,15 @@ namespace WindowsAppRuntimeInstaller
         }
         THROW_IF_FAILED(hrAddResult);
 
+        // If successful install is for Singleton package, restart Push Notifications Long Running Platform when ForceDeployment option is applied.
+        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment))
+        {
+            if (CompareStringOrdinal(resource.id.c_str(), static_cast<int>(resource.id.size()), applicableSingletonResourceID.c_str(), static_cast<int>(applicableSingletonResourceID.size()), TRUE) == CSTR_EQUAL)
+            {
+                RestartPushNotificationsLRP();
+            }
+        }
+
         // Framework provisioning is not supported by the PackageManager ProvisionPackageForAllUsersAsync API.
         // Hence, skip attempting to provision framework package.
         if (!packageProperties->isFramework && Security::IntegrityLevel::IsElevated())
@@ -351,40 +381,6 @@ namespace WindowsAppRuntimeInstaller
         return S_OK;
     }
     CATCH_RETURN()
-
-    // RestartPushNotificationsLRP is best effort and non-blocking to Installer functionality.
-    // Any failures in this helper method will be logged in Telemetry but will not return error to the caller.
-    void RestartPushNotificationsLRP()
-    {
-        WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetInstallStage(WindowsAppRuntimeInstaller::InstallActivity::InstallStage::RestartPushNotificationsLRP);
-
-        IID pushNotificationsIMPL_CLSID;
-        LOG_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_IMPL_CLSID_WSTRING, &pushNotificationsIMPL_CLSID));
-
-        IID pushNotificationsLRP_IID;
-        LOG_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_LRP_CLSID_WSTRING, &pushNotificationsLRP_IID));
-
-        wil::com_ptr<::IUnknown> pNotificationsLRP{};
-
-        unsigned int retries{ 0 };
-        HRESULT hr{ S_OK };
-        while (retries < 3)
-        {
-             hr = CoCreateInstance(pushNotificationsIMPL_CLSID,
-                NULL,
-                CLSCTX_LOCAL_SERVER,
-                pushNotificationsLRP_IID,
-                reinterpret_cast<LPVOID*>(pNotificationsLRP.put()));
-
-            if (SUCCEEDED(hr))
-            {
-                break;
-            }
-            retries++;
-        }
-        // wil call back is setup to log telemetry event for any failure in restarting Notifications LRP
-        LOG_IF_FAILED_MSG(hr, "Restarting Push Notifications LRP failed after 3 attempts.");
-    }
 
     HRESULT InstallLicenses(const WindowsAppRuntimeInstaller::Options options)
     {
@@ -429,19 +425,35 @@ namespace WindowsAppRuntimeInstaller
 
     HRESULT DeployPackages(const WindowsAppRuntimeInstaller::Options options)
     {
+        USHORT processMachine{ IMAGE_FILE_MACHINE_UNKNOWN };
+        USHORT nativeMachine{ IMAGE_FILE_MACHINE_UNKNOWN };
+        THROW_IF_WIN32_BOOL_FALSE(::IsWow64Process2(::GetCurrentProcess(), &processMachine, &nativeMachine));
+        ProcessorArchitecture systemArchitecture{};
+        std::wstring applicableSingletonResourceID;
+        switch (nativeMachine)
+        {
+        case IMAGE_FILE_MACHINE_I386:
+            systemArchitecture = ProcessorArchitecture::X86;
+            applicableSingletonResourceID = MSIX_SINGLETON_X86_ID;
+            break;
+        case IMAGE_FILE_MACHINE_AMD64:
+            systemArchitecture = ProcessorArchitecture::X64;
+            applicableSingletonResourceID = MSIX_SINGLETON_X64_ID;
+            break;
+        case IMAGE_FILE_MACHINE_ARM64:
+            systemArchitecture = ProcessorArchitecture::Arm64;
+            applicableSingletonResourceID = MSIX_SINGLETON_ARM64_ID;
+            break;
+        default:
+            THROW_HR_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), "nativeMachine=%hu", nativeMachine);
+        }
+
         if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallPackages))
         {
             for (const auto& package : WindowsAppRuntimeInstaller::c_packages)
             {
                 WindowsAppRuntimeInstaller::InstallActivity::Context::Get().Reset();
-                DeployPackageFromResource(package, options);
-
-                // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
-                if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment) &&
-                    CompareStringOrdinal(package.id.c_str(), static_cast<int>(package.id.size() - 3), MSIX_SINGLETON_X86_ID, static_cast<int>(package.id.size() - 3), TRUE) == CSTR_EQUAL)
-                {
-                    RestartPushNotificationsLRP();
-                }
+                DeployPackageFromResource(package, options, systemArchitecture, applicableSingletonResourceID);
             }
         }
 
