@@ -11,7 +11,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
     class EnvironmentManagerCentennialTests {
         BEGIN_TEST_CLASS(EnvironmentManagerCentennialTests)
             TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
-            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"ElevatedUser")
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Method", L"ElevatedUser")
             TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"CentennialAppxManifest.pkg.xml")
             TEST_CLASS_PROPERTY(L"UAP:Host",  L"PackagedCWA")
@@ -58,6 +58,18 @@ namespace WindowsAppSDKEnvironmentManagerTests
         TEST_METHOD(CentennialTestGetForProcess);
         TEST_METHOD(CentennialTestGetForUser);
         TEST_METHOD(CentennialTestGetForMachine);
+
+        // Ignore because the test framework package and production framework package have different family names.
+        // Can be run when the code can switch between the test family name and the production family name.
+        BEGIN_TEST_METHOD(CentennialTestAreChangesTracked)
+            TEST_METHOD_PROPERTY(L"Ignore", L"true")
+        END_TEST_METHOD()
+
+        // Ignore until a way is found to install a framework package for another user.
+        BEGIN_TEST_METHOD(CentennialTestAreChangesTrackedAsAdmin)
+            TEST_METHOD_PROPERTY(L"Ignore", L"true")
+            TEST_METHOD_PROPERTY(L"Description", L"Tests if a framework package, installed by a different user, can be found")
+        END_TEST_METHOD()
 
         TEST_METHOD(CentennialTestGetEnvironmentVariablesForProcess);
         TEST_METHOD(CentennialTestGetEnvironmentVariablesForUser);

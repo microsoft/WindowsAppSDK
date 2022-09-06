@@ -133,7 +133,6 @@
   <ItemGroup>
     <ClInclude Include="ChangeTrackerHelper.h" />
     <ClInclude Include="EnvironmentManagerCentennialTests.h" />
-    <ClInclude Include="EnvironmentManagerUWPTests.h" />
     <ClInclude Include="EnvironmentManagerWin32Tests.h" />
     <ClInclude Include="EnvironmentVariableHelper.h" />
     <ClInclude Include="framework.h" />
@@ -146,7 +145,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EnvironmentManagerCentennialTests.cpp" />
-    <ClCompile Include="EnvironmentManagerUWPTests.cpp" />
     <ClCompile Include="EnvironmentManagerWin32Tests.cpp" />
   </ItemGroup>
   <ItemGroup>

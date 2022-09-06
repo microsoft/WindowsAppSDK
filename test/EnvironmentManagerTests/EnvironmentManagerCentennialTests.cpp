@@ -6,6 +6,7 @@
 #include "EnvironmentVariableHelper.h"
 #include "ChangeTrackerHelper.h"
 #include "TestSetupAndTeardownHelper.h"
+#include "WindowsAppRuntime.Test.Metadata.h"
 
 using namespace winrt::Microsoft::Windows;
 
@@ -27,6 +28,30 @@ namespace WindowsAppSDKEnvironmentManagerTests
     {
         EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
         VERIFY_IS_NOT_NULL(environmentManager);
+    }
+
+    void EnvironmentManagerCentennialTests::CentennialTestAreChangesTracked()
+    {
+        EnvironmentManager forProcess{ EnvironmentManager::GetForProcess() };
+        VERIFY_IS_FALSE(forProcess.AreChangesTracked());
+
+        EnvironmentManager forUser{EnvironmentManager::GetForUser()};
+        VERIFY_IS_TRUE(forUser.AreChangesTracked());
+
+        EnvironmentManager forMachine{EnvironmentManager::GetForMachine()};
+        VERIFY_IS_TRUE(forMachine.AreChangesTracked());
+    }
+
+    void EnvironmentManagerCentennialTests::CentennialTestAreChangesTrackedAsAdmin()
+    {
+        EnvironmentManager forProcess{ EnvironmentManager::GetForProcess() };
+        VERIFY_IS_FALSE(forProcess.AreChangesTracked());
+
+        EnvironmentManager forUser{ EnvironmentManager::GetForUser() };
+        VERIFY_IS_TRUE(forUser.AreChangesTracked());
+
+        EnvironmentManager forMachine{ EnvironmentManager::GetForMachine() };
+        VERIFY_IS_TRUE(forMachine.AreChangesTracked());
     }
 
     void EnvironmentManagerCentennialTests::CentennialTestGetEnvironmentVariablesForProcess()

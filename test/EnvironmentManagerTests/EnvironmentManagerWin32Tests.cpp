@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "EnvironmentManagerWin32Tests.h"
 #include "EnvironmentVariableHelper.h"
+#include <WindowsAppRuntime.Test.Metadata.h>
 
 using namespace winrt::Microsoft::Windows;
 
@@ -25,6 +26,12 @@ namespace WindowsAppSDKEnvironmentManagerTests
     {
         EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
         VERIFY_IS_NOT_NULL(environmentManager);
+    }
+
+    void EnvironmentManagerWin32Tests::TestAreChangesTracked()
+    {
+        EnvironmentManager forUser{ EnvironmentManager::GetForUser() };
+        VERIFY_IS_FALSE(forUser.AreChangesTracked());
     }
 
     void EnvironmentManagerWin32Tests::TestGetEnvironmentVariablesForProcess()
