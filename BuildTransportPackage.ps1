@@ -135,10 +135,10 @@ foreach($platformToRun in $platform.Split(","))
     write-host "Copying $MRTBinariesDirectory\$mrtConfiguration\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb to $fullNugetPath\runtimes\win10-$platformToRun\nativen"
     copy-item -path "$MRTBinariesDirectory\$mrtConfiguration\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb" -destination "$fullNugetPath\runtimes\win10-$platformToRun\native"
 
-    if($ploatformToRun -eq "x86")
+    if($platformToRun -eq "x86")
     {
         write-host "Copying $MRTBinariesDirectory\$mrtConfiguration\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.dll to $fullNugetPath\lib\net5.0-windows10.0.17763.0"
-        copy-item -path    "$MRTBinariesDirectory\$mrtConfiguration\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.dll" -destination "$fullNugetPath\lib\net5.0-windows10.0.17763.0"
+        copy-item -path "$MRTBinariesDirectory\$mrtConfiguration\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.dll" -destination "$fullNugetPath\lib\net5.0-windows10.0.17763.0"
         
         write-host "Copying $MRTBinariesDirectory\$mrtConfiguration\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.pdb to $fullNugetPath\lib\net5.0-windows10.0.17763.0"
         copy-item -path "$MRTBinariesDirectory\$mrtConfiguration\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.pdb" -destination "$fullNugetPath\lib\net5.0-windows10.0.17763.0"

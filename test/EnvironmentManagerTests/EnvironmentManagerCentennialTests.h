@@ -11,7 +11,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
     class EnvironmentManagerCentennialTests {
         BEGIN_TEST_CLASS(EnvironmentManagerCentennialTests)
             TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
-            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"ElevatedUser")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Method", L"ElevatedUser")
             TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"CentennialAppxManifest.pkg.xml")
             TEST_CLASS_PROPERTY(L"UAP:Host",  L"PackagedCWA")
