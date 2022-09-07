@@ -406,6 +406,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_DeploymentManagerAutoI
 	EndProjectSection
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.AppNotifications.Builder.Projection", "dev\Projections\CS\Microsoft.Windows.AppNotifications.Builder.Projection\Microsoft.Windows.AppNotifications.Builder.Projection.csproj", "{50BF3E96-3050-4053-B012-BF6993483DA5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VersionInfo", "VersionInfo", "{2A2D1131-273C-4E17-BCD3-8812170A4B95}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VersionInfo", "dev\VersionInfo\VersionInfo.vcxitems", "{E3EDEC7F-A24E-4766-BB1D-6BDFBA157C51}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VersionInfoTests", "test\VersionInfo\VersionInfoTests.vcxproj", "{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{34519337-9249-451E-B5A9-1ECACF9C3DA8} = {34519337-9249-451E-B5A9-1ECACF9C3DA8}
+		{9C1A6C58-52D6-4514-9120-5C339C5DF4BE} = {9C1A6C58-52D6-4514-9120-5C339C5DF4BE}
+		{0B01DB78-F115-4C90-B28F-7819071303C6} = {0B01DB78-F115-4C90-B28F-7819071303C6}
+		{5E2CC9D5-7C05-41D9-9DB5-EC5DF64BA1DC} = {5E2CC9D5-7C05-41D9-9DB5-EC5DF64BA1DC}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{08bc78e0-63c6-49a7-81b3-6afc3deac4de}*SharedItemsImports = 4
@@ -438,6 +450,7 @@ Global
 		dev\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems*{e15c3465-9d45-495d-92ce-b91ef45e8623}*SharedItemsImports = 9
 		dev\AppLifecycle\AppLifecycle.vcxitems*{e3a522a3-6635-4a42-bded-1af46a15f63c}*SharedItemsImports = 9
 		dev\AppNotifications\AppNotificationBuilder\AppNotificationBuilder.vcxitems*{e49329f3-5196-4bba-b5c4-e11ce7efb07a}*SharedItemsImports = 9
+		dev\VersionInfo\VersionInfo.vcxitems*{e3edec7f-a24e-4766-bb1d-6bdfba157c51}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{e5659a29-fe68-417b-9bc5-613073dd54df}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{e977b1bd-00dc-4085-a105-e0a18e0183d7}*SharedItemsImports = 4
 	EndGlobalSection
@@ -1576,6 +1589,20 @@ Global
 		{50BF3E96-3050-4053-B012-BF6993483DA5}.Release|x64.Build.0 = Release|x64
 		{50BF3E96-3050-4053-B012-BF6993483DA5}.Release|x86.ActiveCfg = Release|x86
 		{50BF3E96-3050-4053-B012-BF6993483DA5}.Release|x86.Build.0 = Release|x86
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Debug|ARM64.Build.0 = Debug|ARM64
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Debug|x64.ActiveCfg = Debug|x64
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Debug|x64.Build.0 = Debug|x64
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Debug|x86.ActiveCfg = Debug|Win32
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Debug|x86.Build.0 = Debug|Win32
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Release|Any CPU.ActiveCfg = Release|Win32
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Release|ARM64.ActiveCfg = Release|ARM64
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Release|ARM64.Build.0 = Release|ARM64
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Release|x64.ActiveCfg = Release|x64
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Release|x64.Build.0 = Release|x64
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Release|x86.ActiveCfg = Release|Win32
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1707,6 +1734,9 @@ Global
 		{676BA502-4220-465A-A9ED-ED22CDE4A24B} = {3A37083C-AA67-461E-BA78-0E0A65FE0C22}
 		{5A4FBF6D-04A2-4061-B11F-1A0E64129610} = {3A37083C-AA67-461E-BA78-0E0A65FE0C22}
 		{50BF3E96-3050-4053-B012-BF6993483DA5} = {716C26A0-E6B0-4981-8412-D14A4D410531}
+		{2A2D1131-273C-4E17-BCD3-8812170A4B95} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{E3EDEC7F-A24E-4766-BB1D-6BDFBA157C51} = {2A2D1131-273C-4E17-BCD3-8812170A4B95}
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
