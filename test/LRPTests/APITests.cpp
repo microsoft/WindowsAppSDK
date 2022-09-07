@@ -45,8 +45,6 @@ namespace Test::LRP
             VerifyLRP_IsRunning(false);
 
             STARTUPINFO startupInfo{};
-            wil::unique_process_information processInfo;
-
             ZeroMemory(&startupInfo, sizeof(startupInfo));
             startupInfo.cb = sizeof(startupInfo);
 
@@ -55,6 +53,7 @@ namespace Test::LRP
             auto startupTaskExePath{ Test::FileSystem::GetSolutionOutDirPath() / Test::Packages::WindowsAppRuntimeSingleton::c_PackageDirName };
             startupTaskExePath += LR"(.Msix/msix/PushNotificationsLongRunningTask.StartupTask.exe)";
 
+            wil::unique_process_information processInfo;
             BOOL wasProcessCreated{ CreateProcess(
                 startupTaskExePath.c_str(),
                 nullptr, // command line options
