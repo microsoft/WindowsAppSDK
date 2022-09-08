@@ -27,11 +27,17 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
 
       <!-- /ZH:SHA_256 Hash algorithm for file checksums in debug info -->
-      <AdditionalOptions>%(AdditionalOptions) /ZH:SHA_256</AdditionalOptions>
+      <!-- /d1trimfile:$(RepoRoot) If the prefix for a source file path name string matches "trim-string", 
+      then the prefix is removed and is replaced with the mapping-identifier (if present). Requires /Brepro. -->
+      <AdditionalOptions>%(AdditionalOptions) /d1trimfile:$(RepoRoot) /ZH:SHA_256</AdditionalOptions>
     </ClCompile>
     <Link>
       <!-- /DEBUG:FULL Create PDF containing full debug information -->
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+
+      <!-- /Brepro Enables deterministic output from the compiler toolchain -->
+      <!-- /PDBALTPATH Stops pdb's basepath from appearing in the Debug Directories of the image header -->
+      <AdditionalOptions>%(AdditionalOptions) /Brepro /PDBALTPATH:$(TargetName).pdb</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
 
