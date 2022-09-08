@@ -6,6 +6,7 @@
 #include "NotificationActivationCallback.h"
 #include "AppNotificationUtility.h"
 #include "externs.h"
+#include "ShellLocalization.h"
 
 constexpr PCWSTR c_appNotificationContractId = L"Windows.Toast";
 
@@ -22,6 +23,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         static winrt::Microsoft::Windows::AppNotifications::AppNotificationManager Default();
         static winrt::Windows::Foundation::IInspectable AppNotificationDeserialize(winrt::Windows::Foundation::Uri const& uri);
         void Register();
+        void Register(hstring const& displayName, winrt::Windows::Foundation::Uri const& iconUri);
         void Unregister();
         void UnregisterAll();
         static bool IsSupported();
@@ -48,6 +50,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         // INotificationManagerDeserializer
         winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri);
     private:
+
+        winrt::guid RegisterPackagedApp();
+        winrt::guid RegisterUnpackagedApp(::Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets const& assets);
+        void RegisterAppNotificationSinkWithLongRunningPlatform();
+        void RegisterComServer(winrt::guid const& registeredClsid);
 
         void UnregisterHelper();
 
