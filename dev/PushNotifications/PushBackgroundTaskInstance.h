@@ -3,6 +3,7 @@
 
 #include <winrt/Windows.ApplicationModel.background.h>
 #include "PushRawNotification.h"
+#include "PushNotificationDummyDeferral.h"
 
 // Mocks IBackgroundTaskInstance to send raw payloads to packaged apps in
 // PushNotificationBackgroundTask::Run by com activation from PushNotificationsLongRunningProcess
@@ -19,7 +20,7 @@ struct PushBackgroundTaskInstance : winrt::implements<PushBackgroundTaskInstance
     winrt::Windows::Foundation::IInspectable TriggerDetails() { return m_rawNotification.as<winrt::Windows::Foundation::IInspectable>(); };
     winrt::event_token Canceled(winrt::Windows::ApplicationModel::Background::BackgroundTaskCanceledEventHandler const& /* handler */) { return winrt::event_token{}; };
     void Canceled(winrt::event_token const& /* token */) noexcept { return; };
-    winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral() { return nullptr; };
+    winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral() { return winrt::make<PushNotificationDummyDeferral>().as<winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral>(); };
 private:
     winrt::com_ptr<PushRawNotification> m_rawNotification;
 };

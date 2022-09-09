@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -13,7 +13,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         PushNotificationReceivedEventArgs() = delete;
 
         PushNotificationReceivedEventArgs(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const& backgroundTask);
-        PushNotificationReceivedEventArgs(winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs const& args);
 
         PushNotificationReceivedEventArgs(winrt::hstring const& payload);
 

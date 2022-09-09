@@ -177,7 +177,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         // All packaged processes are triggered through COM via Long Running Process or the Background Infra OS component
         if (AppModel::Identity::IsPackagedProcess())
         {
-            THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec));
+            THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(60000));
             auto lock{ m_lock.lock_shared() };
             THROW_HR_IF(E_UNEXPECTED, !m_backgroundTaskArgs);
             eventArgs = m_backgroundTaskArgs;
@@ -870,16 +870,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         if(storeBackgroundArgs)
         {
-            if (PushNotificationHelpers::IsPackagedAppScenario())
-            {
-                m_backgroundTaskArgs = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(taskInstance);
-            }
-            else
-            {
-                // Need to mock a RawNotification object instead of winrt boxing: https://github.com/microsoft/WindowsAppSDK/issues/2075
-                winrt::hstring payload{ winrt::unbox_value<winrt::hstring>(taskInstance.TriggerDetails()) };
-                m_backgroundTaskArgs = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload.c_str());
-            }
+            m_backgroundTaskArgs = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(taskInstance);
             SetEvent(m_waitHandleForArgs.get());            
         }
     }

@@ -89,6 +89,7 @@ winrt::PushNotificationChannel RequestChannel()
 
 int main()
 {
+    std::cin.ignore();
     if (!Test::AppModel::IsPackagedProcess())
     {
         constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppRuntime.Test.DDLM" };

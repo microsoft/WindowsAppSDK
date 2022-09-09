@@ -14,6 +14,7 @@
 #include <PushNotificationDummyDeferral.h>
 #include "ValueMarshaling.h"
 #include "PushNotificationUtility.h"
+#include "PushBackgroundTaskInstance.h"
 
 namespace winrt
 {
@@ -32,12 +33,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
     }
 
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args):
-        m_rawNotificationPayload(BuildPayload(args.RawNotification().ContentBytes())),
-        m_unpackagedAppScenario(false)
-    {
-    }
-
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(byte* const& payload, ULONG const& length) :
         m_rawNotificationPayload(BuildPayload(payload, length)),
         m_unpackagedAppScenario(true)
@@ -45,6 +40,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
 
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::hstring const& payload) :
+        m_backgroundTaskInstance()
         m_rawNotificationPayload(BuildPayload(payload)),
         m_unpackagedAppScenario(true)
     {
