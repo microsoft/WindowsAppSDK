@@ -410,6 +410,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 }
                 )};
 
+                // Returns ComActivator CLSID from registry. This CLSID provided in manifest is registered when a packaged app is installed
                 m_registeredClsid = PushNotificationHelpers::GetComRegistrationFromRegistry(c_expectedPushServerArgs.data());
 
                 winrt::hstring backgroundTaskFullName;
