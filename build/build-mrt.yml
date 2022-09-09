@@ -219,7 +219,7 @@ steps:
     Contents: |
       Microsoft.Windows.ApplicationModel.Resources.Projection.dll
       Microsoft.Windows.ApplicationModel.Resources.Projection.pdb
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu\net5.0'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu\net6.0'
     flattenFolders: false
 
 - task: CopyFiles@2
