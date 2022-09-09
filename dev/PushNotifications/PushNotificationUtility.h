@@ -185,11 +185,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
             nullptr     // No last write time
         ));
 
-        //THROW_HR_IF_MSG(E_FAIL, comServerGuidCount < 1, "No COM servers are registered for this app");
-        if (comServerGuidCount < 1)
-        {
-            return GUID_NULL;
-        }
+        THROW_HR_IF_MSG(E_FAIL, comServerGuidCount < 1, "No COM servers are registered for this app");
 
         maxSubKeyLength++; // Account for the null character
 

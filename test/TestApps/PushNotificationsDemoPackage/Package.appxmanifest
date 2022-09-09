@@ -46,6 +46,13 @@
 				<desktop:Extension Category="windows.toastNotificationActivation">
 					<desktop:ToastNotificationActivation ToastActivatorCLSID="FE8C7374-A28F-4CBE-8D28-4288CBDFD431" />
 				</desktop:Extension>
+				<com:Extension Category="windows.comServer">
+					<com:ComServer>
+						<com:ExeServer Executable="PushNotificationsDemoApp\PushNotificationsDemoApp.exe" Arguments="----AppNotificationActivated:" DisplayName="Toast activator">
+							<com:Class Id="FE8C7374-A28F-4CBE-8D28-4288CBDFD431" DisplayName="Toast activator"/>
+						</com:ExeServer>
+					</com:ComServer>
+				</com:Extension>
 				<uap:Extension Category="windows.protocol" EntryPoint="Windows.FullTrustApplication">
 					<uap:Protocol Name="packagedpush-protocol">
 						<uap:DisplayName>WindowsAppRuntimeTestProtocol</uap:DisplayName>
