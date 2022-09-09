@@ -35,6 +35,13 @@
         <uap:SplashScreen Image="taef.png" />
       </uap:VisualElements>
         <Extensions>
+            <com:Extension Category="windows.comServer">
+                <com:ComServer>
+                    <com:ExeServer Executable="TE.ProcessHost.exe" DisplayName="SampleBackgroundApp" Arguments="----WindowsAppRuntimePushServer:">
+                        <com:Class Id="ccd2ae3f-764f-4ae3-be45-9804761b28b2" DisplayName="Windows App SDK Push" />
+                    </com:ExeServer>
+                </com:ComServer>
+            </com:Extension>
         </Extensions>
     </Application>
   </Applications>
