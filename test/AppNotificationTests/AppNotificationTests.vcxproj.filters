@@ -18,28 +18,19 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="platform.h">
+    <ClInclude Include="BaseTestSuite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="platformfactory.h">
+    <ClInclude Include="PackagedTests.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ForegroundSinkManager.h">
+    <ClInclude Include="AppNotification-Test-Constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NotificationListenerManager.h">
+    <ClInclude Include="UnpackagedTests.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NotificationListener.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlatformLifetimeManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ToastRegistrationManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PushNotificationLongRunningTaskTelemetry.h">
+    <ClInclude Include="AppNotifications.Test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -47,32 +38,30 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="winmain.cpp">
+    <ClCompile Include="BaseTestSuite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="platform.cpp">
+    <ClCompile Include="PackagedTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="platformfactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ForegroundSinkManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NotificationListenerManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NotificationListener.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlatformLifetimeManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ToastRegistrationManager.cpp">
+    <ClCompile Include="UnpackagedTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="AppNotifications-AppxManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="AppNotificationTests.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

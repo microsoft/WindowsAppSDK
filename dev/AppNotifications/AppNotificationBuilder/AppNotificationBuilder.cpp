@@ -1,8 +1,9 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include "pch.h"
 #include "AppNotificationBuilder.h"
+#include "AppNotificationBuilderTelemetry.h"
 #include <winrt/Windows.Globalization.h>
 #include <winrt/Windows.Globalization.DateTimeFormatting.h>
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder.g.cpp"
@@ -369,28 +370,42 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::AppNotification AppNotificationBuilder::BuildNotification()
     {
-        // Build the actions string and fill m_useButtonStyle
-        std::wstring actions{ GetActions() };
+        HRESULT hr{ S_OK };
 
-        auto xmlResult{ wil::str_printf<std::wstring>(L"<toast%ls%ls%ls%ls%ls><visual><binding template='ToastGeneric'>%ls%ls%ls%ls</binding></visual>%ls%ls</toast>",
-            m_timeStamp.c_str(),
-            GetDuration().c_str(),
-            GetScenario().c_str(),
-            GetArguments().c_str(),
-            GetButtonStyle().c_str(),
-            GetText().c_str(),
-            m_attributionText.c_str(),
-            GetImages().c_str(),
-            GetProgressBars().c_str(),
-            m_audio.c_str(),
-            actions.c_str()) };
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationBuilderTelemetry::LogBuildNotification(hr);
+        }) };
 
-        THROW_HR_IF_MSG(E_FAIL, xmlResult.size() > c_maxAppNotificationPayload, "Maximum payload size exceeded");
+        try
+        {
+            // Build the actions string and fill m_useButtonStyle
+            std::wstring actions{ GetActions() };
 
-        winrt::Microsoft::Windows::AppNotifications::AppNotification appNotification{ xmlResult };
-        appNotification.Tag(m_tag);
-        appNotification.Group(m_group);
-        
-        return appNotification;
+            auto xmlResult{ wil::str_printf<std::wstring>(L"<toast%ls%ls%ls%ls%ls><visual><binding template='ToastGeneric'>%ls%ls%ls%ls</binding></visual>%ls%ls</toast>",
+                m_timeStamp.c_str(),
+                GetDuration().c_str(),
+                GetScenario().c_str(),
+                GetArguments().c_str(),
+                GetButtonStyle().c_str(),
+                GetText().c_str(),
+                m_attributionText.c_str(),
+                GetImages().c_str(),
+                GetProgressBars().c_str(),
+                m_audio.c_str(),
+                actions.c_str()) };
+
+            THROW_HR_IF_MSG(E_FAIL, xmlResult.size() > c_maxAppNotificationPayload, "Maximum payload size exceeded");
+
+            winrt::Microsoft::Windows::AppNotifications::AppNotification appNotification{ xmlResult };
+            appNotification.Tag(m_tag);
+            appNotification.Group(m_group);
+
+            return appNotification;
+        }
+        catch (...)
+        {
+            hr = wil::ResultFromCaughtException();
+            throw;
+        }
     }
 }
