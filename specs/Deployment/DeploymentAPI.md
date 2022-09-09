@@ -179,49 +179,71 @@ they shut down, to refer to the updated framework package.
     }
 ```
 
-#### OnError_*
+#### OnError
 
 Additional behavior is available if an error occurs in `DeploymentManager.Initialize()`,
 per the following logic:
 
-```c++
+```
 DeploymentManager::Initialize(...)
 {
-    HRESULT hr = S_OK
+    // Only needed supported in packaged processes
+    IF IsPackagedProcess()
+    {
+        // We're not a packaged process. Don't call Initialize
+        return OK
+    }
 
-    // Only supported in packaged processes
-    if IsPackagedProcess()
-    {
-        // Do the initialization work
-        hr = _Initialize(...)
-    }
-    else
-    {
-        // We're not a packaged process. Is calling Initialize an error or ignore it?
-        if options.OnNoPackageIdentity_NOOP
-            return OK
-        else
-            hr = HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED)
-    }
+    // Do the initialization work
+    hr = _Initialize(...)
     if FAILED(hr)
     {
         LogToEventLog(hr, ...)
 
         // Should we pop the debugger?
-        if options.OnError_DebugBreak or (options.OnError_DebugBreak_IfDebuggerAttached and IsDebuggerPresent())
+        IF IsDebuggerPresent()
+        {
             DebugBreak()
+        }
 
         // Should we pop some UI?
         if options.OnError_ShowUI
+        {
             MessageBox(...)
-
-        // Should we FailFast?
-        if options.OnError_FailFast
-            FAIL_FAST_HR_MSG(hr, ...)
+        }
     }
-
-    return OK
+    return hr
 }
+```
+
+Here's the previous example extended with the `Show UI on error` option:
+
+```C#
+    if (DeploymentManager.GetStatus().Status != DeploymentStatus.Ok)
+    {
+        // Create DeploymentInitializeOptions object and set ForceDeployment option
+        // to allow for force updating of the WinAppSDK packages even if they are currently in use.
+        // Also enable UI if an error occurs so a user can be told about the problem.
+        var deploymentInitializeOptions = new DeploymentInitializeOptions();
+        deploymentInitializeOptions.ForceDeployment = true;
+        deploymentInitializeOptions.OnErrorShowUI = true;
+
+        // Initialize does a status check, and if the status is not OK it will attempt to get
+        // the WindowsAppRuntime into a good state by deploying packages. Unlike a simple
+        // status check, Initialize can sometimes take several seconds to deploy the packages.
+        // These should be run on a separate thread so as not to hang your app while the
+        // packages deploy.
+        var initializeTask = Task.Run(() => DeploymentManager.Initialize(deploymentInitializeOptions));
+        initializeTask.Wait();
+
+        // Check the result.
+        if (initializeTask.Result.Status != DeploymentStatus.Ok)
+        {
+            // The WindowsAppRuntime is in a bad state which Initialize() did not fix.
+            // Do error reporting or gather information for submitting a bug.
+            // Gracefully exit the program or carry on without using the WindowsAppRuntime.
+        }
+    }
 ```
 
 # API Details
@@ -267,25 +289,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         /// currently in use, when registering the WinAppSDK packages.
         Boolean ForceDeployment;
 
-        /// If not successful call DebugBreak()
-        [contract(DeploymentContract, 3)]
-        Boolean OnError_DebugBreak;
-
-        /// If not successful call DebugBreak() if a debugger is attached to the process
-        [contract(DeploymentContract, 3)]
-        Boolean OnError_DebugBreak_IfDebuggerAttached;
-
-        /// If not successful perform a fail-fast
-        [contract(DeploymentContract, 3)]
-        Boolean OnError_FailFast;
-
         /// If not successful show UI
         [contract(DeploymentContract, 3)]
-        Boolean OnError_ShowUI;
-
-        /// Do nothing (do not error) if the process lacks package identity
-        [contract(DeploymentContract, 3)]
-        Boolean OnNoPackageIdentity_NOOP;
+        Boolean OnErrorShowUI;
     };
 
     /// Used to query deployment information for WindowsAppRuntime
