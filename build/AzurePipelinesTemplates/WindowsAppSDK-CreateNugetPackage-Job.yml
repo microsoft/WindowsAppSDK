@@ -17,7 +17,7 @@ jobs:
   condition: ${{ parameters.condition }}
   ${{ if eq(parameters.buildPool, '') }}:
     pool:
-      vmImage: 'windows-2019'
+      vmImage: 'windows-2022'
   ${{ if ne(parameters.buildPool, '') }}:
     pool: ${{ parameters.buildPool }}
   steps:
