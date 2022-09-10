@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include <winrt/Windows.ApplicationModel.background.h>
@@ -10,19 +10,19 @@
 struct PushBackgroundTaskInstance : winrt::implements<PushBackgroundTaskInstance, winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance>
 {
     PushBackgroundTaskInstance() {};
-    PushBackgroundTaskInstance(std::wstring const& payload): m_rawNotification(winrt::make_self<PushRawNotification>(payload)) {};
+    PushBackgroundTaskInstance(std::wstring const& payload) : m_rawNotification(winrt::make_self<PushRawNotification>(payload)) {};
 
     winrt::guid InstanceId() { return winrt::guid(); };
     UINT32 SuspendedCount() { return 0; };
     UINT32 Progress() { return 0; };
     UINT32 Progress(UINT32 /* progress */) { return 0; };
     winrt::Windows::ApplicationModel::Background::BackgroundTaskRegistration Task() { return nullptr; };
-    winrt::Windows::Foundation::IInspectable TriggerDetails() { return winrt::box_value(m_payload); };
+    winrt::Windows::Foundation::IInspectable TriggerDetails() { return m_rawNotification.as<IInspectable>(); };
     winrt::event_token Canceled(winrt::Windows::ApplicationModel::Background::BackgroundTaskCanceledEventHandler const& /* handler */) { return winrt::event_token{}; };
     void Canceled(winrt::event_token const& /* token */) noexcept { return; };
     winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral() { return winrt::make<PushNotificationDummyDeferral>().as<winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral>(); };
 private:
-    std::wstring m_payload;
+    winrt::com_ptr<PushRawNotification> m_rawNotification;
 };
 
 struct PushBackgroundTaskInstanceFactory : winrt::implements<PushBackgroundTaskInstanceFactory, IClassFactory>
