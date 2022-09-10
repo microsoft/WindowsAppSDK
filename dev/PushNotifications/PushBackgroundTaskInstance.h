@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include <winrt/Windows.ApplicationModel.background.h>
@@ -17,12 +17,12 @@ struct PushBackgroundTaskInstance : winrt::implements<PushBackgroundTaskInstance
     UINT32 Progress() { return 0; };
     UINT32 Progress(UINT32 /* progress */) { return 0; };
     winrt::Windows::ApplicationModel::Background::BackgroundTaskRegistration Task() { return nullptr; };
-    winrt::Windows::Foundation::IInspectable TriggerDetails() { return m_rawNotification.as<winrt::Windows::Foundation::IInspectable>(); };
+    winrt::Windows::Foundation::IInspectable TriggerDetails() { return winrt::box_value(m_payload); };
     winrt::event_token Canceled(winrt::Windows::ApplicationModel::Background::BackgroundTaskCanceledEventHandler const& /* handler */) { return winrt::event_token{}; };
     void Canceled(winrt::event_token const& /* token */) noexcept { return; };
     winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral() { return winrt::make<PushNotificationDummyDeferral>().as<winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral>(); };
 private:
-    winrt::com_ptr<PushRawNotification> m_rawNotification;
+    std::wstring m_payload;
 };
 
 struct PushBackgroundTaskInstanceFactory : winrt::implements<PushBackgroundTaskInstanceFactory, IClassFactory>

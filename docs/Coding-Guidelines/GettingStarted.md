@@ -24,10 +24,10 @@ Development requires the following installed tools...
       * NuGet package manager
       * NuGet targets and build tasks
       * C# and Visual Basic Roslyn compilers
-      * C++ Universal Windows Platform support for v142 build tools (ARM64)
+      * C++ Universal Windows Platform support for v143 build tools (ARM64)
       * MSBuild
-      * MSVC v142 - VS 2022 C++ ARM64 build tools (Latest)
-      * MSVC v142 - VS 2022 C++ x64/x86 build tools (Latest)
+      * MSVC v143 - VS 2022 C++ ARM64 build tools (Latest)
+      * MSVC v143 - VS 2022 C++ x64/x86 build tools (Latest)
       * Windows Universal CRT SDK
       * .NET profiling tools
       * C++ profiling tools
