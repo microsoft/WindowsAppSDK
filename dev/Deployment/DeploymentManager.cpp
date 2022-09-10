@@ -21,7 +21,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         const AppModel::Identity::PackageIdentity& packageIdentity,
         const std::wstring& release) noexcept;
 
-    HRESULT Initialize_ShowUI_OnError(
+    HRESULT Initialize_OnError_ShowUI(
         const AppModel::Identity::PackageIdentity& packageIdentity,
         const std::wstring& release);
 }
@@ -166,24 +166,18 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult deploymentResult{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Unknown, S_OK };
         if (!isPackagedProcess)
         {
-            if (deploymentInitializeOptions.OnNoPackageIdentity_NOOP())
-            {
-                // The process lacks package identity but that's OK. Do nothing
-                const auto c_status{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Ok };
-                return winrt::make<implementation::DeploymentResult>(c_status, S_OK);
-            }
-            hr = LOG_HR_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), "DeploymentManager.Initialize called in a process without package identity");
+            // The process lacks package identity but that's OK. Do nothing
+            const auto c_status{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Ok };
+            return winrt::make<implementation::DeploymentResult>(c_status, S_OK);
         }
-        else
+
+        try
         {
-            try
-            {
-                deploymentResult = _Initialize(initializeActivityContext, packageFullName, deploymentInitializeOptions);
-            }
-            catch (winrt::hresult_error const& e)
-            {
-                hr = e.code();
-            }
+            deploymentResult = _Initialize(initializeActivityContext, packageFullName, deploymentInitializeOptions);
+        }
+        catch (winrt::hresult_error const& e)
+        {
+            hr = e.code();
         }
         if (FAILED(hr))
         {
@@ -203,28 +197,17 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
             // NOTE: IsDebuggerPresent()=TRUE if running under a debugger context.
             //       IsDebuggerPresent()=FALSE if not running under a debugger context, even if AEDebug is set.
-            if (deploymentInitializeOptions.OnError_DebugBreak() ||
-                (deploymentInitializeOptions.OnError_DebugBreak_IfDebuggerAttached() && IsDebuggerPresent()) ||
-                ::Microsoft::Configuration::IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_DEPLOYMENT_INITIALIZE_DEBUGBREAK"))
+            if (IsDebuggerPresent())
             {
                 DebugBreak();
             }
 
-            if (deploymentInitializeOptions.OnError_ShowUI() ||
-                ::Microsoft::Configuration::IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_DEPLOYMENT_INITIALIZE_SHOWUI"))
+            if (deploymentInitializeOptions.OnErrorShowUI() ||
+                ::Microsoft::Configuration::IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_DEPLOYMENT_INITIALIZE_ONERRORSHOWUI"))
             {
-                LOG_IF_FAILED(Initialize_ShowUI_OnError(packageIdentity, release));
+                LOG_IF_FAILED(Initialize_OnError_ShowUI(packageIdentity, release));
             }
 
-            if (deploymentInitializeOptions.OnError_FailFast() ||
-                ::Microsoft::Configuration::IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_DEPLOYMENT_INITIALIZE_FAILFAST"))
-            {
-                const PACKAGE_VERSION version{ packageIdentity.Version() };
-                FAIL_FAST_HR_MSG(hr,
-                                 "DeploymentManager initialize for release %ls (MSIX package version %hu.%hu.%hu.%hu)",
-                                 release.c_str(),
-                                 version.Major, version.Minor, version.Build, version.Revision);
-            }
             Initialize_StopSuccessActivity(initializeActivityContext, deploymentResult.Status(), hr);
             THROW_HR(hr);
         }
@@ -613,7 +596,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
     CATCH_RETURN()
 
-    HRESULT Initialize_ShowUI_OnError(
+    HRESULT Initialize_OnError_ShowUI(
         const AppModel::Identity::PackageIdentity& packageIdentity,
         const std::wstring& release)
     {
