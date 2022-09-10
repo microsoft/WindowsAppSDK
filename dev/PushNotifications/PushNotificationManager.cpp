@@ -177,7 +177,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         // All packaged processes are triggered through COM via Long Running Process or the Background Infra OS component
         if (AppModel::Identity::IsPackagedProcess())
         {
-            THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(60000));
+            THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec));
             auto lock{ m_lock.lock_shared() };
             THROW_HR_IF(E_UNEXPECTED, !m_backgroundTaskArgs);
             eventArgs = m_backgroundTaskArgs;
@@ -189,8 +189,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 if (pair.Name() == L"payload")
                 {
                     // Convert escaped components to its normal content from the conversion done in the Long Running Process (see NotificationListener.cpp)
-                    auto payloadAsWstring = winrt::Windows::Foundation::Uri::UnescapeComponent(pair.Value());
-                    eventArgs = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payloadAsWstring);
+                    auto payloadAsWstring{ winrt::Windows::Foundation::Uri::UnescapeComponent(pair.Value()) };
+                    auto pushBackgroundTask{ winrt::make_self<PushBackgroundTaskInstance>(payloadAsWstring.c_str()) };
+                    eventArgs = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(pushBackgroundTask.as<IBackgroundTaskInstance>());
                     m_backgroundTaskArgs = eventArgs;
                 }
             }

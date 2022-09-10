@@ -10,6 +10,7 @@
 #include <propkey.h> //PKEY properties
 #include <propsys.h>
 #include <ShObjIdl_core.h>
+#include <WindowsAppRuntime.Test.Bootstrap.h>
 
 namespace winrt
 {
@@ -90,19 +91,12 @@ winrt::PushNotificationChannel RequestChannel()
 int main()
 {
     std::cin.ignore();
+
+    Test::Bootstrap::SetupBootstrap();
+    ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
+        ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
     if (!Test::AppModel::IsPackagedProcess())
     {
-        constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppRuntime.Test.DDLM" };
-        constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
-        constexpr PCWSTR c_FrameworkPackageFamilyName = L"Microsoft.WindowsAppRuntime.Framework-4.1_8wekyb3d8bbwe";
-        constexpr PCWSTR c_MainPackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore-4.1_8wekyb3d8bbwe";
-        RETURN_IF_FAILED(MddBootstrapTestInitialize(c_PackageNamePrefix, c_PackagePublisherId, c_FrameworkPackageFamilyName, c_MainPackageFamilyName));
-
-        // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
-        const UINT32 c_Version_MajorMinor{ 0x00040001 };
-        const PACKAGE_VERSION minVersion{};
-        RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
-
         // Not mandatory, but it's highly recommended to specify AppUserModelId
         THROW_IF_FAILED(SetCurrentProcessExplicitAppUserModelID(L"PushTestAppId"));
     }

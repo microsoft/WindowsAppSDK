@@ -10,7 +10,7 @@
 struct PushBackgroundTaskInstance : winrt::implements<PushBackgroundTaskInstance, winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance>
 {
     PushBackgroundTaskInstance() {};
-    PushBackgroundTaskInstance(winrt::com_ptr<PushRawNotification> const& rawNotification): m_rawNotification(rawNotification) {};
+    PushBackgroundTaskInstance(std::wstring const& payload): m_rawNotification(winrt::make_self<PushRawNotification>(payload)) {};
 
     winrt::guid InstanceId() { return winrt::guid(); };
     UINT32 SuspendedCount() { return 0; };

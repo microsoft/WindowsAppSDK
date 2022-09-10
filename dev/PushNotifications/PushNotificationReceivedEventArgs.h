@@ -34,6 +34,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         const winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance m_backgroundTaskInstance{};
 
-        bool m_unpackagedAppScenario;
+        bool m_isForegroundActivation;
     };
 }

@@ -121,9 +121,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
     {
         auto payloadAsWideString{ Utf8BytesToWideString(payloadLength, payload) };
 
-        auto rawNotification{ winrt::make_self<PushRawNotification>(payloadAsWideString) };
-        auto pushBackgroundTaskInstance{ winrt::make_self<PushBackgroundTaskInstance>(rawNotification) };
-        auto localBackgroundTask = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(comServerClsid, CLSCTX_ALL);
+        auto pushBackgroundTaskInstance{ winrt::make_self<PushBackgroundTaskInstance>(payloadAsWideString) };
+        auto localBackgroundTask{ winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(comServerClsid, CLSCTX_ALL) };
 
         localBackgroundTask.Run(*pushBackgroundTaskInstance);
         return S_OK;
