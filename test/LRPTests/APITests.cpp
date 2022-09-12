@@ -62,7 +62,7 @@ namespace Test::LRP
             startupTaskExePath += LR"(.Msix/msix/PushNotificationsLongRunningTask.StartupTask.exe)";
 
             wil::unique_process_information processInfo;
-            winrt::check_bool(CreateProcess(
+            VERIFY_NO_THROW(winrt::check_bool(CreateProcess(
                 startupTaskExePath.c_str(),
                 nullptr, // command line options
                 nullptr, // process attributes
@@ -72,7 +72,7 @@ namespace Test::LRP
                 nullptr, // lpEnvironment
                 nullptr, // current directory for the process
                 &startupInfo,
-                &processInfo));
+                &processInfo)));
 
             // Wait for the process to come up and be captured in the snapshot from verification step.
             Sleep(1000);
