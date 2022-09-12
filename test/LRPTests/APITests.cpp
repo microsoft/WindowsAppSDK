@@ -28,6 +28,14 @@ namespace Test::LRP
             TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
 
+        winrt::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
+        {
+            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
+            VERIFY_IS_NOT_NULL(notificationPlatform.get());
+
+            return notificationPlatform;
+        }
+
         TEST_CLASS_SETUP(ClassInit)
         {
             ::Test::Bootstrap::SetupPackages(Test::Bootstrap::Packages::Singleton);
@@ -54,7 +62,7 @@ namespace Test::LRP
             startupTaskExePath += LR"(.Msix/msix/PushNotificationsLongRunningTask.StartupTask.exe)";
 
             wil::unique_process_information processInfo;
-            BOOL wasProcessCreated{ CreateProcess(
+            winrt::check_bool(CreateProcess(
                 startupTaskExePath.c_str(),
                 nullptr, // command line options
                 nullptr, // process attributes
@@ -64,12 +72,7 @@ namespace Test::LRP
                 nullptr, // lpEnvironment
                 nullptr, // current directory for the process
                 &startupInfo,
-                &processInfo) };
-
-            if (wasProcessCreated == FALSE)
-            {
-                VERIFY_SUCCEEDED(GetLastError());
-            }
+                &processInfo));
 
             // Wait for the process to come up and be captured in the snapshot from verification step.
             Sleep(1000);
@@ -108,16 +111,9 @@ namespace Test::LRP
             VERIFY_IS_FALSE(isRunning);
         }
 
-        TEST_METHOD(LaunchLRP_FromCoCreateInstance)
-        {
-            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
-            VERIFY_IS_NOT_NULL(notificationPlatform.get());
-        }
-
         TEST_METHOD(RegisterUnregisterLongRunningActivator)
         {
-            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
-            VERIFY_IS_NOT_NULL(notificationPlatform.get());
+            auto notificationPlatform{ GetNotificationPlatform() };
 
             wil::unique_cotaskmem_string lrpAppId;
             VERIFY_NO_THROW(notificationPlatform->RegisterFullTrustApplication(c_processName, winrt::guid(), &lrpAppId));
@@ -128,8 +124,7 @@ namespace Test::LRP
 
         TEST_METHOD(RegisterUnregisterLongRunningActivatorWithClsid)
         {
-            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
-            VERIFY_IS_NOT_NULL(notificationPlatform.get());
+            auto notificationPlatform{ GetNotificationPlatform() };
 
             wil::unique_cotaskmem_string lrpAppId;
             VERIFY_NO_THROW(notificationPlatform->RegisterFullTrustApplication(c_processName, c_remoteId, &lrpAppId));
@@ -140,8 +135,7 @@ namespace Test::LRP
 
         TEST_METHOD(AddRemoveToastRegistrationMappingNoSink)
         {
-            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
-            VERIFY_IS_NOT_NULL(notificationPlatform.get());
+            auto notificationPlatform{ GetNotificationPlatform() };
 
             VERIFY_NO_THROW(notificationPlatform->AddToastRegistrationMapping(c_processName, c_appId));
             VERIFY_NO_THROW(notificationPlatform->RemoveToastRegistrationMapping(c_processName));
@@ -149,8 +143,7 @@ namespace Test::LRP
 
         TEST_METHOD(AddRemoveToastRegistrationMappingWithSink)
         {
-            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
-            VERIFY_IS_NOT_NULL(notificationPlatform.get());
+            auto notificationPlatform{ GetNotificationPlatform() };
 
             wil::unique_cotaskmem_string lrpAppId;
             VERIFY_NO_THROW(notificationPlatform->RegisterFullTrustApplication(c_processName, c_remoteId, &lrpAppId));
