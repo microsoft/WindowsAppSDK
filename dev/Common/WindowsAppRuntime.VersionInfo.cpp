@@ -7,8 +7,15 @@
 
 #include "WindowsAppRuntime.VersionInfo.h"
 
+// Function prototype of the function exported by the resource DLL
+// (defined later in the build pipeline so we can't #include a header from there)
+STDAPI_(const void*) WindowsAppRuntime_GetVersionInfo();
+
 static std::wstring g_test_frameworkPackageFamilyName;
 static std::wstring g_test_mainPackageFamilyName;
+static std::atomic<const ::Microsoft::WindowsAppSDK::VersionInfo*> g_versionInfo{};
+
+static const ::Microsoft::WindowsAppSDK::VersionInfo c_noVersionInfo{};
 
 namespace Microsoft::WindowsAppRuntime::VersionInfo
 {
@@ -37,6 +44,21 @@ public:
         const uint32_t c_mainPackageFamilyNameResourceId{ 10002 };
         static std::wstring mainPackageFamilyName{ LoadStringWFromResource(c_mainPackageFamilyNameResourceId) };
         return mainPackageFamilyName;
+    }
+
+public:
+    static const ::Microsoft::WindowsAppSDK::VersionInfo* GetVersionInfo()
+    {
+        if (!g_versionInfo)
+        {
+            static wil::unique_hmodule module{ LoadResourceModule() };
+
+            auto getVersionInfo{ GetProcAddressByFunctionDeclaration(module.get(), WindowsAppRuntime_GetVersionInfo) };
+            THROW_LAST_ERROR_IF_NULL(getVersionInfo);
+
+            g_versionInfo = static_cast<const ::Microsoft::WindowsAppSDK::VersionInfo*>(getVersionInfo());
+        }
+        return g_versionInfo;
     }
 
 private:
@@ -115,3 +137,9 @@ STDAPI WindowsAppRuntime_VersionInfo_TestInitialize(
     return S_OK;
 }
 CATCH_RETURN();
+
+const ::Microsoft::WindowsAppSDK::VersionInfo* Microsoft::WindowsAppSDK::GetVersionInfo()
+{
+    const auto versionInfo{ ::Microsoft::WindowsAppRuntime::VersionInfo::RuntimeInformation::GetVersionInfo() };
+    return !versionInfo ? &c_noVersionInfo : versionInfo;
+}
