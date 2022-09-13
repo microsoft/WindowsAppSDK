@@ -41,25 +41,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         /// currently in use, when registering the WinAppSDK packages.
         Boolean ForceDeployment;
 
-        /// If not successful call DebugBreak()
-        [contract(DeploymentContract, 3)]
-        Boolean OnError_DebugBreak;
-
-        /// If not successful call DebugBreak() if a debugger is attached to the process
-        [contract(DeploymentContract, 3)]
-        Boolean OnError_DebugBreak_IfDebuggerAttached;
-
-        /// If not successful perform a fail-fast
-        [contract(DeploymentContract, 3)]
-        Boolean OnError_FailFast;
-
         /// If not successful show UI
         [contract(DeploymentContract, 3)]
-        Boolean OnError_ShowUI;
-
-        /// Do nothing (do not error) if the process lacks package identity
-        [contract(DeploymentContract, 3)]
-        Boolean OnNoPackageIdentity_NOOP;
+        Boolean OnErrorShowUI;
     };
 
     /// Used to query deployment information for WindowsAppRuntime
