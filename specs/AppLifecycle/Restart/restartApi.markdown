@@ -40,22 +40,22 @@ new method will fill the gap for Win32 applications and align with CoreApplicati
 ## Existing API
 
 1.  **Restart-me-now**. CoreApplication exposes the
-    [RequestRestartAsync](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.core.coreapplication.requestrestartasync?view=winrt-18362)
+    [RequestRestartAsync](https://docs.microsoft.com/uwp/api/windows.applicationmodel.core.coreapplication.requestrestartasync?view=winrt-18362)
     method, which allows an app to terminate and restart itself, and to provide an arbitrary
     command-line string for the restarted instance.
 
 2.  **Restart-me-after-termination**. The Win32 API
-    [RegisterApplicationRestart](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-registerapplicationrestart)
+    [RegisterApplicationRestart](https://docs.microsoft.com/windows/win32/api/winbase/nf-winbase-registerapplicationrestart)
     enables an app to register itself to be restarted after termination, and to provide an arbitrary
     command-line string for the restarted instance. The reasons for termination include app crash or
     hang, app update, or system update. There's also a matching
-    [UnregisterApplicationRestart](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-unregisterapplicationrestart)
+    [UnregisterApplicationRestart](https://docs.microsoft.com/windows/win32/api/winbase/nf-winbase-unregisterapplicationrestart)
     API.
 
 There are 2 related Win32 APIs that focus on recovery prior to restart:
 
 1.  **Let-me-do-something-before-termination**. An app can call
-    [RegisterApplicationRecoveryCallback](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-registerapplicationrecoverycallback)
+    [RegisterApplicationRecoveryCallback](https://docs.microsoft.com/windows/win32/api/winbase/nf-winbase-registerapplicationrecoverycallback)
     to register a callback for the system to call before terminating the app. If an application
     encounters an unhandled exception or becomes unresponsive, Windows Error Reporting (WER) calls
     the specified recovery callback, where the app can save state information. The system pings the
@@ -65,7 +65,7 @@ There are 2 related Win32 APIs that focus on recovery prior to restart:
 
 2.  **Recovery-in-progress**. While the app is doing work in its recovery callback, the app must
     periodically call
-    [ApplicationRecoveryInProgress](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-applicationrecoveryinprogress)
+    [ApplicationRecoveryInProgress](https://docs.microsoft.com/windows/win32/api/winbase/nf-winbase-applicationrecoveryinprogress)
     \-- if it doesn't call within the registered ping interval, WER will terminate the process.
 
 ### Summary
@@ -86,14 +86,14 @@ For Win32 apps (packaged or unpackaged):
 HRESULT RegisterApplicationRestart(PCWSTR pwzCommandline, DWORD dwFlags)
 ```
 Registers an app for restart. More details on the [MSDN
-page](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-registerapplicationrestart).
+page](https://docs.microsoft.com/windows/win32/api/winbase/nf-winbase-registerapplicationrestart).
 
 ```cpp
 HRESULT UnregisterApplicationRestart()
 ```
 Unregisters the app for restart, where the app had previously called RegisterApplicationRestart.
 More details on the [MSDN
-page](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-unregisterapplicationrestart).
+page](https://docs.microsoft.com/windows/win32/api/winbase/nf-winbase-unregisterapplicationrestart).
 
 ```cpp
 public static IAsyncOperation<AppRestartFailureReason> RequestRestartAsync(
@@ -101,7 +101,7 @@ string launchArguments)
 ```
 Static function in CoreApplication. Requests immediate termination and restart. More details on the
 [MSDN
-page](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.core.coreapplication.requestrestartasync?view=winrt-22000).
+page](https://docs.microsoft.com/uwp/api/windows.applicationmodel.core.coreapplication.requestrestartasync?view=winrt-22000).
 
 ```cpp
 public enum AppRestartFailureReason
@@ -116,7 +116,7 @@ An existing enum with the following values:
 ```cpp
 class LaunchActivatedEventArg
 ```
-	
+
 Relevant Properties:
 
 - Arguments: gets the arguments that are passed to the app during its launch activation.
@@ -134,95 +134,17 @@ static  AppRestartFailureReason Restart(String arguments)
 ```c#
 namespace Microsoft.Windows.AppLifecycle
 {
-    enum ExtendedActivationKind
-    {
-        Launch = 0,
-        Search,
-        ShareTarget,
-        File,
-        Protocol,
-        FileOpenPicker,
-        FileSavePicker,
-        CachedFileUpdater,
-        ContactPicker,
-        Device,
-        PrintTaskSettings,
-        CameraSettings,
-        RestrictedLaunch,
-        AppointmentsProvider,
-        Contact,
-        LockScreenCall,
-        VoiceCommand,
-        LockScreen,
-        PickerReturned = 1000,
-        WalletAction,
-        PickFileContinuation,
-        PickSaveFileContinuation,
-        PickFolderContinuation,
-        WebAuthenticationBrokerContinuation,
-        WebAccountProvider,
-        ComponentUI,
-        ProtocolForResults = 1009,
-        ToastNotification,
-        Print3DWorkflow,
-        DialReceiver,
-        DevicePairing,
-        UserDataAccountsProvider,
-        FilePickerExperience,
-        LockScreenComponent,
-        ContactPanel,
-        PrintWorkflowForegroundTask,
-        GameUIProvider,
-        StartupTask,
-        CommandLineLaunch,
-        BarcodeScannerProvider,
-        PrintSupportJobUI,
-        PrintSupportSettingsUI,
-        PhoneCallActivation,
-        VpnForeground,
-        // NOTE: Values below 5000 are designated for the platform.  The above list is kept in sync with
-        // Windows.ApplicationModel.Activation.ActivationKind.
-
-        Push = 5000,
-    };
-
-    runtimeclass AppActivationArguments
-    {
-        ExtendedActivationKind Kind { get; };
-        IInspectable Data{ get; };
-    };
-
+    [contractversion(3)]
+    apicontract AppLifecycleContract {};
+    
+    [contract(AppLifecycleContract, 1)]
     runtimeclass AppInstance
     {
-        static AppInstance GetCurrent();
-        static Windows.Foundation.Collections.IVector<AppInstance> GetInstances();
-        static AppInstance FindOrRegisterForKey(String key);
+        // Non-Restart specific code removed for brevity.
         
-        // This is the new method exposed by this feature
+        [contract(AppLifecycleContract, 2)]
         static Windows.ApplicationModel.Core.AppRestartFailureReason Restart(String arguments);
-
-        void UnregisterKey();
-        Windows.Foundation.IAsyncAction RedirectActivationToAsync(Microsoft.Windows.AppLifecycle.AppActivationArguments args);
-        Microsoft.Windows.AppLifecycle.AppActivationArguments GetActivatedEventArgs();
-        event Windows.Foundation.EventHandler<Microsoft.Windows.AppLifecycle.AppActivationArguments> Activated;
-
-        String Key{ get; };
-        Boolean IsCurrent{ get; };
-        UInt32 ProcessId{ get; };
     }
-
-    static runtimeclass ActivationRegistrationManager
-    {
-        static void RegisterForFileTypeActivation(String[] supportedFileTypes, String logo,
-            String displayName, String[] supportedVerbs, String exePath);
-        static void RegisterForProtocolActivation(String scheme, String logo, String displayName,
-            String exePath);
-        static void RegisterForStartupActivation(String taskId, String exePath);
-
-        static void UnregisterForFileTypeActivation(String[] fileTypes, String exePath);
-        static void UnregisterForProtocolActivation(String scheme, String exePath);
-        static void UnregisterForStartupActivation(String taskId);
-    };
 }
 ```
 There is no relevant RtCop output for this feature.
