@@ -13,6 +13,7 @@
 
 namespace winrt
 {
+    using namespace Windows::ApplicationModel::Background;
     using namespace Windows::Foundation;
 }
 namespace winrt::Microsoft::Windows::PushNotifications::Helpers
@@ -120,7 +121,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
     {
         auto payloadAsWideString{ Utf8BytesToWideString(payloadLength, payload) };
         auto pushBackgroundTaskInstance{ winrt::make_self<PushBackgroundTaskInstance>(payloadAsWideString) };
-        auto localBackgroundTask { winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(comServerClsid, CLSCTX_ALL) };
+        auto localBackgroundTask { winrt::create_instance<winrt::IBackgroundTask>(comServerClsid, CLSCTX_ALL) };
         localBackgroundTask.Run(*pushBackgroundTaskInstance);
         return S_OK;
     }

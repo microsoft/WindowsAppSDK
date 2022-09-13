@@ -189,9 +189,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 if (pair.Name() == L"payload")
                 {
                     // Convert escaped components to its normal content from the conversion done in the Long Running Process (see NotificationListener.cpp)
-                    auto payloadAsWstring{ winrt::Windows::Foundation::Uri::UnescapeComponent(pair.Value()) };
+                    auto payloadAsWstring{ winrt::Uri::UnescapeComponent(pair.Value()) };
                     auto pushBackgroundTask{ winrt::make_self<PushBackgroundTaskInstance>(payloadAsWstring.c_str()) };
-                    eventArgs = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(pushBackgroundTask.as<IBackgroundTaskInstance>());
+                    eventArgs = winrt::make<PushNotificationReceivedEventArgs>(pushBackgroundTask.as<IBackgroundTaskInstance>());
                     m_backgroundTaskArgs = eventArgs;
                 }
             }
@@ -871,7 +871,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         if(storeBackgroundArgs)
         {
-            m_backgroundTaskArgs = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(taskInstance);
+            m_backgroundTaskArgs = winrt::make<PushNotificationReceivedEventArgs>(taskInstance);
             SetEvent(m_waitHandleForArgs.get());            
         }
     }

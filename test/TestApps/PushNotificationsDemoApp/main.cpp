@@ -90,8 +90,6 @@ winrt::PushNotificationChannel RequestChannel()
 
 int main()
 {
-    std::cin.ignore();
-
     Test::Bootstrap::SetupBootstrap();
     ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
         ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);

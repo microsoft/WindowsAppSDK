@@ -33,5 +33,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationDummyDeferral.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationTelemetry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationUtility.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushRawNotification.h" />
   </ItemGroup>
 </Project>
