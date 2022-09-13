@@ -63,4 +63,9 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
+    <ItemGroup>
+    <ResourceCompile Include="WindowsAppRuntime.Bootstrap.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
 </Project>
