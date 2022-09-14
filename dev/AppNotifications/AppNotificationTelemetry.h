@@ -251,6 +251,30 @@ public:
     }
     CATCH_LOG()
 
+    DEFINE_EVENT_METHOD(LogActivated)(
+        winrt::hresult hr,
+        std::wstring const& appId,
+        winrt::hstring const& arguments,
+        bool firstNotificationReceived,
+        bool hasNotificationHandlers) noexcept try
+    {
+        if (m_telemetryHelper.ShouldLogEvent())
+        {
+            TraceLoggingClassWriteMeasure(
+                "Activated",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(appId.c_str(), "AppId"),
+                TraceLoggingUInt32(arguments.size(), "ArgumentsSize"),
+                TraceLoggingBool(firstNotificationReceived, "FirstNotificationReceived"),
+                TraceLoggingBool(hasNotificationHandlers, "HasNotificationHandlers"),
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
+    }
+    CATCH_LOG()
+
 private:
     NotificationTelemetryHelper m_telemetryHelper;
 };

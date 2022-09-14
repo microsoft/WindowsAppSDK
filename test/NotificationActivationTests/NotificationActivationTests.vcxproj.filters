@@ -15,9 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<<< HEAD:test/NotificationActivationTests/NotificationActivationTests.vcxproj.filters
     <ClInclude Include="NotificationActivation-Test-Constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -30,11 +34,17 @@
     <ClInclude Include="NotificationActivation.Test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+========
+>>>>>>>> develop:test/LRPTests/LRPTests.vcxproj.filters
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<<< HEAD:test/NotificationActivationTests/NotificationActivationTests.vcxproj.filters
     <ClCompile Include="APITests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -55,5 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="NotificationActivation-AppxManifest.xml" />
+========
+>>>>>>>> develop:test/LRPTests/LRPTests.vcxproj.filters
   </ItemGroup>
 </Project>

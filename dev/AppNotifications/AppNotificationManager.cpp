@@ -393,58 +393,72 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         winrt::AppNotificationActivatedEventArgs activatedEventArgs = winrt::make<implementation::AppNotificationActivatedEventArgs>(invokedArgs, userInput);
 
-        // Need to store the first notification in the case of ToastActivation
+        HRESULT hr{ S_OK };
 
-        auto lock{ m_lock.lock_exclusive() };
-        if (!m_firstNotificationReceived)
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationTelemetry::LogActivated(hr, m_appId, invokedArgs, m_firstNotificationReceived, !!m_notificationHandlers);
+        }) };
+
+        try
         {
-            m_firstNotificationReceived = true;
+            // Need to store the first notification in the case of ToastActivation
 
-            std::wstring commandLine{ GetCommandLine() };
-
-            // If the app was not launched due to ToastActivation, we will launch a new instance or invoke the foreground handlers.
-            // Otherwise we store the EventArgs and signal to the Main thread
-            auto pos{ commandLine.find(c_notificationActivatedArgument) };
-            if (pos == std::wstring::npos) // Any launch kind that is not AppNotification
+            auto lock{ m_lock.lock_exclusive() };
+            if (!m_firstNotificationReceived)
             {
-                // If the Process was launched due to other Activation Kinds, we will need to
-                // re-route the payload to a new process if there are no registered event handlers.
-                if (!m_notificationHandlers)
+                m_firstNotificationReceived = true;
+
+                std::wstring commandLine{ GetCommandLine() };
+
+                // If the app was not launched due to ToastActivation, we will launch a new instance or invoke the foreground handlers.
+                // Otherwise we store the EventArgs and signal to the Main thread
+                auto pos{ commandLine.find(c_notificationActivatedArgument) };
+                if (pos == std::wstring::npos) // Any launch kind that is not AppNotification
                 {
-                    winrt::guid registeredClsid{ GUID_NULL };
-                    if (AppModel::Identity::IsPackagedProcess())
+                    // If the Process was launched due to other Activation Kinds, we will need to
+                    // re-route the payload to a new process if there are no registered event handlers.
+                    if (!m_notificationHandlers)
                     {
-                        registeredClsid = PushNotificationHelpers::GetComRegistrationFromRegistry(c_expectedAppServerArgs.data());
+                        winrt::guid registeredClsid{ GUID_NULL };
+                        if (AppModel::Identity::IsPackagedProcess())
+                        {
+                            registeredClsid = PushNotificationHelpers::GetComRegistrationFromRegistry(c_expectedAppServerArgs.data());
+                        }
+                        else
+                        {
+                            std::wstring registeredClsidString;
+                            THROW_IF_FAILED(GetActivatorGuid(registeredClsidString));
+
+                            // Remove braces around the guid string
+                            registeredClsid = winrt::guid(registeredClsidString.substr(1, registeredClsidString.size() - 2));
+                        }
+
+                        auto notificationCallback{ winrt::create_instance<INotificationActivationCallback>(registeredClsid, CLSCTX_ALL) };
+                        THROW_IF_FAILED(notificationCallback->Activate(appUserModelId, invokedArgs, data, dataCount));
                     }
                     else
-                    { 
-                        std::wstring registeredClsidString;
-                        THROW_IF_FAILED(GetActivatorGuid(registeredClsidString));
-
-                        // Remove braces around the guid string
-                        registeredClsid = winrt::guid(registeredClsidString.substr(1, registeredClsidString.size() - 2));
+                    {
+                        m_notificationHandlers(Default(), activatedEventArgs);
                     }
-
-                    auto notificationCallback{ winrt::create_instance<INotificationActivationCallback>(registeredClsid, CLSCTX_ALL) };
-                    THROW_IF_FAILED(notificationCallback->Activate(appUserModelId, invokedArgs, data, dataCount));
                 }
                 else
                 {
-                    m_notificationHandlers(Default(), activatedEventArgs);
+                    m_activatedEventArgs = activatedEventArgs;
+                    SetEvent(m_waitHandleForArgs.get());
                 }
             }
             else
             {
-                m_activatedEventArgs = activatedEventArgs;
-                SetEvent(m_waitHandleForArgs.get());
+                m_notificationHandlers(Default(), activatedEventArgs);
             }
-        }
-        else
-        {
-            m_notificationHandlers(Default(), activatedEventArgs);
-        }
 
-        return S_OK;
+            return hr;
+        }
+        catch (...)
+        {
+            hr = wil::ResultFromCaughtException();
+            throw;
+        }
     }
     CATCH_RETURN()
 

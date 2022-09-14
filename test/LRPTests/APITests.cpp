@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include "pch.h"
 #include <TestDef.h>
@@ -17,7 +17,6 @@ namespace Test::LRP
 {
     static const PCWSTR c_processName = L"TAEF.exe";
     static const PCWSTR c_appId = L"toastAppId";
-    inline IID c_remoteId = winrt::guid("A7652901-313C-4EFA-A303-95C371A00DAB");
 
     class LRPTests
     {
@@ -28,6 +27,14 @@ namespace Test::LRP
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
+
+        winrt::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
+        {
+            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
+            VERIFY_IS_NOT_NULL(notificationPlatform.get());
+
+            return notificationPlatform;
+        }
 
         TEST_CLASS_SETUP(ClassInit)
         {
@@ -41,28 +48,21 @@ namespace Test::LRP
             return true;
         }
 
-        TEST_METHOD(LaunchLRP_FromCoCreateInstance)
-        {
-            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
-            VERIFY_IS_NOT_NULL(notificationPlatform.get());
-        }
-
         TEST_METHOD(LaunchLRP_FromStartupTask)
         {
-            STARTUPINFO startupInfo = { 0 };
-            wil::unique_process_information processInfo;
+            VerifyLRP_IsRunning(false);
 
+            STARTUPINFO startupInfo{};
             ZeroMemory(&startupInfo, sizeof(startupInfo));
             startupInfo.cb = sizeof(startupInfo);
 
             // Build the Solution OutDir path where the Startup Task exe is.
-            auto startupTaskExePath = Test::FileSystem::GetSolutionOutDirPath();
-            startupTaskExePath /= Test::Packages::WindowsAppRuntimeSingleton::c_PackageDirName;
-            startupTaskExePath += L".Msix";
-            startupTaskExePath /= L"msix";
-            startupTaskExePath /= L"PushNotificationsLongRunningTask.StartupTask.exe";
+            // Path: $OutDir/WindowsAppRuntime.Test.Singleton.Msix/msix/PushNotificationsLongRunningTask.StartupTask.exe
+            auto startupTaskExePath{ Test::FileSystem::GetSolutionOutDirPath() / Test::Packages::WindowsAppRuntimeSingleton::c_PackageDirName };
+            startupTaskExePath += LR"(.Msix/msix/PushNotificationsLongRunningTask.StartupTask.exe)";
 
-            BOOL wasProcessCreated = CreateProcess(
+            wil::unique_process_information processInfo;
+            VERIFY_NO_THROW(winrt::check_bool(CreateProcess(
                 startupTaskExePath.c_str(),
                 nullptr, // command line options
                 nullptr, // process attributes
@@ -72,13 +72,7 @@ namespace Test::LRP
                 nullptr, // lpEnvironment
                 nullptr, // current directory for the process
                 &startupInfo,
-                &processInfo
-            );
-
-            if (wasProcessCreated == FALSE)
-            {
-                VERIFY_SUCCEEDED(GetLastError());
-            }
+                &processInfo)));
 
             // Wait for the process to come up and be captured in the snapshot from verification step.
             Sleep(1000);
@@ -90,20 +84,20 @@ namespace Test::LRP
             wil::unique_handle processesSnapshot(CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0));
             VERIFY_IS_NOT_NULL(processesSnapshot.get());
 
-            PROCESSENTRY32 processEntry = { 0 };
+            PROCESSENTRY32 processEntry{};
             processEntry.dwSize = sizeof(processEntry);
 
-            BOOL result = Process32First(processesSnapshot.get(), &processEntry);
+            BOOL result{ Process32First(processesSnapshot.get(), &processEntry) };
             while (result != FALSE)
             {
                 if (wcscmp(L"PushNotificationsLongRunningTask.exe", processEntry.szExeFile) == 0)
                 {
                     VERIFY_IS_TRUE(isRunning);
-                    DWORD processId = processEntry.th32ProcessID;
+                    DWORD processId{ processEntry.th32ProcessID };
 
                     wil::unique_handle longRunningProcessHandle(OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, processId));
-                    DWORD exitCode = 0;
-                    BOOL exitCodeProcess = GetExitCodeProcess(longRunningProcessHandle.get(), &exitCode);
+                    DWORD exitCode{};
+                    BOOL exitCodeProcess{ GetExitCodeProcess(longRunningProcessHandle.get(), &exitCode) };
 
                     VERIFY_SUCCEEDED(exitCodeProcess == FALSE ? GetLastError() : S_OK);
                     VERIFY_ARE_EQUAL(exitCode, STILL_ACTIVE);
@@ -119,49 +113,45 @@ namespace Test::LRP
 
         TEST_METHOD(RegisterUnregisterLongRunningActivator)
         {
-            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
-            VERIFY_IS_NOT_NULL(notificationPlatform.get());
+            auto notificationPlatform{ GetNotificationPlatform() };
 
+            wil::unique_cotaskmem_string lrpAppId;
+            VERIFY_NO_THROW(notificationPlatform->RegisterFullTrustApplication(c_processName, winrt::guid(), &lrpAppId));
             VERIFY_NO_THROW(notificationPlatform->RegisterLongRunningActivator(c_processName));
             VERIFY_NO_THROW(notificationPlatform->UnregisterLongRunningActivator(c_processName));
+            VERIFY_NO_THROW(notificationPlatform->UnregisterFullTrustApplication(c_processName));
         }
 
         TEST_METHOD(RegisterUnregisterLongRunningActivatorWithClsid)
         {
-            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
-            VERIFY_IS_NOT_NULL(notificationPlatform.get());
+            auto notificationPlatform{ GetNotificationPlatform() };
 
+            wil::unique_cotaskmem_string lrpAppId;
+            VERIFY_NO_THROW(notificationPlatform->RegisterFullTrustApplication(c_processName, c_remoteId, &lrpAppId));
             VERIFY_NO_THROW(notificationPlatform->RegisterLongRunningActivatorWithClsid(c_processName, c_remoteId));
             VERIFY_NO_THROW(notificationPlatform->UnregisterLongRunningActivator(c_processName));
+            VERIFY_NO_THROW(notificationPlatform->UnregisterFullTrustApplication(c_processName));
         }
 
-        TEST_METHOD(AddToastRegistrationMappingNoSink)
+        TEST_METHOD(AddRemoveToastRegistrationMappingNoSink)
         {
-            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
-            VERIFY_IS_NOT_NULL(notificationPlatform.get());
+            auto notificationPlatform{ GetNotificationPlatform() };
 
             VERIFY_NO_THROW(notificationPlatform->AddToastRegistrationMapping(c_processName, c_appId));
-        }
-
-        TEST_METHOD(RemoveToastRegistrationMappingNoSink)
-        {
-            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
-            VERIFY_IS_NOT_NULL(notificationPlatform.get());
-
             VERIFY_NO_THROW(notificationPlatform->RemoveToastRegistrationMapping(c_processName));
         }
 
         TEST_METHOD(AddRemoveToastRegistrationMappingWithSink)
         {
-            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
-            VERIFY_IS_NOT_NULL(notificationPlatform.get());
+            auto notificationPlatform{ GetNotificationPlatform() };
 
-            wil::unique_cotaskmem_string unpackagedAumid;
-            VERIFY_NO_THROW(notificationPlatform->RegisterFullTrustApplication(c_processName, c_remoteId, &unpackagedAumid));
-            VERIFY_NO_THROW(notificationPlatform->RegisterLongRunningActivator(unpackagedAumid.get()));
+            wil::unique_cotaskmem_string lrpAppId;
+            VERIFY_NO_THROW(notificationPlatform->RegisterFullTrustApplication(c_processName, c_remoteId, &lrpAppId));
+            VERIFY_NO_THROW(notificationPlatform->RegisterLongRunningActivator(lrpAppId.get()));
             VERIFY_NO_THROW(notificationPlatform->AddToastRegistrationMapping(c_processName, c_appId));
             VERIFY_NO_THROW(notificationPlatform->RemoveToastRegistrationMapping(c_processName));
             VERIFY_NO_THROW(notificationPlatform->UnregisterLongRunningActivator(c_processName));
+            VERIFY_NO_THROW(notificationPlatform->UnregisterFullTrustApplication(c_processName));
         }
     };
 }

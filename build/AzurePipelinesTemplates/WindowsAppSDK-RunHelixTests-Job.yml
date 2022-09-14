@@ -16,7 +16,7 @@ jobs:
   dependsOn: ${{ parameters.dependsOn }}
   condition: ${{ parameters.condition }}
   pool:
-    vmImage: 'windows-2019'
+    vmImage: 'windows-2022'
   timeoutInMinutes: 80
   strategy:
     maxParallel: ${{ parameters.maxParallel }}
