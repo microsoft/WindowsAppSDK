@@ -254,7 +254,7 @@ int APIENTRY wWinMain(
 
 ### Handling redirection
 
-## RedirectActivationToAsync vs. RedirectActivationTo
+#### RedirectActivationToAsync vs. RedirectActivationTo
 One issue with RedirectActivationToAsync is that the calling app's message queue is blocked if it is running STA.  To get around this
 app developers can put the redirection call into a seperate thread.  However, this is a cumbersome because two threads need to be synchronized.
 
