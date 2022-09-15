@@ -172,10 +172,7 @@ int APIENTRY wWinMain(
         {
             // Some other instance has already registered for this file,
             // so we'll redirect this activation to that instance instead.
-            // This is an async operation: to ensure the target can get
-            // the payload before this instance terminates, we should
-            // wait for the call to complete.
-            instance.RedirectActivationToAsync(activationArgs).get();
+            instance.RedirectActivationTo(activationArgs);
         }
     }
     return 1;
@@ -238,8 +235,7 @@ int APIENTRY wWinMain(
             {
                 isFound = true;
 
-                // Note that get() is a synchronous call that will block the current thread.
-                instance.RedirectActivationToAsync(activationArgs).get();
+                instance.RedirectActivationTo(activationArgs);
                 break;
             }
         }
@@ -257,6 +253,15 @@ int APIENTRY wWinMain(
 ```
 
 ### Handling redirection
+
+## RedirectActivationToAsync vs. RedirectActivationTo
+One issue with RedirectActivationToAsync is that the calling app's message queue is blocked if it is running STA.  To get around this
+app developers can put the redirection call into a seperate thread.  However, this is a cumbersome because two threads need to be synchronized.
+
+To mediate this issue, and to improve developer expirence with redirection, `RedirectActivationTo` has been added.  This is a synchronous method and
+internally the redirection request is put on to another thread.  This unblocks the calling apps message queue.
+
+Please use `RedirectActivationTo` whenever possible.
 
 The first 2 scenarios illustrate how an app would redirect to another running instance. This
 scenario shows how an app would handle the case where it is already running, and then a fresh
@@ -335,7 +340,7 @@ void OnActivated(const IInspectable&, const AppActivationArguments& args)
         auto instance = AppInstance::FindOrRegisterForKey(uri.AbsoluteUri());
         if (!instance.IsCurrent)
         {
-            instance.RedirectActivationToAsync(args).get();
+            instance.RedirectActivationTo(args);
         }
         else
         {
@@ -413,6 +418,10 @@ to include:
 ```idl
 namespace Microsoft.Windows.AppLifecycle
 {
+    [contractversion(2)]
+    apicontract AppLifecycleContract
+    
+    [contract(AppLifecycleContract, 1)]
     runtimeclass AppInstance
     {
         static AppInstance GetCurrent();
@@ -427,6 +436,9 @@ namespace Microsoft.Windows.AppLifecycle
         String Key{ get; };
         Boolean IsCurrent{ get; };
         UInt32 ProcessId{ get; };
+        
+        [contract(AppLifecycleContract, 2)]
+        void RedirectActivationTo(Microsoft.Windows.AppLifecycle.AppActivationArguments args);
     }
 }
 ```
@@ -458,7 +470,7 @@ design, unregistering a key simply removes the key for this instance; it does no
 instance redirection, nor does it remove this instance from the collection that Windows App SDK is
 maintaining of all running instances.
 
-**RedirectActivationTo** enables an instance of the app to redirect the current activation request to another
+**RedirectActivationToAsync** enables an instance of the app to redirect the current activation request to another
 instance. This is very similar to the existing platform
 [AppInstance.RedirectActivationTo](https://docs.microsoft.com/uwp/api/windows.applicationmodel.appinstance.redirectactivationto)
 method, except that the Windows App SDK implementation allows the app to pass an ActivationArguments
@@ -472,3 +484,6 @@ purposes.
 different instance.
 
 **ProcessId** the process ID of the instance.
+
+**RedirectActivationTo** same as `RedirectActivationToAsync` except the call is synchronous and does not block the
+calling code's message queue.  Prefer this method as it works with STA and MTA programs.
