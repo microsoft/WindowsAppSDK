@@ -124,6 +124,10 @@ Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.ta
 Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" -Destination "$fullNugetPath\build"
 Copy-Item -Path "$nuSpecsPath\AppxManifest.xml" -Destination "$fullNugetPath\AppxManifest.xml"
 
+#------------------
+#    Build mrtcore.sln and move output to staging.
+#------------------
+
 #Restore packages from mrt.
 $MRTSourcesDirectory = "dev\MRTCore"
 & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\core\src\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
@@ -186,11 +190,18 @@ Copy-Item -Path "$MRTSourcesDirectory\mrt\core\src\mrm.h" -Destination "$fullNug
 Copy-Item -Path "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.idl" -Destination "$fullNugetPath\include"
 
 
+#------------------
+#    Build windowsAppRuntime.sln (anyCPU) and move output to staging.
+#------------------
 # build AnyCPU
 msbuild /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=anycpu
 
 # If AnyCPU generates another dll it needs to be added here.
 copy-item -path "buildoutput\$configurationToUseForSingleConfiguration\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$fullNugetPath\lib\net6.0-windows10.0.17763.0"
+
+#------------------
+#    Move other files and prepare manifest and appxmanifest.xml
+#------------------
 
 Copy-Item -Path "$nuSpecsPath\AppxManifest.xml" -Destination "$fullNugetPath"
 Copy-Item -Path "LICENSE" -Destination "$fullNugetPath" -force
