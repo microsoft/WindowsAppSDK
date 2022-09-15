@@ -3,9 +3,12 @@
 
 #include "pch.h"
 
-winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::hstring> MockRawNotification::Headers()
+using namespace winrt::Windows::Foundation::Collections;
+using namespace winrt::Windows::Security::Cryptography;
+
+IMapView<winrt::hstring, winrt::hstring> MockRawNotification::Headers()
 {
-    return winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::hstring>{};
+    return IMapView<winrt::hstring, winrt::hstring>{};
 }
 
 winrt::hstring MockRawNotification::ChannelId()
@@ -20,7 +23,7 @@ winrt::hstring MockRawNotification::Content()
 
 winrt::Windows::Storage::Streams::IBuffer MockRawNotification::ContentBytes()
 {
-    return winrt::Windows::Security::Cryptography::CryptographicBuffer::ConvertStringToBinary(
+    return CryptographicBuffer::ConvertStringToBinary(
         c_rawNotificationPayload,
-        winrt::Windows::Security::Cryptography::BinaryStringEncoding::Utf8);
+        BinaryStringEncoding::Utf8);
 }

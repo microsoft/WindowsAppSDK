@@ -50,6 +50,5 @@ winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral MockBackgro
 
 winrt::Windows::Foundation::IInspectable MockBackgroundTaskInstance::TriggerDetails()
 {
-    auto rawNotification = winrt::make<MockRawNotification>();
-    return rawNotification;
+    return winrt::make<MockRawNotification>();
 }

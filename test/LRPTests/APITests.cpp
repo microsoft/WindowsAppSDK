@@ -25,12 +25,12 @@ namespace Test::LRP
         BEGIN_TEST_CLASS(LRPTests)
             TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK Push Notifications Long Running Process tests")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser") // Need to run as non-elevated until LRP elevation support is enabled.
         END_TEST_CLASS()
 
         winrt::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
         {
-            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
+            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(winrt::guid_of<NotificationsLongRunningPlatform>(), CLSCTX_ALL) };
             VERIFY_IS_NOT_NULL(notificationPlatform.get());
 
             return notificationPlatform;

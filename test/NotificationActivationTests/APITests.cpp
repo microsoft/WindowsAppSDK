@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include "pch.h"
 #include <TestDef.h>
@@ -17,7 +17,7 @@ using namespace NotificationActivation::TestFunctions;
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::PushNotifications;
 using namespace winrt::Microsoft::Windows::AppNotifications;
-
+using namespace winrt::Windows::ApplicationModel::Background;
 
 namespace Test::NotificationActivation
 {
@@ -74,13 +74,13 @@ namespace Test::NotificationActivation
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
                 TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"NotificationActivation-AppxManifest.xml")
-                END_TEST_METHOD_PROPERTIES();
+            END_TEST_METHOD_PROPERTIES();
 
             bool notificationReceived{};
-            winrt::event_token appNotificationToken{ AppNotificationManager::Default().NotificationInvoked([&](const auto&, AppNotificationActivatedEventArgs const& toastArgs)
+            winrt::event_token appNotificationToken{ AppNotificationManager::Default().NotificationInvoked([&](const auto&, AppNotificationActivatedEventArgs const& args)
             {
-                winrt::hstring argument{ toastArgs.Argument() };
-                // IMap<hstring, hstring> userInput { toastArgs.UserInput() };
+                winrt::hstring argument{ args.Argument() };
+                // IMap<hstring, hstring> userInput { appNotificationArgs.UserInput() };
                 VERIFY_ARE_EQUAL(argument, c_appNotificationArgument);
 
                 notificationReceived = true;
@@ -88,9 +88,9 @@ namespace Test::NotificationActivation
 
             AppNotificationManager::Default().Register();
 
-            auto toastActivationCallback{ winrt::create_instance<INotificationActivationCallback>(c_taefAppNotificationComServerId, CLSCTX_ALL) };
+            auto appNotificationActivationCallback{ winrt::create_instance<INotificationActivationCallback>(c_taefAppNotificationComServerId, CLSCTX_ALL) };
             // Returns after payload delivered to foreground handler
-            VERIFY_SUCCEEDED(toastActivationCallback->Activate(c_appNotificationFakeAUMID.c_str(), c_appNotificationArgument.c_str(), nullptr, 0));
+            VERIFY_SUCCEEDED(appNotificationActivationCallback->Activate(c_appNotificationFakeAUMID.c_str(), c_appNotificationArgument.c_str(), nullptr /* userInput */, 0  /* userInputCount */));
 
             VERIFY_IS_TRUE(notificationReceived);
         }
@@ -100,8 +100,8 @@ namespace Test::NotificationActivation
             RunTest(L"AppNotificationBackgroundTest", testWaitTime()); // Need to launch one time to enable background activation.
 
             auto event{ CreateTestEvent(c_testNotificationPhaseEventName) };
-            auto toastActivationCallback{ winrt::create_instance<INotificationActivationCallback>(c_appNotificationComServerId, CLSCTX_ALL) };
-            VERIFY_SUCCEEDED(toastActivationCallback->Activate(c_appNotificationFakeAUMID.c_str(), c_appNotificationArgument.c_str(), nullptr, 0));
+            auto callback{ winrt::create_instance<INotificationActivationCallback>(c_appNotificationComServerId, CLSCTX_ALL) };
+            VERIFY_SUCCEEDED(callback->Activate(c_appNotificationFakeAUMID.c_str(), c_appNotificationArgument.c_str(), nullptr /* data */, 0 /* dataCount */));
 
             wil::unique_event failed{ CreateTestEvent(c_testFailureEventName) };
             WaitForEvent(event, failed);
@@ -118,7 +118,7 @@ namespace Test::NotificationActivation
 
             auto event{ CreateTestEvent(c_testNotificationPhaseEventName) };
 
-            auto localBackgroundTask{ winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_pushNotificationComServerId, CLSCTX_ALL) };
+            auto localBackgroundTask{ winrt::create_instance<IBackgroundTask>(c_pushNotificationComServerId, CLSCTX_ALL) };
             auto mockBackgroundTaskInstance{ winrt::make<MockBackgroundTaskInstance>() };
             VERIFY_NO_THROW(localBackgroundTask.Run(mockBackgroundTaskInstance));
 

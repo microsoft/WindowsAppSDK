@@ -64,7 +64,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{56a1d696-feda-4333-bf37-772ebececb10}</ProjectGuid>
+    <ProjectGuid>{DC9EDD85-90CD-4A92-952C-F3A894CF2FC3}</ProjectGuid>
     <RootNamespace>NotificationActivation</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
