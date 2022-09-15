@@ -486,4 +486,4 @@ different instance.
 **ProcessId** the process ID of the instance.
 
 **RedirectActivationTo** same as `RedirectActivationToAsync` except the call is synchronous and does not block the
-calling code's message queue.  Prefer this method as it works with STA and MTA programs.
+calling code's message queue because the redirection is ran on a different thread.  Prefer this method as it works with STA and MTA programs.
