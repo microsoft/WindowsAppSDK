@@ -10,6 +10,8 @@
 #include <Microsoft.Windows.System.EnvironmentManager.h>
 #include <AppModel.Identity.h>
 #include <Security.IntegrityLevel.h>
+#include <Microsoft.Windows.System.EnvironmentManager.Insights.h>
+#include <WindowsAppRuntime.VersionInfo.h>
 
 
 using namespace winrt::Microsoft::Windows::System::implementation;
@@ -20,21 +22,19 @@ static bool DoesChangeTrackingKeyExist()
     wil::unique_hkey keyToChangeTracker{};
     LSTATUS openResult{ RegOpenKeyEx(HKEY_LOCAL_MACHINE, subKey.c_str(), 0, KEY_READ | KEY_WOW64_64KEY, keyToChangeTracker.put()) };
 
-    LOG_IF_WIN32_ERROR_MSG(openResult, "Open key result to check if tracking exists: %i. Errors are treated as \"Do not track changes\"", openResult);
+    if (FAILED_WIN32(openResult))
+    {
+        EnvironmentManagerInsights::TraceLoggingInfo("Could not find the change tracking HKLM key.  Changes will not be tracked");
+        LOG_IF_WIN32_ERROR(openResult);
+        return false;
+    }
 
-    return openResult == ERROR_SUCCESS;
+    return true;
 }
 
 inline bool IsDllOnSystemAndRegistered()
 {
-
-    // Maybe a better way exists to switch between the test package family name and the production family name.
-    // This does not work because the test code and EM code are in two different processes.
-#if defined(__WINDOWSAPPRUNTIME_TEST_METADATA_H)
-    constexpr std::wstring_view frameworkPackageFamily{ L"Microsoft.WindowsAppRuntime.Framework-%i.%i_8wekyb3d8bbwe" };
-#else
-    constexpr std::wstring_view frameworkPackageFamily{ L"Microsoft.WindowsAppRuntime.%i.%i_8wekyb3d8bbwe" };
-#endif
+    const auto frameworkPackageFamily{::WindowsAppRuntime::VersionInfo::Framework::GetPackageFamilyName()};
 
     std::unique_ptr<WCHAR> frameworkPackageFamilyName{ new WCHAR[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1] };
 

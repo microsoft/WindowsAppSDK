@@ -17,9 +17,6 @@ namespace Microsoft.Windows.System
 
         static Boolean IsSupported{ get; };
 
-        [contract(EnvironmentManagerContract, 2)]
-        Boolean AreChangesTracked{ get; };
-
         IMapView<String, String> GetEnvironmentVariables();
         String GetEnvironmentVariable(String name);
         void SetEnvironmentVariable(String name, String value);
@@ -31,5 +28,8 @@ namespace Microsoft.Windows.System
         // PathExt Manipulation
         void AddExecutableFileExtension(String pathExt);
         void RemoveExecutableFileExtension(String pathExt);
+
+        [contract(EnvironmentManagerContract, 2)]
+        Boolean AreChangesTracked{ get; };
     }
 }

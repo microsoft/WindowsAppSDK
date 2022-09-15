@@ -5,6 +5,7 @@
 #include "TestSetupAndTeardownHelper.h"
 #include "LogContext.h"
 #include <TerminalVelocityFeatures-EnvironmentManager.h>
+#include <WindowsAppRuntime.VersionInfo.h>
 
 namespace WindowsAppSDKEnvironmentManagerTests
 {
@@ -27,6 +28,8 @@ namespace WindowsAppSDKEnvironmentManagerTests
             }
 
             ::Test::Bootstrap::Setup();
+
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(::TP::WindowsAppRuntimeFramework::c_PackageFamilyName, ::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
 
             return true;
         }
