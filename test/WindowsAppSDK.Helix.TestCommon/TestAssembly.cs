@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
@@ -18,7 +18,7 @@ namespace WindowsAppSDK.TestCommon
         // This attribute is used by GenerateHelixWorkItems.ps1 to control how it creates the work items.
         // The default is CreateWorkItemPerModule
         [TestProperty("HelixWorkItemCreation", "CreateWorkItemPerTestClass")]
-        [TestProperty("CoreClrProfile", "net5")]
+        [TestProperty("CoreClrProfile", "net6")]
         [TestProperty("IsolationLevel", "Class")]
         public static void AssemblyInitialize(TestContext testContext)
         {
