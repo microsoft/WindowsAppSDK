@@ -43,7 +43,7 @@ inline void Initialize_StopSuccessActivity(
         S_OK,
         static_cast<PCWSTR>(nullptr),
         GUID{},
-        ::WindowsAppRuntime::Deployment::Activity::Context::Get().GetIsRegisterHigherVersionPackage());
+        ::WindowsAppRuntime::Deployment::Activity::Context::Get().GetUseExistingPackageIfHigherVersion());
 }
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
@@ -299,7 +299,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                 initializeActivityContext.GetDeploymentErrorExtendedHResult(),
                 initializeActivityContext.GetDeploymentErrorText().c_str(),
                 initializeActivityContext.GetDeploymentErrorActivityId(),
-                initializeActivityContext.GetIsRegisterHigherVersionPackage());
+                initializeActivityContext.GetUseExistingPackageIfHigherVersion());
         }
 
         return winrt::make<implementation::DeploymentResult>(status, deployPackagesResult);
@@ -391,10 +391,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         return std::wstring{ path.get() };
     }
 
-    // If registerHigherVersionPackage == false, Adds the current version package at the passed in path using PackageManager.
-    // If registerHigherVersionPackage == true, Registers the higher version package using the passed in path as manifest path and PackageManager.
+    // If useExistingPackageIfHigherVersion == false, Adds the current version package at the passed in path using PackageManager.
+    // If useExistingPackageIfHigherVersion == true, Registers the higher version package using the passed in path as manifest path and PackageManager.
     // This requires the 'packageManagement' or 'runFullTrust' capabilities.
-    HRESULT DeploymentManager::AddOrRegisterPackage(const std::filesystem::path& path, const bool registerHigherVersionPackage, const bool forceDeployment) try
+    HRESULT DeploymentManager::AddOrRegisterPackage(const std::filesystem::path& path, const bool useExistingPackageIfHigherVersion, const bool forceDeployment) try
     {
         winrt::Windows::Management::Deployment::PackageManager packageManager;
 
@@ -406,7 +406,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             winrt::Windows::Management::Deployment::DeploymentProgress> deploymentOperation;
 
         const auto pathUri { winrt::Windows::Foundation::Uri(path.c_str()) };
-        if (registerHigherVersionPackage)
+        if (useExistingPackageIfHigherVersion)
         {
             deploymentOperation = packageManager.RegisterPackageAsync(pathUri, nullptr, options);
         }
@@ -446,13 +446,13 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
 
     /// @warning This function is ONLY for processes with package identity. It's the caller's responsibility to ensure this.
-    HRESULT DeploymentManager::AddOrRegisterPackageInBreakAwayProcess(const std::filesystem::path& path, const bool registerHigherVersionPackage, const bool forceDeployment) try
+    HRESULT DeploymentManager::AddOrRegisterPackageInBreakAwayProcess(const std::filesystem::path& path, const bool useExistingPackageIfHigherVersion, const bool forceDeployment) try
     {
         auto exePath{ GenerateDeploymentAgentPath() };
         auto activityId{ winrt::to_hstring(*::WindowsAppRuntime::Deployment::Activity::Context::Get().GetActivity().Id()) };
 
         // <currentdirectory>\deploymentagent.exe <custom arguments passed by caller>
-        auto cmdLine{ wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" %u \"%s\" %u %s", exePath.c_str(), (registerHigherVersionPackage ? 1 : 0), path.c_str(), (forceDeployment ? 1 : 0), activityId.c_str()) };
+        auto cmdLine{ wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" %u \"%s\" %u %s", exePath.c_str(), (useExistingPackageIfHigherVersion ? 1 : 0), path.c_str(), (forceDeployment ? 1 : 0), activityId.c_str()) };
 
         SIZE_T attributeListSize{};
         auto attributeCount{ 1 };

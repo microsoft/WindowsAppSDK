@@ -7,13 +7,15 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     apicontract DeploymentContract{};
 
     /// Represents the current Deployment status of the WindowsAppRuntime
-    [contract(DeploymentContract, 3)]
+    [contract(DeploymentContract, 1)]
     enum DeploymentStatus
     {
         Unknown = 0,
         Ok,
         PackageInstallRequired,
         PackageInstallFailed,
+
+        [contract(DeploymentContract, 3)]
         PackageRepairFailed,
     };
 

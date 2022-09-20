@@ -37,7 +37,7 @@ namespace WindowsAppRuntime::Deployment::Activity
         WindowsAppRuntimeDeployment_TraceLogger::Initialize m_activity;
         WilFailure m_lastFailure;
         bool isFullTrustPackage{};
-        bool isRegisterHigherVersionPackage{};
+        bool useExistingPackageIfHigherVersion{};
 
     public:
         static WindowsAppRuntime::Deployment::Activity::Context& Get();
@@ -84,9 +84,9 @@ namespace WindowsAppRuntime::Deployment::Activity
             return isFullTrustPackage;
         }
 
-        const bool& GetIsRegisterHigherVersionPackage() const
+        const bool& GetUseExistingPackageIfHigherVersion() const
         {
-            return isRegisterHigherVersionPackage;
+            return useExistingPackageIfHigherVersion;
         }
 
         void SetInstallStage(const DeploymentStage& installStage)
@@ -121,9 +121,9 @@ namespace WindowsAppRuntime::Deployment::Activity
             isFullTrustPackage = true;
         }
 
-        void SetIsRegisterHigherVersionPackage()
+        void SetUseExistingPackageIfHigherVersion()
         {
-            isRegisterHigherVersionPackage = true;
+            useExistingPackageIfHigherVersion = true;
         }
     };
 

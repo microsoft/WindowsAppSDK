@@ -50,7 +50,7 @@ public:
         HRESULT deploymentErrorExtendedHResult,
         PCWSTR deploymentErrorText,
         GUID deploymentErrorActivityId,
-        bool registerHigherVersionPackage)
+        bool useExistingPackageIfHigherVersion)
     {
         // Set a process-wide callback function for WIL to call each time it logs a failure.
         wil::SetResultLoggingCallback(nullptr);
@@ -71,7 +71,7 @@ public:
                 TraceLoggingValue(deploymentErrorExtendedHResult, "DeploymentErrorExtendedHResult"),
                 TraceLoggingValue(deploymentErrorText, "DeploymentErrorText"),
                 TraceLoggingValue(deploymentErrorActivityId, "DeploymentErrorActivityId"),
-                TraceLoggingValue(registerHigherVersionPackage, "registerHigherVersionPackage"));
+                TraceLoggingValue(useExistingPackageIfHigherVersion, "useExistingPackageIfHigherVersion"));
         }
         else
         {
