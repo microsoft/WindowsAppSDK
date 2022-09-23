@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 #include "pch.h"
 #include <wil/win32_helpers.h>
@@ -18,6 +18,7 @@ namespace winrt
     using namespace winrt::Microsoft::Windows::AppLifecycle;
     using namespace winrt::Microsoft::Windows::PushNotifications;
     using namespace winrt::Microsoft::Windows::AppNotifications;
+    using namespace winrt::Microsoft::Windows::AppNotifications::Builder;
     using namespace winrt::Windows::ApplicationModel::Activation;
     using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask APIs
     using namespace winrt::Windows::Foundation;
@@ -124,7 +125,9 @@ bool PostToastHelper(std::wstring const& tag, std::wstring const& group)
     toast.Tag(tag.c_str());
     toast.Group(group.c_str());
 
-    winrt::AppNotificationManager::Default().Show(toast);
+    auto builder{ winrt::AppNotificationBuilder().AddArgument(L"key", L"value").AddArgument(L"key", L"value").SetTag(tag.c_str()).SetGroup(group.c_str())};
+
+    winrt::AppNotificationManager::Default().Show(builder.BuildNotification());
 
     if (toast.Id() == 0)
     {
@@ -170,11 +173,11 @@ int main()
     winrt::event_token token = appNotificationManager.NotificationInvoked([](const auto&, winrt::AppNotificationActivatedEventArgs const& toastArgs)
         {
             std::wcout << L"AppNotification received foreground!\n";
-            winrt::hstring arguments{ toastArgs.Argument() };
-            std::wcout << arguments.c_str() << L"\n\n";
+            winrt::hstring argument{ toastArgs.Argument() };
+            std::wcout << argument.c_str() << L"\n\n";
 
-            winrt::IMap<winrt::hstring, winrt::hstring> userInput{ toastArgs.UserInput() };
-            for (auto pair : userInput)
+            winrt::IMap<winrt::hstring, winrt::hstring> arguments{ toastArgs.Arguments() };
+            for (auto pair : arguments)
             {
                 std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << L"\n";
             }
@@ -200,11 +203,11 @@ int main()
     {
         std::wcout << L"Activated by AppNotification from background.\n";
         winrt::AppNotificationActivatedEventArgs appNotificationArgs{ args.Data().as<winrt::AppNotificationActivatedEventArgs>() };
-        winrt::hstring arguments{ appNotificationArgs.Argument() };
-        std::wcout << arguments.c_str() << std::endl << std::endl;
+        winrt::hstring argument{ appNotificationArgs.Argument() };
+        std::wcout << argument.c_str() << std::endl << std::endl;
 
-        winrt::IMap<winrt::hstring, winrt::hstring> userInput = appNotificationArgs.UserInput();
-        for (auto pair : userInput)
+        winrt::IMap<winrt::hstring, winrt::hstring> arguments = appNotificationArgs.Arguments();
+        for (auto pair : arguments)
         {
             std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << L"\n";
         }

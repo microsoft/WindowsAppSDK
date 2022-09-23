@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -19,7 +19,7 @@
 #include <shlwapi.h>
 #include <WinBase.h>
 #include <AppxPackaging.h>
-
+#include <processthreadsapi.h>
 #include <string_view>
 
 #include <winrt/Windows.ApplicationModel.h>

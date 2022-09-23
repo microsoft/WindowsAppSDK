@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -22,7 +22,7 @@ namespace Test::FileSystem
     {
         wil::unique_hmodule dll(LoadLibrary(L"DynamicDependency_Test_WinRT.dll"));
         const auto lastError{ GetLastError() };
-        VERIFY_IS_NOT_NULL(dll.get());
+        VERIFY_IS_NOT_NULL(dll.get(), WEX::Common::String().Format(L"LastError: %d (0x%X)", lastError, lastError));
         return GetModulePath(dll.get());
     }
 

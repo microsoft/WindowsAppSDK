@@ -10,6 +10,9 @@
 *.userosscache
 *.sln.docstates
 
+# full nuget directory
+[Bb]uild/FullNuget
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

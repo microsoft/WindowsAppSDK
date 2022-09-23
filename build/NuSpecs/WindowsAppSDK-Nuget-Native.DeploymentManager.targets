@@ -1,0 +1,14 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <Target Name="GenerateDeploymentManagerCpp" BeforeTargets="ClCompile">
+        <ItemGroup>
+            <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\DeploymentManagerAutoInitializer.cpp">
+                <PrecompiledHeader>NotUsing</PrecompiledHeader>
+                <PreprocessorDefinitions Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_Default)'=='true'">MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_DEFAULT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+                <PreprocessorDefinitions Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_None)'=='true'">MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_NONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+                <PreprocessorDefinitions Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_OnErrorShowUI)'=='true'">MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERRORSHOWUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            </ClCompile>
+        </ItemGroup>
+    </Target>
+
+</Project>
