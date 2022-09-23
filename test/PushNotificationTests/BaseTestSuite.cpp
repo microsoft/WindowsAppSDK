@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -21,18 +21,16 @@ using namespace winrt::Microsoft::Windows::PushNotifications;
 
 void BaseTestSuite::ClassSetup()
 {
-    ::Test::Bootstrap::SetupPackages();
+    ::Test::Bootstrap::Setup();
 }
 
 void BaseTestSuite::ClassCleanup()
 {
-    ::Test::Bootstrap::CleanupPackages();
+    ::Test::Bootstrap::Cleanup();
 }
 
 void BaseTestSuite::MethodSetup()
 {
-    ::Test::Bootstrap::SetupBootstrap();
-
     bool isSelfContained{};
     VERIFY_SUCCEEDED(TestData::TryGetValue(L"SelfContained", isSelfContained));
 
@@ -58,7 +56,6 @@ void BaseTestSuite::MethodCleanup()
     }
 
     ::WindowsAppRuntime::VersionInfo::TestShutdown();
-    ::Test::Bootstrap::CleanupBootstrap();
 }
 
 HRESULT BaseTestSuite::ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& channelOperation)

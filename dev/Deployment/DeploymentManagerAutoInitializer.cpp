@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include <Windows.h>
@@ -15,11 +15,7 @@
 #if !defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_DEFAULT)
 // Default isn't defined. Define it if no options are defined
 #if defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_NONE)
-#elif defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK)
-#elif defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK_IFDEBUGGERATTACHED)
-#elif defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_FAILFAST)
-#elif defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_SHOWUI)
-#elif defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONNOPACKAGEIDENTITY_NOOP)
+#elif defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERRORSHOWUI)
 #else
 // No options specified! Use the default
 #define MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_DEFAULT
@@ -42,25 +38,13 @@ namespace Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentMan
             ::winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions options;
 #if defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_DEFAULT)
             // Use the default options
-            options.OnError_ShowUI(true);
+            options.OnErrorShowUI(true);
 #elif defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_NONE)
             // No options!
 #else
             // Use the specified options
-#if defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK)
-            options.OnError_DebugBreak(true);
-#endif
-#if defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_DEBUGBREAK_IFDEBUGGERATTACHED)
-            options.OnError_DebugBreak_IfDebuggerAttached(true);
-#endif
-#if defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_FAILFAST)
-            options.OnError_FailFast(true);
-#endif
-#if defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_SHOWUI)
-            options.OnError_ShowUI(true);
-#endif
-#if defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONNOPACKAGEIDENTITY_NOOP)
-            options.OnNoPackageIdentity_NOOP(true);
+#if defined(MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERRORSHOWUI)
+            options.OnErrorShowUI(true);
 #endif
 #endif
             return options;

@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32616.157
@@ -343,10 +343,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_BootstrapAutoInitializ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_BootstrapAutoInitialize_CS_Options_None", "test\DynamicDependency\Test_BootstrapAutoInitialize\CS\Test_BootstrapAutoInitialize_CS_Options_None\Test_BootstrapAutoInitialize_CS_Options_None.csproj", "{4A74BBED-3B20-44A7-B6FF-3373160DE741}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppNotificationTests", "test\AppNotificationTests\AppNotificationTests.vcxproj", "{1C9477D2-7330-4992-B06C-F7E2193CF379}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeploymentAgent", "dev\DeploymentAgent\DeploymentAgent.vcxproj", "{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppNotificationBuilder", "dev\AppNotifications\AppNotificationBuilder\AppNotificationBuilder.vcxitems", "{E49329F3-5196-4BBA-B5C4-E11CE7EFB07A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppNotificationBuilderTests", "test\AppNotificationBuilderTests\AppNotificationBuilderTests.vcxproj", "{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.Security.AccessControl.Projection", "dev\Projections\CS\Microsoft.Windows.Security.AccessControl.Projection\Microsoft.Windows.Security.AccessControl.Projection.csproj", "{E6D59245-696F-4D13-ACF6-7ECE6E653367}"
 EndProject
@@ -400,8 +406,56 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_DeploymentManagerAutoI
 	ProjectSection(ProjectDependencies) = postProject
 		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
 	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.AppNotifications.Builder.Projection", "dev\Projections\CS\Microsoft.Windows.AppNotifications.Builder.Projection\Microsoft.Windows.AppNotifications.Builder.Projection.csproj", "{50BF3E96-3050-4053-B012-BF6993483DA5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VersionInfo", "VersionInfo", "{2A2D1131-273C-4E17-BCD3-8812170A4B95}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VersionInfo", "dev\VersionInfo\VersionInfo.vcxitems", "{E3EDEC7F-A24E-4766-BB1D-6BDFBA157C51}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VersionInfoTests", "test\VersionInfo\VersionInfoTests.vcxproj", "{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{34519337-9249-451E-B5A9-1ECACF9C3DA8} = {34519337-9249-451E-B5A9-1ECACF9C3DA8}
+		{9C1A6C58-52D6-4514-9120-5C339C5DF4BE} = {9C1A6C58-52D6-4514-9120-5C339C5DF4BE}
+		{0B01DB78-F115-4C90-B28F-7819071303C6} = {0B01DB78-F115-4C90-B28F-7819071303C6}
+		{5E2CC9D5-7C05-41D9-9DB5-EC5DF64BA1DC} = {5E2CC9D5-7C05-41D9-9DB5-EC5DF64BA1DC}
+	EndProjectSection
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		test\inc\inc.vcxitems*{08bc78e0-63c6-49a7-81b3-6afc3deac4de}*SharedItemsImports = 4
+		dev\PushNotifications\PushNotifications.vcxitems*{103c0c23-7ba8-4d44-a63c-83488e2e3a81}*SharedItemsImports = 9
+		test\inc\inc.vcxitems*{2cd5cd9b-cf45-4fa7-9769-ee4e02426bf0}*SharedItemsImports = 4
+		dev\EnvironmentManager\API\Microsoft.Process.Environment.vcxitems*{2f3fad1b-d3df-4866-a3a3-c2c777d55638}*SharedItemsImports = 9
+		test\inc\inc.vcxitems*{412d023e-8635-4ad2-a0ea-e19e08d36915}*SharedItemsImports = 4
+		test\inc\inc.vcxitems*{4b30c685-8490-440f-9879-a75d45daa361}*SharedItemsImports = 4
+		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{56371ca6-144b-4989-a4e9-391ad4fa7651}*SharedItemsImports = 9
+		test\inc\inc.vcxitems*{56a1d696-feda-4333-bf37-772ebececb10}*SharedItemsImports = 4
+		test\inc\inc.vcxitems*{5b2d17fe-c371-417f-860c-3d32397c2404}*SharedItemsImports = 4
+		test\inc\inc.vcxitems*{7c502995-59c3-483b-86ba-815985353633}*SharedItemsImports = 4
+		dev\Common\Common.vcxitems*{8828053c-d6ec-4744-8624-f8c676c2d4df}*SharedItemsImports = 9
+		dev\Licensing\Licensing.vcxitems*{885a43fa-052d-4b0d-a2dc-13ee15796435}*SharedItemsImports = 9
+		test\inc\inc.vcxitems*{8e52d7ea-a200-4a6b-ba74-8efb49468caf}*SharedItemsImports = 4
+		dev\AppNotifications\AppNotifications.vcxitems*{b4824897-88e0-4927-8fb9-e60106f01ed9}*SharedItemsImports = 9
+		test\inc\inc.vcxitems*{b567fe2e-3a03-48d0-b2b5-760cdec35891}*SharedItemsImports = 9
+		dev\Common\Common.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
+		dev\DynamicDependency\API\DynamicDependency.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
+		dev\Licensing\Licensing.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
+		dev\PowerNotifications\PowerNotifications.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
+		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
+		dev\PowerNotifications\PowerNotifications.vcxitems*{b75c1b22-553c-40e4-b38e-6ab4d01fdb9d}*SharedItemsImports = 9
+		dev\DynamicDependency\API\DynamicDependency.vcxitems*{bf055a59-0919-4e34-9b76-dd055495cc5a}*SharedItemsImports = 9
+		test\inc\inc.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
+		dev\AccessControl\AccessControl.vcxitems*{c91bcb93-9ed1-4acd-85f3-26f9f6ac52e3}*SharedItemsImports = 9
+		dev\Common\Common.vcxitems*{d45d4170-e055-4926-8b03-04daa5f02c6c}*SharedItemsImports = 4
+		test\inc\inc.vcxitems*{d5667df6-a151-4081-abc7-b93e8e5604ce}*SharedItemsImports = 4
+		dev\Deployment\Deployment.vcxitems*{db38fb4d-d04f-4c1d-93e0-f8ae259c5fd6}*SharedItemsImports = 9
+		dev\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems*{e15c3465-9d45-495d-92ce-b91ef45e8623}*SharedItemsImports = 9
+		dev\AppLifecycle\AppLifecycle.vcxitems*{e3a522a3-6635-4a42-bded-1af46a15f63c}*SharedItemsImports = 9
+		dev\AppNotifications\AppNotificationBuilder\AppNotificationBuilder.vcxitems*{e49329f3-5196-4bba-b5c4-e11ce7efb07a}*SharedItemsImports = 9
+		dev\VersionInfo\VersionInfo.vcxitems*{e3edec7f-a24e-4766-bb1d-6bdfba157c51}*SharedItemsImports = 9
+		test\inc\inc.vcxitems*{e5659a29-fe68-417b-9bc5-613073dd54df}*SharedItemsImports = 4
+		test\inc\inc.vcxitems*{e977b1bd-00dc-4085-a105-e0a18e0183d7}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|ARM64 = Debug|ARM64
@@ -1359,6 +1413,18 @@ Global
 		{4A74BBED-3B20-44A7-B6FF-3373160DE741}.Release|x64.Build.0 = Release|x64
 		{4A74BBED-3B20-44A7-B6FF-3373160DE741}.Release|x86.ActiveCfg = Release|x86
 		{4A74BBED-3B20-44A7-B6FF-3373160DE741}.Release|x86.Build.0 = Release|x86
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Debug|x64.ActiveCfg = Debug|x64
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Debug|x64.Build.0 = Debug|x64
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Debug|x86.ActiveCfg = Debug|Win32
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Debug|x86.Build.0 = Debug|Win32
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Release|Any CPU.ActiveCfg = Release|Win32
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Release|ARM64.ActiveCfg = Release|Win32
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Release|x64.ActiveCfg = Release|x64
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Release|x64.Build.0 = Release|x64
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Release|x86.ActiveCfg = Release|Win32
+		{1C9477D2-7330-4992-B06C-F7E2193CF379}.Release|x86.Build.0 = Release|Win32
 		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Debug|ARM64.ActiveCfg = Debug|arm64
@@ -1375,6 +1441,20 @@ Global
 		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Release|x64.Build.0 = Release|x64
 		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Release|x86.ActiveCfg = Release|Win32
 		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}.Release|x86.Build.0 = Release|Win32
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|ARM64.Build.0 = Debug|ARM64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|x64.ActiveCfg = Debug|x64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|x64.Build.0 = Debug|x64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|x86.ActiveCfg = Debug|Win32
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Debug|x86.Build.0 = Debug|Win32
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|Any CPU.ActiveCfg = Release|Win32
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|ARM64.ActiveCfg = Release|ARM64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|ARM64.Build.0 = Release|ARM64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|x64.ActiveCfg = Release|x64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|x64.Build.0 = Release|x64
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|x86.ActiveCfg = Release|Win32
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}.Release|x86.Build.0 = Release|Win32
 		{E6D59245-696F-4D13-ACF6-7ECE6E653367}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{E6D59245-696F-4D13-ACF6-7ECE6E653367}.Debug|ARM64.ActiveCfg = Debug|arm64
 		{E6D59245-696F-4D13-ACF6-7ECE6E653367}.Debug|ARM64.Build.0 = Debug|arm64
@@ -1509,6 +1589,34 @@ Global
 		{5A4FBF6D-04A2-4061-B11F-1A0E64129610}.Release|x64.Build.0 = Release|x64
 		{5A4FBF6D-04A2-4061-B11F-1A0E64129610}.Release|x86.ActiveCfg = Release|x86
 		{5A4FBF6D-04A2-4061-B11F-1A0E64129610}.Release|x86.Build.0 = Release|x86
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Debug|ARM64.ActiveCfg = Debug|arm64
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Debug|ARM64.Build.0 = Debug|arm64
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Debug|x64.ActiveCfg = Debug|x64
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Debug|x64.Build.0 = Debug|x64
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Debug|x86.ActiveCfg = Debug|x86
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Debug|x86.Build.0 = Debug|x86
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Release|Any CPU.ActiveCfg = Release|x86
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Release|ARM64.ActiveCfg = Release|arm64
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Release|ARM64.Build.0 = Release|arm64
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Release|x64.ActiveCfg = Release|x64
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Release|x64.Build.0 = Release|x64
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Release|x86.ActiveCfg = Release|x86
+		{50BF3E96-3050-4053-B012-BF6993483DA5}.Release|x86.Build.0 = Release|x86
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Debug|ARM64.Build.0 = Debug|ARM64
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Debug|x64.ActiveCfg = Debug|x64
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Debug|x64.Build.0 = Debug|x64
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Debug|x86.ActiveCfg = Debug|Win32
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Debug|x86.Build.0 = Debug|Win32
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Release|Any CPU.ActiveCfg = Release|Win32
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Release|ARM64.ActiveCfg = Release|ARM64
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Release|ARM64.Build.0 = Release|ARM64
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Release|x64.ActiveCfg = Release|x64
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Release|x64.Build.0 = Release|x64
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Release|x86.ActiveCfg = Release|Win32
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1611,7 +1719,7 @@ Global
 		{50451390-66E7-4465-8804-427560625794} = {82A73181-EA4A-431A-B82B-BE6734604CC9}
 		{0419CA2B-5ED1-49F0-B70B-5F470A15D3D0} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{8828053C-D6EC-4744-8624-F8C676C2D4DF} = {0419CA2B-5ED1-49F0-B70B-5F470A15D3D0}
-		{33609C47-60F4-48ED-AB2C-83A89C17255F} = {17B1F036-8FC3-49E6-9464-0C1F96CEAEB9}
+		{33609C47-60F4-48ED-AB2C-83A89C17255F} = {0C534F12-B076-47E5-A05B-2A711233AC6F}
 		{53E3E9A7-11BE-4BBC-981F-AF98A1B00617} = {A05C260F-877D-49C2-968A-164E5A904422}
 		{A05C260F-877D-49C2-968A-164E5A904422} = {33609C47-60F4-48ED-AB2C-83A89C17255F}
 		{F9BA7D03-5B5F-4FF1-A3A6-81B64FBDFE2A} = {A05C260F-877D-49C2-968A-164E5A904422}
@@ -1622,7 +1730,10 @@ Global
 		{0EF1080B-15C6-42E7-A0E2-D624D85C3EBF} = {99C514E4-A6B3-4B09-B870-5511EF9D93AC}
 		{D9139E3C-8D21-4BD9-84E3-30A03A54D610} = {99C514E4-A6B3-4B09-B870-5511EF9D93AC}
 		{4A74BBED-3B20-44A7-B6FF-3373160DE741} = {99C514E4-A6B3-4B09-B870-5511EF9D93AC}
+		{1C9477D2-7330-4992-B06C-F7E2193CF379} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF} = {E378857C-D22A-4E5E-A6DA-A59C445CF22E}
+		{E49329F3-5196-4BBA-B5C4-E11CE7EFB07A} = {1C9A0791-2BAA-420B-84B6-C0721F22A6E8}
+		{131DE0C4-AA1E-4649-B5BC-7B43508FA93A} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{E6D59245-696F-4D13-ACF6-7ECE6E653367} = {716C26A0-E6B0-4981-8412-D14A4D410531}
 		{0D6B1FF3-A075-4194-9FC0-AF7BB89D0519} = {68E63911-6283-4212-BFFE-3F972AF8F835}
 		{2B653A15-2482-40E5-9509-C531E69D0749} = {68E63911-6283-4212-BFFE-3F972AF8F835}
@@ -1637,6 +1748,10 @@ Global
 		{608A8D5A-A839-45F6-98E6-766FC096104A} = {3A37083C-AA67-461E-BA78-0E0A65FE0C22}
 		{676BA502-4220-465A-A9ED-ED22CDE4A24B} = {3A37083C-AA67-461E-BA78-0E0A65FE0C22}
 		{5A4FBF6D-04A2-4061-B11F-1A0E64129610} = {3A37083C-AA67-461E-BA78-0E0A65FE0C22}
+		{50BF3E96-3050-4053-B012-BF6993483DA5} = {716C26A0-E6B0-4981-8412-D14A4D410531}
+		{2A2D1131-273C-4E17-BCD3-8812170A4B95} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{E3EDEC7F-A24E-4766-BB1D-6BDFBA157C51} = {2A2D1131-273C-4E17-BCD3-8812170A4B95}
+		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -36,7 +36,8 @@ namespace WindowsAppRuntime::Deployment::Activity
         GUID m_deploymentErrorActivityId{};
         WindowsAppRuntimeDeployment_TraceLogger::Initialize m_activity;
         WilFailure m_lastFailure;
-        bool isFullTrustPackage{};
+        bool m_isFullTrustPackage{};
+        bool m_useExistingPackageIfHigherVersion{};
 
     public:
         static WindowsAppRuntime::Deployment::Activity::Context& Get();
@@ -78,9 +79,14 @@ namespace WindowsAppRuntime::Deployment::Activity
             return m_lastFailure;
         }
 
-        const bool& GetIsFullTrustPackage() const
+        const bool GetIsFullTrustPackage() const
         {
-            return isFullTrustPackage;
+            return m_isFullTrustPackage;
+        }
+
+        const bool GetUseExistingPackageIfHigherVersion() const
+        {
+            return m_useExistingPackageIfHigherVersion;
         }
 
         void SetInstallStage(const DeploymentStage& installStage)
@@ -112,7 +118,12 @@ namespace WindowsAppRuntime::Deployment::Activity
 
         void SetIsFullTrustPackage()
         {
-            isFullTrustPackage = true;
+            m_isFullTrustPackage = true;
+        }
+
+        void SetUseExistingPackageIfHigherVersion()
+        {
+            m_useExistingPackageIfHigherVersion = true;
         }
     };
 

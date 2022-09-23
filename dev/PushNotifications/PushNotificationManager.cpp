@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -693,7 +693,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             return;
         }
 
-        hresult hr = S_OK;
+        hresult hr{ S_OK };
 
         auto logTelemetry{ wil::scope_exit([&]() {
             PushNotificationTelemetry::LogUnregisterAll(hr);
@@ -799,6 +799,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     IFACEMETHODIMP PushNotificationManager::InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept try
     {
+        HRESULT hr{ S_OK };
+
+        auto logTelemetry{ wil::scope_exit([&]() {
+            PushNotificationTelemetry::LogInvokeAll(hr);
+        }) };
+
         auto args { winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length) };
 
         auto lock{ m_lock.lock_shared() };
@@ -810,19 +816,32 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         else
         {
             *foregroundHandled = false;
-        }   
-        
-        return S_OK;
+        }
+
+        return hr;
     }
     CATCH_RETURN()
 
-    IFACEMETHODIMP PushNotificationManager::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept try
+    IFACEMETHODIMP PushNotificationManager::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept try
     {
-        BOOL foregroundHandled = true;
-        THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
-        THROW_HR_IF(E_UNEXPECTED, !foregroundHandled);
+        HRESULT hr{ S_OK };
 
-        return S_OK;
+        auto logTelemetry{ wil::scope_exit([&]() {
+            PushNotificationTelemetry::LogOnRawNotificationReceived(hr, WindowsGetStringRawBuffer(correlationVector, nullptr));
+        }) };
+
+        try
+        {
+            BOOL foregroundHandled = true;
+            THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
+            THROW_HR_IF(E_UNEXPECTED, !foregroundHandled);
+            return hr;
+        }
+        catch (...)
+        {
+            hr = wil::ResultFromCaughtException();
+            throw;
+        }
     }
     CATCH_RETURN();
 

@@ -87,6 +87,7 @@
     <Import Project="..\AppLifecycle\AppLifecycle.vcxitems" Label="AppLifecycle" />
     <Import Project="..\PushNotifications\PushNotifications.vcxitems" Label="PushNotifications" />
     <Import Project="..\AppNotifications\AppNotifications.vcxitems" Label="AppNotifications" />
+    <Import Project="..\AppNotifications\AppNotificationBuilder\AppNotificationBuilder.vcxitems" Label="AppNotificationBuilder" />
     <Import Project="..\DynamicDependency\API\DynamicDependency.vcxitems" Label="Shared" />
     <Import Project="..\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems" Label="Shared" />
     <Import Project="..\Common\Common.vcxitems" Label="Shared" />
@@ -95,6 +96,7 @@
     <Import Project="..\Licensing\Licensing.vcxitems" Label="Shared" />
     <Import Project="..\EnvironmentManager\API\Microsoft.Process.Environment.vcxitems" Label="EnvironmentManager" />
     <Import Project="..\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems" Label="ChangeTracker" />
+    <Import Project="..\VersionInfo\VersionInfo.vcxitems" Label="VersionInfo" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -278,9 +280,9 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\packages\Microsoft.FrameworkUdk.1.1.2-CI-25087.1001.220410-1342.0\build\native\Microsoft.FrameworkUdk.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.1.1.2-CI-25087.1001.220410-1342.0\build\native\Microsoft.FrameworkUdk.targets')" />
     <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
     <Import Project="..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
+    <Import Project="..\..\packages\Microsoft.FrameworkUdk.1.0.5-CI-25099.1001.220418-1000.0\build\native\Microsoft.FrameworkUdk.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.1.0.5-CI-25099.1001.220418-1000.0\build\native\Microsoft.FrameworkUdk.targets')" />
     <Import Project="..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.targets" Condition="Exists('..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.targets')" />
     <Import Project="..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.targets')" />
     <Import Project="..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets')" />
@@ -296,10 +298,10 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.1.1.2-CI-25087.1001.220410-1342.0\build\native\Microsoft.FrameworkUdk.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.1.1.2-CI-25087.1001.220410-1342.0\build\native\Microsoft.FrameworkUdk.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.1.0.5-CI-25099.1001.220418-1000.0\build\native\Microsoft.FrameworkUdk.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.1.0.5-CI-25099.1001.220418-1000.0\build\native\Microsoft.FrameworkUdk.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.props'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.props'))" />
