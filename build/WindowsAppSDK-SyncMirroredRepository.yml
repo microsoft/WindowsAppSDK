@@ -1,0 +1,17 @@
+name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+variables:
+jobs:
+- job: SyncMirror
+  dependsOn: []
+  pool: 'ProjectReunionESPool-2022'
+  steps:
+  - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-SyncMirror-Steps.yml
+    parameters:
+      PublicRepository: "https://github.com/microsoft/WindowsAppSDK.git"
+      Branch: "develop"
+
+  - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-SyncMirror-Steps.yml
+    parameters:
+      PublicRepository: "https://github.com/microsoft/WindowsAppSDK.git"
+      Branch: "main"
+
