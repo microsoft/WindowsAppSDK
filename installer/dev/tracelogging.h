@@ -39,13 +39,14 @@ class WindowsAppRuntimeInstaller_TraceLogger final : public wil::TraceLoggingPro
 public:
 
     BEGIN_COMPLIANT_CRITICAL_DATA_ACTIVITY_CLASS(Install, PDT_ProductAndServicePerformance);
-    void StartActivity(PCWSTR args, UINT32 options, bool isElevated)
+    void StartActivity(PCWSTR args, UINT32 options, bool isElevated, bool isLocalSystemUser)
     {
         TraceLoggingClassWriteStart(Install,
             _GENERIC_PARTB_FIELDS_ENABLED,
             TraceLoggingValue(args, "cmdLineArgs"),
             TraceLoggingValue(options, "options"),
-            TraceLoggingValue(isElevated, "isElevated"));
+            TraceLoggingValue(isElevated, "isElevated"),
+            TraceLoggingValue(isLocalSystemUser, "isLocalSystemUser"));
     }
     void StopWithResult(
         HRESULT hresult,
@@ -57,7 +58,8 @@ public:
         PCWSTR currentResourceId,
         HRESULT deploymentErrorHresult,
         PCWSTR deploymentErrorText,
-        GUID deploymentErrorActivityId)
+        GUID deploymentErrorActivityId,
+        PCWSTR existingPackageIfHigherVersion)
     {
         SetStopResult(hresult);
 
@@ -73,7 +75,8 @@ public:
                 TraceLoggingValue(currentResourceId, "CurrentResourceId"),
                 TraceLoggingValue(deploymentErrorHresult, "DeploymentErrorHResult"),
                 TraceLoggingValue(deploymentErrorText, "DeploymentErrorText"),
-                TraceLoggingValue(deploymentErrorActivityId, "DeploymentErrorActivityId"));
+                TraceLoggingValue(deploymentErrorActivityId, "DeploymentErrorActivityId"),
+                TraceLoggingValue(existingPackageIfHigherVersion, "existingPackageIfHigherVersion"));
         }
         else
         {
