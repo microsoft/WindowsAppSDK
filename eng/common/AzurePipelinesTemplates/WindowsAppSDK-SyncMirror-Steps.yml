@@ -1,0 +1,30 @@
+parameters:
+  - name: PublicRepository
+    type: string
+    default: ""
+  - name: Branch
+    type: string
+    default: ""
+
+steps:
+- checkout: self
+  persistCredentials: true
+
+- task: powershell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      $publicRepo = "${{ parameters.PublicRepository }}"
+      $branch = "${{ parameters.Branch }}"
+      git fetch
+      git checkout $branch
+      git pull origin $branch
+      git remote add public $publicRepo
+      git remote
+      git fetch public
+      git pull public $branch
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      git push
