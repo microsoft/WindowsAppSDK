@@ -97,7 +97,10 @@ int wmain(int argc, wchar_t *argv[])
                 DisplayHelp();
             }
 
-            installActivityContext.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(), static_cast<UINT32>(options), isElevated));
+            installActivityContext.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(),
+                                                                                                    static_cast<UINT32>(options),
+                                                                                                    isElevated,
+                                                                                                    installActivityContext.IsLocalSystemUser()));
             LOG_IF_WIN32_BOOL_FALSE(installActivityContext.LogInstallerCommandLineArgs(args.str().c_str()));
             LOG_IF_WIN32_BOOL_FALSE(installActivityContext.LogInstallerFailureEvent(HRESULT_FROM_WIN32(ERROR_BAD_ARGUMENTS)));
             installActivityContext.GetActivity().Stop(HRESULT_FROM_WIN32(ERROR_BAD_ARGUMENTS));
@@ -113,7 +116,10 @@ int wmain(int argc, wchar_t *argv[])
         options = options | WindowsAppRuntimeInstaller::Options::Install;
     }
 
-    installActivityContext.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(), static_cast<UINT32>(options), isElevated));
+    installActivityContext.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(),
+                                                                                        static_cast<UINT32>(options),
+                                                                                        isElevated,
+                                                                                        installActivityContext.IsLocalSystemUser()));
     LOG_IF_WIN32_BOOL_FALSE(installActivityContext.LogInstallerCommandLineArgs(args.str().c_str()));
     args.clear();
 

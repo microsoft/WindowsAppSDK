@@ -27,7 +27,7 @@ void WindowsAppRuntimeInstaller::Console::DisplayHelp()
     std::wcout << "  --msix       Install WindowsAppSDK MSIX packages. Cannot be used in combination with -r or --repair option" << std::endl;
     std::wcout << "  -q, --quiet  Perform no user interaction and suppress all text output" << std::endl;
     std::wcout << "  -f, --force  Force shutdown WindowsAppSDK's processes if necessary to update WinAppSDK's MSIX packages" << std::endl;
-    std::wcout << "  -r, --repair Repair WindowsAppSDK MSIX packages.Cannot be used in combination with --msix option" << std::endl;
+    std::wcout << "  -r, --repair Repair WindowsAppSDK.Cannot be used in combination with --msix option" << std::endl;
     std::wcout << "  -?, --help   Show help information" << std::endl;
     std::wcout << "  --info       Display general information and disclosures of the installer" << std::endl;
     std::wcout << std::endl;

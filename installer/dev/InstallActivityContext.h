@@ -40,6 +40,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         WindowsAppRuntimeInstaller_TraceLogger::Install m_activity;
         WilFailure m_lastFailure{};
         HANDLE m_hEventLog;
+        bool m_isLocalSystemUser{ Security::User::IsLocalSystem() };
 
     public:
         static WindowsAppRuntimeInstaller::InstallActivity::Context& Get();
@@ -84,6 +85,11 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         const WilFailure& GetLastFailure() const
         {
             return m_lastFailure;
+        }
+
+        const bool IsLocalSystemUser() const
+        {
+            return m_isLocalSystemUser;
         }
 
         void SetInstallStage(const InstallStage& installStage)
