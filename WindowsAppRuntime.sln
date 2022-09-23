@@ -404,6 +404,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VersionInfoTests", "test\Ve
 		{5E2CC9D5-7C05-41D9-9DB5-EC5DF64BA1DC} = {5E2CC9D5-7C05-41D9-9DB5-EC5DF64BA1DC}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Badges", "dev\AppNotifications\Badges\Badges.vcxitems", "{7867D88B-A9D8-4DBC-971A-BA485E5B2AD7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1686,6 +1688,7 @@ Global
 		{2A2D1131-273C-4E17-BCD3-8812170A4B95} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{E3EDEC7F-A24E-4766-BB1D-6BDFBA157C51} = {2A2D1131-273C-4E17-BCD3-8812170A4B95}
 		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
+		{7867D88B-A9D8-4DBC-971A-BA485E5B2AD7} = {1C9A0791-2BAA-420B-84B6-C0721F22A6E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
@@ -1700,6 +1703,7 @@ Global
 		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{56371ca6-144b-4989-a4e9-391ad4fa7651}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{56a1d696-feda-4333-bf37-772ebececb10}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{5b2d17fe-c371-417f-860c-3d32397c2404}*SharedItemsImports = 4
+		dev\AppNotifications\Badges\Badges.vcxitems*{7867d88b-a9d8-4dbc-971a-ba485e5b2ad7}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{7c502995-59c3-483b-86ba-815985353633}*SharedItemsImports = 4
 		dev\Common\Common.vcxitems*{8828053c-d6ec-4744-8624-f8c676c2d4df}*SharedItemsImports = 9
 		dev\Licensing\Licensing.vcxitems*{885a43fa-052d-4b0d-a2dc-13ee15796435}*SharedItemsImports = 9

@@ -87,6 +87,7 @@
     <Import Project="..\AppLifecycle\AppLifecycle.vcxitems" Label="AppLifecycle" />
     <Import Project="..\PushNotifications\PushNotifications.vcxitems" Label="PushNotifications" />
     <Import Project="..\AppNotifications\AppNotifications.vcxitems" Label="AppNotifications" />
+    <Import Project="..\AppNotifications\Badges\Badges.vcxitems" Label="AppNotifications" />
     <Import Project="..\AppNotifications\AppNotificationBuilder\AppNotificationBuilder.vcxitems" Label="AppNotificationBuilder" />
     <Import Project="..\DynamicDependency\API\DynamicDependency.vcxitems" Label="Shared" />
     <Import Project="..\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems" Label="Shared" />

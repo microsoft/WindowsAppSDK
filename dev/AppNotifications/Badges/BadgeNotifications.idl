@@ -1,0 +1,33 @@
+﻿namespace Microsoft.Windows.AppNotifications.Badges
+{
+    [contractversion(1)]
+    apicontract BadgeNotificationsContract {}
+
+    // The following glyphs are based on what's currently available in the Windows SDK:
+    // https://learn.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/badges
+    [contract(BadgeNotificationsContract, 1)]
+    enum BadgeNotificationGlyph
+    {
+        Activity,
+        Alarm,
+        Alert,
+        Attention,
+        Available,
+        Away,
+        Busy,
+        Error,
+        NewMessage,
+        Paused,
+        Playing,
+        Unavailable
+    };
+
+    [contract(BadgeNotificationsContract, 1)]
+    static runtimeclass BadgeNotificationManager
+    {
+        static void PostValue(UInt32 value);
+        static void PostGlyph(BadgeNotificationGlyph glyph);
+
+        static void Clear();
+    }
+}
