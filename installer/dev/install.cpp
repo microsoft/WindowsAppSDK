@@ -314,15 +314,15 @@ namespace WindowsAppRuntimeInstaller
             // For the already installed package of same WindowsAppSDK Major.Minor version with matching architecture, compare version
             if (installedPackage.Id().Architecture() == packageProperties->architecture)
             {
-                UINT64 installedPackageVersion = (static_cast<UINT64>(installedPackage.Id().Version().Major) << 24 +
-                    static_cast<UINT64>(installedPackage.Id().Version().Minor) << 16 +
-                    static_cast<UINT64>(installedPackage.Id().Version().Build) << 8 +
+                UINT64 installedPackageVersion = (static_cast<UINT64>(installedPackage.Id().Version().Major) << 48 +
+                    static_cast<UINT64>(installedPackage.Id().Version().Minor) << 32 +
+                    static_cast<UINT64>(installedPackage.Id().Version().Build) << 16 +
                     static_cast<UINT64>(installedPackage.Id().Version().Revision));
 
                 // DEBUG STATEMENT: NEED TO GO AWAY
-                std::wcout << L"InstalledPackageVersion.Major " << installedPackage.Id().Version().Major << L"," << std::endl
-                    << L"InstalledPackageVersion.Minor " << installedPackage.Id().Version().Minor << L"," << std::endl
-                    << L"InstalledPackageVersion.Build " << installedPackage.Id().Version().Build << L"," << std::endl
+                std::wcout << L"InstalledPackageVersion.Major " << (static_cast<UINT64>(installedPackage.Id().Version().Major) << 48) << L"," << std::endl
+                    << L"InstalledPackageVersion.Minor " << (static_cast<UINT64>(installedPackage.Id().Version().Minor) << 32) << L"," << std::endl
+                    << L"InstalledPackageVersion.Build " << (static_cast<UINT64>(installedPackage.Id().Version().Build) << 16) << L"," << std::endl
                     << L"InstalledPackageVersion.Revision " << installedPackage.Id().Version().Revision << L"," << std::endl
                     << L"installedPackageVersion " << installedPackageVersion << L"," << std::endl
                     << L"currentPackageVersion " << packageProperties->version << std::endl;
