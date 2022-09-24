@@ -319,6 +319,14 @@ namespace WindowsAppRuntimeInstaller
                     static_cast<UINT64>(installedPackage.Id().Version().Build) << 8 +
                     static_cast<UINT64>(installedPackage.Id().Version().Revision));
 
+                // DEBUG STATEMENT: NEED TO GO AWAY
+                std::wcout << L"InstalledPackageVersion.Major " << installedPackage.Id().Version().Major << L"," << std::endl
+                    << L"InstalledPackageVersion.Minor " << installedPackage.Id().Version().Minor << L"," << std::endl
+                    << L"InstalledPackageVersion.Build " << installedPackage.Id().Version().Build << L"," << std::endl
+                    << L"InstalledPackageVersion.Revision " << installedPackage.Id().Version().Revision << L"," << std::endl
+                    << L"installedPackageVersion " << installedPackageVersion << L"," << std::endl
+                    << L"currentPackageVersion " << packageProperties->version << std::endl;
+
                 if (installedPackageVersion > packageProperties->version)
                 {
                     existingPackageIfHigherVersion = installedPackage.Id().FullName();
