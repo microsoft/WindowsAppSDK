@@ -7,8 +7,13 @@ using namespace WindowsAppRuntimeInstaller::InstallActivity;
 
 void WindowsAppRuntimeInstaller::Console::DisplayHeader()
 {
-    std::wcout << L"WindowsAppRuntimeInstaller -- Installs the Microsoft Windows App SDK runtime "
-        << "version: " << WINDOWSAPPSDK_RELEASE_VERSION << "-" << WINDOWSAPPSDK_RELEASE_CHANNEL << std::endl;
+    std::wcout << L"WindowsAppRuntimeInstaller -- Installs the Microsoft Windows App SDK runtime"
+        << "version: " << WINDOWSAPPSDK_RELEASE_VERSION;
+    if (CompareStringOrdinal(WINDOWSAPPSDK_RELEASE_CHANNEL_W, static_cast<int>(sizeof(WINDOWSAPPSDK_RELEASE_CHANNEL_W)), L"", static_cast<int>(sizeof(L"")), TRUE) == CSTR_EQUAL)
+    {
+        std::wcout << "-" << WINDOWSAPPSDK_RELEASE_CHANNEL_W;
+    }
+    std::wcout << std::endl;
     std::wcout << L"Copyright(c) Microsoft Corporation. All rights reserved." << std::endl << std::endl;
 }
 
@@ -18,10 +23,11 @@ void WindowsAppRuntimeInstaller::Console::DisplayHelp()
     std::wcout << L"  " << wil::GetModuleFileNameW(nullptr).get() << std::endl << std::endl;
     std::wcout << "Options: (append - to disable e.g. --license- to not install licenses)" << std::endl;
     std::wcout << "  --dry-run    Dry run (report but don't execute install operations)" << std::endl;
-    std::wcout << "  --license    Install licenses" << std::endl;
-    std::wcout << "  --msix       Install MSIX packages" << std::endl;
+    std::wcout << "  --license    Install licenses for WindowsAppSDK MSIX packages" << std::endl;
+    std::wcout << "  --msix       Install WindowsAppSDK MSIX packages. Cannot be used in combination with -r or --repair option" << std::endl;
     std::wcout << "  -q, --quiet  Perform no user interaction and suppress all text output" << std::endl;
-    std::wcout << "  -f, --force  Force shutdown WinAppSDK's processes if necessary to update WinAppSDK's MSIX packages" << std::endl;
+    std::wcout << "  -f, --force  Force shutdown WindowsAppSDK's processes if necessary to update WinAppSDK's MSIX packages" << std::endl;
+    std::wcout << "  -r, --repair Repair WindowsAppSDK.Cannot be used in combination with --msix option" << std::endl;
     std::wcout << "  -?, --help   Show help information" << std::endl;
     std::wcout << "  --info       Display general information and disclosures of the installer" << std::endl;
     std::wcout << std::endl;
