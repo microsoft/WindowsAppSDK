@@ -17,7 +17,7 @@ jobs:
   condition: ${{ parameters.condition }}
   ${{ if eq(parameters.buildPool, '') }}:
     pool:
-      vmImage: 'windows-2019'
+      vmImage: 'windows-2022'
   ${{ if ne(parameters.buildPool, '') }}:
     pool: ${{ parameters.buildPool }}
   steps:
@@ -62,6 +62,9 @@ jobs:
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.Bootstrap.CS.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.Bootstrap.CS.targets"
         Copy-Item -Path "$targetsFilePath\WindowsAppSDK-Nuget-Native.Bootstrap.targets" -Destination "$fullpackagePath\build\native\WindowsAppSDK-Nuget-Native.Bootstrap.targets"
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.BootstrapCommon.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.BootstrapCommon.targets"
+        Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.DeploymentManager.CS.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.DeploymentManager.CS.targets"
+        Copy-Item -Path "$targetsFilePath\WindowsAppSDK-Nuget-Native.DeploymentManager.targets" -Destination "$fullpackagePath\build\native\WindowsAppSDK-Nuget-Native.DeploymentManager.targets"
+        Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.DeploymentManagerCommon.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.DeploymentManagerCommon.targets"
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.targets"
         Copy-Item -Path "$targetsFilePath\WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.targets" -Destination "$fullpackagePath\build\native\WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.targets"
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets"

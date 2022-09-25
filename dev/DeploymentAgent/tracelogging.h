@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -15,10 +15,11 @@ class WindowsAppRuntimeDeploymentAgent_TraceLogger final : public wil::TraceLogg
 
 public:
 
-    DEFINE_COMPLIANT_CRITICAL_DATA_EVENT_PARAM3(
+    DEFINE_COMPLIANT_CRITICAL_DATA_EVENT_PARAM4(
         Success,
         PDT_ProductAndServicePerformance,
-        PCWSTR, packagePath,
+        bool, useExistingPackageIfHigherVersion,
+        PCWSTR, path,
         bool, forceDeployment,
         GUID, callerActivityId);
 
@@ -27,11 +28,12 @@ public:
         PDT_ProductAndServicePerformance,
         UINT32, argsCount);
 
-    DEFINE_COMPLIANT_CRITICAL_DATA_EVENT_PARAM7(
+    DEFINE_COMPLIANT_CRITICAL_DATA_EVENT_PARAM8(
         FailedInDeployment,
         PDT_ProductAndServicePerformance,
         HRESULT, hresult,
-        PCWSTR, packagePath,
+        bool, useExistingPackageIfHigherVersion,
+        PCWSTR, path,
         bool, forceDeployment,
         GUID, callerActivityId,
         HRESULT, deploymentExtendedError,

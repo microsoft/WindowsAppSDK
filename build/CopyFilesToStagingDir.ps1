@@ -37,9 +37,11 @@ PublishFile $OverrideDir\DynamicDependency-Override.json $FullPublishDir\
 PublishFile $OverrideDir\PushNotifications-Override.json $FullPublishDir\
 
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.lib $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppLifecycle.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppNotifications.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppNotifications.Builder.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.PushNotifications.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
@@ -50,19 +52,30 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\MsixDynamicDependency.h $Full
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\wil_msixdynamicdependency.h $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Security.AccessControl.h $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\RestartAgent\RestartAgent.exe $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\RestartAgent\RestartAgent.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\DeploymentAgent\DeploymentAgent.exe $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\DeploymentAgent\DeploymentAgent.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
+
 
 #
 PublishFile $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.exe $FullPublishDir\DynamicDependency.DataStore\
+PublishFile $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.pdb $FullPublishDir\DynamicDependency.DataStore\
 PublishFile $FullBuildOutput\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.dll $FullPublishDir\DynamicDependency.DataStore\
+PublishFile $FullBuildOutput\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.pdb $FullPublishDir\DynamicDependency.DataStore\
 #
 PublishFile $FullBuildOutput\PushNotificationsLongRunningTask\PushNotificationsLongRunningTask.exe $FullPublishDir\PushNotificationsLongRunningTask\
+PublishFile $FullBuildOutput\PushNotificationsLongRunningTask\PushNotificationsLongRunningTask.pdb $FullPublishDir\PushNotificationsLongRunningTask\
 #
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.exe $FullPublishDir\DynamicDependencyLifetimeManager\
+PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.pdb $FullPublishDir\DynamicDependencyLifetimeManager\
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.dll $FullPublishDir\DynamicDependencyLifetimeManager\
+PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.pdb $FullPublishDir\DynamicDependencyLifetimeManager\
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManagerShadow\DynamicDependencyLifetimeManagerShadow.exe $FullPublishDir\DynamicDependencyLifetimeManager\
+PublishFile $FullBuildOutput\DynamicDependencyLifetimeManagerShadow\DynamicDependencyLifetimeManagerShadow.pdb $FullPublishDir\DynamicDependencyLifetimeManager\
+
 #
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll $FullPublishDir\Microsoft.WindowsAppRuntime.Bootstrap\
+PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.pdb $FullPublishDir\Microsoft.WindowsAppRuntime.Bootstrap\
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.lib $FullPublishDir\Microsoft.WindowsAppRuntime.Bootstrap\
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrap.h $FullPublishDir\Microsoft.WindowsAppRuntime.Bootstrap\
 PublishFile $FullBuildOutput\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll $FullPublishDir\Microsoft.WindowsAppRuntime.Bootstrap\
@@ -85,22 +98,25 @@ PublishFile $FullBuildOutput\DeploymentAgent\DeploymentAgent.pdb $symbolsOutputD
 # Copy files to Full Nuget package (alphabetical by category)
 #
 # C#/WinRT Projections
-PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
-PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
-PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
-PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
-PublishFile $FullBuildOutput\Microsoft.Windows.AppLifecycle.Projection\Microsoft.Windows.AppLifecycle.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
-PublishFile $FullBuildOutput\Microsoft.Windows.AppLifecycle.Projection\Microsoft.Windows.AppLifecycle.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
-PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Projection\Microsoft.Windows.AppNotifications.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
-PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Projection\Microsoft.Windows.AppNotifications.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
-PublishFile $FullBuildOutput\Microsoft.Windows.PushNotifications.Projection\Microsoft.Windows.PushNotifications.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
-PublishFile $FullBuildOutput\Microsoft.Windows.PushNotifications.Projection\Microsoft.Windows.PushNotifications.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
-PublishFile $FullBuildOutput\Microsoft.Windows.System.Projection\Microsoft.Windows.System.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
-PublishFile $FullBuildOutput\Microsoft.Windows.System.Projection\Microsoft.Windows.System.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
-PublishFile $FullBuildOutput\Microsoft.Windows.System.Power.Projection\Microsoft.Windows.System.Power.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
-PublishFile $FullBuildOutput\Microsoft.Windows.System.Power.Projection\Microsoft.Windows.System.Power.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
-PublishFile $FullBuildOutput\Microsoft.Windows.Security.AccessControl.Projection\Microsoft.Windows.Security.AccessControl.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
-PublishFile $FullBuildOutput\Microsoft.Windows.Security.AccessControl.Projection\Microsoft.Windows.Security.AccessControl.Projection.pdb $NugetDir\lib\net5.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.AppLifecycle.Projection\Microsoft.Windows.AppLifecycle.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.AppLifecycle.Projection\Microsoft.Windows.AppLifecycle.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Projection\Microsoft.Windows.AppNotifications.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Projection\Microsoft.Windows.AppNotifications.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Builder.Projection\Microsoft.Windows.AppNotifications.Builder.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Builder.Projection\Microsoft.Windows.AppNotifications.Builder.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.PushNotifications.Projection\Microsoft.Windows.PushNotifications.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.PushNotifications.Projection\Microsoft.Windows.PushNotifications.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.System.Projection\Microsoft.Windows.System.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.System.Projection\Microsoft.Windows.System.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.System.Power.Projection\Microsoft.Windows.System.Power.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.System.Power.Projection\Microsoft.Windows.System.Power.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.Security.AccessControl.Projection\Microsoft.Windows.Security.AccessControl.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.Security.AccessControl.Projection\Microsoft.Windows.Security.AccessControl.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
+
 #
 # Dynamic Dependency build overrides
 PublishFile $OverrideDir\DynamicDependency-Override.json $NugetDir\runtimes\win10-$Platform\native
@@ -155,10 +171,12 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsApp
 #
 # Tools
 PublishFile $FullBuildOutput\WindowsAppRuntime_MSIXInstallFromPath\WindowsAppRuntime_MSIXInstallFromPath.exe $NugetDir\tools\$Platform
+PublishFile $FullBuildOutput\WindowsAppRuntime_MSIXInstallFromPath\WindowsAppRuntime_MSIXInstallFromPath.pdb $NugetDir\tools\$Platform
 #
 # WinMD for UWP apps
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppNotifications.winmd $NugetDir\lib\uap10.0
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppNotifications.Builder.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.PushNotifications.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd $NugetDir\lib\uap10.0
@@ -169,6 +187,10 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windo
 # Bootstrap Auto-Initializer Files
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cpp $NugetDir\include
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cs $NugetDir\include
+#
+# DeploymentManager Auto-Initializer Files
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\DeploymentManagerAutoInitializer.cpp $NugetDir\include
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\DeploymentManagerAutoInitializer.cs $NugetDir\include
 #
 # UndockedRegFreeWinRT (URFW) Auto-Initializer Files
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\UndockedRegFreeWinRT-AutoInitializer.cpp $NugetDir\include
