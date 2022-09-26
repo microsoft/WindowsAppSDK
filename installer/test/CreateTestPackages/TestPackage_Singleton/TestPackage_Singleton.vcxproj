@@ -66,7 +66,6 @@
     <NMakeCleanCommandLine>REM TODO Clean</NMakeCleanCommandLine>
     <MakeMsixOutputFilename>$(ProjectName)_$(PlatformTarget).msix</MakeMsixOutputFilename>
     <InstallerPackagesDir>$(RepoRoot)\installer\test\testpackages\</InstallerPackagesDir>
-
     <NMakeBuildCommandLine>@IF NOT EXIST $(InstallerPackagesDir) MKDIR $(InstallerPackagesDir)
                            @ECHO Copy $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) to $(InstallerPackagesDir)singleton_$(PlatformTarget).msix
                            @COPY /Y $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) $(InstallerPackagesDir)singleton_$(PlatformTarget).msix >NUL</NMakeBuildCommandLine>
