@@ -7,11 +7,12 @@ jobs:
   steps:
   - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-SyncMirror-Steps.yml
     parameters:
-      PublicRepository: "https://github.com/microsoft/WindowsAppSDK.git"
-      Branch: "develop"
+      SourceRepository: "https://github.com/microsoft/WindowsAppSDK.git"
+      SourceBranch: "develop"
+      TargetBranch: "develop"
 
   - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-SyncMirror-Steps.yml
     parameters:
-      PublicRepository: "https://github.com/microsoft/WindowsAppSDK.git"
-      Branch: "main"
-
+      SourceRepository: "https://github.com/microsoft/WindowsAppSDK.git"
+      SourceBranch: "main"
+      TargetBranch: "main"
