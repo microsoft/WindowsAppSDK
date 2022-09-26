@@ -1,7 +1,6 @@
 name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 parameters:
 - name: "SourceToTargetBranch"
-  displayName: "VSIXs to Publish to Download Center"
   type: object
   default:
     develop: develop
@@ -18,8 +17,8 @@ jobs:
   dependsOn: []
   pool: 'ProjectReunionESPool-2022'
   steps:
-      - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-SyncMirror-Steps.yml
-        parameters:
-          SourceRepository: "https://github.com/microsoft/WindowsAppSDK.git"
-          TargetBranch: $(TargetBranch)
-          SourceBranch: $(SourceBranch)
+  - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-SyncMirror-Steps.yml
+    parameters:
+      SourceRepository: "https://github.com/microsoft/WindowsAppSDK.git"
+      TargetBranch: $(TargetBranch)
+      SourceBranch: $(SourceBranch)
