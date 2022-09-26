@@ -1,8 +1,17 @@
+# This yml template is use to facilitate syncing public repositories to private mirrored repository.
+# These steps must be run on the target repository that is being synced. 
+
+# Requirements:
+# The pipeline agent that runs this must have "Contribute" permissions on the target repository.
+
 parameters:
-  - name: PublicRepository
+  - name: SourceRepository
     type: string
     default: ""
-  - name: Branch
+  - name: SourceBranch
+    type: string
+    default: ""
+  - name: TargetBranch
     type: string
     default: ""
 
@@ -14,15 +23,21 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $publicRepo = "${{ parameters.PublicRepository }}"
-      $branch = "${{ parameters.Branch }}"
-      git fetch
-      git checkout $branch
-      git pull origin $branch
-      git remote add public $publicRepo
+      Write-Host "Sourcebranch " + "${{ parameters.SourceBranch }}"
+      Write-Host "TargetBranch " + "${{ parameters.TargetBranch }}"
+
+      $repo = "${{ parameters.SourceRepository }}"
+      git remote add mirror $repo
       git remote
-      git fetch public
-      git pull public $branch
+
+      $target = "${{ parameters.TargetBranch }}"
+      git fetch origin $target
+      git checkout $target
+      git pull origin $target
+
+      $source = "${{ parameters.SourceBranch }}"
+      git fetch mirror $source
+      git pull mirror $source
 
 - task: CmdLine@2
   inputs:
