@@ -2,7 +2,7 @@
 
     <!-- Targets file common to both managed and native projects -->
 
-    <PropertyGroup Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='' and '$(WindowsAppSDKSelfContained)'!='true' and '$(WindowsPackageType)'=='None' and ('$(OutputType)'=='Exe' or '$(OutputType)'=='Winexe')">
+    <PropertyGroup Condition="'$(WindowsAppSdkDeploymentManagerInitialize)'=='' and '$(WindowsAppSDKSelfContained)'!='true' and '$(WindowsPackageType)'=='MSIX' and ('$(OutputType)'=='Exe' or '$(OutputType)'=='Winexe')">
         <!--Allows GenerateDeploymentManagerCS/GenerateDeploymentManagerCpp to run-->
         <WindowsAppSdkDeploymentManagerInitialize>true</WindowsAppSdkDeploymentManagerInitialize>
     </PropertyGroup>
