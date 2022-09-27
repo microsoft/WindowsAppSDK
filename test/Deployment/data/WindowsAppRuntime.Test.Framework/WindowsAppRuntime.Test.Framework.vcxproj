@@ -86,7 +86,6 @@
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)logo.png" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll"/>
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb" />
-    <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" />
     <MakeMsixInputsWithLocations Include="$(OutDir)..\Deployment.WindowsAppRuntime.Test.Main\Deployment.WindowsAppRuntime.Test.Main.msix">
       <TargetFile>MSIX\Main.msix</TargetFile>
     </MakeMsixInputsWithLocations>

@@ -111,7 +111,6 @@
     <ItemGroup>
     <MakeMsixInputAssets Include="$(MSBuildThisFileDirectory)\Assets\*" />
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)appxmanifest.xml" />
-    <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" />
     <MakeMsixInputs Include="$(StartupExeFile)" />
     <MakeMsixInputs Include="$(TargetExeFile)" />
     <MakeMsixInputs Include="$(TargetExeProxyStubFile)" />

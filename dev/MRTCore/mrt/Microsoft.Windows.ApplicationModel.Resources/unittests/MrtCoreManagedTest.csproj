@@ -178,7 +178,6 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <ItemGroup>
-    <ReferenceCopyLocalPaths Include="$(OutputPath)..\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Internal.FrameworkUdk.dll" />
     <ReferenceCopyLocalPaths Include="$(OutputPath)..\MRM\MRM.dll" />
   </ItemGroup>
   <!-- The powershell command below updates the TestAdaptersPaths path in the runsettings file, in order to allow the test to run in VS Test Explorer. -->
