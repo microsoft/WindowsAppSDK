@@ -36,6 +36,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         // IAppInstance.
         void UnregisterKey();
         winrt::Windows::Foundation::IAsyncAction RedirectActivationToAsync(Microsoft::Windows::AppLifecycle::AppActivationArguments const& args);
+        void RedirectActivationTo(Microsoft::Windows::AppLifecycle::AppActivationArguments const& args);
         winrt::Microsoft::Windows::AppLifecycle::AppActivationArguments GetActivatedEventArgs();
         winrt::event_token Activated(winrt::Windows::Foundation::EventHandler<Microsoft::Windows::AppLifecycle::AppActivationArguments> const& handler);
         void Activated(winrt::event_token const& token) noexcept;

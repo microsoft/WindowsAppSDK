@@ -4,6 +4,8 @@
 #include <pch.h>
 #include <AppInstance.h>
 #include <Microsoft.Windows.AppLifecycle.AppInstance.g.cpp>
+#include <thread>
+#include <synchapi.h>
 
 #include "AppLifecycleTelemetry.h"
 #include "ActivationRegistrationManager.h"
@@ -259,6 +261,15 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         if (!m_isCurrent)
         {
             co_await QueueRequest(args);
+        }
+    }
+
+    void AppInstance::RedirectActivationTo(AppLifecycle::AppActivationArguments const& args)
+    {
+        if (!m_isCurrent)
+        {
+            auto recirectionAction{ RedirectActivationToAsync(args) };
+            THROW_IF_FAILED(WaitForSingleObject(reinterpret_cast<HANDLE>(recirectionAction.Id()), INFINITE));
         }
     }
 

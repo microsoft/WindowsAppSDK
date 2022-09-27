@@ -3,7 +3,7 @@
 
 namespace Microsoft.Windows.AppLifecycle
 {
-    [contractversion(2)]
+    [contractversion(3)]
     apicontract AppLifecycleContract {};
 
     [contract(AppLifecycleContract, 1)]
@@ -87,6 +87,9 @@ namespace Microsoft.Windows.AppLifecycle
         String Key{ get; };
         Boolean IsCurrent{ get; };
         UInt32 ProcessId{ get; };
+
+        [contract(AppLifecycleContract, 3)]
+        void RedirectActivationTo(Microsoft.Windows.AppLifecycle.AppActivationArguments args);
     }
 
     [contract(AppLifecycleContract, 1)]
