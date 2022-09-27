@@ -11,7 +11,7 @@ namespace NotificationActivation::TestFunctions
         SECURITY_ATTRIBUTES attributes = {};
         wil::unique_hlocal_security_descriptor descriptor;
 
-        // Grant access to world and appcontainer.
+        // Allow app containers to signal the TAEF test event
         THROW_IF_WIN32_BOOL_FALSE(ConvertStringSecurityDescriptorToSecurityDescriptor(
             L"D:(A;;GA;;;WD)(A;;GA;;;AC)", SDDL_REVISION_1, &descriptor, nullptr));
         attributes.nLength = sizeof(SECURITY_ATTRIBUTES);
@@ -24,20 +24,19 @@ namespace NotificationActivation::TestFunctions
 
     void WaitForEvent(const wil::unique_event& successEvent, const wil::unique_event& failedEvent)
     {
-        HANDLE waitEvents[2] = { successEvent.get(), failedEvent.get() };
-        auto waitResult = WaitForMultipleObjects(_countof(waitEvents), waitEvents, FALSE,
-            c_phaseTimeout);
+        HANDLE waitEvents[2]{ successEvent.get(), failedEvent.get() };
+        auto waitResult{ WaitForMultipleObjects(_countof(waitEvents), waitEvents, FALSE,
+            c_phaseTimeout) };
 
         // If waitResult == failureEventIndex, it means the remote test process signaled a
         // failure event while we were waiting for a different event.
-        auto failureEventIndex = WAIT_OBJECT_0 + 1;
+        auto failureEventIndex{ WAIT_OBJECT_0 + 1 };
         VERIFY_ARE_NOT_EQUAL(waitResult, failureEventIndex);
 
         VERIFY_ARE_NOT_EQUAL(waitResult, static_cast<DWORD>(WAIT_TIMEOUT));
         if (waitResult == WAIT_FAILED)
         {
-            auto lastError = GetLastError();
-            VERIFY_WIN32_FAILED(lastError);
+            VERIFY_WIN32_FAILED(GetLastError());
         }
 
         successEvent.ResetEvent();
