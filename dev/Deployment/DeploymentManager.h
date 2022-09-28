@@ -24,15 +24,15 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     private:
         static WindowsAppRuntime::DeploymentResult GetStatus(hstring const& packageFullName);
         static WindowsAppRuntime::DeploymentResult Initialize(hstring const& packageFullName);
-        static WindowsAppRuntime::DeploymentResult Initialize(hstring const& packageFullName,
-            WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions,
-            bool isRepair = false);
+        template <typename TOptions>
+        static WindowsAppRuntime::DeploymentResult Initialize(hstring const& packageFullName, TOptions const& tOoptions, bool isRepair = false);
 
     private:
+        template <typename TOptions>
         static WindowsAppRuntime::DeploymentResult _Initialize(
             ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
             hstring const& packageFullName,
-            WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions,
+            TOptions const& tOoptions,
             bool isRepair);
 
     private:

@@ -88,14 +88,12 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         /// Checks the status of the WindowsAppRuntime of the current package and attempts to
         /// repair already installed WinAppSDK packages.
         [contract(DeploymentContract, 3)]
-        [overload("Repair")]
         static DeploymentResult Repair();
 
         /// Checks the status of the WindowsAppRuntime of the current package and attempts to
         /// repair already installed WinAppSDK packages, while applying the DeploymentRepairOptions
         /// passed in.
         [contract(DeploymentContract, 3)]
-        [overload("Repair")]
         static DeploymentResult Repair(Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentRepairOptions deploymentRepairOptions);
     };
 }

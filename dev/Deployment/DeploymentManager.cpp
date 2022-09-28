@@ -69,7 +69,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Repair()
     {
-        winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions options{};
+        winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentRepairOptions options{};
         return Initialize(GetCurrentFrameworkPackageFullName(), options, true);
     }
 
@@ -165,11 +165,14 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         return DeploymentManager::Initialize(packageFullName, deploymentInitializeOptions);
     }
 
+    template <typename TOptions>
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(
-        hstring const& packageFullName,
-        winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions,
-        bool isRepair)
+        hstring const& packageFullName, TOptions const& tOptions, bool isRepair)
     {
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_DATATYPE),
+            (!isRepair && typeid(tOptions).name() != typeid(DeploymentInitializeOptions).name()) ||
+                (isRepair && typeid(tOptions).name() != typeid(DeploymentRepairOptions).name()));
+
         auto& initializeActivityContext{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
         const bool isPackagedProcess{ AppModel::Identity::IsPackagedProcess() };
         const int integrityLevel = Security::IntegrityLevel::GetIntegrityLevel();
@@ -179,7 +182,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
 
             ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsFullTrustPackage();
-        initializeActivityContext.GetActivity().Start(deploymentInitializeOptions.ForceDeployment(),
+        initializeActivityContext.GetActivity().Start(tOptions.ForceDeployment(),
                                                       Security::IntegrityLevel::IsElevated(),
                                                       isPackagedProcess,
                                                       initializeActivityContext.GetIsFullTrustPackage(),
@@ -198,7 +201,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
         try
         {
-            deploymentResult = _Initialize(initializeActivityContext, packageFullName, deploymentInitializeOptions, isRepair);
+            deploymentResult = _Initialize(initializeActivityContext, packageFullName, tOptions, isRepair);
         }
         catch (winrt::hresult_error const& e)
         {
@@ -227,7 +230,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                 DebugBreak();
             }
 
-            if (deploymentInitializeOptions.OnErrorShowUI() ||
+            if (tOptions.OnErrorShowUI() ||
                 ::Microsoft::Configuration::IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_DEPLOYMENT_INITIALIZE_ONERRORSHOWUI"))
             {
                 LOG_IF_FAILED(Initialize_OnError_ShowUI(packageIdentity, release));
@@ -240,10 +243,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         return deploymentResult;
     }
 
+    template <typename TOptions>
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::_Initialize(
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
         hstring const& packageFullName,
-        winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions,
+        TOptions const& tOptions,
         bool isRepair)
     {
         auto getStatusResult{ DeploymentManager::GetStatus(packageFullName) };
@@ -257,7 +261,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
 
         std::wstring frameworkPackageFullName{ packageFullName };
-        auto deployPackagesResult{ Deploy(frameworkPackageFullName, deploymentInitializeOptions.ForceDeployment()) };
+        auto deployPackagesResult{ Deploy(frameworkPackageFullName, tOptions.ForceDeployment()) };
         DeploymentStatus status{};
         if (SUCCEEDED(deployPackagesResult))
         {
