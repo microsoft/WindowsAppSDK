@@ -76,7 +76,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Repair(
         winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentRepairOptions const& deploymentRepairOptions)
     {
-        return Initialize(GetCurrentFrameworkPackageFullName(), options, true);
+        return Initialize(GetCurrentFrameworkPackageFullName(), deploymentRepairOptions, true);
     }
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus(hstring const& packageFullName)
@@ -333,29 +333,38 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     HRESULT DeploymentManager::VerifyPackage(const std::wstring& packageFamilyName, const PACKAGE_VERSION targetVersion,
         __out std::wstring& packageIdentifier) try
     {
-        auto packageFullNames{ FindPackagesByFamily(packageFamilyName) };
+        winrt::Windows::Management::Deployment::PackageManager packageManager;
+        auto packages{ packageManager.FindPackagesForUser(L"", packageFamilyName) };
+
         bool match{};
-        for (const auto& packageFullName : packageFullNames)
+        bool matchedPackageStatusIsOK{};
+        for (const auto& package : packages)
         {
-            auto packagePath{ GetPackagePath(packageFullName) };
+            auto packagePath{ package.InstalledPath()};
             if (packagePath.empty())
             {
                 continue;
             }
 
-            auto packageId{ AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.c_str()) };
-            if (packageId.Version().Version >= targetVersion.Version)
+            UINT64 packageVersion = (static_cast<UINT64>(package.Id().Version().Major) << 48) +
+                                    (static_cast<UINT64>(package.Id().Version().Minor) << 32) +
+                                    (static_cast<UINT64>(package.Id().Version().Build) << 16) +
+                                    (static_cast<UINT64>(package.Id().Version().Revision));
+
+            if (packageVersion >= targetVersion.Version)
             {
                 match = true;
-                if (packageId.Version().Version > targetVersion.Version)
+                matchedPackageStatusIsOK = package.Status().VerifyIsOK();
+                if (packageVersion > targetVersion.Version)
                 {
-                    g_existingTargetPackagesIfHigherVersion.insert(std::make_pair(packageIdentifier, packageFullName));
+                    g_existingTargetPackagesIfHigherVersion.insert(std::make_pair(packageIdentifier, package.Id().FullName()));
                 }
                 break;
             }
         }
 
         RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !match);
+        RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_STATE), !matchedPackageStatusIsOK);
         return S_OK;
     }
     CATCH_RETURN()
