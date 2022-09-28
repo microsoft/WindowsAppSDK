@@ -19,6 +19,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         static WindowsAppRuntime::DeploymentResult Initialize();
         static WindowsAppRuntime::DeploymentResult Initialize(WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions);
         static WindowsAppRuntime::DeploymentResult Repair();
+        static WindowsAppRuntime::DeploymentResult Repair(WindowsAppRuntime::DeploymentRepairOptions const& deploymentRepairOptions);
 
     private:
         static WindowsAppRuntime::DeploymentResult GetStatus(hstring const& packageFullName);

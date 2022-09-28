@@ -73,6 +73,12 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         return Initialize(GetCurrentFrameworkPackageFullName(), options, true);
     }
 
+    winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Repair(
+        winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentRepairOptions const& deploymentRepairOptions)
+    {
+        return Initialize(GetCurrentFrameworkPackageFullName(), options, true);
+    }
+
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus(hstring const& packageFullName)
     {
         // Get PackageInfo for WinAppSDK framework package
