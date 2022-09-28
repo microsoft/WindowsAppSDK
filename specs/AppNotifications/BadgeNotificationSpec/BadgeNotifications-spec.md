@@ -1,7 +1,5 @@
 # Badge notifications in Windows App SDK
 
-<!-- Put an index here - see how dynamic dependencies doc do it -->
-
 - [1. Background](#background)
 - [2. Limitations of the Windows SDK APIs](#limitations-of-the-windows-sdk-apis)
 - [3. API proposal](#api-proposal)
@@ -24,7 +22,7 @@ Another example of a badge, in this case featuring a new message glyph posted by
 
 Badge notification Windows SDK APIs have three main limitations:
 
-- They doesn't support Win32 apps, whether the app is packaged or not.
+- They don't support Win32 unpackaged apps.
 
 - The Badge Windows SDK APIs expect an XML payload that contains the information about the badge to pin, even though the XML is a single line of content. There are no APIs where developers can directly send the number or specify the glyph type.
 
@@ -36,10 +34,12 @@ More information about Windows SDK Badge API usage can be found [here](https://l
 
 As part of bringing badges into Windows App SDK, we propose addressing the issues explained the previous section. With this proposal, developers will be able to pin and clear badges writing less code than what is required in the Windows SDK.
 
+It's worth mentioning this proposal covers local badge notifications. Cloud badges are out of the proposal scope.
+
 ### 1. Posting a numeric badge
 
 ```cpp
-BadgeNotificationManager::PostValue(4);
+BadgeNotificationManager::ShowNumber(4);
 ```
 
 Posting a badge will require a single line of code, instead of 5-6 lines that developers must write using the Windows SDK APIs.
@@ -55,10 +55,10 @@ Notes:
 We will provide an enum that contains all glpyhs already supported in the Windows SDK. This enum will be named `BadgeNotificationGlyph`.
 
 ```cpp
-BadgeNotificationManager::PostGlyph(BadgeNotificationGlyph::Busy);
+BadgeNotificationManager::ShowGlyph(BadgeNotificationGlyph::Busy);
 ```
 
-For a complete list of predefined glyphs, see the IDL details section.
+For a complete list of predefined glyphs, see the [IDL details section](#idl-details).
 
 ### 3. Posting a custom overlay
 
@@ -66,10 +66,13 @@ For a complete list of predefined glyphs, see the IDL details section.
 // using winrt::Windows::Foundation;
 
 std::wstring iconFilepath{ std::filesystem::current_path() / "MyCustomBadge.png" };
-BadgeNotificationManager::PostCustomBadge(Uri{iconFilepath});
+BadgeNotificationManager::ShowCustom(Uri{iconFilepath});
 ```
 
-Note: The URI is expected to be a full path.
+Notes:
+
+- The URI is expected to be a full path.
+- Only local file paths will be supported.
 
 ### 4. Clear a badge
 
@@ -79,9 +82,11 @@ BadgeNotificationManager::Clear();
 
 ## Remarks
 
-- Any subsequent call from any of the `BadgeNotificationManager::Post` APIs will replace any previous badge.
+- **Badge replacement:** Any subsequent `BadgeNotificationManager::Show*` API call will replace any previous badge, if applicable.
 
-- Badges will be tied to the lifetime of the app window. If the app is closed, the badge will be cleared. This behavior is managed by the Taskbar.
+- **Badge lifetime:** Badges will be tied to the lifetime of the app window for all apps. If the app is closed, the badge will be cleared. This behavior is managed by the Taskbar. In the Windows SDK, the Taskbar is able to persist packaged app badges beyond window lifetime.
+
+- **Background support:** Background badge updates won't be supported at this point.
 
 ## IDL details
 
@@ -113,11 +118,11 @@ namespace Microsoft.Windows.AppNotifications.Badges
     [contract(BadgeNotificationsContract, 1)]
     static runtimeclass BadgeNotificationManager
     {
-        static void PostValue(UInt32 value);
+        static void ShowNumber(UInt32 number);
 
-        static void PostGlyph(BadgeNotificationGlyph glyph);
+        static void ShowGlyph(BadgeNotificationGlyph glyph);
 
-        static void PostCustomBadge(Windows.Foundation.Uri customBadgeUri);
+        static void ShowCustom(Windows.Foundation.Uri customBadgeUri);
 
         static void Clear();
     }
