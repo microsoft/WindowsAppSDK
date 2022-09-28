@@ -3,6 +3,7 @@
 
 #pragma once
 #include "Microsoft.Windows.System.EnvironmentManager.g.h"
+#include <optional>
 
 using namespace winrt::Windows::Foundation::Collections;
 
@@ -34,6 +35,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     private:
         Scope m_Scope{};
+        std::optional<bool> m_willChangesBeTracked{};
 
         PCWSTR c_UserEvRegLocation{ L"Environment" };
         PCWSTR c_MachineEvRegLocation{ L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment" };

@@ -30,8 +30,14 @@ namespace WindowsAppSDKEnvironmentManagerTests
 
     void EnvironmentManagerWin32Tests::TestAreChangesTracked()
     {
+        EnvironmentManager forProcess{ EnvironmentManager::GetForProcess() };
+        VERIFY_IS_FALSE(forProcess.AreChangesTracked());
+
         EnvironmentManager forUser{ EnvironmentManager::GetForUser() };
         VERIFY_IS_FALSE(forUser.AreChangesTracked());
+
+        EnvironmentManager forMachine{ EnvironmentManager::GetForMachine() };
+        VERIFY_IS_FALSE(forMachine.AreChangesTracked());
     }
 
     void EnvironmentManagerWin32Tests::TestGetEnvironmentVariablesForProcess()

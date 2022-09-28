@@ -6,7 +6,9 @@
 #include "EnvironmentVariableHelper.h"
 #include "ChangeTrackerHelper.h"
 #include "TestSetupAndTeardownHelper.h"
-#include "WindowsAppRuntime.Test.Metadata.h"
+#include <WexTestClass.h>
+#include <WindowsAppRuntime.VersionInfo.h>
+#include <WindowsAppRuntime.SelfContained.h>
 
 using namespace winrt::Microsoft::Windows;
 
@@ -32,6 +34,20 @@ namespace WindowsAppSDKEnvironmentManagerTests
 
     void EnvironmentManagerCentennialTests::CentennialTestAreChangesTracked()
     {
+        bool isSelfContained{};
+        VERIFY_SUCCEEDED(WEX::TestExecution::TestData::TryGetValue(L"SelfContained", isSelfContained));
+
+        if (!isSelfContained)
+        {
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(::TP::WindowsAppRuntimeFramework::c_PackageFamilyName, ::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
+            //VERIFY_IS_FALSE(::WindowsAppRuntime::SelfContained::IsSelfContained());
+        }
+        else
+        {
+            //::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!", L"I_don't_exist_package!");
+            //VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
+        }
+
         EnvironmentManager forProcess{ EnvironmentManager::GetForProcess() };
         VERIFY_IS_FALSE(forProcess.AreChangesTracked());
 
@@ -39,18 +55,6 @@ namespace WindowsAppSDKEnvironmentManagerTests
         VERIFY_IS_TRUE(forUser.AreChangesTracked());
 
         EnvironmentManager forMachine{EnvironmentManager::GetForMachine()};
-        VERIFY_IS_TRUE(forMachine.AreChangesTracked());
-    }
-
-    void EnvironmentManagerCentennialTests::CentennialTestAreChangesTrackedAsAdmin()
-    {
-        EnvironmentManager forProcess{ EnvironmentManager::GetForProcess() };
-        VERIFY_IS_FALSE(forProcess.AreChangesTracked());
-
-        EnvironmentManager forUser{ EnvironmentManager::GetForUser() };
-        VERIFY_IS_TRUE(forUser.AreChangesTracked());
-
-        EnvironmentManager forMachine{ EnvironmentManager::GetForMachine() };
         VERIFY_IS_TRUE(forMachine.AreChangesTracked());
     }
 

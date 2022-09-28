@@ -5,7 +5,6 @@
 #include "TestSetupAndTeardownHelper.h"
 #include "LogContext.h"
 #include <TerminalVelocityFeatures-EnvironmentManager.h>
-#include <WindowsAppRuntime.VersionInfo.h>
 
 namespace WindowsAppSDKEnvironmentManagerTests
 {
@@ -27,21 +26,21 @@ namespace WindowsAppSDKEnvironmentManagerTests
                 return false;
             }
 
-            ::Test::Bootstrap::Setup();
-
-            ::WindowsAppRuntime::VersionInfo::TestInitialize(::TP::WindowsAppRuntimeFramework::c_PackageFamilyName, ::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
+            ::Test::Bootstrap::SetupPackages();
 
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            ::Test::Bootstrap::Cleanup();
+            ::Test::Bootstrap::CleanupPackages();
             return true;
         }
 
         TEST_METHOD_SETUP(CentennialWriteEVs)
         {
+            ::Test::Bootstrap::SetupBootstrap();
+
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
@@ -53,6 +52,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
 
         TEST_METHOD_CLEANUP(CentennialRemoveEVs)
         {
+            ::Test::Bootstrap::CleanupBootstrap();
             UserCleanup();
             MachineCleanup();
             return true;
@@ -62,16 +62,8 @@ namespace WindowsAppSDKEnvironmentManagerTests
         TEST_METHOD(CentennialTestGetForUser);
         TEST_METHOD(CentennialTestGetForMachine);
 
-        // Ignore because the test framework package and production framework package have different family names.
-        // Can be run when the code can switch between the test family name and the production family name.
         BEGIN_TEST_METHOD(CentennialTestAreChangesTracked)
-            TEST_METHOD_PROPERTY(L"Ignore", L"true")
-        END_TEST_METHOD()
-
-        // Ignore until a way is found to install a framework package for another user.
-        BEGIN_TEST_METHOD(CentennialTestAreChangesTrackedAsAdmin)
-            TEST_METHOD_PROPERTY(L"Ignore", L"true")
-            TEST_METHOD_PROPERTY(L"Description", L"Tests if a framework package, installed by a different user, can be found")
+            TEST_METHOD_PROPERTY(L"Data:SelfContained", L"{true, false}")
         END_TEST_METHOD()
 
         TEST_METHOD(CentennialTestGetEnvironmentVariablesForProcess);

@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-#include <optional>
 #include "Microsoft.Windows.System.EnvironmentManager.h"
 #include "Microsoft.Windows.System.EnvironmentManager.g.cpp"
 #include "Microsoft.Windows.System.EnvironmentManager.Insights.h"
@@ -16,8 +15,6 @@
 
 namespace winrt::Microsoft::Windows::System::implementation
 {
-    std::optional<bool> m_willChangesBeTracked{};
-
     EnvironmentManager::EnvironmentManager(Scope const& scope)
         : m_Scope(scope)
     {

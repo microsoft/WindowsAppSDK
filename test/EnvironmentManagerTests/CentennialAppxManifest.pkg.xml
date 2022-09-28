@@ -31,7 +31,5 @@
     </Applications>
     <Capabilities>
         <rescap:Capability Name="runFullTrust" />
-        <rescap:Capability Name="packageManagement" />
-        <rescap:Capability Name="packageQuery" />
     </Capabilities>
 </Package>
