@@ -32,7 +32,7 @@ namespace Test::NotificationActivation
 
         static const int testWaitTime()
         {
-            return 3000;
+            return 12000; // 12 seconds
         }
 
         static PCWSTR GetTestPackageFile()
