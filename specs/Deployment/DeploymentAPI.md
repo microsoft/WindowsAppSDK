@@ -68,10 +68,10 @@ The API addresses #1 by a simple query of the version needed and a check for OS 
 
 ## GetStatus
 
-This is the means by which an app or program can call to verify that all required WinAppSDK packages
-are present to a minimum version needed by the Framework loaded with the app. A process should call
-GetStatus() after process initialization and before using Windows App Runtime content (e.g. in
-Main() or WinMain()).
+This is the API an app or program can call to verify that all required WinAppSDK packages are
+installed to a minimum version needed by the Framework loaded with the app and that the packages are
+in good state. A process should call GetStatus() after process initialization and before using
+Windows App Runtime content (e.g. in Main() or WinMain()).
 
 Developers call this method without parameters, as all information about the version, channel, and
 architecture are derived from the current Framework package loaded.
@@ -80,14 +80,24 @@ architecture are derived from the current Framework package loaded.
     DeploymentResult result = DeploymentManager.GetStatus();
     if (result.Status == DeploymentStatus.Ok)
     {
-        // WindowsAppRuntime is in a good state and ready for use.
+        // WindowsAppRuntime is installed and is in a good state and ready for use.
     }
     else
     {
-        // WindowsAppRuntime is not in a good state.
-        // Should call Initialize on another thread, or not use features that require the
-        // WindowsAppRuntime. result.ExtendedError has the error code that has the reason
-        // for the Status.
+        // WindowsAppRuntime is either not installed or not in a good state (can't be both at same time).
+        if (result.Status == DeploymentStatus.PackageInstallRequired)
+        {
+            // Should call Initialize on another thread, or not use features that require the
+            // WindowsAppRuntime. result.ExtendedError has the error code that has the reason
+            // for the Status.
+        }
+        else if (result.Status == DeploymentStatus.PackageRepairRequired ||
+                result.Status == DeploymentStatus.Unknown)
+        {
+            // Should call Repair on another thread, or not use features that require the
+            // WindowsAppRuntime. result.ExtendedError has the error code that has the reason
+            // for the Status.
+        }
     }
 ```
 
@@ -118,7 +128,7 @@ again. If there is anything wrong with installed Main and Singleton packages, us
 and repair them.
 
 ```C#
-    if (DeploymentManager.GetStatus().Status != DeploymentStatus.Ok)
+    if (DeploymentManager.GetStatus().Status == DeploymentStatus.PackageInstallRequired)
     {
         // Initialize does a status check, and if the status is not OK it will attempt to get
         // the WindowsAppRuntime into a good state. Unlike a simple status check, Initialize can
@@ -126,6 +136,7 @@ and repair them.
         // These should be run on a separate thread so as not to hang your app while the
         // packages deploy.
         var initializeTask = Task.Run(() => DeploymentManager.Initialize());
+        //...do other work while the repair is running...
         initializeTask.Wait();
 
         // Check the result.
@@ -159,7 +170,7 @@ Framework package and all dependent packages that are currently in use will be r
 they shut down, to refer to the updated Framework package.
 
 ```C#
-    if (DeploymentManager.GetStatus().Status != DeploymentStatus.Ok)
+    if (DeploymentManager.GetStatus().Status == DeploymentStatus.PackageInstallRequired)
     {
         // Create DeploymentInitializeOptions object and set ForceDeployment option
         // to allow for force updating of the WinAppSDK packages even if they are currently in use.
@@ -172,6 +183,7 @@ they shut down, to refer to the updated Framework package.
         // These should be run on a separate thread so as not to hang your app while the
         // packages deploy.
         var initializeTask = Task.Run(() => DeploymentManager.Initialize(deploymentInitializeOptions));
+        //...do other work while the repair is running...
         initializeTask.Wait();
 
         // Check the result.
@@ -184,48 +196,10 @@ they shut down, to refer to the updated Framework package.
     }
 ```
 
-## Repair
-
-This API performs a status check, and if the Main and Singleton packages are both already installed
-at the required version (i.e. when GetStatus returns OK status), it will attempt to repair those
-packages. All information about the version, channel, and architecture needed are derived from the
-current WinAppSDK Framework package.
-
-Since both the Main _and_ the Singleton packages will be repaired, it is possible that Main package
-repair has failed and Initialize returns with PackageRepairFailed status (OR) it is possible that
-Main package is repaired successfully but the Singleton package repair has failed and Initialize
-returns with repair has failed and Initialize returns with PackageRepairFailed status (OR) it is
-possible that status. In both cases, the returned WindowsAppRuntimeStatus will contain the error of
-first package repair failure. There will be no rollback of any successfully repaired packages. See
-the
-[developer docs](https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-packaged-apps#address-installation-errors)
-for instructions on how to handle errors.
-
-```C#
-    if (DeploymentManager.GetStatus().Status == DeploymentStatus.Ok)
-    {
-        // Repair does a status check, and if the status is OK it will attempt to get
-        // the WindowsAppRuntime into a good state by re-deploying packages. Unlike a simple
-        // status check, Repair can sometimes take several seconds to deploy the packages.
-        // These should be run on a separate thread so as not to hang your app while the
-        // packages deploy.
-        var repairTask = Task.Run(() => DeploymentManager.Repair());
-        repairTask.Wait();
-
-        // Check the result.
-        if (repairTask.Result.Status != DeploymentStatus.Ok)
-        {
-            // The Repair() has failed.
-            // Do error reporting or gather information for submitting a bug.
-            // Gracefully exit the program or carry on without using the WindowsAppRuntime.
-        }
-    }
-```
-
 #### OnError
 
-Additional behavior is available if an error occurs in `DeploymentManager.Initialize()`,
-per the following logic:
+Additional behavior is available if an error occurs in `DeploymentManager.Initialize()`, per the
+following logic:
 
 ```
 DeploymentManager::Initialize(...)
@@ -262,7 +236,7 @@ DeploymentManager::Initialize(...)
 Here's the previous example extended with the `Show UI on error` option:
 
 ```C#
-    if (DeploymentManager.GetStatus().Status != DeploymentStatus.Ok)
+    if (DeploymentManager.GetStatus().Status == DeploymentStatus.PackageInstallRequired)
     {
         // Create DeploymentInitializeOptions object and set ForceDeployment option
         // to allow for force updating of the WinAppSDK packages even if they are currently in use.
@@ -277,12 +251,165 @@ Here's the previous example extended with the `Show UI on error` option:
         // These should be run on a separate thread so as not to hang your app while the
         // packages deploy.
         var initializeTask = Task.Run(() => DeploymentManager.Initialize(deploymentInitializeOptions));
+        //...do other work while the repair is running...
         initializeTask.Wait();
 
         // Check the result.
         if (initializeTask.Result.Status != DeploymentStatus.Ok)
         {
             // The WindowsAppRuntime is in a bad state which Initialize() did not fix.
+            // Do error reporting or gather information for submitting a bug.
+            // Gracefully exit the program or carry on without using the WindowsAppRuntime.
+        }
+    }
+```
+
+## Repair
+
+This API will always attempt to repair WindowsAppRuntime regardless of it's state. For that reason,
+this API should be called only when deployment status is not OK to avoid an unecessary repair even
+when WindowsAppRuntime is in good state. All information about the version, channel, and
+architecture needed are derived from the current WinAppSDK Framework package.
+
+Since both the Main _and_ the Singleton packages will be repaired, it is possible that Main package
+repair has failed and Initialize returns with PackageRepairFailed status (OR) it is possible that
+Main package is repaired successfully but the Singleton package repair has failed and Initialize
+returns with repair has failed and Initialize returns with PackageRepairFailed status (OR) it is
+possible that status. In both cases, the returned WindowsAppRuntimeStatus will contain the error of
+first package repair failure. There will be no rollback of any successfully repaired packages. See
+the
+[developer docs](https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-packaged-apps#address-installation-errors)
+for instructions on how to handle errors.
+
+```C#
+    if (DeploymentManager.GetStatus().Status == DeploymentStatus.PackageRepairRequired ||
+        DeploymentManager.GetStatus().Status == DeploymentStatus.Unknown)
+    {
+        // Repair will always attempt to repair WindowsAppRuntime regardless of it's state.
+        // Repair can sometimes take several seconds to deploy the packages.
+        // These should be run on a separate thread so as not to hang your app while the
+        // packages deploy.
+        var repairTask = Task.Run(() => DeploymentManager.Repair());
+        //...do other work while the repair is running...
+        repairTask.Wait();
+
+        // Check the result.
+        if (repairTask.Result.Status != DeploymentStatus.Ok)
+        {
+            // The Repair() has failed.
+            // Do error reporting or gather information for submitting a bug.
+            // Gracefully exit the program or carry on without using the WindowsAppRuntime.
+        }
+    }
+```
+
+### DeploymentRepairOptions
+
+#### ForceDeployment
+
+When this API may install newer version of one or more of the WinAppSDK packages (i.e. an update)
+and if there are any currently running process(es) associated with these WinAppSDK package(s) (in
+other words, if any of the WinAppSDK packages to be updated are currently in use), then this API
+will fail installing that WinAppSDK package. But this update to the WinAppSDK packages can be forced
+by using DeploymentRepairOptions object and setting ForceDeployment option before passing it to this
+API. This option when set will shut down the application(s) associated with WinAppSDK packages,
+update the WinAppSDK packages and restart the application(s).
+
+If this option is set when updating Singleton package, then the out of process com server from the
+Singleton package such as push Notifications is explicitly restarted.
+
+When the API is updating Framework package and ForceDeployment option is set, then all dependent
+packages that are NOT currently in use will be immediately re-installed to refer to the updated
+Framework package and all dependent packages that are currently in use will be re-installed, after
+they shut down, to refer to the updated Framework package.
+
+```C#
+    if (DeploymentManager.GetStatus().Status == DeploymentStatus.PackageInstallRequired)
+    {
+        // Create DeploymentRepairOptions object and set ForceDeployment option
+        // to allow for force updating of the WinAppSDK packages even if they are currently in use.
+        var deploymentRepairOptions = new DeploymentRepairOptions();
+        deploymentRepairOptions.ForceDeployment = true;
+
+        // Repair will always attempt to repair WindowsAppRuntime regardless of it's state.
+        // Repair can sometimes take several seconds to deploy the packages.
+        // These should be run on a separate thread so as not to hang your app while the
+        // packages deploy.
+        var RepairTask = Task.Run(() => DeploymentManager.Repair(deploymentRepairOptions));
+        //...do other work while the repair is running...
+        RepairTask.Wait();
+
+        // Check the result.
+        if (RepairTask.Result.Status != DeploymentStatus.Ok)
+        {
+            // The Repair() has failed.
+            // Do error reporting or gather information for submitting a bug.
+            // Gracefully exit the program or carry on without using the WindowsAppRuntime.
+        }
+    }
+```
+
+#### OnError
+
+Additional behavior is available if an error occurs in `DeploymentManager.Repair()`, per the
+following logic:
+
+```
+DeploymentManager::Repair(...)
+{
+    // Only needed supported in packaged processes
+    IF IsPackagedProcess()
+    {
+        // We're not a packaged process. Don't call Repair
+        return OK
+    }
+
+    // Do the initialization work
+    hr = _Repair(...)
+    if FAILED(hr)
+    {
+        LogToEventLog(hr, ...)
+
+        // Should we pop the debugger?
+        IF IsDebuggerPresent()
+        {
+            DebugBreak()
+        }
+
+        // Should we pop some UI?
+        if options.OnError_ShowUI
+        {
+            MessageBox(...)
+        }
+    }
+    return hr
+}
+```
+
+Here's the previous example extended with the `Show UI on error` option:
+
+```C#
+    if (DeploymentManager.GetStatus().Status == DeploymentStatus.PackageInstallRequired)
+    {
+        // Create DeploymentRepairOptions object and set ForceDeployment option
+        // to allow for force updating of the WinAppSDK packages even if they are currently in use.
+        // Also enable UI if an error occurs so a user can be told about the problem.
+        var deploymentRepairOptions = new DeploymentRepairOptions();
+        deploymentRepairOptions.ForceDeployment = true;
+        deploymentRepairOptions.OnErrorShowUI = true;
+
+        // Repair will always attempt to repair WindowsAppRuntime regardless of it's state.
+        // Repair can sometimes take several seconds to deploy the packages.
+        // These should be run on a separate thread so as not to hang your app while the
+        // packages deploy.
+        var RepairTask = Task.Run(() => DeploymentManager.Repair(deploymentRepairOptions));
+        //...do other work while the repair is running...
+        RepairTask.Wait();
+
+        // Check the result.
+        if (RepairTask.Result.Status != DeploymentStatus.Ok)
+        {
+            // The WindowsAppRuntime is in a bad state which Repair() did not fix.
             // Do error reporting or gather information for submitting a bug.
             // Gracefully exit the program or carry on without using the WindowsAppRuntime.
         }
@@ -298,13 +425,16 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     apicontract DeploymentContract{};
 
     /// Represents the current Deployment status of the WindowsAppRuntime
-    [contract(DeploymentContract, 3)]
+    [contract(DeploymentContract, 1)]
     enum DeploymentStatus
     {
         Unknown = 0,
         Ok,
         PackageInstallRequired,
         PackageInstallFailed,
+
+        [contract(DeploymentContract, 3)]
+        PackageRepairRequired,
         PackageRepairFailed,
     };
 
@@ -329,12 +459,28 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         DeploymentInitializeOptions();
 
         /// Gets or sets a value that indicates whether the processes associated with the
-        /// WindowsAppSDK Main and Singleton packages will be shut down forcibly if they are
-        /// currently in use, when registering the WinAppSDK packages.
+        /// WinAppSDK Main and Singleton packages will be shut down forcibly if they are
+        /// currently in use, when initializing the WindowsAppRuntime.
         Boolean ForceDeployment;
 
         /// If not successful show UI
         [contract(DeploymentContract, 3)]
+        Boolean OnErrorShowUI;
+    };
+
+    /// This object is used to specify deployment options to apply when using DeploymentManager's
+    /// Repair method
+    [contract(DeploymentContract, 3)]
+    runtimeclass DeploymentRepairOptions
+    {
+        DeploymentRepairOptions();
+
+        /// Gets or sets a value that indicates whether the processes associated with the
+        /// WinAppSDK Main and Singleton packages will be shut down forcibly if they are
+        /// currently in use, when repairing the WindowsAppRuntime.
+        Boolean ForceDeployment;
+
+        /// If not successful show UI
         Boolean OnErrorShowUI;
     };
 
@@ -361,6 +507,13 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         /// repair already installed WinAppSDK packages.
         [contract(DeploymentContract, 3)]
         static DeploymentResult Repair();
+
+        /// Checks the status of the WindowsAppRuntime of the current package and attempts to
+        /// repair already installed WinAppSDK packages, while applying the DeploymentInitializeOptions
+        /// passed in.
+        [contract(DeploymentContract, 3)]
+        [overload("Repair")]
+        static DeploymentResult Repair(Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentRepairOptions deploymentRepairOptions);
     };
 }
 ```
