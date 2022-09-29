@@ -9,8 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" version="$(IxpVersion)">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" version="$(IxpVersion)" />
   </ItemGroup>
 </Project>
