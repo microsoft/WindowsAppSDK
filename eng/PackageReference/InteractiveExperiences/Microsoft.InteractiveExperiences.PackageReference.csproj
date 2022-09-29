@@ -5,7 +5,7 @@
     <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
 
     <Copyright>Copyright (c) Microsoft Corporation. All rights reserved.</Copyright>
-    <AssemblyTitle>Microsoft.Maestro</AssemblyTitle>
+    <AssemblyTitle>Microsoft.InteractiveExperiences.PackageReference</AssemblyTitle>
   </PropertyGroup>
 
   <ItemGroup>

@@ -29,25 +29,21 @@
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <FrameworkUdkDll>..\..\..\..\packages\microsoft.projectReunion.interactiveexperiences.transportpackage/$(FrameworkUDKVersion)\runtimes\win10-x86\native\Microsoft.Internal.FrameworkUdk.dll</FrameworkUdkDll>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <FrameworkUdkDll>..\..\..\..\packages\microsoft.projectReunion.interactiveexperiences.transportpackage/$(FrameworkUDKVersion)\runtimes\win10-x86\native\Microsoft.Internal.FrameworkUdk.dll</FrameworkUdkDll>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <FrameworkUdkDll>..\..\..\..\packages\microsoft.projectReunion.interactiveexperiences.transportpackage/$(FrameworkUDKVersion)\runtimes\win10-x64\native\Microsoft.Internal.FrameworkUdk.dll</FrameworkUdkDll>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <FrameworkUdkDll>..\..\..\..\packages\microsoft.projectReunion.interactiveexperiences.transportpackage/$(FrameworkUDKVersion)\runtimes\win10-x64\native\Microsoft.Internal.FrameworkUdk.dll</FrameworkUdkDll>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -91,7 +87,7 @@
     </MakeMsixInputsWithLocations>
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb" />
-    <MakeMsixInputs Include="$(FrameworkUdkDll)" />
+    <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" />
   </ItemGroup>
   <PropertyGroup>
     <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
@@ -105,7 +101,7 @@
     <ProjectReference Include="..\..\..\..\dev\WindowsAppRuntime_DLL\WindowsAppRuntime_DLL.vcxproj">
       <Project>{b73ad907-6164-4294-88fb-f3c9c10da1f1}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\eng\MaestroRestore\Microsoft.MaestroRestore.csproj">
+    <ProjectReference Include="..\..\..\..\eng\PackageReference\InteractiveExperiences\Microsoft.InteractiveExperiences.PackageReference.csproj">
       <Project>{a765ec31-c719-4fe1-bc9b-ab117ef5bb41}</Project>
     </ProjectReference>
   </ItemGroup>

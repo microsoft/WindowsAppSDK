@@ -405,7 +405,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VersionInfoTests", "test\Ve
 		{9C1A6C58-52D6-4514-9120-5C339C5DF4BE} = {9C1A6C58-52D6-4514-9120-5C339C5DF4BE}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.MaestroRestore", "eng\MaestroRestore\Microsoft.MaestroRestore.csproj", "{7492F3F0-F20B-4A06-B7EF-AEF1D38EB376}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.InteractiveExperiences.PackageReference", "eng\PackageReference\InteractiveExperiences\Microsoft.InteractiveExperiences.PackageReference.csproj", "{7492F3F0-F20B-4A06-B7EF-AEF1D38EB376}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
