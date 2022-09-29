@@ -86,7 +86,7 @@
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)logo.png" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll"/>
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb" />
-    <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" />
+    <MakeMsixInputs Include="$(FrameworkUdkDll)" />
     <MakeMsixInputsWithLocations Include="$(OutDir)..\Deployment.WindowsAppRuntime.Test.Main\Deployment.WindowsAppRuntime.Test.Main.msix">
       <TargetFile>MSIX\Main.msix</TargetFile>
     </MakeMsixInputsWithLocations>
@@ -111,6 +111,9 @@
     </ProjectReference>
     <ProjectReference Include="..\WindowsAppRuntime.Test.Singleton\WindowsAppRuntime.Test.Singleton.vcxproj">
       <Project>{0b01db78-f115-4c90-b28f-7819071303c6}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\eng\PackageReference\InteractiveExperiences\Microsoft.InteractiveExperiences.PackageReference.csproj">
+      <Project>{a765ec31-c719-4fe1-bc9b-ab117ef5bb41}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

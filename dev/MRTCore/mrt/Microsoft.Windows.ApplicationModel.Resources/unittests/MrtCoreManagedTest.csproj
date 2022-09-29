@@ -172,13 +172,16 @@
       <Project>{9b3b03bc-1bc0-43ea-b3ff-d5214f3cf5cf}</Project>
       <Name>Microsoft.Windows.ApplicationModel.Resources</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\eng\PackageReference\InteractiveExperiences\Microsoft.InteractiveExperiences.PackageReference.csproj">
+      <Project>{a765ec31-c719-4fe1-bc9b-ab117ef5bb41}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <ItemGroup>
-    <ReferenceCopyLocalPaths Include="$(OutputPath)..\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Internal.FrameworkUdk.dll" />
+    <ReferenceCopyLocalPaths Include="$(FrameworkUdkDll)" />
     <ReferenceCopyLocalPaths Include="$(OutputPath)..\MRM\MRM.dll" />
   </ItemGroup>
   <!-- The powershell command below updates the TestAdaptersPaths path in the runsettings file, in order to allow the test to run in VS Test Explorer. -->

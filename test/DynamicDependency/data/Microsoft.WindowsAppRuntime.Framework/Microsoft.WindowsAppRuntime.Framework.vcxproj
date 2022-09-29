@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ImportGroup>
-    <Import Project="..\..\..\..\eng\Versions.props" />
-  </ImportGroup>
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -26,12 +23,6 @@
     <ProjectGuid>{9C1A6C58-52D6-4514-9120-5C339C5DF4BE}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>Microsoft.WindowsAppRuntime.Framework</ProjectName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)'=='Win32'" Label="Configuration">
-    <FrameworkUdkDll>..\..\..\..\packages\microsoft.projectReunion.interactiveexperiences.transportpackage\$(IxpVersion)\runtimes\win10-x86\native\Microsoft.Internal.FrameworkUdk.dll</FrameworkUdkDll>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)'=='x64'" Label="Configuration">
-    <FrameworkUdkDll>..\..\..\..\packages\microsoft.projectReunion.interactiveexperiences.transportpackage\$(IxpVersion)\runtimes\win10-x64\native\Microsoft.Internal.FrameworkUdk.dll</FrameworkUdkDll>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

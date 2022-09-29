@@ -66,4 +66,11 @@
   <Target Name="CleanIntermediateFiles" AfterTargets="Build" Condition="'$(WindowsAppSDKCleanIntermediateFiles)' == 'true'">
     <RemoveDir Directories="$(IntermediateOutputPath)" />
   </Target>
+
+  <PropertyGroup Condition="'$(Platform)'=='Win32'">
+    <FrameworkUdkDll>$(MSBuildThisFileDirectory)\packages\microsoft.projectReunion.interactiveexperiences.transportpackage\$(IxpVersion)\runtimes\win10-x86\native\Microsoft.Internal.FrameworkUdk.dll</FrameworkUdkDll>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)'=='x64'">
+    <FrameworkUdkDll>$(MSBuildThisFileDirectory)\packages\microsoft.projectReunion.interactiveexperiences.transportpackage\$(IxpVersion)\runtimes\win10-x64\native\Microsoft.Internal.FrameworkUdk.dll</FrameworkUdkDll>
+  </PropertyGroup>
 </Project>
