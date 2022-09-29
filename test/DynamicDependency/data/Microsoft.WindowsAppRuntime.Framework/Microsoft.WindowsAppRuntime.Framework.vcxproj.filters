@@ -3,7 +3,4 @@
   <ItemGroup>
     <Xml Include="appxmanifest.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
 </Project>

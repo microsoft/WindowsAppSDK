@@ -5,6 +5,10 @@
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionClosed</Uri>
       <Sha>1261bb31992442bf7e560330524002ea3a3e9d85</Sha>
     </Dependency>
+    <Dependency Name="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="1.2.3-CI-25207.1001.220922-1000.1">
+      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionClosed</Uri>
+      <Sha>1261bb31992442bf7e560330524002ea3a3e9d85</Sha>
+    </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
     <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.0.0">
