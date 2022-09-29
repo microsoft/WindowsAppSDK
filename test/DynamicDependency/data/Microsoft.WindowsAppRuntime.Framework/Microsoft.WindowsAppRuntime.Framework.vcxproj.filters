@@ -4,6 +4,6 @@
     <Xml Include="appxmanifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Makefile.mak" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

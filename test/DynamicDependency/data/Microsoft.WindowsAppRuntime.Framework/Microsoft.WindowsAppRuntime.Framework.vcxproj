@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\..\packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.1.2.3-CI-25207.1001.220922-1000.1\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.props" Condition="Exists('..\..\..\..\packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.1.2.3-CI-25207.1001.220922-1000.1\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -29,21 +30,25 @@
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
+    <FrameworkUdkDll>..\..\..\..\packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.1.2.3-CI-25207.1001.220922-1000.1\runtimes\win10-x86\native\Microsoft.Internal.FrameworkUdk.dll</FrameworkUdkDll>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
+    <FrameworkUdkDll>..\..\..\..\packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.1.2.3-CI-25207.1001.220922-1000.1\runtimes\win10-x86\native\Microsoft.Internal.FrameworkUdk.dll</FrameworkUdkDll>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
+    <FrameworkUdkDll>..\..\..\..\packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.1.2.3-CI-25207.1001.220922-1000.1\runtimes\win10-x64\native\Microsoft.Internal.FrameworkUdk.dll</FrameworkUdkDll>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
+    <FrameworkUdkDll>..\..\..\..\packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.1.2.3-CI-25207.1001.220922-1000.1\runtimes\win10-x64\native\Microsoft.Internal.FrameworkUdk.dll</FrameworkUdkDll>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -68,7 +73,6 @@
     <NMakeBuildCommandLine>REM Nothing to do!</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>REM TODO Clean then Build</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>REM TODO Clean</NMakeCleanCommandLine>
-
     <MakeMsixOutputFilename>$(MSBuildProjectName).msix</MakeMsixOutputFilename>
   </PropertyGroup>
   <ItemGroup>
@@ -88,7 +92,7 @@
     </MakeMsixInputsWithLocations>
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb" />
-    <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" />
+    <MakeMsixInputs Include="$(FrameworkUdkDll)" />
   </ItemGroup>
   <PropertyGroup>
     <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
@@ -103,7 +107,18 @@
       <Project>{b73ad907-6164-4294-88fb-f3c9c10da1f1}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\..\..\packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.1.2.3-CI-25207.1001.220922-1000.1\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets" Condition="Exists('..\..\..\..\packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.1.2.3-CI-25207.1001.220922-1000.1\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.1.2.3-CI-25207.1001.220922-1000.1\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.1.2.3-CI-25207.1001.220922-1000.1\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.props'))" />
+    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.1.2.3-CI-25207.1001.220922-1000.1\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.1.2.3-CI-25207.1001.220922-1000.1\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets'))" />
+  </Target>
 </Project>
