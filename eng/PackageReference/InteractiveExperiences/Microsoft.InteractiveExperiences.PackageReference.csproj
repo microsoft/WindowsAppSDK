@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" version="$(FrameworkUDKVersion)">
+    <PackageReference Include="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" version="$(IxpVersion)">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>

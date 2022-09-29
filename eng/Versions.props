@@ -10,7 +10,7 @@
     <CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>$(CsWinRTDependencyDotNetCoreSdkPackageVersion)</CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>
 
     <!-- ShortForm Version Fields -->
-    <FrameworkUDKVersion>$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)</FrameworkUDKVersion>
+    <IxpVersion>$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)</IxpVersion>
 
   </PropertyGroup>
 </Project>
