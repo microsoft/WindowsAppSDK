@@ -4,6 +4,9 @@
 #include "pch.h"
 #include <testdef.h>
 #include "Shared.h"
+// suppress macro redifinition.  This is needed to declare tests inline.
+#pragma warning(suppress: 4005)
+#define INLINE_TEST_METHOD_MARKUP
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -75,6 +78,13 @@ namespace Test::AppLifecycle
 
             ::Test::Bootstrap::Cleanup();
             return true;
+        }
+
+        TEST_METHOD(TestRedirectActivationTo)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"ThreadingModel", L"MTA")
+            END_TEST_METHOD_PROPERTIES()
         }
 
         TEST_METHOD(GetActivatedEventArgsIsNotNull)

@@ -269,7 +269,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         if (!m_isCurrent)
         {
             auto recirectionAction{ RedirectActivationToAsync(args) };
-            THROW_IF_FAILED(WaitForSingleObject(reinterpret_cast<HANDLE>(recirectionAction.Id()), INFINITE));
+            recirectionAction.get();
         }
     }
 
