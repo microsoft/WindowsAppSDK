@@ -421,7 +421,7 @@ Here's the previous example extended with the `Show UI on error` option:
 ```C# (but really MIDL3)
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
-    [contractversion(3)]
+    [contractversion(4)]
     apicontract DeploymentContract{};
 
     /// Represents the current Deployment status of the WindowsAppRuntime
@@ -433,7 +433,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         PackageInstallRequired,
         PackageInstallFailed,
 
-        [contract(DeploymentContract, 3)]
+        [contract(DeploymentContract, 4)]
         PackageRepairRequired,
         PackageRepairFailed,
     };
@@ -470,7 +470,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 
     /// This object is used to specify deployment options to apply when using DeploymentManager's
     /// Repair method
-    [contract(DeploymentContract, 3)]
+    [contract(DeploymentContract, 4)]
     runtimeclass DeploymentRepairOptions
     {
         DeploymentRepairOptions();
@@ -505,13 +505,13 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 
         /// Checks the status of the WindowsAppRuntime of the current package and attempts to
         /// repair already installed WinAppSDK packages.
-        [contract(DeploymentContract, 3)]
+        [contract(DeploymentContract, 4)]
         static DeploymentResult Repair();
 
         /// Checks the status of the WindowsAppRuntime of the current package and attempts to
-        /// repair already installed WinAppSDK packages, while applying the DeploymentInitializeOptions
+        /// repair already installed WinAppSDK packages, while applying the DeploymentRepairOptions
         /// passed in.
-        [contract(DeploymentContract, 3)]
+        [contract(DeploymentContract, 4)]
         [overload("Repair")]
         static DeploymentResult Repair(Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentRepairOptions deploymentRepairOptions);
     };
