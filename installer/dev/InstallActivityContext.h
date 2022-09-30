@@ -39,7 +39,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         GUID m_deploymentErrorActivityId{};
         WindowsAppRuntimeInstaller_TraceLogger::Install m_activity;
         WilFailure m_lastFailure{};
-        HANDLE m_hEventLog;
+        HANDLE m_hEventLog{};
         bool m_isLocalSystemUser{ Security::User::IsLocalSystem() };
         winrt::hstring m_existingPackageIfHigherVersion;
 
