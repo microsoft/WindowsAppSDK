@@ -32,6 +32,7 @@
 #include <Security.IntegrityLevel.h>
 #include <Security.User.h>
 #include <PushNotifications-Constants.h>
+#include <AppModel.Package.h>
 
 #include "tracelogging.h"
 #include "InstallActivityContext.h"
