@@ -112,9 +112,6 @@
     <ProjectReference Include="..\WindowsAppRuntime.Test.Singleton\WindowsAppRuntime.Test.Singleton.vcxproj">
       <Project>{0b01db78-f115-4c90-b28f-7819071303c6}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\eng\PackageReference\InteractiveExperiences\Microsoft.InteractiveExperiences.PackageReference.csproj">
-      <Project>{a765ec31-c719-4fe1-bc9b-ab117ef5bb41}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

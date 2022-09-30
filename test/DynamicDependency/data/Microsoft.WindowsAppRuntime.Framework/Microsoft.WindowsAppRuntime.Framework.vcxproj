@@ -99,9 +99,6 @@
     <ProjectReference Include="..\..\..\..\dev\WindowsAppRuntime_DLL\WindowsAppRuntime_DLL.vcxproj">
       <Project>{b73ad907-6164-4294-88fb-f3c9c10da1f1}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\eng\PackageReference\InteractiveExperiences\Microsoft.InteractiveExperiences.PackageReference.csproj">
-      <Project>{a765ec31-c719-4fe1-bc9b-ab117ef5bb41}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

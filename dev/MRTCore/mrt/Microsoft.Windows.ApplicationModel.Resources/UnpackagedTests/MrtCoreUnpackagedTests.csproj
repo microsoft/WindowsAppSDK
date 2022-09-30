@@ -78,9 +78,6 @@
       <Project>{9b3b03bc-1bc0-43ea-b3ff-d5214f3cf5cf}</Project>
       <Name>Microsoft.Windows.ApplicationModel.Resources</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\eng\PackageReference\InteractiveExperiences\Microsoft.InteractiveExperiences.PackageReference.csproj">
-      <Project>{a765ec31-c719-4fe1-bc9b-ab117ef5bb41}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\Microsoft.Taef.10.58.210222006-develop\build\Microsoft.Taef.targets" Condition="Exists('..\..\packages\Microsoft.Taef.10.58.210222006-develop\build\Microsoft.Taef.targets')" />

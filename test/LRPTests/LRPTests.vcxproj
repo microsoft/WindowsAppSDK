@@ -125,9 +125,6 @@
     <ProjectReference Include="..\..\dev\PushNotifications\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.vcxproj">
       <Project>{bf3fced0-cadb-490a-93a7-4d90e1f45ab0}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\eng\PackageReference\InteractiveExperiences\Microsoft.InteractiveExperiences.PackageReference.csproj">
-      <Project>{a765ec31-c719-4fe1-bc9b-ab117ef5bb41}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
     <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />

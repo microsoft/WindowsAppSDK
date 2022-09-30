@@ -134,9 +134,6 @@
     <ProjectReference Include="$(RepoRoot)\dev\PushNotifications\PushNotificationsLongRunningTask\PushNotificationsLongRunningTask.vcxproj">
       <Project>{1307dd1b-bbe8-4cd0-b1a0-0db6d61eeaa0}</Project>
     </ProjectReference>
-    <ProjectReference Include="$(RepoRoot)\eng\PackageReference\InteractiveExperiences\Microsoft.InteractiveExperiences.PackageReference.csproj">
-      <Project>{a765ec31-c719-4fe1-bc9b-ab117ef5bb41}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
