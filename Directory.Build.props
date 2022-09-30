@@ -67,7 +67,11 @@
     <RemoveDir Directories="$(IntermediateOutputPath)" />
   </Target>
 
+  <!-- Some projects depends on the FrameworkUdk -->
   <PropertyGroup Condition="'$(Platform)'=='Win32'">
+    <FrameworkUdkDll>$(MSBuildThisFileDirectory)\packages\microsoft.projectReunion.interactiveexperiences.transportpackage\$(IxpVersion)\runtimes\win10-x86\native\Microsoft.Internal.FrameworkUdk.dll</FrameworkUdkDll>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)'=='x86'">
     <FrameworkUdkDll>$(MSBuildThisFileDirectory)\packages\microsoft.projectReunion.interactiveexperiences.transportpackage\$(IxpVersion)\runtimes\win10-x86\native\Microsoft.Internal.FrameworkUdk.dll</FrameworkUdkDll>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='x64'">
