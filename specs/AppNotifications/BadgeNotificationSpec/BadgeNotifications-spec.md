@@ -46,7 +46,7 @@ Posting a badge will require a single line of code, instead of 5-6 lines that de
 
 Notes:
 
-- Developers won't be able to post 0 or negative numbers for their badges.
+- Developers won't be able to post a badge with the value as negative or zero. The API will throw for the latter.
 
 - If the specified number is greater than 99, a **99+** text will be rendered.
 
@@ -71,8 +71,10 @@ BadgeNotificationManager::ShowCustom(Uri{iconFilepath});
 
 Notes:
 
-- The URI is expected to be a full path.
+- The URI is expected to be a full path, under the process path folder.
+- Packaged apps will have the option to pass a ms-appx URI.
 - Only local file paths will be supported.
+- Tentative supported file formats: .ico, .png, .bmp, .jpg.
 
 ### 4. Clear a badge
 
@@ -84,7 +86,7 @@ BadgeNotificationManager::Clear();
 
 - **Badge replacement:** Any subsequent `BadgeNotificationManager::Show*` API call will replace any previous badge, if applicable.
 
-- **Badge lifetime:** Badges will be tied to the lifetime of the app window for all apps. If the app is closed, the badge will be cleared. This behavior is managed by the Taskbar. In the Windows SDK, the Taskbar is able to persist packaged app badges beyond window lifetime.
+- **Badge lifetime:** Badges will be tied to the lifetime of the app window for all apps. If the app is closed, the badge will be cleared. This behavior is managed by the Taskbar. In the Windows SDK, the Taskbar is able to persist packaged app badges beyond window lifetime. The implementation will call `ITaskbarList3::SetOverlayIcon(HWND, HICON, LPCWSTR description)` to post the badge. [Click here to check the SetOverlayIcon API doc](https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-setoverlayicon).
 
 - **Background support:** Background badge updates won't be supported at this point.
 
@@ -128,3 +130,7 @@ namespace Microsoft.Windows.AppNotifications.Badges
     }
 }
 ```
+
+Notes:
+
+- I considered having a Badge object to have a single `Show(Badge)` function. However, such Badge object would not expose any property, so I opted to have multiple `Show*` overloads instead.
