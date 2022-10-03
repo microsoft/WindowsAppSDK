@@ -7,4 +7,8 @@
     <Copyright>Copyright (c) Microsoft Corporation. All rights reserved.</Copyright>
     <AssemblyTitle>Microsoft.FrameworkUdk.PackageReference</AssemblyTitle>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.FrameworkUdk" version="$(FrameworkUdkVersion)" />
+  </ItemGroup>
 </Project>
