@@ -37,7 +37,10 @@ if(-not (test-path ".nuget\nuget.exe"))
 & .\.nuget\nuget.exe restore "build\packages.config" -PackagesDirectory packages -ConfigFile "build\licensing.nuget.config"
 & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile nuget.config
 & .\.nuget\nuget.exe restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" -configfile nuget.config
+
+# If the call to restore WindowsAppRuntime_Insights fails check to make sure all Window SDK's from 17760 are installed.
 & .\.nuget\nuget.exe restore "dev\WindowsAppRuntime_Insights\packages.config" -ConfigFile "dev\WindowsAppRuntime_Insights\nuget.config" -PackagesDirectory "dev\WindowsAppRuntime_Insights\packages"
+
 
 $VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath
 write-host "VCToolsInstallDir: $VCToolsInstallDir"
