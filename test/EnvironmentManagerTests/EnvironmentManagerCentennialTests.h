@@ -62,9 +62,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
         TEST_METHOD(CentennialTestGetForUser);
         TEST_METHOD(CentennialTestGetForMachine);
 
-        BEGIN_TEST_METHOD(CentennialTestAreChangesTracked)
-            TEST_METHOD_PROPERTY(L"Data:SelfContained", L"{true, false}")
-        END_TEST_METHOD()
+        TEST_METHOD(CentennialTestAreChangesTracked);
 
         TEST_METHOD(CentennialTestGetEnvironmentVariablesForProcess);
         TEST_METHOD(CentennialTestGetEnvironmentVariablesForUser);
