@@ -9,6 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.FrameworkUdk" version="$(FrameworkUdkVersion)" />
+    <PackageReference Include="Microsoft.FrameworkUdk" version="$(FrameworkUdkVersion)" NoWarn="NU1202" />
   </ItemGroup>
 </Project>
