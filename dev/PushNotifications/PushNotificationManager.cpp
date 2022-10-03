@@ -132,7 +132,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         // Elevated processes are not supported by PushNotifications. UnpackagedAppScenario is not supported when it is self contained
         // because the PushNotificationsLongRunningProcess is unavailable due to missing the Singleton package.
-        static bool isSupported{ !Security::IntegrityLevel::IsElevated() && (PushNotificationHelpers::IsPackagedAppScenario() || !WindowsAppRuntime::SelfContained::IsSelfContained()) };
+        static bool isSupported{ PushNotificationHelpers::IsPackagedAppScenario() || !WindowsAppRuntime::SelfContained::IsSelfContained() };
         return isSupported;
 
     }
@@ -377,6 +377,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             PushNotificationTelemetry::LogRegister(hr);
         }) };
 
+        // Need to clear the RoActivateInstance caching for LRP proxyStub to be found.
+        PushNotificationHelpers::ClearRoActivateInstanceCache();
         try
         {
             {

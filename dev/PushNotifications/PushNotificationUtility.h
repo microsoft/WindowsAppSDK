@@ -10,6 +10,9 @@
 #include "wil/win32_helpers.h"
 #include "PushBackgroundTaskInstance.h"
 #include <filesystem>
+#include "roapi.h"
+#include <windows.foundation.h>
+#include <wil/resource.h>
 
 namespace winrt
 {
@@ -127,9 +130,18 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
     }
     CATCH_RETURN()
 
+    inline void ClearRoActivateInstanceCache()
+    {
+        // Activating a nonexistent class clears the cache enables the proxyStub to be found for elevated scenarios
+        auto activatableClass{ wil::make_unique_string_nothrow<wil::unique_hstring>(L"FakeClass.ClassName") };
+        winrt::com_ptr<::IInspectable> ptr{};
+
+        RoActivateInstance(activatableClass.get(), ptr.put());
+    }
+
     inline wil::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
     {
-        return wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER);
+        return wil::CoCreateInstance<INotificationsLongRunningPlatform>(CLSID_NotificationsLongRunningPlatform, (CLSCTX_LOCAL_SERVER | CLSCTX_ALLOW_LOWER_TRUST_REGISTRATION));
     }
 
     inline bool IsBackgroundTaskBuilderAvailable()
@@ -140,7 +152,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 
     inline bool IsPackagedAppScenario()
     {
-        return AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable();
+        return false;
     }
 
     inline HRESULT GetPackageFullName(wil::unique_cotaskmem_string& packagedFullName) noexcept try

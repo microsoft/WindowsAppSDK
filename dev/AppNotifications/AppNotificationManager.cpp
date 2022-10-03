@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -116,6 +116,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             AppNotificationTelemetry::LogRegister(hr, m_appId);
         }) };
 
+        // Need to clear the RoActivateInstance caching for LRP proxyStub to be found.
+        PushNotificationHelpers::ClearRoActivateInstanceCache();
         try
         {
             {
@@ -167,6 +169,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             AppNotificationTelemetry::LogRegister(hr, m_appId);
         }) };
 
+        // Need to clear the RoActivateInstance caching for LRP proxyStub to be found.
+        PushNotificationHelpers::ClearRoActivateInstanceCache();
         try
         {
             THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, AppModel::Identity::IsPackagedProcess(), "Not applicable for packaged applications");

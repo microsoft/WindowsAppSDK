@@ -16,9 +16,10 @@ namespace WindowsAppRuntime::SelfContained
 /// Return true if Windows App SDK in use by the current process is deployed Self-Contained.
 inline bool IsSelfContained()
 {
-    BOOL isSelfContained{};
+    /*BOOL isSelfContained{};
     THROW_IF_FAILED(WindowsAppRuntime_IsSelfContained(&isSelfContained));
-    return !!isSelfContained;
+    return !!isSelfContained;*/
+    return false;
 }
 }
 #endif // defined(__cplusplus)
