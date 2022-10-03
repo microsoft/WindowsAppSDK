@@ -14,6 +14,8 @@ parameters:
 
 steps:
   - ${{ if eq(parameters.enableLicenseInstall, true) }}:
+    - task: NuGetToolInstaller@1
+
     - task: NuGetAuthenticate@0
       inputs:
         nuGetServiceConnections: 'ProjectReunionInternal'
@@ -60,6 +62,8 @@ steps:
     displayName: 'Display build machine environment variables'
     inputs:
       filename: 'set'
+
+  - task: NuGetToolInstaller@1
 
   - task: NuGetAuthenticate@0
     inputs:
