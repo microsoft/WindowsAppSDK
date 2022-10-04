@@ -1,0 +1,4 @@
+LIBRARY Microsoft.Security.Authentication.OAuth
+EXPORTS
+    DllCanUnloadNow PRIVATE
+    DllGetActivationFactory PRIVATE

@@ -408,6 +408,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_DeploymentManagerAutoI
 	EndProjectSection
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.AppNotifications.Builder.Projection", "dev\Projections\CS\Microsoft.Windows.AppNotifications.Builder.Projection\Microsoft.Windows.AppNotifications.Builder.Projection.csproj", "{50BF3E96-3050-4053-B012-BF6993483DA5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OAuth", "OAuth", "{4A3ACD67-5C57-474D-87BF-675676D7451A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OAuth", "dev\OAuth\OAuth.vcxitems", "{3E7FD510-8B66-40E7-A80B-780CB8972F83}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VersionInfo", "VersionInfo", "{2A2D1131-273C-4E17-BCD3-8812170A4B95}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VersionInfo", "dev\VersionInfo\VersionInfo.vcxitems", "{E3EDEC7F-A24E-4766-BB1D-6BDFBA157C51}"
@@ -452,6 +456,7 @@ Global
 		dev\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems*{e15c3465-9d45-495d-92ce-b91ef45e8623}*SharedItemsImports = 9
 		dev\AppLifecycle\AppLifecycle.vcxitems*{e3a522a3-6635-4a42-bded-1af46a15f63c}*SharedItemsImports = 9
 		dev\AppNotifications\AppNotificationBuilder\AppNotificationBuilder.vcxitems*{e49329f3-5196-4bba-b5c4-e11ce7efb07a}*SharedItemsImports = 9
+		dev\OAuth\OAuth.vcxitems*{3E7FD510-8B66-40E7-A80B-780CB8972F83}*SharedItemsImports = 9
 		dev\VersionInfo\VersionInfo.vcxitems*{e3edec7f-a24e-4766-bb1d-6bdfba157c51}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{e5659a29-fe68-417b-9bc5-613073dd54df}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{e977b1bd-00dc-4085-a105-e0a18e0183d7}*SharedItemsImports = 4
@@ -1749,6 +1754,8 @@ Global
 		{676BA502-4220-465A-A9ED-ED22CDE4A24B} = {3A37083C-AA67-461E-BA78-0E0A65FE0C22}
 		{5A4FBF6D-04A2-4061-B11F-1A0E64129610} = {3A37083C-AA67-461E-BA78-0E0A65FE0C22}
 		{50BF3E96-3050-4053-B012-BF6993483DA5} = {716C26A0-E6B0-4981-8412-D14A4D410531}
+		{4A3ACD67-5C57-474D-87BF-675676D7451A} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{3E7FD510-8B66-40E7-A80B-780CB8972F83} = {4A3ACD67-5C57-474D-87BF-675676D7451A}
 		{2A2D1131-273C-4E17-BCD3-8812170A4B95} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{E3EDEC7F-A24E-4766-BB1D-6BDFBA157C51} = {2A2D1131-273C-4E17-BCD3-8812170A4B95}
 		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}

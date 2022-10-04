@@ -1,0 +1,462 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace Microsoft.Security.Authentication.OAuth
+{
+    [contractversion(1)]
+    apicontract OAuthContract {};
+
+    [contract(OAuthContract, 1)]
+    runtimeclass ClientAuthentication
+    {
+        ClientAuthentication();
+        ClientAuthentication(Windows.Web.Http.Headers.HttpCredentialsHeaderValue authorization);
+
+        static ClientAuthentication CreateForBasicAuthorization(String clientId, String clientSecret);
+
+        // Specifies the 'Authorization' header of the HTTP POST request when requesting a token
+        Windows.Web.Http.Headers.HttpCredentialsHeaderValue Authorization { get; set; };
+
+        // Specifies the 'Proxy-Authorization' header of the HTTP POST request when requesting a token
+        Windows.Web.Http.Headers.HttpCredentialsHeaderValue ProxyAuthorization { get; set; };
+
+        // Specifies additional header values of the HTTP POST request when requesting a token
+        Windows.Foundation.Collections.IMap<String, String> AdditionalHeaders { get; set; };
+    }
+
+    [contract(OAuthContract, 1)]
+    static runtimeclass AuthManager
+    {
+        // Initiates an authorization request in the user's default browser as described by RFC 6749 section 3.1. The
+        // returned 'IAsyncOperation' will remain in the 'Started' state until it is either cancelled or completed by a
+        // call to 'CompleteAuthRequest'.
+        static Windows.Foundation.IAsyncOperation<AuthRequestResult> InitiateAuthRequestAsync(
+            Windows.Foundation.Uri authEndpoint,
+            AuthRequestParams params);
+
+        // Called by the application when the user agent completes an auth request via a redirect Uri. Return value is
+        // true if an appropriate request could be found and completed. Otherwise returns false indicating that the
+        // response went unhandled and the application may respond as appropriate.
+        static Boolean CompleteAuthRequest(Windows.Foundation.Uri responseUri);
+
+        // Initiates an access token request as described by RFC 6749 section 3.2.
+        static Windows.Foundation.IAsyncOperation<TokenRequestResult> RequestTokenAsync(
+            Windows.Foundation.Uri tokenEndpoint,
+            TokenRequestParams params);
+
+        // Initiates an access token request as described by RFC 6749 section 3.2.
+        static Windows.Foundation.IAsyncOperation<TokenRequestResult> RequestTokenAsync(
+            Windows.Foundation.Uri tokenEndpoint,
+            TokenRequestParams params,
+            ClientAuthentication clientAuth);
+    }
+
+    // Correlates to the 'code_challenge_method' as described by section 4.3 of RFC 7636: Proof Key for Code Exchange by
+    // OAuth Public Clients (https://www.rfc-editor.org/rfc/rfc7636.html#section-4.3)
+    [contract(OAuthContract, 1)]
+    enum CodeChallengeMethodKind
+    {
+        // Suppresses the use of a code verifier. An error will be thrown if a code challenge string is set when this
+        // option is used
+        None = 0,
+        // Challenge method of "S256" (i.e. SHA256). This is the default unless explicitly set
+        S256 = 1,
+        // Challenge method of "plain" (i.e. send as plain text)
+        Plain = 2,
+    };
+
+    [contract(OAuthContract, 1)]
+    runtimeclass AuthRequestParams
+    {
+        // Construct with required parameters
+        AuthRequestParams(String responseType, String clientId);
+        // Construct with required parameters as well as a redirect URI, which is frequently specified
+        AuthRequestParams(String responseType, String clientId, Windows.Foundation.Uri redirectUri);
+
+        // Helper method to create for an authorization code grant request ("code" response type) with required
+        // parameters, per RFC 6749 section 4.1.1.
+        static AuthRequestParams CreateForAuthorizationCodeRequest(String clientId);
+        // Helper method to create for an authorization code grant request ("code" response type) with required
+        // parameters as well as a redirect URI, which is frequently specified.
+        static AuthRequestParams CreateForAuthorizationCodeRequest(String clientId, Windows.Foundation.Uri redirectUri);
+
+        // Helper method to create for an implicit grant request ("token" response type) with required parameters, per
+        // RFC 6749 section 4.2.1.
+        static AuthRequestParams CreateForImplicitRequest(String clientId);
+        // Helper method to create for an implicit grant request ("token" response type) with required parameters as
+        // well as a redirect URI, which is frequently specified.
+        static AuthRequestParams CreateForImplicitRequest(String clientId, Windows.Foundation.Uri redirectUri);
+
+        // Specifies the required "response_type" parameter of the authorization request. This property is initialized
+        // by the creation function used ("code" for 'CreateForAuthorizationCodeRequest' and "token" for
+        // 'CreateForImplicitRequest').
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, sections 4.1.1 and 4.2.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.1
+        String ResponseType { get; set; };
+
+        // Specifies the required "client_id" parameter of the authorization request. This property is initialized by
+        // the value provided in the creation function call.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, sections 4.1.1 and 4.2.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.1
+        String ClientId { get; set; };
+
+        // Specifies the optional "redirect_uri" parameter of the authorization request.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, sections 4.1.1 and 4.2.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.1
+        Windows.Foundation.Uri RedirectUri { get; set; };
+
+        // Specifies the recommended "state" parameter of the authorization request. Note that although this is not
+        // required by the OAuth standard, a state value will always be set to correlate requests and responses. This
+        // parameter can be manually specified, in which case it must be globally unique across the entire system,
+        // otherwise an error will be thrown. It is therefore recommended to let the API select a value for you as it
+        // will guarantee that a unique value will be used.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, sections 4.1.1 and 4.2.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.1
+        String State { get; set; };
+
+        // Specifies the optional "scope" parameter of the authorization request.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, sections 4.1.1 and 4.2.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.1
+        String Scope { get; set; };
+
+        // Used as the PKCE code verifier. Either this value or a hash of this value will be used to specify the
+        // "code_challenge" parameter of the authorization request, depending on the value of 'CodeChallengeMethod'. If
+        // this value is not specified and 'CodeChallengeMethod' is not 'None', a random value will be generated for
+        // this property. The code verifier will persist all the way through to the token request.
+        //
+        // Defined by RFC 7636: Proof Key for Code Exchange by OAuth Public Clients, section 4.1
+        //      https://www.rfc-editor.org/rfc/rfc7636#section-4.1
+        String CodeVerifier { get; set; };
+
+        // Specifies the optional "code_challenge_method" parameter of the authorization request. For authorization code
+        // requests, this value defaults to 'S256'. For implicit requests, this value defaults to 'None' and cannot be
+        // changed.
+        //
+        // Defined by RFC 7636: Proof Key for Code Exchange by OAuth Public Clients, section 4.3
+        //      https://www.rfc-editor.org/rfc/rfc7636#section-4.3
+        CodeChallengeMethodKind CodeChallengeMethod { get; set; };
+
+        // Additional parameters passed along in the query string of the request URL.
+        Windows.Foundation.Collections.IMap<String, String> AdditionalParams { get; set; };
+    }
+
+    [contract(OAuthContract, 1)]
+    runtimeclass AuthResponse
+    {
+        // From the "state" parameter of the authorization response. This property will always be set because a state
+        // value is always sent with the request.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, sections 4.1.2 and 4.2.2
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.2
+        String State { get; };
+
+        // From the "code" parameter of the authorization response. Set only if the request was an authorization code
+        // request.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.1.2
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2
+        String Code { get; };
+
+        // From the "access_token" parameter of the authorization response. Set only if the request was an implicit
+        // request.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.2.2
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.2
+        String AccessToken { get; };
+
+        // From the "token_type" parameter of the authorization response. Set only if the request was an implicit
+        // request.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.2.2
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.2
+        String TokenType { get; };
+
+        // From the "expires_in" parameter of the authorization response. An optional parameter that may be set only if
+        // the request was an implicit request.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.2.2
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.2
+        String ExpiresIn { get; }; // TODO: DateTime?
+
+        // From the "scope" parameter of the authorization response. An optional parameter that may be set only if the
+        // request was an implicit request.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.2.2
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.2
+        String Scope { get; };
+
+        // Additional parameters set by the authorization server in the response URI.
+        Windows.Foundation.Collections.IMapView<String, String> AdditionalParams { get; };
+    }
+
+    [contract(OAuthContract, 1)]
+    runtimeclass AuthFailure
+    {
+        // From the "error" parameter of the error response. The value of this property will map to a well known string
+        // specified in RFC 6749 sections 4.1.2.1 and 4.2.2.1, or approved extensions.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, sections 4.1.2.1 and 4.2.2.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.2.1
+        String Error { get; };
+
+        // From the "error_description" parameter of the error response. An optional parameter that, when set, provides
+        // additional human-readable information intended to assist the developer in understanding the error.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, sections 4.1.2.1 and 4.2.2.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.2.1
+        String ErrorDescription { get; };
+
+        // From the "error_uri" parameter of the error response. An optional parameter that, when set, specifies a URI
+        // identifying a human-readable webpage intended to assist the developer in understanding the error.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, sections 4.1.2.1 and 4.2.2.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.2.1
+        Windows.Foundation.Uri ErrorUri { get; };
+
+        // From the "state" parameter of the error response. This property will always be set because a state value is
+        // always sent with the request.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, sections 4.1.2.1 and 4.2.2.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.2.2.1
+        String State { get; };
+
+        // Additional parameters set by the authorization server in the response URI.
+        Windows.Foundation.Collections.IMapView<String, String> AdditionalParams { get; };
+    }
+
+    [contract(OAuthContract, 1)]
+    runtimeclass AuthRequestResult
+    {
+        // The raw URI that was used to complete the request.
+        Windows.Foundation.Uri ResponseUri { get; };
+
+        // Non-null if the server's response indicates success, otherwise null
+        AuthResponse Response { get; };
+
+        // Non-null if the server's response indicates failure, otherwise null
+        AuthFailure Failure { get; };
+    }
+
+    [contract(OAuthContract, 1)]
+    runtimeclass TokenRequestParams
+    {
+        // Construct with required parameters
+        TokenRequestParams(String grantType);
+
+        // Helper method to create for an authorization code grant request ("authorization_code" grant type),
+        // initialized with the required parameters extracted from the authorization response, per RFC 6749 section
+        // 4.1.3.
+        static TokenRequestParams CreateForAuthorizationCodeRequest(AuthResponse authResponse);
+
+        // Helper method to create for a resource owner password credentials grant request ("password" grant type),
+        // initialized with the required parameters, per RFC 6749 section 4.3.2.
+        static TokenRequestParams CreateForResourceOwnerPasswordCredentials(String username, String password);
+
+        // Helper method to create for a client credentials grant request ("client_credentials" grant type), initialized
+        // with the required parameters, per RFC 6749 section 4.4.2.
+        static TokenRequestParams CreateForClientCredentials();
+
+        // Helper method to create for an extension grant request, using the provided URI for the grant type, per RFC
+        // 6749 section 4.5.
+        static TokenRequestParams CreateForExtension(Windows.Foundation.Uri extensionUri);
+
+        // Helper method to create for an access token refresh request ("refresh_token" grant type), initialized with
+        // the required parameters, per RFC 6749 section 6.
+        static TokenRequestParams CreateForRefreshToken(String refreshToken);
+
+        // Specifies the required "grant_type" parameter of the token request. This property is initialized by the
+        // creation function used ("authorization_code" for 'CreateForAuthorizationCodeRequest', "password" for
+        // 'CreateForResourceOwnerPasswordCredentials', "client_credentials" for 'CreateForClientCredentials',
+        // "refresh_token" for 'CreateForRefreshToken', or the specified URI for 'CreateForExtension').
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, sections 4.1.3, 4.3.2, 4.4.2, 4.5, and 6
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.3
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.3.2
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.4.2
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.5
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-6
+        String GrantType { get; set; };
+
+        // Specifies the "code" parameter of the token request. This property is required when the grant type is
+        // "authorization_code" and is initialized by 'CreateForAuthorizationCodeRequest'.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.1.3
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.3
+        String Code { get; set; };
+
+        // Specifies the "redirect_uri" parameter of the token request. This property is required when the grant type is
+        // "authorization_code" and a redirect URI was included in the authorization request. This property is
+        // initialized by 'CreateForAuthorizationCodeRequest'.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.1.3
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.3
+        Windows.Foundation.Uri RedirectUri { get; set; };
+
+        // Specifies the "code_verifier" parameter of the token request. This property is required when the grant type
+        // is "authorization_code" and a code challenge was included in the authorization request. This property is
+        // initialized by 'CreateForAuthorizationCodeRequest'.
+        //
+        // Defined by RFC 7636: Proof Key for Code Exchange by OAuth Public Clients, section 4.5
+        //      https://www.rfc-editor.org/rfc/rfc7636#section-4.5
+        String CodeVerifier { get; set; };
+
+        // Specifies the "client_id" parameter of the token request. This property is required when the grant type is
+        // "authorization_code" and no alternative client authentication is specified. This property is initiated by
+        // 'CreateForAuthorizationCodeRequest'.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.1.3
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.1.3
+        String ClientId { get; set; };
+
+        // Specifies the "username" parameter of the token request. This property is required when the grant type is
+        // "password" and is initialized by 'CreateForResourceOwnerPasswordCredentials'.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.3.2
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.3.2
+        String Username { get; set; };
+
+        // Specifies the "password" parameter of the token request. This property is required when the grant type is
+        // "password" and is initialized by 'CreateForResourceOwnerPasswordCredentials'.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 4.3.2
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.3.2
+        String Password { get; set; };
+
+        // Specifies the "scope" parameter of the token request. This property is valid only when the grant type is
+        // "password", "client_credentials", or "refresh_token".
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, sections 4.3.2, 4.4.2, and 6
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.3.2
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-4.4.2
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-6
+        String Scope { get; set; };
+
+        // Specifies the "refresh_token" parameter of the token request. This property is required when the grant type
+        // is "refresh_token" and is initialized by 'CreateForRefreshToken'.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 6
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-6
+        String RefreshToken { get; set; };
+
+        // Additional parameters passed along in the HTTP request entity-body.
+        Windows.Foundation.Collections.IMap<String, String> AdditionalParams { get; set; };
+    }
+
+    [contract(OAuthContract, 1)]
+    runtimeclass TokenResponse
+    {
+        // From the "access_token" parameter of the token response. A required property that should always be set.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 5.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-5.1
+        String AccessToken { get; };
+
+        // From the "token_type" parameter of the token response. A required property that should always be set.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 5.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-5.1
+        String TokenType { get; };
+
+        // From the "expires_in" parameter of the token response. An optional property that, when set, specifies the
+        // lifetime of the access token in seconds.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 5.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-5.1
+        Double ExpiresIn { get; }; // TODO: DateTime?
+
+        // From the "refresh_token" parameter of the token response. An optional property that, when set, can be used to
+        // obtain new access tokens using the same authorization grant provided during the request.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 5.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-5.1
+        String RefreshToken { get; };
+
+        // From the "scope" parameter of the token response. An optional property that, when set, describes the scope of
+        // the access token issued by the authorization server.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 5.1
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-5.1
+        String Scope { get; };
+
+        // Additional parameters set by the authorization server in the token response.
+        Windows.Foundation.Collections.IMapView<String, Windows.Data.Json.IJsonValue> AdditionalParams { get; };
+    }
+
+    [contract(OAuthContract, 1)]
+    enum TokenFailureKind
+    {
+        // The server responded with an error response as described by RFC 6749 section 5.2. This means that the failure
+        // object has an 'Error' string and possibly other specified properties.
+        ErrorResponse = 0,
+
+        // The HTTP POST request failed. See the 'ErrorCode' property for more details as to why.
+        HttpFailure = 1,
+
+        // The server responded, but its response was improperly formatted. This could be that the server did not send
+        // the response as JSON, the response JSON string was improperly formatted, or the response JSON contained
+        // unexpected object types (e.g. a number when a string is expected, etc.).
+        InvalidResponse = 2,
+    };
+
+    [contract(OAuthContract, 1)]
+    runtimeclass TokenFailure
+    {
+        // Indicates the type of failure that this object describes, which will indicate which properties might be set.
+        TokenFailureKind Kind { get; };
+
+        // If 'Kind' was anything other than 'ErrorResponse',
+        HRESULT ErrorCode { get; };
+
+        // From the "error" parameter of the error response. The value of this property will map to a well known string
+        // specified in RFC 6749 section 5.2, or approved extensions.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 5.2
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-5.2
+        String Error { get; };
+
+        // From the "error_description" parameter of the error response. An optional parameter that, when set, provides
+        // additional human-readable information intended to assist the developer in understanding the error.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 5.2
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-5.2
+        String ErrorDescription { get; };
+
+        // From the "error_uri" parameter of the error response. An optional parameter that, when set, specifies a URI
+        // identifying a human-readable webpage intended to assist the developer in understanding the error.
+        //
+        // Defined by RFC 6749: The OAuth 2.0 Authorization Framework, section 5.2
+        //      https://www.rfc-editor.org/rfc/rfc6749#section-5.2
+        Windows.Foundation.Uri ErrorUri { get; };
+
+        // Additional parameters set by the authorization server in the token response.
+        Windows.Foundation.Collections.IMapView<String, Windows.Data.Json.IJsonValue> AdditionalParams { get; };
+    }
+
+    [contract(OAuthContract, 1)]
+    runtimeclass TokenRequestResult
+    {
+        // The raw HTTP response that was used to complete the request
+        Windows.Web.Http.HttpResponseMessage ResponseMessage { get; };
+
+        // Non-null if the server's response indicates success, otherwise null
+        TokenResponse Response { get; };
+
+        // Non-null if the server's response indicates failure, otherwise null
+        TokenFailure Failure { get; };
+    }
+}

@@ -96,6 +96,7 @@
     <Import Project="..\Licensing\Licensing.vcxitems" Label="Shared" />
     <Import Project="..\EnvironmentManager\API\Microsoft.Process.Environment.vcxitems" Label="EnvironmentManager" />
     <Import Project="..\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems" Label="ChangeTracker" />
+    <Import Project="..\OAuth\OAuth.vcxitems" Label="OAuth" />
     <Import Project="..\VersionInfo\VersionInfo.vcxitems" Label="VersionInfo" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
