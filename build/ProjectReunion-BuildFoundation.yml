@@ -42,7 +42,9 @@ jobs:
 
 - job: VerifyCopyrightHeaders
   dependsOn: []
-  pool: ProjectReunionESPool-2022
+  pool:
+    name: ProjectReunionESPool-2022
+    demands: ImageOverride -equals MMS2022
   steps:
   - task: powershell@2
     displayName: 'Verify copyright headers'
