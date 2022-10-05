@@ -3,6 +3,8 @@
 
 #include <shared_mutex>
 
+#include "LockableMap.h"
+
 namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
 {
     struct TokenRequestParams : TokenRequestParamsT<TokenRequestParams>
@@ -36,7 +38,6 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
         winrt::hstring RefreshToken();
         void RefreshToken(const winrt::hstring& value);
         collections::IMap<winrt::hstring, winrt::hstring> AdditionalParams();
-        void AdditionalParams(const collections::IMap<winrt::hstring, winrt::hstring>& value);
 
         // Implementation functions
         void finalize();
@@ -64,8 +65,8 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
         winrt::hstring m_password;
         winrt::hstring m_scope;
         winrt::hstring m_refreshToken;
-        collections::IMap<winrt::hstring, winrt::hstring> m_additionalParams =
-            winrt::multi_threaded_map<winrt::hstring, winrt::hstring>();
+        winrt::com_ptr<LockableMap<winrt::hstring, winrt::hstring>> m_additionalParams =
+            winrt::make_self<LockableMap<winrt::hstring, winrt::hstring>>();
     };
 }
 

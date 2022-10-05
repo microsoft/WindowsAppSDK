@@ -21,7 +21,7 @@ namespace Microsoft.Security.Authentication.OAuth
         Windows.Web.Http.Headers.HttpCredentialsHeaderValue ProxyAuthorization { get; set; };
 
         // Specifies additional header values of the HTTP POST request when requesting a token
-        Windows.Foundation.Collections.IMap<String, String> AdditionalHeaders { get; set; };
+        Windows.Foundation.Collections.IMap<String, String> AdditionalHeaders { get; };
     }
 
     [contract(OAuthContract, 1)]
@@ -147,7 +147,7 @@ namespace Microsoft.Security.Authentication.OAuth
         CodeChallengeMethodKind CodeChallengeMethod { get; set; };
 
         // Additional parameters passed along in the query string of the request URL.
-        Windows.Foundation.Collections.IMap<String, String> AdditionalParams { get; set; };
+        Windows.Foundation.Collections.IMap<String, String> AdditionalParams { get; };
     }
 
     [contract(OAuthContract, 1)]
@@ -354,7 +354,7 @@ namespace Microsoft.Security.Authentication.OAuth
         String RefreshToken { get; set; };
 
         // Additional parameters passed along in the HTTP request entity-body.
-        Windows.Foundation.Collections.IMap<String, String> AdditionalParams { get; set; };
+        Windows.Foundation.Collections.IMap<String, String> AdditionalParams { get; };
     }
 
     [contract(OAuthContract, 1)]

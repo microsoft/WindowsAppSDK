@@ -56,10 +56,4 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
         std::shared_lock guard{ m_mutex };
         return m_additionalHeaders;
     }
-
-    void ClientAuthentication::AdditionalHeaders(winrt::Windows::Foundation::Collections::IMap<hstring, hstring> const& value)
-    {
-        std::lock_guard guard{ m_mutex };
-        m_additionalHeaders = value;
-    }
 }

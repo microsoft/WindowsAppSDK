@@ -187,14 +187,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
     IMap<winrt::hstring, winrt::hstring> TokenRequestParams::AdditionalParams()
     {
         std::shared_lock guard{ m_mutex };
-        return m_additionalParams;
-    }
-
-    void TokenRequestParams::AdditionalParams(const IMap<winrt::hstring, winrt::hstring>& value)
-    {
-        std::lock_guard guard{ m_mutex };
-        check_not_finalized();
-        m_additionalParams = value;
+        return *m_additionalParams;
     }
 
     void TokenRequestParams::finalize()
@@ -206,6 +199,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
         }
 
         m_finalized = true;
+        m_additionalParams->lock();
     }
 
     std::map<winrt::hstring, winrt::hstring> TokenRequestParams::params()
@@ -232,7 +226,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
         addIfSet(L"refresh_token", m_refreshToken);
         if (m_additionalParams)
         {
-            for (auto&& pair : m_additionalParams)
+            for (auto&& pair : IMap<winrt::hstring, winrt::hstring>{ *m_additionalParams })
             {
                 result.emplace(pair.Key(), pair.Value());
             }

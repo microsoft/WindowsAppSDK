@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include "common.h"
 
 #include "AuthRequestParams.h"
@@ -142,14 +142,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
     IMap<winrt::hstring, winrt::hstring> AuthRequestParams::AdditionalParams()
     {
         std::shared_lock guard{ m_mutex };
-        return m_additionalParams;
-    }
-
-    void AuthRequestParams::AdditionalParams(const IMap<winrt::hstring, winrt::hstring>& value)
-    {
-        std::lock_guard guard{ m_mutex };
-        check_not_finalized();
-        m_additionalParams = value;
+        return *m_additionalParams;
     }
 
     void AuthRequestParams::finalize()
@@ -161,6 +154,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
         }
 
         m_finalized = true;
+        m_additionalParams->lock();
 
         if (!m_codeVerifier.empty() && (m_codeChallengeMethod == CodeChallengeMethodKind::None))
         {
@@ -239,7 +233,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
 
         if (m_additionalParams)
         {
-            for (auto&& pair : m_additionalParams)
+            for (auto&& pair : IMap<winrt::hstring, winrt::hstring>{ *m_additionalParams })
             {
                 result += L"&";
                 result += Uri::EscapeComponent(pair.Key());
@@ -249,15 +243,5 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
         }
 
         return result;
-    }
-
-    void AuthRequestParams::check_not_finalized()
-    {
-        // NOTE: Lock should be held when calling
-        if (m_finalized)
-        {
-            throw winrt::hresult_illegal_method_call(
-                L"AuthRequestParams object cannot be modified after being used to initiate a request");
-        }
     }
 }

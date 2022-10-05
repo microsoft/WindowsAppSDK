@@ -3,6 +3,8 @@
 
 #include <shared_mutex>
 
+#include "LockableMap.h"
+
 namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
 {
     struct AuthRequestParams : AuthRequestParamsT<AuthRequestParams>
@@ -34,7 +36,6 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
         oauth::CodeChallengeMethodKind CodeChallengeMethod();
         void CodeChallengeMethod(oauth::CodeChallengeMethodKind value);
         collections::IMap<hstring, winrt::hstring> AdditionalParams();
-        void AdditionalParams(const collections::IMap<winrt::hstring, winrt::hstring>& value);
 
         // Implementation functions
         void finalize();
@@ -43,7 +44,15 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
         std::wstring create_url(const foundation::Uri& authEndpoint);
 
     private:
-        void check_not_finalized();
+        void check_not_finalized()
+        {
+            // NOTE: Lock should be held when calling
+            if (m_finalized)
+            {
+                throw winrt::hresult_illegal_method_call(
+                    L"AuthRequestParams object cannot be modified after being used to initiate a request");
+            }
+        }
 
         std::shared_mutex m_mutex;
         bool m_finalized = false;
@@ -54,8 +63,8 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
         winrt::hstring m_scope;
         winrt::hstring m_codeVerifier;
         oauth::CodeChallengeMethodKind m_codeChallengeMethod;
-        collections::IMap<winrt::hstring, winrt::hstring> m_additionalParams =
-            winrt::multi_threaded_map<winrt::hstring, winrt::hstring>();
+        winrt::com_ptr<LockableMap<winrt::hstring, winrt::hstring>> m_additionalParams =
+            winrt::make_self<LockableMap<winrt::hstring, winrt::hstring>>();
     };
 }
 

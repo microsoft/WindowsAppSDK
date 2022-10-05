@@ -18,7 +18,6 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
         http::Headers::HttpCredentialsHeaderValue ProxyAuthorization();
         void ProxyAuthorization(http::Headers::HttpCredentialsHeaderValue const& value);
         collections::IMap<winrt::hstring, winrt::hstring> AdditionalHeaders();
-        void AdditionalHeaders(collections::IMap<winrt::hstring, winrt::hstring> const& value);
 
     private:
         std::shared_mutex m_mutex;
