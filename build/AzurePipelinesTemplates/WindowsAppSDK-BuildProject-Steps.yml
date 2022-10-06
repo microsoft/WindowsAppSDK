@@ -50,6 +50,7 @@ steps:
 
   # The environment variable VCToolsInstallDir isn't defined on lab machines, so we need to retrieve it ourselves.
   - script: |
+      "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe -all" 
       "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath > %TEMP%\vsinstalldir.txt
       set /p _VSINSTALLDIR15=<%TEMP%\vsinstalldir.txt
       del %TEMP%\vsinstalldir.txt
