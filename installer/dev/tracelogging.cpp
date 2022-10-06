@@ -79,7 +79,8 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                     installActivityContext.GetCurrentResourceId().c_str(),
                     installActivityContext.GetDeploymentErrorHresult(),
                     installActivityContext.GetDeploymentErrorText().c_str(),
-                    installActivityContext.GetDeploymentErrorActivityId());
+                    installActivityContext.GetDeploymentErrorActivityId(),
+                    installActivityContext.GetExistingPackageIfHigherVersion().c_str());
 
                 installActivityContext.LogInstallerFailureEvent(failure.hr);
                 break;
