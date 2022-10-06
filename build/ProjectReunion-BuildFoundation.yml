@@ -94,6 +94,8 @@ jobs:
   - checkout: self
     persistCredentials: true
 
+  - task: NuGetToolInstaller@1
+
   - task: NuGetAuthenticate@0
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
@@ -167,6 +169,8 @@ jobs:
       filePath: tools\DevCheck.ps1
       arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
       workingDirectory: '$(Build.SourcesDirectory)'
+
+  - task: NuGetToolInstaller@1
 
   - task: NuGetAuthenticate@0
     inputs:
@@ -247,6 +251,8 @@ jobs:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
   steps:
+  - task: NuGetToolInstaller@1
+
   - task: NuGetAuthenticate@0
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
