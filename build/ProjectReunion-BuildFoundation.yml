@@ -37,22 +37,22 @@ resources:
     ref: refs/heads/main
 
 jobs:
-# This relatively low-cost job is always run, in parallel w/ the Build job.
-- template: AzurePipelinesTemplates\WindowsAppSDK-SourceAnalysis-job.yml
+# # This relatively low-cost job is always run, in parallel w/ the Build job.
+# - template: AzurePipelinesTemplates\WindowsAppSDK-SourceAnalysis-job.yml
 
-- job: VerifyCopyrightHeaders
-  dependsOn: []
-  pool: ProjectReunionESPool-2022
-  steps:
-  - task: powershell@2
-    displayName: 'Verify copyright headers'
-    inputs:
-      targetType: filePath
-      filePath: tools\VerifyCopyrightHeaders.ps1
+# - job: VerifyCopyrightHeaders
+#   dependsOn: []
+#   pool: ProjectReunionESPool-2022
+#   steps:
+#   - task: powershell@2
+#     displayName: 'Verify copyright headers'
+#     inputs:
+#       targetType: filePath
+#       filePath: tools\VerifyCopyrightHeaders.ps1
 
 - job: Build
-  dependsOn:
-    - VerifyCopyrightHeaders
+  # dependsOn:
+  #   - VerifyCopyrightHeaders
   # Skip the build job if we are reusing the output of a previous build.
   # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
   condition: |
@@ -63,11 +63,43 @@ jobs:
     )
   pool: ProjectReunionESPool-2022
   steps:
+  - task: NuGetToolInstaller@1
+
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: 'TelemetryInternal'
+
+  - task: PowerShell@2
+    name: SetVersion
+    displayName: Update metapackage version
+    inputs:
+      targetType: 'inline'
+      script: |
+        $packageVersion = '$(version)'
+        $pipelineType = '$(PipelineType)'
+        $sourceBranchName = '$(Build.SourceBranchName)'
+        if ($sourceBranchName -eq 'main' -or $sourceBranchName -eq 'develop')
+        {
+          $packageVersion = $packageVersion + '.' + $sourceBranchName + '.' + $pipelineType
+        }
+        Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
+        Write-Host "##vso[task.setvariable variable=packageVersion;isOutput=true;]$packageVersion"
+        Write-Host $packageVersion
+        [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
+        $publicNuspec.package.metadata.version = $packageVersion
+        Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
+
   - task: PowerShell@2
     name: BuildTransportPackage
     inputs:
       filePath: 'BuildTransportPackage.ps1'
-      arguments: -Platform "arm64,x86,x634" -Configuration "release"
+      arguments: -Platform "arm64,x86,x634" -Configuration "release" -AzureBuildStep "BuildBinaries"
+
+  - task: PowerShell@2
+    name: BuildTransportPackage
+    inputs:
+      filePath: 'BuildTransportPackage.ps1'
+      arguments: -Platform "arm64,x86,x634" -Configuration "release" -AzureBuildStep "PackNuget"
 
 # # Publish
 # - job: Publish
