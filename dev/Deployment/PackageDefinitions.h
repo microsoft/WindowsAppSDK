@@ -14,6 +14,7 @@
 #define WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DDLM                  L"DDLM"
 #define WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER                  L"MSIX"
 #define WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FILE_EXTENSION          L".msix"
+#define WINDOWSAPPRUNTIME_PACKAGE_MANIFEST_FILE                     L"AppxManifest.xml"
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
@@ -48,4 +49,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         { WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX,      WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_MAIN,      PackageVersionType::Versioned   },
         { WINDOWSAPPRUNTIME_PACKAGE_NAME_SINGLETONPREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, PackageVersionType::Unversioned },
     };
+
+    // Record existing target package full name(s) to deploy (specifically, re-register) if it's higher version than that of the current framework package version, in this global map.
+    static std::map<std::wstring, std::wstring> g_existingTargetPackagesIfHigherVersion;
 }

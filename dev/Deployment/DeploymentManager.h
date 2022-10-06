@@ -22,7 +22,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     private:
         static WindowsAppRuntime::DeploymentResult GetStatus(hstring const& packageFullName);
         static WindowsAppRuntime::DeploymentResult Initialize(hstring const& packageFullName);
-        static WindowsAppRuntime::DeploymentResult Initialize(hstring const& packageFullName, WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions);
+        static WindowsAppRuntime::DeploymentResult Initialize(hstring const& packageFullName,
+            WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions);
 
     private:
         static WindowsAppRuntime::DeploymentResult _Initialize(
@@ -33,11 +34,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     private:
         static MddCore::PackageInfo GetPackageInfoForPackage(std::wstring const& packageFullName);
         static std::vector<std::wstring> FindPackagesByFamily(std::wstring const& packageFamilyName);
-        static HRESULT VerifyPackage(const std::wstring& packageFamilyName, const PACKAGE_VERSION targetVersion);
+        static HRESULT VerifyPackage(const std::wstring& packageFamilyName, const PACKAGE_VERSION targetVersion, __out std::wstring& matchedPackageFullName);
         static std::wstring GetPackagePath(std::wstring const& packageFullName);
-        static HRESULT AddPackageInBreakAwayProcess(const std::filesystem::path& packagePath, const bool forceDeployment);
+        static HRESULT AddOrRegisterPackageInBreakAwayProcess(const std::filesystem::path& packagePath, const bool regiterHigherVersionPackage, const bool forceDeployment);
         static std::wstring GenerateDeploymentAgentPath();
-        static HRESULT AddPackage(const std::filesystem::path& packagePath, const bool forceDeployment);
+        static HRESULT AddOrRegisterPackage(const std::filesystem::path& package, const bool regiterHigherVersionPackage, const bool forceDeployment);
         static HRESULT DeployPackages(const std::wstring& frameworkPackageFullName, const bool forceDeployment);
         static HRESULT Deploy(const std::wstring& frameworkPackageFullName, const bool forceDeployment = false);
         static HRESULT InstallLicenses(const std::wstring& frameworkPackageFullName);
