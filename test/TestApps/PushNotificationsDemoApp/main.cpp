@@ -19,6 +19,7 @@
 #include <roapi.h>
 #include <winstring.h>
 #include <wil/resource.h>
+#include "AppModel.PackageGraph.h"
 
 namespace winrt
 {
@@ -122,12 +123,13 @@ int main()
             std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
         });
 
-    winrt::AppNotificationManager::Default().Register();
+    // winrt::AppNotificationManager::Default().Register();
 
-    auto activatableClass{ wil::make_unique_string_nothrow<wil::unique_hstring>(L"FakeClass.ClassName") };
-    winrt::com_ptr<IInspectable> deviceIdentifier;
-
-    HRESULT hr{ RoActivateInstance(activatableClass.get(), deviceIdentifier.put()) };
+    const UINT32 flags{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC | PACKAGE_INFORMATION_BASIC };
+    uint32_t packageInfosCount{};
+    const PACKAGE_INFO* packageInfos{};
+    wil::unique_cotaskmem_ptr<BYTE[]> buffer;
+    THROW_IF_FAILED(::AppModel::PackageGraph::GetCurrentPackageGraph(flags, packageInfosCount, packageInfos, buffer));
 
     winrt::PushNotificationManager::Default().Register();
 
