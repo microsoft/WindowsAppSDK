@@ -66,7 +66,7 @@ jobs:
   - task: PowerShell@2
     name: BuildTransportPackage
     inputs:
-      filePath: 'BuildTransportPackage.ps1.ps1'
+      filePath: 'BuildTransportPackage.ps1'
       arguments: -Platform "arm64,x86,x634" -Configuration "release"
 
 # # Publish
