@@ -63,7 +63,9 @@ jobs:
       eq(variables['useBuildOutputFromBuildId'],''),
       in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
     )
-  pool: ProjectReunionESPool-2022
+  pool:
+    name: ProjectReunionESPool-2022
+    demands: ImageOverride -equals Win2022-VS17.2
   timeoutInMinutes: 120
   strategy:
     maxParallel: 10
@@ -145,7 +147,9 @@ jobs:
       eq(variables['useBuildOutputFromBuildId'],''),
       in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
     )
-  pool: ProjectReunionESPool-2022
+  pool:
+    name: ProjectReunionESPool-2022
+    demands: ImageOverride -equals Win2022-VS17.2
   timeoutInMinutes: 120
   variables:
     buildPlatform: 'anycpu'
@@ -225,7 +229,8 @@ jobs:
 
 - job: BuildMRT
   pool:
-    vmImage: 'windows-2022'
+    name: ProjectReunionESPool-2022
+    demands: ImageOverride -equals Win2022-VS17.2
   dependsOn:
     - VerifyCopyrightHeaders
   condition: in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
@@ -464,7 +469,9 @@ jobs:
 - job: WinAppSDKIntegrationBuildAndTest
   dependsOn: ['CreateNugetPackage']
   condition: succeeded()
-  pool: ProjectReunionESPool-2022
+  pool:
+    name: ProjectReunionESPool-2022
+    demands: ImageOverride -equals Win2022-VS17.2
   variables:
     WindowsAppSDKTransportPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
     VersionWithDevTag: $[format('{0}.{1}.{2}-{3}.{4}.{5}', variables['major'], variables['minor'], variables['patch'], 'dev', variables['versionDate'], variables['versionCounter'])]
