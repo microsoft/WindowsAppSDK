@@ -248,7 +248,7 @@ Try {
 } 
 Catch 
 {
-    $formatstring = "`n{0}`n`n{1}`n`nBuild can be resumed by running:`nBuildAll -resume`n- or -`nBuildAll -Checkpoint {2}"
+    $formatstring = "`n{0}`n`n{1}`n`nBuild can be resumed by running:`nBuildAll -resume`n- or -`nBuildAll -Checkpoint <COMING SOON>"
     $fields = $_, $_.ScriptStackTrace
 
     Write-Host ($formatstring -f $fields) -ForegroundColor RED
