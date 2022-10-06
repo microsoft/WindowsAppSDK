@@ -90,6 +90,11 @@ jobs:
         Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
 
   - task: PowerShell@2
+    name: DevCheck
+    inputs:
+      filePath: 'DevCheck.ps1'
+
+  - task: PowerShell@2
     name: BuildBinaries
     inputs:
       filePath: 'BuildTransportPackage.ps1'
