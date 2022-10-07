@@ -208,7 +208,7 @@ copy-item -path "buildoutput\$configurationToUseForSingleConfiguration\anycpu\Mi
 #------------------
 
 Copy-Item -Path "$nuSpecsPath\AppxManifest.xml" -Destination "$fullNugetPath"
-Copy-Item -Path "LICENSE" -Destination "$fullNugetPath" -recurse
+Copy-Item -Path "LICENSE" -Destination "$fullNugetPath" -force
 
 # for some reason xslt.load changes the working directory to C:\windows\system32.
 # store the current working directory here.
