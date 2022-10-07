@@ -115,6 +115,18 @@ namespace ManagedTest
         {
             CommonTestCode.ResourceManagerTest.ResourceEnumTest();
         }
+
+        [TestMethod]
+        public void GetValueFullUriTest()
+        {
+            CommonTestCode.ResourceManagerTest.GetValueFullUriTest();
+        }
+
+        [TestMethod]
+        public void GetSubtreeFullUriTest()
+        {
+            CommonTestCode.ResourceManagerTest.GetSubtreeFullUriTest();
+        }
     }
 
     [TestClass]
