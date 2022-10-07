@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0-windows10.0.18362</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.18362</TargetFramework>
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
     <OutDir>$(BaseOutputPath)\HelixTests\</OutDir>
     <GenerateProjectSpecificOutputFolder>False</GenerateProjectSpecificOutputFolder>

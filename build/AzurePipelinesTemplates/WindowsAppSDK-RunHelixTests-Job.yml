@@ -16,7 +16,7 @@ jobs:
   dependsOn: ${{ parameters.dependsOn }}
   condition: ${{ parameters.condition }}
   pool:
-    vmImage: 'windows-2019'
+    vmImage: 'windows-2022'
   timeoutInMinutes: 80
   strategy:
     maxParallel: ${{ parameters.maxParallel }}
@@ -85,7 +85,9 @@ jobs:
     parameters:
       displayName: WindowsAppSDK.Helix.Test
       solutionPath: test\WindowsAppSDK.Helix.Test\WindowsAppSDK.Helix.Test.sln
-
+  
+  - task: NuGetToolInstaller@1
+  
   # Note: 'NuGetCommand@2' is ambiguous so the specific task GUID must be used instead.
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     displayName: 'NuGet restore build/Helix/packages.config'
@@ -153,6 +155,8 @@ jobs:
     inputs:
       PathtoPublish: $(helixWorkItemsDir)
       artifactName: HelixWorkItems_$(buildPlatform)_$(buildConfiguration)
+  
+  - task: NuGetToolInstaller@1
 
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     displayName: 'NuGet restore Helix/RunTestsInHelix.proj'

@@ -51,5 +51,7 @@
   <WizardData>
     <MinSupportedVersion>10.0.17763.0</MinSupportedVersion>
     <SkipXamlCompilerCheck>true</SkipXamlCompilerCheck>
+    <UseWindowsSdkBuildToolsPackage>true</UseWindowsSdkBuildToolsPackage>
+    <UseSdkFallbackFile>true</UseSdkFallbackFile>
   </WizardData>
 </VSTemplate>

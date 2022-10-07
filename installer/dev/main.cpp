@@ -23,8 +23,8 @@ int wmain(int argc, wchar_t *argv[])
     // Register WindowsAppRuntime Installer event source to log it's events to %Windir%\System32\WinEvt\Logs\Application.Evtx
     LOG_LAST_ERROR_IF_NULL(WindowsAppRuntimeInstaller::InstallActivity::Context::Get().RegisterInstallerEventSourceW());
 
-    auto options{ WindowsAppRuntimeInstaller::Options::InstallPackages |
-                  WindowsAppRuntimeInstaller::Options::InstallLicenses };
+    WindowsAppRuntimeInstaller::Options options{};
+    bool installAsDefaultOption{ true };
 
     std::wstringstream args{};
 
@@ -39,6 +39,7 @@ int wmain(int argc, wchar_t *argv[])
         else if (arg == L"--license")
         {
             WI_SetFlag(options, WindowsAppRuntimeInstaller::Options::InstallLicenses);
+            installAsDefaultOption = false;
         }
         else if (arg == L"--license-")
         {
@@ -47,6 +48,7 @@ int wmain(int argc, wchar_t *argv[])
         else if (arg == L"--msix")
         {
             WI_SetFlag(options, WindowsAppRuntimeInstaller::Options::InstallPackages);
+            installAsDefaultOption = false;
         }
         else if (arg == L"--msix-")
         {
@@ -68,6 +70,15 @@ int wmain(int argc, wchar_t *argv[])
         {
             WI_ClearFlag(options, WindowsAppRuntimeInstaller::Options::ForceDeployment);
         }
+        else if ((arg == L"-r") || (arg == L"--repair"))
+        {
+            WI_SetFlag(options, WindowsAppRuntimeInstaller::Options::Repair);
+            installAsDefaultOption = false;
+        }
+        else if ((arg == L"-r-") || (arg == L"--repair-"))
+        {
+            WI_ClearFlag(options, WindowsAppRuntimeInstaller::Options::Repair);
+        }
         else if ((arg == L"-?") || (arg == L"--help"))
         {
             DisplayHelp();
@@ -86,7 +97,10 @@ int wmain(int argc, wchar_t *argv[])
                 DisplayHelp();
             }
 
-            installActivityContext.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(), static_cast<UINT32>(options), isElevated));
+            installActivityContext.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(),
+                                                                                                    static_cast<UINT32>(options),
+                                                                                                    isElevated,
+                                                                                                    installActivityContext.IsLocalSystemUser()));
             LOG_IF_WIN32_BOOL_FALSE(installActivityContext.LogInstallerCommandLineArgs(args.str().c_str()));
             LOG_IF_WIN32_BOOL_FALSE(installActivityContext.LogInstallerFailureEvent(HRESULT_FROM_WIN32(ERROR_BAD_ARGUMENTS)));
             installActivityContext.GetActivity().Stop(HRESULT_FROM_WIN32(ERROR_BAD_ARGUMENTS));
@@ -96,7 +110,16 @@ int wmain(int argc, wchar_t *argv[])
         // Capture valid arguments only
         args << argv[i] << " ";
     }
-    installActivityContext.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(), static_cast<UINT32>(options), isElevated));
+
+    if (installAsDefaultOption)
+    {
+        options = options | WindowsAppRuntimeInstaller::Options::Install;
+    }
+
+    installActivityContext.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(),
+                                                                                        static_cast<UINT32>(options),
+                                                                                        isElevated,
+                                                                                        installActivityContext.IsLocalSystemUser()));
     LOG_IF_WIN32_BOOL_FALSE(installActivityContext.LogInstallerCommandLineArgs(args.str().c_str()));
     args.clear();
 
@@ -126,7 +149,8 @@ int wmain(int argc, wchar_t *argv[])
             static_cast<PCWSTR>(nullptr),
             S_OK,
             static_cast<PCWSTR>(nullptr),
-            GUID_NULL);
+            GUID_NULL,
+            static_cast<PCWSTR>(nullptr));
     }
     else
     {
@@ -146,7 +170,8 @@ int wmain(int argc, wchar_t *argv[])
             installActivityContext.GetCurrentResourceId().c_str(),
             installActivityContext.GetDeploymentErrorHresult(),
             installActivityContext.GetDeploymentErrorText().c_str(),
-            installActivityContext.GetDeploymentErrorActivityId());
+            installActivityContext.GetDeploymentErrorActivityId(),
+            installActivityContext.GetExistingPackageIfHigherVersion().c_str());
     }
 
     LOG_IF_WIN32_BOOL_FALSE(WindowsAppRuntimeInstaller::InstallActivity::Context::Get().DeregisterInstallerEventSourceW());
