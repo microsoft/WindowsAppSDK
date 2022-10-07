@@ -101,10 +101,10 @@ int main()
 {
     std::cin.ignore();
 
-    ::Test::Bootstrap::SetupBootstrap();
+    ::Test::Bootstrap::Setup();
 
     // Test hook to ensure that the app is not self-contained
-    WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
+    ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
         ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
 
     if (!Test::AppModel::IsPackagedProcess())
@@ -125,11 +125,7 @@ int main()
 
     // winrt::AppNotificationManager::Default().Register();
 
-    const UINT32 flags{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC | PACKAGE_INFORMATION_BASIC };
-    uint32_t packageInfosCount{};
-    const PACKAGE_INFO* packageInfos{};
-    wil::unique_cotaskmem_ptr<BYTE[]> buffer;
-    THROW_IF_FAILED(::AppModel::PackageGraph::GetCurrentPackageGraph(flags, packageInfosCount, packageInfos, buffer));
+
 
     winrt::PushNotificationManager::Default().Register();
 
