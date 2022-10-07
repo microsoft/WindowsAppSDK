@@ -30,7 +30,7 @@ namespace Test::LRP
 
         winrt::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
         {
-            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
+            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(CLSID_NotificationsLongRunningPlatform, (CLSCTX_LOCAL_SERVER | CLSCTX_ALLOW_LOWER_TRUST_REGISTRATION)) };
             VERIFY_IS_NOT_NULL(notificationPlatform.get());
 
             return notificationPlatform;
