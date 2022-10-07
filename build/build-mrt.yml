@@ -24,77 +24,6 @@ steps:
     versionSpec: 5.11
   continueOnError: true
 
-# Start restoring packages for C++ projects. The C# ones will be restored by the build task
-# Note: 'NuGetCommand@2' is ambiguous so the specific task GUID must be used instead.
-- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-  displayName: 'NuGet restore of core'
-  inputs:
-    command: 'custom'
-    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\core\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
-
-# NuGetCommand@2
-- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-  displayName: 'NuGet restore of applicationmodel'
-  inputs:
-    command: 'custom'
-    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
-
-# NuGetCommand@2
-- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-  displayName: 'NuGet restore of mrmex'
-  inputs:
-    command: 'custom'
-    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\mrmex\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
-
-# NuGetCommand@2
-- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-  displayName: 'NuGet restore of mrmmin'
-  inputs:
-    command: 'custom'
-    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\mrmmin\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
-
-# NuGetCommand@2
-- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-  displayName: 'NuGet restore of mrm unittests'
-  inputs:
-    command: 'custom'
-    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\unittests\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
-
-#  - task: powershell@2
-#    displayName: 'Install the VS build tools'
-#    inputs:
-#      targetType: filePath
-#      filePath: ${{ parameters.MRTSourcesDirectory }}\build\Initialize-InstallMSBuild.ps1
-#      arguments: '-installDir ${{ parameters.MRTSourcesDirectory }}\.buildtools -logsDir ${{ parameters.MRTSourcesDirectory }}\msbuild-install-logs'
-
-#  - task: BatchScript@1
-#    displayName: Add the VS build tools to the path
-#    inputs:
-#      filename: '${{ parameters.MRTSourcesDirectory }}\build\SetMSBuildVars.cmd'
-#      arguments: '${{ parameters.MRTSourcesDirectory }}\.buildtools'
-#      modifyEnvironment: true
-
-#  - task: PublishBuildArtifacts@1
-#    displayName: 'Publish install logs'
-#    condition: Failed()
-#    inputs:
-#      PathtoPublish: '${{ parameters.MRTSourcesDirectory }}\msbuild-install-logs'
-#      artifactName: 'installlogs'
-
-# - task: powershell@2
-#   displayName: 'Installing .NET SDK'
-#   inputs:
-#     targetType: filePath
-#     workingDirectory: ${{ parameters.MRTSourcesDirectory }}\build
-#     filePath: ${{ parameters.MRTSourcesDirectory }}\build\DownloadDotNetCoreSdk.ps1
-
-# - task: BatchScript@1
-#   displayName: 'Use .NET SDK'
-#   inputs:
-#     filename: '${{ parameters.MRTSourcesDirectory }}\build\SetDotnetVars.cmd'
-#     arguments: '${{ parameters.MRTSourcesDirectory }}'
-#     modifyEnvironment: true
-
 - task: powershell@2
   displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
   inputs:
@@ -123,6 +52,13 @@ steps:
         }
       }
 
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  displayName: 'NuGet restore MrtCore'
+  inputs:
+    restoreSolution: '${{ parameters.MRTSourcesDirectory }}\mrt\MrtCore.sln'
+    feedsToUse: config
+    nugetConfigPath:  nuget.config
+
 - task: MSBuild@1
   displayName: 'build MrtCore'
   inputs:
@@ -131,7 +67,7 @@ steps:
     platform: '$(buildPlatform)'
     solution: '${{ parameters.MRTSourcesDirectory }}\mrt\MrtCore.sln'
     configuration: '$(buildConfiguration)'
-    msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+    msbuildArguments: '/binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
 - ${{ if eq(parameters.runSDLBinaryAnalysis, 'true') }}:
   - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
