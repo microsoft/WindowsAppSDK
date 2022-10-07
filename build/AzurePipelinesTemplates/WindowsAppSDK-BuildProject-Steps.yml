@@ -71,13 +71,6 @@ steps:
       PathtoPublish: $(Build.ArtifactStagingDirectory)/vsdevcmd.$(buildPlatform).$(buildConfiguration).txt
       ArtifactName: binlogs
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish VC/Auxillary/Build'
-    condition: eq('$(buildPlatform)', 'x86')
-    inputs:
-      PathtoPublish: "c:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build"
-      ArtifactName: vcvars
-
   - task: CmdLine@1
     displayName: 'Display build machine environment variables'
     inputs:

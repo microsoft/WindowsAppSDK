@@ -52,6 +52,12 @@ jobs:
       targetType: filePath
       filePath: tools\VerifyCopyrightHeaders.ps1
 
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish VC/Auxillary/Build'
+    inputs:
+      PathtoPublish: "c:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build"
+      ArtifactName: vcvars
+
 - job: Build
   dependsOn:
     - VerifyCopyrightHeaders
