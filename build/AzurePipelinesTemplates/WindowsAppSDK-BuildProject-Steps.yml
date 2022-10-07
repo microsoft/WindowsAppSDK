@@ -50,6 +50,7 @@ steps:
 
   # The environment variable VCToolsInstallDir isn't defined on lab machines, so we need to retrieve it ourselves.
   - script: |
+      "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -all 
       "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath > %TEMP%\vsinstalldir.txt
       set /p _VSINSTALLDIR15=<%TEMP%\vsinstalldir.txt
       del %TEMP%\vsinstalldir.txt
@@ -57,7 +58,12 @@ steps:
       call "%_VSINSTALLDIR15%\Common7\Tools\VsDevCmd.bat"
       echo VCToolsInstallDir = %VCToolsInstallDir%
       echo ##vso[task.setvariable variable=VCToolsInstallDir]%VCToolsInstallDir%
+      call "%_VSINSTALLDIR15%\MSBuild\Current\Bin\msbuild.exe" -version -noLogo
     displayName: 'Retrieve VC tools directory'
+
+  - script: |
+      dir "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC"
+    displayName: 'List VC tool dirs'
 
   - task: CmdLine@1
     displayName: 'Display build machine environment variables'
@@ -237,3 +243,7 @@ steps:
       filePath: tools\DevCheck.ps1
       arguments: -NoInteractive -Offline -Verbose -RemoveTestCert -RemoveTestPfx
       workingDirectory: '$(Build.SourcesDirectory)'
+
+  - script: |
+      dir "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC"
+    displayName: 'List VC tool dirs'
