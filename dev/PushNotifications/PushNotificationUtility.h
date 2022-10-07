@@ -152,7 +152,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 
     inline bool IsPackagedAppScenario()
     {
-        return false;
+        return AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable();
     }
 
     inline HRESULT GetPackageFullName(wil::unique_cotaskmem_string& packagedFullName) noexcept try
