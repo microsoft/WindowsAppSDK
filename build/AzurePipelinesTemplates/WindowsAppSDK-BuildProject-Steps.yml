@@ -59,6 +59,10 @@ steps:
       echo ##vso[task.setvariable variable=VCToolsInstallDir]%VCToolsInstallDir%
     displayName: 'Retrieve VC tools directory'
 
+  - script: |
+      dir "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC"
+    displayName: 'List VC tool dirs'
+
   - task: CmdLine@1
     displayName: 'Display build machine environment variables'
     inputs:
@@ -237,3 +241,7 @@ steps:
       filePath: tools\DevCheck.ps1
       arguments: -NoInteractive -Offline -Verbose -RemoveTestCert -RemoveTestPfx
       workingDirectory: '$(Build.SourcesDirectory)'
+
+  - script: |
+      dir "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC"
+    displayName: 'List VC tool dirs'
