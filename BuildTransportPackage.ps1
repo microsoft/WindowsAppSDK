@@ -19,7 +19,7 @@ Param(
     [string]$Platform,
     [string]$Configuration,
     [string]$AzureBuildStep = "all",
-    [string]$LocalPackagesPath = $null,
+    [string]$LocalPackagesPath = "",
     [string]$UpdateVersionDetailsPath = $null
 )
 

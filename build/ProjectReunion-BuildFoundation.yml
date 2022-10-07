@@ -189,7 +189,14 @@ jobs:
     name: PackNuget
     inputs:
       filePath: 'BuildTransportPackage.ps1'
-      arguments: -Platform "arm64,x86,x64" -Configuration "release" -AzureBuildStep "PackNuget"
+      arguments: -Platform "arm64,x86,x64" -Configuration "release" -AzureBuildStep "PackNuget" -LocalPackagesPath "$(build.artifactStagingDirectory)\FullNuget"
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget'
+    inputs:
+      PathtoPublish: '$(build.artifactStagingDirectory)\FullNuget'
+      artifactName: 'FullNuget'
+
 
 # # Publish
 # - job: Publish
