@@ -103,7 +103,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DynamicDependency.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.ApplicationModel.DynamicDependency -Output $(Build.SourcesDirectory)\dev\common\MddTerminalVelocityFeatures.h
+      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DynamicDependency.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.ApplicationModel.DynamicDependency -Output $(Build.SourcesDirectory)\dev\common\MddTerminalVelocityFeatures.h
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: powershell@2
@@ -111,7 +111,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.h
+      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.h
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: powershell@2
@@ -119,7 +119,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.AppNotifications -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.h
+      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.AppNotifications -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.h
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: powershell@2
@@ -127,7 +127,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.PushNotifications -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.h
+      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.PushNotifications -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.h
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: powershell@2
@@ -135,7 +135,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.System -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.h
+      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.System -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.h
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: powershell@2
