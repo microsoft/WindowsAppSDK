@@ -55,7 +55,7 @@ steps:
       set /p _VSINSTALLDIR15=<%TEMP%\vsinstalldir.txt
       del %TEMP%\vsinstalldir.txt
       set VSCMD_DEBUG=3
-      call "%_VSINSTALLDIR15%\Common7\Tools\VsDevCmd.bat"
+      call "%_VSINSTALLDIR15%\Common7\Tools\VsDevCmd.bat" > '$(Build.ArtifactStagingDirectory)\vsdevcmd.$(buildPlatform).$(buildConfiguration).txt'
       echo VCToolsInstallDir = %VCToolsInstallDir%
       echo ##vso[task.setvariable variable=VCToolsInstallDir]%VCToolsInstallDir%
       call "%_VSINSTALLDIR15%\MSBuild\Current\Bin\msbuild.exe" -version -noLogo
@@ -64,6 +64,12 @@ steps:
   - script: |
       dir "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC"
     displayName: 'List VC tool dirs'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish vsdevcmd.txt'
+    inputs:
+      PathtoPublish: $(Build.ArtifactStagingDirectory)/vsdevcmd.$(buildPlatform).$(buildConfiguration).txt
+      ArtifactName: binlogs
 
   - task: CmdLine@1
     displayName: 'Display build machine environment variables'
