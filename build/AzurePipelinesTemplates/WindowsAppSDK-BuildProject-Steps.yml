@@ -14,6 +14,8 @@ parameters:
 
 steps:
   - ${{ if eq(parameters.enableLicenseInstall, true) }}:
+    - task: NuGetToolInstaller@1
+
     - task: NuGetAuthenticate@0
       inputs:
         nuGetServiceConnections: 'ProjectReunionInternal'
@@ -61,16 +63,11 @@ steps:
     inputs:
       filename: 'set'
 
+  - task: NuGetToolInstaller@1
+
   - task: NuGetAuthenticate@0
     inputs:
       nuGetServiceConnections: 'WindowsES'
-
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'NuGet restore ${{ parameters.solutionPath }}'
-    inputs:
-      restoreSolution: ${{ parameters.solutionPath }}
-      feedsToUse: config
-      nugetConfigPath: ${{ parameters.nugetConfigPath }}
 
   - task: powershell@2
     displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
@@ -166,6 +163,13 @@ steps:
         TargetFolder: '$(Build.SourcesDirectory)\dev\Licensing'
         flattenFolders: false
         overWrite: true
+
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore ${{ parameters.solutionPath }}'
+    inputs:
+      restoreSolution: ${{ parameters.solutionPath }}
+      feedsToUse: config
+      nugetConfigPath: ${{ parameters.nugetConfigPath }}
 
   - task: VSBuild@1
     displayName: 'Build solution ${{ parameters.solutionPath }}'
