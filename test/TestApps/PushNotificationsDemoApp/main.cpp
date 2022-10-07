@@ -121,9 +121,7 @@ int main()
             std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
         });
 
-    // winrt::AppNotificationManager::Default().Register();
-
-
+    winrt::AppNotificationManager::Default().Register();
 
     winrt::PushNotificationManager::Default().Register();
 
