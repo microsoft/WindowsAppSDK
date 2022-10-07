@@ -203,7 +203,7 @@ Try {
         #    Build windowsAppRuntime.sln (anyCPU) and move output to staging.
         #------------------
         # build AnyCPU
-        msbuild /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=anycpu
+        & $msBuildPath  /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=anycpu
 
         # If AnyCPU generates another dll it needs to be added here.
         copy-item -path "buildoutput\$configurationToUseForSingleConfiguration\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$fullNugetPath\lib\net6.0-windows10.0.17763.0"
