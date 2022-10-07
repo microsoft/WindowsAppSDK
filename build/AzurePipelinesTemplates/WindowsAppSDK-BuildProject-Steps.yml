@@ -57,6 +57,7 @@ steps:
       call "%_VSINSTALLDIR15%\Common7\Tools\VsDevCmd.bat"
       echo VCToolsInstallDir = %VCToolsInstallDir%
       echo ##vso[task.setvariable variable=VCToolsInstallDir]%VCToolsInstallDir%
+      call "%_VSINSTALLDIR15%\MSBuild\Current\Bin\msbuild.exe" -version -noLogo
     displayName: 'Retrieve VC tools directory'
 
   - script: |
