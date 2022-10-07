@@ -13,11 +13,11 @@ namespace MddCore
 class PackageGraphManager
 {
 public:
-    static UINT32 GetGenerationId();
+    static UINT32 GetPackageGraphRevisionId();
 
-    static UINT32 IncrementGenerationId();
+    static UINT32 IncrementPackageGraphRevisionId();
 
-    static UINT32 SetGenerationId(const UINT32 value);
+    static UINT32 SetPackageGraphRevisionId(const UINT32 value);
 
 public:
     static HRESULT ResolvePackageDependency(
@@ -80,7 +80,7 @@ private:
 private:
     static std::recursive_mutex s_lock;
     static MddCore::PackageGraph s_packageGraph;
-    static volatile ULONG s_generationId;
+    static volatile ULONG s_packageGraphRevisionId;
 };
 }
 
