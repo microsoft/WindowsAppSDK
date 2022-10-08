@@ -154,7 +154,7 @@ Invoke-WebRequest https://dot.net/v1/dotnet-install.ps1 -OutFile $dotnetInstallS
 
 if (-not $latestAlreadyInstalled)
 {
-    Install-SDK -version $dotNetSdkVersion -channel "release\5.0.1xx" 
+    Install-SDK -version $dotNetSdkVersion -channel "release\6.0" 
 }
 
 if (-not $lkgAlreadyInstalled)
