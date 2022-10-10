@@ -91,6 +91,9 @@ static LONG (WINAPI* TrueGetPackageInfo2)(
     BYTE* buffer,
     UINT32* count) = nullptr;
 
+// NOTE: We don't dynamically load GetPackageInfo2 (if available)
+//       but we DON'T Detour it so we don't need DynamicGetPackageInfo2()
+
 typedef HRESULT (WINAPI* GetPackageInfo2Function)(
     PACKAGE_INFO_REFERENCE packageInfoReference,
     const UINT32 flags,
@@ -98,6 +101,12 @@ typedef HRESULT (WINAPI* GetPackageInfo2Function)(
     UINT32* bufferLength,
     BYTE* buffer,
     UINT32* count);
+
+static UINT32 (WINAPI* TrueGetPackageGraphRevisionId)() = nullptr;
+
+HRESULT WINAPI DynamicGetPackageGraphRevisionId();
+
+typedef UINT32 (WINAPI* GetPackageGraphRevisionIdFunction)();
 
 HRESULT WINAPI MddDetourPackageGraphInitialize() noexcept
 {
@@ -107,6 +116,7 @@ HRESULT WINAPI MddDetourPackageGraphInitialize() noexcept
     //
     // NOTE: GetCurrentPackageInfo2 requires >=19H1
     // NOTE: GetCurrentPackageInfo3 requires >=20H1
+    // NOTE: GetPackageGraphRevisionId requires >=22H2
     // Support down to RS5
     if (WindowsVersion::IsWindows10_19H1OrGreater())
     {
@@ -132,6 +142,17 @@ HRESULT WINAPI MddDetourPackageGraphInitialize() noexcept
             FAIL_FAST_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllGetCurrentPackageInfo3);
             TrueGetCurrentPackageInfo3 = dllGetCurrentPackageInfo3;
             FAIL_FAST_IF_WIN32_ERROR(DetourAttach(&(PVOID&)TrueGetCurrentPackageInfo3, DynamicGetCurrentPackageInfo3));
+
+            if (WindowsVersion::IsWindows11_22H2OrGreater())
+            {
+                HMODULE dllApisetAppmodelRuntime_1_6{ LoadLibraryExW(L"api-ms-win-appmodel-runtime-l1-1-6.dll", nullptr, 0) };
+                FAIL_FAST_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllApisetAppmodelRuntime_1_6);
+
+                auto dllGetPackageGraphRevisionId{ reinterpret_cast<GetPackageGraphRevisionIdFunction>(GetProcAddress(dllApisetAppmodelRuntime_1_6, "GetPackageGraphRevisionId")) };
+                FAIL_FAST_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllGetPackageGraphRevisionId);
+                TrueGetPackageGraphRevisionId = dllGetPackageGraphRevisionId;
+                FAIL_FAST_IF_WIN32_ERROR(DetourAttach(&(PVOID&)TrueGetPackageGraphRevisionId, DynamicGetPackageGraphRevisionId));
+            }
         }
     }
     return S_OK;
@@ -139,19 +160,24 @@ HRESULT WINAPI MddDetourPackageGraphInitialize() noexcept
 
 HRESULT _MddDetourPackageGraphShutdown() noexcept
 {
-    // Stop Detour'ing package graph APIs to our implementation
-    FAIL_FAST_IF_WIN32_ERROR(DetourDetach(&(PVOID&)TrueGetCurrentPackageInfo, DynamicGetCurrentPackageInfo));
-    TrueGetCurrentPackageInfo = ::GetCurrentPackageInfo;
-    if (TrueGetCurrentPackageInfo2)
+    // Stop Detour'ing package graph APIs to our implementation (undo in reverse order we started Detour'ing APIs)
+    if (TrueGetPackageGraphRevisionId)
     {
-        FAIL_FAST_IF_WIN32_ERROR(DetourDetach(&(PVOID&)TrueGetCurrentPackageInfo2, DynamicGetCurrentPackageInfo2));
-        TrueGetCurrentPackageInfo2 = nullptr;
+        FAIL_FAST_IF_WIN32_ERROR(DetourDetach(&(PVOID&)TrueGetPackageGraphRevisionId, DynamicGetPackageGraphRevisionId));
+        TrueGetPackageGraphRevisionId = nullptr;
     }
     if (TrueGetCurrentPackageInfo3)
     {
         FAIL_FAST_IF_WIN32_ERROR(DetourDetach(&(PVOID&)TrueGetCurrentPackageInfo3, DynamicGetCurrentPackageInfo3));
         TrueGetCurrentPackageInfo3 = nullptr;
     }
+    if (TrueGetCurrentPackageInfo2)
+    {
+        FAIL_FAST_IF_WIN32_ERROR(DetourDetach(&(PVOID&)TrueGetCurrentPackageInfo2, DynamicGetCurrentPackageInfo2));
+        TrueGetCurrentPackageInfo2 = nullptr;
+    }
+    FAIL_FAST_IF_WIN32_ERROR(DetourDetach(&(PVOID&)TrueGetCurrentPackageInfo, DynamicGetCurrentPackageInfo));
+    TrueGetCurrentPackageInfo = ::GetCurrentPackageInfo;
     return S_OK;
 }
 
@@ -215,7 +241,7 @@ LONG MddGetPackageInfo1Or2(
     UINT32* count)
 {
     // GetPackageInfo2 is only available on Windows >= 19H1
-    // Call it if available, else fall back to GetPAckageInfo (v1)
+    // Call it if available, else fall back to GetPackageInfo (v1)
     if (TrueGetPackageInfo2)
     {
         return TrueGetPackageInfo2(packageInfoReference, flags, packagePathType, bufferLength, buffer, count);
@@ -236,4 +262,9 @@ HRESULT MddTrueGetCurrentPackageInfo3(
     // Passthru to the original (not-Detoured) Windows API
     RETURN_IF_FAILED(TrueGetCurrentPackageInfo3(flags, packageInfoType, bufferLength, buffer, count));
     return S_OK;
+}
+
+LONG WINAPI DynamicGetPackageGraphRevisionId()
+{
+    return MddCore::PackageGraphManager::GetPackageGraphRevisionId();
 }

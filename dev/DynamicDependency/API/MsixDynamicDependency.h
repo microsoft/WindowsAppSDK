@@ -29,6 +29,8 @@
 /// MSIX Dynamic Dependency: Bootstrap initialization request is incompatible with current Bootstrap initialization state.
 #define MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE         _HRESULT_TYPEDEF_(0x80040014L)
 
+#if defined(__cplusplus)
+
 enum class MddCreatePackageDependencyOptions : uint32_t
 {
     None = 0,
@@ -210,7 +212,15 @@ STDAPI MddGetIdForPackageDependencyContext(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId) noexcept;
 
-/// Return the package graph's current generation id.
+/// Return the package graph's current revision id.
+STDAPI_(UINT32) MddGetPackageGraphRevisionId() noexcept;
+
+/// Return the package graph's current revision id.
+///
+/// @note This API is deprecated and will be removed in a future release.
+///       Use MddGetPackageGraphRevisionId().
 STDAPI_(UINT32) MddGetGenerationId() noexcept;
+
+#endif // defined(__cplusplus)
 
 #endif // MSIXDYNAMICDEPENDENCY_H
