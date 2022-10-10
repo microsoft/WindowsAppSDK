@@ -108,7 +108,12 @@ STDAPI MddGetIdForPackageDependencyContext(
 }
 CATCH_RETURN();
 
+STDAPI_(UINT32) MddGetPackageGraphRevisionId() noexcept
+{
+    return MddCore::PackageGraphManager::GetPackageGraphRevisionId();
+}
+
 STDAPI_(UINT32) MddGetGenerationId() noexcept
 {
-    return MddCore::PackageGraphManager::GetGenerationId();
+    return MddGetPackageGraphRevisionId();
 }

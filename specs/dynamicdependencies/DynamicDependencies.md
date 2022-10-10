@@ -1253,7 +1253,13 @@ STDAPI MddGetIdForPackageDependencyContext(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId) noexcept;
 
-/// Return the package graph's current generation id.
+/// Return the package graph's current revision id.
+STDAPI_(UINT32) MddGetPackageGraphRevisionId() noexcept;
+
+/// Return the package graph's current revision id.
+///
+/// @note This API is deprecated and will be removed in a future release.
+///       Use MddGetPackageGraphRevisionId().
 STDAPI_(UINT32) MddGetGenerationId() noexcept;
 ```
 
@@ -1565,6 +1571,9 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
 ```c# (but really MIDL3)
 namespace Microsoft.Windows.ApplicationModel.DynamicDependency
 {
+[contractversion(2)]
+apicontract DynamicDependencyContract{};
+
 /// CPU architectures to optionally filter available packages against a package dependency.
 /// These generally correspond to processor architecture types supported by MSIX.
 /// @see Windows.System.ProcessorArchitecture
@@ -1802,9 +1811,9 @@ runtimeclass PackageDependency
     /// Calls to Add() can be balanced by a PackageDependencyContext.Remove()
     /// to remove the entry from the package graph.
     ///
-    /// Successful calls change the package graph's current generation id.
+    /// Successful calls change the package graph's current revision id.
     ///
-    /// @see GenerationId
+    /// @see PackageGraphRevisionId
     PackageDependencyContext Add();
 
     /// Resolve a previously pinned PackageDependency to a specific package and
@@ -1841,12 +1850,19 @@ runtimeclass PackageDependency
     /// Calls to Add() can be balanced by a PackageDependencyContext.Remove() (or object destruction)
     /// to remove the entry from the package graph.
     ///
-    /// Successful calls change the package graph's current generation id.
+    /// Successful calls change the package graph's current revision id.
     ///
-    /// @see GenerationId
+    /// @see PackageGraphRevisionId
     PackageDependencyContext Add(AddPackageDependencyOptions options);
 
-    /// Return the package graph's current generation id.
+    /// Return the package graph's current revision id.
+    [contract(DynamicDependencyContract, 2)]
+    static UInt32 PackageGraphRevisionId{ get; };
+
+    /// Return the package graph's current revision id.
+    ///
+    /// @note This API is deprecated and will be removed in a future release.
+    ///       Use the PackageGraphRevisionId property.
     static UInt32 GenerationId{ get; };
 };
 
@@ -1886,7 +1902,7 @@ runtimeclass PackageDependencyContext
     ///
     /// Successful calls change the package graph's current revision id.
     ///
-    /// @see PackageDependency.GenerationId
+    /// @see PackageDependency.RevisionId
     void Remove();
 };
 }
