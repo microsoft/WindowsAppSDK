@@ -19,7 +19,8 @@ Param(
     [string]$Platform,
     [string]$Configuration,
     [string]$AzureBuildStep = "all",
-    [string]$LocalPackagesPath = "",
+    [string]$OutputDirectory = "",
+    [string]$BasePath = "BuildOutput/FullNuget",
     [string]$UpdateVersionDetailsPath = $null
 )
 
@@ -94,16 +95,14 @@ Try {
             }
         }
 
-        # Make sure fullnuget path exists.
-        $fullNugetPath = "build\fullnuget"
-        if(-not (test-path "$fullNugetPath"))
+        if(-not (test-path "$BasePath"))
         {    
-            new-item -path "$fullNugetPath" -itemtype "directory"
+            new-item -path "$BasePath" -itemtype "directory"
         }
 
-        if(-not (test-path "$fullNugetPath\build\native"))
+        if(-not (test-path "$BasePath\build\native"))
         {
-            new-item -path "$fullNugetPath\build\native" -itemtype "directory"
+            new-item -path "$BasePath\build\native" -itemtype "directory"
         }
 
         # Copy WindowsAppRuntime.sln files
@@ -111,27 +110,27 @@ Try {
         {
             foreach($platformToRun in $platform.Split(","))
             {
-                .\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$fullNugetPath" -Platform $PlatformToRun -Configuration $ConfigurationToRun
+                .\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$BasePath" -Platform $PlatformToRun -Configuration $ConfigurationToRun
             }
         }
 
         $nuSpecsPath = "build\NuSpecs"
-        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.targets" -Destination "$fullNugetPath\build\native"
-        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.props" -Destination "$fullNugetPath\build\native"
-        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.C.props" -Destination "$fullNugetPath\build\native"
-        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.WinRt.props" -Destination "$fullNugetPath\build\native"
-        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.targets" -Destination "$fullNugetPath\build"
-        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.props" -Destination "$fullNugetPath\build"
-        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Bootstrap.CS.targets" -Destination "$fullNugetPath\build"
-        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.Bootstrap.targets" -Destination "$fullNugetPath\build\native"
-        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.BootstrapCommon.targets" -Destination "$fullNugetPath\build"
-        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.DeploymentManager.CS.targets" -Destination "$fullNugetPath\build"
-        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.DeploymentManager.targets" -Destination "$fullNugetPath\build\native"
-        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.DeploymentManagerCommon.targets" -Destination "$fullNugetPath\build"
-        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.targets" -Destination "$fullNugetPath\build"
-        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.targets" -Destination "$fullNugetPath\build"
-        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" -Destination "$fullNugetPath\build"
-        Copy-Item -Path "$nuSpecsPath\AppxManifest.xml" -Destination "$fullNugetPath\AppxManifest.xml"
+        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.targets" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.props" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.C.props" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.WinRt.props" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Foundation.props" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.Bootstrap.CS.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.Bootstrap.targets" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.BootstrapCommon.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.DeploymentManager.CS.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.DeploymentManager.targets" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.DeploymentManagerCommon.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRT.CS.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$nuSpecsPath\AppxManifest.xml" -Destination "$BasePath\AppxManifest.xml"
 
         #------------------
         #    Build mrtcore.sln and move output to staging.
@@ -167,36 +166,36 @@ Try {
         # Copy over mrt files
         foreach($platformToRun in $platform.Split(","))
         {
-            copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\mrm\mrm.dll" -destination "$fullNugetPath\runtimes\win10-$platformToRun\native" -force
-            copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\mrm\mrm.pdb" -destination "$fullNugetPath\runtimes\win10-$platformToRun\native" -force
-            copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb" -destination "$fullNugetPath\runtimes\win10-$platformToRun\native" -force
-            copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.dll" -destination "$fullNugetPath\runtimes\win10-$platformToRun\native" -force
+            copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\mrm\mrm.dll" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
+            copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\mrm\mrm.pdb" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
+            copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
+            copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.dll" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
             
-            copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\mrm\mrm.lib" -destination "$fullNugetPath\lib\win10-$platformToRun" -force
+            copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\mrm\mrm.lib" -destination "$BasePath\lib\win10-$platformToRun" -force
 
             if($platformToRun -eq "x86")
             {
-                copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.dll" -destination "$fullNugetPath\lib\net6.0-windows10.0.17763.0" -force
-                copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.pdb" -destination "$fullNugetPath\lib\net6.0-windows10.0.17763.0" -force
-                copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.winmd" -destination "$fullNugetPath\lib\uap10.0" -force
+                copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.dll" -destination "$BasePath\lib\net6.0-windows10.0.17763.0" -force
+                copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.pdb" -destination "$BasePath\lib\net6.0-windows10.0.17763.0" -force
+                copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.winmd" -destination "$BasePath\lib\uap10.0" -force
             }
         }
 
         # copy MRT IDL over.
-        copy-item -path "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.idl" -destination "$fullNugetPath\include" -force
+        copy-item -path "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.idl" -destination "$BasePath\include" -force
 
         # Copy MRT metadata files.
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\MrtCore.props" -Destination "$fullNugetPath\build"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\MrtCore.PriGen.targets" -Destination "$fullNugetPath\build"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\MrtCore.References.targets" -Destination "$fullNugetPath\build"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\MrtCore.targets" -Destination "$fullNugetPath\build"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\native\MrtCore.C.props" -Destination "$fullNugetPath\build\native"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\native\MrtCore.props" -Destination "$fullNugetPath\build\native"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\native\MrtCore.targets" -Destination "$fullNugetPath\build\native"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\ProjectItemsSchema.xaml" -Destination "$fullNugetPath\build"
-        Copy-Item -Path "$MRTSourcesDirectory\packaging\README.md" -Destination "$fullNugetPath\build"
-        Copy-Item -Path "$MRTSourcesDirectory\mrt\core\src\mrm.h" -Destination "$fullNugetPath\include"
-        Copy-Item -Path "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.idl" -Destination "$fullNugetPath\include"
+        Copy-Item -Path "$MRTSourcesDirectory\packaging\MrtCore.props" -Destination "$BasePath\build"
+        Copy-Item -Path "$MRTSourcesDirectory\packaging\MrtCore.PriGen.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$MRTSourcesDirectory\packaging\MrtCore.References.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$MRTSourcesDirectory\packaging\MrtCore.targets" -Destination "$BasePath\build"
+        Copy-Item -Path "$MRTSourcesDirectory\packaging\native\MrtCore.C.props" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$MRTSourcesDirectory\packaging\native\MrtCore.props" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$MRTSourcesDirectory\packaging\native\MrtCore.targets" -Destination "$BasePath\build\native"
+        Copy-Item -Path "$MRTSourcesDirectory\packaging\ProjectItemsSchema.xaml" -Destination "$BasePath\build"
+        Copy-Item -Path "$MRTSourcesDirectory\packaging\README.md" -Destination "$BasePath\build"
+        Copy-Item -Path "$MRTSourcesDirectory\mrt\core\src\mrm.h" -Destination "$BasePath\include"
+        Copy-Item -Path "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.idl" -Destination "$BasePath\include"
 
 
         #------------------
@@ -206,25 +205,25 @@ Try {
         & $msBuildPath  /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=anycpu
 
         # If AnyCPU generates another dll it needs to be added here.
-        copy-item -path "buildoutput\$configurationForMrtAndAnyCPU\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$fullNugetPath\lib\net6.0-windows10.0.17763.0"
+        copy-item -path "buildoutput\$configurationForMrtAndAnyCPU\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$BasePath\lib\net6.0-windows10.0.17763.0"
 
         #------------------
         #    Move other files and prepare manifest and appxmanifest.xml
         #------------------
 
-        Copy-Item -Path "$nuSpecsPath\AppxManifest.xml" -Destination "$fullNugetPath"
-        Copy-Item -Path "LICENSE" -Destination "$fullNugetPath" -force
+        Copy-Item -Path "$nuSpecsPath\AppxManifest.xml" -Destination "$BasePath"
+        Copy-Item -Path "LICENSE" -Destination "$BasePath" -force
 
         # for some reason xslt.load changes the working directory to C:\windows\system32.
         # store the current working directory here.
         $workingDirectory = get-location
-        $manifestPath = "$fullNugetPath\manifests"
+        $manifestPath = "$BasePath\manifests"
 
         # Make Microsoft.WindowsAppSDK.Foundation.manifest.
         $newitem = New-Item -ItemType Directory -Force -Path $manifestPath
         $xslt = New-Object System.Xml.Xsl.XslCompiledTransform
         $xslt.Load("$workingDirectory\build\TransformAppxManifest.xslt")
-        $xslt.Transform("$workingDirectory\$fullNugetPath\AppxManifest.xml", "$workingDirectory\$manifestPath\Microsoft.WindowsAppSdk.Foundation.manifest")
+        $xslt.Transform("$workingDirectory\$BasePath\AppxManifest.xml", "$workingDirectory\$manifestPath\Microsoft.WindowsAppSdk.Foundation.manifest")
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "PackNuget")) 
     {
@@ -234,7 +233,7 @@ Try {
         Set-Content -Value $publicNuspec.OuterXml ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec"
 
         # Make the foundation transport package.
-        nuget pack ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec" -BasePath $fullNugetPath -OutputDirectory $LocalPackagesPath
+        & .\.nuget\nuget.exe pack ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec" -BasePath $BasePath -OutputDirectory $OutputDirectory
 
         # # Update the details in eng/version.details.xml
         # $packageName = "Microsoft.WindowsAppSDK.Foundation.TransportPackage"
