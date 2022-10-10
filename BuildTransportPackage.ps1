@@ -59,7 +59,7 @@ Try {
         #------------------
 
         # Generate package config and copy over misc files.
-        & .\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1 -versionDetailsPath "eng\Version.Details.xml" -packageConfigPath "build\packages.config"
+        & .\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1 -versionDetailsPath "eng\Version.Details.xml" -packageConfigPath "BuildOutput\packages.config"
 
         # Generate overrides
         # Make sure override directory exists.
@@ -205,7 +205,7 @@ Try {
         & $msBuildPath  /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=anycpu
 
         # If AnyCPU generates another dll it needs to be added here.
-        copy-item -path "buildoutput\$configurationForMrtAndAnyCPU\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$BasePath\lib\net6.0-windows10.0.17763.0"
+        copy-item -path "BuildOutput\$configurationForMrtAndAnyCPU\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$BasePath\lib\net6.0-windows10.0.17763.0"
 
         #------------------
         #    Move other files and prepare manifest and appxmanifest.xml
@@ -227,13 +227,16 @@ Try {
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "PackNuget")) 
     {
+        $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.nuspec" 
+        Copy-Item -Path ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec" -Destination $nuspecPath
+
         # Add the version to the nuspec.
-        [xml]$publicNuspec = Get-Content -Path ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec"
+        [xml]$publicNuspec = Get-Content -Path $nuspecPath
         $publicNuspec.package.metadata.version = $PackageVersion
-        Set-Content -Value $publicNuspec.OuterXml ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec"
+        Set-Content -Value $publicNuspec.OuterXml $nuspecPath
 
         # Make the foundation transport package.
-        & .\.nuget\nuget.exe pack ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec" -BasePath $BasePath -OutputDirectory $OutputDirectory
+        & .\.nuget\nuget.exe pack $nuspecPath -BasePath $BasePath -OutputDirectory $OutputDirectory
 
         # # Update the details in eng/version.details.xml
         # $packageName = "Microsoft.WindowsAppSDK.Foundation.TransportPackage"
