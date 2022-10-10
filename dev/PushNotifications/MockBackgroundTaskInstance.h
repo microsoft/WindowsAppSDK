@@ -2,15 +2,15 @@
 // Licensed under the MIT License.
 
 #include <winrt/Windows.ApplicationModel.background.h>
-#include "PushRawNotification.h"
+#include "MockRawNotification.h"
 #include "PushNotificationDummyDeferral.h"
 
 // Mocks IBackgroundTaskInstance to send raw payloads to packaged apps in
 // PushNotificationBackgroundTask::Run by com activation from PushNotificationsLongRunningProcess
-struct PushBackgroundTaskInstance : winrt::implements<PushBackgroundTaskInstance, winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance>
+struct MockBackgroundTaskInstance : winrt::implements<MockBackgroundTaskInstance, winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance>
 {
-    PushBackgroundTaskInstance() {};
-    PushBackgroundTaskInstance(std::wstring const& payload) : m_rawNotification(winrt::make_self<PushRawNotification>(payload)) {};
+    MockBackgroundTaskInstance() {};
+    MockBackgroundTaskInstance(std::wstring const& payload) : m_rawNotification(winrt::make_self<MockRawNotification>(payload)) {};
 
     winrt::guid InstanceId() { return winrt::guid(); };
     UINT32 SuspendedCount() { return 0; };
@@ -22,15 +22,15 @@ struct PushBackgroundTaskInstance : winrt::implements<PushBackgroundTaskInstance
     void Canceled(winrt::event_token const& /* token */) noexcept { return; };
     winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral() { return winrt::make<PushNotificationDummyDeferral>().as<winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral>(); };
 private:
-    winrt::com_ptr<PushRawNotification> m_rawNotification;
+    winrt::com_ptr<MockRawNotification> m_rawNotification;
 };
 
-struct PushBackgroundTaskInstanceFactory : winrt::implements<PushBackgroundTaskInstanceFactory, IClassFactory>
+struct MockBackgroundTaskInstanceFactory : winrt::implements<MockBackgroundTaskInstanceFactory, IClassFactory>
 {
     HRESULT __stdcall CreateInstance(_In_opt_ IUnknown* aggregateInterface, _In_ REFIID interfaceId, _Outptr_ VOID** object) noexcept final try
     {
         RETURN_HR_IF(CLASS_E_NOAGGREGATION, aggregateInterface != nullptr);
-        return winrt::make<PushBackgroundTaskInstance>().as(interfaceId, object);
+        return winrt::make<MockBackgroundTaskInstance>().as(interfaceId, object);
     } 
     CATCH_RETURN()
 
