@@ -105,6 +105,7 @@ foreach($configurationToRun in $configuration.Split(","))
 {
     foreach($platformToRun in $platform.Split(","))
     {
+        write-host "Moving items to staging directory for Configuration:$configurationToRun and Platform:$platformToRun"
         .\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$fullNugetPath" -Platform $PlatformToRun -Configuration $ConfigurationToRun
     }
 }
