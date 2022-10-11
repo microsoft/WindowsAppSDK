@@ -6,10 +6,10 @@
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.Security.Cryptography.h>
 
-struct MockRawNotification : winrt::implements<MockRawNotification, winrt::Windows::Networking::PushNotifications::IRawNotification, winrt::Windows::Networking::PushNotifications::IRawNotification2, winrt::Windows::Networking::PushNotifications::IRawNotification3>
+struct LRPRawNotification : winrt::implements<LRPRawNotification, winrt::Windows::Networking::PushNotifications::IRawNotification, winrt::Windows::Networking::PushNotifications::IRawNotification2, winrt::Windows::Networking::PushNotifications::IRawNotification3>
 {
-    MockRawNotification() {};
-    MockRawNotification(std::wstring const& payload): m_payload(payload) {};
+    LRPRawNotification() {};
+    LRPRawNotification(std::wstring const& payload): m_payload(payload) {};
 
     winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::hstring> Headers() { return {}; };
     winrt::hstring ChannelId() { return {}; };
@@ -23,12 +23,12 @@ private:
     std::wstring m_payload;
 };
 
-struct MockRawNotificationFactory : winrt::implements<MockRawNotificationFactory, IClassFactory>
+struct LRPRawNotificationFactory : winrt::implements<LRPRawNotificationFactory, IClassFactory>
 {
     HRESULT __stdcall CreateInstance(_In_opt_ IUnknown* aggregateInterface, _In_ REFIID interfaceId, _Outptr_ VOID** object) noexcept final
     {
         RETURN_HR_IF(CLASS_E_NOAGGREGATION, aggregateInterface != nullptr);
-        return winrt::make<MockRawNotification>().as(interfaceId, object);
+        return winrt::make<LRPRawNotification>().as(interfaceId, object);
     }
 
     HRESULT __stdcall LockServer(BOOL) noexcept final

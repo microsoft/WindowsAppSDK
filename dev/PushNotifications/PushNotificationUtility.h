@@ -8,7 +8,7 @@
 #include "../Common/AppModel.Identity.h"
 #include "wil/stl.h"
 #include "wil/win32_helpers.h"
-#include "MockBackgroundTaskInstance.h"
+#include "LRPBackgroundTaskInstance.h"
 #include <filesystem>
 
 namespace winrt
@@ -120,9 +120,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
     inline HRESULT PackagedAppLauncherByClsid(winrt::guid const& comServerClsid, unsigned int payloadLength, _In_reads_(payloadLength) byte* payload) noexcept try
     {
         auto payloadAsWideString{ Utf8BytesToWideString(payloadLength, payload) };
-        auto mockBackgroundTaskInstance{ winrt::make_self<MockBackgroundTaskInstance>(payloadAsWideString) };
+        auto LRPBackgroundTaskInstance{ winrt::make_self<LRPBackgroundTaskInstance>(payloadAsWideString) };
         auto localBackgroundTask { winrt::create_instance<winrt::IBackgroundTask>(comServerClsid, CLSCTX_ALL) };
-        localBackgroundTask.Run(*mockBackgroundTaskInstance);
+        localBackgroundTask.Run(*LRPBackgroundTaskInstance);
         return S_OK;
     }
     CATCH_RETURN()
