@@ -62,6 +62,24 @@ jobs:
   #     in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
   #   )
   pool: ProjectReunionESPool-2022
+  timeoutInMinutes: 120
+  strategy:
+    maxParallel: 10
+    matrix:
+      Release_x86:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
+        PGOBuildMode: 'Optimize'
+      Release_x64:
+        buildPlatform: 'x64'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
+        PGOBuildMode: 'Optimize'
+      Release_Arm64:
+        buildPlatform: 'arm64'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
   steps:
   - task: NuGetToolInstaller@1
 
@@ -194,41 +212,149 @@ jobs:
         overWrite: true
 
   - task: PowerShell@2
-    name: SetVersion
-    displayName: Update metapackage version
+    name: BuildBinaries
+    inputs:
+      filePath: 'BuildTransportPackage.ps1'
+      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget'
+    inputs:
+      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
+      artifactName: 'BuildOutput'
+
+- job: BuildAnyCPU
+  # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
+  # Can be expanded to add any other binary as needed
+  pool: ProjectReunionESPool-2022
+  steps:
+  - task: NuGetToolInstaller@1
+
+  - task: NuGetToolInstaller@1
+
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: 'TelemetryInternal'
+
+  - template: AzurePipelinesTemplates\WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
+  
+  # The environment variable VCToolsInstallDir isn't defined on lab machines, so we need to retrieve it ourselves.
+  - script: |
+      "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath > %TEMP%\vsinstalldir.txt
+      set /p _VSINSTALLDIR15=<%TEMP%\vsinstalldir.txt
+      del %TEMP%\vsinstalldir.txt
+      call "%_VSINSTALLDIR15%\Common7\Tools\VsDevCmd.bat"
+      echo VCToolsInstallDir = %VCToolsInstallDir%
+      echo ##vso[task.setvariable variable=VCToolsInstallDir]%VCToolsInstallDir%
+    displayName: 'Retrieve VC tools directory'
+
+  - task: CmdLine@1
+    displayName: 'Display build machine environment variables'
+    inputs:
+      filename: 'set'
+
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: 'WindowsES'
+
+  - template: AzurePipelinesTemplates\WindowsAppSDK-InstallWindowsSDK-Steps.yml
+
+  - task: powershell@2
+    displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+  - task: powershell@2
+    displayName: 'Create DynamicDependencies TerminalVelocity features'
+    inputs:
+      targetType: filePath
+      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DynamicDependency.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.ApplicationModel.DynamicDependency -Output $(Build.SourcesDirectory)\dev\common\MddTerminalVelocityFeatures.h
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+  - task: powershell@2
+    displayName: 'Create DeploymentAPI TerminalVelocity features'
+    inputs:
+      targetType: filePath
+      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.h
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+  - task: powershell@2
+    displayName: 'Create AppNotifications TerminalVelocity features'
+    inputs:
+      targetType: filePath
+      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.AppNotifications -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.h
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+  - task: powershell@2
+    displayName: 'Create PushNotifications TerminalVelocity features'
+    inputs:
+      targetType: filePath
+      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.PushNotifications -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.h
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+  - task: powershell@2
+    displayName: 'Create EnvironmentManager TerminalVelocity features'
+    inputs:
+      targetType: filePath
+      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.System -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.h
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+  - task: powershell@2
+    name: UpdateTraceloggingConfig
     inputs:
       targetType: 'inline'
       script: |
-        $packageVersion = '$(version)'
-        $pipelineType = '$(PipelineType)'
-        $sourceBranchName = '$(Build.SourceBranchName)'
-        if ($sourceBranchName -eq 'main' -or $sourceBranchName -eq 'develop')
-        {
-          $packageVersion = $packageVersion + '.' + $sourceBranchName + '.' + $pipelineType
+        $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
+
+        if (($srcPath -ne $null)){
+          $destinationPaths = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
+
+          if (($destinationPaths -ne $null)) {
+            foreach ($destPath in $destinationPaths) {
+              Write-Host 'SourcePath:' $srcPath.FullName
+              Write-Host 'DestinationPath:' $destPath.FullName
+              Copy-Item -Force $srcPath.FullName $destPath.FullName
+            }
+          }
         }
-        Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
-        Write-Host $packageVersion
-        [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
-        $publicNuspec.package.metadata.version = $packageVersion
-        Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
 
   - task: PowerShell@2
     name: BuildBinaries
     inputs:
       filePath: 'BuildTransportPackage.ps1'
-      arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "BuildBinaries"
+      arguments: -AzureBuildStep "BuildAnyCPU"
 
-  - task: PowerShell@2
-    name: BuildBinaries
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget'
     inputs:
-      filePath: 'BuildTransportPackage.ps1'
-      arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "BuildAnyCPU"
+      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
+      artifactName: 'BuildOutput'
+
+- job: StageAndPack
+  pool: ProjectReunionESPool-2022
+  timeoutInMinutes: 120
+  dependsOn:
+  - Build
+  - BuildAnyCPU
+  steps:
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      artifactName: BuildOutput
+      downloadPath: '$(Build.SourcesDirectory)'
 
   - task: PowerShell@2
     name: StageFiles
     inputs:
       filePath: 'BuildTransportPackage.ps1'
-      arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "StageFiles"
+      arguments: -Platform "x86,x64,arm64" -Configuration "release" -AzureBuildStep "StageFiles"
 
   - task: EsrpCodeSigning@1
     inputs:
@@ -278,6 +404,25 @@ jobs:
       eq(${{ parameters.ReleaseSigning }}, true)
 
   - task: PowerShell@2
+    name: SetVersion
+    displayName: Update metapackage version
+    inputs:
+      targetType: 'inline'
+      script: |
+        $packageVersion = '$(version)'
+        $pipelineType = '$(PipelineType)'
+        $sourceBranchName = '$(Build.SourceBranchName)'
+        if ($sourceBranchName -eq 'main' -or $sourceBranchName -eq 'develop')
+        {
+          $packageVersion = $packageVersion + '.' + $sourceBranchName + '.' + $pipelineType
+        }
+        Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
+        Write-Host $packageVersion
+        [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
+        $publicNuspec.package.metadata.version = $packageVersion
+        Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
+
+  - task: PowerShell@2
     name: PackNuget
     inputs:
       filePath: 'BuildTransportPackage.ps1'
@@ -316,14 +461,6 @@ jobs:
     inputs:
       PathtoPublish: '$(build.artifactStagingDirectory)\FullNuget'
       artifactName: 'TransportPackage'
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: Full Nuget'
-    inputs:
-      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
-      artifactName: 'BuildOutput'
-
-
 
 # # Publish
 # - job: Publish
