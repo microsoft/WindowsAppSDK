@@ -16,8 +16,9 @@ Main branch points to the external feed.
 
 Param(
     [string]$PackageVersion = "1.1.1.1",
-    [string]$Platform,
-    [string]$Configuration,
+    [string]$Channel = "experimental",
+    [string]$Platform = "x64",
+    [string]$Configuration = "release",
     [string]$AzureBuildStep = "all",
     [string]$OutputDirectory = "",
     [string]$BasePath = "BuildOutput/FullNuget",
@@ -70,6 +71,41 @@ Try {
 
         .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
         .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
+
+        .\tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1 `
+            -Path "dev\common\TerminalVelocityFeatures-DynamicDependency.xml" `
+            -Channel $Channel `
+            -Language "C++" `
+            -Namespace "Microsoft.Windows.ApplicationModel.DynamicDependency" `
+            -Output "dev\common\MddTerminalVelocityFeatures.h"
+
+        .\tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1 `
+            -Path "dev\common\TerminalVelocityFeatures-DeploymentAPI.xml" `
+            -Channel $Channel `
+            -Language "C++" `
+            -Namespace "Microsoft.Windows.ApplicationModel.WindowsAppRuntime" `
+            -Output "dev\common\TerminalVelocityFeatures-DeploymentAPI.h"
+
+        .\tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1 `
+            -Path "dev\common\TerminalVelocityFeatures-AppNotifications.xml" `
+            -Channel $Channel `
+            -Language "C++" `
+            -Namespace "Microsoft.Windows.AppNotifications" `
+            -Output "dev\common\TerminalVelocityFeatures-AppNotifications.h"
+
+        .\tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1 `
+            -Path "dev\common\TerminalVelocityFeatures-PushNotifications.xml" `
+            -Channel $Channel `
+            -Language "C++" `
+            -Namespace "Microsoft.Windows.PushNotifications" `
+            -Output "dev\common\TerminalVelocityFeatures-PushNotifications.h"
+
+        .\tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1 `
+            -Path "dev\common\TerminalVelocityFeatures-EnvironmentManager.xml" `
+            -Channel $Channel `
+            -Language "C++" `
+            -Namespace "Microsoft.Windows.System" `
+            -Output "dev\common\TerminalVelocityFeatures-EnvironmentManager.h"
 
         $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
 
