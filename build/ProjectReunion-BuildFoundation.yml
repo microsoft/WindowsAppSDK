@@ -187,7 +187,7 @@ jobs:
   - task: EsrpCodeSigning@1
     inputs:
       ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
-      FolderPath: '$(Build.ArtifactStagingDirectory)\BuildOutput\FullNuget'
+      FolderPath: '$(Build.SourcesDirectory)\BuildOutput\FullNuget'
       Pattern: |
         **/*.winmd
         **/*.dll
