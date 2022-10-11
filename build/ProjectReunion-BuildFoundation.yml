@@ -159,6 +159,38 @@ jobs:
           }
         }
 
+  # Copy MSIX license installation header into the correct source location.
+  - ${{ if eq(parameters.enableLicenseInstall, true) }}:
+    - task: fNuGetAuthenticate@0
+      inputs:
+        nuGetServiceConnections: 'ProjectReunionInternal'
+
+    # Restore transport package dependencies. This is only enbaled in release-signed builds.
+    - task: PowerShell@2
+      name: ConvertVersionDetailsToPackageConfig
+      displayName: "Convert VersionDetails To PackageConfig"
+      inputs:
+        filePath: '$(Build.SourcesDirectory)\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
+        arguments: -versionDetailsPath '$(Build.SourcesDirectory)\eng\Version.Details.xml' -packageConfigPath '$(Build.SourcesDirectory)\build\packages.config'
+
+    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+      displayName: RestoreNuGetPackages
+      inputs:
+        restoreSolution: build/packages.config
+        feedsToUse: config
+        nugetConfigPath: build/licensing.nuget.config
+        restoreDirectory: packages
+
+    - task: CopyFiles@2
+      displayName: 'Extract license header to source location'
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)\build\packages\$(AppLicensingInternalPackageName).$(AppLicensingInternalPackageVersion)\src'
+        Contents: |
+          *.h
+        TargetFolder: '$(Build.SourcesDirectory)\dev\Licensing'
+        flattenFolders: false
+        overWrite: true
+
   - task: PowerShell@2
     name: SetVersion
     displayName: Update metapackage version

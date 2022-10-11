@@ -40,10 +40,6 @@ if(-not (test-path ".nuget\nuget.exe"))
 Try {
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildBinaries")) 
     {
-        # Generate package config and copy over misc files.
-        & .\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1 -versionDetailsPath "eng\Version.Details.xml" -packageConfigPath "BuildOutput\packages.config"
-        # Restore nuget packages for everything in WIndowsAppRuntime.sln and other files.
-        & .\.nuget\nuget.exe restore "BuildOutput\packages.config" -PackagesDirectory packages -ConfigFile "build\licensing.nuget.config"
         & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile nuget.config
         & .\.nuget\nuget.exe restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" -configfile nuget.config
 
