@@ -28,6 +28,9 @@ parameters:
   - name: "enablePREFast"
     type: boolean
     default: true
+  - name: "enableLicenseInstall"
+    type: boolean
+    default: true
 
 resources:
   repositories:
