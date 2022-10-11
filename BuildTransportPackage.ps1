@@ -39,6 +39,12 @@ if(-not (test-path ".nuget\nuget.exe"))
 $configurationForMrtAndAnyCPU = "release"
 $MRTSourcesDirectory = "dev\MRTCore"
 
+$VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath
+write-host "VCToolsInstallDir: $VCToolsInstallDir"
+
+$msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
+write-host "msBuildPath: $msBuildPath"
+
 Try {
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildBinaries")) 
     {
@@ -48,12 +54,6 @@ Try {
         # If the call to restore WindowsAppRuntime_Insights fails check to make sure all Window SDK's from 17760 are installed.
         & .\.nuget\nuget.exe restore "dev\WindowsAppRuntime_Insights\packages.config" -ConfigFile "dev\WindowsAppRuntime_Insights\nuget.config" -PackagesDirectory "dev\WindowsAppRuntime_Insights\packages"
 
-
-        $VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath
-        write-host "VCToolsInstallDir: $VCToolsInstallDir"
-
-        $msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
-        write-host "msBuildPath: $msBuildPath"
         #------------------
         #    Build windowsAppRuntime.sln and move output to staging.
         #------------------
