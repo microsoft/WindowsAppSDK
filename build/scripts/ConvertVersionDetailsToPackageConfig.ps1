@@ -38,9 +38,5 @@ $packagesText +=
 
 Write-Host $packagesText
 
-if(-not (test-path $packageConfigPath))
-{
-    new-item -path $packageConfigPath
-}
-
-Set-Content -Value $packagesText $packageConfigPath
+New-Item -Path $packageConfigPath -Type file -Force
+Set-Content -Path $packageConfigPath -Value $packagesText
