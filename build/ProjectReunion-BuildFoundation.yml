@@ -219,6 +219,12 @@ jobs:
       arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "BuildBinaries"
 
   - task: PowerShell@2
+    name: BuildBinaries
+    inputs:
+      filePath: 'BuildTransportPackage.ps1'
+      arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "BuildAnyCPU"
+
+  - task: PowerShell@2
     name: StageFiles
     inputs:
       filePath: 'BuildTransportPackage.ps1'

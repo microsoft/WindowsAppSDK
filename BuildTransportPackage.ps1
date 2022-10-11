@@ -36,6 +36,8 @@ if(-not (test-path ".nuget\nuget.exe"))
     Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile .nuget\nuget.exe
 }
 
+$configurationForMrtAndAnyCPU = "release"
+$MRTSourcesDirectory = "dev\MRTCore"
 
 Try {
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildBinaries")) 
@@ -95,7 +97,6 @@ Try {
         #------------------
 
         #Restore packages from mrt.
-        $MRTSourcesDirectory = "dev\MRTCore"
         & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\core\src\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
         & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
         & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
@@ -117,9 +118,9 @@ Try {
                 & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" /p:Configuration=$configurationToRun,Platform=$platformToRun
             }
         }
-
-        $configurationForMrtAndAnyCPU = "release"
-
+    }
+    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildAnyCPU")) 
+    {
         #------------------
         #    Build windowsAppRuntime.sln (anyCPU) and move output to staging.
         #------------------
@@ -131,7 +132,6 @@ Try {
         #------------------
         #    Stage files for Packing
         #------------------    
-
         if(-not (test-path "$BasePath"))
         {    
             new-item -path "$BasePath" -itemtype "directory"
