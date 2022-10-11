@@ -90,6 +90,48 @@ Try {
             }
         }
 
+        #------------------
+        #    Build mrtcore.sln and move output to staging.
+        #------------------
+
+        #Restore packages from mrt.
+        $MRTSourcesDirectory = "dev\MRTCore"
+        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\core\src\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
+        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
+        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
+        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmmin\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
+        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\unittests\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
+
+        # Init mrtcore
+        foreach($platformToRun in $platform.Split(","))
+        {
+            & $MRTSourcesDirectory\build\init.cmd /envonly $platformToRun\fre
+        }
+
+        # Build mrt core.
+        foreach($configurationToRun in $configuration.Split(","))
+        {
+            foreach($platformToRun in $platform.Split(","))
+            {
+                write-host "Building MrtCore.sln for configuration $configurationToRun and platform:$platformToRun"
+                & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" /p:Configuration=$configurationToRun,Platform=$platformToRun
+            }
+        }
+
+        $configurationForMrtAndAnyCPU = "release"
+
+        #------------------
+        #    Build windowsAppRuntime.sln (anyCPU) and move output to staging.
+        #------------------
+        # build AnyCPU
+        & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=anycpu
+    }
+    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "StageFiles")) 
+    {
+        #------------------
+        #    Stage files for Packing
+        #------------------    
+
         if(-not (test-path "$BasePath"))
         {    
             new-item -path "$BasePath" -itemtype "directory"
@@ -127,52 +169,21 @@ Try {
         Copy-Item -Path "$nuSpecsPath\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" -Destination "$BasePath\build"
         Copy-Item -Path "$nuSpecsPath\AppxManifest.xml" -Destination "$BasePath\AppxManifest.xml"
 
-        #------------------
-        #    Build mrtcore.sln and move output to staging.
-        #------------------
-
-        #Restore packages from mrt.
-        $MRTSourcesDirectory = "dev\MRTCore"
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\core\src\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmmin\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\unittests\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
-
-        # Init mrtcore
-        foreach($platformToRun in $platform.Split(","))
-        {
-            & $MRTSourcesDirectory\build\init.cmd /envonly $platformToRun\fre
-        }
-
-        # Build mrt core.
-        foreach($configurationToRun in $configuration.Split(","))
-        {
-            foreach($platformToRun in $platform.Split(","))
-            {
-                write-host "Building MrtCore.sln for configuration $configurationToRun and platform:$platformToRun"
-                & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" /p:Configuration=$configurationToRun,Platform=$platformToRun
-            }
-        }
-
-        $configurationForMrtAndAnyCPU = "release"
-
-        $MRTBinariesDirectory = "BuildOutput"
         # Copy over mrt files
         foreach($platformToRun in $platform.Split(","))
         {
-            copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\mrm\mrm.dll" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
-            copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\mrm\mrm.pdb" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
-            copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
-            copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.dll" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
+            copy-item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\mrm\mrm.dll" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
+            copy-item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\mrm\mrm.pdb" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
+            copy-item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
+            copy-item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.dll" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
             
-            copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\mrm\mrm.lib" -destination "$BasePath\lib\win10-$platformToRun" -force
+            copy-item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\mrm\mrm.lib" -destination "$BasePath\lib\win10-$platformToRun" -force
 
             if($platformToRun -eq "x86")
             {
-                copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.dll" -destination "$BasePath\lib\net6.0-windows10.0.17763.0" -force
-                copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.pdb" -destination "$BasePath\lib\net6.0-windows10.0.17763.0" -force
-                copy-item -path "$MRTBinariesDirectory\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.winmd" -destination "$BasePath\lib\uap10.0" -force
+                copy-item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.dll" -destination "$BasePath\lib\net6.0-windows10.0.17763.0" -force
+                copy-item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\Microsoft.Windows.ApplicationModel.Resources.Projection.pdb" -destination "$BasePath\lib\net6.0-windows10.0.17763.0" -force
+                copy-item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.winmd" -destination "$BasePath\lib\uap10.0" -force
             }
         }
 
@@ -191,13 +202,6 @@ Try {
         Copy-Item -Path "$MRTSourcesDirectory\packaging\README.md" -Destination "$BasePath\build"
         Copy-Item -Path "$MRTSourcesDirectory\mrt\core\src\mrm.h" -Destination "$BasePath\include"
         Copy-Item -Path "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.idl" -Destination "$BasePath\include"
-
-
-        #------------------
-        #    Build windowsAppRuntime.sln (anyCPU) and move output to staging.
-        #------------------
-        # build AnyCPU
-        & $msBuildPath  /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=anycpu
 
         # If AnyCPU generates another dll it needs to be added here.
         copy-item -path "BuildOutput\$configurationForMrtAndAnyCPU\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$BasePath\lib\net6.0-windows10.0.17763.0"
