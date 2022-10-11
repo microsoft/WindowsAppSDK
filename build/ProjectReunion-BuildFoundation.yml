@@ -44,7 +44,7 @@ jobs:
   dependsOn: []
   pool:
     name: ProjectReunionESPool-2022
-    demands: ''
+    demands: ImageOverride -equals Win2022-VS17.2
   steps:
   - task: powershell@2
     displayName: 'Verify copyright headers'
@@ -71,7 +71,7 @@ jobs:
     )
   pool:
     name: ProjectReunionESPool-2022
-    demands: ImageOverride -equals Win2022-VS17.2
+    demands: ImageOverride -equals ${{ variables.CompilerPoolImage }}
   timeoutInMinutes: 120
   strategy:
     maxParallel: 10
