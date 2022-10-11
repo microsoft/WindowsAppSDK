@@ -15,9 +15,6 @@ parameters:
   - name: "PublishPackage"
     type: boolean
     default: False
-  - name: "WindowsAppRuntimeInsightsSourceDirectory"
-    type: string
-    default: $(Build.SourcesDirectory)\dev\WindowsAppRuntime_Insights
   - name: "GenerateSBOM"
     type: boolean
     default: False
@@ -311,7 +308,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget'
     inputs:
-      PathtoPublish: '$(build.artifactStagingDirectory)\BuildOutput'
+      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
       artifactName: 'BuildOutput'
 
 
