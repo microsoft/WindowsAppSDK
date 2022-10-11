@@ -166,7 +166,7 @@ jobs:
 
   # Copy MSIX license installation header into the correct source location.
   - ${{ if eq(parameters.enableLicenseInstall, true) }}:
-    - task: fNuGetAuthenticate@0
+    - task: NuGetAuthenticate@0
       inputs:
         nuGetServiceConnections: 'ProjectReunionInternal'
 
