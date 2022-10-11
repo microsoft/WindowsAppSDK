@@ -16,8 +16,8 @@ Main branch points to the external feed.
 
 Param(
     [string]$PackageVersion = "1.1.1.1",
-    [string]$Platform,
-    [string]$Configuration,
+    [string]$Platform = "x64",
+    [string]$Configuration = "release",
     [string]$AzureBuildStep = "all",
     [string]$OutputDirectory = "",
     [string]$BasePath = "BuildOutput/FullNuget",
@@ -142,7 +142,7 @@ Try {
         # Init mrtcore
         foreach($platformToRun in $platform.Split(","))
         {
-        & $MRTSourcesDirectory\build\init.cmd /envonly $platformToRun\fre
+            & $MRTSourcesDirectory\build\init.cmd /envonly $platformToRun\fre
         }
 
         # Build mrt core.

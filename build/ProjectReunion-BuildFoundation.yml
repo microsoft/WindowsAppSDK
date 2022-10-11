@@ -306,8 +306,13 @@ jobs:
     displayName: 'Publish artifact: Full Nuget'
     inputs:
       PathtoPublish: '$(build.artifactStagingDirectory)\FullNuget'
-      artifactName: 'FullNuget'
+      artifactName: 'TransportPackage'
 
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget'
+    inputs:
+      PathtoPublish: '$(build.artifactStagingDirectory)\BuildOutput'
+      artifactName: 'BuildOutput'
 
 
 
