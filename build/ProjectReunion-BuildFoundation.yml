@@ -184,17 +184,95 @@ jobs:
       filePath: 'BuildTransportPackage.ps1'
       arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "BuildBinaries"
 
+  - task: EsrpCodeSigning@1
+    inputs:
+      ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+      FolderPath: '$(Build.ArtifactStagingDirectory)\BuildOutput\FullNuget'
+      Pattern: |
+        **/*.winmd
+        **/*.dll
+        **/*.exe
+      UseMinimatch: true
+      signConfigType: 'inlineSignParams'
+      inlineOperation: |
+        [
+          {
+            "keyCode": "CP-230012",
+            "operationSetCode": "SigntoolSign",
+            "parameters": [
+              {
+                "parameterName": "OpusName",
+                "parameterValue": "Microsoft"
+              },
+              {
+                "parameterName": "OpusInfo",
+                "parameterValue": "http://www.microsoft.com"
+              },
+              {
+                "parameterName": "PageHash",
+                "parameterValue": "/NPH"
+              },
+              {
+                "parameterName": "FileDigest",
+                "parameterValue": "/fd sha256"
+              },
+              {
+                "parameterName": "TimeStamp",
+                "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+              }
+            ],
+            "toolName": "signtool.exe",
+            "toolVersion": "6.2.9304.0"
+          }
+        ]
+      SessionTimeout: '60'
+      MaxConcurrency: '50'
+      MaxRetryAttempts: '5'
+    condition:
+      eq(${{ parameters.ReleaseSigning }}, true)
+
   - task: PowerShell@2
     name: PackNuget
     inputs:
       filePath: 'BuildTransportPackage.ps1'
       arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
 
+  - ${{if parameters.signConfigPattern }}:
+    - task: EsrpCodeSigning@1
+      inputs:
+        ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+        FolderPath: $(build.artifactStagingDirectory)\FullNuget
+        Pattern: 'Microsoft.WindowsAppSDK.Foundation*.nupkg'
+        UseMinimatch: true
+        signConfigType: 'inlineSignParams'
+        inlineOperation: |
+          [
+            {
+              "KeyCode" : "CP-401405",
+              "OperationCode" : "NuGetSign",
+              "Parameters" : {},
+              "ToolName" : "sign",
+              "ToolVersion" : "1.0"
+            },
+            {
+                "KeyCode" : "CP-401405",
+                "OperationCode" : "NuGetVerify",
+                "Parameters" : {},
+                "ToolName" : "sign",
+                "ToolVersion" : "1.0"
+            }
+          ]
+        SessionTimeout: '60'
+        MaxConcurrency: '50'
+        MaxRetryAttempts: '5'
+
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget'
     inputs:
       PathtoPublish: '$(build.artifactStagingDirectory)\FullNuget'
       artifactName: 'FullNuget'
+
+
 
 
 # # Publish
