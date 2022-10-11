@@ -2,6 +2,7 @@ name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
+- template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-CompilerPoolImage.yml
 - name: buildPool
   value: 'ProjectReunionESPool-2022'
 

@@ -1,5 +1,4 @@
 variables:
-- template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-CompilerPoolImage.yml
   channel: 'experimental'
   rerunPassesRequiredToAvoidFailure: 5
   versionDate: $[format('{0:yyyyMMdd}', pipeline.startTime)]
