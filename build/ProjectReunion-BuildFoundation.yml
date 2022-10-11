@@ -68,6 +68,8 @@ jobs:
   steps:
   - task: NuGetToolInstaller@1
 
+  - task: NuGetToolInstaller@1
+
   - task: NuGetAuthenticate@0
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
