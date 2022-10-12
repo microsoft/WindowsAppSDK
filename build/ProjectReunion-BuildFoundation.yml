@@ -414,8 +414,8 @@ jobs:
   pool: ProjectReunionESPool-2022
   timeoutInMinutes: 120
   dependsOn:
-  - TestMRT
-  - TestFoundation
+  - Build
+  - BuildAnyCPU
   steps:
   - task: DownloadBuildArtifacts@0
     inputs:
