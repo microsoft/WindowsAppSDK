@@ -344,6 +344,13 @@ jobs:
         outputDirectory: BuildOutput
         enablePREFast: ${{ parameters.enablePREFast }}
 
+- template: AzurePipelinesTemplates\WindowsAppSDK-RunHelixTests-Job.yml
+  parameters:
+    name: 'TestFoundation'
+    dependsOn:
+      - Build
+      - BuildAnyCPU
+    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
 
 - job: TestMRT
   pool: ProjectReunionESPool-2022
@@ -408,6 +415,7 @@ jobs:
   timeoutInMinutes: 120
   dependsOn:
   - TestMRT
+  - TestFoundation
   steps:
   - task: DownloadBuildArtifacts@0
     inputs:
