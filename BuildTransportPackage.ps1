@@ -36,7 +36,7 @@ if(-not (test-path ".nuget\nuget.exe"))
     Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile .nuget\nuget.exe
 }
 
-$configurationForMrtAndAnyCPU = "Release"
+$configurationForMrtAndAnyCPU = "release"
 $MRTSourcesDirectory = "dev\MRTCore"
 
 $VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath
