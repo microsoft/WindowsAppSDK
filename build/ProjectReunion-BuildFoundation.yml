@@ -92,7 +92,7 @@ jobs:
 
   - task: NuGetToolInstaller@1
 
-  - task: NuGetAuthenticate@0
+  - task: NuGetAuthenticate@1
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
 
@@ -166,7 +166,7 @@ jobs:
 
   - task: NuGetToolInstaller@1
 
-  - task: NuGetAuthenticate@0
+  - task: NuGetAuthenticate@1
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
 
@@ -246,7 +246,7 @@ jobs:
   steps:
   - task: NuGetToolInstaller@1
 
-  - task: NuGetAuthenticate@0
+  - task: NuGetAuthenticate@1
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
 
