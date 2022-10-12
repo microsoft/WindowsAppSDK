@@ -68,17 +68,17 @@ jobs:
     matrix:
       Release_x86:
         buildPlatform: 'x86'
-        buildConfiguration: 'release'
+        buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
         PGOBuildMode: 'Optimize'
       Release_x64:
         buildPlatform: 'x64'
-        buildConfiguration: 'release'
+        buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
         PGOBuildMode: 'Optimize'
       Release_Arm64:
         buildPlatform: 'arm64'
-        buildConfiguration: 'release'
+        buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
   steps:
   - task: NuGetToolInstaller@1

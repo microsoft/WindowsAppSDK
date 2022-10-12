@@ -17,7 +17,7 @@ Main branch points to the external feed.
 Param(
     [string]$PackageVersion = "1.1.1.1",
     [string]$Platform = "x64",
-    [string]$Configuration = "release",
+    [string]$Configuration = "Release",
     [string]$AzureBuildStep = "all",
     [string]$OutputDirectory = "",
     [string]$BasePath = "BuildOutput/FullNuget",
@@ -36,7 +36,7 @@ if(-not (test-path ".nuget\nuget.exe"))
     Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile .nuget\nuget.exe
 }
 
-$configurationForMrtAndAnyCPU = "release"
+$configurationForMrtAndAnyCPU = "Release"
 $MRTSourcesDirectory = "dev\MRTCore"
 $buildOverridePath = "build\override"
 
@@ -125,7 +125,7 @@ Try {
         #    Build windowsAppRuntime.sln (anyCPU) and move output to staging.
         #------------------
         # build AnyCPU
-        & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=anycpu
+        & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=AnyCPU
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "StageFiles")) 
     {
