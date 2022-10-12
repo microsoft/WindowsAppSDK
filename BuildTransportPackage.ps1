@@ -38,6 +38,7 @@ if(-not (test-path ".nuget\nuget.exe"))
 
 $configurationForMrtAndAnyCPU = "release"
 $MRTSourcesDirectory = "dev\MRTCore"
+$buildOverridePath = "build\override"
 
 $VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath
 write-host "VCToolsInstallDir: $VCToolsInstallDir"
@@ -60,7 +61,6 @@ Try {
 
         # Generate overrides
         # Make sure override directory exists.
-        $buildOverridePath = "build\override"
         if(-not (test-path "$buildOverridePath"))
         {
             new-item -path "$buildOverridePath" -itemtype "directory"
