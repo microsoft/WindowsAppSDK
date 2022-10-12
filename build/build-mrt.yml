@@ -20,9 +20,7 @@ steps:
 
 - task: NuGetToolInstaller@1
 
-- task: NuGetAuthenticate@0
-  inputs:
-    nuGetServiceConnections: 'PR-Dependencies-Feed'
+- task: NuGetAuthenticate@1
 
 # Start restoring packages for C++ projects. The C# ones will be restored by the build task
 # Note: 'NuGetCommand@2' is ambiguous so the specific task GUID must be used instead.
