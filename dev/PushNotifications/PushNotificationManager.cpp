@@ -190,8 +190,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 {
                     // Convert escaped components to its normal content from the conversion done in the Long Running Process (see NotificationListener.cpp)
                     auto payloadAsWstring{ winrt::Uri::UnescapeComponent(pair.Value()) };
-                    auto pushBackgroundTask{ winrt::make_self<LRPBackgroundTaskInstance>(payloadAsWstring.c_str()) };
-                    eventArgs = winrt::make<PushNotificationReceivedEventArgs>(pushBackgroundTask.as<IBackgroundTaskInstance>());
+                    auto backgroundTask{ winrt::make_self<LongRunningProcessSourcedTaskInstance>(payloadAsWstring.c_str()) };
+                    eventArgs = winrt::make<PushNotificationReceivedEventArgs>(backgroundTask.as<IBackgroundTaskInstance>());
                     m_backgroundTaskArgs = eventArgs;
                 }
             }

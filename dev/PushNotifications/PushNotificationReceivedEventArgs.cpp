@@ -60,6 +60,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             return winrt::make<PushNotificationDummyDeferral>().as<BackgroundTaskDeferral>();
         }
+
         THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, m_isForegroundActivation, "Foreground activation cannot call this.");
 
         return m_backgroundTaskInstance.GetDeferral();
@@ -67,25 +68,19 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::event_token PushNotificationReceivedEventArgs::Canceled(winrt::BackgroundTaskCanceledEventHandler const& handler)
     {
-        if (!PushNotificationHelpers::IsPackagedAppScenario())
-        {
-            return winrt::event_token{};
-        }
-        else
+        if (PushNotificationHelpers::IsPackagedAppScenario())
         {
             THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, m_isForegroundActivation, "Foreground activation cannot call this.");
 
             return m_backgroundTaskInstance.Canceled(handler);
         }
+
+        return winrt::event_token{};
     }
 
     void PushNotificationReceivedEventArgs::Canceled(winrt::event_token const& token) noexcept
     {
-        if (!PushNotificationHelpers::IsPackagedAppScenario())
-        {
-            return;
-        }
-        else
+        if (PushNotificationHelpers::IsPackagedAppScenario())
         {
             THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, m_isForegroundActivation, "Foreground activation cannot call this.");
 

@@ -6,10 +6,10 @@
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.Security.Cryptography.h>
 
-struct LRPRawNotification : winrt::implements<LRPRawNotification, winrt::Windows::Networking::PushNotifications::IRawNotification, winrt::Windows::Networking::PushNotifications::IRawNotification2, winrt::Windows::Networking::PushNotifications::IRawNotification3>
+struct LongRunningProcessSourcedRawNotification : winrt::implements<LongRunningProcessSourcedRawNotification, winrt::Windows::Networking::PushNotifications::IRawNotification, winrt::Windows::Networking::PushNotifications::IRawNotification2, winrt::Windows::Networking::PushNotifications::IRawNotification3>
 {
-    LRPRawNotification() {};
-    LRPRawNotification(std::wstring const& payload): m_payload(payload) {};
+    LongRunningProcessSourcedRawNotification() {};
+    LongRunningProcessSourcedRawNotification(std::wstring const& payload): m_payload(payload) {};
 
     winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::hstring> Headers() { return {}; };
     winrt::hstring ChannelId() { return {}; };
@@ -23,12 +23,12 @@ private:
     std::wstring m_payload;
 };
 
-struct LRPRawNotificationFactory : winrt::implements<LRPRawNotificationFactory, IClassFactory>
+struct LongRunningProcessSourcedRawNotificationFactory : winrt::implements<LongRunningProcessSourcedRawNotificationFactory, IClassFactory>
 {
     HRESULT __stdcall CreateInstance(_In_opt_ IUnknown* aggregateInterface, _In_ REFIID interfaceId, _Outptr_ VOID** object) noexcept final
     {
         RETURN_HR_IF(CLASS_E_NOAGGREGATION, aggregateInterface != nullptr);
-        return winrt::make<LRPRawNotification>().as(interfaceId, object);
+        return winrt::make<LongRunningProcessSourcedRawNotification>().as(interfaceId, object);
     }
 
     HRESULT __stdcall LockServer(BOOL) noexcept final
