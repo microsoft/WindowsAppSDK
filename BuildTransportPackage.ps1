@@ -38,7 +38,6 @@ if(-not (test-path ".nuget\nuget.exe"))
 
 $configurationForMrtAndAnyCPU = "Release"
 $MRTSourcesDirectory = "dev\MRTCore"
-$buildOverridePath = "build\override"
 
 $VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath
 write-host "VCToolsInstallDir: $VCToolsInstallDir"
@@ -58,16 +57,6 @@ Try {
         #------------------
         #    Build windowsAppRuntime.sln and move output to staging.
         #------------------
-
-        # Generate overrides
-        # Make sure override directory exists.
-        if(-not (test-path "$buildOverridePath"))
-        {
-            new-item -path "$buildOverridePath" -itemtype "directory"
-        }
-
-        .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
-        .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
 
         $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
 
@@ -141,6 +130,17 @@ Try {
         {
             new-item -path "$BasePath\build\native" -itemtype "directory"
         }
+
+        # Generate overrides
+        # Make sure override directory exists.
+        if(-not (test-path "$buildOverridePath"))
+        {
+            new-item -path "$buildOverridePath" -itemtype "directory"
+        }
+
+        $buildOverridePath = "build\override"
+        .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
+        .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
 
         # Copy WindowsAppRuntime.sln files
         foreach($configurationToRun in $configuration.Split(","))
