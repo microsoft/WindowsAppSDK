@@ -385,6 +385,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NotificationActivation", "test\TestApps\NotificationActivation\NotificationActivation.vcxproj", "{DC9EDD85-90CD-4A92-952C-F3A894CF2FC3}"
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "NotificationActivationPackage", "test\TestApps\NotificationActivationPackage\NotificationActivationPackage.wapproj", "{4B9CB088-77A1-46CB-87C5-14265FDD43DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.FrameworkUdk.PackageReference", "eng\PackageReference\FrameworkUdk\Microsoft.FrameworkUdk.PackageReference.csproj", "{FD0CC14A-ED4B-4936-B68B-F31E58372E32}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1522,6 +1523,22 @@ Global
 		{4B9CB088-77A1-46CB-87C5-14265FDD43DA}.Release|x86.ActiveCfg = Release|x86
 		{4B9CB088-77A1-46CB-87C5-14265FDD43DA}.Release|x86.Build.0 = Release|x86
 		{4B9CB088-77A1-46CB-87C5-14265FDD43DA}.Release|x86.Deploy.0 = Release|x86
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32}.Debug|x64.Build.0 = Debug|Any CPU
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32}.Debug|x86.Build.0 = Debug|Any CPU
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32}.Release|ARM64.Build.0 = Release|Any CPU
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32}.Release|x64.ActiveCfg = Release|Any CPU
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32}.Release|x64.Build.0 = Release|Any CPU
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32}.Release|x86.ActiveCfg = Release|Any CPU
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

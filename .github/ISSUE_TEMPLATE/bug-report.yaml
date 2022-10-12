@@ -35,8 +35,9 @@ body:
       label: NuGet package version
       description: Specify the version of Windows App SDK (or Project Reunion) you're using.
       options:
-        - "1.2.220727.1-experimental1"
-        - "1.1.4"
+        - "1.2.220930.4-preview2"
+        - "1.2.220909.2-experimental2"
+        - "1.1.5"
         - "1.1.0-preview3"
         - "1.0.4"
         - "1.0.0-preview3"
