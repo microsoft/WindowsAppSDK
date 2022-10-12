@@ -131,6 +131,7 @@ Try {
             new-item -path "$BasePath\build\native" -itemtype "directory"
         }
 
+        $buildOverridePath = "build\override"
         # Generate overrides
         # Make sure override directory exists.
         if(-not (test-path "$buildOverridePath"))
@@ -138,7 +139,6 @@ Try {
             new-item -path "$buildOverridePath" -itemtype "directory"
         }
 
-        $buildOverridePath = "build\override"
         .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
         .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
 
