@@ -5,7 +5,7 @@
 
 namespace Microsoft.Windows.System
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract EnvironmentManagerContract{};
 
     [contract(EnvironmentManagerContract, 1)]
@@ -28,5 +28,8 @@ namespace Microsoft.Windows.System
         // PathExt Manipulation
         void AddExecutableFileExtension(String pathExt);
         void RemoveExecutableFileExtension(String pathExt);
+
+        [contract(EnvironmentManagerContract, 2)]
+        Boolean AreChangesTracked{ get; };
     }
 }
