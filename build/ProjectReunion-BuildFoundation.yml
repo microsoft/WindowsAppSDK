@@ -81,7 +81,7 @@ jobs:
         buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
   steps:
-  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnviroment-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
   - task: NuGetAuthenticate@1
     inputs:
@@ -132,7 +132,7 @@ jobs:
   # Can be expanded to add any other binary as needed
   pool: ProjectReunionESPool-2022
   steps:
-  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnviroment-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
   - task: PowerShell@2
     name: BuildBinaries
@@ -181,7 +181,7 @@ jobs:
         buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
   steps:
-  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnviroment-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
   - task: PowerShell@2
     name: BuildBinaries
