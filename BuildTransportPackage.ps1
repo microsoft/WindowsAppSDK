@@ -20,6 +20,7 @@ Param(
     [string]$Configuration = "Release",
     [string]$AzureBuildStep = "all",
     [string]$OutputDirectory = "",
+    [string]$PGOBuildMode = "Optimize",
     [string]$BasePath = "BuildOutput/FullNuget",
     [string]$UpdateVersionDetailsPath = $null
 )
@@ -54,9 +55,6 @@ Try {
         # If the call to restore WindowsAppRuntime_Insights fails check to make sure all Window SDK's from 17760 are installed.
         & .\.nuget\nuget.exe restore "dev\WindowsAppRuntime_Insights\packages.config" -ConfigFile "dev\WindowsAppRuntime_Insights\nuget.config" -PackagesDirectory "dev\WindowsAppRuntime_Insights\packages"
 
-        #------------------
-        #    Build windowsAppRuntime.sln and move output to staging.
-        #------------------
         $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
 
         if (($srcPath -ne $null)){
@@ -73,12 +71,34 @@ Try {
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildBinaries")) 
     {
+        # Some builds have "-branchname" appended, but when this happens the environment variable 
+         # TFS_BUILDNUMBER has the un-modified version.
+        if ($env:TFS_BUILDNUMBER)
+        {
+            $env:BUILD_BUILDNUMBER = $env:TFS_BUILDNUMBER
+        }
+        Write-Host "BuildNumber : " $env:BUILD_BUILDNUMBER
+        $yymm = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 10, 4)
+        $dd = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 5, 2)
+        $revision = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 3, 3)
+        #------------------
+        #    Build windowsAppRuntime.sln and move output to staging.
+        #------------------
         foreach($configurationToRun in $configuration.Split(","))
         {
             foreach($platformToRun in $platform.Split(","))
             {
                 write-host "Building WindowsAppRuntime.sln for configuration $configurationToRun and platform:$platformToRun"
-                & $msBuildPath /restore WindowsAppRuntime.sln /p:Configuration=$configurationToRun,Platform=$platformToRun
+                & $msBuildPath /restore `
+                                WindowsAppRuntime.sln `
+                                /p:Configuration=$configurationToRun,Platform=$platformToRun `
+                                /p:AppxSymbolPackageEnabled=false
+                                /binaryLogger:BuildOutput/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog`
+                                p:WindowsAppSDKVersionBuild=$yymm `
+                                /p:WindowsAppSDKVersionRevision=$dd$revision `
+                                /p:PGOBuildMode=$PGOBuildMode `
+                                /p:WindowsAppSDKBuildPipeline=1 `
+                                /p:WindowsAppSDKCleanIntermediateFiles=true
             }
         }
     }

@@ -121,6 +121,12 @@ jobs:
       filePath: 'BuildTransportPackage.ps1'
       arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
 
+  - ${{ if eq(parameters.runSDLBinaryAnalysis, 'true') }}:
+    - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
+      parameters:
+        outputDirectory: BuildOutput
+        enablePREFast: ${{ parameters.enablePREFast }}
+
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget'
     inputs:
@@ -140,17 +146,17 @@ jobs:
       filePath: 'BuildTransportPackage.ps1'
       arguments: -AzureBuildStep "BuildAnyCPU"
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: Full Nuget'
-    inputs:
-      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
-      artifactName: 'BuildOutput'
-
   - ${{ if eq(parameters.runSDLBinaryAnalysis, 'true') }}:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
       parameters:
         outputDirectory: BuildOutput
         enablePREFast: ${{ parameters.enablePREFast }}
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget'
+    inputs:
+      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
+      artifactName: 'BuildOutput'
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-RunHelixTests-Job.yml
   parameters:
@@ -188,6 +194,13 @@ jobs:
     inputs:
       filePath: 'BuildTransportPackage.ps1'
       arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish mrtcore binlog'
+    condition: succeededOrFailed()
+    inputs:
+      PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
+      artifactName: binlogs
 
   # Run the test locally on the Azure VM.
   - task: VSTest@2
@@ -234,11 +247,18 @@ jobs:
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
 
+  - ${{ if eq(parameters.runSDLBinaryAnalysis, 'true') }}:
+    - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
+      parameters:
+        outputDirectory: 'BuildOutput'
+        enablePREFast: ${{ parameters.enablePREFast }}
+
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget'
     inputs:
       PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
       artifactName: 'BuildOutput'
+
 
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
