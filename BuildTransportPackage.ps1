@@ -100,13 +100,13 @@ Try {
                 write-host "Building WindowsAppRuntime.sln for configuration $configurationToRun and platform:$platformToRun"
                 & $msBuildPath /restore `
                                 WindowsAppRuntime.sln `
-                                /p:Configuration=$configurationToRun,Platform=$platformToRun `
-                                /p:AppxSymbolPackageEnabled=false `
-                                /binaryLogger:"BuildOutput/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
-                                $WindowsAppSDKVersionProperty `
-                                /p:PGOBuildMode=$PGOBuildMode `
-                                /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline `
-                                /p:WindowsAppSDKCleanIntermediateFiles=true
+                                /p:Configuration=$configurationToRun,Platform=$platformToRun
+                                # /p:AppxSymbolPackageEnabled=false `
+                                # /binaryLogger:"BuildOutput/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
+                                # $WindowsAppSDKVersionProperty `
+                                # /p:PGOBuildMode=$PGOBuildMode `
+                                # /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline `
+                                # /p:WindowsAppSDKCleanIntermediateFiles=true
             }
         }
     }
@@ -135,7 +135,10 @@ Try {
             foreach($platformToRun in $platform.Split(","))
             {
                 write-host "Building MrtCore.sln for configuration $configurationToRun and platform:$platformToRun"
-                & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" /p:Configuration=$configurationToRun,Platform=$platformToRun
+                & $msBuildPath /restore `
+                                "$MRTSourcesDirectory\mrt\MrtCore.sln" `
+                                /p:Configuration=$configurationToRun,Platform=$platformToRun `
+                                /binaryLogger:"BuildOutput/mrtcore.$platformToRun.$configurationToRun.binlog"
             }
         }
     }

@@ -199,7 +199,7 @@ jobs:
     displayName: 'Publish mrtcore binlog'
     condition: succeededOrFailed()
     inputs:
-      PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
+      PathtoPublish: $(Build.SourcesDirectory)/BuildOutput/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
       artifactName: binlogs
 
   # Run the test locally on the Azure VM.
