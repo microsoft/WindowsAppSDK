@@ -55,6 +55,8 @@ namespace WindowsAppSDKEnvironmentManagerTests
         TEST_METHOD(TestGetForUser);
         TEST_METHOD(TestGetForMachine);
 
+        TEST_METHOD(TestAreChangesTracked);
+
         TEST_METHOD(TestGetEnvironmentVariablesForProcess);
         TEST_METHOD(TestGetEnvironmentVariablesForUser);
         TEST_METHOD(TestGetEnvironmentVariablesForMachine);

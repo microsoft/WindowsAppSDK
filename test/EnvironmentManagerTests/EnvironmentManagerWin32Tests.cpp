@@ -4,6 +4,10 @@
 #include "pch.h"
 #include "EnvironmentManagerWin32Tests.h"
 #include "EnvironmentVariableHelper.h"
+#include <WindowsAppRuntime.Test.Metadata.h>
+#include <WindowsAppRuntime.VersionInfo.h>
+#include <WindowsAppRuntime.SelfContained.h>
+
 
 using namespace winrt::Microsoft::Windows;
 
@@ -25,6 +29,36 @@ namespace WindowsAppSDKEnvironmentManagerTests
     {
         EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
         VERIFY_IS_NOT_NULL(environmentManager);
+    }
+
+    void EnvironmentManagerWin32Tests::TestAreChangesTracked()
+    {
+        BEGIN_TEST_METHOD_PROPERTIES()
+            TEST_METHOD_PROPERTY(L"Data:SelfContained", L"{true, false}")
+            END_TEST_METHOD_PROPERTIES()
+
+        bool isSelfContained{};
+        VERIFY_SUCCEEDED(WEX::TestExecution::TestData::TryGetValue(L"SelfContained", isSelfContained));
+
+        if (!isSelfContained)
+        {
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(::TP::WindowsAppRuntimeFramework::c_PackageFamilyName, ::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
+            VERIFY_IS_FALSE(::WindowsAppRuntime::SelfContained::IsSelfContained());
+        }
+        else
+        {
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!", L"I_don't_exist_package!");
+            VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
+        }
+
+        EnvironmentManager forProcess{ EnvironmentManager::GetForProcess() };
+        VERIFY_IS_FALSE(forProcess.AreChangesTracked());
+
+        EnvironmentManager forUser{ EnvironmentManager::GetForUser() };
+        VERIFY_IS_FALSE(forUser.AreChangesTracked());
+
+        EnvironmentManager forMachine{ EnvironmentManager::GetForMachine() };
+        VERIFY_IS_FALSE(forMachine.AreChangesTracked());
     }
 
     void EnvironmentManagerWin32Tests::TestGetEnvironmentVariablesForProcess()
