@@ -102,9 +102,9 @@ Try {
                                 WindowsAppRuntime.sln `
                                 /p:Configuration=$configurationToRun,Platform=$platformToRun
                                 # /p:AppxSymbolPackageEnabled=false `
-                                # /binaryLogger:"BuildOutput/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
-                                # $WindowsAppSDKVersionProperty `
-                                # /p:PGOBuildMode=$PGOBuildMode `
+                                /binaryLogger:"BuildOutput/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
+                                $WindowsAppSDKVersionProperty `
+                                /p:PGOBuildMode=$PGOBuildMode `
                                 # /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline `
                                 # /p:WindowsAppSDKCleanIntermediateFiles=true
             }
