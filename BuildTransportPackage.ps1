@@ -71,16 +71,24 @@ Try {
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildBinaries")) 
     {
-        # Some builds have "-branchname" appended, but when this happens the environment variable 
-         # TFS_BUILDNUMBER has the un-modified version.
-        if ($env:TFS_BUILDNUMBER)
+        $WindowsAppSDKBuildPipeline = 1
+        if ($AzureBuildStep -ne "all")
         {
-            $env:BUILD_BUILDNUMBER = $env:TFS_BUILDNUMBER
+            # Some builds have "-branchname" appended, but when this happens the environment variable 
+            # TFS_BUILDNUMBER has the un-modified version.
+            if ($env:TFS_BUILDNUMBER)
+            {
+                $env:BUILD_BUILDNUMBER = $env:TFS_BUILDNUMBER
+            }
+            Write-Host "BuildNumber : " $env:BUILD_BUILDNUMBER
+            $yymm = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 10, 4)
+            $dd = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 5, 2)
+            $revision = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 3, 3)
+            
+            $WindowsAppSDKVersionProperty = "/p:WindowsAppSDKVersionBuild=$yymm /p:WindowsAppSDKVersionRevision=$dd$revision"
+            $WindowsAppSDKBuildPipeline = 0
         }
-        Write-Host "BuildNumber : " $env:BUILD_BUILDNUMBER
-        $yymm = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 10, 4)
-        $dd = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 5, 2)
-        $revision = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 3, 3)
+
         #------------------
         #    Build windowsAppRuntime.sln and move output to staging.
         #------------------
@@ -93,11 +101,10 @@ Try {
                                 WindowsAppRuntime.sln `
                                 /p:Configuration=$configurationToRun,Platform=$platformToRun `
                                 /p:AppxSymbolPackageEnabled=false
-                                /binaryLogger:BuildOutput/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog`
-                                p:WindowsAppSDKVersionBuild=$yymm `
-                                /p:WindowsAppSDKVersionRevision=$dd$revision `
+                                /binaryLogger:BuildOutput/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog `
+                                $WindowsAppSDKVersionProperty `
                                 /p:PGOBuildMode=$PGOBuildMode `
-                                /p:WindowsAppSDKBuildPipeline=1 `
+                                /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline `
                                 /p:WindowsAppSDKCleanIntermediateFiles=true
             }
         }
