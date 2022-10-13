@@ -22,14 +22,6 @@ steps:
 
 - task: NuGetAuthenticate@1
 
-# Start restoring packages for C++ projects. The C# ones will be restored by the build task
-# Note: 'NuGetCommand@2' is ambiguous so the specific task GUID must be used instead.
-- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-  displayName: 'NuGet restore of core'
-  inputs:
-    versionSpec: 5.11
-  continueOnError: true
-
 - task: powershell@2
   displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
   inputs:
