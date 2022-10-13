@@ -179,12 +179,12 @@ jobs:
           }
         }
 
-  # Copy MSIX license installation header into the correct source location.
-  - ${{ if eq(parameters.enableLicenseInstall, true) }}:
-    - task: NuGetAuthenticate@0
-      inputs:
-        nuGetServiceConnections: 'ProjectReunionInternal'
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: 'ProjectReunionInternal'
 
+  - ${{ if eq(parameters.enableLicenseInstall, true) }}:
+    # Copy MSIX license installation header into the correct source location.
     # Restore transport package dependencies. This is only enbaled in release-signed builds.
     - task: PowerShell@2
       name: ConvertVersionDetailsToPackageConfig
