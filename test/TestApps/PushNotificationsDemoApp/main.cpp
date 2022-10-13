@@ -92,7 +92,7 @@ winrt::PushNotificationChannel RequestChannel()
 
 int main()
 {
-    // Test hook to ensure that the app is not self-contained
+    Test::Bootstrap::SetupBootstrap();
     ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
         ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
 
