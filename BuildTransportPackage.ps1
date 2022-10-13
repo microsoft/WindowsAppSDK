@@ -100,11 +100,11 @@ Try {
                 write-host "Building WindowsAppRuntime.sln for configuration $configurationToRun and platform:$platformToRun"
                 & $msBuildPath /restore `
                                 WindowsAppRuntime.sln `
-                                /p:Configuration=$configurationToRun,Platform=$platformToRun
-                                # /p:AppxSymbolPackageEnabled=false `
+                                /p:Configuration=$configurationToRun,Platform=$platformToRun `
                                 /binaryLogger:"BuildOutput/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
                                 $WindowsAppSDKVersionProperty `
-                                /p:PGOBuildMode=$PGOBuildMode `
+                                /p:PGOBuildMode=$PGOBuildMode 
+                                # /p:AppxSymbolPackageEnabled=false `
                                 # /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline `
                                 # /p:WindowsAppSDKCleanIntermediateFiles=true
             }
