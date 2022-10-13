@@ -47,6 +47,25 @@ $msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
 write-host "msBuildPath: $msBuildPath"
 
 Try {
+    $WindowsAppSDKBuildPipeline = 0
+    if ($AzureBuildStep -ne "all")
+    {
+        # Some builds have "-branchname" appended, but when this happens the environment variable 
+        # TFS_BUILDNUMBER has the un-modified version.
+        if ($env:TFS_BUILDNUMBER)
+        {
+            $env:BUILD_BUILDNUMBER = $env:TFS_BUILDNUMBER
+        }
+        Write-Host "BuildNumber : " $env:BUILD_BUILDNUMBER
+        $yymm = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 10, 4)
+        $dd = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 5, 2)
+        $revision = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 3, 3)
+        
+        $WindowsAppSDKVersionProperty = "/p:WindowsAppSDKVersionBuild=$yymm /p:WindowsAppSDKVersionRevision=$dd$revision"
+        
+        # If $AzureBuildStep is not "all", that means we are in the pipeline
+        $WindowsAppSDKBuildPipeline = 1
+    }
     if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildBinaries") -Or ($AzureBuildStep -eq "BuildMRT"))) 
     {
         & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile nuget.config
@@ -71,24 +90,6 @@ Try {
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildBinaries")) 
     {
-        $WindowsAppSDKBuildPipeline = 1
-        if ($AzureBuildStep -ne "all")
-        {
-            # Some builds have "-branchname" appended, but when this happens the environment variable 
-            # TFS_BUILDNUMBER has the un-modified version.
-            if ($env:TFS_BUILDNUMBER)
-            {
-                $env:BUILD_BUILDNUMBER = $env:TFS_BUILDNUMBER
-            }
-            Write-Host "BuildNumber : " $env:BUILD_BUILDNUMBER
-            $yymm = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 10, 4)
-            $dd = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 5, 2)
-            $revision = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 3, 3)
-            
-            $WindowsAppSDKVersionProperty = "/p:WindowsAppSDKVersionBuild=$yymm /p:WindowsAppSDKVersionRevision=$dd$revision"
-            $WindowsAppSDKBuildPipeline = 0
-        }
-
         #------------------
         #    Build windowsAppRuntime.sln and move output to staging.
         #------------------
@@ -101,7 +102,7 @@ Try {
                                 WindowsAppRuntime.sln `
                                 /p:Configuration=$configurationToRun,Platform=$platformToRun `
                                 /p:AppxSymbolPackageEnabled=false
-                                /binaryLogger:BuildOutput/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog `
+                                /binaryLogger:"BuildOutput/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
                                 $WindowsAppSDKVersionProperty `
                                 /p:PGOBuildMode=$PGOBuildMode `
                                 /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline `
