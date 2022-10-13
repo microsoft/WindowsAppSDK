@@ -81,103 +81,7 @@ jobs:
         buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
   steps:
-  - task: NuGetToolInstaller@1
-
-  - task: NuGetToolInstaller@1
-
-  - task: NuGetAuthenticate@1
-    inputs:
-      nuGetServiceConnections: 'TelemetryInternal'
-
-  - template: AzurePipelinesTemplates\WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
-  
-  # The environment variable VCToolsInstallDir isn't defined on lab machines, so we need to retrieve it ourselves.
-  - script: |
-      "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath > %TEMP%\vsinstalldir.txt
-      set /p _VSINSTALLDIR15=<%TEMP%\vsinstalldir.txt
-      del %TEMP%\vsinstalldir.txt
-      call "%_VSINSTALLDIR15%\Common7\Tools\VsDevCmd.bat"
-      echo VCToolsInstallDir = %VCToolsInstallDir%
-      echo ##vso[task.setvariable variable=VCToolsInstallDir]%VCToolsInstallDir%
-    displayName: 'Retrieve VC tools directory'
-
-  - task: CmdLine@1
-    displayName: 'Display build machine environment variables'
-    inputs:
-      filename: 'set'
-
-  - task: NuGetAuthenticate@0
-    inputs:
-      nuGetServiceConnections: 'WindowsES'
-
-  - template: AzurePipelinesTemplates\WindowsAppSDK-InstallWindowsSDK-Steps.yml
-
-  - task: powershell@2
-    displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
-    inputs:
-      targetType: filePath
-      filePath: tools\DevCheck.ps1
-      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
-      workingDirectory: '$(Build.SourcesDirectory)'
-
-  - task: powershell@2
-    displayName: 'Create DynamicDependencies TerminalVelocity features'
-    inputs:
-      targetType: filePath
-      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DynamicDependency.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.ApplicationModel.DynamicDependency -Output $(Build.SourcesDirectory)\dev\common\MddTerminalVelocityFeatures.h
-      workingDirectory: '$(Build.SourcesDirectory)'
-
-  - task: powershell@2
-    displayName: 'Create DeploymentAPI TerminalVelocity features'
-    inputs:
-      targetType: filePath
-      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.h
-      workingDirectory: '$(Build.SourcesDirectory)'
-
-  - task: powershell@2
-    displayName: 'Create AppNotifications TerminalVelocity features'
-    inputs:
-      targetType: filePath
-      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.AppNotifications -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.h
-      workingDirectory: '$(Build.SourcesDirectory)'
-
-  - task: powershell@2
-    displayName: 'Create PushNotifications TerminalVelocity features'
-    inputs:
-      targetType: filePath
-      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.PushNotifications -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.h
-      workingDirectory: '$(Build.SourcesDirectory)'
-
-  - task: powershell@2
-    displayName: 'Create EnvironmentManager TerminalVelocity features'
-    inputs:
-      targetType: filePath
-      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.System -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.h
-      workingDirectory: '$(Build.SourcesDirectory)'
-
-  - task: powershell@2
-    name: UpdateTraceloggingConfig
-    inputs:
-      targetType: 'inline'
-      script: |
-        $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
-
-        if (($srcPath -ne $null)){
-          $destinationPaths = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
-
-          if (($destinationPaths -ne $null)) {
-            foreach ($destPath in $destinationPaths) {
-              Write-Host 'SourcePath:' $srcPath.FullName
-              Write-Host 'DestinationPath:' $destPath.FullName
-              Copy-Item -Force $srcPath.FullName $destPath.FullName
-            }
-          }
-        }
+  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnviroment-Steps.yml
 
   - task: NuGetAuthenticate@1
     inputs:
@@ -228,101 +132,7 @@ jobs:
   # Can be expanded to add any other binary as needed
   pool: ProjectReunionESPool-2022
   steps:
-  - task: NuGetToolInstaller@1
-
-  - task: NuGetAuthenticate@1
-    inputs:
-      nuGetServiceConnections: 'TelemetryInternal'
-
-  - template: AzurePipelinesTemplates\WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
-  
-  # The environment variable VCToolsInstallDir isn't defined on lab machines, so we need to retrieve it ourselves.
-  - script: |
-      "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath > %TEMP%\vsinstalldir.txt
-      set /p _VSINSTALLDIR15=<%TEMP%\vsinstalldir.txt
-      del %TEMP%\vsinstalldir.txt
-      call "%_VSINSTALLDIR15%\Common7\Tools\VsDevCmd.bat"
-      echo VCToolsInstallDir = %VCToolsInstallDir%
-      echo ##vso[task.setvariable variable=VCToolsInstallDir]%VCToolsInstallDir%
-    displayName: 'Retrieve VC tools directory'
-
-  - task: CmdLine@1
-    displayName: 'Display build machine environment variables'
-    inputs:
-      filename: 'set'
-
-  - task: NuGetAuthenticate@0
-    inputs:
-      nuGetServiceConnections: 'WindowsES'
-
-  - template: AzurePipelinesTemplates\WindowsAppSDK-InstallWindowsSDK-Steps.yml
-
-  - task: powershell@2
-    displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
-    inputs:
-      targetType: filePath
-      filePath: tools\DevCheck.ps1
-      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
-      workingDirectory: '$(Build.SourcesDirectory)'
-
-  - task: powershell@2
-    displayName: 'Create DynamicDependencies TerminalVelocity features'
-    inputs:
-      targetType: filePath
-      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DynamicDependency.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.ApplicationModel.DynamicDependency -Output $(Build.SourcesDirectory)\dev\common\MddTerminalVelocityFeatures.h
-      workingDirectory: '$(Build.SourcesDirectory)'
-
-  - task: powershell@2
-    displayName: 'Create DeploymentAPI TerminalVelocity features'
-    inputs:
-      targetType: filePath
-      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.h
-      workingDirectory: '$(Build.SourcesDirectory)'
-
-  - task: powershell@2
-    displayName: 'Create AppNotifications TerminalVelocity features'
-    inputs:
-      targetType: filePath
-      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.AppNotifications -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.h
-      workingDirectory: '$(Build.SourcesDirectory)'
-
-  - task: powershell@2
-    displayName: 'Create PushNotifications TerminalVelocity features'
-    inputs:
-      targetType: filePath
-      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.PushNotifications -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.h
-      workingDirectory: '$(Build.SourcesDirectory)'
-
-  - task: powershell@2
-    displayName: 'Create EnvironmentManager TerminalVelocity features'
-    inputs:
-      targetType: filePath
-      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.System -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.h
-      workingDirectory: '$(Build.SourcesDirectory)'
-
-  - task: powershell@2
-    name: UpdateTraceloggingConfig
-    inputs:
-      targetType: 'inline'
-      script: |
-        $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
-
-        if (($srcPath -ne $null)){
-          $destinationPaths = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
-
-          if (($destinationPaths -ne $null)) {
-            foreach ($destPath in $destinationPaths) {
-              Write-Host 'SourcePath:' $srcPath.FullName
-              Write-Host 'DestinationPath:' $destPath.FullName
-              Copy-Item -Force $srcPath.FullName $destPath.FullName
-            }
-          }
-        }
+  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnviroment-Steps.yml
 
   - task: PowerShell@2
     name: BuildBinaries
@@ -350,7 +160,7 @@ jobs:
       - BuildAnyCPU
     condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
 
-- job: TestMRT
+- job: BuildAndTestMRT
   pool: ProjectReunionESPool-2022
   timeoutInMinutes: 120
   strategy:
@@ -370,24 +180,14 @@ jobs:
         buildPlatform: 'arm64'
         buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
-  dependsOn:
-  - Build
-  - BuildAnyCPU
   steps:
-  - task: DownloadBuildArtifacts@0
-    inputs:
-      artifactName: BuildOutput
-      downloadPath: '$(Build.SourcesDirectory)'
-  - task: NuGetToolInstaller@1
+  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnviroment-Steps.yml
 
-  - task: NuGetAuthenticate@1
-
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'NuGet restore MrtCore'
+  - task: PowerShell@2
+    name: BuildBinaries
     inputs:
-      restoreSolution: '$(Build.SourcesDirectory)\dev\MRTCore\mrt\MrtCore.sln'
-      feedsToUse: config
-      nugetConfigPath:  nuget.config
+      filePath: 'BuildTransportPackage.ps1'
+      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
 
   # Run the test locally on the Azure VM.
   - task: VSTest@2
@@ -434,6 +234,11 @@ jobs:
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
 
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget'
+    inputs:
+      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
+      artifactName: 'BuildOutput'
 
 - job: StageAndPack
   pool: ProjectReunionESPool-2022

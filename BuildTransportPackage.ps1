@@ -57,19 +57,18 @@ Try {
         #------------------
         #    Build windowsAppRuntime.sln and move output to staging.
         #------------------
-
         $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
 
         if (($srcPath -ne $null)){
-        $destinationPaths = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
+            $destinationPaths = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
 
-        if (($destinationPaths -ne $null)) {
-            foreach ($destPath in $destinationPaths) {
-            Write-Host 'SourcePath:' $srcPath.FullName
-            Write-Host 'DestinationPath:' $destPath.FullName
-            Copy-Item -Force $srcPath.FullName $destPath.FullName
+            if (($destinationPaths -ne $null)) {
+                foreach ($destPath in $destinationPaths) {
+                Write-Host 'SourcePath:' $srcPath.FullName
+                Write-Host 'DestinationPath:' $destPath.FullName
+                Copy-Item -Force $srcPath.FullName $destPath.FullName
+                }
             }
-        }
         }
 
         foreach($configurationToRun in $configuration.Split(","))
@@ -80,7 +79,9 @@ Try {
                 & $msBuildPath /restore WindowsAppRuntime.sln /p:Configuration=$configurationToRun,Platform=$platformToRun
             }
         }
-
+    }
+    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMRT")) 
+    {
         #------------------
         #    Build mrtcore.sln and move output to staging.
         #------------------
@@ -91,6 +92,20 @@ Try {
         & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
         & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmmin\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
         & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\unittests\packages.config" -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
+
+        $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
+
+        if (($srcPath -ne $null)){
+            $destinationPaths = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
+
+            if (($destinationPaths -ne $null)) {
+                foreach ($destPath in $destinationPaths) {
+                Write-Host 'SourcePath:' $srcPath.FullName
+                Write-Host 'DestinationPath:' $destPath.FullName
+                Copy-Item -Force $srcPath.FullName $destPath.FullName
+                }
+            }
+        }
 
         # Init mrtcore
         foreach($platformToRun in $platform.Split(","))
