@@ -6,15 +6,8 @@
 #include <winrt/Windows.ApplicationModel.Background.h>
 #include <MddBootstrap.h>
 #include <MddBootstrapTest.h>
-#include "WindowsAppRuntime.Test.AppModel.h"
 #include <propkey.h> //PKEY properties
 #include <propsys.h>
-#include <ShObjIdl_core.h>
-#include "WindowsAppRuntime.Test.AppModel.h"
-#include <WindowsAppRuntime.Test.Bootstrap.h>
-#include <WindowsAppRuntime.SelfContained.h>
-#include <WindowsAppRuntime.VersionInfo.h>
-#include <roapi.h>
 #include <ShObjIdl_core.h>
 #include <roapi.h>
 #include <winstring.h>
@@ -99,11 +92,11 @@ winrt::PushNotificationChannel RequestChannel()
 
 int main()
 {
-    std::cin.ignore();
-
     // Test hook to ensure that the app is not self-contained
     ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
         ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
+
+    THROW_HR_IF(E_FAIL, ::WindowsAppRuntime::SelfContained::IsSelfContained());
 
     if (!Test::AppModel::IsPackagedProcess())
     {

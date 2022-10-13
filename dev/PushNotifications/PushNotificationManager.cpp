@@ -130,8 +130,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     bool PushNotificationManager::IsSupported()
     {
-        // Elevated processes are not supported by PushNotifications. UnpackagedAppScenario is not supported when it is self contained
-        // because the PushNotificationsLongRunningProcess is unavailable due to missing the Singleton package.
+        // UnpackagedAppScenario is not supported when it is self contained due to missing the Singleton package.
         static bool isSupported{ PushNotificationHelpers::IsPackagedAppScenario() || !WindowsAppRuntime::SelfContained::IsSelfContained() };
         return isSupported;
 
