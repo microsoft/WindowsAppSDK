@@ -5,7 +5,7 @@ steps:
   inputs:
     nuGetServiceConnections: 'TelemetryInternal'
 
-- template: AzurePipelinesTemplates\WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
+- template: WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
 
 # The environment variable VCToolsInstallDir isn't defined on lab machines, so we need to retrieve it ourselves.
 - script: |
@@ -26,7 +26,7 @@ steps:
   inputs:
     nuGetServiceConnections: 'WindowsES'
 
-- template: AzurePipelinesTemplates\WindowsAppSDK-InstallWindowsSDK-Steps.yml
+- template: WindowsAppSDK-InstallWindowsSDK-Steps.yml
 
 - task: powershell@2
   displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
