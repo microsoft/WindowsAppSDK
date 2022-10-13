@@ -15,7 +15,6 @@
 #include <WindowsAppRuntime.SelfContained.h>
 #include <WindowsAppRuntime.VersionInfo.h>
 #include <roapi.h>
-#include <ShObjIdl_core.h>
 #include <roapi.h>
 #include <winstring.h>
 #include <wil/resource.h>
@@ -99,9 +98,8 @@ winrt::PushNotificationChannel RequestChannel()
 
 int main()
 {
-    std::cin.ignore();
 
-    // Test hook to ensure that the app is not self-contained
+    Test::Bootstrap::SetupBootstrap();
     ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
         ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
 
