@@ -355,6 +355,23 @@ jobs:
 - job: TestMRT
   pool: ProjectReunionESPool-2022
   timeoutInMinutes: 120
+  strategy:
+    maxParallel: 10
+    matrix:
+      Release_x86:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
+        PGOBuildMode: 'Optimize'
+      Release_x64:
+        buildPlatform: 'x64'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
+        PGOBuildMode: 'Optimize'
+      Release_Arm64:
+        buildPlatform: 'arm64'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
   dependsOn:
   - Build
   - BuildAnyCPU
@@ -363,7 +380,6 @@ jobs:
     inputs:
       artifactName: BuildOutput
       downloadPath: '$(Build.SourcesDirectory)'
-
   # Run the test locally on the Azure VM.
   - task: VSTest@2
     displayName: 'test MRT: ManagedTests'
