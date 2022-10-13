@@ -101,7 +101,7 @@ Try {
                 & $msBuildPath /restore `
                                 WindowsAppRuntime.sln `
                                 /p:Configuration=$configurationToRun,Platform=$platformToRun `
-                                /p:AppxSymbolPackageEnabled=false
+                                /p:AppxSymbolPackageEnabled=false `
                                 /binaryLogger:"BuildOutput/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
                                 $WindowsAppSDKVersionProperty `
                                 /p:PGOBuildMode=$PGOBuildMode `
