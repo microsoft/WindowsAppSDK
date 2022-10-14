@@ -315,6 +315,43 @@ jobs:
     condition:
       eq(${{ parameters.ReleaseSigning }}, true)
 
+  - task: CopyFiles@2
+    displayName: 'Copy symbols to artifact staging directory'
+    condition: always()
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)\BuildOutput\FullNuget
+      contents: |
+        **\*.pdb
+      targetFolder: $(Build.ArtifactStagingDirectory)\symbols
+
+  - task: PublishSymbols@2
+    displayName: 'Publish private symbols to internal server (without source indexing)'
+    inputs:
+      searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+      symbolServerType: 'TeamServices'
+    # This ADO task does not support indexing of github sources currently :-(
+      indexSources: false
+      detailedLog: true
+    # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
+    # To work around this issue, we just force LIB to be any dir that we know exists.
+    env:
+      LIB: $(Build.SourcesDirectory)
+
+  - task: PublishSymbols@2
+    displayName: 'Publish symbols to public server(without source indexing)'
+    inputs:
+      searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+      symbolServerType: 'TeamServices'
+    # This ADO task does not support indexing of github sources currently :-(
+      indexSources: false
+      detailedLog: true
+    # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
+    # To work around this issue, we just force LIB to be any dir that we know exists.
+    env:
+      LIB: $(Build.SourcesDirectory)
+      ArtifactServices_Symbol_AccountName: microsoftpublicsymbols
+      ArtifactServices_Symbol_PAT: $(WinSDKLab_microsoftpublicsymbols_PAT)
+
   - task: PowerShell@2
     name: SetVersion
     displayName: Update metapackage version
