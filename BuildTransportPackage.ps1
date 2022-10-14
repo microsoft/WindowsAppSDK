@@ -116,8 +116,8 @@ Try {
                                 $WindowsAppSDKVersionProperty `
                                 /p:PGOBuildMode=$PGOBuildMode `
                                 /p:WindowsAppSDKCleanIntermediateFiles=true `
-                                /p:AppxSymbolPackageEnabled=false
-                                /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline `
+                                /p:AppxSymbolPackageEnabled=false `
+                                /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline
             }
         }
     }
