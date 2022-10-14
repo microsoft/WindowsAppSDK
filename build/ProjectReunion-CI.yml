@@ -56,7 +56,8 @@ jobs:
       filePath: tools\VerifyCopyrightHeaders.ps1
 
 - job: Build
-  pool: ProjectReunionESPool-2022
+  pool:
+    vmImage: 'windows-2022'
   timeoutInMinutes: 120
   strategy:
     maxParallel: 10
