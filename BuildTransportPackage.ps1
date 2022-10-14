@@ -103,9 +103,10 @@ Try {
                                 /p:Configuration=$configurationToRun,Platform=$platformToRun `
                                 /binaryLogger:"BuildOutput/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
                                 $WindowsAppSDKVersionProperty `
-                                /p:PGOBuildMode=$PGOBuildMode 
+                                /p:PGOBuildMode=$PGOBuildMode `
+                                /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline `
+                                /p:WindowsAppSDKCleanIntermediateFiles=true
                                 # /p:AppxSymbolPackageEnabled=false `
-                                # /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline `
                                 # /p:WindowsAppSDKCleanIntermediateFiles=true
             }
         }
@@ -138,6 +139,7 @@ Try {
                 & $msBuildPath /restore `
                                 "$MRTSourcesDirectory\mrt\MrtCore.sln" `
                                 /p:Configuration=$configurationToRun,Platform=$platformToRun `
+                                /p:PGOBuildMode=$PGOBuildMode `
                                 /binaryLogger:"BuildOutput/mrtcore.$platformToRun.$configurationToRun.binlog"
             }
         }
