@@ -216,7 +216,7 @@ jobs:
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
       
-  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildMRT-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestMRT-Steps.yml
 
   - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
