@@ -82,10 +82,6 @@ jobs:
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
-  - task: NuGetAuthenticate@1
-    inputs:
-      nuGetServiceConnections: 'ProjectReunionInternal'
-
   - task: PowerShell@2
     name: BuildBinaries
     inputs:
