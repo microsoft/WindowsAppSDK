@@ -80,6 +80,8 @@ jobs:
   - checkout: self
     persistCredentials: true
 
+  - task: NuGetToolInstaller@1
+
   - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
   - task: PowerShell@2
@@ -136,6 +138,8 @@ jobs:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
   steps:
+  - task: NuGetToolInstaller@1
+
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildMRT-Steps.yml
 
   - task: PublishBuildArtifacts@1

@@ -75,6 +75,12 @@ jobs:
   - checkout: self
     persistCredentials: true
 
+  - task: NuGetToolInstaller@1
+
+  - task: NuGetAuthenticate@1
+    inputs:
+      nuGetServiceConnections: 'TelemetryInternal'
+
   - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
   - task: NuGetAuthenticate@1
@@ -141,6 +147,12 @@ jobs:
   # Can be expanded to add any other binary as needed
   pool: ProjectReunionESPool-2022
   steps:
+  - task: NuGetToolInstaller@1
+
+  - task: NuGetAuthenticate@1
+    inputs:
+      nuGetServiceConnections: 'TelemetryInternal'
+
   - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
   - task: PowerShell@2
@@ -198,6 +210,12 @@ jobs:
         buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
   steps:
+  - task: NuGetToolInstaller@1
+
+  - task: NuGetAuthenticate@1
+    inputs:
+      nuGetServiceConnections: 'TelemetryInternal'
+
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildMRT-Steps.yml
 
   - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:

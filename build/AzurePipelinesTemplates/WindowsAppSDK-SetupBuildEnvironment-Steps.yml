@@ -1,10 +1,4 @@
-steps: 
-- task: NuGetToolInstaller@1
-
-- task: NuGetAuthenticate@1
-  inputs:
-    nuGetServiceConnections: 'TelemetryInternal'
-
+steps:
 - template: WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
 
 # The environment variable VCToolsInstallDir isn't defined on lab machines, so we need to retrieve it ourselves.
