@@ -2,6 +2,7 @@ parameters:
   jobName: 'RunTestsInHelix'
   dependsOn: ''
   condition: ''
+  nuGetServiceConnections: ''
   maxParallel: 10
   matrix:
     Release_x86:
@@ -64,6 +65,8 @@ jobs:
   - task: NuGetToolInstaller@0
 
   - task: NuGetAuthenticate@1
+    inputs:
+      nuGetServiceConnections: '${{ parameters.nuGetServiceConnections }}'
 
   - task: powershell@2
     displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
