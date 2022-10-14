@@ -91,32 +91,6 @@ jobs:
       filePath: 'BuildTransportPackage.ps1'
       arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
 
-  - task: BinSkim@3
-    inputs:
-      InputType: 'Basic'
-      Function: 'analyze'
-      AnalyzeTarget: '$(build.SourcesDirectory)\BuildOutput\*.dll;$(build.SourcesDirectory)\BuildOutput\*.exe'
-      AnalyzeVerbose: true
-    condition: ne(variables['buildConfiguration'], 'Debug')
-
-  - task: PostAnalysis@1
-    inputs:
-      AllTools: false
-      APIScan: false
-      BinSkim: true
-      BinSkimBreakOn: 'Error'
-      CodesignValidation: false
-      CredScan: false
-      FortifySCA: false
-      FxCop: false
-      ModernCop: false
-      PoliCheck: false
-      RoslynAnalyzers: false
-      SDLNativeRules: false
-      Semmle: false
-      TSLint: false
-      ToolLogsNotFoundAction: 'Standard'
-
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget'
     inputs:
@@ -148,31 +122,6 @@ jobs:
     inputs:
       artifactName: BuildOutput
       PathtoPublish: '$(buildOutputDir)'
-
-  - task: BinSkim@3
-    inputs:
-      InputType: 'Basic'
-      Function: 'analyze'
-      AnalyzeTarget: '$(build.SourcesDirectory)\BuildOutput\*.dll;$(build.SourcesDirectory)\BuildOutput\*.exe'
-      AnalyzeVerbose: true
-
-  - task: PostAnalysis@1
-    inputs:
-      AllTools: false
-      APIScan: false
-      BinSkim: true
-      BinSkimBreakOn: 'Error'
-      CodesignValidation: false
-      CredScan: false
-      FortifySCA: false
-      FxCop: false
-      ModernCop: false
-      PoliCheck: false
-      RoslynAnalyzers: false
-      SDLNativeRules: false
-      Semmle: false
-      TSLint: false
-      ToolLogsNotFoundAction: 'Standard'
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-RunHelixTests-Job.yml
   parameters:
@@ -226,6 +175,31 @@ jobs:
     inputs:
       filePath: 'BuildTransportPackage.ps1'
       arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
+
+  - task: BinSkim@3
+    inputs:
+      InputType: 'Basic'
+      Function: 'analyze'
+      AnalyzeTarget: '$(build.SourcesDirectory)\BuildOutput\FullNuget\*.dll;$(build.SourcesDirectory)\BuildOutput\FullNuget\*.exe'
+      AnalyzeVerbose: true
+
+  - task: PostAnalysis@1
+    inputs:
+      AllTools: false
+      APIScan: false
+      BinSkim: true
+      BinSkimBreakOn: 'Error'
+      CodesignValidation: false
+      CredScan: false
+      FortifySCA: false
+      FxCop: false
+      ModernCop: false
+      PoliCheck: false
+      RoslynAnalyzers: false
+      SDLNativeRules: false
+      Semmle: false
+      TSLint: false
+      ToolLogsNotFoundAction: 'Standard'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: NugetContent'
