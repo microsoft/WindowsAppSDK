@@ -247,7 +247,14 @@ jobs:
 
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
-  timeoutInMinutes: 120
+  timeoutInMinutes: 120      
+  dependsOn:
+  - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+    - TestInHelix
+  - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+    - Build
+    - BuildAnyCPU
+    - BuildAndTestMRT
   condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
   steps:
   - task: DownloadBuildArtifacts@0
