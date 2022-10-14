@@ -19,10 +19,8 @@ steps:
 - template: AzurePipelinesTemplates\WindowsAppSDK-InstallWindowsSDK-Steps.yml
 
 - task: NuGetToolInstaller@1
-  displayName: 'Use NuGet 5.11'
-  inputs:
-    versionSpec: 5.11
-  continueOnError: true
+
+- task: NuGetAuthenticate@1
 
 - task: powershell@2
   displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
