@@ -104,10 +104,9 @@ Try {
                                 /binaryLogger:"BuildOutput/WindowsAppRuntime.$platformToRun.$configurationToRun.binlog" `
                                 $WindowsAppSDKVersionProperty `
                                 /p:PGOBuildMode=$PGOBuildMode `
-                                /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline `
-                                /p:WindowsAppSDKCleanIntermediateFiles=true
-                                # /p:AppxSymbolPackageEnabled=false `
-                                # /p:WindowsAppSDKCleanIntermediateFiles=true
+                                /p:WindowsAppSDKCleanIntermediateFiles=true `
+                                /p:AppxSymbolPackageEnabled=false
+                                # /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline `
             }
         }
     }
