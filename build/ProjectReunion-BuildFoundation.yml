@@ -215,7 +215,7 @@ jobs:
   - task: NuGetAuthenticate@1
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
-
+      
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildMRT-Steps.yml
 
   - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
@@ -243,13 +243,18 @@ jobs:
       - Build
       - BuildAnyCPU
       - BuildAndTestMRT
-    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
 
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
-  timeoutInMinutes: 120
+  timeoutInMinutes: 120      
   dependsOn:
-  - TestInHelix
+  - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+    - TestInHelix
+  - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+    - Build
+    - BuildAnyCPU
+    - BuildAndTestMRT
   condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
   steps:
   - task: DownloadBuildArtifacts@0
