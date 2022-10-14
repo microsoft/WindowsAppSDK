@@ -87,6 +87,17 @@ Try {
                 }
             }
         }
+
+        $buildOverridePath = "build\override"
+        # Generate overrides
+        # Make sure override directory exists.
+        if(-not (test-path "$buildOverridePath"))
+        {
+            new-item -path "$buildOverridePath" -itemtype "directory"
+        }
+
+        .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
+        .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildBinaries")) 
     {
@@ -106,7 +117,7 @@ Try {
                                 /p:PGOBuildMode=$PGOBuildMode `
                                 /p:WindowsAppSDKCleanIntermediateFiles=true `
                                 /p:AppxSymbolPackageEnabled=false
-                                # /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline `
+                                /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline `
             }
         }
     }
@@ -165,17 +176,6 @@ Try {
         {
             new-item -path "$BasePath\build\native" -itemtype "directory"
         }
-
-        $buildOverridePath = "build\override"
-        # Generate overrides
-        # Make sure override directory exists.
-        if(-not (test-path "$buildOverridePath"))
-        {
-            new-item -path "$buildOverridePath" -itemtype "directory"
-        }
-
-        .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
-        .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
 
         # Copy WindowsAppRuntime.sln files
         foreach($configurationToRun in $configuration.Split(","))
