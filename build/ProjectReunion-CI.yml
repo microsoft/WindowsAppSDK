@@ -97,6 +97,26 @@ jobs:
       PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
       artifactName: 'BuildOutput'
 
+- job: BuildAnyCPU
+  pool:
+    vmImage: 'windows-2022'
+  steps:
+  - task: NuGetToolInstaller@1
+
+  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+
+  - task: PowerShell@2
+    name: BuildBinaries
+    inputs:
+      filePath: 'BuildTransportPackage.ps1'
+      arguments: -AzureBuildStep "BuildAnyCPU"
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget'
+    inputs:
+      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
+      artifactName: 'BuildOutput'
+
 - job: BuildMRT
   pool:
     vmImage: 'windows-2022'
