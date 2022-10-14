@@ -244,6 +244,7 @@ jobs:
       - BuildAnyCPU
       - BuildAndTestMRT
     condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
+    nuGetServiceConnections: 'ProjectReunionInternal'
 
 - job: StageAndPack
   pool: ProjectReunionESPool-2022

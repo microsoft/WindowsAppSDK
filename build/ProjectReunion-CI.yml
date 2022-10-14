@@ -181,6 +181,7 @@ jobs:
       - Build
       - BuildMRT
     condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
+    nuGetServiceConnections: 'PR-Dependencies-Feed'
 
 - job: StageAndPack
   pool:
