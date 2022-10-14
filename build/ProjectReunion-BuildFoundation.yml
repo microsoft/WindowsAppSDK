@@ -118,11 +118,17 @@ jobs:
   # component detection must happen *within* the build task
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 
-  - ${{ if eq(parameters.runSDLBinaryAnalysis, 'true') }}:
+  - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
       parameters:
         outputDirectory: BuildOutput
         enablePREFast: ${{ parameters.enablePREFast }}
+
+  - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
+    - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+      displayName: 'SBOM Generation Task'
+      inputs:
+        BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget'
@@ -143,7 +149,7 @@ jobs:
       filePath: 'BuildTransportPackage.ps1'
       arguments: -AzureBuildStep "BuildAnyCPU"
 
-  - ${{ if eq(parameters.runSDLBinaryAnalysis, 'true') }}:
+  - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
       parameters:
         outputDirectory: BuildOutput
@@ -152,19 +158,24 @@ jobs:
   # component detection must happen *within* the build task
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 
+  - task: ComponentGovernanceComponentDetection@0
+    inputs:
+      scanType: 'Register'
+      verbosity: 'Verbose'
+      alertWarningLevel: 'Medium'
+      failOnAlert: true
+
+  - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
+    - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+      displayName: 'SBOM Generation Task'
+      inputs:
+        BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
+
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget'
     inputs:
       PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
       artifactName: 'BuildOutput'
-
-- template: AzurePipelinesTemplates\WindowsAppSDK-RunHelixTests-Job.yml
-  parameters:
-    name: 'TestFoundation'
-    dependsOn:
-      - Build
-      - BuildAnyCPU
-    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
 
 - job: BuildAndTestMRT
   pool: ProjectReunionESPool-2022
@@ -187,74 +198,19 @@ jobs:
         buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
   steps:
-  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildMRT-Steps.yml
 
-  - task: PowerShell@2
-    name: BuildBinaries
-    inputs:
-      filePath: 'BuildTransportPackage.ps1'
-      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
-
-  # component detection must happen *within* the build task
-  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish mrtcore binlog'
-    condition: succeededOrFailed()
-    inputs:
-      PathtoPublish: $(Build.SourcesDirectory)/BuildOutput/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
-      artifactName: binlogs
-
-  # Run the test locally on the Azure VM.
-  - task: VSTest@2
-    displayName: 'test MRT: ManagedTests'
-    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-    inputs:
-      testSelector: 'testAssemblies'
-      testAssemblyVer2: '**\MrtCoreManagedTest.build.appxrecipe'
-      searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreManagedTest'
-      testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
-      platform: '$(buildPlatform)'
-      configuration: '$(buildConfiguration)'
-
-  - task: VSTest@2
-    displayName: 'test MRT: UnitTests'
-    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-    inputs:
-      testSelector: 'testAssemblies'
-      testAssemblyVer2: '**\MrmUnitTest.dll'
-      searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest'
-      testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
-      platform: '$(buildPlatform)'
-      configuration: '$(buildConfiguration)'
-
-  - task: VSTest@2
-    displayName: 'test MRT: BaseUnitTests'
-    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-    inputs:
-      testSelector: 'testAssemblies'
-      testAssemblyVer2: '**\MrmBaseUnitTests.dll'
-      searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests'
-      testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
-      platform: '$(buildPlatform)'
-      configuration: '$(buildConfiguration)'
-
-  - task: VSTest@2
-    displayName: 'test MRT: UnpackagedTests'
-    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-    inputs:
-      testSelector: 'testAssemblies'
-      testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
-      searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests'
-      testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
-      platform: '$(buildPlatform)'
-      configuration: '$(buildConfiguration)'
-
-  - ${{ if eq(parameters.runSDLBinaryAnalysis, 'true') }}:
+  - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
       parameters:
         outputDirectory: 'BuildOutput'
         enablePREFast: ${{ parameters.enablePREFast }}
+
+  - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
+    - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+      displayName: 'SBOM Generation Task'
+      inputs:
+        BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget'
@@ -262,13 +218,21 @@ jobs:
       PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
       artifactName: 'BuildOutput'
 
+- template: AzurePipelinesTemplates\WindowsAppSDK-RunHelixTests-Job.yml
+  parameters:
+    jobName: 'TestInHelix'
+    dependsOn:
+      - Build
+      - BuildAnyCPU
+      - BuildAndTestMRT
+    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
 
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
   timeoutInMinutes: 120
   dependsOn:
-  - Build
-  - BuildAnyCPU
+  - TestInHelix
+  condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
   steps:
   - task: DownloadBuildArtifacts@0
     inputs:
@@ -382,42 +346,31 @@ jobs:
       MaxRetryAttempts: '5'
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: Full Nuget'
+    displayName: 'Publish artifact: NugetContent'
+    inputs:
+      PathtoPublish: '$(Build.SourcesDirectory)\BuildOutput\FullNuget'
+      artifactName: 'NugetContent'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: TransportPackage'
     inputs:
       PathtoPublish: '$(build.artifactStagingDirectory)\FullNuget'
       artifactName: 'TransportPackage'
 
-# # Publish
-# - job: Publish
-#   dependsOn: 
-#   - CreateNugetPackage
-#   # - WinAppSDKIntegrationBuildAndTest
-#   condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
-#   pool: ProjectReunionESPool-2022
-#   variables:
-#     WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
-#   steps:
-#     - task: DownloadBuildArtifacts@0
-#       inputs:
-#         artifactName: FullNuget
-#         downloadPath: '$(Build.SourcesDirectory)'
-#         itemPattern: |
-#           **/*.nupkg
+  - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(parameters.PublishPackage, 'true')) }}:
+    # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
+    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+      displayName: 'NuGet push to ProjectReunion.nuget.internal'
+      inputs:
+        command: 'push'
+        packagesToPush: '$(Build.SourcesDirectory)/FullNuget/*.nupkg;!$(Build.SourcesDirectory)/FullNuget/*.symbols.nupkg'
+        verbosityPush: 'Detailed'
+        nuGetFeedType: 'internal'
+        #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
+        publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
 
-#     - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(parameters.PublishPackage, 'true')) }}:
-#       # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
-#       - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-#         displayName: 'NuGet push to ProjectReunion.nuget.internal'
-#         inputs:
-#           command: 'push'
-#           packagesToPush: '$(Build.SourcesDirectory)/FullNuget/*.nupkg;!$(Build.SourcesDirectory)/FullNuget/*.symbols.nupkg'
-#           verbosityPush: 'Detailed'
-#           nuGetFeedType: 'internal'
-#           #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
-#           publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
-
-#       - template: ..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
-#         parameters:
-#           AssetNames: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
-#           AssetVersions: $(WindowsAppSDKPackageVersion)
-#           TriggerSubscription: true
+    - template: ..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
+      parameters:
+        AssetNames: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
+        AssetVersions: $(packageVersion)
+        TriggerSubscription: true
