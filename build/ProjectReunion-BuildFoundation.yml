@@ -248,8 +248,6 @@ jobs:
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
   timeoutInMinutes: 120
-  dependsOn:
-  - TestInHelix
   condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
   steps:
   - task: DownloadBuildArtifacts@0
