@@ -136,7 +136,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
         auto activatableClass{ wil::make_unique_string_nothrow<wil::unique_hstring>(L"FakeClass.ClassName") };
         winrt::com_ptr<::IInspectable> ptr{};
 
-        RoActivateInstance(activatableClass.get(), ptr.put());
+        // Function is expected fail and if anything else happens we should throw.
+        winrt::hresult hr{ RoActivateInstance(activatableClass.get(), ptr.put()) };
+        THROW_HR_IF(hr, hr != REGDB_E_CLASSNOTREG);
     }
 
     inline wil::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
