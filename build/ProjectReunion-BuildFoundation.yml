@@ -37,30 +37,20 @@ resources:
     ref: refs/heads/main
 
 jobs:
-# # This relatively low-cost job is always run, in parallel w/ the Build job.
-# - template: AzurePipelinesTemplates\WindowsAppSDK-SourceAnalysis-job.yml
+# This relatively low-cost job is always run, in parallel w/ the Build job.
+- template: AzurePipelinesTemplates\WindowsAppSDK-SourceAnalysis-job.yml
 
-# - job: VerifyCopyrightHeaders
-#   dependsOn: []
-#   pool: ProjectReunionESPool-2022
-#   steps:
-#   - task: powershell@2
-#     displayName: 'Verify copyright headers'
-#     inputs:
-#       targetType: filePath
-#       filePath: tools\VerifyCopyrightHeaders.ps1
+- job: VerifyCopyrightHeaders
+  dependsOn: []
+  pool: ProjectReunionESPool-2022
+  steps:
+  - task: powershell@2
+    displayName: 'Verify copyright headers'
+    inputs:
+      targetType: filePath
+      filePath: tools\VerifyCopyrightHeaders.ps1
 
 - job: Build
-  # dependsOn:
-  #   - VerifyCopyrightHeaders
-  # Skip the build job if we are reusing the output of a previous build.
-  # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
-  # condition: |
-  #   and
-  #   (
-  #     eq(variables['useBuildOutputFromBuildId'],''),
-  #     in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
-  #   )
   pool: ProjectReunionESPool-2022
   timeoutInMinutes: 120
   strategy:
@@ -81,6 +71,10 @@ jobs:
         buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
   steps:
+  # Required by the Packaged ES SDL Templates.
+  - checkout: self
+    persistCredentials: true
+
   - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
   - task: NuGetAuthenticate@1
@@ -121,6 +115,9 @@ jobs:
       filePath: 'BuildTransportPackage.ps1'
       arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
 
+  # component detection must happen *within* the build task
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+
   - ${{ if eq(parameters.runSDLBinaryAnalysis, 'true') }}:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
       parameters:
@@ -151,6 +148,9 @@ jobs:
       parameters:
         outputDirectory: BuildOutput
         enablePREFast: ${{ parameters.enablePREFast }}
+
+  # component detection must happen *within* the build task
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget'
@@ -194,6 +194,9 @@ jobs:
     inputs:
       filePath: 'BuildTransportPackage.ps1'
       arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
+
+  # component detection must happen *within* the build task
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish mrtcore binlog'
