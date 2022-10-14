@@ -56,11 +56,7 @@ jobs:
       filePath: tools\VerifyCopyrightHeaders.ps1
 
 - job: Build
-  dependsOn:
-    - VerifyCopyrightHeaders
-  condition: in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
-  pool:
-    vmImage: 'windows-2022'
+  pool: ProjectReunionESPool-2022
   timeoutInMinutes: 120
   strategy:
     maxParallel: 10
@@ -79,31 +75,26 @@ jobs:
       Release_Arm64:
         buildPlatform: 'arm64'
         buildConfiguration: 'Release'
-
-  variables:
-    publishDir : $(Build.ArtifactStagingDirectory)
   steps:
-  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
-    parameters:
-      channel: ${{ variables.channel }}
-      # This pipeline is unable to access OneBranch, so skip running BinaryAnalysis.
-      runSDLBinaryAnalysis: false
+  # Required by the Packaged ES SDL Templates.
+  - checkout: self
+    persistCredentials: true
 
-  - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
-    parameters:
-      GenerateSBOM: false
+  - task: NuGetToolInstaller@1
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish BuildOutput'
+  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+
+  - task: PowerShell@2
+    name: BuildBinaries
     inputs:
-      artifactName: BuildOutput
-      PathtoPublish: '$(buildOutputDir)'
+      filePath: 'BuildTransportPackage.ps1'
+      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
 
   - task: BinSkim@3
     inputs:
       InputType: 'Basic'
       Function: 'analyze'
-      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
+      AnalyzeTarget: '$(build.SourcesDirectory)\BuildOutput\*.dll;$(build.SourcesDirectory)\BuildOutput\*.exe'
       AnalyzeVerbose: true
     condition: ne(variables['buildConfiguration'], 'Debug')
 
@@ -125,10 +116,13 @@ jobs:
       TSLint: false
       ToolLogsNotFoundAction: 'Standard'
 
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget'
+    inputs:
+      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
+      artifactName: 'BuildOutput'
+
 - job: BuildMRT
-  dependsOn:
-    - VerifyCopyrightHeaders
-  condition: in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
   pool:
     vmImage: 'windows-2022'
   strategy:
@@ -144,12 +138,9 @@ jobs:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
   steps:
-  - template: build-mrt.yml
-    parameters:
-      buildJobName: 'BuildMRTCore'
-      GenerateSBOM: false
-      # This pipeline is unable to access OneBranch, so skip running BinaryAnalysis.
-      runSDLBinaryAnalysis: false
+  - task: NuGetToolInstaller@1
+
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildMRT-Steps.yml
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish BuildOutput'
@@ -182,15 +173,6 @@ jobs:
       TSLint: false
       ToolLogsNotFoundAction: 'Standard'
 
-- job: PublishMRT
-  dependsOn:
-    - BuildMRT
-  condition: in(dependencies.BuildMRT.result, 'Succeeded')
-  pool:
-    vmImage: 'windows-2022'
-  steps:
-  - template: publish-mrt.yml
-
 - template: AzurePipelinesTemplates\WindowsAppSDK-RunHelixTests-Job.yml
   parameters:
     name: 'RunTestsInHelix'
@@ -199,20 +181,58 @@ jobs:
       - BuildMRT
     condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
 
-# Create Nuget Package
-- template: AzurePipelinesTemplates\WindowsAppSDK-CreateNugetPackage-Job.yml
-  parameters:
-    publishToMaestro: false
-    jobName: CreateNugetPackage
-    dependsOn:
-      - VerifyCopyrightHeaders
-      - Build
-      - PublishMRT
-    prereleaseVersionTag: ci
-    condition: |
-      and
-      (
-        in(dependencies.PublishMRT.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
-        in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
-        in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
-      )
+- job: StageAndPack
+  pool:
+    vmImage: 'windows-2022'
+  timeoutInMinutes: 120
+  dependsOn:
+    - Build
+    - BuildMRT
+  steps:
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      artifactName: BuildOutput
+      downloadPath: '$(Build.SourcesDirectory)'
+
+  - task: PowerShell@2
+    name: StageFiles
+    inputs:
+      filePath: 'BuildTransportPackage.ps1'
+      arguments: -Platform "x86,x64,arm64" -Configuration "release" -AzureBuildStep "StageFiles"
+
+  - task: PowerShell@2
+    name: SetVersion
+    displayName: Update metapackage version
+    inputs:
+      targetType: 'inline'
+      script: |
+        $packageVersion = '$(version)'
+        $pipelineType = '$(PipelineType)'
+        $sourceBranchName = '$(Build.SourceBranchName)'
+        if ($sourceBranchName -eq 'main' -or $sourceBranchName -eq 'develop')
+        {
+          $packageVersion = $packageVersion + '.' + $sourceBranchName + '.' + $pipelineType
+        }
+        Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
+        Write-Host $packageVersion
+        [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
+        $publicNuspec.package.metadata.version = $packageVersion
+        Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
+
+  - task: PowerShell@2
+    name: PackNuget
+    inputs:
+      filePath: 'BuildTransportPackage.ps1'
+      arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: NugetContent'
+    inputs:
+      PathtoPublish: '$(Build.SourcesDirectory)\BuildOutput\FullNuget'
+      artifactName: 'NugetContent'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: TransportPackage'
+    inputs:
+      PathtoPublish: '$(build.artifactStagingDirectory)\FullNuget'
+      artifactName: 'TransportPackage'
