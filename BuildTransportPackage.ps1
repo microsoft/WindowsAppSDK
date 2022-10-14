@@ -46,6 +46,15 @@ write-host "VCToolsInstallDir: $VCToolsInstallDir"
 $msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
 write-host "msBuildPath: $msBuildPath"
 
+
+$buildOverridePath = "build\override"
+# Generate overrides
+# Make sure override directory exists.
+if(-not (test-path "$buildOverridePath"))
+{
+    new-item -path "$buildOverridePath" -itemtype "directory"
+}
+
 Try {
     $WindowsAppSDKBuildPipeline = 0
     if ($AzureBuildStep -ne "all")
@@ -87,23 +96,16 @@ Try {
                 }
             }
         }
-
-        $buildOverridePath = "build\override"
-        # Generate overrides
-        # Make sure override directory exists.
-        if(-not (test-path "$buildOverridePath"))
-        {
-            new-item -path "$buildOverridePath" -itemtype "directory"
-        }
-
-        .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
-        .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildBinaries")) 
     {
         #------------------
         #    Build windowsAppRuntime.sln and move output to staging.
         #------------------
+        .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
+        .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
+
+        
         foreach($configurationToRun in $configuration.Split(","))
         {
             foreach($platformToRun in $platform.Split(","))
