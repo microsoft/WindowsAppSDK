@@ -74,6 +74,12 @@ Try {
         
         # If $AzureBuildStep is not "all", that means we are in the pipeline
         $WindowsAppSDKBuildPipeline = 1
+
+        #------------------
+        #    Build windowsAppRuntime.sln and move output to staging.
+        #------------------
+        .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
+        .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
     }
     if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildBinaries") -Or ($AzureBuildStep -eq "BuildMRT"))) 
     {
@@ -99,13 +105,6 @@ Try {
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildBinaries")) 
     {
-        #------------------
-        #    Build windowsAppRuntime.sln and move output to staging.
-        #------------------
-        .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
-        .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
-
-        
         foreach($configurationToRun in $configuration.Split(","))
         {
             foreach($platformToRun in $platform.Split(","))
