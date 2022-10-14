@@ -247,15 +247,15 @@ jobs:
       - Build
       - BuildAnyCPU
       - BuildAndTestMRT
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/user/kythant/PowerscriptPipeline')
 
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
   timeoutInMinutes: 120      
   dependsOn:
-  - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+  - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/user/kythant/PowerscriptPipeline') }}:
     - TestInHelix
-  - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+  - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/user/kythant/PowerscriptPipeline') }}:
     - Build
     - BuildAnyCPU
     - BuildAndTestMRT
