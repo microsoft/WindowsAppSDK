@@ -243,7 +243,7 @@ jobs:
       - Build
       - BuildAnyCPU
       - BuildAndTestMRT
-    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
     nuGetServiceConnections: 'ProjectReunionInternal'
 
 - job: StageAndPack

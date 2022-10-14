@@ -175,7 +175,7 @@ jobs:
   # By executing 'dotnet msbuild' against RunTestsInHelix.proj the test payload and the work items to execute get sent to Helix.
   - task: DotNetCoreCLI@2
     displayName: 'Run tests in Helix (open queues)'
-    condition: and(succeeded(),eq(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
+    condition: and(succeeded(), eq(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
     timeoutInMinutes: 45
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -187,7 +187,7 @@ jobs:
 
   - task: DotNetCoreCLI@2
     displayName: 'Run tests in Helix (closed queues)'
-    condition: and(succeeded(),ne(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
+    condition: and(succeeded(), ne(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
     timeoutInMinutes: 45
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
