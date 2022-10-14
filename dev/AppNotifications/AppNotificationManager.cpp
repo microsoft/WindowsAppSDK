@@ -60,12 +60,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     winrt::Microsoft::Windows::AppNotifications::AppNotificationManager AppNotificationManager::Default()
     {
         auto appProperties{ winrt::CoreApplication::Properties() };
-        static std::once_flag flag;
-        std::call_once(flag, []()
-        {
-            // Need to clear the RoActivateInstance caching for LRP proxyStub to be found.
-            PushNotificationHelpers::ClearRoActivateInstanceCache();
-        });
 
         static wil::srwlock lock;
 
@@ -77,6 +71,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         }
         else
         {
+            // Need to clear the RoActivateInstance caching for the PushNotificationLongRunningProcess proxyStub to be found.
+            PushNotificationHelpers::ClearRoActivateInstanceCache();
+
             // Store the AppNotificationManager in the COM static store
             auto appNotificationManager{ winrt::make<AppNotificationManager>() };
             appProperties.Insert(STORED_APPNOTIFICATION_MANAGER_KEY, appNotificationManager);
