@@ -153,6 +153,10 @@ jobs:
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
 
+  - task: NuGetAuthenticate@1
+    inputs:
+      nuGetServiceConnections: 'ProjectReunionInternal'
+
   - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
   - task: PowerShell@2
