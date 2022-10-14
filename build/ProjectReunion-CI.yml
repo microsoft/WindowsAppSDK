@@ -153,7 +153,7 @@ jobs:
     inputs:
       InputType: 'Basic'
       Function: 'analyze'
-      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
+      AnalyzeTarget: '$(build.SourcesDirectory)\BuildOutput\*.dll;$(build.SourcesDirectory)\BuildOutput\*.exe'
       AnalyzeVerbose: true
 
   - task: PostAnalysis@1
