@@ -138,6 +138,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::Microsoft::Windows::PushNotifications::PushNotificationManager PushNotificationManager::Default()
     {
+        static std::once_flag flag;
+        std::call_once(flag, []()
+        {
+            // Need to clear the RoActivateInstance caching for LRP proxyStub to be found.
+            PushNotificationHelpers::ClearRoActivateInstanceCache();
+        });
+
         static wil::srwlock lock;
 
         auto criticalSection{ lock.lock_exclusive() };
@@ -377,8 +384,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             PushNotificationTelemetry::LogRegister(hr);
         }) };
 
-        // Need to clear the RoActivateInstance caching for LRP proxyStub to be found.
-        PushNotificationHelpers::ClearRoActivateInstanceCache();
         try
         {
             {

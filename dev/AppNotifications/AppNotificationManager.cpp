@@ -60,6 +60,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     winrt::Microsoft::Windows::AppNotifications::AppNotificationManager AppNotificationManager::Default()
     {
         auto appProperties{ winrt::CoreApplication::Properties() };
+        static std::once_flag flag;
+        std::call_once(flag, []()
+        {
+            // Need to clear the RoActivateInstance caching for LRP proxyStub to be found.
+            PushNotificationHelpers::ClearRoActivateInstanceCache();
+        });
 
         static wil::srwlock lock;
 
@@ -116,8 +122,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             AppNotificationTelemetry::LogRegister(hr, m_appId);
         }) };
 
-        // Need to clear the RoActivateInstance caching for LRP proxyStub to be found.
-        PushNotificationHelpers::ClearRoActivateInstanceCache();
         try
         {
             {
@@ -169,8 +173,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             AppNotificationTelemetry::LogRegister(hr, m_appId);
         }) };
 
-        // Need to clear the RoActivateInstance caching for LRP proxyStub to be found.
-        PushNotificationHelpers::ClearRoActivateInstanceCache();
         try
         {
             THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, AppModel::Identity::IsPackagedProcess(), "Not applicable for packaged applications");

@@ -46,7 +46,6 @@ namespace Test::LRP
                 notificationPlatform = winrt::try_create_instance<INotificationsLongRunningPlatform>(CLSID_NotificationsLongRunningPlatform, CLSCTX_LOCAL_SERVER);
             }
 
-
             VERIFY_IS_NOT_NULL(notificationPlatform.get());
             return notificationPlatform;
         }
