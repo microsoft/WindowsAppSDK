@@ -5,7 +5,7 @@
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionClosed</Uri>
       <Sha>1261bb31992442bf7e560330524002ea3a3e9d85</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.FrameworkUdk" Version="1.2.3-CI-25225.1000.221013-1111.2">
+    <Dependency Name="Microsoft.FrameworkUdk" Version="1.2.3-CI-25225.1001.221014-1000.0">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
       <Sha>597da33ad00caf0b0b39fcfa70ada3a9efb52c81</Sha>
     </Dependency>
