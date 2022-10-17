@@ -6,6 +6,8 @@
 
 namespace Microsoft::RoApi
 {
+    // WinAppSDK Components that activate a class registered via windows.activatableClass.proxyStub
+    // in manifest should call this function before due to a RoActivateInstance caching bug.
     inline void ClearRoActivateInstanceCache()
     {
         // Activating a nonexistent class clears the cache enables the proxyStub to be found for elevated scenarios
