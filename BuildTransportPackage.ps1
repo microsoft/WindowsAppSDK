@@ -272,15 +272,6 @@ Try {
 
         # Make the foundation transport package.
         & .\.nuget\nuget.exe pack $nuspecPath -BasePath $BasePath -OutputDirectory $OutputDirectory
-
-        # # Update the details in eng/version.details.xml
-        # $packageName = "Microsoft.WindowsAppSDK.Foundation.TransportPackage"
-        # &"$UpdateVersionDetailsPath" -dependencyName $packageName -dependencyVersion $PackageVersion
-
-        # if(test-path("$env:Build_SourcesDirectory\build\packages\Microsoft.WindowsAppSDK.Foundation.TransportPackage.$PackageVersion"))
-        # {
-        #     remove-item "$env:Build_SourcesDirectory\build\packages\Microsoft.WindowsAppSDK.Foundation.TransportPackage.$PackageVersion" -force -recurse
-        # }
     }
 } 
 Catch 
