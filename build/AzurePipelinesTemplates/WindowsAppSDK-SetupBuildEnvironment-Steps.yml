@@ -26,7 +26,7 @@ steps:
   displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
   inputs:
     targetType: filePath
-    filePath: tools\DevCheck.ps1
+    filePath: DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
     workingDirectory: '$(Build.SourcesDirectory)'
 
