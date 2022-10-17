@@ -8,7 +8,7 @@
 #include <shellapi.h>
 
 using namespace std::literals;
-using namespace winrt::Microsoft::Security::Authentication::OAuth;
+using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Security::Cryptography;
@@ -66,15 +66,6 @@ AuthRequestAsyncOperation::AuthRequestAsyncOperation(const Uri& authEndpoint,
 
         m_ptp = ::CreateThreadpoolWait(async_callback, this, nullptr);
         connect_to_new_client();
-
-        // Pipe server has been successfully set up. Initiate the launch
-        auto url = m_params->create_url(authEndpoint);
-
-        auto launchResult = ::ShellExecuteW(nullptr, L"open", url.c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
-        if (auto code = reinterpret_cast<std::intptr_t>(launchResult); code < 32)
-        {
-            throw winrt::hresult_error(static_cast<std::int32_t>(code), L"Failed to launch browser");
-        }
     }
     catch (...)
     {

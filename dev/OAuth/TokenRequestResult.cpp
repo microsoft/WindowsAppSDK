@@ -2,18 +2,18 @@
 #include "common.h"
 
 #include "TokenRequestResult.h"
-#include <Microsoft.Security.Authentication.OAuth.TokenRequestResult.g.cpp>
+#include <Microsoft.Windows.Security.Authentication.OAuth.TokenRequestResult.g.cpp>
 
 #include "TokenFailure.h"
 #include "TokenResponse.h"
 
-using namespace winrt::Microsoft::Security::Authentication::OAuth;
+using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;
 using namespace winrt::Windows::Data::Json;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Web::Http;
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementation
 {
     TokenRequestResult::TokenRequestResult(HttpResponseMessage responseMessage, oauth::TokenResponse response,
         oauth::TokenFailure failure) :

@@ -2,14 +2,14 @@
 #include "common.h"
 
 #include "AuthResponse.h"
-#include <Microsoft.Security.Authentication.OAuth.AuthResponse.g.cpp>
+#include <Microsoft.Windows.Security.Authentication.OAuth.AuthResponse.g.cpp>
 
 using namespace std::literals;
-using namespace winrt::Microsoft::Security::Authentication::OAuth;
+using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementation
 {
     AuthResponse::AuthResponse(AuthRequestParams* requestParams, const Uri& responseUri) :
         m_requestParams(requestParams->get_strong())

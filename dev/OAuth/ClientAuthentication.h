@@ -1,9 +1,9 @@
 ﻿#pragma once
-#include <Microsoft.Security.Authentication.OAuth.ClientAuthentication.g.h>
+#include <Microsoft.Windows.Security.Authentication.OAuth.ClientAuthentication.g.h>
 
 #include <shared_mutex>
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementation
 {
     struct ClientAuthentication : ClientAuthenticationT<ClientAuthentication>
     {
@@ -27,7 +27,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
             winrt::multi_threaded_map<winrt::hstring, winrt::hstring>();
     };
 }
-namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::factory_implementation
 {
     struct ClientAuthentication : ClientAuthenticationT<ClientAuthentication, implementation::ClientAuthentication>
     {

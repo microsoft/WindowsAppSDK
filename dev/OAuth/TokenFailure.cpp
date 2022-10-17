@@ -2,15 +2,15 @@
 #include "common.h"
 
 #include "TokenFailure.h"
-#include <Microsoft.Security.Authentication.OAuth.TokenFailure.g.cpp>
+#include <Microsoft.Windows.Security.Authentication.OAuth.TokenFailure.g.cpp>
 
 using namespace std::literals;
-using namespace winrt::Microsoft::Security::Authentication::OAuth;
+using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;
 using namespace winrt::Windows::Data::Json;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementation
 {
     TokenFailure::TokenFailure(TokenFailureKind kind, winrt::hresult code) : m_kind(kind), m_errorCode(code) {}
 

@@ -111,6 +111,7 @@ The list of all contracts defined across Windows App SDK
 | MRTCore            | windowsappsdk | MrtCoreContract                 | Microsoft.Windows.ApplicationModel.Resources         |         |
 | PowerNotifications | windowsappsdk | PowerNotificationsContract      | Microsoft.Windows.System.Power                       |         |
 | PushNotifications  | windowsappsdk | PushNotificationsContract       | Microsoft.Windows.PushNotifications                  |         |
+| OAuth              | windowsappsdk | OAuthContract                   | Microsoft.Windows.Security.Authentication.OAuth      |         |
 | WinUI              | winui         | HostingContract                 | Microsoft.UI.Xaml.Hosting                            |         |
 | WinUI              | winui         | WinUIContract                   | Microsoft.UI.Xaml                                    |         |
 | WinUI              | winui         | WinUIControlsContract           | Microsoft.UI.Xaml.Controls                           |         |

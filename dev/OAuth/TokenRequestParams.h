@@ -1,11 +1,11 @@
 #pragma once
-#include <Microsoft.Security.Authentication.OAuth.TokenRequestParams.g.h>
+#include <Microsoft.Windows.Security.Authentication.OAuth.TokenRequestParams.g.h>
 
 #include <shared_mutex>
 
 #include "LockableMap.h"
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementation
 {
     struct TokenRequestParams : TokenRequestParamsT<TokenRequestParams>
     {
@@ -70,7 +70,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
     };
 }
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::factory_implementation
 {
     struct TokenRequestParams : TokenRequestParamsT<TokenRequestParams, implementation::TokenRequestParams>
     {

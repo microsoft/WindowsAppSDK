@@ -58,6 +58,12 @@
           <!-- AccessControl -->
           <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers" ThreadingModel="both" />
 
+          <!-- OAuth -->
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.Authentication.OAuth.AuthManager" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.Authentication.OAuth.AuthRequestParams" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.Authentication.OAuth.ClientAuthentication" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.Authentication.OAuth.TokenRequestParams" ThreadingModel="both" />
+
           <!-- Environment Manager -->
           <ActivatableClass ActivatableClassId="Microsoft.Windows.System.EnvironmentManager" ThreadingModel="both" />
 

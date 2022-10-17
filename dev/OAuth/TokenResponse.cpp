@@ -2,14 +2,14 @@
 #include "common.h"
 
 #include "TokenResponse.h"
-#include <Microsoft.Security.Authentication.OAuth.TokenResponse.g.cpp>
+#include <Microsoft.Windows.Security.Authentication.OAuth.TokenResponse.g.cpp>
 
-using namespace winrt::Microsoft::Security::Authentication::OAuth;
+using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;
 using namespace winrt::Windows::Data::Json;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementation
 {
     TokenResponse::TokenResponse(const json::JsonObject& jsonObject)
     {

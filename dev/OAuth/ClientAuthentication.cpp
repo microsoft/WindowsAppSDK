@@ -2,15 +2,15 @@
 #include "common.h"
 
 #include "ClientAuthentication.h"
-#include <Microsoft.Security.Authentication.OAuth.ClientAuthentication.g.cpp>
+#include <Microsoft.Windows.Security.Authentication.OAuth.ClientAuthentication.g.cpp>
 
-using namespace winrt::Microsoft::Security::Authentication::OAuth;
+using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Security::Cryptography;
 using namespace winrt::Windows::Web::Http::Headers;
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementation
 {
     ClientAuthentication::ClientAuthentication(const HttpCredentialsHeaderValue& authorization) :
         m_authorization(authorization)

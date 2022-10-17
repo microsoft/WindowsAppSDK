@@ -1,14 +1,14 @@
 #pragma once
-#include <Microsoft.Security.Authentication.OAuth.AuthManager.g.h>
+#include <Microsoft.Windows.Security.Authentication.OAuth.AuthManager.g.h>
 
 #include "AuthRequestAsyncOperation.h"
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementation
 {
     struct AuthManager;
 }
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::factory_implementation
 {
     struct AuthRequestState
     {
@@ -39,7 +39,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
     };
 }
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementation
 {
     struct AuthManager
     {

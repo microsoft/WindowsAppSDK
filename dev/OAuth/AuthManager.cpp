@@ -2,7 +2,7 @@
 #include "common.h"
 
 #include "AuthManager.h"
-#include <Microsoft.Security.Authentication.OAuth.AuthManager.g.cpp>
+#include <Microsoft.Windows.Security.Authentication.OAuth.AuthManager.g.cpp>
 
 #include "AuthRequestParams.h"
 #include "TokenFailure.h"
@@ -10,23 +10,40 @@
 #include "TokenRequestResult.h"
 #include "TokenResponse.h"
 
-using namespace winrt::Microsoft::Security::Authentication::OAuth;
+using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;
 using namespace winrt::Windows::Data::Json;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Web::Http;
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::factory_implementation
 {
     IAsyncOperation<AuthRequestResult> AuthManager::InitiateAuthRequestAsync(const Uri& authEndpoint,
         const oauth::AuthRequestParams& params)
     {
-        auto asyncOp = winrt::make_self<AuthRequestAsyncOperation>(authEndpoint,
-            winrt::get_self<implementation::AuthRequestParams>(params));
+        auto paramsImpl = winrt::get_self<implementation::AuthRequestParams>(params);
+        auto asyncOp = winrt::make_self<AuthRequestAsyncOperation>(authEndpoint, paramsImpl);
 
         {
             std::lock_guard guard{ m_mutex };
             m_pendingAuthRequests.push_back(AuthRequestState{ params.State(), asyncOp });
+        }
+
+        try
+        {
+            // Pipe server has been successfully set up. Initiate the launch
+            auto url = paramsImpl->create_url(authEndpoint);
+
+            auto launchResult = ::ShellExecuteW(nullptr, L"open", url.c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
+            if (auto code = reinterpret_cast<std::intptr_t>(launchResult); code < 32)
+            {
+                throw winrt::hresult_error(HRESULT_FROM_WIN32(::GetLastError()), L"Failed to launch browser");
+            }
+        }
+        catch (...)
+        {
+            try_remove(asyncOp.get());
+            throw;
         }
 
         return *asyncOp;

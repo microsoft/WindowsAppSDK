@@ -2,15 +2,15 @@
 #include "common.h"
 
 #include "AuthRequestParams.h"
-#include <Microsoft.Security.Authentication.OAuth.AuthRequestParams.g.cpp>
+#include <Microsoft.Windows.Security.Authentication.OAuth.AuthRequestParams.g.cpp>
 
-using namespace winrt::Microsoft::Security::Authentication::OAuth;
+using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Security::Cryptography;
 using namespace winrt::Windows::Security::Cryptography::Core;
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementation
 {
     AuthRequestParams::AuthRequestParams(const winrt::hstring& responseType, const winrt::hstring& clientId) :
         m_responseType(responseType),

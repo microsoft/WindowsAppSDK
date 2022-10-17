@@ -1,9 +1,9 @@
 #pragma once
-#include <Microsoft.Security.Authentication.OAuth.AuthResponse.g.h>
+#include <Microsoft.Windows.Security.Authentication.OAuth.AuthResponse.g.h>
 
 #include "AuthRequestParams.h"
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementation
 {
     struct AuthResponse : AuthResponseT<AuthResponse>
     {

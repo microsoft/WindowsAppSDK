@@ -97,6 +97,15 @@
     <Extension Category="windows.activatableClass.inProcessServer">
         <InProcessServer>
             <Path>Microsoft.WindowsAppRuntime.dll</Path>
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.Authentication.OAuth.AuthManager" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.Authentication.OAuth.AuthRequestParams" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.Authentication.OAuth.ClientAuthentication" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.Authentication.OAuth.TokenRequestParams" ThreadingModel="both" />
+        </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+        <InProcessServer>
+            <Path>Microsoft.WindowsAppRuntime.dll</Path>
             <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationTextProperties" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationButton" ThreadingModel="both" />

@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-namespace Microsoft.Security.Authentication.OAuth
+namespace Microsoft.Windows.Security.Authentication.OAuth
 {
     [contractversion(1)]
     apicontract OAuthContract {};

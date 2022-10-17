@@ -2,15 +2,15 @@
 #include "common.h"
 
 #include "TokenRequestParams.h"
-#include <Microsoft.Security.Authentication.OAuth.TokenRequestParams.g.cpp>
+#include <Microsoft.Windows.Security.Authentication.OAuth.TokenRequestParams.g.cpp>
 
 #include "AuthResponse.h"
 
-using namespace winrt::Microsoft::Security::Authentication::OAuth;
+using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;
 using namespace winrt::Windows::Foundation;
 using namespace Collections;
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementation
 {
     TokenRequestParams::TokenRequestParams(const winrt::hstring& grantType) : m_grantType(grantType) {}
 

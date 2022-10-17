@@ -2,16 +2,16 @@
 #include "common.h"
 
 #include "AuthRequestResult.h"
-#include <Microsoft.Security.Authentication.OAuth.AuthRequestResult.g.cpp>
+#include <Microsoft.Windows.Security.Authentication.OAuth.AuthRequestResult.g.cpp>
 
 #include "AuthFailure.h"
 #include "AuthResponse.h"
 
-using namespace winrt::Microsoft::Security::Authentication::OAuth;
+using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementation
 {
     AuthRequestResult::AuthRequestResult(AuthRequestParams* params, const Uri& responseUri) : m_responseUri(responseUri)
     {

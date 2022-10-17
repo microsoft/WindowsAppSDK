@@ -2,14 +2,14 @@
 #include "common.h"
 
 #include "AuthFailure.h"
-#include <Microsoft.Security.Authentication.OAuth.AuthFailure.g.cpp>
+#include <Microsoft.Windows.Security.Authentication.OAuth.AuthFailure.g.cpp>
 
 using namespace std::literals;
-using namespace winrt::Microsoft::Security::Authentication::OAuth;
+using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementation
 {
     AuthFailure::AuthFailure(const Uri& responseUri)
     {

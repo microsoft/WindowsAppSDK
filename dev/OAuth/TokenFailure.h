@@ -1,7 +1,7 @@
 #pragma once
-#include <Microsoft.Security.Authentication.OAuth.TokenFailure.g.h>
+#include <Microsoft.Windows.Security.Authentication.OAuth.TokenFailure.g.h>
 
-namespace winrt::Microsoft::Security::Authentication::OAuth::implementation
+namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementation
 {
     struct TokenFailure : TokenFailureT<TokenFailure>
     {
