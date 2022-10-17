@@ -404,6 +404,8 @@ jobs:
       SessionTimeout: '60'
       MaxConcurrency: '50'
       MaxRetryAttempts: '5'
+    condition:
+        eq(${{ parameters.ReleaseSigning }}, true)
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: NugetContent'
