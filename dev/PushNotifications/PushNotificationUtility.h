@@ -10,8 +10,6 @@
 #include "wil/win32_helpers.h"
 #include "LongRunningProcessSourcedTaskInstance.h"
 #include <filesystem>
-#include "roapi.h"
-#include <windows.foundation.h>
 #include <wil/resource.h>
 
 namespace winrt
@@ -129,17 +127,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
         return S_OK;
     }
     CATCH_RETURN()
-
-    inline void ClearRoActivateInstanceCache()
-    {
-        // Activating a nonexistent class clears the cache enables the proxyStub to be found for elevated scenarios
-        auto activatableClass{ wil::make_unique_string_nothrow<wil::unique_hstring>(L"FakeClass.ClassName") };
-        winrt::com_ptr<::IInspectable> ptr{};
-
-        // Function is expected fail and if anything else happens we should throw.
-        winrt::hresult hr{ RoActivateInstance(activatableClass.get(), ptr.put()) };
-        THROW_HR_IF(hr, hr != REGDB_E_CLASSNOTREG);
-    }
 
     inline wil::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
     {

@@ -20,6 +20,7 @@
 #include "NotificationsLongRunningProcess_h.h"
 #include "PushNotificationUtility.h"
 #include "AppNotificationUtility.h"
+#include <Microsoft.RoApi.h>
 #include "PushNotificationReceivedEventArgs.h"
 #include <security.integritylevel.h>
 
@@ -150,7 +151,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         else
         {
             // Need to clear the RoActivateInstance caching for the PushNotificationLongRunningProcess proxyStub to be found.
-            PushNotificationHelpers::ClearRoActivateInstanceCache();
+            ::Microsoft::RoApi::ClearRoActivateInstanceCache();
 
             // Store the PushNotificationManager in the COM static store
             auto pushNotificationManager{ winrt::make<PushNotificationManager>() };

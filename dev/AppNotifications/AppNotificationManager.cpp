@@ -23,6 +23,7 @@
 #include <string_view>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <WindowsAppRuntime.SelfContained.h>
+#include <Microsoft.RoApi.h>
 #include <ShellLocalization.h>
 #include <filesystem>
 
@@ -72,7 +73,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         else
         {
             // Need to clear the RoActivateInstance caching for the PushNotificationLongRunningProcess proxyStub to be found.
-            PushNotificationHelpers::ClearRoActivateInstanceCache();
+            ::Microsoft::RoApi::ClearRoActivateInstanceCache();
 
             // Store the AppNotificationManager in the COM static store
             auto appNotificationManager{ winrt::make<AppNotificationManager>() };
