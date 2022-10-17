@@ -113,7 +113,7 @@ function Get-IsAdmin
 
 function Get-ProjectRoot
 {
-    return Split-Path -Path $PSScriptRoot
+    return $PSScriptRoot
 }
 
 function Get-TempPath
