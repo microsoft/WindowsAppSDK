@@ -5,6 +5,7 @@
 #include <TestDef.h>
 #include <TlHelp32.h>
 #include <NotificationsLongRunningProcess_h.h>
+#include "../PushNotifications/NotificationPlatformActivation.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -28,37 +29,24 @@ namespace Test::LRP
             TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
 
-        winrt::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
+        wil::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
         {
-            winrt::com_ptr<INotificationsLongRunningPlatform> notificationPlatform;
+            auto notificationPlatform{ NotificationPlatform::GetNotificationPlatform() };
+            VERIFY_IS_NOT_NULL(notificationPlatform);
 
-            // If supported, allow use of class registrations from less trusted sources.
-            auto supportMarker{ wil::CoCreateInstanceNoThrow<ISupportAllowLowerTrustActivation>(CLSID_ActivationCapabilities) };
-            if (supportMarker)
-            {
-                notificationPlatform = winrt::try_create_instance<INotificationsLongRunningPlatform>(CLSID_NotificationsLongRunningPlatform, CLSCTX_LOCAL_SERVER |
-                    CLSCTX_ALLOW_LOWER_TRUST_REGISTRATION);
-            }
-            else
-            {
-                // Even if we can't pass CLSCTX_ALLOW_LOWER_TRUST_REGISTRATION, we still want to attempt the activation.
-                // This might fail to find the class when run elevated on a downlevel SKU, but it will work otherwise.
-                notificationPlatform = winrt::try_create_instance<INotificationsLongRunningPlatform>(CLSID_NotificationsLongRunningPlatform, CLSCTX_LOCAL_SERVER);
-            }
-
-            VERIFY_IS_NOT_NULL(notificationPlatform.get());
             return notificationPlatform;
         }
 
         TEST_CLASS_SETUP(ClassInit)
         {
-            ::Test::Bootstrap::SetupPackages(Test::Bootstrap::Packages::Singleton);
+
+            ::Test::Bootstrap::SetupPackages(Test::Bootstrap::Packages::Framework | Test::Bootstrap::Packages::Singleton);
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            ::Test::Bootstrap::CleanupPackages(Test::Bootstrap::Packages::Singleton);
+            ::Test::Bootstrap::CleanupPackages(Test::Bootstrap::Packages::Framework | Test::Bootstrap::Packages::Singleton);
             return true;
         }
 
