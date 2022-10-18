@@ -4,6 +4,10 @@
 #ifndef __MICROSOFT_ROAPI_H
 #define __MICROSOFT_ROAPI_H
 
+#include <roapi.h>
+#include <wrl.h>
+#include <wil/resource.h>
+
 namespace Microsoft::RoApi
 {
     // WinAppSDK Components that activate a class registered via windows.activatableClass.proxyStub
