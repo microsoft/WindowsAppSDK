@@ -20,7 +20,7 @@ class WindowsAppRuntimeDeployment_TraceLogger final : public wil::TraceLoggingPr
 public:
 
     BEGIN_COMPLIANT_CRITICAL_DATA_ACTIVITY_CLASS(Initialize, PDT_ProductAndServicePerformance);
-    void StartActivity(bool forceDeployment, bool isElevated, bool isPackagedProcess, DWORD integrityLevel)
+    void StartActivity(bool forceDeployment, bool isElevated, bool isPackagedProcess, bool isFullTrustPackage, DWORD integrityLevel)
     {
         // Clear the process-wide callback set in Start
         wil::SetResultLoggingCallback(nullptr);
@@ -33,6 +33,7 @@ public:
             TraceLoggingValue(forceDeployment, "forceDeployment"),
             TraceLoggingValue(isElevated, "isElevated"),
             TraceLoggingValue(isPackagedProcess, "isPackagedProcess"),
+            TraceLoggingValue(isFullTrustPackage, "isFullTrustPackage"),
             TraceLoggingValue(integrityLevel, "integrityLevel"));
     }
     void StopWithResult(
@@ -48,7 +49,7 @@ public:
         HRESULT deploymentErrorExtendedHResult,
         PCWSTR deploymentErrorText,
         GUID deploymentErrorActivityId,
-        bool isFullTrustPackage)
+        bool useExistingPackageIfHigherVersion)
     {
         // Set a process-wide callback function for WIL to call each time it logs a failure.
         wil::SetResultLoggingCallback(nullptr);
@@ -69,7 +70,7 @@ public:
                 TraceLoggingValue(deploymentErrorExtendedHResult, "DeploymentErrorExtendedHResult"),
                 TraceLoggingValue(deploymentErrorText, "DeploymentErrorText"),
                 TraceLoggingValue(deploymentErrorActivityId, "DeploymentErrorActivityId"),
-                TraceLoggingValue(isFullTrustPackage, "isFullTrustPackage"));
+                TraceLoggingValue(useExistingPackageIfHigherVersion, "useExistingPackageIfHigherVersion"));
         }
         else
         {
