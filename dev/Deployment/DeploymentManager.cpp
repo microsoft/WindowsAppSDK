@@ -402,7 +402,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         HRESULT deploymentOperationHResult{};
         HRESULT deploymentOperationExtendedHResult{};
 
-        if (deploymentOperation.Status() != winrt::Windows::Foundation::AsyncStatus::Completed)
+        if (deploymentOperation.Status() != AsyncStatus::Completed)
         {
             deploymentOperationHResult = static_cast<HRESULT>(deploymentOperation.ErrorCode());
             deploymentOperationExtendedHResult = deploymentResult.ExtendedErrorCode();
