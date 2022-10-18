@@ -20,6 +20,7 @@ namespace Microsoft::RoApi
 
         // Function is expected fail and if anything else happens we should throw.
         winrt::hresult hr{ RoActivateInstance(activatableClass.get(), ptr.put()) };
+        THROW_HR_IF_MSG(E_FAIL, hr == S_OK, "Cache fix failed: Found class name FakeClass.ClassName");
         THROW_HR_IF(hr, hr != REGDB_E_CLASSNOTREG);
     }
 }
