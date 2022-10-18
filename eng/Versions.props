@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <MicrosoftFrameworkUdkPackageVersion>1.2.3-CI-25225.1002.221015-1000.0</MicrosoftFrameworkUdkPackageVersion>
+    <MicrosoftFrameworkUdkPackageVersion>1.2.3-CI-25227.1000.221017-1000.0</MicrosoftFrameworkUdkPackageVersion>
     <MicrosoftWindowsCsWinRTPackageVersion>2.0.0</MicrosoftWindowsCsWinRTPackageVersion>
     <CsWinRTDependencyDotNetCoreSdkPackageVersion>6.0.301</CsWinRTDependencyDotNetCoreSdkPackageVersion>
     <CsWinRTDependencyDotNetCoreRuntimePackageVersion>6.0.6</CsWinRTDependencyDotNetCoreRuntimePackageVersion>
