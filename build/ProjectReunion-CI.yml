@@ -3,6 +3,7 @@ name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
+- template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-CompilerImage.yml
 - name: buildOutputDir
   value: $(Build.SourcesDirectory)\BuildOutput
 
@@ -60,7 +61,8 @@ jobs:
     - VerifyCopyrightHeaders
   condition: in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
   pool:
-    vmImage: 'windows-2022'
+    name: ProjectReunionESPool-2022
+    demands: ImageOverride -equals ${{ variables.CompilerPoolImage }}
   timeoutInMinutes: 120
   strategy:
     maxParallel: 10
@@ -130,7 +132,8 @@ jobs:
     - VerifyCopyrightHeaders
   condition: in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
   pool:
-    vmImage: 'windows-2022'
+    name: ProjectReunionESPool-2022
+    demands: ImageOverride -equals ${{ variables.CompilerPoolImage }}
   strategy:
     maxParallel: 10
     matrix:
