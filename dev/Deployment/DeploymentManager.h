@@ -34,7 +34,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     private:
         static MddCore::PackageInfo GetPackageInfoForPackage(std::wstring const& packageFullName);
         static std::vector<std::wstring> FindPackagesByFamily(std::wstring const& packageFamilyName);
-        static HRESULT VerifyPackage(const std::wstring& packageFamilyName, const PACKAGE_VERSION targetVersion, __out std::wstring& matchedPackageFullName);
+        static HRESULT VerifyPackage(const std::wstring& packageFamilyName, const PACKAGE_VERSION targetVersion, _Inout_ std::wstring& matchedPackageFullName);
         static std::wstring GetPackagePath(std::wstring const& packageFullName);
         static HRESULT AddOrRegisterPackageInBreakAwayProcess(const std::filesystem::path& packagePath, const bool regiterHigherVersionPackage, const bool forceDeployment);
         static std::wstring GenerateDeploymentAgentPath();
