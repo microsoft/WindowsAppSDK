@@ -1,0 +1,9 @@
+variables:
+  # Specify a specific image from ProjectReunionESPool-2022 to use for compilation. Release/servicing branches are
+  # recommended to choose an LTSC image for long-term stability and security updates.
+  # Options are:
+  # - MMS2022 (default)
+  #   (latest, updated weekly)
+  # - Win2022-VS17.2
+  #   (Windows Server 2022 Datacenter with Visual Studio 17.2 LTSC)
+  CompilerPoolImage: 'MMS2022'

@@ -2,6 +2,7 @@ name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
+- template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-CompilerImage.yml
 - name: buildPool
   value: 'ProjectReunionESPool-2022'
 
@@ -42,7 +43,9 @@ jobs:
 
 - job: VerifyCopyrightHeaders
   dependsOn: []
-  pool: ProjectReunionESPool-2022
+  pool:
+    name: ProjectReunionESPool-2022
+    demands: ImageOverride -equals ${{ variables.CompilerPoolImage }}
   steps:
   - task: powershell@2
     displayName: 'Verify copyright headers'
@@ -61,7 +64,9 @@ jobs:
       eq(variables['useBuildOutputFromBuildId'],''),
       in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
     )
-  pool: ProjectReunionESPool-2022
+  pool:
+    name: ProjectReunionESPool-2022
+    demands: ImageOverride -equals ${{ variables.CompilerPoolImage }}
   timeoutInMinutes: 120
   strategy:
     maxParallel: 10
@@ -145,7 +150,9 @@ jobs:
       eq(variables['useBuildOutputFromBuildId'],''),
       in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
     )
-  pool: ProjectReunionESPool-2022
+  pool:
+    name: ProjectReunionESPool-2022
+    demands: ImageOverride -equals ${{ variables.CompilerPoolImage }}
   timeoutInMinutes: 120
   variables:
     buildPlatform: 'anycpu'
@@ -227,7 +234,8 @@ jobs:
 
 - job: BuildMRT
   pool:
-    vmImage: 'windows-2022'
+    name: ProjectReunionESPool-2022
+    demands: ImageOverride -equals ${{ variables.CompilerPoolImage }}
   dependsOn:
     - VerifyCopyrightHeaders
   condition: in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
@@ -267,7 +275,9 @@ jobs:
   dependsOn:
     - BuildMRT
   condition: in(dependencies.BuildMRT.result, 'Succeeded')
-  pool: ProjectReunionESPool-2022
+  pool:
+    name: ProjectReunionESPool-2022
+    demands: ImageOverride -equals ${{ variables.CompilerPoolImage }}
   steps:
   - template: publish-mrt.yml
 
@@ -286,7 +296,9 @@ jobs:
       in(dependencies.PublishMRT.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
       in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
     )
-  pool: ProjectReunionESPool-2022
+  pool:
+    name: ProjectReunionESPool-2022
+    demands: ImageOverride -equals ${{ variables.CompilerPoolImage }}
 
   steps:
   - task: DownloadBuildArtifacts@0
@@ -468,7 +480,9 @@ jobs:
 - job: WinAppSDKIntegrationBuildAndTest
   dependsOn: ['CreateNugetPackage']
   condition: succeeded()
-  pool: ProjectReunionESPool-2022
+  pool:
+    name: ProjectReunionESPool-2022
+    demands: ImageOverride -equals ${{ variables.CompilerPoolImage }}
   variables:
     WindowsAppSDKTransportPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
     VersionWithDevTag: $[format('{0}.{1}.{2}-{3}.{4}.{5}', variables['major'], variables['minor'], variables['patch'], 'dev', variables['versionDate'], variables['versionCounter'])]
