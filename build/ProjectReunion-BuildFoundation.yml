@@ -438,7 +438,7 @@ jobs:
 
     - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
       parameters:
-        TransportPackageArtifactName: 'FullNuget'
+        TransportPackageArtifactName: 'TransportPackage'
         WindowsAppSDKPackageVersion: $(VersionWithDevTag)
         BuildType:  'stable'
         TransportPackages: 
