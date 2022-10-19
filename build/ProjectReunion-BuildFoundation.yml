@@ -245,7 +245,7 @@ jobs:
       - BuildAndTestMRT
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
 
-- job: Stage-Pack-IntegrationTest-Publish
+- job: Stage_Pack_Integration_Publish
   pool: ProjectReunionESPool-2022
   timeoutInMinutes: 120      
   dependsOn:
