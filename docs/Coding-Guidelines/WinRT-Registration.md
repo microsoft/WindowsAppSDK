@@ -8,8 +8,6 @@ Windows App SDK provides registers WinRT types via *manifested* solutions:
 
 ## Registration Options
 
-Before discussing further it helps to understand the options available and their tradeoffs.
-
 There are 3 ways to resolve a packaged WinRT's activatable class id (ACID):
 
 A. **Via the process' package graph** -- Requires using WinAppSDK/MSIX and the ACID defined in
@@ -27,18 +25,15 @@ WinAppSDK/MSIX uses option A.
 
 WinAppSDK/Self-Contained uses option B.
 
+# Appendix A - Frequently Asked Questions
+
 ## Why use manifested registration?
 
-WinAppSDK uses options A+B ByDesign, for performance and complexity reasons.
+Windows App SDK uses options A+B (process package graph + RegFReeWinRT) for performance and complexity reasons.
 
-While some might call this "non-ideal layout" (implying projections' manifest-free resolution is
-ideal), that's not true. The manifest-free option is *simple*, but not necessarily best. As in
-WinAppSDK's case.
+Manifest-free resolution is simple for developers to use but weaker at meeting WinAppSDK's performance and implementation complexity.
 
-WinAppSDK policy and practices doesn't doesn't match
-[Naming best practice for Windows Runtime component dlls](https://docs.microsoft.com/windows/uwp/winrt-components/create-a-windows-runtime-component-in-cppwinrt#naming-best-practice-for-windows-runtime-component-dlls)
-because that doesn't provide guidance for complex scenarios where the manifest-free option is a
-sub-optimal solution. See <https://task.ms/38821629> tracking work to improve that guidance.
+Manifest-based registration allows explicit binding of type names to implementations. Windows App SDK's mapping of types to implementation DLLs may change over time, and being explicit ensures the mapping logic is centralized.
 
 ## Why not use manifest-free registration?
 
