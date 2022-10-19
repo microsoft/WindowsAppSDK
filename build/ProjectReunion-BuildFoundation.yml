@@ -245,7 +245,7 @@ jobs:
       - BuildAndTestMRT
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
 
-- job: Stage_Pack_Integration_Publish
+- job: StageAndPack
   pool: ProjectReunionESPool-2022
   timeoutInMinutes: 120      
   dependsOn:
@@ -366,6 +366,8 @@ jobs:
           $packageVersion = $packageVersion + '.' + $sourceBranchName + '.' + $pipelineType
         }
         Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
+        Write-Host "##vso[task.setvariable variable=packageVersion;isOutput=true;]$packageVersion"
+
         Write-Host $packageVersion
         [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
         $publicNuspec.package.metadata.version = $packageVersion
@@ -419,49 +421,74 @@ jobs:
       PathtoPublish: '$(build.artifactStagingDirectory)\FullNuget'
       artifactName: 'TransportPackage'
 
-  # WinAppSDKIntegrationBuildAndTest
-  #TODO: Remove the two template calls once Add-AppxPackage has been resolved
-  - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
-    parameters:
-      AzureSubscriptionServiceConnection: 'ProjectReunion Resource Manager'
-      NuGetServiceConnectionName: 'ProjectReunionInternal'
-
-  - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
-    parameters:
-      TransportPackageArtifactName: 'FullNuget'
-      WindowsAppSDKPackageVersion: $(packageVersion)
-      BuildType:  'stable'
-      TransportPackages: 
-        FoundationPackage:
-          Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
-          Version: $(WindowsAppSDKTransportPackageVersion)
-
-  # TODO: Reenable, Add-AppxPackage currently does not work on 2022 images. See issue #2908
-  # - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
-  #   parameters:
-  #     WindowsAppSDKPackageVersion: $(VersionWithDevTag)
-  #     TestSelection: '*Foundation_*'
-  #     TransportPackageArtifactName: 'FullNuget'
-  #     BuildType: 'stable'
-  #     TransportPackages: 
-  #       FoundationPackage:
-  #         Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
-  #         Version: $(WindowsAppSDKTransportPackageVersion)
-
-  - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(parameters.PublishPackage, 'true')) }}:
-    # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
-    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-      displayName: 'NuGet push to ProjectReunion.nuget.internal'
-      inputs:
-        command: 'push'
-        packagesToPush: '$(Build.artifactStagingDirectory)/FullNuget/*.nupkg;!$(Build.artifactStagingDirectory)/FullNuget/*.symbols.nupkg'
-        verbosityPush: 'Detailed'
-        nuGetFeedType: 'internal'
-        #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
-        publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
-
-    - template: ..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
+# Build WinAppSDK and Run Integration Test from TestAll.ps1
+- job: WinAppSDKIntegrationBuildAndTest
+  dependsOn: ['StageAndPack']
+  condition: succeeded()
+  pool: ProjectReunionESPool-2022
+  variables:
+    WindowsAppSDKTransportPackageVersion: $[ dependencies.StageAndPack.outputs['SetVersion.packageVersion'] ]
+    VersionWithDevTag: $[format('{0}.{1}.{2}-{3}.{4}.{5}', variables['major'], variables['minor'], variables['patch'], 'dev', variables['versionDate'], variables['versionCounter'])]
+  steps:
+    #TODO: Remove the two template calls once Add-AppxPackage has been resolved
+    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
       parameters:
-        AssetNames: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
-        AssetVersions: $(packageVersion)
-        TriggerSubscription: true
+        AzureSubscriptionServiceConnection: 'ProjectReunion Resource Manager'
+        NuGetServiceConnectionName: 'ProjectReunionInternal'
+
+    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
+      parameters:
+        TransportPackageArtifactName: 'FullNuget'
+        WindowsAppSDKPackageVersion: $(VersionWithDevTag)
+        BuildType:  'stable'
+        TransportPackages: 
+          FoundationPackage:
+            Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
+            Version: $(WindowsAppSDKTransportPackageVersion)
+
+    # TODO: Reenable, Add-AppxPackage currently does not work on 2022 images. See issue #2908
+    # - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
+    #   parameters:
+    #     WindowsAppSDKPackageVersion: $(VersionWithDevTag)
+    #     TestSelection: '*Foundation_*'
+    #     TransportPackageArtifactName: 'FullNuget'
+    #     BuildType: 'stable'
+    #     TransportPackages: 
+    #       FoundationPackage:
+    #         Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
+    #         Version: $(WindowsAppSDKTransportPackageVersion)
+
+# Publish
+- job: Publish
+  dependsOn: 
+  - StageAndPack
+  - WinAppSDKIntegrationBuildAndTest
+  condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
+  pool: ProjectReunionESPool-2022
+  variables:
+    WindowsAppSDKPackageVersion: $[ dependencies.StageAndPack.outputs['SetVersion.packageVersion'] ]
+  steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        artifactName: TransportPackage
+        downloadPath: '$(Build.artifactStagingDirectory)'
+        itemPattern: |
+          **/*.nupkg
+
+    - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(parameters.PublishPackage, 'true')) }}:
+      # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
+      - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+        displayName: 'NuGet push to ProjectReunion.nuget.internal'
+        inputs:
+          command: 'push'
+          packagesToPush: '$(Build.artifactStagingDirectory)/TransportPackage/*.nupkg;!$(Build.artifactStagingDirectory)/TransportPackage/*.symbols.nupkg'
+          verbosityPush: 'Detailed'
+          nuGetFeedType: 'internal'
+          #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
+          publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
+
+      - template: ..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
+        parameters:
+          AssetNames: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
+          AssetVersions: $(WindowsAppSDKPackageVersion)
+          TriggerSubscription: true
