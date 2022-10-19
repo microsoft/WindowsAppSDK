@@ -210,12 +210,12 @@ Try {
         # Copy over mrt files
         foreach($platformToRun in $platform.Split(","))
         {
-            Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\mrm\mrm.dll" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
-            Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\mrm\mrm.pdb" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
+            Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\mrm\MRM.dll" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
+            Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\mrm\MRM.pdb" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
             Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
             Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.dll" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
             
-            Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\mrm\mrm.lib" -destination "$BasePath\lib\win10-$platformToRun" -force
+            Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\mrm\MRM.lib" -destination "$BasePath\lib\win10-$platformToRun" -force
 
             if($platformToRun -eq "x86")
             {
@@ -238,7 +238,7 @@ Try {
         Copy-Item -Path "$MRTSourcesDirectory\packaging\native\MrtCore.targets" -Destination "$BasePath\build\native"
         Copy-Item -Path "$MRTSourcesDirectory\packaging\ProjectItemsSchema.xaml" -Destination "$BasePath\build"
         Copy-Item -Path "$MRTSourcesDirectory\packaging\README.md" -Destination "$BasePath\build"
-        Copy-Item -Path "$MRTSourcesDirectory\mrt\core\src\mrm.h" -Destination "$BasePath\include"
+        Copy-Item -Path "$MRTSourcesDirectory\mrt\core\src\MRM.h" -Destination "$BasePath\include"
         Copy-Item -Path "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.idl" -Destination "$BasePath\include"
 
         # If AnyCPU generates another dll it needs to be added here.
