@@ -18,7 +18,7 @@ namespace WindowsAppSDK.TestCommon
         // This attribute is used by GenerateHelixWorkItems.ps1 to control how it creates the work items.
         // The default is CreateWorkItemPerModule
         [TestProperty("HelixWorkItemCreation", "CreateWorkItemPerTestClass")]
-        [TestProperty("CoreClrProfile", "net6")]
+        [TestProperty("CoreClrProfile", "net7")]
         [TestProperty("IsolationLevel", "Class")]
         public static void AssemblyInitialize(TestContext testContext)
         {
