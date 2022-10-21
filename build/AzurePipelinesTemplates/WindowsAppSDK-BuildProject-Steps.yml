@@ -14,7 +14,9 @@ parameters:
 
 steps:
   - ${{ if eq(parameters.enableLicenseInstall, true) }}:
-    - task: NuGetAuthenticate@0
+    - task: NuGetToolInstaller@1
+
+    - task: NuGetAuthenticate@1
       inputs:
         nuGetServiceConnections: 'ProjectReunionInternal'
 
@@ -61,7 +63,7 @@ steps:
     inputs:
       filename: 'set'
 
-  - task: NuGetAuthenticate@0
+  - task: NuGetAuthenticate@1
     inputs:
       nuGetServiceConnections: 'WindowsES'
 

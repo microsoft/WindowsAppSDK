@@ -61,9 +61,11 @@ jobs:
     inputs:
       filename: 'set'
 
-  - task: NuGetToolInstaller@0
+  - task: NuGetToolInstaller@1
 
-  - task: NuGetAuthenticate@0
+  - task: NuGetAuthenticate@1
+    inputs:
+      nuGetServiceConnections: 'ProjectReunionInternal'
 
   - task: powershell@2
     displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
