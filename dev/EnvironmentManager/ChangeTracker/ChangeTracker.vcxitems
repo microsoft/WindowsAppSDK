@@ -15,6 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)EnvironmentVariableChangeTracker.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EnvironmentVariableChangeTrackerHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IChangeTracker.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PathChangeTracker.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PathExtChangeTracker.h" />

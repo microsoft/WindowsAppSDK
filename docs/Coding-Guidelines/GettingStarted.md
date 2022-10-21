@@ -55,7 +55,7 @@ via `More` / `Import configuration` and select `docs\Coding-Guidelines\VisualStu
 
 # One-Time Setup
 
-Run the `tools\DevCheck.cmd` from an elevated command prompt (e.g. right-click on "Command Prompt"
+Run the `DevCheck.cmd` from an elevated command prompt (e.g. right-click on "Command Prompt"
 in the Start Menu and select `Run as Administrator`) to update your development environment. The script:
 
 * Adds test certificate to the certificate store. Used to sign test packages for inner-loop development and testing
@@ -63,7 +63,7 @@ in the Start Menu and select `Run as Administrator`) to update your development 
 
 This is needed once to enable your machine to develop Windows App SDK. It may be needed again in the
 future at rare intervals e.g. the test certificate usually expires a year from its issue date) or if
-the TAEF dependency has an update. When in doubt you can always run `tools\DevCheck.cmd` as it's
+the TAEF dependency has an update. When in doubt you can always run `DevCheck.cmd` as it's
 harmless if your configuration is current with no changes needed.
 
 # Tada!

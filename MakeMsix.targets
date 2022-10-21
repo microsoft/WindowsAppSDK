@@ -72,8 +72,8 @@
     <Exec Command="$(_MakeMsixCommand)" />
 
     <!-- Sign the MSIX -->
-    <Error Condition="('$(MakeMsixSigned)' == 'true') and !Exists('$(RepoTestCertificatePFX)')" Text="$(RepoTestCertificatePFX) not found. Run '$(RepoRoot)\tools\DevCheck.cmd' to generate the test certificate." />
-    <Error Condition="('$(MakeMsixSigned)' == 'true') and !Exists('$(RepoTestCertificatePWD)')" Text="$(RepoTestCertificatePWD) not found. Run '$(RepoRoot)\tools\DevCheck.cmd' to generate the test certificate." />
+    <Error Condition="('$(MakeMsixSigned)' == 'true') and !Exists('$(RepoTestCertificatePFX)')" Text="$(RepoTestCertificatePFX) not found. Run '$(RepoRoot)\DevCheck.cmd' to generate the test certificate." />
+    <Error Condition="('$(MakeMsixSigned)' == 'true') and !Exists('$(RepoTestCertificatePWD)')" Text="$(RepoTestCertificatePWD) not found. Run '$(RepoRoot)\DevCheck.cmd' to generate the test certificate." />
     <PropertyGroup Condition="'$(MakeMsixSigned)' == 'true'">
       <_SignMsix_Executable>signtool.exe</_SignMsix_Executable>
       <_SignMsix_Parameters>/fd SHA256</_SignMsix_Parameters>

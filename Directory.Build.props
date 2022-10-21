@@ -27,8 +27,8 @@
   <Target Name="DirectoryBuildPropsInfo">
     <Message Condition="'$(WindowsAppSDKBuildPipeline)' == '1'" Importance="High" Text="Directory.Build.props detects WindowsAppSDKBuildPipeline=$(WindowsAppSDKBuildPipeline)"/>
 
-    <Error Condition="!Exists('$(RepoTestCertificatePFX)')" Text="$(RepoTestCertificatePFX) not found. Run '$(RepoRoot)\tools\DevCheck.cmd' to generate the test certificate." />
-    <Error Condition="!Exists('$(RepoTestCertificatePWD)')" Text="$(RepoTestCertificatePWD) not found. Run '$(RepoRoot)\tools\DevCheck.cmd' to generate the test certificate." />
+    <Error Condition="!Exists('$(RepoTestCertificatePFX)')" Text="$(RepoTestCertificatePFX) not found. Run '$(RepoRoot)\DevCheck.cmd' to generate the test certificate." />
+    <Error Condition="!Exists('$(RepoTestCertificatePWD)')" Text="$(RepoTestCertificatePWD) not found. Run '$(RepoRoot)\DevCheck.cmd' to generate the test certificate." />
   </Target>
 
   <!-- Conditional behavior for build pipeline vs local development -->

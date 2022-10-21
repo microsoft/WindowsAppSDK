@@ -1,8 +1,9 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
 #include "Microsoft.Windows.System.EnvironmentManager.g.h"
+#include <optional>
 
 using namespace winrt::Windows::Foundation::Collections;
 
@@ -23,6 +24,7 @@ namespace winrt::Microsoft::Windows::System::implementation
         static Microsoft::Windows::System::EnvironmentManager GetForUser();
         static Microsoft::Windows::System::EnvironmentManager GetForMachine();
         static bool IsSupported();
+        bool AreChangesTracked();
         IMapView<hstring, hstring> GetEnvironmentVariables();
         hstring GetEnvironmentVariable(hstring const& variableName);
         void SetEnvironmentVariable(hstring const& name, hstring const& value);
@@ -33,6 +35,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     private:
         Scope m_Scope{};
+        std::optional<bool> m_willChangesBeTracked{};
 
         PCWSTR c_UserEvRegLocation{ L"Environment" };
         PCWSTR c_MachineEvRegLocation{ L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment" };

@@ -1,11 +1,18 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+// suppress macro redifinition.  This is needed to declare tests inline.
+#pragma warning(suppress: 4005)
+#define INLINE_TEST_METHOD_MARKUP
 #include "pch.h"
 #include "EnvironmentManagerCentennialTests.h"
 #include "EnvironmentVariableHelper.h"
 #include "ChangeTrackerHelper.h"
 #include "TestSetupAndTeardownHelper.h"
+#include <TE.Common.h>
+#include <WexTestClass.h>
+#include <WindowsAppRuntime.VersionInfo.h>
+#include <WindowsAppRuntime.SelfContained.h>
 
 using namespace winrt::Microsoft::Windows;
 
@@ -27,6 +34,42 @@ namespace WindowsAppSDKEnvironmentManagerTests
     {
         EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
         VERIFY_IS_NOT_NULL(environmentManager);
+    }
+
+    void EnvironmentManagerCentennialTests::CentennialTestAreChangesTracked()
+    {
+        BEGIN_TEST_METHOD_PROPERTIES()
+            TEST_METHOD_PROPERTY(L"Data:SelfContained", L"{true, false}")
+        END_TEST_METHOD_PROPERTIES()
+
+        bool isSelfContained{};
+        VERIFY_SUCCEEDED(WEX::TestExecution::TestData::TryGetValue(L"SelfContained", isSelfContained));
+
+        if (!isSelfContained)
+        {
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(::TP::WindowsAppRuntimeFramework::c_PackageFamilyName, ::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
+            VERIFY_IS_FALSE(::WindowsAppRuntime::SelfContained::IsSelfContained());
+
+            EnvironmentManager forUser{ EnvironmentManager::GetForUser() };
+            VERIFY_IS_TRUE(forUser.AreChangesTracked());
+
+            EnvironmentManager forMachine{ EnvironmentManager::GetForMachine() };
+            VERIFY_IS_TRUE(forMachine.AreChangesTracked());
+        }
+        else
+        {
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(L"I_don't_exist_package!", L"I_don't_exist_package!");
+            VERIFY_IS_TRUE(::WindowsAppRuntime::SelfContained::IsSelfContained());
+
+            EnvironmentManager forUser{ EnvironmentManager::GetForUser() };
+            VERIFY_IS_FALSE(forUser.AreChangesTracked());
+
+            EnvironmentManager forMachine{ EnvironmentManager::GetForMachine() };
+            VERIFY_IS_FALSE(forMachine.AreChangesTracked());
+        }
+
+        EnvironmentManager forProcess{ EnvironmentManager::GetForProcess() };
+        VERIFY_IS_FALSE(forProcess.AreChangesTracked());
     }
 
     void EnvironmentManagerCentennialTests::CentennialTestGetEnvironmentVariablesForProcess()

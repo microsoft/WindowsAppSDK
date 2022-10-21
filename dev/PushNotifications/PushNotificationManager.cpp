@@ -189,8 +189,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 if (pair.Name() == L"payload")
                 {
                     // Convert escaped components to its normal content from the conversion done in the Long Running Process (see NotificationListener.cpp)
-                    auto payloadAsWstring = winrt::Windows::Foundation::Uri::UnescapeComponent(pair.Value());
-                    eventArgs = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payloadAsWstring);
+                    auto payloadAsWstring{ winrt::Uri::UnescapeComponent(pair.Value()) };
+                    auto backgroundTask{ winrt::make_self<LongRunningProcessSourcedTaskInstance>(payloadAsWstring.c_str()) };
+                    eventArgs = winrt::make<PushNotificationReceivedEventArgs>(backgroundTask.as<IBackgroundTaskInstance>());
                     m_backgroundTaskArgs = eventArgs;
                 }
             }
@@ -870,16 +871,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         if(storeBackgroundArgs)
         {
-            if (PushNotificationHelpers::IsPackagedAppScenario())
-            {
-                m_backgroundTaskArgs = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(taskInstance);
-            }
-            else
-            {
-                // Need to mock a RawNotification object instead of winrt boxing: https://github.com/microsoft/WindowsAppSDK/issues/2075
-                winrt::hstring payload{ winrt::unbox_value<winrt::hstring>(taskInstance.TriggerDetails()) };
-                m_backgroundTaskArgs = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload.c_str());
-            }
+            m_backgroundTaskArgs = winrt::make<PushNotificationReceivedEventArgs>(taskInstance);
             SetEvent(m_waitHandleForArgs.get());            
         }
     }

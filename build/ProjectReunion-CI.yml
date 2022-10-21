@@ -56,9 +56,6 @@ jobs:
       filePath: tools\VerifyCopyrightHeaders.ps1
 
 - job: Build
-  dependsOn:
-    - VerifyCopyrightHeaders
-  condition: in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
   pool:
     vmImage: 'windows-2022'
   timeoutInMinutes: 120
@@ -79,56 +76,48 @@ jobs:
       Release_Arm64:
         buildPlatform: 'arm64'
         buildConfiguration: 'Release'
-
-  variables:
-    publishDir : $(Build.ArtifactStagingDirectory)
   steps:
-  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
-    parameters:
-      channel: ${{ variables.channel }}
-      # This pipeline is unable to access OneBranch, so skip running BinaryAnalysis.
-      runSDLBinaryAnalysis: false
+  # Required by the Packaged ES SDL Templates.
+  - checkout: self
+    persistCredentials: true
 
-  - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
-    parameters:
-      GenerateSBOM: false
+  - task: NuGetToolInstaller@1
+
+  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+
+  - task: PowerShell@2
+    name: BuildBinaries
+    inputs:
+      filePath: 'BuildTransportPackage.ps1'
+      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish BuildOutput'
+    displayName: 'Publish artifact: Full Nuget'
     inputs:
-      artifactName: BuildOutput
-      PathtoPublish: '$(buildOutputDir)'
+      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
+      artifactName: 'BuildOutput'
 
-  - task: BinSkim@3
-    inputs:
-      InputType: 'Basic'
-      Function: 'analyze'
-      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
-      AnalyzeVerbose: true
-    condition: ne(variables['buildConfiguration'], 'Debug')
+- job: BuildAnyCPU
+  pool:
+    vmImage: 'windows-2022'
+  steps:
+  - task: NuGetToolInstaller@1
 
-  - task: PostAnalysis@1
+  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+
+  - task: PowerShell@2
+    name: BuildBinaries
     inputs:
-      AllTools: false
-      APIScan: false
-      BinSkim: true
-      BinSkimBreakOn: 'Error'
-      CodesignValidation: false
-      CredScan: false
-      FortifySCA: false
-      FxCop: false
-      ModernCop: false
-      PoliCheck: false
-      RoslynAnalyzers: false
-      SDLNativeRules: false
-      Semmle: false
-      TSLint: false
-      ToolLogsNotFoundAction: 'Standard'
+      filePath: 'BuildTransportPackage.ps1'
+      arguments: -AzureBuildStep "BuildAnyCPU"
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget'
+    inputs:
+      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
+      artifactName: 'BuildOutput'
 
 - job: BuildMRT
-  dependsOn:
-    - VerifyCopyrightHeaders
-  condition: in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
   pool:
     vmImage: 'windows-2022'
   strategy:
@@ -144,12 +133,9 @@ jobs:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
   steps:
-  - template: build-mrt.yml
-    parameters:
-      buildJobName: 'BuildMRTCore'
-      GenerateSBOM: false
-      # This pipeline is unable to access OneBranch, so skip running BinaryAnalysis.
-      runSDLBinaryAnalysis: false
+  - task: NuGetToolInstaller@1
+
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestMRT-Steps.yml
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish BuildOutput'
@@ -157,11 +143,63 @@ jobs:
       artifactName: BuildOutput
       PathtoPublish: '$(buildOutputDir)'
 
+- template: AzurePipelinesTemplates\WindowsAppSDK-RunHelixTests-Job.yml
+  parameters:
+    name: 'RunTestsInHelix'
+    dependsOn:
+      - Build
+      - BuildMRT
+    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
+
+- job: StageAndPack
+  pool:
+    vmImage: 'windows-2022'
+  timeoutInMinutes: 120
+  dependsOn:
+    - Build
+    - BuildMRT
+  steps:
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      artifactName: BuildOutput
+      downloadPath: '$(Build.SourcesDirectory)'
+
+  - task: PowerShell@2
+    name: StageFiles
+    inputs:
+      filePath: 'BuildTransportPackage.ps1'
+      arguments: -Platform "x86,x64,arm64" -Configuration "release" -AzureBuildStep "StageFiles"
+
+  - task: PowerShell@2
+    name: SetVersion
+    displayName: Update metapackage version
+    inputs:
+      targetType: 'inline'
+      script: |
+        $packageVersion = '$(version)'
+        $pipelineType = '$(PipelineType)'
+        $sourceBranchName = '$(Build.SourceBranchName)'
+        if ($sourceBranchName -eq 'main' -or $sourceBranchName -eq 'develop')
+        {
+          $packageVersion = $packageVersion + '.' + $sourceBranchName + '.' + $pipelineType
+        }
+        Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
+        Write-Host $packageVersion
+        [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
+        $publicNuspec.package.metadata.version = $packageVersion
+        Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
+
+  - task: PowerShell@2
+    name: PackNuget
+    inputs:
+      filePath: 'BuildTransportPackage.ps1'
+      arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
+
   - task: BinSkim@3
     inputs:
       InputType: 'Basic'
       Function: 'analyze'
-      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
+      AnalyzeTarget: '$(build.SourcesDirectory)\BuildOutput\FullNuget\*.dll;$(build.SourcesDirectory)\BuildOutput\FullNuget\*.exe'
       AnalyzeVerbose: true
 
   - task: PostAnalysis@1
@@ -182,37 +220,14 @@ jobs:
       TSLint: false
       ToolLogsNotFoundAction: 'Standard'
 
-- job: PublishMRT
-  dependsOn:
-    - BuildMRT
-  condition: in(dependencies.BuildMRT.result, 'Succeeded')
-  pool:
-    vmImage: 'windows-2022'
-  steps:
-  - template: publish-mrt.yml
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: NugetContent'
+    inputs:
+      PathtoPublish: '$(Build.SourcesDirectory)\BuildOutput\FullNuget'
+      artifactName: 'NugetContent'
 
-- template: AzurePipelinesTemplates\WindowsAppSDK-RunHelixTests-Job.yml
-  parameters:
-    name: 'RunTestsInHelix'
-    dependsOn:
-      - Build
-      - BuildMRT
-    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
-
-# Create Nuget Package
-- template: AzurePipelinesTemplates\WindowsAppSDK-CreateNugetPackage-Job.yml
-  parameters:
-    publishToMaestro: false
-    jobName: CreateNugetPackage
-    dependsOn:
-      - VerifyCopyrightHeaders
-      - Build
-      - PublishMRT
-    prereleaseVersionTag: ci
-    condition: |
-      and
-      (
-        in(dependencies.PublishMRT.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
-        in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
-        in(dependencies.VerifyCopyrightHeaders.result, 'Succeeded')
-      )
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: TransportPackage'
+    inputs:
+      PathtoPublish: '$(build.artifactStagingDirectory)\FullNuget'
+      artifactName: 'TransportPackage'
