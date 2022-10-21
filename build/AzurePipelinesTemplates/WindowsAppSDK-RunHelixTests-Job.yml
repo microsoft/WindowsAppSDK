@@ -61,7 +61,6 @@ jobs:
     inputs:
       filename: 'set'
 
-
   - task: NuGetToolInstaller@1
 
   - task: NuGetAuthenticate@1
