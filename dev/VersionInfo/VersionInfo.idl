@@ -3,10 +3,12 @@
 
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
+    [experimental]
     [contractversion(1)]
     apicontract VersionInfoContract{};
 
     /// Version information for the Windows App SDK release.
+    [experimental]
     [contract(VersionInfoContract, 1)]
     static runtimeclass ReleaseInfo
     {
@@ -27,6 +29,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     };
 
     /// Version information for the Windows App SDK runtime.
+    [experimental]
     [contract(VersionInfoContract, 1)]
     static runtimeclass RuntimeInfo
     {
