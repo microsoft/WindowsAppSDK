@@ -30,6 +30,12 @@ namespace Test::VersionInfo
 
         TEST_METHOD(VersionInfo_Release)
         {
+            if (::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_VersionInfoAPI::IsEnabled())
+            {
+                WEX::Logging::Log::Comment(WEX::Common::String(L"Feature_VersionInfoAPI is disabled. Skipping..."));
+                return;
+            }
+
             try
             {
                 auto release{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::ReleaseInfo::AsString() };
@@ -43,6 +49,12 @@ namespace Test::VersionInfo
 
         TEST_METHOD(VersionInfo_Runtime)
         {
+            if (::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_VersionInfoAPI::IsEnabled())
+            {
+                WEX::Logging::Log::Comment(WEX::Common::String(L"Feature_VersionInfoAPI is disabled. Skipping..."));
+                return;
+            }
+
             try
             {
                 auto runtime{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeInfo::AsString() };
