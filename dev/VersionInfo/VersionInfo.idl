@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+#include <TerminalVelocityFeatures-VersionInfo.h>
+
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
     [feature(Feature_VersionInfoAPI)]
