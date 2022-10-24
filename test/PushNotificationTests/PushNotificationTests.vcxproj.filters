@@ -53,8 +53,6 @@
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
-    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
-    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="PushNotifications-AppxManifest.xml">
