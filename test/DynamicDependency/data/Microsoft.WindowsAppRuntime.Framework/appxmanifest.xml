@@ -55,13 +55,6 @@
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
         <Path>Microsoft.WindowsAppRuntime.dll</Path>
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.ReleaseInfo" ThreadingModel="both" />
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.RuntimeInfo" ThreadingModel="both" />
-      </InProcessServer>
-    </Extension>
-    <Extension Category="windows.activatableClass.inProcessServer">
-      <InProcessServer>
-        <Path>Microsoft.WindowsAppRuntime.dll</Path>
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationArguments" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationRegistrationManager" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.AppInstance" ThreadingModel="both" />
