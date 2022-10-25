@@ -5,7 +5,7 @@
 #include <TestDef.h>
 #include <TlHelp32.h>
 #include <NotificationsLongRunningProcess_h.h>
-#include "../PushNotifications/NotificationPlatformActivation.h"
+#include "NotificationPlatformActivation.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;

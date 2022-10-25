@@ -5,8 +5,8 @@
 
 #include <wil/com.h>
 #include <wil/resource.h>
-#include "../../Common/Microsoft.RoApi.h"
-#include "../../PushNotifications/NotificationPlatformActivation.h"
+#include "Microsoft.RoApi.h"
+#include "NotificationPlatformActivation.h"
 
 inline bool isRetriableRpcError(HRESULT hr)
 {
