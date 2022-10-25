@@ -1671,8 +1671,6 @@ Global
 		{50BF3E96-3050-4053-B012-BF6993483DA5} = {716C26A0-E6B0-4981-8412-D14A4D410531}
 		{1FDC307C-2DB7-4B40-8F18-F1057E9E0969} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{978B013F-9B68-4B3E-8DA4-6F3BE4EB22B4} = {1FDC307C-2DB7-4B40-8F18-F1057E9E0969}
-		{E3EDEC7F-A24E-4766-BB1D-6BDFBA157C51} = {2A2D1131-273C-4E17-BCD3-8812170A4B95}
-		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
@@ -1707,7 +1705,6 @@ Global
 		dev\Deployment\Deployment.vcxitems*{db38fb4d-d04f-4c1d-93e0-f8ae259c5fd6}*SharedItemsImports = 9
 		dev\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems*{e15c3465-9d45-495d-92ce-b91ef45e8623}*SharedItemsImports = 9
 		dev\AppLifecycle\AppLifecycle.vcxitems*{e3a522a3-6635-4a42-bded-1af46a15f63c}*SharedItemsImports = 9
-		dev\VersionInfo\VersionInfo.vcxitems*{e3edec7f-a24e-4766-bb1d-6bdfba157c51}*SharedItemsImports = 9
 		dev\AppNotifications\AppNotificationBuilder\AppNotificationBuilder.vcxitems*{e49329f3-5196-4bba-b5c4-e11ce7efb07a}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{e5659a29-fe68-417b-9bc5-613073dd54df}*SharedItemsImports = 4
 	EndGlobalSection
