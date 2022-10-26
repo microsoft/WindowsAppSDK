@@ -11,11 +11,11 @@
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
-    <Dependency Name="CsWinRT.Dependency.DotNetCoreSdk" Version="7.0.100-rc.2">
+    <Dependency Name="CsWinRT.Dependency.DotNetCoreSdk" Version="7.0.100-rc.2.22477.23">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
-    <Dependency Name="CsWinRT.Dependency.DotNetCoreRuntime" Version="7.0.0-rc.2">
+    <Dependency Name="CsWinRT.Dependency.DotNetCoreRuntime" Version="7.0.0-rc.2.22472.13">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
