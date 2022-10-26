@@ -26,6 +26,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)externs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LongRunningProcessSourcedRawNotification.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LongRunningProcessSourcedTaskInstance.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NotificationPlatformActivation.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationChannel.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationCreateChannelResult.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationManager.h" />

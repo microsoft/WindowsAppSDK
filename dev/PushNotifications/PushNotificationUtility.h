@@ -10,6 +10,7 @@
 #include "wil/win32_helpers.h"
 #include "LongRunningProcessSourcedTaskInstance.h"
 #include <filesystem>
+#include <wil/resource.h>
 
 namespace winrt
 {
@@ -126,11 +127,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
         return S_OK;
     }
     CATCH_RETURN()
-
-    inline wil::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
-    {
-        return wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER);
-    }
 
     inline bool IsBackgroundTaskBuilderAvailable()
     {
