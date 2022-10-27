@@ -35,9 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="$(TargetDir)..\ToastNotificationsTestApp\ToastNotificationsTestApp.exe" />
-    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
     <CopyFileToFolders Include="$(TestPkgOutputPath)\Dependencies\$(PlatformTarget)\Microsoft.VCLibs.$(PlatformTarget)$(VCLibsDebugConfigName).14.00.Desktop.appx" />
-    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
   </ItemGroup>
 </Project>

@@ -50,6 +50,5 @@
       <Filter>CopyFiles</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
-    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
   </ItemGroup>
 </Project>
