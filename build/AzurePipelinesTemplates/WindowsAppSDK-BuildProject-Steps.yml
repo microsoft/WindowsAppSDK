@@ -50,18 +50,18 @@ steps:
 
 # temporarily add an install .net sdk step
   - task: powershell@2
-  displayName: 'Installing .NET SDK'
-  inputs:
-    targetType: filePath
-    workingDirectory: $(Build.SourcesDirectory)\dev\MRTCore\build
-    filePath: $(Build.SourcesDirectory)\dev\MRTCore\build\DownloadDotNetCoreSdk.ps1
+    displayName: 'Installing .NET SDK'
+    inputs:
+      targetType: filePath
+      workingDirectory: $(Build.SourcesDirectory)\dev\MRTCore\build
+      filePath: $(Build.SourcesDirectory)\dev\MRTCore\build\DownloadDotNetCoreSdk.ps1
 
-- task: BatchScript@1
-  displayName: 'Use .NET SDK'
-  inputs:
-    filename: '$(Build.SourcesDirectory)\dev\MRTCore\build\SetDotnetVars.cmd'
-    arguments: '$(Build.SourcesDirectory)\dev\MRTCore'
-    modifyEnvironment: true
+  - task: BatchScript@1
+    displayName: 'Use .NET SDK'
+    inputs:
+      filename: '$(Build.SourcesDirectory)\dev\MRTCore\build\SetDotnetVars.cmd'
+      arguments: '$(Build.SourcesDirectory)\dev\MRTCore'
+      modifyEnvironment: true
 
   # The environment variable VCToolsInstallDir isn't defined on lab machines, so we need to retrieve it ourselves.
   - script: |
