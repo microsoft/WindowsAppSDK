@@ -107,7 +107,12 @@ std::wstring GetEnumString(winrt::AppNotificationSetting const& setting)
 
 bool PostToastHelper(std::wstring const& tag, std::wstring const& group)
 {
-    auto appNotification{ winrt::AppNotificationBuilder().AddArgument(L"key", L"value").AddArgument(L"key", L"value").SetTag(tag.c_str()).SetGroup(group.c_str()).BuildNotification() };
+    auto appNotification{ winrt::AppNotificationBuilder()
+        .AddArgument(L"key", L"value")
+        .AddArgument(L"key", L"value")
+        .SetTag(tag.c_str())
+        .SetGroup(group.c_str())
+        .BuildNotification() };
 
     winrt::AppNotificationManager::Default().Show(appNotification);
 
