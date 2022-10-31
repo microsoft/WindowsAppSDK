@@ -16,7 +16,7 @@ jobs:
   dependsOn: ${{ parameters.dependsOn }}
   condition: ${{ parameters.condition }}
   pool:
-    vmImage: 'windows-2019'
+    vmImage: 'windows-2022'
   timeoutInMinutes: 80
   strategy:
     maxParallel: ${{ parameters.maxParallel }}
@@ -61,15 +61,15 @@ jobs:
     inputs:
       filename: 'set'
 
-  - task: NuGetToolInstaller@0
+  - task: NuGetToolInstaller@1
 
-  - task: NuGetAuthenticate@0
+  - task: NuGetAuthenticate@1
 
   - task: powershell@2
     displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
     inputs:
       targetType: filePath
-      filePath: tools\DevCheck.ps1
+      filePath: DevCheck.ps1
       arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
       workingDirectory: '$(Build.SourcesDirectory)'
 
@@ -77,7 +77,7 @@ jobs:
     displayName: 'Install test certificate for MSIX test packages (DevCheck)'
     inputs:
       targetType: filePath
-      filePath: tools\DevCheck.ps1
+      filePath: DevCheck.ps1
       arguments: -NoInteractive -Offline -Verbose -CheckTestCert
       workingDirectory: '$(Build.SourcesDirectory)'
 
@@ -85,7 +85,7 @@ jobs:
     parameters:
       displayName: WindowsAppSDK.Helix.Test
       solutionPath: test\WindowsAppSDK.Helix.Test\WindowsAppSDK.Helix.Test.sln
-
+  
   # Note: 'NuGetCommand@2' is ambiguous so the specific task GUID must be used instead.
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     displayName: 'NuGet restore build/Helix/packages.config'
@@ -153,6 +153,8 @@ jobs:
     inputs:
       PathtoPublish: $(helixWorkItemsDir)
       artifactName: HelixWorkItems_$(buildPlatform)_$(buildConfiguration)
+  
+  - task: NuGetToolInstaller@1
 
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     displayName: 'NuGet restore Helix/RunTestsInHelix.proj'
@@ -168,7 +170,7 @@ jobs:
   # By executing 'dotnet msbuild' against RunTestsInHelix.proj the test payload and the work items to execute get sent to Helix.
   - task: DotNetCoreCLI@2
     displayName: 'Run tests in Helix (open queues)'
-    condition: and(succeeded(),eq(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
+    condition: and(succeeded(), eq(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
     timeoutInMinutes: 45
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -180,7 +182,7 @@ jobs:
 
   - task: DotNetCoreCLI@2
     displayName: 'Run tests in Helix (closed queues)'
-    condition: and(succeeded(),ne(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
+    condition: and(succeeded(), ne(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
     timeoutInMinutes: 45
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -245,6 +247,6 @@ jobs:
     displayName: 'Remove test certificate for MSIX test packages (DevCheck)'
     inputs:
       targetType: filePath
-      filePath: tools\DevCheck.ps1
+      filePath: DevCheck.ps1
       arguments: -NoInteractive -Offline -Verbose -RemoveTestCert -RemoveTestPfx
       workingDirectory: '$(Build.SourcesDirectory)'

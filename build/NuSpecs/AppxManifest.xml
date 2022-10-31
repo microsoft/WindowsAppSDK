@@ -34,8 +34,14 @@
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContext" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyRank" ThreadingModel="both" />
 
-          <!-- Environment Manager -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.System.EnvironmentManager" ThreadingModel="both" />
+          <!-- Deployment -->
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions" ThreadingModel="both" />
+
+          <!-- VersionInfo -->
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.ReleaseInfo" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.RuntimeInfo" ThreadingModel="both" />
 
           <!-- AppLifecycle -->
           <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationRegistrationManager" ThreadingModel="both" />
@@ -49,10 +55,11 @@
           <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationRegistrationToken" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationManager" ThreadingModel="both" />
 
-          <!-- Deployment -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions" ThreadingModel="both" />
+          <!-- AccessControl -->
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers" ThreadingModel="both" />
+
+          <!-- Environment Manager -->
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.System.EnvironmentManager" ThreadingModel="both" />
 
           <!-- PowerNotifications -->
           <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Power.PowerManager" ThreadingModel="both" />
@@ -70,9 +77,14 @@
           <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationProgressBar" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationComboBox" ThreadingModel="both" />
 
-          <!-- AccessControl -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers" ThreadingModel="both" />
       </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.proxyStub">
+      <ProxyStub ClassId="71201C0F-21E1-4B80-945F-7B0A10F90883">
+          <Path>PushNotificationsLongRunningTask.ProxyStub.dll</Path>
+          <Interface Name="IWpnForegroundSink" InterfaceId="25604D55-9B17-426F-9D67-2B11B3A65598"/>
+          <Interface Name="INotificationsLongRunningPlatform" InterfaceId="60FC21B2-B396-4D49-94F0-7555869FB93C"/>
+      </ProxyStub>
     </Extension>
   </Extensions>
 </Package>

@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -23,8 +23,10 @@
 #include <string_view>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <WindowsAppRuntime.SelfContained.h>
+#include <Microsoft.RoApi.h>
 #include <ShellLocalization.h>
 #include <filesystem>
+#include <NotificationPlatformActivation.h>
 
 using namespace std::literals;
 
@@ -71,6 +73,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         }
         else
         {
+            // Need to clear the RoActivateInstance caching for the PushNotificationLongRunningProcess proxyStub to be found.
+            ::Microsoft::RoApi::ClearRoActivateInstanceCache();
+
             // Store the AppNotificationManager in the COM static store
             auto appNotificationManager{ winrt::make<AppNotificationManager>() };
             appProperties.Insert(STORED_APPNOTIFICATION_MANAGER_KEY, appNotificationManager);
@@ -224,7 +229,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationManager::RegisterAppNotificationSinkWithLongRunningPlatform()
     {
-        auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
+        auto notificationPlatform{ NotificationPlatform::GetNotificationPlatform() };
         THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(m_processName.c_str(), m_appId.c_str()));
     }
 
@@ -328,7 +333,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             // Remove any Registrations from the Long Running Process that are necessary for Cloud toasts
             if (!PushNotificationHelpers::IsPackagedAppScenario() && !WindowsAppRuntime::SelfContained::IsSelfContained())
             {
-                auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
+                auto notificationPlatform{ NotificationPlatform::GetNotificationPlatform() };
                 THROW_IF_FAILED(notificationPlatform->RemoveToastRegistrationMapping(m_processName.c_str()));
             }
 

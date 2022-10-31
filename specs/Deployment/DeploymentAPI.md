@@ -179,12 +179,79 @@ they shut down, to refer to the updated framework package.
     }
 ```
 
+#### OnError
+
+Additional behavior is available if an error occurs in `DeploymentManager.Initialize()`,
+per the following logic:
+
+```
+DeploymentManager::Initialize(...)
+{
+    // Only needed supported in packaged processes
+    IF IsPackagedProcess()
+    {
+        // We're not a packaged process. Don't call Initialize
+        return OK
+    }
+
+    // Do the initialization work
+    hr = _Initialize(...)
+    if FAILED(hr)
+    {
+        LogToEventLog(hr, ...)
+
+        // Should we pop the debugger?
+        IF IsDebuggerPresent()
+        {
+            DebugBreak()
+        }
+
+        // Should we pop some UI?
+        if options.OnError_ShowUI
+        {
+            MessageBox(...)
+        }
+    }
+    return hr
+}
+```
+
+Here's the previous example extended with the `Show UI on error` option:
+
+```C#
+    if (DeploymentManager.GetStatus().Status != DeploymentStatus.Ok)
+    {
+        // Create DeploymentInitializeOptions object and set ForceDeployment option
+        // to allow for force updating of the WinAppSDK packages even if they are currently in use.
+        // Also enable UI if an error occurs so a user can be told about the problem.
+        var deploymentInitializeOptions = new DeploymentInitializeOptions();
+        deploymentInitializeOptions.ForceDeployment = true;
+        deploymentInitializeOptions.OnErrorShowUI = true;
+
+        // Initialize does a status check, and if the status is not OK it will attempt to get
+        // the WindowsAppRuntime into a good state by deploying packages. Unlike a simple
+        // status check, Initialize can sometimes take several seconds to deploy the packages.
+        // These should be run on a separate thread so as not to hang your app while the
+        // packages deploy.
+        var initializeTask = Task.Run(() => DeploymentManager.Initialize(deploymentInitializeOptions));
+        initializeTask.Wait();
+
+        // Check the result.
+        if (initializeTask.Result.Status != DeploymentStatus.Ok)
+        {
+            // The WindowsAppRuntime is in a bad state which Initialize() did not fix.
+            // Do error reporting or gather information for submitting a bug.
+            // Gracefully exit the program or carry on without using the WindowsAppRuntime.
+        }
+    }
+```
+
 # API Details
 
 ```C# (but really MIDL3)
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
-    [contractversion(2)]
+    [contractversion(3)]
     apicontract DeploymentContract{};
 
     /// Represents the current Deployment status of the WindowsAppRuntime
@@ -221,6 +288,10 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         /// WindowsAppSDK main and singleton packages will be shut down forcibly if they are
         /// currently in use, when registering the WinAppSDK packages.
         Boolean ForceDeployment;
+
+        /// If not successful show UI
+        [contract(DeploymentContract, 3)]
+        Boolean OnErrorShowUI;
     };
 
     /// Used to query deployment information for WindowsAppRuntime

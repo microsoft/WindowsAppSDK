@@ -47,6 +47,21 @@
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
         <Path>Microsoft.WindowsAppRuntime.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.WindowsAppRuntime.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.ReleaseInfo" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.RuntimeInfo" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.WindowsAppRuntime.dll</Path>
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationArguments" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationRegistrationManager" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.AppInstance" ThreadingModel="both" />
@@ -54,12 +69,13 @@
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
-      <InProcessServer>
-        <Path>Microsoft.WindowsAppRuntime.dll</Path>
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager" ThreadingModel="both" />
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult" ThreadingModel="both" />
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions" ThreadingModel="both" />
-      </InProcessServer>
+        <InProcessServer>
+            <Path>Microsoft.WindowsAppRuntime.dll</Path>
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationManager" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotification" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationProgressData" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationActivatedEventArgs" ThreadingModel="both" />
+        </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
         <InProcessServer>
@@ -75,10 +91,7 @@
     <Extension Category="windows.activatableClass.inProcessServer">
         <InProcessServer>
             <Path>Microsoft.WindowsAppRuntime.dll</Path>
-            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationManager" ThreadingModel="both" />
-            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotification" ThreadingModel="both" />
-            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationProgressData" ThreadingModel="both" />
-            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationActivatedEventArgs" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers" ThreadingModel="both" />
         </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
@@ -103,11 +116,12 @@
             <ActivatableClass ActivatableClassId="Microsoft.Windows.System.EnvironmentManager" ThreadingModel="both" />
         </InProcessServer>
     </Extension>
-    <Extension Category="windows.activatableClass.inProcessServer">
-        <InProcessServer>
-            <Path>Microsoft.WindowsAppRuntime.dll</Path>
-            <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers" ThreadingModel="both" />
-        </InProcessServer>
+    <Extension Category="windows.activatableClass.proxyStub">
+      <ProxyStub ClassId="71201C0F-21E1-4B80-945F-7B0A10F90883">
+          <Path>PushNotificationsLongRunningTask.ProxyStub.dll</Path>
+          <Interface Name="IWpnForegroundSink" InterfaceId="25604D55-9B17-426F-9D67-2B11B3A65598"/>
+          <Interface Name="INotificationsLongRunningPlatform" InterfaceId="60FC21B2-B396-4D49-94F0-7555869FB93C"/>
+      </ProxyStub>
     </Extension>
   </Extensions>
 </Package>

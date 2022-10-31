@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -6,16 +6,15 @@
 #include "Microsoft.Windows.System.EnvironmentManager.g.cpp"
 #include "Microsoft.Windows.System.EnvironmentManager.Insights.h"
 #include <EnvironmentVariableChangeTracker.h>
+#include <EnvironmentVariableChangeTrackerHelper.h>
 #include <PathChangeTracker.h>
 #include <PathExtChangeTracker.h>
 #include <IChangeTracker.h>
 #include <TerminalVelocityFeatures-EnvironmentManager.h>
 
+
 namespace winrt::Microsoft::Windows::System::implementation
 {
-    bool EnvironmentManager::s_HasCheckedIsSupported{};
-    bool EnvironmentManager::s_IsSupported{};
-
     EnvironmentManager::EnvironmentManager(Scope const& scope)
         : m_Scope(scope)
     {
@@ -23,7 +22,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForProcess()
     {
-        EnvironmentManagerInsights::LogMessage(L"Making EM for process");
+        EnvironmentManagerInsights::LogCreateForProcess();
 
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Process);
@@ -32,7 +31,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForUser()
     {
-        EnvironmentManagerInsights::LogMessage(L"Making EM for User");
+        EnvironmentManagerInsights::LogCreateForUser();
 
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::User);
@@ -41,46 +40,33 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForMachine()
     {
-        EnvironmentManagerInsights::LogMessage(L"Making EM for Machine");
+        EnvironmentManagerInsights::LogCreateForMachine();
 
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Machine);
         return environmentManager;
     }
 
+    // Using EM is supported on RS5+.
+    // Tracking the changes is Windows11+.
     bool EnvironmentManager::IsSupported()
     {
-        if (s_HasCheckedIsSupported)
+        return true;
+    }
+
+    bool EnvironmentManager::AreChangesTracked()
+    {
+        if (!m_willChangesBeTracked.has_value())
         {
-            return s_IsSupported;
+            m_willChangesBeTracked = ShouldChangesBeTracked(m_Scope);
         }
 
-        PCWSTR c_RegLocationForSupportCheck{ L"SOFTWARE\\Microsoft\\AppModel\\RegistryWriteVirtualization\\ExcludedKeys\\HKEY_CURRENT_USER/Software/ChangeTracker" };
-
-        wil::unique_hkey environmentVariablesHKey{};
-        LSTATUS openResult{ RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_RegLocationForSupportCheck, 0, KEY_READ | KEY_WOW64_64KEY, environmentVariablesHKey.addressof()) };
-
-        s_HasCheckedIsSupported = true;
-
-        if (openResult == ERROR_SUCCESS)
-        {
-            s_IsSupported = true;
-        }
-        else if (openResult == ERROR_FILE_NOT_FOUND)
-        {
-            s_IsSupported = false;
-        }
-        else
-        {
-            THROW_WIN32(openResult);
-        }
-
-        return s_IsSupported;
+        return m_willChangesBeTracked.value();
     }
 
     IMapView<hstring, hstring> EnvironmentManager::GetEnvironmentVariables()
     {
-        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling GetEnvironmentVariables");
+        EnvironmentManagerInsights::LogGetEnvironmentVariables(m_Scope);
         StringMap environmentVariables;
 
         if (!IsSupported())
@@ -102,7 +88,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     hstring EnvironmentManager::GetEnvironmentVariable(hstring const& variableName)
     {
-        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling GetEnvironmentVariable");
+        EnvironmentManagerInsights::LogGetEnvironmentVariable(m_Scope);
 
         if (!IsSupported())
         {
@@ -129,7 +115,8 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::SetEnvironmentVariable(hstring const& name, hstring const& value)
     {
-        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling SetEnvironmentVariable");
+        EnvironmentManagerInsights::LogSetEnvironmentVariable(m_Scope);
+
         if (!IsSupported())
         {
             return;
@@ -205,7 +192,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::AppendToPath(hstring const& path)
     {
-        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling AppendToPath");
+        EnvironmentManagerInsights::LogAppendToPath(m_Scope);
 
         if (!IsSupported())
         {
@@ -273,7 +260,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::RemoveFromPath(hstring const& path)
     {
-        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling RemoveFromPath");
+        EnvironmentManagerInsights::LogRemoveFromPath(m_Scope);
 
         if (!IsSupported())
         {
@@ -375,7 +362,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::AddExecutableFileExtension(hstring const& pathExt)
     {
-        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling AddExecutableFileExtension");
+        EnvironmentManagerInsights::LogAddExecutableFileExtension(m_Scope);
 
         if (!IsSupported())
         {
@@ -443,7 +430,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::RemoveExecutableFileExtension(hstring const& pathExt)
     {
-        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling RemoveExecutableFileExtension");
+        EnvironmentManagerInsights::LogRemoveExecutableFileExtension(m_Scope);
 
         if (!IsSupported())
         {
