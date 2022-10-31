@@ -161,7 +161,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\..\..\..\packages\Microsoft.FrameworkUdk\$(FrameworkUdkVersion)\build\native\Microsoft.FrameworkUdk.targets" Condition="Exists('..\..\..\..\..\..\..\..\packages\Microsoft.FrameworkUdk\$(FrameworkUdkVersion)\build\native\Microsoft.FrameworkUdk.targets')" />
+    <Import Project="..\..\..\..\..\packages\Microsoft.FrameworkUdk\$(FrameworkUdkVersion)\build\native\Microsoft.FrameworkUdk.targets" Condition="Exists('..\..\..\..\..\packages\Microsoft.FrameworkUdk\$(FrameworkUdkVersion)\build\native\Microsoft.FrameworkUdk.targets')" />
     <Import Project="..\..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
     <Import Project="..\..\..\..\..\packages\Microsoft.SourceLink.Common.1.1.1\build\Microsoft.SourceLink.Common.targets" Condition="Exists('..\..\..\..\..\packages\Microsoft.SourceLink.Common.1.1.1\build\Microsoft.SourceLink.Common.targets')" />
     <Import Project="..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.1.1.1\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.1.1.1\build\Microsoft.Build.Tasks.Git.targets')" />
@@ -172,7 +172,7 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.FrameworkUdk\$(FrameworkUdkVersion)\build\native\Microsoft.FrameworkUdk.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\..\..\..\packages\Microsoft.FrameworkUdk\$(FrameworkUdkVersion)\build\native\Microsoft.FrameworkUdk.targets'))" />
+    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.FrameworkUdk\$(FrameworkUdkVersion)\build\native\Microsoft.FrameworkUdk.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.FrameworkUdk\$(FrameworkUdkVersion)\build\native\Microsoft.FrameworkUdk.targets'))" />
     <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
     <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.SourceLink.Common.1.1.1\build\Microsoft.SourceLink.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.SourceLink.Common.1.1.1\build\Microsoft.SourceLink.Common.props'))" />
