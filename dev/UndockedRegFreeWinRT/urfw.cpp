@@ -343,9 +343,11 @@ HRESULT ExtRoLoadCatalog()
     if ((hActCtx == INVALID_HANDLE_VALUE) || (hActCtx == nullptr))
     {
         const auto lastError{ GetLastError() };
-        if (lastError == ERROR_RESOURCE_DATA_NOT_FOUND)
+        if ((lastError == ERROR_RESOURCE_DATA_NOT_FOUND) || (lastError == ERROR_RESOURCE_TYPE_NOT_FOUND))
         {
-            // Not found == Nothing to do!
+            // No resources in the executable (ERROR_RESOURCE_DATA_NOT_FOUND) or there are resources
+            // but not an embedded SxS manifest we're looking for (ERROR_RESOURCE_TYPE_NOT_FOUND).
+            // Either way it's Not Found == Nothing to do!
             return S_OK;
         }
         RETURN_WIN32(lastError);
