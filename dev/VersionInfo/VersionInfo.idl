@@ -1,16 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#include <TerminalVelocityFeatures-VersionInfo.h>
-
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
-    [feature(Feature_VersionInfoAPI)]
+    [experimental]
     [contractversion(1)]
     apicontract VersionInfoContract{};
 
     /// Version information for the Windows App SDK release.
-    [feature(Feature_VersionInfoAPI)]
+    [experimental]
     [contract(VersionInfoContract, 1)]
     static runtimeclass ReleaseInfo
     {
@@ -31,7 +29,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     };
 
     /// Version information for the Windows App SDK runtime.
-    [feature(Feature_VersionInfoAPI)]
+    [experimental]
     [contract(VersionInfoContract, 1)]
     static runtimeclass RuntimeInfo
     {
