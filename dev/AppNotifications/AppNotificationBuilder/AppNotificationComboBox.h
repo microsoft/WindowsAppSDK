@@ -37,6 +37,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::hstring m_selectedItem{};
 
         std::wstring GetSelectionItems();
+
+        NotificationTelemetryHelper m_telemetryHelper{};
     };
 }
 

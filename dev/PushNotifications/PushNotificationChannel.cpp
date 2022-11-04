@@ -41,9 +41,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         HRESULT hr{ S_OK };
 
-        auto logTelemetry{ wil::scope_exit([&]() {
-            PushNotificationTelemetry::LogCloseChannel(hr);
-        }) };
+        NotificationTelemetryHelper telemetryHelper{};
+        auto logTelemetry = PushNotificationTelemetry::CloseChannel::Start(telemetryHelper);
 
         try
         {

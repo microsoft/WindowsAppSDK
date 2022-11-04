@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
+#include "NotificationTelemetryHelper.h"
 #include "AppNotificationButton.h"
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationButton.g.cpp"
 #include <IsWindowsVersion.h>
@@ -118,29 +119,17 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::hstring AppNotificationButton::ToString()
     {
-        HRESULT hr{ S_OK };
+        auto logTelemetry = AppNotificationBuilderTelemetry::ButtonToString::Start(m_telemetryHelper);
 
-        auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationBuilderTelemetry::LogButtonToString(hr);
-        }) };
+        std::wstring xmlResult{ wil::str_printf<std::wstring>(L"<action content='%ls'%ls%ls%ls%ls%ls%ls/>",
+            m_content.c_str(),
+            GetActivationArguments().c_str(),
+            m_useContextMenuPlacement ? L" placement='contextMenu'" : L"",
+            m_iconUri ? wil::str_printf<std::wstring>(L" imageUri='%ls'", m_iconUri.ToString().c_str()).c_str() : L"",
+            !m_inputId.empty() ? wil::str_printf<std::wstring>(L" hint-inputId='%ls'", m_inputId.c_str()).c_str() : L"",
+            GetButtonStyle().c_str(),
+            !m_toolTip.empty() ? wil::str_printf<std::wstring>(L" hint-toolTip='%ls'", m_toolTip.c_str()).c_str() : L"") };
 
-        try
-        {
-            std::wstring xmlResult{ wil::str_printf<std::wstring>(L"<action content='%ls'%ls%ls%ls%ls%ls%ls/>",
-                m_content.c_str(),
-                GetActivationArguments().c_str(),
-                m_useContextMenuPlacement ? L" placement='contextMenu'" : L"",
-                m_iconUri ? wil::str_printf<std::wstring>(L" imageUri='%ls'", m_iconUri.ToString().c_str()).c_str() : L"",
-                !m_inputId.empty() ? wil::str_printf<std::wstring>(L" hint-inputId='%ls'", m_inputId.c_str()).c_str() : L"",
-                GetButtonStyle().c_str(),
-                !m_toolTip.empty() ? wil::str_printf<std::wstring>(L" hint-toolTip='%ls'", m_toolTip.c_str()).c_str() : L"") };
-
-            return xmlResult.c_str();
-        }
-        catch (...)
-        {
-            hr = wil::ResultFromCaughtException();
-            throw;
-        }
+        return xmlResult.c_str();
     }
 }

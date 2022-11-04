@@ -6,19 +6,15 @@
 class NotificationTelemetryHelper
 {
 public:
-    inline bool ShouldLogEvent()
-    {
-        return c_maxEventLimit >= UpdateLogEventCount();
-    }
 
-    inline bool IsPackagedApp() const
+    inline const bool IsPackagedApp()
     {
         static const bool isPackagedApp{ AppModel::Identity::IsPackagedProcess() };
 
         return isPackagedApp;
     }
 
-    inline const std::wstring& GetAppName() const
+    inline const std::wstring& GetAppName()
     {
         static const std::wstring appName{ IsPackagedApp() ? GetAppNamePackaged() : GetAppNameUnpackaged() };
 
@@ -26,31 +22,6 @@ public:
     }
 
 private:
-    wil::srwlock m_lock;
-    ULONGLONG m_lastFiredTick = 0;
-    UINT m_eventCount = 0;
-
-    static constexpr ULONGLONG c_logPeriod = 1000; // One second
-    static constexpr UINT c_maxEventLimit = 10;
-
-    UINT UpdateLogEventCount()
-    {
-        ULONGLONG currentTick = GetTickCount64();
-
-        auto lock{ m_lock.lock_exclusive() };
-
-        // Only fire limiting events every log period to prevent too many events from being fired
-        if ((currentTick - m_lastFiredTick) > c_logPeriod)
-        {
-            m_eventCount = 0;
-            m_lastFiredTick = currentTick;
-        }
-
-        m_eventCount++;
-
-        return m_eventCount;
-    }
-
     std::wstring GetAppNamePackaged() const
     {
         wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH]{};

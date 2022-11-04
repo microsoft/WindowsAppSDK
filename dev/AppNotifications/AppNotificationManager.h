@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
 // Licensed under the MIT License.
 
 #pragma once
@@ -7,6 +7,7 @@
 #include "AppNotificationUtility.h"
 #include "externs.h"
 #include "ShellLocalization.h"
+#include "NotificationTelemetryHelper.h"
 
 constexpr PCWSTR c_appNotificationContractId = L"Windows.Toast";
 
@@ -67,6 +68,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs m_activatedEventArgs{ nullptr };
         std::wstring m_appId;
         bool m_registering{ false };
+
+        NotificationTelemetryHelper m_telemetryHelper{};
     };
 
     struct AppNotificationManagerFactory : winrt::implements<AppNotificationManagerFactory, IClassFactory>

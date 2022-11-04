@@ -8,6 +8,7 @@
 #include <frameworkudk/pushnotificationsRT.h>
 #include <winrt/Windows.ApplicationModel.background.h>
 #include "externs.h"
+#include "NotificationTelemetryHelper.h"
 
 constexpr PCWSTR c_pushContractId = L"Windows.Push";
 
@@ -76,6 +77,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel m_channel{ nullptr };
         wil::unique_event m_waitHandleForArgs;
         winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs m_backgroundTaskArgs{ nullptr };
+
+        NotificationTelemetryHelper m_telemetryHelper{};
     };
 
     struct PushNotificationManagerFactory : winrt::implements<PushNotificationManagerFactory, IClassFactory>
