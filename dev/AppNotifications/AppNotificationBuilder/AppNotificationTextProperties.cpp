@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-#include "NotificationTelemetryHelper.h"
+#include "externs.h"
 #include "AppNotificationTextProperties.h"
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationTextProperties.g.cpp"
 #include "AppNotificationBuilderTelemetry.h"
@@ -29,7 +29,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::hstring AppNotificationTextProperties::ToString()
     {
-        auto logTelemetry = AppNotificationBuilderTelemetry::TextPropertiesToString::Start(m_telemetryHelper);
+        auto logTelemetry{ AppNotificationBuilderTelemetry::TextPropertiesToString::Start(g_telemetryHelper) };
 
         std::wstring language{ !m_language.empty() ? wil::str_printf<std::wstring>(L" lang='%ls'", m_language.c_str()) : L"" };
         std::wstring callScenarioAlign{ m_useCallScenarioAlign ? L" hint-callScenarioCenterAlign='true'" : L"" };

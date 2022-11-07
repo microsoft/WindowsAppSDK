@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-#include "NotificationTelemetryHelper.h"
+#include "externs.h"
 #include "AppNotificationBuilder.h"
 #include "AppNotificationBuilderTelemetry.h"
 #include <winrt/Windows.Globalization.h>
@@ -371,7 +371,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::AppNotification AppNotificationBuilder::BuildNotification()
     {
-        auto logTelemetry = AppNotificationBuilderTelemetry::BuildNotification::Start(m_telemetryHelper);
+        auto logTelemetry{ AppNotificationBuilderTelemetry::BuildNotification::Start(g_telemetryHelper) };
 
         // Build the actions string and fill m_useButtonStyle
         std::wstring actions{ GetActions() };

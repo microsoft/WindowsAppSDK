@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-#include "NotificationTelemetryHelper.h"
+#include "externs.h"
 #include "AppNotificationComboBox.h"
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationComboBox.g.cpp"
 #include "AppNotificationBuilderUtility.h"
@@ -56,7 +56,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::hstring AppNotificationComboBox::ToString()
     {
-        auto logTelemetry = AppNotificationBuilderTelemetry::ComboBoxToString::Start(m_telemetryHelper);
+        auto logTelemetry{ AppNotificationBuilderTelemetry::ComboBoxToString::Start(g_telemetryHelper) };
 
         std::wstring xmlResult{ wil::str_printf<std::wstring>(L"<input id='%ls' type='selection'%ls%ls>%ls</input>",
             m_id.c_str(),

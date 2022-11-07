@@ -73,8 +73,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::hstring m_inputId{};
         bool m_useContextMenuPlacement{};
         AppNotificationButtonStyle m_buttonStyle { AppNotificationButtonStyle::Default };
-
-        NotificationTelemetryHelper m_telemetryHelper{};
     };
 }
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::factory_implementation

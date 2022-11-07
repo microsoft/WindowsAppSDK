@@ -6,23 +6,25 @@
 class NotificationTelemetryHelper
 {
 public:
+    NotificationTelemetryHelper()
+    {
+        m_isPackagedApp = AppModel::Identity::IsPackagedProcess();
+        m_appName = m_isPackagedApp ? GetAppNamePackaged() : GetAppNameUnpackaged();
+    }
+
     inline bool ShouldLogEvent()
     {
         return c_maxEventLimit >= UpdateLogEventCount();
     }
 
-    inline bool IsPackagedApp() const
+    inline const bool IsPackagedApp() const
     {
-        static const bool isPackagedApp{ AppModel::Identity::IsPackagedProcess() };
-
-        return isPackagedApp;
+        return m_isPackagedApp;
     }
 
     inline const std::wstring& GetAppName() const
     {
-        static const std::wstring appName{ IsPackagedApp() ? GetAppNamePackaged() : GetAppNameUnpackaged() };
-
-        return appName;
+        return m_appName;
     }
 
 private:
@@ -32,6 +34,9 @@ private:
 
     static constexpr ULONGLONG c_logPeriod = 1000; // One second
     static constexpr UINT c_maxEventLimit = 10;
+
+    bool m_isPackagedApp{ false };
+    std::wstring m_appName;
 
     UINT UpdateLogEventCount()
     {

@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-#include "NotificationTelemetryHelper.h"
+#include "externs.h"
 #include "AppNotificationButton.h"
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationButton.g.cpp"
 #include <IsWindowsVersion.h>
@@ -119,7 +119,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::hstring AppNotificationButton::ToString()
     {
-        auto logTelemetry = AppNotificationBuilderTelemetry::ButtonToString::Start(m_telemetryHelper);
+        auto logTelemetry{ AppNotificationBuilderTelemetry::ButtonToString::Start(g_telemetryHelper) };
 
         std::wstring xmlResult{ wil::str_printf<std::wstring>(L"<action content='%ls'%ls%ls%ls%ls%ls%ls/>",
             m_content.c_str(),

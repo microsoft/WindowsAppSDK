@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-#include "NotificationTelemetryHelper.h"
+#include "externs.h"
 #include "AppNotificationProgressBar.h"
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationProgressBar.g.cpp"
 #include "AppNotificationBuilderUtility.h"
@@ -101,7 +101,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::hstring AppNotificationProgressBar::ToString()
     {
-        auto logTelemetry = AppNotificationBuilderTelemetry::ProgressBarToString::Start(m_telemetryHelper);
+        auto logTelemetry{ AppNotificationBuilderTelemetry::ProgressBarToString::Start(g_telemetryHelper) };
 
         auto title{ wil::str_printf<std::wstring>(L" title='%ls'", m_titleBindMode == BindMode::Value ? m_title.c_str() : L"{progressTitle}") };
         auto status{ wil::str_printf<std::wstring>(L" status='%ls'", m_statusBindMode == BindMode::Value ? m_status.c_str() : L"{progressStatus}") };
