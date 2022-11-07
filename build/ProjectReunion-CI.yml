@@ -168,13 +168,14 @@ jobs:
     inputs:
       artifactName: BuildOutput
       PathtoPublish: '$(buildOutputDir)'
-      
+
 - template: AzurePipelinesTemplates\WindowsAppSDK-RunHelixTests-Job.yml
   parameters:
     name: 'RunTestsInHelix'
     dependsOn:
       - Build
       - BuildMRT
+      - BuildNotifications
     condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
 
 - job: StageAndPack
@@ -184,6 +185,7 @@ jobs:
   dependsOn:
     - Build
     - BuildMRT
+    - BuildNotifications
   steps:
   - task: DownloadBuildArtifacts@0
     inputs:
