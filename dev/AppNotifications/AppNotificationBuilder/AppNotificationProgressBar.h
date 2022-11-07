@@ -51,6 +51,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         double m_value;
         BindMode m_valueStringOverrideBindMode;
         winrt::hstring m_valueStringOverride;
+
+        NotificationTelemetryHelper m_telemetryHelper{};
     };
 }
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::factory_implementation

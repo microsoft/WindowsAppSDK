@@ -93,6 +93,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::vector<AppNotificationComboBox> m_comboBoxList{};
         winrt::hstring m_tag{};
         winrt::hstring m_group{};
+
+        NotificationTelemetryHelper m_telemetryHelper{};
     };
 }
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::factory_implementation

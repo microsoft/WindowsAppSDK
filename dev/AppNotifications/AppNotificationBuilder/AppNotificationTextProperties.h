@@ -34,6 +34,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         int m_maxLines{ 0 };
         winrt::hstring m_language{};
         bool m_useCallScenarioAlign{};
+
+        NotificationTelemetryHelper m_telemetryHelper{};
     };
 }
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::factory_implementation
