@@ -25,6 +25,7 @@
   <Import Project="GeneratedWorkItems\MrtCore-MrmUnitTests.proj"/>
   <Import Project="GeneratedWorkItems\MrtCore-MrmBaseUnitTests.proj"/>
   <Import Project="GeneratedWorkItems\MrtCore-MrtCoreUnpackagedTests.proj"/>
+  <Import Project="GeneratedWorkItems\PushNotificationTests.proj"/>
 
   <!-- Note: It is also possible to directly create work-items for Helix here instead of using the scripts. -->
 

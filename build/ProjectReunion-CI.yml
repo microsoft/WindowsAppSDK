@@ -143,6 +143,32 @@ jobs:
       artifactName: BuildOutput
       PathtoPublish: '$(buildOutputDir)'
 
+- job: BuildNotifications
+  pool:
+    vmImage: 'windows-2022'
+  strategy:
+    maxParallel: 10
+    matrix:
+      Release_x86:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Release'
+      Release_x64:
+        buildPlatform: 'x64'
+        buildConfiguration: 'Release'
+      Release_Arm64:
+        buildPlatform: 'ARM64'
+        buildConfiguration: 'Release'
+  steps:
+  - task: NuGetToolInstaller@1
+
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestNotifications-Steps.yml
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish BuildOutput'
+    inputs:
+      artifactName: BuildOutput
+      PathtoPublish: '$(buildOutputDir)'
+      
 - template: AzurePipelinesTemplates\WindowsAppSDK-RunHelixTests-Job.yml
   parameters:
     name: 'RunTestsInHelix'

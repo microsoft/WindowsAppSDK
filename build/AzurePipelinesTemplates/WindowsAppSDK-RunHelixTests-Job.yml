@@ -115,6 +115,13 @@ jobs:
       arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrmUnitTests.proj' -WorkItemPrefix 'MrtCore.MrmUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrmUnitTests.$(buildPlatform).$(buildConfiguration)'
 
   - task: powershell@2
+    displayName: 'Discover PushNotifications UnitTests'
+    inputs:
+      targetType: filePath
+      filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
+      arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\PushNotificationTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\PushNotificationTests.proj' -WorkItemPrefix 'PushNotificationTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'PushNotificationTests.$(buildPlatform).$(buildConfiguration)'
+
+  - task: powershell@2
     displayName: 'Discover MRT Core BaseUnitTests'
     inputs:
       targetType: filePath
