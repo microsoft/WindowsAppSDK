@@ -12,6 +12,8 @@
         <!-- Provides a default package version in order to simplify dev inner loop testing -->
         <WindowsAppSdkVersion Condition="'$(WindowsAppSdkVersion)' == ''">1.0.0-preview1</WindowsAppSdkVersion>
         <Deployment Condition="'$(Deployment)' == '' ">Standalone</Deployment>
+        <!-- Don't automatically deploy the extension to the test VS environment during the build -->
+        <DeployExtension>false</DeployExtension>
     </PropertyGroup>
 
     <!-- Useful folder paths -->
