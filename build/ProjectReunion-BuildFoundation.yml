@@ -236,6 +236,41 @@ jobs:
       PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
       artifactName: 'BuildOutput'
 
+- job: BuildAndTestNotifications
+  pool: ProjectReunionESPool-2022
+  timeoutInMinutes: 120
+  strategy:
+    maxParallel: 10
+    matrix:
+      Release_x86:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
+        PGOBuildMode: 'Optimize'
+      Release_x64:
+        buildPlatform: 'x64'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
+        PGOBuildMode: 'Optimize'
+      Release_Arm64:
+        buildPlatform: 'arm64'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
+  steps:
+  - task: NuGetToolInstaller@1
+
+  - task: NuGetAuthenticate@1
+    inputs:
+      nuGetServiceConnections: 'TelemetryInternal'
+      
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestNotifications-Steps.yml
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget'
+    inputs:
+      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
+      artifactName: 'BuildOutput'
+
 - template: AzurePipelinesTemplates\WindowsAppSDK-RunHelixTests-Job.yml
   parameters:
     jobName: 'TestInHelix'
@@ -243,6 +278,7 @@ jobs:
       - Build
       - BuildAnyCPU
       - BuildAndTestMRT
+      - BuildAndTestNotifications
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
 
 - job: StageAndPack
@@ -255,6 +291,7 @@ jobs:
     - Build
     - BuildAnyCPU
     - BuildAndTestMRT
+    - BuildAndTestNotifications
   condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
   steps:
   - task: DownloadBuildArtifacts@0
