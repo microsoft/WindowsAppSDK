@@ -64,6 +64,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
             m_selectedItem.empty() ? L"" : wil::str_printf<std::wstring>(L" defaultInput='%ls'", m_selectedItem.c_str()).c_str(),
             GetSelectionItems().c_str()) };
 
+        logTelemetry.Stop();
+
         return xmlResult.c_str();
     }
 }

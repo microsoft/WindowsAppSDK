@@ -395,6 +395,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         appNotification.Tag(m_tag);
         appNotification.Group(m_group);
 
+        logTelemetry.Stop();
+
         return appNotification;
     }
 }

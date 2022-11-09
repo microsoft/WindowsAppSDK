@@ -130,6 +130,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
             GetButtonStyle().c_str(),
             !m_toolTip.empty() ? wil::str_printf<std::wstring>(L" hint-toolTip='%ls'", m_toolTip.c_str()).c_str() : L"") };
 
+        logTelemetry.Stop();
+
         return xmlResult.c_str();
     }
 }

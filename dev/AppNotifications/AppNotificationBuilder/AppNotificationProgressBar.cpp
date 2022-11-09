@@ -108,6 +108,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         auto value{ wil::str_printf<std::wstring>(L" value='%ls'", m_valueBindMode == BindMode::Value ? wil::str_printf<std::wstring>(L"%g", m_value).c_str() : L"{progressValue}") };
         auto valueStringOverride{ wil::str_printf < std::wstring>(L" valueStringOverride='%ls'", m_valueStringOverrideBindMode == BindMode::Value ? m_valueStringOverride.c_str() : L"{progressValueString}") };
 
+        logTelemetry.Stop();
+
         return wil::str_printf<std::wstring>(L"<progress%ls%ls%ls%ls/>",
             m_titleBindMode == BindMode::NotSet ? L"" : title.c_str(),
             status.c_str(),
