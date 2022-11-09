@@ -17,7 +17,7 @@ public:
         return c_maxEventLimit >= UpdateLogEventCount();
     }
 
-    inline const bool IsPackagedApp() const
+    inline bool IsPackagedApp() const
     {
         return m_isPackagedApp;
     }
