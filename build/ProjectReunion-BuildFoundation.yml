@@ -136,6 +136,18 @@ jobs:
       inputs:
         BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
 
+  # Run the test locally on the Azure VM.
+  - task: VSTest@2
+    displayName: 'test PushNotifications'
+    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+    inputs:
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: '**\PushNotificationTests.build.appxrecipe'
+      searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\PushNotificationTests'
+      testRunTitle: 'test PushNotifications - $(buildPlatform)'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget'
     inputs:
