@@ -136,6 +136,22 @@ jobs:
       inputs:
         BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
 
+  - task: powershell@2
+    displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+  - task: powershell@2
+    displayName: 'Install test certificate for MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -CheckTestCert
+      workingDirectory: '$(Build.SourcesDirectory)'
+      
   # Run the test locally on the Azure VM.
   - task: VSTest@2
     displayName: 'test PushNotifications'
