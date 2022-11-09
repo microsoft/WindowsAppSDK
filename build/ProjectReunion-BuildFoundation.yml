@@ -142,7 +142,7 @@ jobs:
     condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
     inputs:
       testSelector: 'testAssemblies'
-      testAssemblyVer2: '**\PushNotificationTests.build.appxrecipe'
+      testAssemblyVer2: '**\PushNotificationTests.dll'
       searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\PushNotificationTests'
       testRunTitle: 'test PushNotifications - $(buildPlatform)'
       platform: '$(buildPlatform)'
