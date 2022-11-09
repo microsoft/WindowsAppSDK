@@ -31,6 +31,14 @@ steps:
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2
+  displayName: 'Install test certificate for MSIX test packages (DevCheck)'
+  inputs:
+    targetType: filePath
+    filePath: DevCheck.ps1
+    arguments: -NoInteractive -Offline -Verbose -CheckTestCert
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: powershell@2
   displayName: 'Create DynamicDependencies TerminalVelocity features'
   inputs:
     targetType: filePath
