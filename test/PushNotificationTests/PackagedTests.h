@@ -12,7 +12,6 @@ class PackagedTests : BaseTestSuite
 {
     BEGIN_TEST_CLASS(PackagedTests)
         TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-        TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
         TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")
         TEST_CLASS_PROPERTY(L"Data:SelfContained", L"{true, false}")
         TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
