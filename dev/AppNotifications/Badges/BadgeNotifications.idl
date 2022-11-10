@@ -23,10 +23,23 @@
     };
 
     [contract(BadgeNotificationsContract, 1)]
+    runtimeclass BadgeNotification
+    {
+        BadgeNotification(UInt32 number);
+
+        BadgeNotification(BadgeNotificationGlyph glyph, UInt32 sth);
+
+        void Foo();
+    }
+
+    [contract(BadgeNotificationsContract, 1)]
     static runtimeclass BadgeNotificationManager
     {
         static void PostValue(UInt32 value);
+
         static void PostGlyph(BadgeNotificationGlyph glyph);
+
+        static void PostCustomBadge(Windows.Foundation.Uri customBadgeUri);
 
         static void Clear();
     }

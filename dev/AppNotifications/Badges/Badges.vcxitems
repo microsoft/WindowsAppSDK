@@ -17,9 +17,11 @@
     <Midl Include="$(MSBuildThisFileDirectory)BadgeNotifications.idl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)BadgeNotification.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BadgeNotificationManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)BadgeNotification.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)BadgeNotificationManager.cpp" />
   </ItemGroup>
 </Project>

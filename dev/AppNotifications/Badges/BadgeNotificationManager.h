@@ -11,7 +11,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::Badges::implementation
         struct BadgeNotificationManager() = default;
 
         static void PostValue(uint32_t value);
+
         static void PostGlyph(winrt::Microsoft::Windows::AppNotifications::Badges::BadgeNotificationGlyph glyph);
+
+        static void PostCustomBadge(winrt::Windows::Foundation::Uri const& customBadgeUri);
+
         static void Clear();
     };
 }
