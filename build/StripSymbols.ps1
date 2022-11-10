@@ -69,6 +69,7 @@ foreach ($inputPdb in (Get-ChildItem -Recurse -Filter "*.pdb" $InputDirectory))
 {
     $outputPdbDir = $inputPdb.DirectoryName -replace [regex]::Escape($InputDirectory), $OutputDirectory
 
+    Write-Host $outputPdbDir
     if (!(Test-Path $outputPdbDir))
     {
         New-Item -ItemType Directory $outputPdbDir | Out-Null
