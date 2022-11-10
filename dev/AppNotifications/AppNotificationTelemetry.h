@@ -177,7 +177,7 @@ public:
         std::wstring const& appId)
     {
         TraceLoggingClassWriteStart(
-            RemoveAllAsyncActivity,
+            RemoveAllAsync,
             _GENERIC_PARTB_FIELDS_ENABLED,
             TraceLoggingWideString(appId.c_str(), "AppId"),
             TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
