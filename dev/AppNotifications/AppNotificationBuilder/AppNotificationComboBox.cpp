@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
+#include "externs.h"
 #include "AppNotificationComboBox.h"
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationComboBox.g.cpp"
 #include "AppNotificationBuilderUtility.h"
@@ -55,26 +56,16 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::hstring AppNotificationComboBox::ToString()
     {
-        HRESULT hr{ S_OK };
+        auto logTelemetry{ AppNotificationBuilderTelemetry::ComboBoxToString::Start(g_telemetryHelper) };
 
-        auto logTelemetry{ wil::scope_exit([&]() {
-            AppNotificationBuilderTelemetry::LogComboBoxToString(hr);
-        }) };
+        std::wstring xmlResult{ wil::str_printf<std::wstring>(L"<input id='%ls' type='selection'%ls%ls>%ls</input>",
+            m_id.c_str(),
+            m_title.empty() ? L"" : wil::str_printf<std::wstring>(L" title='%ls'", m_title.c_str()).c_str(),
+            m_selectedItem.empty() ? L"" : wil::str_printf<std::wstring>(L" defaultInput='%ls'", m_selectedItem.c_str()).c_str(),
+            GetSelectionItems().c_str()) };
 
-        try
-        {
-            std::wstring xmlResult{ wil::str_printf<std::wstring>(L"<input id='%ls' type='selection'%ls%ls>%ls</input>",
-                m_id.c_str(),
-                m_title.empty() ? L"" : wil::str_printf<std::wstring>(L" title='%ls'", m_title.c_str()).c_str(),
-                m_selectedItem.empty() ? L"" : wil::str_printf<std::wstring>(L" defaultInput='%ls'", m_selectedItem.c_str()).c_str(),
-                GetSelectionItems().c_str()) };
+        logTelemetry.Stop();
 
-            return xmlResult.c_str();
-        }
-        catch (...)
-        {
-            hr = wil::ResultFromCaughtException();
-            throw;
-        }
+        return xmlResult.c_str();
     }
 }

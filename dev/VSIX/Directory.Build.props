@@ -6,12 +6,14 @@
         <RestoreSources Condition="'$(RestoreSources)'==''">
             https://pkgs.dev.azure.com/microsoft/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/index.json
         </RestoreSources>
-        <CppWinRTVersion Condition="'$(CppWinRTVersion)' == ''">2.0.220929.3</CppWinRTVersion>
+        <CppWinRTVersion Condition="'$(CppWinRTVersion)' == ''">2.0.221104.6</CppWinRTVersion>
         <WindowsSDKBuildToolsVersion Condition="'$(WindowsSDKBuildToolsVersion)' == ''">10.0.22621.755</WindowsSDKBuildToolsVersion>
         <WILVersion Condition="'$(WILVersion)' == ''">1.0.220914.1</WILVersion>
         <!-- Provides a default package version in order to simplify dev inner loop testing -->
         <WindowsAppSdkVersion Condition="'$(WindowsAppSdkVersion)' == ''">1.0.0-preview1</WindowsAppSdkVersion>
         <Deployment Condition="'$(Deployment)' == '' ">Standalone</Deployment>
+        <!-- Don't automatically deploy the extension to the test VS environment during the build -->
+        <DeployExtension>false</DeployExtension>
     </PropertyGroup>
 
     <!-- Useful folder paths -->
