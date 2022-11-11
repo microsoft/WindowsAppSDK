@@ -17,23 +17,7 @@ Plus, **create beautiful, modern apps for Windows 11 that are backwards compatib
 
 ### Use it now!
 
-1.1 is [available today](https://docs.microsoft.com/windows/apps/windows-app-sdk/) and includes push notifications, multi-window support, elevation support and much more!
-
-### Roadmap
-
-Here's a snippet of what's currently available and what we intend to deliver in 2022 *(times/features/releases are tentative and subject to change)*:
-
-App type |          1.0     |  1.1  |
---        |  ------------------------ |   -----  |
-Desktop apps<br>(WinUI 3, WPF, etc) |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)\*\*<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>✅ [Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://docs.microsoft.com/windows/apps/develop/app-lifecycle-and-system-services)<br>✅ [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview)<br>🔁 [Push Notifications](https://docs.microsoft.com/windows/apps/windows-app-sdk/notifications/push-notifications/)  |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)\*\*<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>✅ [Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://docs.microsoft.com/windows/apps/develop/app-lifecycle-and-system-services)<br>✅ [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview)<br>✅ [Push Notifications](https://docs.microsoft.com/windows/apps/windows-app-sdk/notifications/push-notifications/)  <br>✅ [Multiple windows](https://portal.productboard.com/winappsdk/1-windows-app-sdk/c/35-multiple-window-support)<br> ✅ [Elevation support](https://portal.productboard.com/winappsdk/1-windows-app-sdk/c/37-elevated-admin-support)<br>  ✅ [Local toast notifications](https://portal.productboard.com/winappsdk/1-windows-app-sdk/c/15-local-toast-notifications)<br> ✅ [Environmental variables API](https://portal.productboard.com/winappsdk/1-windows-app-sdk/c/47-environment-variables-api)<br> ✅ [Restart API](https://portal.productboard.com/winappsdk/1-windows-app-sdk/c/54-restart-for-all-desktop-apps)<br> ✅ [Self-contained deployment](https://portal.productboard.com/winappsdk/1-windows-app-sdk/c/42-self-contained-xcopy-deployment-support)<br> |
-
-✅ Supported | 🔁 Experimental
-
-*\*\* - WinUI 3 in 1.0 and 1.1 is only supported for use by full WinUI 3 apps. You'll be able to use WinUI 3 in WPF/WinForms/other apps in a future release via XAML Islands.*
-
-To see our full roadmap and features that are under consideration (or to submit feature requests), [visit our productboard portal](https://portal.productboard.com/winappsdk/1-windows-app-sdk).
-
-
+1.2 is [available today](https://docs.microsoft.com/windows/apps/windows-app-sdk/) and includes the ability to create widgets for Win11 devices, media playback controls, native Arm64 development with .NET 7 and VS2022 17.4 and much more!
 
 ### Version support
 
