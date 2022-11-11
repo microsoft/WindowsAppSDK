@@ -56,7 +56,8 @@ else
 {
     Write-Host -ForegroundColor Yellow "MISSING"
 }
-
+Write-Host "OuTPUTDIR"
+Write-Host $OutputDirectory
 if (Test-Path $OutputDirectory)
 {
     Remove-Item -Recurse $OutputDirectory
