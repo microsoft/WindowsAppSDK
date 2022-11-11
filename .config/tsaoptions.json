@@ -1,9 +1,9 @@
 {
     "instanceUrl": "https://microsoft.visualstudio.com",
     "projectName": "os",
-    "areaPath": "OS\\Client and Services\\ADEPT\\OWL (Open Windows pLatform)\\Rendering\\WinAppSDK Engineering System",
+    "areaPath": "OS\\Windows Client and Services\\ADEPT\\OWL (Open Windows pLatform)\\Rendering\\WinAppSDK Engineering System",
     "iterationPath": "OS\\2211",
     "notificationAliases": [ "WinAppSDK-Build@microsoft.com" ],
     "ignoreBranchName": true,
-    "codebaseName": "WinAppSDK"
+    "codebaseName": "WinAppSDK-Foundation"
 }
