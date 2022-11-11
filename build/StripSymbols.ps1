@@ -76,6 +76,12 @@ foreach ($inputPdb in (Get-ChildItem -Recurse -Filter "*.pdb" $InputDirectory))
     }
 
     $inputPdbPath = $inputPdb.FullName
-    $outputPdbPath = Join-Path $outputPdbDir $inputPdb.Name
+    $outputPdbPath = Join-Path $outputPdbDir $inputPdb.name
+
+    Write-Host $inputPdbPath
+    Write-Host $outputPdbPath
+
     Remove-PrivateSymbolInformation $inputPdbPath $outputPdbPath
+
+    Write-Host
 }
