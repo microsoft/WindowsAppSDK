@@ -9,7 +9,7 @@ void WindowsAppRuntimeInstaller::Console::DisplayHeader()
 {
     std::wcout << L"WindowsAppRuntimeInstaller -- Installs the Microsoft Windows App SDK runtime"
         << "version: " << WINDOWSAPPSDK_RELEASE_VERSION;
-    if (CompareStringOrdinal(WINDOWSAPPSDK_RELEASE_CHANNEL_W, static_cast<int>(sizeof(WINDOWSAPPSDK_RELEASE_CHANNEL_W)), L"", static_cast<int>(sizeof(L"")), TRUE) == CSTR_EQUAL)
+    if (CompareStringOrdinal(WINDOWSAPPSDK_RELEASE_CHANNEL_W, -1, L"", -1, TRUE) == CSTR_EQUAL)
     {
         std::wcout << "-" << WINDOWSAPPSDK_RELEASE_CHANNEL_W;
     }
