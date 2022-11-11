@@ -117,8 +117,9 @@ public:
     }
     CATCH_LOG()
 
-        DEFINE_EVENT_METHOD(LogInvokeAll)(
-            winrt::hresult hr) noexcept try
+    DEFINE_EVENT_METHOD(LogInvokeAll)(
+        winrt::hresult hr,
+        _In_ PCWSTR correlationVector) noexcept try
     {
         if (m_telemetryHelper.ShouldLogEvent())
         {
@@ -127,6 +128,7 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(correlationVector, "CorrelationVector"),
                 TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
         }

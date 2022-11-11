@@ -804,12 +804,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     IFACEMETHODIMP PushNotificationManager::InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept try
     {
-        HRESULT hr{ S_OK };
-
-        auto logTelemetry{ wil::scope_exit([&]() {
-            PushNotificationTelemetry::LogInvokeAll(hr);
-        }) };
-
         auto args { winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length) };
 
         auto lock{ m_lock.lock_shared() };
@@ -823,22 +817,39 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             *foregroundHandled = false;
         }
 
-        return hr;
+        return S_OK;
     }
     CATCH_RETURN()
+
+    IFACEMETHODIMP PushNotificationManager::InvokeAllWithCorrelationVector(
+        ULONG length,
+        _In_ byte* payload,
+        _In_ PCWSTR correlationVector,
+        _Out_ BOOL* foregroundHandled) noexcept 
+    {
+        HRESULT hr{ S_OK };
+
+        auto logTelemetry{ wil::scope_exit([&]() {
+            PushNotificationTelemetry::LogInvokeAll(hr, correlationVector);
+        }) };
+
+        hr = InvokeAll(length, payload, foregroundHandled);
+        
+        return hr;
+    }
 
     IFACEMETHODIMP PushNotificationManager::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept try
     {
         HRESULT hr{ S_OK };
 
         auto logTelemetry{ wil::scope_exit([&]() {
-            PushNotificationTelemetry::LogOnRawNotificationReceived(hr, WindowsGetStringRawBuffer(correlationVector, nullptr));
+            PushNotificationTelemetry::LogOnRawNotificationReceived(hr, wil::str_raw_ptr(correlationVector));
         }) };
 
         try
         {
             BOOL foregroundHandled = true;
-            THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
+            THROW_IF_FAILED(InvokeAllWithCorrelationVector(payloadLength, payload, wil::str_raw_ptr(correlationVector), &foregroundHandled));
             THROW_HR_IF(E_UNEXPECTED, !foregroundHandled);
             return hr;
         }

@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -36,12 +36,15 @@ HRESULT NotificationListener::RuntimeClassInitialize(
 }
 CATCH_RETURN();
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept try
+STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived(
+    unsigned int payloadLength,
+    _In_ byte* payload,
+    _In_ HSTRING correlationVector) noexcept try
 {
     HRESULT hr{ S_OK };
 
     auto logTelemetry{ wil::scope_exit([&]() {
-        PushNotificationLongRunningTaskTelemetry::LogOnRawNotificationReceived(hr, WindowsGetStringRawBuffer(correlationVector, nullptr));
+        PushNotificationLongRunningTaskTelemetry::LogOnRawNotificationReceived(hr, wil::str_raw_ptr(correlationVector));
     }) };
 
     try
@@ -50,7 +53,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
 
         winrt::com_array<uint8_t> payloadArray{ payload, payload + (payloadLength * sizeof(uint8_t)) };
 
-        if (!m_foregroundSinkManager->InvokeForegroundHandlers(m_appId, payloadArray, payloadLength))
+        if (!m_foregroundSinkManager->InvokeForegroundHandlers(m_appId, payloadArray, correlationVector, payloadLength))
         {
             if (m_comServerClsid == winrt::guid())
             {
