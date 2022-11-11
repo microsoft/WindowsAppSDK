@@ -19,7 +19,7 @@ class PushNotificationTelemetry : public wil::TraceLoggingProvider
 public:
 
     BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(CreateChannelAsync, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper, const winrt::guid& remoteId)
+    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper, const winrt::guid& remoteId) noexcept try
     {
         TraceLoggingClassWriteStart(
             CreateChannelAsync,
@@ -28,10 +28,11 @@ public:
             TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
             TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
     }
+    CATCH_LOG()
     END_ACTIVITY_CLASS();
 
     BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(CloseChannel, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper)
+    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper) noexcept try
     {
         TraceLoggingClassWriteStart(
             CloseChannel,
@@ -39,10 +40,11 @@ public:
             TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
             TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
     }
+    CATCH_LOG()
     END_ACTIVITY_CLASS();
 
     BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(Register, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper)
+    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper) noexcept try
     {
         TraceLoggingClassWriteStart(
             Register,
@@ -50,10 +52,11 @@ public:
             TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
             TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
     }
+    CATCH_LOG()
     END_ACTIVITY_CLASS();
 
     BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(Unregister, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper)
+    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper) noexcept try
     {
         TraceLoggingClassWriteStart(
             Unregister,
@@ -61,10 +64,11 @@ public:
             TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
             TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
     }
+    CATCH_LOG()
     END_ACTIVITY_CLASS();
 
     BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(UnregisterAll, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper)
+    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper) noexcept try
     {
         TraceLoggingClassWriteStart(
             UnregisterAll,
@@ -72,10 +76,11 @@ public:
             TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
             TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
     }
+    CATCH_LOG()
     END_ACTIVITY_CLASS();
 
     BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(OnRawNotificationReceived, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper, std::wstring const& correlationVector)
+    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper, std::wstring const& correlationVector) noexcept try
     {
         TraceLoggingClassWriteStart(
             OnRawNotificationReceived,
@@ -84,10 +89,11 @@ public:
             TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
             TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
     }
+    CATCH_LOG()
     END_ACTIVITY_CLASS();
 
     BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(InvokeAll, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper)
+    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper) noexcept try
     {
         TraceLoggingClassWriteStart(
             InvokeAll,
@@ -95,5 +101,6 @@ public:
             TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
             TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
     }
+    CATCH_LOG()
     END_ACTIVITY_CLASS();
 };
