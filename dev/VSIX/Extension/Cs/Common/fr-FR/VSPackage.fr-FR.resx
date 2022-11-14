@@ -189,7 +189,7 @@
     <value>Bibliothèque de classes (WinUI 3 dans desktop)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Expérimental] Bibliothèque de classes (WinUI 3 dans UWP)</value>
+    <value>[Expérimental] Bibliothèque de classes (WinUI 3)</value>
   </data>
   <data name="1027" xml:space="preserve">
     <value>Projet de création d’une bibliothèque de classes managées (.dll) pour les applications de bureau basées sur la bibliothèque d’interface utilisateur Windows (WinUI 3).</value>

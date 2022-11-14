@@ -204,10 +204,10 @@
     <value>Modèle de projet pour la création d’une application de bureau basée sur la Bibliothèque d’interface utilisateur Windows (WinUI 3) ainsi qu’un package MSIX pour le chargement indépendant ou la distribution via le Microsoft Store.</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>Composant Windows Runtime (WinUI 3 dans UWP)</value>
+    <value>Composant Windows Runtime (WinUI 3)</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>Composant Windows Runtime (WinUI 3 dans UWP)</value>
+    <value>Composant Windows Runtime (WinUI 3)</value>
   </data>
   <data name="1035" xml:space="preserve">
     <value>Projet de création d’un composant de Windows Runtime C++/WinRT (.winmd) pour les applications de bureau et de plateforme Windows universelle (UWP), basé sur la bibliothèque d’interface utilisateur Windows (WinUI 3).</value>
