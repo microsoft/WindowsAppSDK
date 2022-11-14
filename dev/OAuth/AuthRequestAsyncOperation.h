@@ -6,7 +6,7 @@ struct AuthRequestAsyncOperation :
     winrt::implements<AuthRequestAsyncOperation, foundation::IAsyncOperation<oauth::AuthRequestResult>,
         foundation::IAsyncInfo>
 {
-    AuthRequestAsyncOperation(const foundation::Uri& authEndpoint, oauth::implementation::AuthRequestParams* params);
+    AuthRequestAsyncOperation(oauth::implementation::AuthRequestParams* params);
     ~AuthRequestAsyncOperation();
 
     // IAsyncInfo
@@ -29,21 +29,25 @@ struct AuthRequestAsyncOperation :
 private:
     enum class state
     {
+        closed,
         connecting,
         reading,
     };
 
     static void CALLBACK async_callback(PTP_CALLBACK_INSTANCE, PVOID context, PTP_WAIT, TP_WAIT_RESULT waitResult);
+    void callback(TP_WAIT_RESULT waitResult);
 
     bool try_create_pipe(const winrt::hstring& state);
     void close_pipe();
-    void connect_to_new_client();
+    void connect_to_new_client(bool disconnect = false);
     void initiate_read();
     void on_read_complete();
 
     void transition_state(foundation::AsyncStatus status, const foundation::Uri& responseUri = nullptr,
         winrt::hresult hr = {});
     void invoke_handler(const foundation::AsyncOperationCompletedHandler<oauth::AuthRequestResult>& handler);
+
+    void destroy();
 
     std::shared_mutex m_mutex;
 

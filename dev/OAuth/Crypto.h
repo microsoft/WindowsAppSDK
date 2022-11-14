@@ -60,10 +60,27 @@ inline crypto::Core::CryptographicKey create_key(const winrt::hstring& keyString
 {
     using namespace winrt::Windows::Security::Cryptography;
     using namespace winrt::Windows::Security::Cryptography::Core;
+    using namespace winrt::Windows::Storage::Streams;
 
+    WINRT_ASSERT(!keyString.empty());
+
+    // AES key must be 128, 192, or 256 bits (16, 24, or 32 bytes). Note that the key doesn't have to make a valid
+    // string. If we end up slicing a UTF-8 character, that's okay
     auto keyBuffer = CryptographicBuffer::ConvertStringToBinary(keyString, BinaryStringEncoding::Utf8);
+    auto keyBufferBegin = keyBuffer.data();
+    auto keyBufferEnd = keyBufferBegin + keyBuffer.Length();
+
+    // Repeat the key string as necessary to achieve the desired length
+    std::vector<std::uint8_t> buffer(keyBufferBegin, keyBufferEnd);
+    auto desiredSize = (buffer.size() <= 16) ? 16 : (buffer.size() <= 24) ? 24 : 32;
+    while (buffer.size() < desiredSize)
+    {
+        buffer.insert(buffer.end(), keyBufferBegin, keyBufferEnd);
+    }
+    buffer.resize(desiredSize);
+
     auto algo = SymmetricKeyAlgorithmProvider::OpenAlgorithm(SymmetricAlgorithmNames::AesEcbPkcs7());
-    return algo.CreateSymmetricKey(keyBuffer);
+    return algo.CreateSymmetricKey(CryptographicBuffer::CreateFromByteArray(buffer));
 }
 
 inline streams::IBuffer encrypt(const winrt::hstring& message, const winrt::hstring& keyString)

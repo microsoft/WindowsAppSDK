@@ -28,13 +28,15 @@ namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementa
 
     oauth::AuthRequestParams AuthRequestParams::CreateForAuthorizationCodeRequest(const winrt::hstring& clientId)
     {
-        return winrt::make<AuthRequestParams>(L"code", clientId);
+        return CreateForAuthorizationCodeRequest(clientId, nullptr);
     }
 
     oauth::AuthRequestParams AuthRequestParams::CreateForAuthorizationCodeRequest(const winrt::hstring& clientId,
         const Uri& redirectUri)
     {
-        return winrt::make<AuthRequestParams>(L"code", clientId, redirectUri);
+        auto result = winrt::make_self<AuthRequestParams>(L"code", clientId, redirectUri);
+        result->m_codeChallengeMethod = CodeChallengeMethodKind::S256;
+        return *result;
     }
 
     oauth::AuthRequestParams AuthRequestParams::CreateForImplicitRequest(const winrt::hstring& clientId)

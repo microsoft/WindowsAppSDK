@@ -22,7 +22,7 @@ namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::factory_im
         const oauth::AuthRequestParams& params)
     {
         auto paramsImpl = winrt::get_self<implementation::AuthRequestParams>(params);
-        auto asyncOp = winrt::make_self<AuthRequestAsyncOperation>(authEndpoint, paramsImpl);
+        auto asyncOp = winrt::make_self<AuthRequestAsyncOperation>(paramsImpl);
 
         {
             std::lock_guard guard{ m_mutex };
@@ -53,21 +53,33 @@ namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::factory_im
     {
         // We need to extract the state in order to find the original request
         winrt::hstring state;
-        for (auto&& entry : responseUri.QueryParsed())
+        auto tryFindState = [&](const winrt::hstring& str)
         {
-            if (entry.Name() == L"state")
+            if (str.empty())
             {
-                state = entry.Value();
-                break;
+                return; // Avoid unnecessary construction/activation
             }
-        }
 
-        // TODO: If we could not find the state, we need to check the fragment
+            for (auto&& entry : WwwFormUrlDecoder(str))
+            {
+                if (entry.Name() == L"state")
+                {
+                    state = entry.Value();
+                    break;
+                }
+            }
+        };
 
-        // Don't throw an error. It could be the case that the application just blindly calls this function first
+        tryFindState(responseUri.Query());
         if (state.empty())
         {
-            return false;
+            tryFindState(fragment_component(responseUri));
+
+            // Don't throw an error. It could be the case that the application just blindly calls this function first
+            if (state.empty())
+            {
+                return false;
+            }
         }
 
         // First check in our local pending list
@@ -160,33 +172,41 @@ namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::factory_im
             auto headers = request.Headers();
             headers.Accept().ParseAdd(L"application/json");
 
-            if (auto auth = clientAuth.Authorization())
+            if (clientAuth)
             {
-                headers.Authorization(auth);
-            }
-
-            if (auto proxyAuth = clientAuth.ProxyAuthorization())
-            {
-                headers.ProxyAuthorization(proxyAuth);
-            }
-
-            if (auto map = clientAuth.AdditionalHeaders())
-            {
-                for (auto&& pair : map)
+                if (auto auth = clientAuth.Authorization())
                 {
-                    if (!headers.TryAppendWithoutValidation(pair.Key(), pair.Value()))
+                    headers.Authorization(auth);
+                }
+
+                if (auto proxyAuth = clientAuth.ProxyAuthorization())
+                {
+                    headers.ProxyAuthorization(proxyAuth);
+                }
+
+                if (auto map = clientAuth.AdditionalHeaders())
+                {
+                    for (auto&& pair : map)
                     {
-                        // TODO? Why might this fail? Throw?
+                        if (!headers.TryAppendWithoutValidation(pair.Key(), pair.Value()))
+                        {
+                            // TODO? Why might this fail? Throw?
+                        }
                     }
                 }
             }
+
+            auto cancellation = co_await winrt::get_cancellation_token();
+            cancellation.enable_propagation();
 
             response = co_await httpClient.SendRequestAsync(request);
             // TODO: Check status code?
             if (!response.IsSuccessStatusCode())
             {
-                __debugbreak(); // TODO
-                response.EnsureSuccessStatusCode(); // TODO: Could just use this?
+                auto status = response.StatusCode();
+                HRESULT hr = MAKE_HRESULT(SEVERITY_ERROR, FACILITY_HTTP, static_cast<HRESULT>(status));
+                co_return implementation::TokenRequestResult::MakeFailure(std::move(response),
+                    TokenFailureKind::HttpFailure, hr);
             }
 
             auto responseContentType = response.Content().Headers().ContentType().MediaType();

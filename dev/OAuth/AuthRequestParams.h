@@ -62,7 +62,7 @@ namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementa
         winrt::hstring m_state;
         winrt::hstring m_scope;
         winrt::hstring m_codeVerifier;
-        oauth::CodeChallengeMethodKind m_codeChallengeMethod;
+        oauth::CodeChallengeMethodKind m_codeChallengeMethod = oauth::CodeChallengeMethodKind::None;
         winrt::com_ptr<LockableMap<winrt::hstring, winrt::hstring>> m_additionalParams =
             winrt::make_self<LockableMap<winrt::hstring, winrt::hstring>>();
     };

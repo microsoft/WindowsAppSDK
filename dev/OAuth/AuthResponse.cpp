@@ -15,41 +15,48 @@ namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementa
         m_requestParams(requestParams->get_strong())
     {
         std::map<winrt::hstring, winrt::hstring> additionalParams;
+        auto parseComponents = [&](const winrt::hstring& str) {
+            if (str.empty())
+            {
+                return; // Avoid unnecessary construction/activation
+            }
 
-        for (auto&& entry : responseUri.QueryParsed())
-        {
-            auto name = entry.Name();
-            if (name == L"state"sv)
+            for (auto&& entry : WwwFormUrlDecoder(str))
             {
-                m_state = entry.Value();
+                auto name = entry.Name();
+                if (name == L"state"sv)
+                {
+                    m_state = entry.Value();
+                }
+                else if (name == L"code"sv)
+                {
+                    m_code = entry.Value();
+                }
+                else if (name == L"access_token"sv)
+                {
+                    m_accessToken = entry.Value();
+                }
+                else if (name == L"token_type"sv)
+                {
+                    m_tokenType = entry.Value();
+                }
+                else if (name == L"expires_in"sv)
+                {
+                    m_expiresIn = entry.Value();
+                }
+                else if (name == L"scope"sv)
+                {
+                    m_scope = entry.Value();
+                }
+                else
+                {
+                    additionalParams.emplace(std::move(name), entry.Value());
+                }
             }
-            else if (name == L"code"sv)
-            {
-                m_code = entry.Value();
-            }
-            else if (name == L"access_token"sv)
-            {
-                m_accessToken = entry.Value();
-            }
-            else if (name == L"token_type"sv)
-            {
-                m_tokenType = entry.Value();
-            }
-            else if (name == L"expires_in"sv)
-            {
-                m_expiresIn = entry.Value();
-            }
-            else if (name == L"scope"sv)
-            {
-                m_scope = entry.Value();
-            }
-            else
-            {
-                additionalParams.emplace(std::move(name), entry.Value());
-            }
-        }
+        };
 
-        // TODO: Look in the fragment part as well
+        parseComponents(responseUri.Query());
+        parseComponents(fragment_component(responseUri));
 
         m_additionalParams = winrt::single_threaded_map(std::move(additionalParams)).GetView();
     }

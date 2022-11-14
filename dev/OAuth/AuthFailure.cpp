@@ -15,32 +15,40 @@ namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementa
     {
         std::map<winrt::hstring, winrt::hstring> additionalParams;
 
-        for (auto&& entry : responseUri.QueryParsed())
-        {
-            auto name = entry.Name();
-            if (name == L"error"sv)
+        auto parseComponents = [&](const winrt::hstring& str) {
+            if (str.empty())
             {
-                m_error = entry.Value();
+                return; // Avoid unnecessary construction/activation
             }
-            else if (name == L"error_description"sv)
-            {
-                m_errorDescription = entry.Value();
-            }
-            else if (name == L"error_uri"sv)
-            {
-                m_errorUri = Uri(entry.Value());
-            }
-            else if (name == L"state"sv)
-            {
-                m_state = entry.Value();
-            }
-            else
-            {
-                additionalParams.emplace(std::move(name), entry.Value());
-            }
-        }
 
-        // TODO: Look in the fragment part as well
+            for (auto&& entry : WwwFormUrlDecoder(str))
+            {
+                auto name = entry.Name();
+                if (name == L"error"sv)
+                {
+                    m_error = entry.Value();
+                }
+                else if (name == L"error_description"sv)
+                {
+                    m_errorDescription = entry.Value();
+                }
+                else if (name == L"error_uri"sv)
+                {
+                    m_errorUri = Uri(entry.Value());
+                }
+                else if (name == L"state"sv)
+                {
+                    m_state = entry.Value();
+                }
+                else
+                {
+                    additionalParams.emplace(std::move(name), entry.Value());
+                }
+            }
+        };
+
+        parseComponents(responseUri.Query());
+        parseComponents(fragment_component(responseUri));
 
         m_additionalParams = winrt::single_threaded_map(std::move(additionalParams)).GetView();
     }

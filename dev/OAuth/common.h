@@ -18,3 +18,16 @@ namespace oauth = winrt::Microsoft::Windows::Security::Authentication::OAuth;
 namespace streams = winrt::Windows::Storage::Streams;
 
 #include "Crypto.h"
+
+inline winrt::hstring fragment_component(const foundation::Uri& uri)
+{
+    auto fragment = uri.Fragment();
+    std::wstring_view fragmentStr = fragment;
+    if (!fragmentStr.empty())
+    {
+        WINRT_ASSERT(fragmentStr.front() == '#');
+        fragmentStr = fragmentStr.substr(1);
+    }
+
+    return winrt::hstring(fragmentStr);
+}

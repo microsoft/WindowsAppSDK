@@ -18,24 +18,32 @@ namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementa
         // We first need to figure out if this is a success or failure response
         bool isError = false;
         bool isSuccess = false;
-        for (auto&& entry : m_responseUri.QueryParsed())
-        {
-            auto name = entry.Name();
-            if ((name == L"code") || (name == L"access_token"))
+        auto checkComponent = [&](const winrt::hstring& str) {
+            if (str.empty())
             {
-                isSuccess = true;
-                break;
+                return; // Avoid unnecessary construction/activation
             }
-            else if (name == L"error")
-            {
-                isError = true;
-                break;
-            }
-        }
 
+            for (auto&& entry : WwwFormUrlDecoder(str))
+            {
+                auto name = entry.Name();
+                if ((name == L"code") || (name == L"access_token"))
+                {
+                    isSuccess = true;
+                    break;
+                }
+                else if (name == L"error")
+                {
+                    isError = true;
+                    break;
+                }
+            }
+        };
+
+        checkComponent(responseUri.Query());
         if (!isError && !isSuccess)
         {
-            // TODO: May also need to check the fragment
+            checkComponent(fragment_component(responseUri));
         }
 
         // If we don't recognize the response as an error, interpret it as success. The application may be using an

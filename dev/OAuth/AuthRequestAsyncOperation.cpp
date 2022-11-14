@@ -1,4 +1,4 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include "common.h"
 
 #include "AuthManager.h"
@@ -13,8 +13,7 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Security::Cryptography;
 
-AuthRequestAsyncOperation::AuthRequestAsyncOperation(const Uri& authEndpoint,
-    implementation::AuthRequestParams* params) :
+AuthRequestAsyncOperation::AuthRequestAsyncOperation(implementation::AuthRequestParams* params) :
     m_params(params->get_strong())
 {
     try
@@ -70,25 +69,28 @@ AuthRequestAsyncOperation::AuthRequestAsyncOperation(const Uri& authEndpoint,
     catch (...)
     {
         // Throwing in a constructor will cause the destructor not to run...
-        close_pipe();
+        destroy();
         throw;
     }
 }
 
 AuthRequestAsyncOperation::~AuthRequestAsyncOperation()
 {
-    close_pipe();
+    destroy();
 }
 
-void AuthRequestAsyncOperation::close_pipe()
+void AuthRequestAsyncOperation::destroy()
 {
-    if (m_state == state::reading)
     {
-        // TODO: Might this trigger a callback? If so, we may end up trying to perform more operations... Might need
-        // some synchronization and another state value here.
-        ::CancelIoEx(m_pipe, &m_overlapped);
+        // Expects lock to be held and is required since we haven't ensured all callbacks have completed
+        std::unique_lock guard{ m_mutex };
+        close_pipe();
     }
 
+    // Note that we don't hold the lock here for two reasons. The big reason is that 'WaitForThreadpoolWaitCallbacks may
+    // wait on a callback trying to acquire the lock. The second reason - and the reason we get away with this - is that
+    // this code path only gets called on destruction, meaning nothing except callbacks (which we wait for) will access
+    // or modify object state
     if (m_ptp)
     {
         if (!::SetThreadpoolWaitEx(m_ptp, nullptr, nullptr, nullptr))
@@ -107,9 +109,19 @@ void AuthRequestAsyncOperation::close_pipe()
         ::CloseHandle(m_overlapped.hEvent);
         m_overlapped.hEvent = nullptr;
     }
+}
+
+void AuthRequestAsyncOperation::close_pipe()
+{
+    auto lastState = std::exchange(m_state, state::closed);
+    if (lastState == state::closed)
+    {
+        return;
+    }
 
     if (m_pipe != INVALID_HANDLE_VALUE)
     {
+        ::CancelIoEx(m_pipe, &m_overlapped);
         ::CloseHandle(m_pipe);
         m_pipe = INVALID_HANDLE_VALUE;
     }
@@ -231,7 +243,7 @@ void AuthRequestAsyncOperation::transition_state(AsyncStatus status, const Uri& 
     AsyncOperationCompletedHandler<AuthRequestResult> handler;
     {
         std::lock_guard guard{ m_mutex };
-        // TODO: Should probably close pipe, however we might be in a callback which would deadlock...
+        close_pipe();
 
         // State change is initiated by AuthManager and should never happen twice
         WINRT_ASSERT(m_status == AsyncStatus::Started);
@@ -261,20 +273,35 @@ void CALLBACK AuthRequestAsyncOperation::async_callback(PTP_CALLBACK_INSTANCE, P
     TP_WAIT_RESULT waitResult)
 {
     auto pThis = static_cast<AuthRequestAsyncOperation*>(context);
+    pThis->callback(waitResult);
+}
 
+void AuthRequestAsyncOperation::callback(TP_WAIT_RESULT waitResult)
+{
     try
     {
+        state currentState;
         DWORD bytes = 0;
         DWORD overlappedError = ERROR_SUCCESS;
-        if (waitResult == WAIT_OBJECT_0)
         {
-            if (!::GetOverlappedResult(pThis->m_pipe, &pThis->m_overlapped, &bytes, false))
+            std::shared_lock guard{ m_mutex };
+            currentState = m_state;
+            if (currentState == state::closed)
             {
-                overlappedError = ::GetLastError();
+                // Nothing productive we can do if the pipe was closed. This also likely means the result was an error
+                return;
+            }
+
+            if (waitResult == WAIT_OBJECT_0)
+            {
+                if (!::GetOverlappedResult(m_pipe, &m_overlapped, &bytes, false))
+                {
+                    overlappedError = ::GetLastError();
+                }
             }
         }
 
-        switch (pThis->m_state)
+        switch (currentState)
         {
         case state::connecting: {
             WINRT_ASSERT(waitResult == WAIT_OBJECT_0); // TODO: Is this valid? Maybe when we cancelled? Error?
@@ -291,28 +318,27 @@ void CALLBACK AuthRequestAsyncOperation::async_callback(PTP_CALLBACK_INSTANCE, P
                     L"Failed waiting for a client to connect to the pipe");
             }
 
-            pThis->initiate_read();
+            initiate_read();
         }
         break;
 
         case state::reading: {
             if (overlappedError == ERROR_MORE_DATA)
             {
-                pThis->m_pipeReadData.insert(pThis->m_pipeReadData.end(), pThis->m_pipeReadBuffer,
-                    pThis->m_pipeReadBuffer + pThis->m_overlapped.InternalHigh);
-                pThis->initiate_read(); // Need more data before we can complete
+                // NOTE: Pipe server is effectively single threaded, hence no synchronization needed here
+                m_pipeReadData.insert(m_pipeReadData.end(), m_pipeReadBuffer,
+                    m_pipeReadBuffer + m_overlapped.InternalHigh);
+                initiate_read(); // Need more data before we can complete
             }
             else if ((waitResult != WAIT_OBJECT_0) || (overlappedError != ERROR_SUCCESS))
             {
                 // Ideally we could assume that read timeouts/failures are fatal, however we don't know if the client is
                 // trustworthy and we don't want some arbitrary process to bait us into terminating the request
-                [[maybe_unused]] auto disconnectResult = ::DisconnectNamedPipe(pThis->m_pipe);
-                WINRT_ASSERT(disconnectResult); // TODO: What if the client disconnected from us?
-                pThis->connect_to_new_client();
+                connect_to_new_client(true);
             }
             else
             {
-                pThis->on_read_complete();
+                on_read_complete();
             }
         }
         break;
@@ -325,12 +351,13 @@ void CALLBACK AuthRequestAsyncOperation::async_callback(PTP_CALLBACK_INSTANCE, P
     }
     catch (...)
     {
-        winrt::make_self<factory_implementation::AuthManager>()->error(pThis, winrt::to_hresult());
+        winrt::make_self<factory_implementation::AuthManager>()->error(this, winrt::to_hresult());
     }
 }
 
 bool AuthRequestAsyncOperation::try_create_pipe(const winrt::hstring& state)
 {
+    // NOTE: Called on construction where no synchronization is needed
     auto name = request_pipe_name(state);
     m_pipe =
         ::CreateNamedPipeW(name.c_str(), PIPE_ACCESS_INBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE | FILE_FLAG_OVERLAPPED,
@@ -345,24 +372,50 @@ bool AuthRequestAsyncOperation::try_create_pipe(const winrt::hstring& state)
     return false;
 }
 
-void AuthRequestAsyncOperation::connect_to_new_client()
+void AuthRequestAsyncOperation::connect_to_new_client(bool disconnect)
 {
     m_pipeReadData.clear();
 
-    [[maybe_unused]] auto connectResult = ::ConnectNamedPipe(m_pipe, &m_overlapped);
-    WINRT_ASSERT(!connectResult); // Only non-zero in synchronous mode, even if already connected
-    if (auto err = ::GetLastError(); err == ERROR_PIPE_CONNECTED)
+    DWORD lastError;
+    {
+        std::shared_lock guard{ m_mutex };
+        if (m_state == state::closed)
+        {
+            return;
+        }
+
+        if (disconnect)
+        {
+            [[maybe_unused]] auto disconnectResult = ::DisconnectNamedPipe(m_pipe);
+            WINRT_ASSERT(disconnectResult); // TODO: Correct if the client disconnected from us?
+        }
+
+        [[maybe_unused]] auto connectResult = ::ConnectNamedPipe(m_pipe, &m_overlapped);
+        WINRT_ASSERT(!connectResult); // Only non-zero in asynchronous mode, even if already connected
+        lastError = ::GetLastError();
+    }
+
+    if (lastError == ERROR_PIPE_CONNECTED)
     {
         // Client already connected
         initiate_read();
     }
-    else if (err != ERROR_IO_PENDING)
+    else if (lastError != ERROR_IO_PENDING)
     {
-        throw winrt::hresult_error(HRESULT_FROM_WIN32(err), L"Failed to listen for clients on the pipe");
+        throw winrt::hresult_error(HRESULT_FROM_WIN32(lastError), L"Failed to listen for clients on the pipe");
     }
     else
     {
-        m_state = state::connecting;
+        {
+            std::lock_guard guard{ m_mutex };
+            if (m_state == state::closed)
+            {
+                // Don't set the threadpool wait again as we may have just cleared it!
+                return;
+            }
+
+            m_state = state::connecting;
+        }
         ::SetThreadpoolWait(m_ptp, m_overlapped.hEvent, nullptr);
     }
 }
@@ -371,7 +424,19 @@ void AuthRequestAsyncOperation::initiate_read()
 {
     while (true)
     {
-        if (::ReadFile(m_pipe, m_pipeReadBuffer, sizeof(m_pipeReadBuffer), nullptr, &m_overlapped))
+        BOOL readResult;
+        {
+            std::shared_lock guard{ m_mutex };
+            if (m_state == state::closed)
+            {
+                // No pipe to read from
+                return;
+            }
+
+            readResult = ::ReadFile(m_pipe, m_pipeReadBuffer, sizeof(m_pipeReadBuffer), nullptr, &m_overlapped);
+        }
+
+        if (readResult)
         {
             // Immediate success. No need to wait
             on_read_complete();
@@ -387,6 +452,13 @@ void AuthRequestAsyncOperation::initiate_read()
         else if (err == ERROR_IO_PENDING)
         {
             // Reading asynchronously
+            std::lock_guard guard{ m_mutex };
+            if (m_state == state::closed)
+            {
+                // Simultaneously closed; don't set the threadpool wait as we may have just cleared it!
+                return;
+            }
+
             m_state = state::reading;
             std::int64_t timeout = std::chrono::duration_cast<TimeSpan>(-50ms).count(); // 50ms timeout
             ::SetThreadpoolWait(m_ptp, m_overlapped.hEvent, reinterpret_cast<PFILETIME>(&timeout));
@@ -394,11 +466,7 @@ void AuthRequestAsyncOperation::initiate_read()
         }
         else
         {
-            // Ideally we could assume that read timeouts/failures are fatal, however we don't know if the client is
-            // trustworthy and we don't want some arbitrary process to bait us into terminating the request
-            [[maybe_unused]] auto disconnectResult = ::DisconnectNamedPipe(m_pipe);
-            WINRT_ASSERT(disconnectResult); // TODO: What if the client disconnected from us?
-            connect_to_new_client();
+            connect_to_new_client(true);
             break;
         }
     }
@@ -414,17 +482,38 @@ void AuthRequestAsyncOperation::on_read_complete()
         auto expectedState = m_params->State();
         auto encryptedBuffer = CryptographicBuffer::CreateFromByteArray(m_pipeReadData);
         auto uriString = decrypt(encryptedBuffer, expectedState);
-        Uri responseUri(uriString);
 
         // An exception is unlikely (we needed the state from the URI to open the pipe in the first place), but could
         // happen if someone is connecting and sending garbage data. We'll catch below, so all is okay
-        auto state = responseUri.QueryParsed().GetFirstValueByName(L"state");
+        Uri responseUri(uriString);
+        winrt::hstring state;
+        auto tryFindState = [&](const winrt::hstring& str)
+        {
+            if (str.empty())
+            {
+                return; // Avoid unnecessary construction/activation
+            }
+
+            for (auto&& entry : WwwFormUrlDecoder(str))
+            {
+                if (entry.Name() == L"state")
+                {
+                    state = entry.Value();
+                    break;
+                }
+            }
+        };
+
+        tryFindState(responseUri.Query());
+        if (state.empty())
+        {
+            tryFindState(fragment_component(responseUri));
+        }
+
         if (state == expectedState)
         {
-            if (winrt::make_self<factory_implementation::AuthManager>()->try_complete_local(state, responseUri))
-            {
-                shouldReconnect = false;
-            }
+            shouldReconnect =
+                winrt::make_self<factory_implementation::AuthManager>()->try_complete_local(state, responseUri);
         }
     }
     catch (...)
@@ -432,14 +521,11 @@ void AuthRequestAsyncOperation::on_read_complete()
         // Likely handed bad data; just disconnect and attempt a reconnect
     }
 
-    // The client will only ever send a single message, so disconnect and form a new connection
-    [[maybe_unused]] auto disconnectResult = ::DisconnectNamedPipe(m_pipe);
-    WINRT_ASSERT(disconnectResult); // TODO
-
     if (shouldReconnect)
     {
-        connect_to_new_client();
+        connect_to_new_client(true);
     }
+    // Otherwise the 'try_complete_local' call should have closed the pipe
 }
 
 void AuthRequestAsyncOperation::invoke_handler(const AsyncOperationCompletedHandler<AuthRequestResult>& handler)

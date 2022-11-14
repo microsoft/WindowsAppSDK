@@ -224,12 +224,9 @@ namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementa
         addIfSet(L"password", m_password);
         addIfSet(L"scope", m_scope);
         addIfSet(L"refresh_token", m_refreshToken);
-        if (m_additionalParams)
+        for (auto&& pair : IMap<winrt::hstring, winrt::hstring>{ *m_additionalParams })
         {
-            for (auto&& pair : IMap<winrt::hstring, winrt::hstring>{ *m_additionalParams })
-            {
-                result.emplace(pair.Key(), pair.Value());
-            }
+            result.emplace(pair.Key(), pair.Value());
         }
 
         return result;
