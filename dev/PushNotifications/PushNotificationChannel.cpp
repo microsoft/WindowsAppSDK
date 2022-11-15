@@ -55,8 +55,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             hr = channelCloseException.code();
 
-            logTelemetry.StopWithResult(hr);
-
             if (channelCloseException.code() != HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
             {
                 throw channelCloseException;
