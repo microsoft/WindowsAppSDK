@@ -68,9 +68,10 @@ Write-Host "Stripping private information from symbols..."
 
 foreach ($inputPdb in (Get-ChildItem -Recurse -Filter "*.pdb" $InputDirectory))
 {
+    Write-Host "input dir name " $inputPdb.DirectoryName
     $outputPdbDir = $inputPdb.DirectoryName -replace [regex]::Escape($InputDirectory), $OutputDirectory
-
-    Write-Host $outputPdbDir
+    Write-Host "output dir name" $outputPdbDir
+    
     if (!(Test-Path $outputPdbDir))
     {
         New-Item -ItemType Directory $outputPdbDir | Out-Null
