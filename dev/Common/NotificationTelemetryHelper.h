@@ -12,11 +12,6 @@ public:
         m_appName = m_isPackagedApp ? GetAppNamePackaged() : GetAppNameUnpackaged();
     }
 
-    inline bool ShouldLogEvent()
-    {
-        return c_maxEventLimit >= UpdateLogEventCount();
-    }
-
     inline bool IsPackagedApp() const
     {
         return m_isPackagedApp;
@@ -28,33 +23,8 @@ public:
     }
 
 private:
-    wil::srwlock m_lock;
-    ULONGLONG m_lastFiredTick = 0;
-    UINT m_eventCount = 0;
-
-    static constexpr ULONGLONG c_logPeriod = 1000; // One second
-    static constexpr UINT c_maxEventLimit = 10;
-
     bool m_isPackagedApp{ false };
     std::wstring m_appName;
-
-    UINT UpdateLogEventCount()
-    {
-        ULONGLONG currentTick = GetTickCount64();
-
-        auto lock{ m_lock.lock_exclusive() };
-
-        // Only fire limiting events every log period to prevent too many events from being fired
-        if ((currentTick - m_lastFiredTick) > c_logPeriod)
-        {
-            m_eventCount = 0;
-            m_lastFiredTick = currentTick;
-        }
-
-        m_eventCount++;
-
-        return m_eventCount;
-    }
 
     std::wstring GetAppNamePackaged() const
     {

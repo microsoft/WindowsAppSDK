@@ -41,13 +41,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         HRESULT hr{ S_OK };
 
-        auto logTelemetry{ wil::scope_exit([&]() {
-            PushNotificationTelemetry::LogCloseChannel(hr);
-        }) };
+        auto logTelemetry{ PushNotificationTelemetry::CloseChannel::Start(g_telemetryHelper) };
 
         try
         {
             THROW_IF_FAILED(PushNotifications_CloseChannel(m_channelInfo.appId.c_str(), m_channelInfo.channelId.c_str()));
+            logTelemetry.Stop();
         }
 
         catch (...)

@@ -18,57 +18,62 @@ class AppNotificationBuilderTelemetry : public wil::TraceLoggingProvider
 public:
 
     BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(BuildNotification, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper)
-    {
-        TraceLoggingClassWriteStart(
-            BuildNotification,
-            _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
-            TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
-    }
+        DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper) noexcept try
+        {
+            TraceLoggingClassWriteStart(
+                BuildNotification,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
+        }
+        CATCH_LOG()
     END_ACTIVITY_CLASS();
 
     BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(ButtonToString, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper)
-    {
-        TraceLoggingClassWriteStart(
-            ButtonToString,
-            _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
-            TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
-    }
+        DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper) noexcept try
+        {
+            TraceLoggingClassWriteStart(
+                ButtonToString,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
+        }
+        CATCH_LOG()
     END_ACTIVITY_CLASS();
 
     BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(ComboBoxToString, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper)
-    {
-        TraceLoggingClassWriteStart(
-            ComboBoxToString,
-            _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
-            TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
-    }
+        DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper) noexcept try
+        {
+            TraceLoggingClassWriteStart(
+                ComboBoxToString,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
+        }
+        CATCH_LOG()
     END_ACTIVITY_CLASS();
 
     BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(ProgressBarToString, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper)
-    {
-        TraceLoggingClassWriteStart(
-            ProgressBarToString,
-            _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
-            TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
-    }
+        DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper) noexcept try
+        {
+            TraceLoggingClassWriteStart(
+                ProgressBarToString,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
+        }
+        CATCH_LOG()
     END_ACTIVITY_CLASS();
 
     BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(TextPropertiesToString, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper)
-    {
-        TraceLoggingClassWriteStart(
-            TextPropertiesToString,
-            _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
-            TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
-    }
+        DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper) noexcept try
+        {
+            TraceLoggingClassWriteStart(
+                TextPropertiesToString,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
+        }
+        CATCH_LOG()
     END_ACTIVITY_CLASS();
 };
