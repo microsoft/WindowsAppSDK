@@ -56,8 +56,7 @@ else
 {
     Write-Host -ForegroundColor Yellow "MISSING"
 }
-Write-Host "OuTPUTDIR"
-Write-Host $OutputDirectory
+
 if (Test-Path $OutputDirectory)
 {
     Remove-Item -Recurse $OutputDirectory
@@ -71,10 +70,5 @@ foreach ($inputPdb in (Get-ChildItem -Recurse -Filter "*.pdb" $InputDirectory))
     $inputPdbPath = $inputPdb.FullName
     $outputPdbPath = Join-Path $OutputDirectory $inputPdb.name
 
-    Write-Host $inputPdbPath
-    Write-Host $outputPdbPath
-
     Remove-PrivateSymbolInformation $inputPdbPath $outputPdbPath
-
-    Write-Host
 }
