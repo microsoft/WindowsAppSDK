@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -775,8 +775,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             *foregroundHandled = false;
         }
-
-        logTelemetry.Stop();
 
         return S_OK;
     }
