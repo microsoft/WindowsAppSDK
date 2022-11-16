@@ -263,7 +263,7 @@ jobs:
       - Build
       - BuildAnyCPU
       - BuildAndTestMRT
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/user/purifoypaul/HelixNotifications2')
 
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
