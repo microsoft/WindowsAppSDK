@@ -43,12 +43,9 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
 {
     HRESULT hr{ S_OK };
 
-    auto logTelemetry{ wil::scope_exit([&]() {
-        PushNotificationLongRunningTaskTelemetry::LogOnRawNotificationReceived(hr, wil::str_raw_ptr(correlationVector));
-    }) };
-
     try
     {
+        auto logTelemetry = PushNotificationLongRunningTaskTelemetry::OnRawNotificationReceived::Start(correlationVector);
         auto lock = m_lock.lock_exclusive();
 
         winrt::com_array<uint8_t> payloadArray{ payload, payload + (payloadLength * sizeof(uint8_t)) };
@@ -65,6 +62,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
             }
         }
 
+        logTelemetry.Stop();
         return hr;
     }
     catch (...)
