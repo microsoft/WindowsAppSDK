@@ -144,18 +144,6 @@ jobs:
       arguments: -NoInteractive -Offline -Verbose -CheckTAEFService 
       workingDirectory: '$(Build.SourcesDirectory)'
 
-  # Run the test locally on the Azure VM.
-  - task: VSTest@2
-    displayName: 'test PushNotifications'
-    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-    inputs:
-      testSelector: 'testAssemblies'
-      testAssemblyVer2: '**\PushNotificationTests.dll'
-      searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\PushNotificationTests'
-      testRunTitle: 'test PushNotifications - $(buildPlatform)'
-      platform: '$(buildPlatform)'
-      configuration: '$(buildConfiguration)'
-
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget'
     inputs:
