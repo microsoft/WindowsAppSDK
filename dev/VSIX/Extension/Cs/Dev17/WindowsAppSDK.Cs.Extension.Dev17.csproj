@@ -141,29 +141,6 @@
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">
-    <ProjectReference Include="$(ProjectTemplatesDir)UWP\CSharp\BlankApp\WinUI.UWP.Cs.BlankApp.csproj">
-      <Project>{93abc6a8-319a-4291-b8e2-607d3272a4b4}</Project>
-      <Name>WinUI.UWP.Cs.BlankApp</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
-    <ProjectReference Include="$(ProjectTemplatesDir)UWP\CSharp\RuntimeComponent\WinUI.UWP.Cs.RuntimeComponent.csproj">
-      <Project>{824C3303-D492-4806-95CD-9AA20AB34BB3}</Project>
-      <Name>WinUI.UWP.Cs.RuntimeComponent</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
-    <ProjectReference Include="$(ProjectTemplatesDir)UWP\CSharp\ClassLibrary\WinUI.UWP.Cs.ClassLibrary.csproj">
-      <Project>{2A3D41EE-5641-4DEB-AC2C-B433CBC9174D}</Project>
-      <Name>WinUI.UWP.Cs.ClassLibrary</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(ExtensionDir)Cs\Common\VSPackage.resx">
       <Link>Resources\VSPackage.resx</Link>

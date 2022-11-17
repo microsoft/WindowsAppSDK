@@ -212,31 +212,4 @@
   <data name="1035" xml:space="preserve">
     <value>Šablona projektu pro vytvoření desktopové aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3) spolu s balíčkem MSIX pro zkušební načtení nebo distribuci prostřednictvím Microsoft Store.</value>
   </data>
-  <data name="1037" xml:space="preserve">
-    <value>Prázdná aplikace (WinUI 3 v UPW)</value>
-  </data>
-  <data name="1038" xml:space="preserve">
-    <value>[Experimentální] Prázdná aplikace (WinUI 3 v UPW)</value>
-  </data>
-  <data name="1039" xml:space="preserve">
-    <value>Projekt pro vytvoření aplikace Univerzální platformy Windows (UPW) založené na Knihovně uživatelského rozhraní Windows (WinUI 3). Vyžaduje experimentální podporu sady Windows App SDK.</value>
-  </data>
-  <data name="1041" xml:space="preserve">
-    <value>Knihovna tříd (WinUI 3 v UPW)</value>
-  </data>
-  <data name="1042" xml:space="preserve">
-    <value>[Experimentální] Knihovna tříd (WinUI 3 v UPW)</value>
-  </data>
-  <data name="1043" xml:space="preserve">
-    <value>Projekt pro vytvoření aplikace spravované knihovny tříd (.dll) pro Univerzální platformu Windows (UPW) založené na Knihovně uživatelského rozhraní Windows (WinUI 3). Vyžaduje experimentální podporu sady Windows App SDK.</value>
-  </data>
-  <data name="1045" xml:space="preserve">
-    <value>Součást prostředí Windows Runtime (WinUI 3 v UPW)</value>
-  </data>
-  <data name="1046" xml:space="preserve">
-    <value>[Experimentální] součást prostředí Windows Runtime (WinUI 3 v UPW)</value>
-  </data>
-  <data name="1047" xml:space="preserve">
-    <value>Projekt pro vytvoření aplikace spravované součásti prostředí Windows Runtime (.winmd) pro Univerzální platformu Windows (UPW) založené na Knihovně uživatelského rozhraní Windows (WinUI 3). Vyžaduje experimentální podporu sady Windows App SDK.</value>
-  </data>
 </root>
