@@ -154,6 +154,8 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
     // Build the target package's .msix filename. It's under the Solution's $(OutDir)
     // NOTE: It could live in ...\Something.msix\... or ...\Something\...
     auto solutionOutDirPath = ::Test::FileSystem::GetSolutionOutDirPath();
+    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"%s\n", solutionOutDirPath.c_str()));
+
     //
     // Look in ...\Something.msix\...
     auto msix(solutionOutDirPath);
