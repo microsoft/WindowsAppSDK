@@ -146,15 +146,6 @@
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">
-    <ProjectReference Include="$(ProjectTemplatesDir)UWP\CppWinRT\BlankApp\WinUI.UWP.CppWinRT.BlankApp.csproj">
-      <Project>{627B2125-97B1-4620-97AA-AD46B37AC9D1}</Project>
-      <Name>WinUI.UWP.CppWinRT.BlankApp</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(ExtensionDir)Cpp\Common\VSPackage.resx">
       <Link>Resources\VSPackage.resx</Link>
