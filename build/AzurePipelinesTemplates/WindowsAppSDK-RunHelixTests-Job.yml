@@ -128,6 +128,13 @@ jobs:
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
       arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrtCoreUnpackagedTests.proj' -WorkItemPrefix 'MrtCore.MrtCoreUnpackagedTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrtCoreUnpackagedTests.$(buildPlatform).$(buildConfiguration)'
 
+  - task: powershell@2
+    displayName: 'Discover PushNotification UnitTests'
+    inputs:
+      targetType: filePath
+      filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
+      arguments: -TestFilePattern 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\PushNotificationTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\PushNotificationTests.proj' -WorkItemPrefix 'PushNotificationTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'PushNotificationTests.$(buildPlatform).$(buildConfiguration)'
+
   # In Helix, test folders are under subfolders of TAEF. MRTCore UnpackagedTests use reg-free WinRT activation. It requires the winmd file
   # under same folder as the executable.
   - task: CopyFiles@2
@@ -138,6 +145,22 @@ jobs:
         Microsoft.Windows.ApplicationModel.Resources.winmd
       targetFolder: $(testPayloadDir)
 
+  - task: CopyFiles@2
+    displayName: 'Copy WASfwk to test root'
+    inputs:
+      sourceFolder: $(testPayloadDir)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\Microsoft.WindowsAppRuntime.Framework
+      contents: |
+        Microsoft.WindowsAppRuntime.Framework.msix
+      targetFolder: $(testPayloadDir)
+
+  - task: CopyFiles@2
+    displayName: 'Copy WASddlm to test root'
+    inputs:
+      sourceFolder: $(testPayloadDir)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntime.Test.Singleton.Msix
+      contents: |
+        WindowsAppRuntime.Test.Singleton.Msix
+      targetFolder: $(testPayloadDir)
+      
   # TODO: This test needs to be converted to TAEF to run in Helix.
   # - task: powershell@2
   #   displayName: 'Discover MRT Core Managed tests'
