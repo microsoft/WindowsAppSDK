@@ -119,6 +119,7 @@ foreach($cerFile in (Get-ChildItem "*.cer"))
 # However, it retains the same folder structure as within the artifact when unpacked, so the resulting folder structure looks like:
 #  $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\HelixTests\BuildOutput\$(buildConfiguration)\$(buildPlatform)
 # When running inside Helix, the current directory is the "HelixTests" folder, so we look under: BuildOutput\$(buildConfiguration)\$(buildPlatform)
+Dir -Recurse ".\BuildOutput\*\*" | Get-Childitem
 $certificates = Get-ChildItem -Recurse ".\BuildOutput\*\*\certificates\*.cer"
 Write-Host "$($certificates.Length) found at .\BuildOutput\*\*\certificates\*.cer"
 foreach ($cerFile in $certificates)
