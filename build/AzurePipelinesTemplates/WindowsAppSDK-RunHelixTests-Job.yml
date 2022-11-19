@@ -104,6 +104,21 @@ jobs:
       artifactName: 'BuildOutput'
       downloadPath: $(testPayloadDir)
       itemPattern: 'BuildOutput/$(buildConfiguration)/$(buildPlatform)/**/*'
+  
+  - task: CopyFiles@2
+    displayName: 'Copy certificates to BuildOutput'
+    condition: always()
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)\.user
+      contents: |
+        winappsdk.certificate.test.cer
+      targetFolder: $(testPayloadDir)\$(buildConfiguration)\$(buildPlatform)\certificates
+      flattenFolders: false
+
+  # DEBUG: DeleteMe
+  - script: |
+      displayName: 'DIR buildOutputDir'
+      dir /s $(buildOutputDir)
 
   # Discover the TAEF test binaries to run and generate the Helix Work Items for them.
   # Note: There are 4 test suites for MRT Core. We currently run 3 of them in Helix.
@@ -176,7 +191,23 @@ jobs:
       contents: |
         WindowsAppRuntime.Test.Singleton.Msix
       targetFolder: $(testPayloadDir)
+
+  - task: CopyFiles@2
+    displayName: 'Copy WASddlm to test root'
+    inputs:
+      sourceFolder: $(testPayloadDir)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntime.Test.Singleton.Msix
+      contents: |
+        WindowsAppRuntime.Test.Singleton.Msix
+      targetFolder: $(testPayloadDir)
   
+  - task: CopyFiles@2
+    displayName: 'Copy certificates to BuildOutput'
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)\.user
+      contents: |
+        winappsdk.certificate.test.cer
+      targetFolder: $(testPayloadDir)
+
   # TODO: This test needs to be converted to TAEF to run in Helix.
   # - task: powershell@2
   #   displayName: 'Discover MRT Core Managed tests'
