@@ -235,6 +235,16 @@ steps:
 #      arguments: -SearchDir '${{ parameters.buildOutputDir }}\$(buildConfiguration)' -SourceRoot '$(Build.SourcesDirectory)' -recursive -Verbose -CommitId $(Build.SourceVersion)
 #      errorActionPreference: silentlyContinue
 
+  - task: CopyFiles@2
+    displayName: 'Copy certificates to BuildOutput'
+    condition: always()
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)\.user
+      contents: |
+        **\*.cer
+      targetFolder: $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\Certificates
+      flattenFolders: false
+      
   - task: powershell@2
     displayName: 'Remove test certificate for MSIX test packages (DevCheck)'
     inputs:

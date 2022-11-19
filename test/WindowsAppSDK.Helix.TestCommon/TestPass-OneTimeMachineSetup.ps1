@@ -113,6 +113,21 @@ foreach($cerFile in (Get-ChildItem "*.cer"))
     certutil -addstore TrustedPeople "$cerFile"
 }
 
+# Install any certificates (*.cer) included in the "certificates" folder from the BuildOutput.
+# NOTE: When building up the "testPayloadDir" in WindowsAppSDK-RunHelixTests-Job.yml, the BuildOutput pipeline artifact is
+# unpacked under: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\HelixTests
+# However, it retains the same folder structure as within the artifact when unpacked, so the resulting folder structure looks like:
+#  $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\HelixTests\BuildOutput\$(buildConfiguration)\$(buildPlatform)
+# When running inside Helix, the current directory is the "HelixTests" folder, so we look under: BuildOutput\$(buildConfiguration)\$(buildPlatform)
+$certificates = Get-ChildItem -Recurse ".\BuildOutput\*\*\certificates\*.cer"
+Write-Host "$($certificates.Length) found at .\BuildOutput\*\*\certificates\*.cer"
+foreach ($cerFile in $certificates)
+{
+    Write-Host "Adding cert '$cerFile'"
+    Write-Host "Adding certificate '$cerFile'"
+    certutil -addstore TrustedPeople "$cerFile"
+}
+
 if(Test-Path .\dotnet-windowsdesktop-runtime-installer.exe)
 {
     Write-Host "Install dotnet runtime"
