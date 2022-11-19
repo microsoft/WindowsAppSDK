@@ -156,11 +156,27 @@ jobs:
   - task: CopyFiles@2
     displayName: 'Copy WASddlm to test root'
     inputs:
+      sourceFolder: $(testPayloadDir)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\DynamicDependencyLifetimeManager.Msix
+      contents: |
+        DynamicDependencyLifetimeManager.Msix
+      targetFolder: $(testPayloadDir)
+
+  - task: CopyFiles@2
+    displayName: 'Copy WASdatastore to test root'
+    inputs:
+      sourceFolder: $(testPayloadDir)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\DynamicDependency.DataStore.Msix
+      contents: |
+        DynamicDependency.DataStore.Msix
+      targetFolder: $(testPayloadDir)
+
+  - task: CopyFiles@2
+    displayName: 'Copy WASddlm to test root'
+    inputs:
       sourceFolder: $(testPayloadDir)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntime.Test.Singleton.Msix
       contents: |
         WindowsAppRuntime.Test.Singleton.Msix
       targetFolder: $(testPayloadDir)
-      
+  
   # TODO: This test needs to be converted to TAEF to run in Helix.
   # - task: powershell@2
   #   displayName: 'Discover MRT Core Managed tests'

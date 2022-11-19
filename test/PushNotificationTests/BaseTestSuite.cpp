@@ -21,6 +21,11 @@ using namespace winrt::Microsoft::Windows::PushNotifications;
 
 void BaseTestSuite::ClassSetup()
 {
+    String path;
+    WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", path);
+    Log::Comment(L"TestDeploymentDir path:");
+    Log::Comment(path);
+
     ::Test::Bootstrap::Setup();
 }
 
