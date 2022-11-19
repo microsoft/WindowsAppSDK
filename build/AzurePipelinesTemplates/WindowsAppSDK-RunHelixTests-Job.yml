@@ -107,18 +107,11 @@ jobs:
   
   - task: CopyFiles@2
     displayName: 'Copy certificates to BuildOutput'
-    condition: always()
     inputs:
       sourceFolder: $(Build.SourcesDirectory)\.user
       contents: |
         winappsdk.certificate.test.cer
       targetFolder: $(testPayloadDir)\$(buildConfiguration)\$(buildPlatform)\certificates
-      flattenFolders: false
-
-  # DEBUG: DeleteMe
-  - script: |
-      displayName: 'DIR buildOutputDir'
-      dir /s $(buildOutputDir)
 
   # Discover the TAEF test binaries to run and generate the Helix Work Items for them.
   # Note: There are 4 test suites for MRT Core. We currently run 3 of them in Helix.
