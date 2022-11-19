@@ -199,6 +199,14 @@ jobs:
       sourceFolder: $(Build.SourcesDirectory)\.user
       contents: |
         winappsdk.certificate.test.cer
+      targetFolder: $(testPayloadDir)\BuildOutput
+
+  - task: CopyFiles@2
+    displayName: 'Copy certificates to BuildOutput'
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)\.user
+      contents: |
+        winappsdk.certificate.test.cer
       targetFolder: $(testPayloadDir)
 
   # TODO: This test needs to be converted to TAEF to run in Helix.

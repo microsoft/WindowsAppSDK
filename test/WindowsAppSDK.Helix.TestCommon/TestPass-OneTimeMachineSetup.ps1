@@ -119,12 +119,31 @@ foreach($cerFile in (Get-ChildItem "*.cer"))
 # However, it retains the same folder structure as within the artifact when unpacked, so the resulting folder structure looks like:
 #  $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\HelixTests\BuildOutput\$(buildConfiguration)\$(buildPlatform)
 # When running inside Helix, the current directory is the "HelixTests" folder, so we look under: BuildOutput\$(buildConfiguration)\$(buildPlatform)
-$paulOutput = Dir -Recurse ".\BuildOutput\*\*" | Get-Childitem
-Write-Host "$paulOutput"
 
-$certificates = Get-ChildItem -Recurse ".\BuildOutput\*\*\certificates\*.cer"
-Write-Host "$($certificates.Length) found at .\BuildOutput\*\*\certificates\*.cer"
+Write-Host "Looking for cert in last BuildOutput"
+$certificates = Get-ChildItem -Recurse ".\BuildOutput\*\*\certificates\*.certificate.test.cer"
+Write-Host "$($certificates.Length) found at .\BuildOutput\*\*\certificates\*.certificate.test.cer"
 foreach ($cerFile in $certificates)
+{
+    Write-Host "Adding cert '$cerFile'"
+    Write-Host "Adding certificate '$cerFile'"
+    certutil -addstore TrustedPeople "$cerFile"
+}
+
+Write-Host "Looking for cert in middle BuildOutput"
+$certificates2 = Get-ChildItem -Recurse ".\BuildOutput\*.certificate.test.cer"
+Write-Host "$($certificates2.Length) found at .\BuildOutput\*.certificate.test.cer"
+foreach ($cerFile in $certificates2)
+{
+    Write-Host "Adding cert '$cerFile'"
+    Write-Host "Adding certificate '$cerFile'"
+    certutil -addstore TrustedPeople "$cerFile"
+}
+
+Write-Host "Looking for cert in first BuildOutput"
+$certificates3 = Get-ChildItem -Recurse ".\*.certificate.test.cer"
+Write-Host "$($certificates3.Length) found at .\*.certificate.test.cer"
+foreach ($cerFile in $certificates3)
 {
     Write-Host "Adding cert '$cerFile'"
     Write-Host "Adding certificate '$cerFile'"
