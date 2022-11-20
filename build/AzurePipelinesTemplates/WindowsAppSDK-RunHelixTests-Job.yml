@@ -186,13 +186,21 @@ jobs:
       targetFolder: $(testPayloadDir)
 
   - task: CopyFiles@2
-    displayName: 'Copy certificates to BuildOutput'
+    displayName: 'Copy winappsdk certificate to BuildOutput'
     inputs:
       sourceFolder: $(Build.SourcesDirectory)\.user
       contents: |
         winappsdk.certificate.test.cer
       targetFolder: $(testPayloadDir)
 
+  - task: CopyFiles@2
+    displayName: 'Copy test cert'
+    inputs:
+      sourceFolder: $(testPayloadDir)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\AppxPackages\ToastNotificationsDemoAppPackage_1.0.0.0_Test
+      contents: |
+        ToastNotificationsDemoAppPackage_1.0.0.0_$(buildPlatform).cer
+      targetFolder: $(testPayloadDir)
+  
   # TODO: This test needs to be converted to TAEF to run in Helix.
   # - task: powershell@2
   #   displayName: 'Discover MRT Core Managed tests'
