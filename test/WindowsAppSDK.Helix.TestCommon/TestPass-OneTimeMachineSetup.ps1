@@ -111,7 +111,7 @@ Write-Host "Looking for cert..."
 foreach($cerFile in (Get-ChildItem "*.cer"))
 {
     Write-Host "Adding cert '$cerFile'"
-    certutil -addstore TrustedPeople "$cerFile"
+    certutil -addstore root "$cerFile"
 }
 
 if(Test-Path .\dotnet-windowsdesktop-runtime-installer.exe)
