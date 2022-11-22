@@ -22,8 +22,33 @@ Param(
     [string]$OutputDirectory = "",
     [string]$PGOBuildMode = "Optimize",
     [string]$BasePath = "BuildOutput/FullNuget",
-    [string]$UpdateVersionDetailsPath = $null
+    [string]$UpdateVersionDetailsPath = $null,
+    [switch]$Clean = $false
 )
+
+$env:Build_SourcesDirectory = (Split-Path $MyInvocation.MyCommand.Path)
+$buildOverridePath = "build\override"
+
+# FUTURE(YML2PS): Update build to no longer place generated files in sources directory
+if ($Clean) 
+{
+    $CleanTargets = @(
+      "BuildOutput",
+      "obj",
+      $buildOverridePath
+    )
+  
+    foreach ($CleanTarget in $CleanTargets)
+    {
+      $CleanTargetPath = (Join-Path $env:Build_SourcesDirectory $CleanTarget)
+  
+      if (Test-Path ($CleanTargetPath)) {
+        Remove-Item $CleanTargetPath -recurse
+      }
+    }
+    
+    Exit
+}
 
 # Make sure nuget directory exists.
 if(-not (test-path ".nuget"))
@@ -47,7 +72,6 @@ $msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
 write-host "msBuildPath: $msBuildPath"
 
 
-$buildOverridePath = "build\override"
 # Generate overrides
 # Make sure override directory exists.
 if(-not (test-path "$buildOverridePath"))
@@ -58,9 +82,6 @@ if(-not (test-path "$buildOverridePath"))
 Try {
     $WindowsAppSDKBuildPipeline = 0
 
-    #------------------
-    #    Build windowsAppRuntime.sln and move output to staging.
-    #------------------
     .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
     .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
 
