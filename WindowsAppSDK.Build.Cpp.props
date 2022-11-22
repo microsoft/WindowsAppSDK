@@ -11,8 +11,8 @@
   <!-- Common (all Configurations) options -->
   <ItemDefinitionGroup>
     <ClCompile>
-      <!-- /std:c++17 Enable ISO C++17 Standard -->
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <!-- /std:c++20 Enable ISO C++20 Standard -->
+      <LanguageStandard>stdcpp20</LanguageStandard>
 
       <!-- /permissive- Enable Conformance mode (i.e. Disable 'permissive' mode) -->
       <ConformanceMode>true</ConformanceMode>
@@ -27,7 +27,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
 
       <!-- /ZH:SHA_256 Hash algorithm for file checksums in debug info -->
-      <!-- /d1trimfile:$(RepoRoot) If the prefix for a source file path name string matches "trim-string", 
+      <!-- /d1trimfile:$(RepoRoot) If the prefix for a source file path name string matches "trim-string",
       then the prefix is removed and is replaced with the mapping-identifier (if present). Requires /Brepro. -->
       <AdditionalOptions>%(AdditionalOptions) /d1trimfile:$(RepoRoot) /ZH:SHA_256</AdditionalOptions>
     </ClCompile>
