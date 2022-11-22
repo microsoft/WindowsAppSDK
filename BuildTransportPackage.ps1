@@ -57,6 +57,13 @@ if(-not (test-path "$buildOverridePath"))
 
 Try {
     $WindowsAppSDKBuildPipeline = 0
+
+    #------------------
+    #    Build windowsAppRuntime.sln and move output to staging.
+    #------------------
+    .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
+    .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
+
     if ($AzureBuildStep -ne "all")
     {
         # Some builds have "-branchname" appended, but when this happens the environment variable 
@@ -74,12 +81,6 @@ Try {
         
         # If $AzureBuildStep is not "all", that means we are in the pipeline
         $WindowsAppSDKBuildPipeline = 1
-
-        #------------------
-        #    Build windowsAppRuntime.sln and move output to staging.
-        #------------------
-        .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
-        .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
     }
     if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildBinaries") -Or ($AzureBuildStep -eq "BuildMRT"))) 
     {
