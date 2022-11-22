@@ -355,21 +355,25 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test_DeploymentManagerAutoInitialize_CPP_Default", "test\Deployment\Test_DeploymentManagerAutoInitialize\CPP\Test_DeploymentManagerAutoInitialize_CPP_Default\Test_DeploymentManagerAutoInitialize_CPP_Default.vcxproj", "{78532CFE-6A25-4DF2-8ABA-C97CF3050ECF}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9C1A6C58-52D6-4514-9120-5C339C5DF4BE} = {9C1A6C58-52D6-4514-9120-5C339C5DF4BE}
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test_DeploymentManagerAutoInitialize_CPP_Options_Default", "test\Deployment\Test_DeploymentManagerAutoInitialize\CPP\Test_DeploymentManagerAutoInitialize_CPP_Options_Default\Test_DeploymentManagerAutoInitialize_CPP_Options_Default.vcxproj", "{E11B882F-81AE-40EA-B2DE-07D5ADDE8E81}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9C1A6C58-52D6-4514-9120-5C339C5DF4BE} = {9C1A6C58-52D6-4514-9120-5C339C5DF4BE}
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test_DeploymentManagerAutoInitialize_CPP_Options_Defined", "test\Deployment\Test_DeploymentManagerAutoInitialize\CPP\Test_DeploymentManagerAutoInitialize_CPP_Options_Defined\Test_DeploymentManagerAutoInitialize_CPP_Options_Defined.vcxproj", "{52203B40-5045-46F8-8D51-9BF8F0CDFF4D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9C1A6C58-52D6-4514-9120-5C339C5DF4BE} = {9C1A6C58-52D6-4514-9120-5C339C5DF4BE}
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test_DeploymentManagerAutoInitialize_CPP_Options_None", "test\Deployment\Test_DeploymentManagerAutoInitialize\CPP\Test_DeploymentManagerAutoInitialize_CPP_Options_None\Test_DeploymentManagerAutoInitialize_CPP_Options_None.vcxproj", "{DC09374F-92EE-44B2-ACEE-3BE7A6C71FF0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9C1A6C58-52D6-4514-9120-5C339C5DF4BE} = {9C1A6C58-52D6-4514-9120-5C339C5DF4BE}
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_DeploymentManagerAutoInitialize_CS_Default", "test\Deployment\Test_DeploymentManagerAutoInitialize\CS\Test_DeploymentManagerAutoInitialize_CS_Default\Test_DeploymentManagerAutoInitialize_CS_Default.csproj", "{533DD2EE-7133-45B1-959C-306F80D50781}"
