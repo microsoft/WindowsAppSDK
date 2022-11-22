@@ -8,7 +8,15 @@
     <CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>27</CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>
     <!-- TODO: Fix DownloadDotNetCoreSdk.ps1 script so we don't need this property -->
     <CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>$(CsWinRTDependencyDotNetCoreSdkPackageVersion)</CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>
+<<<<<<< HEAD
     <!-- ShortForm Version Fields -->
     <FrameworkUdkVersion>$(MicrosoftFrameworkUdkPackageVersion)</FrameworkUdkVersion>
+=======
+
+    <CppWinRTVersion>2.0.221104.6</CppWinRTVersion>
+    <BuildTasksGitVersion>1.1.1</BuildTasksGitVersion>
+    <SourceLinkCommonVersion>1.1.1</SourceLinkCommonVersion>
+    <SourceLinkGitHubVersion>1.1.1</SourceLinkGitHubVersion>
+>>>>>>> 4ecbea8f (Add vars to Versions.props)
   </PropertyGroup>
 </Project>
