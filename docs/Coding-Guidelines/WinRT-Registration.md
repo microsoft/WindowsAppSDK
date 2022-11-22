@@ -1,6 +1,6 @@
 # WinRT Registration
 
-Windows App SDK provides registers WinRT types via *manifested* solutions:
+Windows App SDK provides WinRT types via *manifest-based* solutions:
 
 * WinAppSDK used via MSIX packages declare types in their `appxmanifest.xml`
 * WinAppSDK used via Self-Contained declare types in a SxS (aka Fusion) manifest
