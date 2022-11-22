@@ -25,7 +25,7 @@ Follow these steps:
 
 1. Create `dev\common\TerminalVelocityFeatures-<feature>.xml`
 2. Run the TerminalVelocity generator create `dev\common\TerminalVelocityFeatures-<feature>.h`
-3. Add a task to the build pipeline `build\AzurePipelinesTemplates\WindowsAppSDK-BuildProject-Steps.yml`
+3. Add a task to call `Generate-TerminalVelocityFeatures.ps1` to the build pipeline `build\AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml`
 4. Add TerminalVelocity checks to NOOP your feature
 5. Checkin!
 
