@@ -1,11 +1,14 @@
 <#
-This script is to build the framework transport package that will be used to generate the windows app sdk framework package.
+This script is to build the Foundation transport package that will be used to generate the windows app sdk package.
 This script is called from BuildAll.ps1 from the aggregator repo and should not be called directly.
 
+PackageVersion: NuGet Package Version that will be used in the packing of Foundation Transport Package
 Platform: Comma delimited string of platforms to run.
 Configuration: Comma delimited string of configurations to run.
-LocalPackagesPath: The path that the generated transport package needs to be saved.
+AzureBuildStep: Only used by the pipeline to perform tasks such as signing in between the steps
+OutputDirectory: Pack Location of the Nuget Package
 UpdateVersionDetailsPath: Path to a ps1 or cmd that updates version.details.xml.
+Clean: Performs a clean on BuildOutput, Obj, and build\override
 
 Note about building in different environments.
 The feed the nuget.config points to changes depending on the branch.
@@ -19,15 +22,15 @@ Param(
     [string]$Platform = "x64",
     [string]$Configuration = "Release",
     [string]$AzureBuildStep = "all",
-    [string]$OutputDirectory = "",
+    [string]$OutputDirectory = "BuildOutput",
     [string]$PGOBuildMode = "Optimize",
-    [string]$BasePath = "BuildOutput/FullNuget",
     [string]$UpdateVersionDetailsPath = $null,
     [switch]$Clean = $false
 )
 
 $env:Build_SourcesDirectory = (Split-Path $MyInvocation.MyCommand.Path)
 $buildOverridePath = "build\override"
+$BasePath = "BuildOutput/FullNuget"
 
 # FUTURE(YML2PS): Update build to no longer place generated files in sources directory
 if ($Clean) 
