@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
     This is the project file used by CentralPackageVersions, and used to control all PackageReference's
     and make sure the version is only declared in a single place
@@ -10,8 +9,8 @@
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <PackageReference Update="Microsoft.Windows.CsWinRT" Version="2.0.0" />
-    <PackageReference Update="Microsoft.SourceLink.Common" Version="1.1.1" />
-    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
+    <PackageReference Update="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" />
+    <PackageReference Update="Microsoft.SourceLink.Common" Version="$(SourceLinkCommonVersion)" />
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" />
   </ItemGroup>
 </Project>
