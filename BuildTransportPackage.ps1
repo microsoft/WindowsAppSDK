@@ -1,11 +1,14 @@
 <#
-This script is to build the framework transport package that will be used to generate the windows app sdk framework package.
+This script is to build the Foundation transport package that will be used to generate the windows app sdk package.
 This script is called from BuildAll.ps1 from the aggregator repo and should not be called directly.
 
+PackageVersion: NuGet Package Version that will be used in the packing of Foundation Transport Package
 Platform: Comma delimited string of platforms to run.
 Configuration: Comma delimited string of configurations to run.
-LocalPackagesPath: The path that the generated transport package needs to be saved.
+AzureBuildStep: Only used by the pipeline to perform tasks such as signing in between the steps
+OutputDirectory: Pack Location of the Nuget Package
 UpdateVersionDetailsPath: Path to a ps1 or cmd that updates version.details.xml.
+Clean: Performs a clean on BuildOutput, Obj, and build\override
 
 Note about building in different environments.
 The feed the nuget.config points to changes depending on the branch.
@@ -19,11 +22,36 @@ Param(
     [string]$Platform = "x64",
     [string]$Configuration = "Release",
     [string]$AzureBuildStep = "all",
-    [string]$OutputDirectory = "",
+    [string]$OutputDirectory = "BuildOutput",
     [string]$PGOBuildMode = "Optimize",
-    [string]$BasePath = "BuildOutput/FullNuget",
-    [string]$UpdateVersionDetailsPath = $null
+    [string]$UpdateVersionDetailsPath = $null,
+    [switch]$Clean = $false
 )
+
+$env:Build_SourcesDirectory = (Split-Path $MyInvocation.MyCommand.Path)
+$buildOverridePath = "build\override"
+$BasePath = "BuildOutput/FullNuget"
+
+# FUTURE(YML2PS): Update build to no longer place generated files in sources directory
+if ($Clean) 
+{
+    $CleanTargets = @(
+      "BuildOutput",
+      "obj",
+      $buildOverridePath
+    )
+  
+    foreach ($CleanTarget in $CleanTargets)
+    {
+      $CleanTargetPath = (Join-Path $env:Build_SourcesDirectory $CleanTarget)
+  
+      if (Test-Path ($CleanTargetPath)) {
+        Remove-Item $CleanTargetPath -recurse
+      }
+    }
+    
+    Exit
+}
 
 # Make sure nuget directory exists.
 if(-not (test-path ".nuget"))
@@ -47,7 +75,6 @@ $msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
 write-host "msBuildPath: $msBuildPath"
 
 
-$buildOverridePath = "build\override"
 # Generate overrides
 # Make sure override directory exists.
 if(-not (test-path "$buildOverridePath"))
@@ -57,6 +84,10 @@ if(-not (test-path "$buildOverridePath"))
 
 Try {
     $WindowsAppSDKBuildPipeline = 0
+
+    .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
+    .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
+
     if ($AzureBuildStep -ne "all")
     {
         # Some builds have "-branchname" appended, but when this happens the environment variable 
@@ -74,12 +105,6 @@ Try {
         
         # If $AzureBuildStep is not "all", that means we are in the pipeline
         $WindowsAppSDKBuildPipeline = 1
-
-        #------------------
-        #    Build windowsAppRuntime.sln and move output to staging.
-        #------------------
-        .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
-        .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"
     }
     if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildBinaries") -Or ($AzureBuildStep -eq "BuildMRT"))) 
     {
