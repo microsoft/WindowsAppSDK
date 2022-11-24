@@ -571,7 +571,7 @@ function Start-TAEFService
 
 function Get-DependencyVersions
 {
-    $versions = New-Object -TypeName PSObject
+    $versions = [ordered]@{}
 
     $root = Get-ProjectRoot
     $path = Join-Path $root 'eng'
@@ -584,11 +584,11 @@ function Get-DependencyVersions
     {
         $name = $element.get_name()
         $version = $element.'#text'
-        $versions | Add-Member -MemberType NoteProperty -Name $name -Value $version
+        $versions.Add($name, $version)
     }
-    ForEach ($p in $versions.PSObject.Properties)
+    ForEach ($name in $versions.Keys)
     {
-        Write-Host "...$($p.Name) = $($p.Value)"
+        Write-Host "DBG: $($name) = $($versions[$name])"
     }
 
     $versions
