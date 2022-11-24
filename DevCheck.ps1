@@ -269,7 +269,7 @@ function Test-DevTestPfx
         return $false
     }
 
-    $cert = Get-ChildItem $cert_path
+    $cert = Get-ChildItem -Path $cert_path
     $expiration = $cert.NotAfter
     $now = Get-Date
     if ($expiration -lt $now)
@@ -635,8 +635,64 @@ function Test-Dependencies
         $global:issues++
     }
 
-    Write-Host "Dependencies...$dependencies"
-    Write-Host "Transports...$transports"
+    # Scan for duplicates (a dependency cannot appear in both lists)
+    $duplicates = $dependencies.Keys | Where-Object { $transports.Contains($_) }
+    if ($duplicates)
+    {
+        ForEach ($item in $duplicates)
+        {
+            $global:issues++
+            Write-Host "ERROR: Dependency in Version.Details.xml and Versions.props"
+        }
+    }
+
+    # Merge the lists
+    $versions = [ordered]@{}
+    ForEach ($name in $dependencies.Keys)
+    {
+        if ($versions.Contains($name))
+        {
+            $global:issues++
+            Write-Host "ERROR: Dependency defined multiple times ($name)"
+        }
+        else
+        {
+            $value = $dependencies[$name]
+            $versions.Add($name, $value)
+        }
+    }
+    ForEach ($name in $transports.Keys)
+    {
+        if ($versions.Contains($name))
+        {
+            $global:issues++
+            Write-Host "ERROR: Dependency defined multiple times ($name)"
+        }
+        else
+        {
+            $value = $transports[$name]
+            $versions.Add($name, $value)
+        }
+    }
+    Write-Host "$($versions.Count) dependencies detected"
+
+    # Scan for references
+    $root = Get-ProjectRoot
+    $path = Join-Path $root 'dev'
+    $files = 0
+    ForEach ($file in (Get-ChildItem -Path $path -Recurse -File 'packages.config'))
+    {
+        $files++
+    }
+    Write-Host "...Scanned $($files) packages.config"
+
+    $path = Join-Path $root 'test'
+    $files = 0
+    ForEach ($file in (Get-ChildItem -Path $path -Recurse -Filter '*.vcxproj'))
+    {
+        $files++
+    }
+    Write-Host "...Scanned $($files) *.vcxproj"
 }
 
 Write-Output "Checking developer environment..."
