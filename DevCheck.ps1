@@ -588,7 +588,7 @@ function Get-DependencyVersions
     }
     ForEach ($name in $versions.Keys)
     {
-        Write-Host "DBG: $($name) = $($versions[$name])"
+        Write-Host "...$($name) = $($versions[$name])"
     }
 
     $versions
@@ -596,7 +596,7 @@ function Get-DependencyVersions
 
 function Get-TransportPackageVersions
 {
-    $dependencies = New-Object -TypeName PSObject
+    $versions = [ordered]@{}
 
     $root = Get-ProjectRoot
     $path = Join-Path $root 'eng'
@@ -609,14 +609,14 @@ function Get-TransportPackageVersions
     {
         $name = $dependency.Name
         $version = $dependency.Version
-        $dependencies | Add-Member -MemberType NoteProperty -Name $name -Value $version
+        $versions.Add($name, $version)
     }
-    ForEach ($p in $dependencies.PSObject.Properties)
+    ForEach ($name in $versions.Keys)
     {
-        Write-Host "...$($p.Name) = $($p.Value)"
+        Write-Host "...$($name) = $($versions[$name])"
     }
 
-    $dependencies
+    $versions
 }
 
 function Test-Dependencies
