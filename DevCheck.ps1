@@ -70,6 +70,8 @@ Param(
 
     [Switch]$CheckVisualStudio=$false,
 
+    [Switch]$CheckDependencies=$false,
+
     [Switch]$Clean=$false,
 
     [Switch]$NoInteractive=$false,
@@ -88,7 +90,7 @@ Param(
 $global:issues = 0
 
 $remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
-if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And ($CheckVisualStudio -eq $false))
+if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false))
 {
     $CheckAll = $true
 }
@@ -183,7 +185,7 @@ function Get-VSWhere
                 $global:issues += 1
                 return
             }
-            $vswhere_url = 'https://github.com/microsoft/vswhere/releases/download/2.8.4/vswhere.exe'
+            $vswhere_url = 'https://github.com/microsoft/vswhere/releases/download/3.1.1/vswhere.exe'
             Write-Host "Downloading $vswhere from $vswhere_url..."
             Write-Verbose "Executing: curl.exe --output $vswhere -L -# $vswhere_url"
             $p = Start-Process curl.exe -ArgumentList "--output $vswhere -L -# $vswhere_url" -Wait -NoNewWindow -PassThru
@@ -567,6 +569,76 @@ function Start-TAEFService
     }
 }
 
+function Get-DependencyVersions
+{
+    $versions = New-Object -TypeName PSObject
+
+    $root = Get-ProjectRoot
+    $path = Join-Path $root 'eng'
+    $filename = Join-Path $path 'Versions.props'
+    Write-Host "Reading $($filename)..."
+
+    $ErrorActionPreference = "Stop"
+    $xml = [xml](Get-Content $filename -EA:Stop)
+    ForEach ($element in $xml.SelectNodes("/*[local-name()='Project']/*[local-name()='PropertyGroup']/*"))
+    {
+        $name = $element.get_name()
+        $version = $element.'#text'
+        $versions | Add-Member -MemberType NoteProperty -Name $name -Value $version
+    }
+    ForEach ($p in $versions.PSObject.Properties)
+    {
+        Write-Host "...$($p.Name) = $($p.Value)"
+    }
+
+    $versions
+}
+
+function Get-TransportPackageVersions
+{
+    $dependencies = New-Object -TypeName PSObject
+
+    $root = Get-ProjectRoot
+    $path = Join-Path $root 'eng'
+    $filename = Join-Path $path 'Version.Details.xml'
+    Write-Host "Reading $($filename)..."
+
+    $ErrorActionPreference = "Stop"
+    $xml = [xml](Get-Content $filename -EA:Stop)
+    ForEach ($dependency in $xml.SelectNodes("/Dependencies/ToolsetDependencies/Dependency"))
+    {
+        $name = $dependency.Name
+        $version = $dependency.Version
+        $dependencies | Add-Member -MemberType NoteProperty -Name $name -Value $version
+    }
+    ForEach ($p in $dependencies.PSObject.Properties)
+    {
+        Write-Host "...$($p.Name) = $($p.Value)"
+    }
+
+    $dependencies
+}
+
+function Test-Dependencies
+{
+    # Get version information for tools we depend on
+    $dependencies = Get-DependencyVersions
+    if ([string]::IsNullOrEmpty($dependencies))
+    {
+        $global:issues++
+    }
+
+    # Get version information for transport packages we depende on
+    $transports = Get-TransportPackageVersions
+    if ([string]::IsNullOrEmpty($transports))
+    {
+        $global:issues++
+    }
+
+    Write-Host "Dependencies...$dependencies"
+    Write-Host "Transports...$transports"
+}
+
 Write-Output "Checking developer environment..."
 
 $cpu = Get-CpuArchitecture
@@ -615,6 +687,12 @@ if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
         $test = Start-TAEFService
     }
 }
+
+if (($CheckAll -ne $false) -Or ($CheckDependencies -ne $false))
+{
+    Test-Dependencies
+}
+
 
 if (($RemoveAll -ne $false) -Or ($RemoveTestCert -ne $false))
 {
