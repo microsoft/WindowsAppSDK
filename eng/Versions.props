@@ -6,8 +6,13 @@
     <CsWinRTDependencyDotNetCoreSdkPackageVersion>6.0.301</CsWinRTDependencyDotNetCoreSdkPackageVersion>
     <CsWinRTDependencyDotNetCoreRuntimePackageVersion>6.0.6</CsWinRTDependencyDotNetCoreRuntimePackageVersion>
     <CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>27</CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>
+
     <!-- TODO: Fix DownloadDotNetCoreSdk.ps1 script so we don't need this property -->
     <CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>$(CsWinRTDependencyDotNetCoreSdkPackageVersion)</CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>
+
+    <!-- TODO: REMOVE This belongs in Version.Details.xml -->
+    <MicrosoftFrameworkUdkPackageVersion>1.2.3-CI-25233.1000.221026-1354.0</MicrosoftFrameworkUdkPackageVersion>
+
     <!-- ShortForm Version Fields -->
     <CppWinRTVersion>2.0.220929.3</CppWinRTVersion>
     <FrameworkUdkVersion>$(MicrosoftFrameworkUdkPackageVersion)</FrameworkUdkVersion>

@@ -619,6 +619,49 @@ function Get-TransportPackageVersions
     $versions
 }
 
+function Test-PackagesConfig
+{
+    param(
+        [string] $filename,
+        $versions
+    )
+
+    $ErrorActionPreference = "Stop"
+    $xml = [xml](Get-Content $filename -EA:Stop)
+    ForEach ($package in $xml.packages.package)
+    {
+        $name = $package.id
+        $version = $package.version
+
+        if (-not($versions.Contains($name)))
+        {
+            Write-Host "...Unknown package $name in $filename"
+            $global:issues++
+        }
+        elseif ($version -ne $versions[$name])
+        {
+            Write-Host "...Unknown version $name=$version in $filename"
+            $global:issues++
+        }
+
+        if (-not($package.HasAttribute("targetFramework")))
+        {
+            Write-Host "ERROR: targetFramework=""native"" missing in $filename"
+            $global:issues++
+        }
+        else
+        {
+            $targetFramework = $package.targetFramework
+            if (($targetFramework -ne "native") -And ($targetFramework -ne "net45"))
+            {
+                Write-Host "ERROR: targetFramework != ""native"" in $filename"
+                $global:issues++
+            }
+        }
+
+    }
+}
+
 function Test-Dependencies
 {
     # Get version information for tools we depend on
@@ -641,8 +684,8 @@ function Test-Dependencies
     {
         ForEach ($item in $duplicates)
         {
-            $global:issues++
             Write-Host "ERROR: Dependency in Version.Details.xml and Versions.props"
+            $global:issues++
         }
     }
 
@@ -652,8 +695,8 @@ function Test-Dependencies
     {
         if ($versions.Contains($name))
         {
-            $global:issues++
             Write-Host "ERROR: Dependency defined multiple times ($name)"
+            $global:issues++
         }
         else
         {
@@ -665,8 +708,8 @@ function Test-Dependencies
     {
         if ($versions.Contains($name))
         {
-            $global:issues++
             Write-Host "ERROR: Dependency defined multiple times ($name)"
+            $global:issues++
         }
         else
         {
@@ -682,6 +725,7 @@ function Test-Dependencies
     $files = 0
     ForEach ($file in (Get-ChildItem -Path $path -Recurse -File 'packages.config'))
     {
+        $null = Test-PackagesConfig $file.FullName $versions
         $files++
     }
     Write-Host "...Scanned $($files) packages.config"
