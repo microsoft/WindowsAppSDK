@@ -9,6 +9,8 @@
 #include <winrt/Windows.Web.Http.h>
 #include <winrt/Windows.Web.Http.Headers.h>
 
+#include <TerminalVelocityFeatures-OAuth.h>
+
 namespace collections = winrt::Windows::Foundation::Collections;
 namespace crypto = winrt::Windows::Security::Cryptography;
 namespace foundation = winrt::Windows::Foundation;

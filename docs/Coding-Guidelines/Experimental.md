@@ -14,7 +14,7 @@ The implementation of experimental features in Windows App SDK makes heavy use o
 in different release channels. See the TerminalVelocity document for detailed information on how to
 implement an experimental feature using a specific technology (e.g. C++, IDL, WinRT).
 
-Your should ensure that your feature's state is disabled in Preview and Stable release channels, and
+You should ensure that your feature's state is disabled in Preview and Stable release channels, and
 enabled in the Experimental release channel.
 
 # Stripping experimental APIs from WinRT metadata (.winmd)

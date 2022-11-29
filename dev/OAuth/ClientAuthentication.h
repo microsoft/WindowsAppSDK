@@ -7,7 +7,7 @@ namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementa
 {
     struct ClientAuthentication : ClientAuthenticationT<ClientAuthentication>
     {
-        ClientAuthentication() = default;
+        ClientAuthentication();
         ClientAuthentication(http::Headers::HttpCredentialsHeaderValue const& authorization);
 
         static oauth::ClientAuthentication CreateForBasicAuthorization(const winrt::hstring& clientId,

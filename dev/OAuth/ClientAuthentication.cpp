@@ -1,7 +1,8 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include "common.h"
 
 #include "ClientAuthentication.h"
+
 #include <Microsoft.Windows.Security.Authentication.OAuth.ClientAuthentication.g.cpp>
 
 using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;
@@ -12,9 +13,15 @@ using namespace winrt::Windows::Web::Http::Headers;
 
 namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementation
 {
+    ClientAuthentication::ClientAuthentication()
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
+    }
+
     ClientAuthentication::ClientAuthentication(const HttpCredentialsHeaderValue& authorization) :
         m_authorization(authorization)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
     }
 
     oauth::ClientAuthentication ClientAuthentication::CreateForBasicAuthorization(const winrt::hstring& clientId,

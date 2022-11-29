@@ -2,6 +2,7 @@
 #include "common.h"
 
 #include "TokenResponse.h"
+
 #include <Microsoft.Windows.Security.Authentication.OAuth.TokenResponse.g.cpp>
 
 using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;

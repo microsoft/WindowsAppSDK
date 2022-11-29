@@ -21,6 +21,8 @@
 #include <winrt/Windows.Security.Cryptography.Core.h>
 #include <winrt/Windows.Storage.Streams.h>
 
+#include <TerminalVelocityFeatures-OAuth.h>
+
 #include "OAuthTestValues.h"
 
 // NOTE: Thise files don't include verything they need, hence they are here last
@@ -51,6 +53,12 @@ struct OAuthTests
 
     TEST_CLASS_SETUP(Setup)
     {
+        if (!::Microsoft::Windows::Security::Authentication::OAuth::Feature_OAuth::IsEnabled())
+        {
+            Log::Result(TestResults::Skipped, L"OAuth API Features are not enabled.");
+            return true;
+        }
+
         Test::Bootstrap::Setup();
 
         Test::Packages::WapProj::AddPackage(Test::TAEF::GetDeploymentDir(), L"OAuthTestAppPackage", L".msix");

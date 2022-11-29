@@ -2,6 +2,7 @@
 #include "common.h"
 
 #include "AuthRequestParams.h"
+
 #include <Microsoft.Windows.Security.Authentication.OAuth.AuthRequestParams.g.cpp>
 
 using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;
@@ -16,6 +17,7 @@ namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementa
         m_responseType(responseType),
         m_clientId(clientId)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
     }
 
     AuthRequestParams::AuthRequestParams(const winrt::hstring& responseType, const winrt::hstring& clientId,
@@ -24,6 +26,7 @@ namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementa
         m_clientId(clientId),
         m_redirectUri(redirectUri)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
     }
 
     oauth::AuthRequestParams AuthRequestParams::CreateForAuthorizationCodeRequest(const winrt::hstring& clientId)

@@ -2,6 +2,7 @@
 #include "common.h"
 
 #include "AuthFailure.h"
+
 #include <Microsoft.Windows.Security.Authentication.OAuth.AuthFailure.g.cpp>
 
 using namespace std::literals;

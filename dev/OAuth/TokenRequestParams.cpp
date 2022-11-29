@@ -1,10 +1,10 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include "common.h"
 
-#include "TokenRequestParams.h"
-#include <Microsoft.Windows.Security.Authentication.OAuth.TokenRequestParams.g.cpp>
-
 #include "AuthResponse.h"
+#include "TokenRequestParams.h"
+
+#include <Microsoft.Windows.Security.Authentication.OAuth.TokenRequestParams.g.cpp>
 
 using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;
 using namespace winrt::Windows::Foundation;
@@ -12,7 +12,10 @@ using namespace Collections;
 
 namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::implementation
 {
-    TokenRequestParams::TokenRequestParams(const winrt::hstring& grantType) : m_grantType(grantType) {}
+    TokenRequestParams::TokenRequestParams(const winrt::hstring& grantType) : m_grantType(grantType)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
+    }
 
     oauth::TokenRequestParams TokenRequestParams::CreateForAuthorizationCodeRequest(
         const oauth::AuthResponse& authResponse)

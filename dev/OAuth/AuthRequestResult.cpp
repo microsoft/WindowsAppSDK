@@ -1,11 +1,11 @@
 #include <pch.h>
 #include "common.h"
 
-#include "AuthRequestResult.h"
-#include <Microsoft.Windows.Security.Authentication.OAuth.AuthRequestResult.g.cpp>
-
 #include "AuthFailure.h"
+#include "AuthRequestResult.h"
 #include "AuthResponse.h"
+
+#include <Microsoft.Windows.Security.Authentication.OAuth.AuthRequestResult.g.cpp>
 
 using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;
 using namespace winrt::Windows::Foundation;

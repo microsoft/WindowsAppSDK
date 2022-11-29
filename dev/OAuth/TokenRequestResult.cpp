@@ -1,11 +1,11 @@
 #include <pch.h>
 #include "common.h"
 
-#include "TokenRequestResult.h"
-#include <Microsoft.Windows.Security.Authentication.OAuth.TokenRequestResult.g.cpp>
-
 #include "TokenFailure.h"
+#include "TokenRequestResult.h"
 #include "TokenResponse.h"
+
+#include <Microsoft.Windows.Security.Authentication.OAuth.TokenRequestResult.g.cpp>
 
 using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;
 using namespace winrt::Windows::Data::Json;

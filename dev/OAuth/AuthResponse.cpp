@@ -2,6 +2,7 @@
 #include "common.h"
 
 #include "AuthResponse.h"
+
 #include <Microsoft.Windows.Security.Authentication.OAuth.AuthResponse.g.cpp>
 
 using namespace std::literals;

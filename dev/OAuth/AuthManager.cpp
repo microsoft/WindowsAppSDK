@@ -1,14 +1,14 @@
-#include <pch.h>
+﻿#include <pch.h>
 #include "common.h"
 
 #include "AuthManager.h"
-#include <Microsoft.Windows.Security.Authentication.OAuth.AuthManager.g.cpp>
-
 #include "AuthRequestParams.h"
 #include "TokenFailure.h"
 #include "TokenRequestParams.h"
 #include "TokenRequestResult.h"
 #include "TokenResponse.h"
+
+#include <Microsoft.Windows.Security.Authentication.OAuth.AuthManager.g.cpp>
 
 using namespace winrt::Microsoft::Windows::Security::Authentication::OAuth;
 using namespace winrt::Windows::Data::Json;
@@ -21,6 +21,8 @@ namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::factory_im
     IAsyncOperation<AuthRequestResult> AuthManager::InitiateAuthRequestAsync(const Uri& authEndpoint,
         const oauth::AuthRequestParams& params)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
+
         auto paramsImpl = winrt::get_self<implementation::AuthRequestParams>(params);
         auto asyncOp = winrt::make_self<AuthRequestAsyncOperation>(paramsImpl);
 
@@ -51,6 +53,8 @@ namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::factory_im
 
     bool AuthManager::CompleteAuthRequest(const Uri& responseUri)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
+
         // We need to extract the state in order to find the original request
         winrt::hstring state;
         auto tryFindState = [&](const winrt::hstring& str)
@@ -157,6 +161,8 @@ namespace winrt::Microsoft::Windows::Security::Authentication::OAuth::factory_im
     IAsyncOperation<oauth::TokenRequestResult> AuthManager::RequestTokenAsync(Uri tokenEndpoint,
         oauth::TokenRequestParams params, oauth::ClientAuthentication clientAuth)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Security::Authentication::OAuth::Feature_OAuth::IsEnabled());
+
         auto paramsImpl = winrt::get_self<implementation::TokenRequestParams>(params);
         paramsImpl->finalize();
 

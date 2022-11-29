@@ -66,6 +66,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>
         ..\..\dev\Detours;
+        ..\..\dev\Common;
         $(OutDir)\..\WindowsAppRuntime_DLL;
         $(OutDir)\..\WindowsAppRuntime_BootstrapDLL;
         %(AdditionalIncludeDirectories)

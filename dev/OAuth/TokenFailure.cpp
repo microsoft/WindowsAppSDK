@@ -2,6 +2,7 @@
 #include "common.h"
 
 #include "TokenFailure.h"
+
 #include <Microsoft.Windows.Security.Authentication.OAuth.TokenFailure.g.cpp>
 
 using namespace std::literals;
