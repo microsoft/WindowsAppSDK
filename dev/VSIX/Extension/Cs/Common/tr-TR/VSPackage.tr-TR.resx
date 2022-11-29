@@ -212,31 +212,4 @@
   <data name="1035" xml:space="preserve">
     <value>Microsoft Store aracılığıyla dışarıdan yükleme veya dağıtım için bir MSIX paketi ile birlikte Windows UI Kitaplığı’nı (WinUI 3) temel alan bir Masaüstü uygulaması oluşturmaya yönelik bir proje şablonu.</value>
   </data>
-  <data name="1037" xml:space="preserve">
-    <value>Boş Uygulama (UWP'de WinUI 3)</value>
-  </data>
-  <data name="1038" xml:space="preserve">
-    <value>[Deneysel] Boş Uygulama (UWP'de WinUI 3)</value>
-  </data>
-  <data name="1039" xml:space="preserve">
-    <value>Windows Kullanıcı Arabirimi (UI) Kitaplığı'nı (WinUI 3) temel alan bir Evrensel Windows Platformu (UWP) uygulaması oluşturmaya yönelik bir proje. Windows Uygulama SDK'sı deneysel desteği gerektirir.</value>
-  </data>
-  <data name="1041" xml:space="preserve">
-    <value>Sınıf Kitaplığı (UWP'de WinUI 3)</value>
-  </data>
-  <data name="1042" xml:space="preserve">
-    <value>[Deneysel] Sınıf Kitaplığı (UWP'de WinUI 3)</value>
-  </data>
-  <data name="1043" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan Evrensel Windows Platformu (UWP) uygulamaları için yönetilen bir sınıf kitaplığı (.dll) oluşturmaya yönelik bir proje. Windows Uygulama SDK'sı deneysel desteği gerektirir.</value>
-  </data>
-  <data name="1045" xml:space="preserve">
-    <value>Windows Çalışma Zamanı Bileşeni (UWP'de WinUI 3)</value>
-  </data>
-  <data name="1046" xml:space="preserve">
-    <value>[Deneysel] Windows Çalışma Zamanı Bileşeni (UWP'de WinUI 3)</value>
-  </data>
-  <data name="1047" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan, Evrensel Windows Platformu (UWP) uygulamaları için yönetilen bir Windows Çalışma Zamanı Bileşeni (.winmd) oluşturmaya yönelik bir proje. Windows Uygulama SDK'sı deneysel desteği gerektirir.</value>
-  </data>
 </root>
