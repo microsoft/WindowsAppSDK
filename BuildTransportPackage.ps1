@@ -111,6 +111,11 @@ Try {
         & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile nuget.config
         & .\.nuget\nuget.exe restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" -configfile nuget.config
 
+        if ($lastexitcode -ne 0)
+        {
+            exit 1
+        }
+
         # If the call to restore WindowsAppRuntime_Insights fails check to make sure all Window SDK's from 17760 are installed.
         & .\.nuget\nuget.exe restore "dev\WindowsAppRuntime_Insights\packages.config" -ConfigFile "dev\WindowsAppRuntime_Insights\nuget.config" -PackagesDirectory "dev\WindowsAppRuntime_Insights\packages"
 
@@ -126,6 +131,11 @@ Try {
                 Copy-Item -Force $srcPath.FullName $destPath.FullName
                 }
             }
+        }
+
+        if ($lastexitcode -ne 0)
+        {
+            exit 1
         }
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildBinaries")) 
@@ -144,6 +154,10 @@ Try {
                                 /p:WindowsAppSDKCleanIntermediateFiles=true `
                                 /p:AppxSymbolPackageEnabled=false `
                                 /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline
+                if ($lastexitcode -ne 0)
+                {
+                    exit 1
+                }
             }
         }
     }
@@ -164,6 +178,10 @@ Try {
         foreach($platformToRun in $platform.Split(","))
         {
             & $MRTSourcesDirectory\build\init.cmd /envonly $platformToRun\fre
+            if ($lastexitcode -ne 0)
+            {
+                exit 1
+            }
         }
 
         # Build mrt core.
@@ -177,6 +195,11 @@ Try {
                                 /p:Configuration=$configurationToRun,Platform=$platformToRun `
                                 /p:PGOBuildMode=$PGOBuildMode `
                                 /binaryLogger:"BuildOutput/mrtcore.$platformToRun.$configurationToRun.binlog"
+
+                if ($lastexitcode -ne 0)
+                {
+                    exit 1
+                }
             }
         }
     }
@@ -187,6 +210,10 @@ Try {
         #------------------
         # build AnyCPU
         & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=AnyCPU
+        if ($lastexitcode -ne 0)
+        {
+            exit 1
+        }
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "StageFiles")) 
     {
@@ -209,6 +236,10 @@ Try {
             foreach($platformToRun in $platform.Split(","))
             {
                 .\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$BasePath" -Platform $PlatformToRun -Configuration $ConfigurationToRun
+                if ($lastexitcode -ne 0)
+                {
+                    exit 1
+                }
             }
         }
 
@@ -276,6 +307,11 @@ Try {
         Copy-Item -Path "$nuSpecsPath\AppxManifest.xml" -Destination "$BasePath"
         Copy-Item -Path "LICENSE" -Destination "$BasePath" -force
 
+        if ($lastexitcode -ne 0)
+        {
+            exit 1
+        }
+
         # for some reason xslt.load changes the working directory to C:\windows\system32.
         # store the current working directory here.
         $workingDirectory = get-location
@@ -286,6 +322,11 @@ Try {
         $xslt = New-Object System.Xml.Xsl.XslCompiledTransform
         $xslt.Load("$workingDirectory\build\TransformAppxManifest.xslt")
         $xslt.Transform("$workingDirectory\$BasePath\AppxManifest.xml", "$workingDirectory\$manifestPath\Microsoft.WindowsAppSdk.Foundation.manifest")
+
+        if ($lastexitcode -ne 0)
+        {
+            exit 1
+        }
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "PackNuget")) 
     {
@@ -299,6 +340,11 @@ Try {
 
         # Make the foundation transport package.
         & .\.nuget\nuget.exe pack $nuspecPath -BasePath $BasePath -OutputDirectory $OutputDirectory
+
+        if ($lastexitcode -ne 0)
+        {
+            exit 1
+        }
     }
 } 
 Catch 
