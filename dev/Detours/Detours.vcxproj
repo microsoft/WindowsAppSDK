@@ -6,6 +6,7 @@
                 to build Detours from source but we carefully do so, to build Detours the same way Detours' makefiles do.
                 Be very very careful changing anything in this file
     -->
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="..\..\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('..\..\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" />
   <Import Project="..\..\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('..\..\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props')" />
   <Import Project="..\..\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props" Condition="Exists('..\..\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props')" />
@@ -42,7 +43,6 @@
     <RootNamespace>Detours</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
