@@ -281,7 +281,9 @@ namespace WindowsAppRuntimeInstaller
         // Check if a higher version of the package is already installed.
         PackageManager packageManager;
         winrt::hstring currentUserSID;
-        const auto installedPackages = packageManager.FindPackagesForUser(currentUserSID, packageProperties->familyName.get());
+        auto installedPackages{ packageManager.FindPackagesForUserWithPackageTypes(currentUserSID, packageProperties->familyName.get(),
+                                                                                                            ::Windows::Management::Deployment::PackageTypes::Framework |
+                                                                                                            ::Windows::Management::Deployment::PackageTypes::Main) };
         bool isPackageInstalledAndIsPackageStatusOK{};
 
         // installedPackages can contain only one version of the packagefamily across all servicing revisions of a WindowsAppSDK version.
@@ -291,11 +293,7 @@ namespace WindowsAppRuntimeInstaller
             // For the already installed package of same WindowsAppSDK Major.Minor version with matching architecture, compare version
             if (installedPackage.Id().Architecture() == packageProperties->architecture)
             {
-                UINT64 installedPackageVersion = ((static_cast<UINT64>(installedPackage.Id().Version().Major) << 48) +
-                    (static_cast<UINT64>(installedPackage.Id().Version().Minor) << 32) +
-                    (static_cast<UINT64>(installedPackage.Id().Version().Build) << 16) +
-                    static_cast<UINT64>(installedPackage.Id().Version().Revision));
-
+                const auto installedPackageVersion{ AppModel::Package::ToPackageVersion(installedPackage.Id().Version()).Version };
                 if (installedPackageVersion > packageProperties->version)
                 {
                     installActivityContext.SetExistingPackageIfHigherVersion(installedPackage.Id().FullName());

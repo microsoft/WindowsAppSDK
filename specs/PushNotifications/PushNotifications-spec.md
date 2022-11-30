@@ -63,7 +63,7 @@ We will prioritize the following feature set for Windows App SDK:
 A Portal Registration flow through
 [AAD (Azure Active Directory)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
 will also be defined that removes the dependency of the Push Flow with the Partner Center Portal.
-The RemoteIdentifier GUID in this spec maps to the ApplicationId in the AAD App Registration
+The RemoteIdentifier GUID in this spec maps to the ObjectId in the AAD App Registration
 process. Below is an illustration of the proposed flow through AAD:
 ![Push Flow For Windows App SDK](Push.PNG)
 

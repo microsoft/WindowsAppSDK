@@ -42,6 +42,16 @@ inline std::vector<std::wstring> FindByFamily(const std::wstring& packageFamilyN
 {
     return FindByFamily(packageFamilyName.c_str());
 }
+
+inline PACKAGE_VERSION ToPackageVersion(winrt::Windows::ApplicationModel::PackageVersion const& from)
+{
+    PACKAGE_VERSION to{};
+    to.Major = from.Major;
+    to.Minor = from.Minor;
+    to.Build = from.Build;
+    to.Revision = from.Revision;
+    return to;
+}
 }
 
 #endif // __APPMODEL_PACKAGE_H

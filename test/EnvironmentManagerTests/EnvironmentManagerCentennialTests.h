@@ -26,19 +26,21 @@ namespace WindowsAppSDKEnvironmentManagerTests
                 return false;
             }
 
-            ::Test::Bootstrap::Setup();
+            ::Test::Bootstrap::SetupPackages();
 
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            ::Test::Bootstrap::Cleanup();
+            ::Test::Bootstrap::CleanupPackages();
             return true;
         }
 
         TEST_METHOD_SETUP(CentennialWriteEVs)
         {
+            ::Test::Bootstrap::SetupBootstrap();
+
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
@@ -50,6 +52,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
 
         TEST_METHOD_CLEANUP(CentennialRemoveEVs)
         {
+            ::Test::Bootstrap::CleanupBootstrap();
             UserCleanup();
             MachineCleanup();
             return true;
@@ -58,6 +61,8 @@ namespace WindowsAppSDKEnvironmentManagerTests
         TEST_METHOD(CentennialTestGetForProcess);
         TEST_METHOD(CentennialTestGetForUser);
         TEST_METHOD(CentennialTestGetForMachine);
+
+        TEST_METHOD(CentennialTestAreChangesTracked);
 
         TEST_METHOD(CentennialTestGetEnvironmentVariablesForProcess);
         TEST_METHOD(CentennialTestGetEnvironmentVariablesForUser);

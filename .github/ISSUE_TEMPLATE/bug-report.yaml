@@ -35,14 +35,9 @@ body:
       label: NuGet package version
       description: Specify the version of Windows App SDK (or Project Reunion) you're using.
       options:
-        - "1.2.220727.1-experimental1"
-        - "1.1.4"
-        - "1.1.0-preview3"
-        - "1.0.4"
-        - "1.0.0-preview3"
-        - "1.0.0-experimental1"
-        - "0.8.12"
-        - "0.5"
+        - "Windows App SDK 1.2.1: 1.2.221116.1"
+        - "1.2.220909.2-experimental2"
+        - "1.1.5"
   - type: dropdown
     attributes:
       label: Packaging type
@@ -58,7 +53,9 @@ body:
       multiple: true
       options:
         - "Insider Build (xxxxx)"
+        - "Windows 11 version 22H2 (22621, 2022 Update)"
         - "Windows 11 version 21H2 (22000)"
+        - "Windows 10 version 22H2 (19045, 2022 Update)"
         - "Windows 10 version 21H2 (19044, November 2021 Update)"
         - "Windows 10 version 21H1 (19043, May 2021 Update)"
         - "Windows 10 version 20H2 (19042, October 2020 Update)"
@@ -75,7 +72,6 @@ body:
         - "Visual Studio 2022-preview"
         - "Visual Studio 2022"
         - "Visual Studio 2019"
-        - "Visual Studio 2017"
         - "Other"
   - type: textarea
     attributes:

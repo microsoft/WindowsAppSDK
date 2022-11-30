@@ -212,13 +212,4 @@
   <data name="1035" xml:space="preserve">
     <value>Windows UI 라이브러리(WinUI 3)를 기반으로 하는 데스크톱 및 유니버설 Windows 플랫폼(UWP) 앱 두 가지 모두를 위한 C++/WinRT Windows 런타임 구성 요소(.winmd)를 만들기 위한 프로젝트입니다.</value>
   </data>
-  <data name="1037" xml:space="preserve">
-    <value>빈 앱(UWP의 WinUI 3)</value>
-  </data>
-  <data name="1038" xml:space="preserve">
-    <value>[실험적] 빈 앱(UWP의 WinUI 3)</value>
-  </data>
-  <data name="1039" xml:space="preserve">
-    <value>Windows UI 라이브러리(WinUI 3)를 기반으로 하는 유니버설 Windows 플랫폼(UWP) 앱을 만들기 위한 프로젝트입니다. Windows 앱 SDK 실험적 지원이 필요합니다.</value>
-  </data>
 </root>

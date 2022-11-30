@@ -212,31 +212,4 @@
   <data name="1035" xml:space="preserve">
     <value>A project template for creating a Desktop app based on the Windows UI Library (WinUI 3) along with a MSIX package for side-loading or distribution via the Microsoft Store.</value>
   </data>
-  <data name="1037" xml:space="preserve">
-    <value>Blank App (WinUI 3 in UWP)</value>
-  </data>
-  <data name="1038" xml:space="preserve">
-    <value>[Experimental] Blank App (WinUI 3 in UWP)</value>
-  </data>
-  <data name="1039" xml:space="preserve">
-    <value>A project for creating a Universal Windows Platform (UWP) app based on the Windows UI Library (WinUI 3). Requires Windows App SDK experimental support.</value>
-  </data>
-  <data name="1041" xml:space="preserve">
-    <value>Class Library (WinUI 3 in UWP)</value>
-  </data>
-  <data name="1042" xml:space="preserve">
-    <value>[Experimental] Class Library (WinUI 3 in UWP)</value>
-  </data>
-  <data name="1043" xml:space="preserve">
-    <value>A project for creating a managed class library (.dll) for Universal Windows Platform (UWP) apps based on the Windows UI Library (WinUI 3). Requires Windows App SDK experimental support.</value>
-  </data>
-  <data name="1045" xml:space="preserve">
-    <value>Windows Runtime Component (WinUI 3 in UWP)</value>
-  </data>
-  <data name="1046" xml:space="preserve">
-    <value>[Experimental] Windows Runtime Component (WinUI 3 in UWP)</value>
-  </data>
-  <data name="1047" xml:space="preserve">
-    <value>A project for creating a managed Windows Runtime Component (.winmd) for Universal Windows Platform (UWP) apps, based on the Windows UI Library (WinUI 3). Requires Windows App SDK experimental support.</value>
-  </data>
 </root>

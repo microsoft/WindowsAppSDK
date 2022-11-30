@@ -212,31 +212,4 @@
   <data name="1035" xml:space="preserve">
     <value>Windows UI ライブラリ (WinUI 3) に基づいてデスクトップ アプリを作成するためのプロジェクト テンプレートと、Microsoft Store を介したサイドローディングまたは配布用の MSIX パッケージです。</value>
   </data>
-  <data name="1037" xml:space="preserve">
-    <value>空のアプリ (UWP の WinUI 3)</value>
-  </data>
-  <data name="1038" xml:space="preserve">
-    <value>[試験段階] 空のアプリ (UWP の WinUI 3)</value>
-  </data>
-  <data name="1039" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づいてユニバーサル Windows プラットフォーム (UWP) アプリを作成するためのプロジェクトで、Windows アプリ SDK の試験的なサポートが必要です。</value>
-  </data>
-  <data name="1041" xml:space="preserve">
-    <value>クラス ライブラリ (UWP の WinUI 3)</value>
-  </data>
-  <data name="1042" xml:space="preserve">
-    <value>[試験段階] クラス ライブラリ (UWP の WinUI 3)</value>
-  </data>
-  <data name="1043" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づいてユニバーサル Windows プラットフォーム (UWP) アプリ用のマネージド クラス ライブラリ (.dll) を作成するためのプロジェクトで、Windows アプリ SDK の試験的なサポートが必要です。</value>
-  </data>
-  <data name="1045" xml:space="preserve">
-    <value>Windows ランタイム コンポーネント (UWP の WinUI 3)</value>
-  </data>
-  <data name="1046" xml:space="preserve">
-    <value>[試験段階]Windows ランタイム コンポーネント (UWP の WinUI 3)</value>
-  </data>
-  <data name="1047" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づいて、ユニバーサル Windows プラットフォーム (UWP) アプリ用のマネージド Windows ランタイム コンポーネント (.winmd) を作成するためのプロジェクトです。Windows アプリ SDK の試験的なサポートが必要です。</value>
-  </data>
 </root>

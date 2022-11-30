@@ -317,13 +317,13 @@ HRESULT WINAPI RoResolveNamespaceDetour(
 
 HRESULT ExtRoLoadCatalog()
 {
-    WCHAR filePath[MAX_PATH];
+    WCHAR filePath[MAX_PATH]{};
     if (!GetModuleFileNameW(nullptr, filePath, _countof(filePath)))
     {
         return HRESULT_FROM_WIN32(GetLastError());
     }
     std::wstring manifestPath(filePath);
-    HANDLE hActCtx = INVALID_HANDLE_VALUE;
+    HANDLE hActCtx{ INVALID_HANDLE_VALUE };
     auto exit = wil::scope_exit([&]
     {
         if (hActCtx != INVALID_HANDLE_VALUE)
@@ -333,22 +333,28 @@ HRESULT ExtRoLoadCatalog()
     });
     wil::unique_hmodule exeModule;
     RETURN_IF_WIN32_BOOL_FALSE(GetModuleHandleExW(0, nullptr, &exeModule));
-    ACTCTXW acw = { sizeof(acw) };
+    ACTCTXW acw{ sizeof(acw) };
     acw.lpSource = manifestPath.c_str();
     acw.hModule = exeModule.get();
     acw.lpResourceName = MAKEINTRESOURCEW(1);
     acw.dwFlags = ACTCTX_FLAG_HMODULE_VALID | ACTCTX_FLAG_RESOURCE_NAME_VALID;
 
     hActCtx = CreateActCtxW(&acw);
-    RETURN_LAST_ERROR_IF(!hActCtx);
-    if (hActCtx == INVALID_HANDLE_VALUE)
+    if ((hActCtx == INVALID_HANDLE_VALUE) || (hActCtx == nullptr))
     {
-        SetLastError(ERROR_OUTOFMEMORY);
-        return HRESULT_FROM_WIN32(GetLastError());
+        const auto lastError{ GetLastError() };
+        if ((lastError == ERROR_RESOURCE_DATA_NOT_FOUND) || (lastError == ERROR_RESOURCE_TYPE_NOT_FOUND))
+        {
+            // No resources in the executable (ERROR_RESOURCE_DATA_NOT_FOUND) or there are resources
+            // but not an embedded SxS manifest we're looking for (ERROR_RESOURCE_TYPE_NOT_FOUND).
+            // Either way it's Not Found == Nothing to do!
+            return S_OK;
+        }
+        RETURN_WIN32(lastError);
     }
 
     PACTIVATION_CONTEXT_DETAILED_INFORMATION actCtxInfo = nullptr;
-    SIZE_T bufferSize = 0;
+    SIZE_T bufferSize{};
     (void)QueryActCtxW(0,
         hActCtx,
         nullptr,
@@ -357,13 +363,9 @@ HRESULT ExtRoLoadCatalog()
         0,
         &bufferSize);
     RETURN_HR_IF(HRESULT_FROM_WIN32(GetLastError()), bufferSize == 0);
-    auto actCtxInfoBuffer = std::make_unique<BYTE[]>(bufferSize);
+    auto actCtxInfoBuffer{ std::make_unique<BYTE[]>(bufferSize) };
+    RETURN_IF_NULL_ALLOC(actCtxInfoBuffer);
     actCtxInfo = reinterpret_cast<PACTIVATION_CONTEXT_DETAILED_INFORMATION>(actCtxInfoBuffer.get());
-    if (!actCtxInfo)
-    {
-        SetLastError(ERROR_OUTOFMEMORY);
-        return HRESULT_FROM_WIN32(GetLastError());
-    }
 
     RETURN_IF_WIN32_BOOL_FALSE(QueryActCtxW(0,
         hActCtx,
@@ -385,13 +387,9 @@ HRESULT ExtRoLoadCatalog()
             0,
             &bufferSize);
         RETURN_HR_IF(HRESULT_FROM_WIN32(GetLastError()), bufferSize == 0);
-        auto asmInfobuffer = std::make_unique<BYTE[]>(bufferSize);
+        auto asmInfobuffer{ std::make_unique<BYTE[]>(bufferSize) };
+        RETURN_IF_NULL_ALLOC(asmInfobuffer);
         asmInfo = reinterpret_cast<PACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION>(asmInfobuffer.get());
-        if (!asmInfo)
-        {
-            SetLastError(ERROR_OUTOFMEMORY);
-            return HRESULT_FROM_WIN32(GetLastError());
-        }
 
         RETURN_IF_WIN32_BOOL_FALSE(QueryActCtxW(0,
             hActCtx,

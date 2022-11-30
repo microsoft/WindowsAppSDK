@@ -45,6 +45,6 @@ steps:
         $pfxPath = (Join-Path $env:Build_SourcesDirectory 'MyCert.pfx')
         [System.IO.File]::WriteAllBytes($pfxPath, $certificateBytes)
 
-  - task: NuGetAuthenticate@0
+  - task: NuGetAuthenticate@1
     inputs:
       nuGetServiceConnections: ${{ parameters.NuGetServiceConnectionName }}

@@ -9,21 +9,21 @@
 
 std::recursive_mutex MddCore::PackageGraphManager::s_lock;
 MddCore::PackageGraph MddCore::PackageGraphManager::s_packageGraph;
-volatile ULONG MddCore::PackageGraphManager::s_generationId{};
+volatile ULONG MddCore::PackageGraphManager::s_packageGraphRevisionId{};
 
-UINT32 MddCore::PackageGraphManager::GetGenerationId()
+UINT32 MddCore::PackageGraphManager::GetPackageGraphRevisionId()
 {
-    return static_cast<UINT32>(ReadULongAcquire(&s_generationId));
+    return static_cast<UINT32>(ReadULongAcquire(&s_packageGraphRevisionId));
 }
 
-UINT32 MddCore::PackageGraphManager::IncrementGenerationId()
+UINT32 MddCore::PackageGraphManager::IncrementPackageGraphRevisionId()
 {
-    return static_cast<UINT32>(InterlockedIncrement(&s_generationId));
+    return static_cast<UINT32>(InterlockedIncrement(&s_packageGraphRevisionId));
 }
 
-UINT32 MddCore::PackageGraphManager::SetGenerationId(const UINT32 value)
+UINT32 MddCore::PackageGraphManager::SetPackageGraphRevisionId(const UINT32 value)
 {
-    return static_cast<UINT32>(InterlockedExchange(&s_generationId, value));
+    return static_cast<UINT32>(InterlockedExchange(&s_packageGraphRevisionId, value));
 }
 
 HRESULT MddCore::PackageGraphManager::ResolvePackageDependency(
@@ -47,7 +47,7 @@ HRESULT MddCore::PackageGraphManager::AddToPackageGraph(
 
     RETURN_IF_FAILED(s_packageGraph.Add(packageDependencyId, rank, options, *context, packageFullName));
 
-    IncrementGenerationId();
+    IncrementPackageGraphRevisionId();
     return S_OK;
 }
 
@@ -63,7 +63,7 @@ void MddCore::PackageGraphManager::RemoveFromPackageGraph(
 
     (void) LOG_IF_FAILED(s_packageGraph.Remove(context));
 
-    IncrementGenerationId();
+    IncrementPackageGraphRevisionId();
 }
 
 HRESULT MddCore::PackageGraphManager::GetPackageDependencyForContext(
@@ -80,7 +80,7 @@ HRESULT MddCore::PackageGraphManager::GetPackageDependencyForContext(
 //     buffer is a byte[] containing PACKAGE_INFO[count] followed by all variable length data.
 // Pointers in PACKAGE_INFO (all PWSTR) are null or point to their value in the variable length data.
 //   * PackageInfoType_PackageInfoGeneration
-//     buffer is a UINT32 containing the GenerationId. count is unused (always set to zero if not null).
+//     buffer is a UINT32 containing the RevisionId (aka GenerationId). count is unused (always set to zero if not null).
 //
 // On success but \c bufferLength is too small to hold all the data, we still set bufferLength to the
 // size needed for all this data but return ERROR_INSUFFICIENT_BUFFER (as an HRESULT).
@@ -94,7 +94,7 @@ HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo3(
     // Check parameter(s) per GetCurrentPackageInfo3 compatibility
     //   * bufferLength is required
     //   * buffer is required if bufferLength >0
-    //   * count is required if buffer is not nullptr, unless caller is getting the generation
+    //   * count is required if buffer is not nullptr, unless caller is getting the revision (aka generation)
     RETURN_HR_IF(E_INVALIDARG, (bufferLength == nullptr) || (*bufferLength > 0 && buffer == nullptr) || ((count == nullptr) && (buffer != nullptr) && (packageInfoType != PackageInfoType_PackageInfoGeneration)));
 
     if (count)
@@ -121,15 +121,15 @@ HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo3(
         return HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE);
     }
 
-    // Are we asked for the GenerationId?
+    // Are we asked for the RevisionId (aka GenerationId)?
     if (packageInfoType == PackageInfoType_PackageInfoGeneration)
     {
         const bool insufficientSpace{ *bufferLength < sizeof(UINT32) };
         *bufferLength = sizeof(UINT32);
         RETURN_HR_IF_EXPECTED(HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER), insufficientSpace);
 
-        UINT32* generationId{ reinterpret_cast<UINT32*>(buffer) };
-        *generationId = GetGenerationId();
+        UINT32* revisionId{ reinterpret_cast<UINT32*>(buffer) };
+        *revisionId = GetPackageGraphRevisionId();
         return S_OK;
     }
     else if ((packageInfoType != PackageInfoType_PackageInfoInstallPath) &&
