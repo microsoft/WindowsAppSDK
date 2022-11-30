@@ -35,8 +35,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DynamicDependency.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.ApplicationModel.DynamicDependency -Output $(Build.SourcesDirectory)\dev\common\MddTerminalVelocityFeatures.h
-    workingDirectory: '$(Build.SourcesDirectory)'
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DynamicDependency.xml -Channel 'experimental' -Language C++ -Namespace Microsoft.Windows.ApplicationModel.DynamicDependency -Output $(Build.SourcesDirectory)\dev\common\MddTerminalVelocityFeatures.h
 
 - task: powershell@2
   displayName: 'Create DeploymentAPI TerminalVelocity features'
