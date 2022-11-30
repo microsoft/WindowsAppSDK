@@ -71,6 +71,14 @@ steps:
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2
+  displayName: 'Create OAuth TerminalVelocity features'
+  inputs:
+    targetType: filePath
+    filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-OAuth.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.Security.Authentication.OAuth -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-OAuth.h
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: powershell@2
   name: UpdateTraceloggingConfig
   inputs:
     targetType: 'inline'
