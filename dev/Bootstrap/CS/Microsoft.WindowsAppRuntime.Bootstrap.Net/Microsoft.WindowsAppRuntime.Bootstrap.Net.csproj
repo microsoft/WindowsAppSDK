@@ -1,6 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.1" />
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
