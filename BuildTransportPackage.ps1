@@ -166,6 +166,11 @@ Try {
 
         #Restore packages from mrt.
         & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\MrtCore.sln" -ConfigFile nuget.config -ConfigFile nuget.config -PackagesDirectory "$MRTSourcesDirectory\mrt\packages"
+        if ($lastexitcode -ne 0)
+        {
+            Write-Host "Failure in NugetRestore"
+            exit 1
+        }
 
         # Init mrtcore
         foreach($platformToRun in $platform.Split(","))
@@ -173,6 +178,7 @@ Try {
             & $MRTSourcesDirectory\build\init.cmd /envonly $platformToRun\fre
             if ($lastexitcode -ne 0)
             {
+                Write-Host "Failure in Init mrtcore"
                 exit 1
             }
         }
