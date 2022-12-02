@@ -10,7 +10,12 @@
     <CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>$(CsWinRTDependencyDotNetCoreSdkPackageVersion)</CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>
 
     <!-- ShortForm Version Fields -->
+    <CppWinRTVersion>2.0.220929.3</CppWinRTVersion>
     <FrameworkUdkVersion>$(MicrosoftFrameworkUdkPackageVersion)</FrameworkUdkVersion>
-
+    <BuildTasksGitVersion>1.1.1</BuildTasksGitVersion>
+    <MicrosoftTaefVersion>10.58.210222006-develop</MicrosoftTaefVersion>
+    <SourceLinkCommonVersion>1.1.1</SourceLinkCommonVersion>
+    <SourceLinkGitHubVersion>1.1.1</SourceLinkGitHubVersion>
+    <WindowsImplementationLibraryVersion>1.0.220914.1</WindowsImplementationLibraryVersion>
   </PropertyGroup>
 </Project>

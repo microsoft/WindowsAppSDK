@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\..\..\..\packages\Microsoft.SourceLink.GitHub.1.1.1\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('..\..\..\..\..\packages\Microsoft.SourceLink.GitHub.1.1.1\build\Microsoft.SourceLink.GitHub.props')" />
-  <Import Project="..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.1.1.1\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.1.1.1\build\Microsoft.Build.Tasks.Git.props')" />
-  <Import Project="..\..\..\..\..\packages\Microsoft.SourceLink.Common.1.1.1\build\Microsoft.SourceLink.Common.props" Condition="Exists('..\..\..\..\..\packages\Microsoft.SourceLink.Common.1.1.1\build\Microsoft.SourceLink.Common.props')" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="..\..\..\..\..\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('..\..\..\..\..\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" />
+  <Import Project="..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props')" />
+  <Import Project="..\..\..\..\..\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props" Condition="Exists('..\..\..\..\..\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props')" />
   <PropertyGroup Label="DevEnvironmentScenario">
     <ConsumeWinRT>false</ConsumeWinRT>
     <UseModernCompliantVclibs>true</UseModernCompliantVclibs>
@@ -44,7 +45,6 @@
     <UseNonThrowingNew>true</UseNonThrowingNew>
     <BinplaceLinkedAdditionalOptions>/:FULLCLASS</BinplaceLinkedAdditionalOptions>
   </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -109,21 +109,21 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
-    <Import Project="..\..\..\..\..\packages\Microsoft.SourceLink.Common.1.1.1\build\Microsoft.SourceLink.Common.targets" Condition="Exists('..\..\..\..\..\packages\Microsoft.SourceLink.Common.1.1.1\build\Microsoft.SourceLink.Common.targets')" />
-    <Import Project="..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.1.1.1\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.1.1.1\build\Microsoft.Build.Tasks.Git.targets')" />
-    <Import Project="..\..\..\..\..\packages\Microsoft.SourceLink.GitHub.1.1.1\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('..\..\..\..\..\packages\Microsoft.SourceLink.GitHub.1.1.1\build\Microsoft.SourceLink.GitHub.targets')" />
+    <Import Project="..\..\..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220914.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220914.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
+    <Import Project="..\..\..\..\..\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets" Condition="Exists('..\..\..\..\..\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets')" />
+    <Import Project="..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" />
+    <Import Project="..\..\..\..\..\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('..\..\..\..\..\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
-    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.SourceLink.Common.1.1.1\build\Microsoft.SourceLink.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.SourceLink.Common.1.1.1\build\Microsoft.SourceLink.Common.props'))" />
-    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.SourceLink.Common.1.1.1\build\Microsoft.SourceLink.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.SourceLink.Common.1.1.1\build\Microsoft.SourceLink.Common.targets'))" />
-    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.1.1.1\build\Microsoft.Build.Tasks.Git.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.1.1.1\build\Microsoft.Build.Tasks.Git.props'))" />
-    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.1.1.1\build\Microsoft.Build.Tasks.Git.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.1.1.1\build\Microsoft.Build.Tasks.Git.targets'))" />
-    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.SourceLink.GitHub.1.1.1\build\Microsoft.SourceLink.GitHub.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.SourceLink.GitHub.1.1.1\build\Microsoft.SourceLink.GitHub.props'))" />
-    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.SourceLink.GitHub.1.1.1\build\Microsoft.SourceLink.GitHub.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.SourceLink.GitHub.1.1.1\build\Microsoft.SourceLink.GitHub.targets'))" />
+    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220914.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220914.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
+    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props'))" />
+    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets'))" />
+    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props'))" />
+    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets'))" />
+    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props'))" />
+    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets'))" />
   </Target>
 </Project>
