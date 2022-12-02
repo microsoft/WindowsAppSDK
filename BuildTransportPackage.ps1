@@ -116,9 +116,6 @@ Try {
             exit 1
         }
 
-        # If the call to restore WindowsAppRuntime_Insights fails check to make sure all Window SDK's from 17760 are installed.
-        & .\.nuget\nuget.exe restore "dev\WindowsAppRuntime_Insights\packages.config" -ConfigFile "dev\WindowsAppRuntime_Insights\nuget.config" -PackagesDirectory "dev\WindowsAppRuntime_Insights\packages"
-
         $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
 
         if (($srcPath -ne $null)){
