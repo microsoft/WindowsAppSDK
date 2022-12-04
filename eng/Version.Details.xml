@@ -5,6 +5,10 @@
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionClosed</Uri>
       <Sha>cc4045b6190f44ed55e10700cc9f0d25a7a60341</Sha>
     </Dependency>
+    <Dependency Name="Microsoft.FrameworkUdk" Version="1.2.3-CI-25233.1000.221026-1354.0">
+      <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
+      <Sha>cd0911a72c1c9981849737cadbb30f0027a2dd7e</Sha>
+    </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
     <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.0.0">

@@ -38,13 +38,4 @@ interface INotificationsLongRunningPlatform : IUnknown
     HRESULT RemoveToastRegistrationMapping([in] LPCWSTR processName);
 };
 
-[uuid(PUSHNOTIFICATIONS_LIBID_UUID)]
-[version(1.0)]
-library NotificationsLongRunningPlatformLibrary
-{
-    [uuid(PUSHNOTIFICATIONS_IMPL_CLSID_UUID)]
-    coclass NotificationsLongRunningPlatform
-    {
-        [default] interface INotificationsLongRunningPlatform;
-    };
-};
+declare_guid(CLSID_NotificationsLongRunningPlatform, PUSHNOTIFICATIONS_IMPL_CLSID_UUID);

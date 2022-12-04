@@ -86,6 +86,8 @@
     <MakeMsixInputsWithLocations Include="$(OutDir)..\DeploymentAgent\DeploymentAgent.pdb">
       <TargetFile>DeploymentAgent.pdb</TargetFile>
     </MakeMsixInputsWithLocations>
+    <MakeMsixInputs Include="$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.dll" />
+    <MakeMsixInputs Include="$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.pdb" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" />
