@@ -577,11 +577,12 @@ Write-Output "Windows App SDK location...$project_root"
 
 if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
 {
-    Test-VisualStudio2022Install
+    # Test-VisualStudio2022Install
 }
 
 if (($CheckAll -ne $false) -Or ($CheckTestPfx -ne $false))
 {
+    Write-Host "I ran"
     $test = Test-DevTestPfx
     if ($test -ne $true)
     {
