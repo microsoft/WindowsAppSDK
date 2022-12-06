@@ -39,7 +39,8 @@
 
       <!-- /Brepro Enables deterministic output from the compiler toolchain -->
       <!-- /PDBALTPATH Stops pdb's basepath from appearing in the Debug Directories of the image header -->
-      <AdditionalOptions>%(AdditionalOptions) /Brepro /PDBALTPATH:$(TargetName).pdb</AdditionalOptions>
+      <!-- /CETCOMPAT enables Control-flow Enforcement Technology (CET) Shadow Stack mitigation. BinSkim asks for this. -->
+      <AdditionalOptions>%(AdditionalOptions) /Brepro /PDBALTPATH:$(TargetName).pdb /CETCOMPAT</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
 
