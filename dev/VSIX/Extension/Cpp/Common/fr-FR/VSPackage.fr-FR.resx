@@ -212,13 +212,4 @@
   <data name="1035" xml:space="preserve">
     <value>Projet de création d’un composant de Windows Runtime C++/WinRT (.winmd) pour les applications de bureau et de plateforme Windows universelle (UWP), basé sur la bibliothèque d’interface utilisateur Windows (WinUI 3).</value>
   </data>
-  <data name="1037" xml:space="preserve">
-    <value>Application vide (WinUI 3 dans UWP)</value>
-  </data>
-  <data name="1038" xml:space="preserve">
-    <value>[Expérimental] Application vide (WinUI 3 dans UWP)</value>
-  </data>
-  <data name="1039" xml:space="preserve">
-    <value>Projet de création d’une application de plateforme Windows universelle (UWP) basée sur la bibliothèque d’interface utilisateur Windows (WinUI 3). Nécessite la prise en charge expérimentale de SDK d’application Windows.</value>
-  </data>
 </root>

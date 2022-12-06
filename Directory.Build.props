@@ -13,6 +13,7 @@
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)Generated Files\</GeneratedFilesDir>
     <GenerateProjectSpecificOutputFolder>True</GenerateProjectSpecificOutputFolder>
     <ForceImportAfterCppTargets>$(BuildRoot)AfterCpp.targets</ForceImportAfterCppTargets>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>

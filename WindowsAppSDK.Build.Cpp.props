@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
@@ -29,7 +29,9 @@
       <!-- /ZH:SHA_256 Hash algorithm for file checksums in debug info -->
       <!-- /d1trimfile:$(RepoRoot) If the prefix for a source file path name string matches "trim-string", 
       then the prefix is removed and is replaced with the mapping-identifier (if present). Requires /Brepro. -->
-      <AdditionalOptions>%(AdditionalOptions) /d1trimfile:$(RepoRoot) /ZH:SHA_256</AdditionalOptions>
+      <!-- /Qspectre Specifies compiler generation of instructions to mitigate certain Spectre variant 1 
+      security vulnerabilities. BinSkim asks for this. -->
+      <AdditionalOptions>%(AdditionalOptions) /d1trimfile:$(RepoRoot) /ZH:SHA_256 /Qspectre</AdditionalOptions>
     </ClCompile>
     <Link>
       <!-- /DEBUG:FULL Create PDF containing full debug information -->
@@ -40,6 +42,11 @@
       <AdditionalOptions>%(AdditionalOptions) /Brepro /PDBALTPATH:$(TargetName).pdb</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
+
+  <!-- BinSkim emits errors or warnings without this settings -->
+  <PropertyGroup>
+    <SpectreMitigation>Spectre</SpectreMitigation>
+  </PropertyGroup>
 
   <!-- Debug-specific options -->
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
