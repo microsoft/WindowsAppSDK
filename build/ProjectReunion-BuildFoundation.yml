@@ -81,6 +81,12 @@ jobs:
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
 
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore of packages'
+    inputs:
+      command: 'custom'
+      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile dev\WindowsAppRuntime_Insights\nuget.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
+
   - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
   - task: NuGetAuthenticate@1
@@ -118,7 +124,7 @@ jobs:
   - task: PowerShell@2
     name: BuildBinaries
     inputs:
-      filePath: 'BuildTransportPackage.ps1'
+      filePath: 'BuildAll.ps1'
       arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
 
   # component detection must happen *within* the build task
@@ -153,12 +159,18 @@ jobs:
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
 
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore of packages'
+    inputs:
+      command: 'custom'
+      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile dev\WindowsAppRuntime_Insights\nuget.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
+
   - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
   - task: PowerShell@2
     name: BuildBinaries
     inputs:
-      filePath: 'BuildTransportPackage.ps1'
+      filePath: 'BuildAll.ps1'
       arguments: -AzureBuildStep "BuildAnyCPU"
 
   - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
@@ -216,6 +228,12 @@ jobs:
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
       
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore of packages'
+    inputs:
+      command: 'custom'
+      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile dev\WindowsAppRuntime_Insights\nuget.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
+
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestMRT-Steps.yml
 
   - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
@@ -265,7 +283,7 @@ jobs:
   - task: PowerShell@2
     name: StageFiles
     inputs:
-      filePath: 'BuildTransportPackage.ps1'
+      filePath: 'BuildAll.ps1'
       arguments: -Platform "x86,x64,arm64" -Configuration "release" -AzureBuildStep "StageFiles"
 
   - task: EsrpCodeSigning@1
@@ -376,7 +394,7 @@ jobs:
   - task: PowerShell@2
     name: PackNuget
     inputs:
-      filePath: 'BuildTransportPackage.ps1'
+      filePath: 'BuildAll.ps1'
       arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
 
   - task: EsrpCodeSigning@1
