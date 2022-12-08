@@ -109,3 +109,14 @@ Troubleshoot build problems by enabling binary logging (e.g. `msbuild...-bl`) an
 | Run tests only displaying per-tests reults and errors | `te.exe WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll /logoutput:low` |
 
 See TAEF documentation for more details.
+
+## Github PullRequest Tips
+
+To trigger validation, comment "/azp run" in your Pull Request.
+
+Main branch runs: https://dev.azure.com/ms/ProjectReunion/_build?definitionId=391
+
+Develop branch runs an internal pipeline by the name of "TransportPackage-Foundation-PR"
+You may also comment "/azp run TransportPackage-Foundation-PR" to specifically run that pipeline.
+The azure-pipelines[bot] may say "Azure Pipelines could not run because the pipeline triggers exclude this branch/path." 
+But this is inaccurate. The pipeline will run. 
