@@ -26,10 +26,11 @@
       <!-- /W4 Enable max warning level -->
       <WarningLevel>Level4</WarningLevel>
 
-      <!-- /ZH:SHA_256 Hash algorithm for file checksums in debug info -->
-      <!-- /d1trimfile:$(RepoRoot) If the prefix for a source file path name string matches "trim-string" the prefix is replaced with the mapping-identifier (if present). Requires /Brepro. -->
       <!-- /Qspectre Specifies compiler generation of instructions to mitigate certain Spectre variant 1 security vulnerabilities. BinSkim asks for this. -->
-      <AdditionalOptions>%(AdditionalOptions) /Qspectre /ZH:SHA_256 /d1trimfile:$(RepoRoot)</AdditionalOptions>
+      <!-- /ZH:SHA_256 Hash algorithm for file checksums in debug info -->
+      <!-- /await:strict Enable coroutine support. Disable /await language extensions not adopted into C++20 -->
+      <!-- /d1trimfile:$(RepoRoot) If the prefix for a source file path name string matches "trim-string" the prefix is replaced with the mapping-identifier (if present). Requires /Brepro. -->
+      <AdditionalOptions>%(AdditionalOptions) /Qspectre /ZH:SHA_256 /await:strict /d1trimfile:$(RepoRoot)</AdditionalOptions>
     </ClCompile>
     <Link>
       <!-- /DEBUG:FULL Create PDF containing full debug information -->
