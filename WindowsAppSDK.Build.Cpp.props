@@ -29,7 +29,7 @@
       <!-- /Qspectre Specifies compiler generation of instructions to mitigate certain Spectre variant 1 security vulnerabilities. BinSkim asks for this. -->
       <!-- /ZH:SHA_256 Hash algorithm for file checksums in debug info -->
       <!-- /await Enable coroutine support. -->
-      <!-- TODO: Replace /await with... /await:strict Enable coroutine support. Disable /await language extensions not adopted into C++20 -->
+      <!-- TODO:42560699 Replace /await with... /await:strict Enable coroutine support. Disable /await language extensions not adopted into C++20 -->
       <!-- /d1trimfile:$(RepoRoot) If the prefix for a source file path name string matches "trim-string" the prefix is replaced with the mapping-identifier (if present). Requires /Brepro. -->
       <AdditionalOptions>%(AdditionalOptions) /Qspectre /ZH:SHA_256 /await /d1trimfile:$(RepoRoot)</AdditionalOptions>
     </ClCompile>
