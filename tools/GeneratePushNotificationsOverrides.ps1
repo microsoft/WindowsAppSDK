@@ -58,7 +58,7 @@ $content_json=@"
 				"UUID": "25604D55-9B17-426F-9D67-2B11B3A65598"
 			}
 		},
-        "ForegroundSink2": {
+            "ForegroundSink2": {
 			"CLSID": {
 				"UUID": "559B4205-F810-4947-B02B-3EA9A311C6AD"
 			}
