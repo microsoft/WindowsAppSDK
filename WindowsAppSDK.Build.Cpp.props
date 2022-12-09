@@ -17,21 +17,19 @@
       <!-- /permissive- Enable Conformance mode (i.e. Disable 'permissive' mode) -->
       <ConformanceMode>true</ConformanceMode>
 
-      <!-- /W4 Enable max warning level -->
-      <WarningLevel>Level4</WarningLevel>
+      <!-- /GR- Disable RTTI (causes binary bloat) -->
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
 
       <!-- /sdk Enable additional security checks-->
       <SDLCheck>true</SDLCheck>
 
-      <!-- /GR- Disable RTTI (causes binary bloat) -->
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <!-- /W4 Enable max warning level -->
+      <WarningLevel>Level4</WarningLevel>
 
       <!-- /ZH:SHA_256 Hash algorithm for file checksums in debug info -->
-      <!-- /d1trimfile:$(RepoRoot) If the prefix for a source file path name string matches "trim-string",
-      then the prefix is removed and is replaced with the mapping-identifier (if present). Requires /Brepro. -->
-      <!-- /Qspectre Specifies compiler generation of instructions to mitigate certain Spectre variant 1 
-      security vulnerabilities. BinSkim asks for this. -->
-      <AdditionalOptions>%(AdditionalOptions) /d1trimfile:$(RepoRoot) /ZH:SHA_256 /Qspectre</AdditionalOptions>
+      <!-- /d1trimfile:$(RepoRoot) If the prefix for a source file path name string matches "trim-string" the prefix is replaced with the mapping-identifier (if present). Requires /Brepro. -->
+      <!-- /Qspectre Specifies compiler generation of instructions to mitigate certain Spectre variant 1 security vulnerabilities. BinSkim asks for this. -->
+      <AdditionalOptions>%(AdditionalOptions) /Qspectre /ZH:SHA_256 /d1trimfile:$(RepoRoot)</AdditionalOptions>
     </ClCompile>
     <Link>
       <!-- /DEBUG:FULL Create PDF containing full debug information -->
@@ -39,7 +37,7 @@
 
       <!-- /Brepro Enables deterministic output from the compiler toolchain -->
       <!-- /PDBALTPATH Stops pdb's basepath from appearing in the Debug Directories of the image header -->
-      <!-- /CETCOMPAT enables Control-flow Enforcement Technology (CET) Shadow Stack mitigation. 
+      <!-- /CETCOMPAT enables Control-flow Enforcement Technology (CET) Shadow Stack mitigation.
       BinSkim asks for this. /CETCOMPAT does not support arm64 -->
       <AdditionalOptions Condition="'$(Platform)' == 'arm64'">%(AdditionalOptions) /Brepro /PDBALTPATH:$(TargetName).pdb</AdditionalOptions>
       <AdditionalOptions Condition="'$(Platform)' != 'arm64'">%(AdditionalOptions) /Brepro /PDBALTPATH:$(TargetName).pdb /CETCOMPAT</AdditionalOptions>
