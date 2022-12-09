@@ -2,5 +2,6 @@
 // Licensed under the MIT License.
 
 #include <winresrc.h>
-#define VERSIONINFO_FILENAME "Microsoft.WindowsAppRuntime.Bootstrap.dll"
+#define VERSIONINFO_FILENAME "DeploymentAgent.exe"
+#define VERSIONINFO_FILETYPE VFT_APP
 #include "..\common\WindowsAppSDK.ver"

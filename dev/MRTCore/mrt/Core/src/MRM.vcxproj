@@ -99,6 +99,9 @@
     <ClInclude Include="MRM.h" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="MRM.rc" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="MRM.def" />
     <None Include="packages.config" />
   </ItemGroup>
