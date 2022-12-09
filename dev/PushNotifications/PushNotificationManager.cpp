@@ -761,8 +761,34 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
+    // IWpnForegroundSink
     IFACEMETHODIMP PushNotificationManager::InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept try
     {
+        InvokeAllInternal(length, payload, nullptr, foregroundHandled);
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    // IWpnForegroundSink2
+    IFACEMETHODIMP PushNotificationManager::InvokeAllWithCorrelationVector(
+        ULONG length,
+        _In_ byte* payload,
+        _In_ PCWSTR correlationVector,
+        _Out_ BOOL* foregroundHandled) noexcept 
+    {        
+        InvokeAllInternal(length, payload, correlationVector, foregroundHandled);
+        return S_OK;
+    }
+
+    void PushNotificationManager::InvokeAllInternal(
+        ULONG length,
+        _In_ byte* payload,
+        _In_ PCWSTR correlationVector,
+        _Out_ BOOL* foregroundHandled)
+    {
+        auto logTelemetry{ PushNotificationTelemetry::InvokeAll::Start(g_telemetryHelper, correlationVector) };
+        wil::scope_exit([&]() { logTelemetry.Stop(); });
+
         auto args{ winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length) };
 
         auto lock{ m_lock.lock_shared() };
@@ -775,19 +801,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             *foregroundHandled = false;
         }
-
-        return S_OK;
-    }
-    CATCH_RETURN()
-
-    IFACEMETHODIMP PushNotificationManager::InvokeAllWithCorrelationVector(
-        ULONG length,
-        _In_ byte* payload,
-        _In_ PCWSTR correlationVector,
-        _Out_ BOOL* foregroundHandled) noexcept 
-    {        
-        auto logTelemetry{ PushNotificationTelemetry::InvokeAll::Start(g_telemetryHelper, correlationVector) };
-        return InvokeAll(length, payload, foregroundHandled);
     }
 
     IFACEMETHODIMP PushNotificationManager::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept try

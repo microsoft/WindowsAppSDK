@@ -69,6 +69,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties*) noexcept;
     private:
         bool IsBackgroundTaskRegistered(winrt::hstring const& backgroundTaskFullName);
+        void InvokeAllInternal(
+            ULONG length,
+            _In_ byte* payload,
+            _In_ PCWSTR correlationVector,
+            _Out_ BOOL* foregroundHandled);
 
         bool m_firstNotificationReceived{ false };
         winrt::event<PushNotificationEventHandler> m_foregroundHandlers;

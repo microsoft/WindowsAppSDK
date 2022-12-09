@@ -98,7 +98,7 @@ public:
         TraceLoggingClassWriteStart(
             InvokeAll,
             _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingWideString(correlationVector, "CorrelationVector"),
+            TraceLoggingWideString(correlationVector ? correlationVector : L"", "CorrelationVector"),
             TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
             TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
     }
