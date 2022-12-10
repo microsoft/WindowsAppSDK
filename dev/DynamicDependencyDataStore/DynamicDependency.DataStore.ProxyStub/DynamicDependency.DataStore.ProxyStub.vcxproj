@@ -267,6 +267,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="DynamicDependency.DataStore.ProxyStub.rc" />
+  </ItemGroup>
+  <ItemGroup>
     <Midl Include="DynamicDependencyDataStore.idl" />
   </ItemGroup>
   <ItemGroup>

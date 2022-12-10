@@ -2,5 +2,5 @@
 // Licensed under the MIT License.
 
 #include <winresrc.h>
-#define VERSIONINFO_FILENAME "Microsoft.WindowsAppRuntime.Bootstrap.dll"
-#include "..\common\WindowsAppSDK.ver"
+#define VERSIONINFO_FILENAME "MRM.dll"
+#include "..\..\..\..\common\WindowsAppSDK.ver"

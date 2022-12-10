@@ -107,6 +107,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="DeploymentAgent.rc" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="packages.config" />
     <None Include="PropertySheet.props" />
   </ItemGroup>

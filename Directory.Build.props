@@ -48,6 +48,14 @@
     </Midl>
   </ItemDefinitionGroup>
 
+  <!-- The standard props files do not set _DEBUG for the resource compiler, but we need that to build the correct file 
+       flags in the version info resource -->
+    <ItemDefinitionGroup Condition="$(Configuration) == 'Debug'">
+        <ResourceCompile>
+            <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+        </ResourceCompile>
+    </ItemDefinitionGroup> 
+
   <!-- Define our standardardized options for C/C++ builds -->
   <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK.Build.Cpp.props" />
 
