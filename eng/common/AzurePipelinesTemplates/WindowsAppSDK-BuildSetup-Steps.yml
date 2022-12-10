@@ -31,19 +31,23 @@ steps:
       SecretsFilter: 'TestMSCert'
       RunAsPreJob: false
 
-  # Setup for MyCert.pfx
+  # Setup for winappsdk.certificate.test.pfx
   - task: PowerShell@2
     name: CreateCert
-    displayName: Create MyCert.pfx
+    displayName: Create winappsdk.certificate.test.pfx
     inputs:
       targetType: 'inline'
       script: |
+        $userPath = Join-Path $env:Build_SourcesDirectory ".user"
+        mkdir -Force $userPath | Out-Null
         $kvSecretBytes = [System.Convert]::FromBase64String("$(TestMSCert)")
         $certCollection = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2Collection
         $certCollection.Import($kvSecretBytes,$null,[System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
         $certificateBytes = $certCollection.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pkcs12)
-        $pfxPath = (Join-Path $env:Build_SourcesDirectory 'MyCert.pfx')
+        $pfxPath = (Join-Path $userPath 'winappsdk.certificate.test.pfx')
         [System.IO.File]::WriteAllBytes($pfxPath, $certificateBytes)
+
+  - task: NuGetToolInstaller@1
 
   - task: NuGetAuthenticate@1
     inputs:
