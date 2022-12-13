@@ -15,6 +15,18 @@ interface IWpnForegroundSink : IUnknown
 };
 
 [object]
+[uuid(PUSHNOTIFICATIONS_FOREGROUNDSINK2_CLSID_UUID)]
+[pointer_default(unique)]
+interface IWpnForegroundSink2 : IUnknown
+{
+    HRESULT InvokeAllWithCorrelationVector(
+        [in] ULONG length,
+        [in, size_is(length)] byte* data,
+        [in] LPCWSTR correlationVector,
+        [out] BOOL* foregroundHandled);
+};
+
+[object]
 [uuid(PUSHNOTIFICATIONS_LRP_CLSID_UUID)]
 [pointer_default(unique)]
 interface INotificationsLongRunningPlatform : IUnknown

@@ -797,9 +797,33 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
+    // IWpnForegroundSink
     IFACEMETHODIMP PushNotificationManager::InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept try
     {
-        HRESULT hr{ S_OK };
+        InvokeAllInternal(length, payload, nullptr, foregroundHandled);
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    // IWpnForegroundSink2
+    IFACEMETHODIMP PushNotificationManager::InvokeAllWithCorrelationVector(
+        ULONG length,
+        _In_ byte* payload,
+        _In_ PCWSTR correlationVector,
+        _Out_ BOOL* foregroundHandled) noexcept 
+    {        
+        InvokeAllInternal(length, payload, correlationVector, foregroundHandled);
+        return S_OK;
+    }
+
+    void PushNotificationManager::InvokeAllInternal(
+        ULONG length,
+        _In_ byte* payload,
+        _In_ PCWSTR correlationVector,
+        _Out_ BOOL* foregroundHandled)
+    {
+        auto logTelemetry{ PushNotificationTelemetry::InvokeAll::Start(g_telemetryHelper, correlationVector) };
+        wil::scope_exit([&]() { logTelemetry.Stop(); });
 
         auto logTelemetry{ wil::scope_exit([&]() {
             PushNotificationTelemetry::LogInvokeAll(hr);
@@ -820,7 +844,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         return hr;
     }
-    CATCH_RETURN()
 
     IFACEMETHODIMP PushNotificationManager::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept try
     {

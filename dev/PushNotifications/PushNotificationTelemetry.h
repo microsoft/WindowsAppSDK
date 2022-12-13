@@ -117,19 +117,15 @@ public:
     }
     CATCH_LOG()
 
-        DEFINE_EVENT_METHOD(LogInvokeAll)(
-            winrt::hresult hr) noexcept try
+    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(InvokeAll, PDT_ProductAndServicePerformance);
+    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper, _In_ PCWSTR correlationVector) noexcept try
     {
-        if (m_telemetryHelper.ShouldLogEvent())
-        {
-            TraceLoggingClassWriteMeasure(
-                "InvokeAll",
-                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
-                _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingHexUInt32(hr, "OperationResult"),
-                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
-        }
+        TraceLoggingClassWriteStart(
+            InvokeAll,
+            _GENERIC_PARTB_FIELDS_ENABLED,
+            TraceLoggingWideString(correlationVector ? correlationVector : L"", "CorrelationVector"),
+            TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+            TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
     }
     CATCH_LOG()
 
