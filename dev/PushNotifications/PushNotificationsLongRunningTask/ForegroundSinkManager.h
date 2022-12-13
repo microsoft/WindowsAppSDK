@@ -15,7 +15,11 @@ public:
 
     void Remove(std::wstring const& appId);
 
-    bool InvokeForegroundHandlers(std::wstring const& appId, winrt::com_array<uint8_t> const& payload, ULONG const& payloadSize);
+    bool InvokeForegroundHandlers(
+        std::wstring const& appId,
+        winrt::com_array<uint8_t> const& payload,
+        HSTRING correlationVector,
+        ULONG const& payloadSize);
 
 private:
     // An app can only have one activate foreground sink with Long Running Process.
