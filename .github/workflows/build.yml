@@ -1,10 +1,10 @@
-name: Build CI Master
+name: Build CI Main
 
 # Controls when the action will run. Triggers the workflow on pull requests
 # for the target branch
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
     paths-ignore: 
       - '.github/ISSUE_TEMPLATE/**'
       - 'docs/**'
@@ -25,13 +25,13 @@ jobs:
       uses: NuGet/setup-nuget@v1.0.2
 
     - name: restore project packages
-      run: nuget restore ProjectReunion.sln
+      run: nuget restore WindowsAppRuntime.sln
 
     - name: build x86
-      run: msbuild /m /p:Configuration=Release,Platform=x86 ProjectReunion.sln
+      run: msbuild /m /p:Configuration=Release,Platform=x86 WindowsAppRuntime.sln
 
     - name: build x64
-      run: msbuild /m /p:Configuration=Release,Platform=x64 ProjectReunion.sln
+      run: msbuild /m /p:Configuration=Release,Platform=x64 WindowsAppRuntime.sln
 
     - name: build ARM64
-      run: msbuild /m /p:Configuration=Release,Platform=ARM64 ProjectReunion.sln
+      run: msbuild /m /p:Configuration=Release,Platform=ARM64 WindowsAppRuntime.sln
