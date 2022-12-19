@@ -1,40 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Dependencies>
   <!-- Rules for Dependency Management:
-       1. Dependencies in Version.Details.xml are automagically propogated via Maestro
-          e.g. if B depends on A v1 and A v2 is published, Maestro updates B's Version.Details.xml to A v2
-       2. Dependencies in Version.Dependencies.xml are only changed by explicit (manual) developer action
-          e.g. if B depends on A v1 and A v2 is published, B is unchanged.
-       3. Dependencies in Version.Details.xml are made available to MSBuild + VisualStudio as macros in the form name.Replace(".", "").Append("PackageVersion")
-       4. Dependencies in Version.Dependencies.xml are made available to MSBuild + VisualStudio as macros in the form name.Replace(".", "").Append("Version")
-       5. DevCheck.cmd/ps1 -SyncDependencies generates Version.Dependencies.props from Version.*.xml
-       6. DevCheck.cmd/ps1 -CheckDependencies verifies Version.Dependencies.props matches Version.*.xml
-       7. Version.Dependencies.props is a generated file. DO NOT EDIT. Use DevCheck -SyncDependencies
-       8. POLICY: Dependencies on Transport Packages are expressed in Version.Details.xml
-       9. POLICY: Dependencies on non-Transport Packages are expressed in Version.Dependencies.xml
+        1. Dependencies in Version.Details.xml are automagically propogated via Maestro
+           e.g. if B depends on A v1 and A v2 is published, Maestro updates B's Version.Details.xml to A v2
+        2. Dependencies in Version.Dependencies.xml are only changed by explicit (manual) developer action
+           e.g. if B depends on A v1 and A v2 is published, B is unchanged.
+        3. Dependencies' versions in Version.*.xml are TheMasterSourceOfTruth(TM). These are literal values. No macro expansion of magic substitution will occur.
+        4. Dependencies in Version.*.xml are listed in sorted order (alphabetically, case-insensitive).
+        5. Dependencies in Version.Details.xml are made available to MSBuild + VisualStudio as macros in the form name.Replace(".", "").Append("PackageVersion")
+        6. Dependencies in Version.Dependencies.xml are made available to MSBuild + VisualStudio as macros in the form name.Replace(".", "").Append("Version")
+        7. DevCheck.cmd/ps1 -SyncDependencies generates Version.Dependencies.props from Version.*.xml (if necessary)
+        8. DevCheck.cmd/ps1 -SyncDependencies updates versions in packages.config to match Version.*.xml (if necessary)
+        9. DevCheck.cmd/ps1 -SyncDependencies updates versions in *proj to match Version.*.xml (if necessary)
+       10. DevCheck.cmd/ps1 -CheckDependencies verifies Version.Dependencies.props matches Version.*.xml
+       11. DevCheck.cmd/ps1 -CheckDependencies verifies packages and versions in packages.config match Version.*.xml
+       12. DevCheck.cmd/ps1 -CheckDependencies verifies packages and versions in packages.config match Version.*.xml
+       13. DevCheck.cmd/ps1 -CheckDependencies verifies versions in *proj match Version.*.xml
+       14. Version.Dependencies.props is a generated file. DO NOT EDIT. Use DevCheck -SyncDependencies
+       15. POLICY: Dependencies on Transport Packages are expressed in Version.Details.xml
+       16. POLICY: Dependencies on non-Transport Packages are expressed in Version.Dependencies.xml
        NOTE: This documentation exists at the top of Version.Details.xml and Version.Dependencies.xml.
     -->
-
   <ProductDependencies>
-    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.2.0-main.20221103.4">
-      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionClosed</Uri>
-      <Sha>cc4045b6190f44ed55e10700cc9f0d25a7a60341</Sha>
-    </Dependency>
     <Dependency Name="Microsoft.FrameworkUdk" Version="1.3.0-CI-25260.1001.221205-1000.0">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
       <Sha>f4a7f5a1ff6b473f3c55560d80bfd3d4c80da6a7</Sha>
     </Dependency>
+    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.2.0-main.20221103.4">
+      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionClosed</Uri>
+      <Sha>cc4045b6190f44ed55e10700cc9f0d25a7a60341</Sha>
+    </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.0.0">
+    <Dependency Name="CsWinRT.Dependency.DotNetCoreRuntime" Version="6.0.6">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
     <Dependency Name="CsWinRT.Dependency.DotNetCoreSdk" Version="6.0.301">
-      <Uri>https://github.com/microsoft/CsWinRT</Uri>
-      <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
-    </Dependency>
-    <Dependency Name="CsWinRT.Dependency.DotNetCoreRuntime" Version="6.0.6">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
@@ -45,6 +47,10 @@
     <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.3.221209100">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionInternal</Uri>
       <Sha>f595a1e3c825d944ff5f097cd1941dfe27447d7e</Sha>
+    </Dependency>
+    <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.0.0">
+      <Uri>https://github.com/microsoft/CsWinRT</Uri>
+      <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
