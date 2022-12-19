@@ -19,6 +19,9 @@
 .PARAMETER CheckAll
     Check all. If not specified this is set to true if all other -Check... options are false
 
+.PARAMETER CheckDependencies
+    Verify dependencies in projects (*proj, packages.config, eng\Version.*.props) match defined dependencies (eng\Version.*.xml)
+
 .PARAMETER CheckTAEFService
     Check the TAEF service
 
@@ -45,6 +48,9 @@
 
 .PARAMETER RemoveTestPfx
     Remove the MSIX Test signing certificate (i.e. undoc CheckTestPfx)
+
+.PARAMETER SyncDependencies
+    Update dependencies (*proj, packages.config, eng\Version.*.props) to match defined dependencies (eng\Version.*.xml)
 
 .PARAMETER Verbose
     Display detailed information
@@ -84,6 +90,8 @@ Param(
 
     [Switch]$RemoveTestPfx=$false,
 
+    [Switch]$SyncDependencies=$false,
+
     [Switch]$Verbose=$false
 )
 
@@ -93,6 +101,10 @@ $remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($Remov
 if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false))
 {
     $CheckAll = $true
+}
+if ($SyncDependencies -eq $true)
+{
+    $CheckDependencies = $true
 }
 
 function Write-Verbose
@@ -575,20 +587,23 @@ function Get-DependencyVersions
 
     $root = Get-ProjectRoot
     $path = Join-Path $root 'eng'
-    $filename = Join-Path $path 'Versions.props'
+    $filename = Join-Path $path 'Version.Dependencies.xml'
     Write-Host "Reading $($filename)..."
 
     $ErrorActionPreference = "Stop"
     $xml = [xml](Get-Content $filename -EA:Stop)
-    ForEach ($element in $xml.SelectNodes("/*[local-name()='Project']/*[local-name()='PropertyGroup']/*"))
+    ForEach ($dependency in $xml.SelectNodes("/Dependencies/ProductDependencies/Dependency"))
     {
-        $name = $element.get_name()
-        $version = $element.'#text'
+        $name = $dependency.Name
+        $version = $dependency.Version
         $versions.Add($name, $version)
     }
-    ForEach ($name in $versions.Keys)
+    if ($Verbose -eq $true)
     {
-        Write-Host "...$($name) = $($versions[$name])"
+        ForEach ($name in $versions.Keys)
+        {
+            Write-Host "...$($name) = $($versions[$name])"
+        }
     }
 
     $versions
@@ -605,15 +620,24 @@ function Get-TransportPackageVersions
 
     $ErrorActionPreference = "Stop"
     $xml = [xml](Get-Content $filename -EA:Stop)
+    ForEach ($dependency in $xml.SelectNodes("/Dependencies/ProductDependencies/Dependency"))
+    {
+        $name = $dependency.Name
+        $version = $dependency.Version
+        $versions.Add($name, $version)
+    }
     ForEach ($dependency in $xml.SelectNodes("/Dependencies/ToolsetDependencies/Dependency"))
     {
         $name = $dependency.Name
         $version = $dependency.Version
         $versions.Add($name, $version)
     }
-    ForEach ($name in $versions.Keys)
+    if ($Verbose -eq $true)
     {
-        Write-Host "...$($name) = $($versions[$name])"
+        ForEach ($name in $versions.Keys)
+        {
+            Write-Host "...$($name) = $($versions[$name])"
+        }
     }
 
     $versions
@@ -662,20 +686,117 @@ function Test-PackagesConfig
     }
 }
 
+function Build-Dependencies
+{
+    param(
+        [HashTable]$in
+    )
+
+    $dependencies = $in["Dependencies"]
+    $transports = $in["Transports"]
+
+    $output = @"
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DO NOT EDIT!!! This is a generated file! See Version.Dependencies.xml for more details -->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- TODO: Fix DownloadDotNetCoreSdk.ps1 script so we don't need this property -->
+    <CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>$$(CsWinRTDependencyDotNetCoreSdkPackageVersion)</CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>
+
+
+"@
+
+    $lines = @{}
+    ForEach ($name in $dependencies.Keys)
+    {
+        # NOTE: Create macros per name.Replace(".","").Append("Version")=value
+        $macro = $name.Replace(".","") + "Version"
+        $value = $dependencies[$name]
+        $lines.Add("    <$($macro)>$($value)</$($macro)>`r`n", $null)
+    }
+    ForEach ($name in $transports.Keys)
+    {
+        # NOTE: Create macros per name.Replace(".","").Append("PackageVersion")=value
+        $macro = $name.Replace(".","") + "PackageVersion"
+        $value = $transports[$name]
+        $lines.Add("    <$($macro)>$($value)</$($macro)>`r`n", $null)
+    }
+    $sortedLines = $lines.Keys | Sort-Object
+    $output = $output + [String]::Join("", $sortedLines)
+
+    $output = $output + @"
+  </PropertyGroup>
+</Project>
+
+"@
+
+    $output
+}
+
+function CheckAndSync-Dependencies
+{
+    param(
+        [HashTable]$in
+    )
+
+    $dependencies = $in["Dependencies"]
+    $transports = $in["Transports"]
+
+    $expected = Build-Dependencies @{ Dependencies=$dependencies; Transports=$transports }
+
+    $root = Get-ProjectRoot
+    $path = Join-Path $root 'eng'
+    $filename = Join-Path $path 'Version.Dependencies.props'
+    Write-Host "Reading $($filename)..."
+    if (-not(Test-Path -Path $filename -PathType Leaf))
+    {
+        if ($SyncDependencies -eq $false)
+        {
+            Write-Host "ERROR: $filename not found. Create with 'DevCheck -SyncDependencies'"
+            $global:issues++
+            return
+        }
+    }
+    else
+    {
+        $ErrorActionPreference = "Stop"
+        $content = Get-Content $filename -EA:Stop -Raw
+        if ($content -eq $expected)
+        {
+            Write-Host "Verify $($filename)...OK"
+            return
+        }
+        elseif ($SyncDependencies -eq $false)
+        {
+            Write-Host "ERROR: $($filename) out of date. Update with 'DevCheck -SyncDependencies'"
+            $global:issues++
+        }
+    }
+
+    if ($SyncDependencies -eq $true)
+    {
+        Write-Host "Updating $($filename)..."
+        Set-Content -Path $filename -Value $expected -Force
+    }
+}
+
 function Test-Dependencies
 {
     # Get version information for tools we depend on
+    $fatal_errors = 0
     $dependencies = Get-DependencyVersions
     if ([string]::IsNullOrEmpty($dependencies))
     {
         $global:issues++
+        $fatal_errors++
     }
 
-    # Get version information for transport packages we depende on
+    # Get version information for transport packages we depend on
     $transports = Get-TransportPackageVersions
     if ([string]::IsNullOrEmpty($transports))
     {
         $global:issues++
+        $fatal_errors++
     }
 
     # Scan for duplicates (a dependency cannot appear in both lists)
@@ -686,6 +807,7 @@ function Test-Dependencies
         {
             Write-Host "ERROR: Dependency in Version.Details.xml and Versions.props"
             $global:issues++
+            $fatal_errors++
         }
     }
 
@@ -697,6 +819,7 @@ function Test-Dependencies
         {
             Write-Host "ERROR: Dependency defined multiple times ($name)"
             $global:issues++
+            $fatal_errors++
         }
         else
         {
@@ -710,6 +833,7 @@ function Test-Dependencies
         {
             Write-Host "ERROR: Dependency defined multiple times ($name)"
             $global:issues++
+            $fatal_errors++
         }
         else
         {
@@ -718,6 +842,15 @@ function Test-Dependencies
         }
     }
     Write-Host "$($versions.Count) dependencies detected"
+
+    # Fatal errors detected?
+    if ($fatal_errors++ -gt 0)
+    {
+        return
+    }
+
+    # Check Version.Dependencies.props
+    $null = CheckAndSync-Dependencies  @{ Dependencies=$dependencies; Transports=$transports }
 
     # Scan for references
     $root = Get-ProjectRoot

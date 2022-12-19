@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Dependencies>
+  <!-- Rules for Dependency Management:
+       1. Dependencies in Version.Details.xml are automagically propogated via Maestro
+          e.g. if B depends on A v1 and A v2 is published, Maestro updates B's Version.Details.xml to A v2
+       2. Dependencies in Version.Dependencies.xml are only changed by explicit (manual) developer action
+          e.g. if B depends on A v1 and A v2 is published, B is unchanged.
+       3. Dependencies in Version.Details.xml are made available to MSBuild + VisualStudio as macros in the form name.Replace(".", "").Append("PackageVersion")
+       4. Dependencies in Version.Dependencies.xml are made available to MSBuild + VisualStudio as macros in the form name.Replace(".", "").Append("Version")
+       5. DevCheck.cmd/ps1 -SyncDependencies generates Version.Dependencies.props from Version.*.xml
+       6. DevCheck.cmd/ps1 -CheckDependencies verifies Version.Dependencies.props matches Version.*.xml
+       7. Version.Dependencies.props is a generated file. DO NOT EDIT. Use DevCheck -SyncDependencies
+       8. POLICY: Dependencies on Transport Packages are expressed in Version.Details.xml
+       9. POLICY: Dependencies on non-Transport Packages are expressed in Version.Dependencies.xml
+       NOTE: This documentation exists at the top of Version.Details.xml and Version.Dependencies.xml.
+    -->
+
   <ProductDependencies>
     <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.2.0-main.20221103.4">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionClosed</Uri>
