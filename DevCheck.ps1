@@ -208,7 +208,7 @@ function Get-VSWhere
     return $global:vswhere
 }
 
-function Run-Process([string]$exe, [string]$arguments, [Ref][string]$stderr)
+function Run-Process([string]$exe, [string]$arguments, [Ref][string]$stderr, [int]$throwIfExitCodeIsFailure=$false)
 {
     $pi = New-Object System.Diagnostics.ProcessStartInfo
     $pi.FileName = $exe
@@ -226,6 +226,13 @@ function Run-Process([string]$exe, [string]$arguments, [Ref][string]$stderr)
     $p.WaitForExit()
     $stdout = $p.StandardOutput.ReadToEnd()
     $stderr = $p.StandardError.ReadToEnd()
+    if ($throwIfExitCodeIsFailure -eq $true)
+    {
+        if ($p.ExitCode -ne 0)
+        {
+            throw $p.ExitCode
+        }
+    }
     return $stdout
 }
 
@@ -246,14 +253,70 @@ function Get-VisualStudio2022InstallPath
     return $global:vspath
 }
 
+function Test-VisualStudioComponent
+{
+    param(
+        [String]$component,
+        [String]$versionRange
+    )
+
+    $vswhere = Get-VSWhere
+    $args = " -latest -products * -version $versionRange -requires $component -property productDisplayVersion"
+    Write-Verbose "Executing $vswhere $args"
+    try
+    {
+        $value = Run-Process $vswhere $args -throwIfExitCodeIsFailure $true
+        $path = $path -replace [environment]::NewLine, ''
+        Write-Verbose "Visual Studio component $($component) = $($value)"
+        return 0
+    }
+    catch
+    {
+        $e = $_
+        Write-Host "...ERROR $($e): $($component) not found or valid"
+        return 1
+    }
+}
+
+function Test-VisualStudioComponents
+{
+    Write-Verbose "Detecting VisualStudio components..."
+    $root = Get-ProjectRoot
+    $path = Join-Path $root 'docs\Coding-Guidelines'
+    $filename = Join-Path $path 'VisualStudio2022.vsconfig'
+
+    $versionRange = "[17.0,18.0)"
+
+    $ErrorActionPreference = "Stop"
+    $json = Get-Content $filename -EA:Stop -Raw | ConvertFrom-Json
+    Write-Host "...Scanning $($json.components.Length) components in $($filename)" -NoNewline
+    $errors = 0
+    $components = $json.components
+    ForEach ($component in $components)
+    {
+        Write-Host "." -NoNewline
+        $errors += (Test-VisualStudioComponent $component $versionRange)
+    }
+    if ($errors -gt 0)
+    {
+        Write-Host ""
+        return $false
+    }
+    Write-Host "OK"
+    return $true
+}
+
 function Test-VisualStudio2022Install
 {
+    $ok = $true
     $path = Get-VisualStudio2022InstallPath
     if ([string]::IsNullOrEmpty($path))
     {
         $global:issues++
+        $ok = $false
     }
     Write-Host "VisualStudio 2022...$path"
+    return $ok
 }
 
 function Test-DevTestPfx
@@ -602,7 +665,7 @@ function Get-DependencyVersions
     {
         ForEach ($name in $versions.Keys)
         {
-            Write-Host "...$($name) = $($versions[$name])"
+            Write-Verbose "...$($name) = $($versions[$name])"
         }
     }
 
@@ -636,7 +699,7 @@ function Get-TransportPackageVersions
     {
         ForEach ($name in $versions.Keys)
         {
-            Write-Host "...$($name) = $($versions[$name])"
+            Write-Verbose "...$($name) = $($versions[$name])"
         }
     }
 
@@ -882,7 +945,11 @@ Write-Output "Windows App SDK location...$project_root"
 
 if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
 {
-    Test-VisualStudio2022Install
+    $ok = Test-VisualStudio2022Install
+    if ($ok -eq $true)
+    {
+        $null = Test-VisualStudioComponents
+    }
 }
 
 if (($CheckAll -ne $false) -Or ($CheckTestPfx -ne $false))
