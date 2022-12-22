@@ -24,7 +24,7 @@
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
     <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.1.0-20220307.0-CI">
-      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionInternal</Uri>
+      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKAggregator</Uri>
       <Sha>7dac813fd238fdbf0eef1b1e7b20616810854e2b</Sha>
     </Dependency>
   </ToolsetDependencies>
