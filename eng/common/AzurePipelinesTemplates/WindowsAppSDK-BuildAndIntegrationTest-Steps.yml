@@ -1,5 +1,5 @@
 # This yml template combines WindowsAppSDK-BuildSetup, WindowsAppSDK-Build, 
-# and WindowsAppSDK-IntegrationTest templatesfor running the testAll script in ProjectReunionInternal
+# and WindowsAppSDK-IntegrationTest templatesfor running the testAll script in WindowsAppSDKAggregator
 parameters:
   - name: TransportPackageArtifactName
     type: string
