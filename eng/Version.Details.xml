@@ -5,6 +5,10 @@
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
       <Sha>cc4045b6190f44ed55e10700cc9f0d25a7a60341</Sha>
     </Dependency>
+    <Dependency Name="Microsoft.FrameworkUdk" Version="1.0.5-CI-25099.1001.220418-1000.0">
+      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionClosed</Uri>
+      <Sha>1261bb31992442bf7e560330524002ea3a3e9d85</Sha>
+    </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
     <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.0.0">
