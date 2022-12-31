@@ -243,6 +243,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChangeTracker", "dev\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems", "{E15C3465-9D45-495D-92CE-B91EF45E8623}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppRuntime_MSIXInstallFromPath", "dev\WindowsAppRuntime_MSIXInstallFromPath\WindowsAppRuntime_MSIXInstallFromPath.vcxproj", "{D45D4170-E055-4926-8B03-04DAA5F02C6C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BF3FCED0-CADB-490A-93A7-4D90E1F45AB0} = {BF3FCED0-CADB-490A-93A7-4D90E1F45AB0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework.Widgets", "test\DynamicDependency\data\Framework.Widgets\Framework.Widgets.vcxproj", "{09DDAE21-397F-4263-8561-7F2FF28127CF}"
 EndProject
@@ -422,6 +425,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VersionInfoTests", "test\Ve
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.FrameworkUdk.PackageReference", "eng\PackageReference\FrameworkUdk\Microsoft.FrameworkUdk.PackageReference.csproj", "{FD0CC14A-ED4B-4936-B68B-F31E58372E32}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MSIX.Package", "MSIX.Package", "{AF2F6D25-AC23-471E-B5C5-0F7BFB0315D9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MSIXPackage", "dev\MSIX.Package\MSIX.Package.vcxitems", "{9313B570-83C2-4474-BC23-414B31EC4D15}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1721,6 +1728,8 @@ Global
 		{2A2D1131-273C-4E17-BCD3-8812170A4B95} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{E3EDEC7F-A24E-4766-BB1D-6BDFBA157C51} = {2A2D1131-273C-4E17-BCD3-8812170A4B95}
 		{442FB943-1197-48FE-B3B6-8C1BCA1E81E4} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
+		{AF2F6D25-AC23-471E-B5C5-0F7BFB0315D9} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{9313B570-83C2-4474-BC23-414B31EC4D15} = {AF2F6D25-AC23-471E-B5C5-0F7BFB0315D9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
@@ -1738,6 +1747,7 @@ Global
 		dev\Common\Common.vcxitems*{8828053c-d6ec-4744-8624-f8c676c2d4df}*SharedItemsImports = 9
 		dev\Licensing\Licensing.vcxitems*{885a43fa-052d-4b0d-a2dc-13ee15796435}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{8e52d7ea-a200-4a6b-ba74-8efb49468caf}*SharedItemsImports = 4
+		dev\MSIX.Package\MSIX.Package.vcxitems*{9313b570-83c2-4474-bc23-414b31ec4d15}*SharedItemsImports = 9
 		dev\AppNotifications\AppNotifications.vcxitems*{b4824897-88e0-4927-8fb9-e60106f01ed9}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{b567fe2e-3a03-48d0-b2b5-760cdec35891}*SharedItemsImports = 9
 		dev\Common\Common.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
