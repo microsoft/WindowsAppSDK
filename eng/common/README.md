@@ -26,5 +26,5 @@
 !!! Changes made in this directory are subject to being overwritten by automation !!!
 
 The files in this directory are shared by all WindowsAppSDK repos and managed by automation.
-The parent of repository is ProjectReunionInternal and all changes for eng/common 
+The parent of repository is WindowsAppSDKAggregator and all changes for eng/common 
 should be made there.
