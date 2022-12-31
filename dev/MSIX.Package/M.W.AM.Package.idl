@@ -34,7 +34,7 @@ namespace Microsoft.Windows.ApplicationModel
     {
         None       = 0,
         Developer  = 1,
-        Enterprise = 2,
+        Enterprise = 2, //TODO Rename?
         Store      = 3,
         System     = 4,
     };
@@ -77,7 +77,7 @@ namespace Microsoft.Windows.ApplicationModel
 
         PackageGraph PackageGraph { get; };
 
-        PackageInstallInfo Install { get; };
+        PackageInstallInfo Install { get; };    //TODO Rename InstallInfo? Rename all to *Info?
 
         PackageApplications Applications { get; };
 
@@ -125,7 +125,6 @@ namespace Microsoft.Windows.ApplicationModel
         // Equivalent to W.M.D.PackageManager.FindProvisionedPackages()
         static IVector<Package> FindProvisionedPackages();
 
-        // Or....just 1 method? Rename to FindPackage(s)?
         static Package FindPackageWithOptions(FindPackageOptions options);
         static IVector<Package> FindPackagesWithOptions(FindPackageOptions options);
 
@@ -137,7 +136,9 @@ namespace Microsoft.Windows.ApplicationModel
         Boolean IsOptional { get; };
         Boolean IsOptionalInRelatedSet { get; };
         Boolean IsBundle { get; };
+
         Boolean IsDevelopmentMode { get; };
+
         Boolean IsStub { get; };
 
         Boolean IsSigned { get; };
