@@ -56,40 +56,16 @@
     <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <!-- TODO <ConfigurationType>DynamicLibrary</ConfigurationType> -->
-    <!-- TODO <UseDebugLibraries>true</UseDebugLibraries> -->
-    <!-- TODO <PlatformToolset>v143</PlatformToolset> -->
-    <!-- TODO <CharacterSet>Unicode</CharacterSet> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <!-- TODO <ConfigurationType>DynamicLibrary</ConfigurationType> -->
-    <!-- TODO <UseDebugLibraries>false</UseDebugLibraries> -->
-    <!-- TODO <PlatformToolset>v143</PlatformToolset> -->
-    <!-- TODO <CharacterSet>Unicode</CharacterSet> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <!-- TODO <ConfigurationType>DynamicLibrary</ConfigurationType> -->
-    <!-- TODO <UseDebugLibraries>true</UseDebugLibraries> -->
-    <!-- TODO <PlatformToolset>v143</PlatformToolset> -->
-    <!-- TODO <CharacterSet>Unicode</CharacterSet> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <!-- TODO <ConfigurationType>DynamicLibrary</ConfigurationType> -->
-    <!-- TODO <UseDebugLibraries>false</UseDebugLibraries> -->
-    <!-- TODO <PlatformToolset>v143</PlatformToolset> -->
-    <!-- TODO <CharacterSet>Unicode</CharacterSet> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
-    <!-- TODO <ConfigurationType>DynamicLibrary</ConfigurationType> -->
-    <!-- TODO <UseDebugLibraries>true</UseDebugLibraries> -->
-    <!-- TODO <PlatformToolset>v143</PlatformToolset> -->
-    <!-- TODO <CharacterSet>Unicode</CharacterSet> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
-    <!-- TODO <ConfigurationType>DynamicLibrary</ConfigurationType> -->
-    <!-- TODO <UseDebugLibraries>false</UseDebugLibraries> -->
-    <!-- TODO <PlatformToolset>v143</PlatformToolset> -->
-    <!-- TODO <CharacterSet>Unicode</CharacterSet> -->
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -115,22 +91,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <!-- TODO <TargetName>KozaniAppGraph</TargetName> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <!-- TODO <TargetName>KozaniAppGraph</TargetName> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <!-- TODO <TargetName>KozaniAppGraph</TargetName> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <!-- TODO <TargetName>KozaniAppGraph</TargetName> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-    <!-- TODO <TargetName>KozaniAppGraph</TargetName> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-    <!-- TODO <TargetName>KozaniAppGraph</TargetName> -->
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -166,149 +136,61 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-    <!-- TODO   <PrecompiledHeader>Use</PrecompiledHeader> -->
-    <!-- TODO   <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories> -->
       <PreprocessorDefinitions>WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    <!-- TODO   <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile> -->
     </ClCompile>
     <Link>
-    <!-- TODO   <SubSystem>Windows</SubSystem> -->
-    <!-- TODO   <EnableUAC>false</EnableUAC> -->
-    <!-- TODO   <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories> -->
-    <!-- TODO   <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies> -->
       <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
-    <!-- TODO   <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs> -->
     </Link>
     <Midl>
-    <!-- TODO   <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories> -->
-      <!-- TODO <GenerateClientFiles>None</GenerateClientFiles> -->
-      <!-- TODO <GenerateServerFiles>None</GenerateServerFiles> -->
-      <!-- TODO <GenerateTypeLibrary>false</GenerateTypeLibrary> -->
-      <!-- TODO <HeaderFileName>%(Filename).h</HeaderFileName> -->
-      <!-- TODO <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory> -->
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
+    </Link>
+    <Midl>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-    <!-- TODO   <PrecompiledHeader>Use</PrecompiledHeader> -->
-    <!-- TODO   <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories> -->
-    <!-- TODO   <PreprocessorDefinitions>_DEBUG;KOZANIAPPGRAPHDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions> -->
-    <!-- TODO   <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile> -->
     </ClCompile>
     <Link>
-    <!-- TODO   <SubSystem>Windows</SubSystem> -->
-    <!-- TODO   <EnableUAC>false</EnableUAC> -->
-    <!-- TODO   <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories> -->
-    <!-- TODO   <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies> -->
       <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
-    <!-- TODO   <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs> -->
     </Link>
     <Midl>
-    <!-- TODO   <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories> -->
-      <!-- TODO <GenerateClientFiles>None</GenerateClientFiles> -->
-      <!-- TODO <GenerateServerFiles>None</GenerateServerFiles> -->
-      <!-- TODO <GenerateTypeLibrary>false</GenerateTypeLibrary> -->
-      <!-- TODO <HeaderFileName>%(Filename).h</HeaderFileName> -->
-      <!-- TODO <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory> -->
     </Midl>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(RepoRoot)dev\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-    <ClCompile>
-    <!-- TODO   <PrecompiledHeader>Use</PrecompiledHeader> -->
-    <!-- TODO   <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories> -->
-    <!-- TODO   <PreprocessorDefinitions>_DEBUG;KOZANIAPPGRAPHDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions> -->
-    <!-- TODO   <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile> -->
-    </ClCompile>
-    <Link>
-    <!-- TODO   <SubSystem>Windows</SubSystem> -->
-    <!-- TODO   <EnableUAC>false</EnableUAC> -->
-    <!-- TODO   <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories> -->
-    <!-- TODO   <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies> -->
-      <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
-    <!-- TODO   <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs> -->
-    </Link>
-    <Midl>
-    <!-- TODO   <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories> -->
-      <!-- TODO <GenerateClientFiles>None</GenerateClientFiles> -->
-      <!-- TODO <GenerateServerFiles>None</GenerateServerFiles> -->
-      <!-- TODO <GenerateTypeLibrary>false</GenerateTypeLibrary> -->
-      <!-- TODO <HeaderFileName>%(Filename).h</HeaderFileName> -->
-      <!-- TODO <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory> -->
-    </Midl>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-    <!-- TODO   <PrecompiledHeader>Use</PrecompiledHeader> -->
-    <!-- TODO   <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories> -->
-      <PreprocessorDefinitions>WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    <!-- TODO   <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile> -->
-    </ClCompile>
-    <Link>
-    <!-- TODO   <SubSystem>Windows</SubSystem> -->
-    <!-- TODO   <EnableUAC>false</EnableUAC> -->
-    <!-- TODO   <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories> -->
-    <!-- TODO   <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies> -->
-      <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
-    <!-- TODO   <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs> -->
-    </Link>
-    <Midl>
-    <!-- TODO   <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories> -->
-      <!-- TODO <GenerateClientFiles>None</GenerateClientFiles> -->
-      <!-- TODO <GenerateServerFiles>None</GenerateServerFiles> -->
-      <!-- TODO <GenerateTypeLibrary>false</GenerateTypeLibrary> -->
-      <!-- TODO <HeaderFileName>%(Filename).h</HeaderFileName> -->
-      <!-- TODO <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory> -->
-    </Midl>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-    <!-- TODO   <PrecompiledHeader>Use</PrecompiledHeader> -->
-    <!-- TODO   <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories> -->
-    <!-- TODO   <PreprocessorDefinitions>NDEBUG;KOZANIAPPGRAPHDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions> -->
-    <!-- TODO   <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile> -->
     </ClCompile>
     <Link>
-    <!-- TODO   <SubSystem>Windows</SubSystem> -->
-    <!-- TODO   <EnableUAC>false</EnableUAC> -->
-    <!-- TODO   <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories> -->
-    <!-- TODO   <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies> -->
       <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
-    <!-- TODO   <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs> -->
     </Link>
     <Midl>
-    <!-- TODO   <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories> -->
-      <!-- TODO <GenerateClientFiles>None</GenerateClientFiles> -->
-      <!-- TODO <GenerateServerFiles>None</GenerateServerFiles> -->
-      <!-- TODO <GenerateTypeLibrary>false</GenerateTypeLibrary> -->
-      <!-- TODO <HeaderFileName>%(Filename).h</HeaderFileName> -->
-      <!-- TODO <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory> -->
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <ClCompile>
+    </ClCompile>
+    <Link>
+      <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
+    </Link>
+    <Midl>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
-    <!-- TODO   <PrecompiledHeader>Use</PrecompiledHeader> -->
-    <!-- TODO   <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories> -->
-    <!-- TODO   <PreprocessorDefinitions>NDEBUG;KOZANIAPPGRAPHDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions> -->
-    <!-- TODO   <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile> -->
     </ClCompile>
     <Link>
-    <!-- TODO   <SubSystem>Windows</SubSystem> -->
-    <!-- TODO   <EnableUAC>false</EnableUAC> -->
-    <!-- TODO   <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories> -->
-    <!-- TODO   <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies> -->
       <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
-    <!-- TODO   <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs> -->
     </Link>
     <Midl>
-    <!-- TODO   <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories> -->
-      <!-- TODO <GenerateClientFiles>None</GenerateClientFiles> -->
-      <!-- TODO <GenerateServerFiles>None</GenerateServerFiles> -->
-      <!-- TODO <GenerateTypeLibrary>false</GenerateTypeLibrary> -->
-      <!-- TODO <HeaderFileName>%(Filename).h</HeaderFileName> -->
-      <!-- TODO <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory> -->
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -324,10 +206,10 @@
     <ClCompile Include="KozaniAppGraphTracelogging.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
