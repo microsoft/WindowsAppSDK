@@ -134,9 +134,13 @@
     <Link>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
@@ -146,7 +150,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
@@ -200,9 +203,9 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="KozaniAppGraphActivity.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="KozaniAppGraph.cpp" />
+    <ClCompile Include="KozaniAppGraphActivity.cpp" />
     <ClCompile Include="KozaniAppGraphTracelogging.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
