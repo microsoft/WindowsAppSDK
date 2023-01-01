@@ -43,41 +43,52 @@
     <CppWinRTGenerateWindowsMetadata>false</CppWinRTGenerateWindowsMetadata>
     <CppWinRTNamespaceMergeDepth>9</CppWinRTNamespaceMergeDepth>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+  <PropertyGroup>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <!-- TODO <ConfigurationType>DynamicLibrary</ConfigurationType> -->
+    <!-- TODO <UseDebugLibraries>true</UseDebugLibraries> -->
+    <!-- TODO <PlatformToolset>v143</PlatformToolset> -->
+    <!-- TODO <CharacterSet>Unicode</CharacterSet> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <!-- TODO <ConfigurationType>DynamicLibrary</ConfigurationType> -->
+    <!-- TODO <UseDebugLibraries>false</UseDebugLibraries> -->
+    <!-- TODO <PlatformToolset>v143</PlatformToolset> -->
+    <!-- TODO <CharacterSet>Unicode</CharacterSet> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <!-- TODO <ConfigurationType>DynamicLibrary</ConfigurationType> -->
+    <!-- TODO <UseDebugLibraries>true</UseDebugLibraries> -->
+    <!-- TODO <PlatformToolset>v143</PlatformToolset> -->
+    <!-- TODO <CharacterSet>Unicode</CharacterSet> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <!-- TODO <ConfigurationType>DynamicLibrary</ConfigurationType> -->
+    <!-- TODO <UseDebugLibraries>false</UseDebugLibraries> -->
+    <!-- TODO <PlatformToolset>v143</PlatformToolset> -->
+    <!-- TODO <CharacterSet>Unicode</CharacterSet> -->
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
+    <!-- TODO <ConfigurationType>DynamicLibrary</ConfigurationType> -->
+    <!-- TODO <UseDebugLibraries>true</UseDebugLibraries> -->
+    <!-- TODO <PlatformToolset>v143</PlatformToolset> -->
+    <!-- TODO <CharacterSet>Unicode</CharacterSet> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <!-- TODO <ConfigurationType>DynamicLibrary</ConfigurationType> -->
+    <!-- TODO <UseDebugLibraries>false</UseDebugLibraries> -->
+    <!-- TODO <PlatformToolset>v143</PlatformToolset> -->
+    <!-- TODO <CharacterSet>Unicode</CharacterSet> -->
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -123,7 +134,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\..\WindowsAppRuntime_DLL;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;KOZANIAPPGRAPHDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
