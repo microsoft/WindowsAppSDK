@@ -428,6 +428,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "KozaniAppGraph", "KozaniAppGraph", "{AC000276-4BCF-4E2B-B9C2-1B2716E61CC1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KozaniAppGraph", "dev\Kozani\KozaniAppGraph\KozaniAppGraph.vcxproj", "{029519CF-B149-4346-85B9-4338820CC063}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
