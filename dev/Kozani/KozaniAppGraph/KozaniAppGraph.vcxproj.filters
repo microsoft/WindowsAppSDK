@@ -46,6 +46,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <Midl Include="$(MSBuildThisFileDirectory)KozaniAppGraph.idl" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="KozaniAppGraph.def">
       <Filter>Source Files</Filter>
     </None>

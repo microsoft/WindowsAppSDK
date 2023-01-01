@@ -136,17 +136,18 @@
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <HeaderFileName>%(Filename).h</HeaderFileName>
-      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <!-- TODO <GenerateClientFiles>None</GenerateClientFiles> -->
+      <!-- TODO <GenerateServerFiles>None</GenerateServerFiles> -->
+      <!-- TODO <GenerateTypeLibrary>false</GenerateTypeLibrary> -->
+      <!-- TODO <HeaderFileName>%(Filename).h</HeaderFileName> -->
+      <!-- TODO <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory> -->
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;KOZANIAPPGRAPHDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -159,11 +160,12 @@
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <HeaderFileName>%(Filename).h</HeaderFileName>
-      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <!-- TODO <GenerateClientFiles>None</GenerateClientFiles> -->
+      <!-- TODO <GenerateServerFiles>None</GenerateServerFiles> -->
+      <!-- TODO <GenerateTypeLibrary>false</GenerateTypeLibrary> -->
+      <!-- TODO <HeaderFileName>%(Filename).h</HeaderFileName> -->
+      <!-- TODO <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory> -->
     </Midl>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(RepoRoot)dev\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -172,7 +174,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;KOZANIAPPGRAPHDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -185,17 +187,18 @@
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <HeaderFileName>%(Filename).h</HeaderFileName>
-      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <!-- TODO <GenerateClientFiles>None</GenerateClientFiles> -->
+      <!-- TODO <GenerateServerFiles>None</GenerateServerFiles> -->
+      <!-- TODO <GenerateTypeLibrary>false</GenerateTypeLibrary> -->
+      <!-- TODO <HeaderFileName>%(Filename).h</HeaderFileName> -->
+      <!-- TODO <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory> -->
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;KOZANIAPPGRAPHDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -208,17 +211,18 @@
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <HeaderFileName>%(Filename).h</HeaderFileName>
-      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <!-- TODO <GenerateClientFiles>None</GenerateClientFiles> -->
+      <!-- TODO <GenerateServerFiles>None</GenerateServerFiles> -->
+      <!-- TODO <GenerateTypeLibrary>false</GenerateTypeLibrary> -->
+      <!-- TODO <HeaderFileName>%(Filename).h</HeaderFileName> -->
+      <!-- TODO <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory> -->
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;KOZANIAPPGRAPHDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -231,17 +235,18 @@
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <HeaderFileName>%(Filename).h</HeaderFileName>
-      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <!-- TODO <GenerateClientFiles>None</GenerateClientFiles> -->
+      <!-- TODO <GenerateServerFiles>None</GenerateServerFiles> -->
+      <!-- TODO <GenerateTypeLibrary>false</GenerateTypeLibrary> -->
+      <!-- TODO <HeaderFileName>%(Filename).h</HeaderFileName> -->
+      <!-- TODO <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory> -->
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;KOZANIAPPGRAPHDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -254,11 +259,12 @@
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <HeaderFileName>%(Filename).h</HeaderFileName>
-      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <!-- TODO <GenerateClientFiles>None</GenerateClientFiles> -->
+      <!-- TODO <GenerateServerFiles>None</GenerateServerFiles> -->
+      <!-- TODO <GenerateTypeLibrary>false</GenerateTypeLibrary> -->
+      <!-- TODO <HeaderFileName>%(Filename).h</HeaderFileName> -->
+      <!-- TODO <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory> -->
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -280,6 +286,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="$(MSBuildThisFileDirectory)KozaniAppGraph.idl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="KozaniAppGraph.def" />
