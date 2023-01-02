@@ -40,7 +40,7 @@ Param(
     [String]$Feature=$null
 )
 
-#TODO Set-StrictMode -Version 3.0
+Set-StrictMode -Version 3.0
 
 $ErrorActionPreference = 'Stop'
 
