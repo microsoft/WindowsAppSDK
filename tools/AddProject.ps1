@@ -33,7 +33,9 @@
 Param(
     [Switch]$List=$false,
 
-    [String]$Add=$false,
+    [Switch]$Add=$false,
+
+    [String]$Template=$null,
 
     [String]$Name=$null,
 
@@ -55,6 +57,11 @@ elseif (($List -eq $false) -and ($Add -eq $false))
 
 if ($Add -eq $true)
 {
+    if ([string]::IsNullOrEmpty($Template))
+    {
+        Write-Output "ERROR: -Add requires -Template parameter"
+        Exit 1
+    }
     if ([string]::IsNullOrEmpty($Name))
     {
         Write-Output "ERROR: -Add requires -Name parameter"
@@ -173,7 +180,7 @@ function Get-Content
     }
 }
 
-function List-ProjectTemplates
+function Get-ProjectTemplates
 {
     $template_path = $(Get-ProjectTemplatePath)
     $templates_dirs = $(Get-ChildItem -Path $template_path -Attributes Directory)
@@ -182,22 +189,89 @@ function List-ProjectTemplates
     {
         $id = $pt.BaseName
         $fields = $id -Split "\."
-        $template = [PSCustomObject]@{}
-        $template | Add-Member -MemberType NoteProperty -Name 'Template' -Value $id
-        $template | Add-Member -MemberType NoteProperty -Name 'Type' -Value $fields[0]
+        $t = [PSCustomObject]@{}
+        $t | Add-Member -MemberType NoteProperty -Name 'Template' -Value $id
+        $t | Add-Member -MemberType NoteProperty -Name 'Type' -Value $fields[0]
         $language = Get-Language $fields[1]
-        $template | Add-Member -MemberType NoteProperty -Name 'Language' -Value $language
+        $t | Add-Member -MemberType NoteProperty -Name 'Language' -Value $language
         $target = Get-Target $fields[2]
-        $template | Add-Member -MemberType NoteProperty -Name 'Target' -Value $target
+        $t | Add-Member -MemberType NoteProperty -Name 'Target' -Value $target
         $content = Get-Content $fields[3]
-        $template | Add-Member -MemberType NoteProperty -Name 'Content' -Value $content
-        $templates += $template
+        $t | Add-Member -MemberType NoteProperty -Name 'Content' -Value $content
+        $templates += $t
     }
+
+    $templates
+}
+
+function List-ProjectTemplates
+{
+    $templates = Get-ProjectTemplates
     $templates | Sort-Object -Property Template | Format-Table Template,Type,Language,Target,Content -AutoSize | Out-Default
 }
 
 function Add-Project
 {
+    Write-Host "x$($Template)x"
+    if ([string]::IsNullOrEmpty($Template))
+    {
+        Write-Host "ERROR: -Add requires -Template"
+        Exit 1
+    }
+    $templates = Get-ProjectTemplates
+    $t = $templates | Where-Object { $_.Template -eq $Template }
+    if ($t -eq $null)
+    {
+        Write-Host "ERROR: Template $Template not found. Use -List to list the available templates"
+        Exit 1
+    }
+    $id = $t.Id
+    $template_path = Join-Path Get-ProjectTemplatePath $t.Type.ToLowerCase()
+    $sourcedir = Join-Path $template_path $id
+
+    if ([string]::IsNullOrEmpty($Name))
+    {
+        Write-Host "ERROR: -Add requires -Name"
+        Exit 1
+    }
+    $targetdir = $template_path
+    if (-not([string]::IsNullOrEmpty($Feature)))
+    {
+        $targetdir = Join-Path $targetdir $Feature
+    }
+    $targetdir = Join-Path $targetdir $Name
+    if (Test-Path -Path $targetdir)
+    {
+        Write-Host "ERROR: Target directory exists ($targetdir). Remove to proceed"
+        Exit 1
+    }
+    $null = New-Item $targetdir -ItemType Directory
+
+    $files = Get-ChildItem $sourcedir
+    $count = 0
+    ForEach ($f in $files)
+    {
+        $fn = $f.BaseName
+        $source = $f.FullName
+
+        # Change placemarkers in file content and filenames to the project name
+        # NOTE: The placemarker "Purojekuto Tenpuret" is Japanese for "Project Template" :-)
+        $in = Get-Content $source -Encoding utf8 -Raw
+        $out = $in -Replace 'PurojekutoTenpuret', $Name
+        $out = $out -Replace 'PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant()
+        $out = $out -Replace 'PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant()
+
+        $outfn = $fn -Replace 'PurojekutoTenpuret', $Name
+        $outfn = $outfn -Replace 'PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant()
+        $outfn = $outfn -Replace 'PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant()
+        $target = Join-Path $targetdir $outfn
+
+        Write-Host "Transforming $fn to $outfn"
+        $null = Set-Content -outfn -Value $out -Encoding utf8
+
+        $count++
+    }
+    Write-Output "$count files copied to new project $targetdir"
 }
 
 if ($List -eq $true)
