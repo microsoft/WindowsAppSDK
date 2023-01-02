@@ -22,14 +22,12 @@
 .PARAMETER Name
     The project's name.
 
-.PARAMETER Verbose
-    Display detailed information
-
 .EXAMPLE
     AddProject -List -Verbose
     AddProject -Add -Template dev.cpp.dll.winrt -Name EnvironmentManager
 #>
 
+[CmdletBinding(SupportsShouldProcess=$true)]
 Param(
     [Switch]$List=$false,
 
@@ -39,10 +37,12 @@ Param(
 
     [String]$Name=$null,
 
-    [String]$Feature=$null,
-
-    [Switch]$Verbose=$false
+    [String]$Feature=$null
 )
+
+#TODO Set-StrictMode -Version 3.0
+
+$ErrorActionPreference = 'Stop'
 
 if (($List -eq $true) -and ($Add -eq $true))
 {
@@ -74,18 +74,18 @@ if ($Add -eq $true)
     }
 }
 
-function Write-Verbose
-{
-    param(
-        [Parameter(Mandatory=$true)]
-        [string]$Message
-    )
-
-    if ($Verbose -eq $true)
-    {
-        Write-Host $Message
-    }
-}
+#function Write-Verbose
+#{
+#    param(
+#        [Parameter(Mandatory=$true)]
+#        [string]$Message
+#    )
+#
+#    if ($Verbose -eq $true)
+#    {
+#        Write-Host $Message
+#    }
+#}
 
 function Get-ProjectRoot
 {
@@ -212,7 +212,6 @@ function List-ProjectTemplates
 
 function Add-Project
 {
-    Write-Host "x$($Template)x"
     if ([string]::IsNullOrEmpty($Template))
     {
         Write-Host "ERROR: -Add requires -Template"
@@ -225,16 +224,17 @@ function Add-Project
         Write-Host "ERROR: Template $Template not found. Use -List to list the available templates"
         Exit 1
     }
-    $id = $t.Id
-    $template_path = Join-Path Get-ProjectTemplatePath $t.Type.ToLowerCase()
-    $sourcedir = Join-Path $template_path $id
-
+    $id = $t.Template
     if ([string]::IsNullOrEmpty($Name))
     {
         Write-Host "ERROR: -Add requires -Name"
         Exit 1
     }
-    $targetdir = $template_path
+
+    Write-Host "Creating project $Name from template $Template"
+
+    $root = Get-ProjectRoot
+    $targetdir = Join-Path $root $t.Type.ToLowerInvariant()
     if (-not([string]::IsNullOrEmpty($Feature)))
     {
         $targetdir = Join-Path $targetdir $Feature
@@ -245,13 +245,15 @@ function Add-Project
         Write-Host "ERROR: Target directory exists ($targetdir). Remove to proceed"
         Exit 1
     }
+    Write-Host "Creating $targetdir"
     $null = New-Item $targetdir -ItemType Directory
 
+    Write-Host "Creating project files..."
+    $sourcedir = Join-Path $(Get-ProjectTemplatePath) $id
     $files = Get-ChildItem $sourcedir
     $count = 0
     ForEach ($f in $files)
     {
-        $fn = $f.BaseName
         $source = $f.FullName
 
         # Change placemarkers in file content and filenames to the project name
@@ -261,17 +263,18 @@ function Add-Project
         $out = $out -Replace 'PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant()
         $out = $out -Replace 'PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant()
 
-        $outfn = $fn -Replace 'PurojekutoTenpuret', $Name
+        $outfn = $f -Replace 'PurojekutoTenpuret', $Name
         $outfn = $outfn -Replace 'PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant()
         $outfn = $outfn -Replace 'PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant()
         $target = Join-Path $targetdir $outfn
 
-        Write-Host "Transforming $fn to $outfn"
-        $null = Set-Content -outfn -Value $out -Encoding utf8
+        Write-Host "Transforming $f to $outfn"
+        $null = Set-Content $target -Value $out -Encoding utf8
 
         $count++
     }
     Write-Output "$count files copied to new project $targetdir"
+    Write-Output "Coding time!"
 }
 
 if ($List -eq $true)
