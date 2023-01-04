@@ -95,6 +95,8 @@ Param(
     [Switch]$Verbose=$false
 )
 
+Set-StrictMode -Version 3.0
+
 $ErrorActionPreference = "Stop"
 
 $global:issues = 0
