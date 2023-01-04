@@ -9,8 +9,8 @@
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" />
-    <PackageVersion Include="Microsoft.SourceLink.Common" Version="$(SourceLinkCommonVersion)" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" />
+    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTVersion)" />
+    <PackageVersion Include="Microsoft.SourceLink.Common" Version="$(MicrosoftSourceLinkCommonVersion)" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="$(MicrosoftSourceLinkGitHubVersion)" />
   </ItemGroup>
 </Project>
