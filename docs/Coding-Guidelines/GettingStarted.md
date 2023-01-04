@@ -12,11 +12,11 @@ Development requires the following installed tools...
 **NOTE:** Visual Studio 2022 doesn't include this SDK but will use it if installed on the machine.
 
 2. Visual Studio 2022 with...
-   a. Workloads
+   * Workloads
       * .NET desktop development
       * Desktop development with C++
       * Universal Windows Platform development
-   b. Individual components
+   * Individual components
       * .NET 6.0 Runtime (LTS)
       * .NET SDK
       * Git for Windows
@@ -47,11 +47,11 @@ Development requires the following installed tools...
 via `More` / `Import configuration` and select `docs\Coding-Guidelines\VisualStudio2022.vsconfig`.
 
 3. Run NuGet Restore
-   a. Download nuget.exe version >= 6.2.1 from https://www.nuget.org/downloads
-      e.g. https://dist.nuget.org/win-x86-commandline/v6.2.1/nuget.exe
-   b. Open a command prompt
-   c. CD to the project root e.g. `cd c:\source\repos\windowsappsdk`
-   d. Run `nuget.exe restore`
+   * Download nuget.exe version >= 6.2.1 from https://www.nuget.org/downloads
+     e.g. https://dist.nuget.org/win-x86-commandline/v6.2.1/nuget.exe
+   * Open a command prompt
+   * CD to the project root e.g. `cd c:\source\repos\windowsappsdk`
+   * Run `nuget.exe restore`
 
 # One-Time Setup
 
