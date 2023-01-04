@@ -95,6 +95,8 @@ Param(
     [Switch]$Verbose=$false
 )
 
+$ErrorActionPreference = "Stop"
+
 $global:issues = 0
 
 $remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
@@ -287,7 +289,6 @@ function Test-VisualStudioComponents
 
     $versionRange = "[17.0,18.0)"
 
-    $ErrorActionPreference = "Stop"
     $json = Get-Content $filename -EA:Stop -Raw | ConvertFrom-Json
     Write-Host "...Scanning $($json.components.Length) components in $($filename)" -NoNewline
     $errors = 0
@@ -646,64 +647,50 @@ function Start-TAEFService
 
 function Get-DependencyVersions
 {
-    $versions = [ordered]@{}
-
-    $root = Get-ProjectRoot
-    $path = Join-Path $root 'eng'
-    $filename = Join-Path $path 'Version.Dependencies.xml'
-    Write-Host "Reading $($filename)..."
-
-    $ErrorActionPreference = "Stop"
-    $xml = [xml](Get-Content $filename -EA:Stop)
-    ForEach ($dependency in $xml.SelectNodes("/Dependencies/ProductDependencies/Dependency"))
-    {
-        $name = $dependency.Name
-        $version = $dependency.Version
-        $versions.Add($name, $version)
-    }
-    if ($Verbose -eq $true)
-    {
-        ForEach ($name in $versions.Keys)
-        {
-            Write-Verbose "...$($name) = $($versions[$name])"
-        }
-    }
-
-    $versions
-}
-
-function Get-TransportPackageVersions
-{
-    $versions = [ordered]@{}
+    # Dependencies are defined in Version.Details.xml
+    #   - <ProductDependencies> = Automagically updated by Maestro
+    #   - <ToolsetDependencies> = Manually updated by human beings
+    # Return the pair of lists
+    $dependencies = @{ Automagic=$null; Manual=$null }
 
     $root = Get-ProjectRoot
     $path = Join-Path $root 'eng'
     $filename = Join-Path $path 'Version.Details.xml'
     Write-Host "Reading $($filename)..."
-
-    $ErrorActionPreference = "Stop"
     $xml = [xml](Get-Content $filename -EA:Stop)
+
+    # Parse the automagic dependencies
+    $versions = [ordered]@{}
     ForEach ($dependency in $xml.SelectNodes("/Dependencies/ProductDependencies/Dependency"))
     {
         $name = $dependency.Name
         $version = $dependency.Version
         $versions.Add($name, $version)
     }
+    $dependencies.Automagic = $versions
+
+    # Parse the manual dependencies
+    $versions = [ordered]@{}
     ForEach ($dependency in $xml.SelectNodes("/Dependencies/ToolsetDependencies/Dependency"))
     {
         $name = $dependency.Name
         $version = $dependency.Version
         $versions.Add($name, $version)
     }
+    $dependencies.Manual = $versions
+
     if ($Verbose -eq $true)
     {
-        ForEach ($name in $versions.Keys)
+        ForEach ($list in @($dependencies.AutoMagic, $dependencies.Manual))
         {
-            Write-Verbose "...$($name) = $($versions[$name])"
+            ForEach ($name in $versions.Keys)
+            {
+                Write-Verbose "...$($name) = $($versions[$name])"
+            }
         }
     }
 
-    $versions
+    $dependencies
 }
 
 function Test-PackagesConfig
@@ -713,7 +700,6 @@ function Test-PackagesConfig
         $versions
     )
 
-    $ErrorActionPreference = "Stop"
     $xml = [xml](Get-Content $filename -EA:Stop)
     ForEach ($package in $xml.packages.package)
     {
@@ -722,12 +708,12 @@ function Test-PackagesConfig
 
         if (-not($versions.Contains($name)))
         {
-            Write-Host "...Unknown package $name in $filename"
+            Write-Host "ERROR: Unknown package $name in $filename"
             $global:issues++
         }
         elseif ($version -ne $versions[$name])
         {
-            Write-Host "...Unknown version $name=$version in $filename"
+            Write-Host "ERROR: Unknown version $name=$version in $filename"
             $global:issues++
         }
 
@@ -755,37 +741,49 @@ function Build-Dependencies
         [HashTable]$in
     )
 
-    $dependencies = $in["Dependencies"]
-    $transports = $in["Transports"]
+    $automagic = $in["Automagic"]
+    $manual = $in["Manual"]
 
     $output = @"
 <?xml version="1.0" encoding="utf-8"?>
-<!-- DO NOT EDIT!!! This is a generated file! See Version.Dependencies.xml for more details -->
+<!-- DO NOT EDIT!!! This is a generated file! See Version.Details.xml for more details -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <!-- TODO: Fix DownloadDotNetCoreSdk.ps1 script so we don't need this property -->
-    <CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>$$(CsWinRTDependencyDotNetCoreSdkPackageVersion)</CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>
+    <VersionDetailsXmlFilename>`$(MSBuildThisFileDirectory)Version.Details.xml</VersionDetailsXmlFilename>
+    <VersionDetailsXml>`$([System.IO.File]::ReadAllText(`"`$(VersionDetailsXmlFilename)`"))</VersionDetailsXml>
 
 
 "@
 
+    $output = $output + "    <!-- Dependencies: Automagic -->`r`n"
     $lines = @{}
-    ForEach ($name in $dependencies.Keys)
-    {
-        # NOTE: Create macros per name.Replace(".","").Append("Version")=value
-        $macro = $name.Replace(".","") + "Version"
-        $value = $dependencies[$name]
-        $lines.Add("    <$($macro)>$($value)</$($macro)>`r`n", $null)
-    }
-    ForEach ($name in $transports.Keys)
+    ForEach ($name in $automagic.Keys)
     {
         # NOTE: Create macros per name.Replace(".","").Append("PackageVersion")=value
         $macro = $name.Replace(".","") + "PackageVersion"
-        $value = $transports[$name]
-        $lines.Add("    <$($macro)>$($value)</$($macro)>`r`n", $null)
+        $value = $automagic[$name]
+        $lines.Add("    <$($macro)>`$([System.Text.RegularExpressions.Regex]::Match(`$(VersionDetailsXml), 'Name=`"$($name)`"\s+Version=`"(.*?)`"').Groups[1].Value)</$macro>`r`n", $null)
+
     }
     $sortedLines = $lines.Keys | Sort-Object
     $output = $output + [String]::Join("", $sortedLines)
+
+    $output = $output + "`r`n"
+    $output = $output + "    <!-- Dependencies: Manual -->`r`n"
+    $lines = @{}
+    ForEach ($name in $manual.Keys)
+    {
+        # NOTE: Create macros per name.Replace(".","").Append("Version")=value
+        $macro = $name.Replace(".","") + "Version"
+        $value = $manual[$name]
+        $lines.Add("    <$($macro)>`$([System.Text.RegularExpressions.Regex]::Match(`$(VersionDetailsXml), 'Name=`"$($name)`"\s+Version=`"(.*?)`"').Groups[1].Value)</$macro>`r`n", $null)
+    }
+    $sortedLines = $lines.Keys | Sort-Object
+    $output = $output + [String]::Join("", $sortedLines)
+
+    $output = $output + @"
+
+"@
 
     $output = $output + @"
   </PropertyGroup>
@@ -802,10 +800,10 @@ function CheckAndSync-Dependencies
         [HashTable]$in
     )
 
-    $dependencies = $in["Dependencies"]
-    $transports = $in["Transports"]
+    $automagic = $in["Automagic"]
+    $manual = $in["Manual"]
 
-    $expected = Build-Dependencies @{ Dependencies=$dependencies; Transports=$transports }
+    $expected = Build-Dependencies @{ Automagic=$automagic; Manual=$manual }
 
     $root = Get-ProjectRoot
     $path = Join-Path $root 'eng'
@@ -822,7 +820,6 @@ function CheckAndSync-Dependencies
     }
     else
     {
-        $ErrorActionPreference = "Stop"
         $content = Get-Content $filename -EA:Stop -Raw
         if ($content -eq $expected)
         {
@@ -845,7 +842,7 @@ function CheckAndSync-Dependencies
 
 function Test-Dependencies
 {
-    # Get version information for tools we depend on
+    # Get version information for dependencies
     $fatal_errors = 0
     $dependencies = Get-DependencyVersions
     if ([string]::IsNullOrEmpty($dependencies))
@@ -853,30 +850,17 @@ function Test-Dependencies
         $global:issues++
         $fatal_errors++
     }
-
-    # Get version information for transport packages we depend on
-    $transports = Get-TransportPackageVersions
-    if ([string]::IsNullOrEmpty($transports))
+    $automagic = $dependencies.Automagic
+    $manual = $dependencies.Manual
+    if ([string]::IsNullOrEmpty($automagic))
     {
         $global:issues++
         $fatal_errors++
     }
 
-    # Scan for duplicates (a dependency cannot appear in both lists)
-    $duplicates = $dependencies.Keys | Where-Object { $transports.Contains($_) }
-    if ($duplicates)
-    {
-        ForEach ($item in $duplicates)
-        {
-            Write-Host "ERROR: Dependency in Version.Details.xml and Versions.props"
-            $global:issues++
-            $fatal_errors++
-        }
-    }
-
     # Merge the lists
     $versions = [ordered]@{}
-    ForEach ($name in $dependencies.Keys)
+    ForEach ($name in $automagic.Keys)
     {
         if ($versions.Contains($name))
         {
@@ -886,11 +870,11 @@ function Test-Dependencies
         }
         else
         {
-            $value = $dependencies[$name]
+            $value = $automagic[$name]
             $versions.Add($name, $value)
         }
     }
-    ForEach ($name in $transports.Keys)
+    ForEach ($name in $manual.Keys)
     {
         if ($versions.Contains($name))
         {
@@ -900,7 +884,7 @@ function Test-Dependencies
         }
         else
         {
-            $value = $transports[$name]
+            $value = $manual[$name]
             $versions.Add($name, $value)
         }
     }
@@ -913,18 +897,19 @@ function Test-Dependencies
     }
 
     # Check Version.Dependencies.props
-    $null = CheckAndSync-Dependencies  @{ Dependencies=$dependencies; Transports=$transports }
+    $null = CheckAndSync-Dependencies  @{ Automagic=$automagic; Manual=$manual }
 
     # Scan for references
     $root = Get-ProjectRoot
     $path = Join-Path $root 'dev'
     $files = 0
+    Write-Host "Scanning packages.config..."
     ForEach ($file in (Get-ChildItem -Path $path -Recurse -File 'packages.config'))
     {
         $null = Test-PackagesConfig $file.FullName $versions
         $files++
     }
-    Write-Host "...Scanned $($files) packages.config"
+    Write-Host "Scanned $($files) packages.config"
 
     $path = Join-Path $root 'test'
     $files = 0
@@ -932,7 +917,7 @@ function Test-Dependencies
     {
         $files++
     }
-    Write-Host "...Scanned $($files) *.vcxproj"
+    Write-Host "Scanned $($files) *.vcxproj"
 }
 
 Write-Output "Checking developer environment..."

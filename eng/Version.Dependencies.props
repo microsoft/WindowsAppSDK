@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- DO NOT EDIT!!! This is a generated file! See Version.Dependencies.xml for more details -->
+<!-- DO NOT EDIT!!! This is a generated file! See Version.Details.xml for more details -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <!-- TODO: Fix DownloadDotNetCoreSdk.ps1 script so we don't need this property -->
-    <CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>(CsWinRTDependencyDotNetCoreSdkPackageVersion)</CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>
+    <VersionDetailsXmlFilename>$(MSBuildThisFileDirectory)Version.Details.xml</VersionDetailsXmlFilename>
+    <VersionDetailsXml>$([System.IO.File]::ReadAllText("$(VersionDetailsXmlFilename)"))</VersionDetailsXml>
 
-    <CsWinRTDependencyDotNetCoreRuntimePackageVersion>6.0.6</CsWinRTDependencyDotNetCoreRuntimePackageVersion>
-    <CsWinRTDependencyDotNetCoreSdkPackageVersion>6.0.301</CsWinRTDependencyDotNetCoreSdkPackageVersion>
-    <CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>27</CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>
-    <MicrosoftBuildTasksGitVersion>1.1.1</MicrosoftBuildTasksGitVersion>
-    <MicrosoftFrameworkUdkPackageVersion>1.3.0-CI-25260.1001.221205-1000.0</MicrosoftFrameworkUdkPackageVersion>
-    <MicrosoftSourceLinkCommonVersion>1.1.1</MicrosoftSourceLinkCommonVersion>
-    <MicrosoftSourceLinkGitHubVersion>1.1.1</MicrosoftSourceLinkGitHubVersion>
-    <MicrosoftTaefVersion>10.58.210222006-develop</MicrosoftTaefVersion>
-    <MicrosoftTelemetryInboxNativeVersion>10.0.19041.1-191206-1406.vb-release.x86fre</MicrosoftTelemetryInboxNativeVersion>
-    <MicrosoftWinAppSDKEngCommonPackageVersion>1.3.221209100</MicrosoftWinAppSDKEngCommonPackageVersion>
-    <MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>1.2.0-main.20221103.4</MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>
-    <MicrosoftWindowsCppWinRTVersion>2.0.220929.3</MicrosoftWindowsCppWinRTVersion>
-    <MicrosoftWindowsCsWinRTPackageVersion>2.0.0</MicrosoftWindowsCsWinRTPackageVersion>
-    <MicrosoftWindowsImplementationLibraryVersion>1.0.220914.1</MicrosoftWindowsImplementationLibraryVersion>
+    <!-- Dependencies: Automagic -->
+    <MicrosoftFrameworkUdkPackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.FrameworkUdk"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftFrameworkUdkPackageVersion>
+    <MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>
+
+    <!-- Dependencies: Manual -->
+    <CsWinRTDependencyDotNetCoreRuntimeVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="CsWinRT.Dependency.DotNetCoreRuntime"\s+Version="(.*?)"').Groups[1].Value)</CsWinRTDependencyDotNetCoreRuntimeVersion>
+    <CsWinRTDependencyDotNetCoreSdkVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="CsWinRT.Dependency.DotNetCoreSdk"\s+Version="(.*?)"').Groups[1].Value)</CsWinRTDependencyDotNetCoreSdkVersion>
+    <CsWinRTDependencyWindowsSdkVersionSuffixVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="CsWinRT.Dependency.WindowsSdkVersionSuffix"\s+Version="(.*?)"').Groups[1].Value)</CsWinRTDependencyWindowsSdkVersionSuffixVersion>
+    <MicrosoftBuildTasksGitVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.Build.Tasks.Git"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftBuildTasksGitVersion>
+    <MicrosoftSourceLinkCommonVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.SourceLink.Common"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftSourceLinkCommonVersion>
+    <MicrosoftSourceLinkGitHubVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.SourceLink.GitHub"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftSourceLinkGitHubVersion>
+    <MicrosoftTaefVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.Taef"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftTaefVersion>
+    <MicrosoftTelemetryInboxNativeVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.Telemetry.Inbox.Native"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftTelemetryInboxNativeVersion>
+    <MicrosoftWinAppSDKEngCommonVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.WinAppSDK.EngCommon"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWinAppSDKEngCommonVersion>
+    <MicrosoftWindowsCppWinRTVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.Windows.CppWinRT"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsCppWinRTVersion>
+    <MicrosoftWindowsCsWinRTVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.Windows.CsWinRT"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsCsWinRTVersion>
+    <MicrosoftWindowsImplementationLibraryVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.Windows.ImplementationLibrary"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsImplementationLibraryVersion>
   </PropertyGroup>
 </Project>
+
