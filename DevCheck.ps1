@@ -788,7 +788,6 @@ function Build-Dependencies
     $output = $output + @"
   </PropertyGroup>
 </Project>
-
 "@
 
     $output
@@ -821,7 +820,7 @@ function CheckAndSync-Dependencies
     else
     {
         $content = Get-Content $filename -EA:Stop -Raw
-        if ($content -eq $expected)
+        if ($content.TrimEnd() -eq $expected.TrimEnd()) # Ignore trailing whitespace
         {
             Write-Host "Verify $($filename)...OK"
             return
