@@ -941,14 +941,14 @@ Write-Verbose("Processor...$cpu")
 $project_root = Get-ProjectRoot
 Write-Output "Windows App SDK location...$project_root"
 
-# if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
-# {
-#     $ok = Test-VisualStudio2022Install
-#     if ($ok -eq $true)
-#     {
-#         $null = Test-VisualStudioComponents
-#     }
-# }
+if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
+{
+    $ok = Test-VisualStudio2022Install
+    if ($ok -eq $true)
+    {
+        $null = Test-VisualStudioComponents
+    }
+}
 
 if (($CheckAll -ne $false) -Or ($CheckTestPfx -ne $false))
 {
