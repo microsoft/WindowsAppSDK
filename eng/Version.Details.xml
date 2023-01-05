@@ -41,5 +41,21 @@
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKAggregator</Uri>
       <Sha>f595a1e3c825d944ff5f097cd1941dfe27447d7e</Sha>
     </Dependency>
+    <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.0.0">
+      <Uri>https://github.com/microsoft/CsWinRT</Uri>
+      <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
+    </Dependency>
+    <Dependency Name="CsWinRT.Dependency.DotNetCoreSdk" Version="6.0.301">
+      <Uri>https://github.com/microsoft/CsWinRT</Uri>
+      <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
+    </Dependency>
+    <Dependency Name="CsWinRT.Dependency.DotNetCoreRuntime" Version="6.0.6">
+      <Uri>https://github.com/microsoft/CsWinRT</Uri>
+      <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
+    </Dependency>
+    <Dependency Name="CsWinRT.Dependency.WindowsSdkVersionSuffix" Version="27">
+      <Uri>https://github.com/microsoft/CsWinRT</Uri>
+      <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
+    </Dependency>
   </ToolsetDependencies>
 </Dependencies>

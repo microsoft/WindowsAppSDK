@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
   <!-- Rules for Dependency Management:
-        1. Dependencies in Version.Details.xml are utomagically propogated via Maestro
+        1. Dependencies in Version.Details.xml are automagically propogated via Maestro
            e.g. if B depends on A v1 and A v2 is published, Maestro updates B's Version.Details.xml to A v2
         2. Dependencies in Version.Dependencies.xml are only changed by explicit (manual) developer action
            e.g. if B depends on A v1 and A v2 is published, B is unchanged
@@ -26,10 +26,6 @@
             NOTE: This is required when adding or removing a dependency
     -->
 <Dependencies>
-  <Dependency Name="CsWinRT.Dependency.DotNetCoreRuntime" Version="6.0.6"/>
-  <Dependency Name="CsWinRT.Dependency.DotNetCoreSdk" Version="6.0.301"/>
-  <Dependency Name="CsWinRT.Dependency.WindowsSdkVersionSuffix" Version="27"/>
-  <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.0.0"/>
   <Dependency Name="Microsoft.Build.Tasks.Git"                Version="1.1.1"/>
   <Dependency Name="Microsoft.SourceLink.Common"              Version="1.1.1"/>
   <Dependency Name="Microsoft.SourceLink.GitHub"              Version="1.1.1"/>
