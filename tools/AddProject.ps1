@@ -180,6 +180,25 @@ function Get-TemplateContent
     }
 }
 
+function Get-UpdatedContent
+{
+    param(
+        [string]$filename,
+        [string]$content
+    )
+
+    $ext = [System.IO.Path]::GetExtension($filename)
+    if ($ext -eq '.vcxproj')
+    {
+        $projectguid = "<ProjectGuid>{00000000-0000-0000-0000-000000000000}</ProjectGuid>"
+        $newguid = $(New-Guid).Guid
+        $newprojectguid = "<ProjectGuid>{$($newguid)}</ProjectGuid>"
+        $content = $content -Replace $projectguid, $newprojectguid
+    }
+
+    $content
+}
+
 function Get-ProjectTemplates
 {
     $template_path = $(Get-ProjectTemplatePath)
@@ -259,7 +278,8 @@ function Add-Project
         # Change placemarkers in file content and filenames to the project name
         # NOTE: The placemarker "Purojekuto Tenpuret" is Japanese for "Project Template" :-)
         $in = Get-Content -Path $source -Encoding utf8 -Raw
-        $out = $in -Replace 'PurojekutoTenpuret', $Name
+        $out = $(Get-UpdatedContent $source $in)
+        $out = $out -Replace 'PurojekutoTenpuret', $Name
         $out = $out -Replace 'PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant()
         $out = $out -Replace 'PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant()
 
