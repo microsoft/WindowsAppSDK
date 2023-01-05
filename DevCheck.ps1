@@ -650,18 +650,19 @@ function Start-TAEFService
 function Get-DependencyVersions
 {
     # Dependencies are defined in Version.Details.xml
-    #   - <ProductDependencies> = Automagically updated by Maestro
-    #   - <ToolsetDependencies> = Manually updated by human beings
+    #   Automagically updated by Maestro
+    # Dependencies are defined in Version.Dependencies.xml
+    #   Manually updated by human beings
     # Return the pair of lists
-    $dependencies = @{ Automagic=$null; Manual=$null }
+    $dependencies = @{ Details=$null; Dependencies=$null }
 
     $root = Get-ProjectRoot
     $path = Join-Path $root 'eng'
-    $filename = Join-Path $path 'Version.Details.xml'
-    Write-Host "Reading $($filename)..."
-    $xml = [xml](Get-Content $filename -EA:Stop)
 
-    # Parse the automagic dependencies
+    # Parse the VersionDetails dependencies
+    $versionDetailsFileName = Join-Path $path 'Version.Details.xml'
+    Write-Host "Reading $($versionDetailsFileName)..."
+    $xml = [xml](Get-Content $versionDetailsFileName -EA:Stop)
     $versions = [ordered]@{}
     ForEach ($dependency in $xml.SelectNodes("/Dependencies/ProductDependencies/Dependency"))
     {
@@ -669,21 +670,37 @@ function Get-DependencyVersions
         $version = $dependency.Version
         $versions.Add($name, $version)
     }
-    $dependencies.Automagic = $versions
-
-    # Parse the manual dependencies
-    $versions = [ordered]@{}
     ForEach ($dependency in $xml.SelectNodes("/Dependencies/ToolsetDependencies/Dependency"))
     {
         $name = $dependency.Name
         $version = $dependency.Version
         $versions.Add($name, $version)
     }
-    $dependencies.Manual = $versions
+    $dependencies.Details = $versions
+
+    # Parse The VersionDependencies dependencies
+    $versionDependenciesFileName = Join-Path $path 'Version.Dependencies.xml'
+    Write-Host "Reading $($versionDependenciesFileName)..."
+    $xml = [xml](Get-Content $versionDependenciesFileName -EA:Stop)
+    # Parse the VersionDependencies dependencies
+    $versions = [ordered]@{}
+    ForEach ($dependency in $xml.SelectNodes("/Dependencies/ProductDependencies/Dependency"))
+    {
+        $name = $dependency.Name
+        $version = $dependency.Version
+        $versions.Add($name, $version)
+    }
+    ForEach ($dependency in $xml.SelectNodes("/Dependencies/ToolsetDependencies/Dependency"))
+    {
+        $name = $dependency.Name
+        $version = $dependency.Version
+        $versions.Add($name, $version)
+    }
+    $dependencies.Dependencies = $versions
 
     if ($Verbose -eq $true)
     {
-        ForEach ($list in @($dependencies.AutoMagic, $dependencies.Manual))
+        ForEach ($list in @($dependencies.Dependencies, $dependencies.Details))
         {
             ForEach ($name in $versions.Keys)
             {
@@ -743,8 +760,8 @@ function Build-Dependencies
         [HashTable]$in
     )
 
-    $automagic = $in["Automagic"]
-    $manual = $in["Manual"]
+    $dependencies = $in["Dependencies"]
+    $details = $in["Details"]
 
     $output = @"
 <?xml version="1.0" encoding="utf-8"?>
@@ -757,13 +774,13 @@ function Build-Dependencies
 
 "@
 
-    $output = $output + "    <!-- Dependencies: Automagic -->`r`n"
+    $output = $output + "    <!-- Dependencies: Details -->`r`n"
     $lines = @{}
-    ForEach ($name in $automagic.Keys)
+    ForEach ($name in $details.Keys)
     {
         # NOTE: Create macros per name.Replace(".","").Append("PackageVersion")=value
         $macro = $name.Replace(".","") + "PackageVersion"
-        $value = $automagic[$name]
+        $value = $dependencies[$name]
         $lines.Add("    <$($macro)>`$([System.Text.RegularExpressions.Regex]::Match(`$(VersionDetailsXml), 'Name=`"$($name)`"\s+Version=`"(.*?)`"').Groups[1].Value)</$macro>`r`n", $null)
 
     }
@@ -771,14 +788,14 @@ function Build-Dependencies
     $output = $output + [String]::Join("", $sortedLines)
 
     $output = $output + "`r`n"
-    $output = $output + "    <!-- Dependencies: Manual -->`r`n"
+    $output = $output + "    <!-- Dependencies: dependencies -->`r`n"
     $lines = @{}
-    ForEach ($name in $manual.Keys)
+    ForEach ($name in $dependencies.Keys)
     {
         # NOTE: Create macros per name.Replace(".","").Append("Version")=value
         $macro = $name.Replace(".","") + "Version"
-        $value = $manual[$name]
-        $lines.Add("    <$($macro)>`$([System.Text.RegularExpressions.Regex]::Match(`$(VersionDetailsXml), 'Name=`"$($name)`"\s+Version=`"(.*?)`"').Groups[1].Value)</$macro>`r`n", $null)
+        $value = $dependencies[$name]
+        $lines.Add("    <$($macro)>`$([System.Text.RegularExpressions.Regex]::Match(`$(VersionDependenciesXml), 'Name=`"$($name)`"\s+Version=`"(.*?)`"').Groups[1].Value)</$macro>`r`n", $null)
     }
     $sortedLines = $lines.Keys | Sort-Object
     $output = $output + [String]::Join("", $sortedLines)
@@ -801,10 +818,10 @@ function CheckAndSync-Dependencies
         [HashTable]$in
     )
 
-    $automagic = $in["Automagic"]
-    $manual = $in["Manual"]
+    $dependencies = $in["Dependencies"]
+    $details = $in["details"]
 
-    $expected = Build-Dependencies @{ Automagic=$automagic; Manual=$manual }
+    $expected = Build-Dependencies @{ Dependencies=$dependencies; Details=$details }
 
     $root = Get-ProjectRoot
     $path = Join-Path $root 'eng'
@@ -851,9 +868,9 @@ function Test-Dependencies
         $global:issues++
         $fatal_errors++
     }
-    $automagic = $dependencies.Automagic
-    $manual = $dependencies.Manual
-    if ([string]::IsNullOrEmpty($automagic))
+    $dependencies = $dependencies.Dependencies
+    $details = $dependencies.Details
+    if ([string]::IsNullOrEmpty($details))
     {
         $global:issues++
         $fatal_errors++
@@ -861,7 +878,7 @@ function Test-Dependencies
 
     # Merge the lists
     $versions = [ordered]@{}
-    ForEach ($name in $automagic.Keys)
+    ForEach ($name in $details.Keys)
     {
         if ($versions.Contains($name))
         {
@@ -871,11 +888,11 @@ function Test-Dependencies
         }
         else
         {
-            $value = $automagic[$name]
+            $value = $details[$name]
             $versions.Add($name, $value)
         }
     }
-    ForEach ($name in $manual.Keys)
+    ForEach ($name in $dependencies.Keys)
     {
         if ($versions.Contains($name))
         {
@@ -885,7 +902,7 @@ function Test-Dependencies
         }
         else
         {
-            $value = $manual[$name]
+            $value = $dependencies[$name]
             $versions.Add($name, $value)
         }
     }
@@ -898,7 +915,7 @@ function Test-Dependencies
     }
 
     # Check Version.Dependencies.props
-    $null = CheckAndSync-Dependencies  @{ Automagic=$automagic; Manual=$manual }
+    $null = CheckAndSync-Dependencies  @{ Details=$details; Dependencies=$dependencies }
 
     # Scan for references
     $root = Get-ProjectRoot
