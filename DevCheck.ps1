@@ -696,9 +696,9 @@ function Get-DependencyVersions
     {
         ForEach ($list in @($dependencies.AutoMagic, $dependencies.Manual))
         {
-            ForEach ($name in $versions.Keys)
+            ForEach ($name in $list.Keys)
             {
-                Write-Verbose "...$($name) = $($versions[$name])"
+                Write-Verbose "...$($name) = $($list[$name])"
             }
         }
     }
@@ -764,11 +764,12 @@ function Build-Dependencies
   <PropertyGroup>
     <VersionDetailsXmlFilename>`$(MSBuildThisFileDirectory)Version.Details.xml</VersionDetailsXmlFilename>
     <VersionDetailsXml>`$([System.IO.File]::ReadAllText(`"`$(VersionDetailsXmlFilename)`"))</VersionDetailsXml>
-    <VersionDependenciesXmlFilename>`$(MSBuildThisFileDirectory)Version.Details.xml</VersionDependenciesXmlFilename>
-    <VersionDependenciesXml>`$([System.IO.File]::ReadAllText("`$(VersionDetailsXmlFilename)"))</VersionDependenciesXml>
+    <VersionDependenciesXmlFilename>`$(MSBuildThisFileDirectory)Version.Dependencies.xml</VersionDependenciesXmlFilename>
+    <VersionDependenciesXml>`$([System.IO.File]::ReadAllText("`$(VersionDependenciesXmlFilename)"))</VersionDependenciesXml>
+
 "@
 
-    $output = $output + "    <!-- Dependencies: Automagic -->`r`n"
+    $output = $output + "    <!-- Dependencies: Maestro -->`r`n"
     $lines = @{}
     ForEach ($name in $automagic.Keys)
     {
@@ -789,7 +790,7 @@ function Build-Dependencies
         # NOTE: Create macros per name.Replace(".","").Append("Version")=value
         $macro = $name.Replace(".","") + "Version"
         $value = $manual[$name]
-        $lines.Add("    <$($macro)>`$([System.Text.RegularExpressions.Regex]::Match(`$(VersionDetailsXml), 'Name=`"$($name)`"\s+Version=`"(.*?)`"').Groups[1].Value)</$macro>`r`n", $null)
+        $lines.Add("    <$($macro)>`$([System.Text.RegularExpressions.Regex]::Match(`$(VersionDependenciesXml), 'Name=`"$($name)`"\s+Version=`"(.*?)`"').Groups[1].Value)</$macro>`r`n", $null)
     }
     $sortedLines = $lines.Keys | Sort-Object
     $output = $output + [String]::Join("", $sortedLines)
