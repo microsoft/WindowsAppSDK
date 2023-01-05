@@ -650,44 +650,55 @@ function Start-TAEFService
 function Get-DependencyVersions
 {
     # Dependencies are defined in Version.Details.xml
-    #   - <ProductDependencies> = Automagically updated by Maestro
-    #   - <ToolsetDependencies> = Manually updated by human beings
+    #   - Automagically updated by Maestro
+    # Dependencies are defined in Version.Dependencies.xml
+    #   - Manually updated by human beings
     # Return the pair of lists
     $dependencies = @{ Automagic=$null; Manual=$null }
 
     $root = Get-ProjectRoot
     $path = Join-Path $root 'eng'
-    $filename = Join-Path $path 'Version.Details.xml'
-    Write-Host "Reading $($filename)..."
-    $xml = [xml](Get-Content $filename -EA:Stop)
 
-    # Parse the automagic dependencies
-    $versions = [ordered]@{}
-    ForEach ($dependency in $xml.SelectNodes("/Dependencies/ProductDependencies/Dependency"))
+    # Parse the Version.Details.xml dependencies
+    $versionDetailsFileName = Join-Path $path 'Version.Details.xml'
+    Write-Host "Reading $($versionDetailsFileName)..."
+    $automagicXml = [xml](Get-Content $versionDetailsFileName -EA:Stop)
+    $automagicVersions = [ordered]@{}
+    ForEach ($dependency in $automagicXml.SelectNodes("/Dependencies/ProductDependencies/Dependency"))
     {
         $name = $dependency.Name
         $version = $dependency.Version
-        $versions.Add($name, $version)
+        $automagicVersions.Add($name, $version)
     }
-    $dependencies.Automagic = $versions
-
-    # Parse the manual dependencies
-    $versions = [ordered]@{}
-    ForEach ($dependency in $xml.SelectNodes("/Dependencies/ToolsetDependencies/Dependency"))
+    ForEach ($dependency in $automagicXml.SelectNodes("/Dependencies/ToolsetDependencies/Dependency"))
     {
         $name = $dependency.Name
         $version = $dependency.Version
-        $versions.Add($name, $version)
+        $automagicVersions.Add($name, $version)
     }
-    $dependencies.Manual = $versions
+    $dependencies.Automagic = $automagicVersions
+
+    # Parse The Version.Dependencies.xml dependencies
+    $versionDependenciesFileName = Join-Path $path 'Version.Dependencies.xml'
+    Write-Host "Reading $($versionDependenciesFileName)..."
+    $manualXml = [xml](Get-Content $versionDependenciesFileName -EA:Stop)
+    # Parse the Version.Dependencies.xml dependencies
+    $manualVersions = [ordered]@{}
+    ForEach ($dependency in $manualXml.SelectNodes("/Dependencies/Dependency"))
+    {
+        $name = $dependency.Name
+        $version = $dependency.Version
+        $manualVersions.Add($name, $version)
+    }
+    $dependencies.Manual = $manualVersions
 
     if ($Verbose -eq $true)
     {
         ForEach ($list in @($dependencies.AutoMagic, $dependencies.Manual))
         {
-            ForEach ($name in $versions.Keys)
+            ForEach ($name in $list.Keys)
             {
-                Write-Verbose "...$($name) = $($versions[$name])"
+                Write-Verbose "...$($name) = $($list[$name])"
             }
         }
     }
@@ -753,11 +764,12 @@ function Build-Dependencies
   <PropertyGroup>
     <VersionDetailsXmlFilename>`$(MSBuildThisFileDirectory)Version.Details.xml</VersionDetailsXmlFilename>
     <VersionDetailsXml>`$([System.IO.File]::ReadAllText(`"`$(VersionDetailsXmlFilename)`"))</VersionDetailsXml>
-
+    <VersionDependenciesXmlFilename>`$(MSBuildThisFileDirectory)Version.Dependencies.xml</VersionDependenciesXmlFilename>
+    <VersionDependenciesXml>`$([System.IO.File]::ReadAllText("`$(VersionDependenciesXmlFilename)"))</VersionDependenciesXml>
 
 "@
 
-    $output = $output + "    <!-- Dependencies: Automagic -->`r`n"
+    $output = $output + "    <!-- Dependencies: Maestro -->`r`n"
     $lines = @{}
     ForEach ($name in $automagic.Keys)
     {
@@ -778,7 +790,7 @@ function Build-Dependencies
         # NOTE: Create macros per name.Replace(".","").Append("Version")=value
         $macro = $name.Replace(".","") + "Version"
         $value = $manual[$name]
-        $lines.Add("    <$($macro)>`$([System.Text.RegularExpressions.Regex]::Match(`$(VersionDetailsXml), 'Name=`"$($name)`"\s+Version=`"(.*?)`"').Groups[1].Value)</$macro>`r`n", $null)
+        $lines.Add("    <$($macro)>`$([System.Text.RegularExpressions.Regex]::Match(`$(VersionDependenciesXml), 'Name=`"$($name)`"\s+Version=`"(.*?)`"').Groups[1].Value)</$macro>`r`n", $null)
     }
     $sortedLines = $lines.Keys | Sort-Object
     $output = $output + [String]::Join("", $sortedLines)
