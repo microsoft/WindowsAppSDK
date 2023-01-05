@@ -66,7 +66,7 @@ jobs:
   - task: NuGetAuthenticate@1
 
   - task: powershell@2
-    displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
+    displayName: 'DevCheck: Setup development environment'
     inputs:
       targetType: filePath
       filePath: DevCheck.ps1
@@ -85,7 +85,7 @@ jobs:
     parameters:
       displayName: WindowsAppSDK.Helix.Test
       solutionPath: test\WindowsAppSDK.Helix.Test\WindowsAppSDK.Helix.Test.sln
-  
+
   # Note: 'NuGetCommand@2' is ambiguous so the specific task GUID must be used instead.
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     displayName: 'NuGet restore build/Helix/packages.config'
@@ -153,7 +153,7 @@ jobs:
     inputs:
       PathtoPublish: $(helixWorkItemsDir)
       artifactName: HelixWorkItems_$(buildPlatform)_$(buildConfiguration)
-  
+
   - task: NuGetToolInstaller@1
 
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
