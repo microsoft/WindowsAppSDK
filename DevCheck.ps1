@@ -650,16 +650,16 @@ function Start-TAEFService
 function Get-DependencyVersions
 {
     # Dependencies are defined in Version.Details.xml
-    #   Automagically updated by Maestro
+    #   - Automagically updated by Maestro
     # Dependencies are defined in Version.Dependencies.xml
-    #   Manually updated by human beings
+    #   - Manually updated by human beings
     # Return the pair of lists
     $dependencies = @{ Automagic=$null; Manual=$null }
 
     $root = Get-ProjectRoot
     $path = Join-Path $root 'eng'
 
-    # Parse the VersionDetails dependencies
+    # Parse the Version.Details.xml dependencies
     $versionDetailsFileName = Join-Path $path 'Version.Details.xml'
     Write-Host "Reading $($versionDetailsFileName)..."
     $automagicXml = [xml](Get-Content $versionDetailsFileName -EA:Stop)
@@ -678,11 +678,11 @@ function Get-DependencyVersions
     }
     $dependencies.Automagic = $automagicVersions
 
-    # Parse The VersionDependencies dependencies
+    # Parse The Version.Dependencies.xml dependencies
     $versionDependenciesFileName = Join-Path $path 'Version.Dependencies.xml'
     Write-Host "Reading $($versionDependenciesFileName)..."
     $manualXml = [xml](Get-Content $versionDependenciesFileName -EA:Stop)
-    # Parse the VersionDependencies dependencies
+    # Parse the Version.Dependencies.xml dependencies
     $manualVersions = [ordered]@{}
     ForEach ($dependency in $manualXml.SelectNodes("/Dependencies/Dependency"))
     {
