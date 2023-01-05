@@ -124,7 +124,7 @@ function Get-ProjectTemplatePath
     return $templates
 }
 
-function Get-Language
+function Get-TemplateLanguage
 {
     param(
         [string]$language
@@ -144,7 +144,7 @@ function Get-Language
     }
 }
 
-function Get-Target
+function Get-TemplateTarget
 {
     param(
         [string]$target
@@ -164,7 +164,7 @@ function Get-Target
     }
 }
 
-function Get-Content
+function Get-TemplateContent
 {
     param(
         [string]$content
@@ -192,11 +192,11 @@ function Get-ProjectTemplates
         $t = [PSCustomObject]@{}
         $t | Add-Member -MemberType NoteProperty -Name 'Template' -Value $id
         $t | Add-Member -MemberType NoteProperty -Name 'Type' -Value $fields[0]
-        $language = Get-Language $fields[1]
+        $language = Get-TemplateLanguage $fields[1]
         $t | Add-Member -MemberType NoteProperty -Name 'Language' -Value $language
-        $target = Get-Target $fields[2]
+        $target = Get-TemplateTarget $fields[2]
         $t | Add-Member -MemberType NoteProperty -Name 'Target' -Value $target
-        $content = Get-Content $fields[3]
+        $content = Get-TemplateContent $fields[3]
         $t | Add-Member -MemberType NoteProperty -Name 'Content' -Value $content
         $templates += $t
     }
@@ -258,7 +258,7 @@ function Add-Project
 
         # Change placemarkers in file content and filenames to the project name
         # NOTE: The placemarker "Purojekuto Tenpuret" is Japanese for "Project Template" :-)
-        $in = Get-Content $source -Encoding utf8 -Raw
+        $in = Get-Content -Path $source -Encoding utf8 -Raw
         $out = $in -Replace 'PurojekutoTenpuret', $Name
         $out = $out -Replace 'PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant()
         $out = $out -Replace 'PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant()

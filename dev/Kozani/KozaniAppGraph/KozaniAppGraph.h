@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#if !defined(KOZANIAPPGRAPH_H)
-#define KOZANIAPPGRAPH_H
+#if !defined(KozaniAppGraph_H)
+#define KozaniAppGraph_H
 
 #include <appmodel.h>
 
 #if defined(__cplusplus)
-#define KOZANIAPPGRAPH_NOEXCEPT   noexcept
+#define KozaniAppGraph_NOEXCEPT   noexcept
 #else
-#define KOZANIAPPGRAPH_NOEXCEPT
+#define KozaniAppGraph_NOEXCEPT
 #endif // defined(__cplusplus)
 
 //TODO Flat-C API
@@ -21,4 +21,5 @@
 
 #endif // defined(__cplusplus)
 
-#endif // KOZANIAPPGRAPH_H
+#endif // KozaniAppGraph_H
+

@@ -8,3 +8,4 @@
 namespace WindowsAppRuntime::Kozani::AppGraph::Activity
 {
 }
+

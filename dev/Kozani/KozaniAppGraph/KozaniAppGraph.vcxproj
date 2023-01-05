@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" />
-  <Import Project="$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props')" />
-  <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props')" />
-  <Import Project="$(RepoRoot)\packages\Microsoft.Windows.CppWinRT.$(CppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.Windows.CppWinRT.$(CppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props')" />
+  <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" />
+  <Import Project="$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props')" />
+  <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props')" />
+  <Import Project="$(RepoRoot)\packages\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -90,24 +90,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>KOZANIAPPGRAPHDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>KozaniAppGraphDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -124,15 +112,11 @@
     <ClCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <Link>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <Link>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
     <ClCompile>
@@ -140,61 +124,34 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-    </ClCompile>
     <Link>
       <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
     </Link>
-    <Midl>
-    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-    </ClCompile>
     <Link>
       <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
     </Link>
-    <Midl>
-    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-    </ClCompile>
     <Link>
       <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
     </Link>
-    <Midl>
-    </Midl>
-    <ResourceCompile>
-      <AdditionalIncludeDirectories>$(RepoRoot)dev\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-    </ClCompile>
     <Link>
       <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
     </Link>
-    <Midl>
-    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-    <ClCompile>
-    </ClCompile>
     <Link>
       <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
     </Link>
-    <Midl>
-    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-    <ClCompile>
-    </ClCompile>
     <Link>
       <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
     </Link>
-    <Midl>
-    </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
@@ -230,24 +187,24 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(RepoRoot)\packages\Microsoft.Windows.CppWinRT.$(CppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.Windows.CppWinRT.$(CppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" />
-    <Import Project="$(RepoRoot)\packages\Microsoft.Windows.ImplementationLibrary.1.0.220914.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.Windows.ImplementationLibrary.1.0.220914.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
-    <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets')" />
-    <Import Project="$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" />
-    <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" />
+    <Import Project="$(RepoRoot)\packages\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" />
+    <Import Project="$(RepoRoot)\packages\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
+    <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets')" />
+    <Import Project="$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" />
+    <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.Windows.CppWinRT.$(CppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.Windows.CppWinRT.$(CppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props'))" />
-    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.Windows.CppWinRT.$(CppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.Windows.CppWinRT.$(CppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets'))" />
-    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.Windows.ImplementationLibrary.1.0.220914.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.Windows.ImplementationLibrary.1.0.220914.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
-    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props'))" />
-    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(SourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets'))" />
-    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props'))" />
-    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(BuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets'))" />
-    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props'))" />
-    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(SourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets'))" />
+    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props'))" />
+    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
+    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props'))" />
+    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets'))" />
+    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props'))" />
+    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets'))" />
+    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props'))" />
+    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets'))" />
   </Target>
 </Project>
