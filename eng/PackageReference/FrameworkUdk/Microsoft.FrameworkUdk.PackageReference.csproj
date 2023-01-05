@@ -16,6 +16,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageDownload Include="Microsoft.FrameworkUdk" version="[$(FrameworkUdkVersion)]" />
+    <PackageDownload Include="Microsoft.FrameworkUdk" version="[$(MicrosoftFrameworkUdkPackageVersion)]" />
   </ItemGroup>
 </Project>
