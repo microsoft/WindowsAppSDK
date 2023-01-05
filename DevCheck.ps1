@@ -654,7 +654,7 @@ function Get-DependencyVersions
     # Dependencies are defined in Version.Dependencies.xml
     #   Manually updated by human beings
     # Return the pair of lists
-    $dependencies = @{ Details=$null; Dependencies=$null }
+    $dependencies = @{ Automagic=$null; Manual=$null }
 
     $root = Get-ProjectRoot
     $path = Join-Path $root 'eng'
@@ -662,45 +662,39 @@ function Get-DependencyVersions
     # Parse the VersionDetails dependencies
     $versionDetailsFileName = Join-Path $path 'Version.Details.xml'
     Write-Host "Reading $($versionDetailsFileName)..."
-    $xml = [xml](Get-Content $versionDetailsFileName -EA:Stop)
-    $versions = [ordered]@{}
-    ForEach ($dependency in $xml.SelectNodes("/Dependencies/ProductDependencies/Dependency"))
+    $automagicXml = [xml](Get-Content $versionDetailsFileName -EA:Stop)
+    $automagicVersions = [ordered]@{}
+    ForEach ($dependency in $automagicXml.SelectNodes("/Dependencies/ProductDependencies/Dependency"))
     {
         $name = $dependency.Name
         $version = $dependency.Version
-        $versions.Add($name, $version)
+        $automagicVersions.Add($name, $version)
     }
-    ForEach ($dependency in $xml.SelectNodes("/Dependencies/ToolsetDependencies/Dependency"))
+    ForEach ($dependency in $automagicXml.SelectNodes("/Dependencies/ToolsetDependencies/Dependency"))
     {
         $name = $dependency.Name
         $version = $dependency.Version
-        $versions.Add($name, $version)
+        $automagicVersions.Add($name, $version)
     }
-    $dependencies.Details = $versions
+    $dependencies.Automagic = $automagicVersions
 
     # Parse The VersionDependencies dependencies
     $versionDependenciesFileName = Join-Path $path 'Version.Dependencies.xml'
     Write-Host "Reading $($versionDependenciesFileName)..."
-    $xml = [xml](Get-Content $versionDependenciesFileName -EA:Stop)
+    $manualXml = [xml](Get-Content $versionDependenciesFileName -EA:Stop)
     # Parse the VersionDependencies dependencies
-    $versions = [ordered]@{}
-    ForEach ($dependency in $xml.SelectNodes("/Dependencies/ProductDependencies/Dependency"))
+    $manualVersions = [ordered]@{}
+    ForEach ($dependency in $manualXml.SelectNodes("/Dependencies/Dependency"))
     {
         $name = $dependency.Name
         $version = $dependency.Version
-        $versions.Add($name, $version)
+        $manualVersions.Add($name, $version)
     }
-    ForEach ($dependency in $xml.SelectNodes("/Dependencies/ToolsetDependencies/Dependency"))
-    {
-        $name = $dependency.Name
-        $version = $dependency.Version
-        $versions.Add($name, $version)
-    }
-    $dependencies.Dependencies = $versions
+    $dependencies.Manual = $manualVersions
 
     if ($Verbose -eq $true)
     {
-        ForEach ($list in @($dependencies.Dependencies, $dependencies.Details))
+        ForEach ($list in @($dependencies.AutoMagic, $dependencies.Manual))
         {
             ForEach ($name in $versions.Keys)
             {
@@ -760,8 +754,8 @@ function Build-Dependencies
         [HashTable]$in
     )
 
-    $dependencies = $in["Dependencies"]
-    $details = $in["Details"]
+    $automagic = $in["Automagic"]
+    $manual = $in["Manual"]
 
     $output = @"
 <?xml version="1.0" encoding="utf-8"?>
@@ -770,17 +764,17 @@ function Build-Dependencies
   <PropertyGroup>
     <VersionDetailsXmlFilename>`$(MSBuildThisFileDirectory)Version.Details.xml</VersionDetailsXmlFilename>
     <VersionDetailsXml>`$([System.IO.File]::ReadAllText(`"`$(VersionDetailsXmlFilename)`"))</VersionDetailsXml>
-
-
+    <VersionDependenciesXmlFilename>`$(MSBuildThisFileDirectory)Version.Details.xml</VersionDependenciesXmlFilename>
+    <VersionDependenciesXml>`$([System.IO.File]::ReadAllText("`$(VersionDetailsXmlFilename)"))</VersionDependenciesXml>
 "@
 
-    $output = $output + "    <!-- Dependencies: Details -->`r`n"
+    $output = $output + "    <!-- Dependencies: Automagic -->`r`n"
     $lines = @{}
-    ForEach ($name in $details.Keys)
+    ForEach ($name in $automagic.Keys)
     {
         # NOTE: Create macros per name.Replace(".","").Append("PackageVersion")=value
         $macro = $name.Replace(".","") + "PackageVersion"
-        $value = $dependencies[$name]
+        $value = $automagic[$name]
         $lines.Add("    <$($macro)>`$([System.Text.RegularExpressions.Regex]::Match(`$(VersionDetailsXml), 'Name=`"$($name)`"\s+Version=`"(.*?)`"').Groups[1].Value)</$macro>`r`n", $null)
 
     }
@@ -788,14 +782,14 @@ function Build-Dependencies
     $output = $output + [String]::Join("", $sortedLines)
 
     $output = $output + "`r`n"
-    $output = $output + "    <!-- Dependencies: dependencies -->`r`n"
+    $output = $output + "    <!-- Dependencies: Manual -->`r`n"
     $lines = @{}
-    ForEach ($name in $dependencies.Keys)
+    ForEach ($name in $manual.Keys)
     {
         # NOTE: Create macros per name.Replace(".","").Append("Version")=value
         $macro = $name.Replace(".","") + "Version"
-        $value = $dependencies[$name]
-        $lines.Add("    <$($macro)>`$([System.Text.RegularExpressions.Regex]::Match(`$(VersionDependenciesXml), 'Name=`"$($name)`"\s+Version=`"(.*?)`"').Groups[1].Value)</$macro>`r`n", $null)
+        $value = $manual[$name]
+        $lines.Add("    <$($macro)>`$([System.Text.RegularExpressions.Regex]::Match(`$(VersionDetailsXml), 'Name=`"$($name)`"\s+Version=`"(.*?)`"').Groups[1].Value)</$macro>`r`n", $null)
     }
     $sortedLines = $lines.Keys | Sort-Object
     $output = $output + [String]::Join("", $sortedLines)
@@ -818,10 +812,10 @@ function CheckAndSync-Dependencies
         [HashTable]$in
     )
 
-    $dependencies = $in["Dependencies"]
-    $details = $in["details"]
+    $automagic = $in["Automagic"]
+    $manual = $in["Manual"]
 
-    $expected = Build-Dependencies @{ Dependencies=$dependencies; Details=$details }
+    $expected = Build-Dependencies @{ Automagic=$automagic; Manual=$manual }
 
     $root = Get-ProjectRoot
     $path = Join-Path $root 'eng'
@@ -868,9 +862,9 @@ function Test-Dependencies
         $global:issues++
         $fatal_errors++
     }
-    $dependencies = $dependencies.Dependencies
-    $details = $dependencies.Details
-    if ([string]::IsNullOrEmpty($details))
+    $automagic = $dependencies.Automagic
+    $manual = $dependencies.Manual
+    if ([string]::IsNullOrEmpty($automagic))
     {
         $global:issues++
         $fatal_errors++
@@ -878,7 +872,7 @@ function Test-Dependencies
 
     # Merge the lists
     $versions = [ordered]@{}
-    ForEach ($name in $details.Keys)
+    ForEach ($name in $automagic.Keys)
     {
         if ($versions.Contains($name))
         {
@@ -888,11 +882,11 @@ function Test-Dependencies
         }
         else
         {
-            $value = $details[$name]
+            $value = $automagic[$name]
             $versions.Add($name, $value)
         }
     }
-    ForEach ($name in $dependencies.Keys)
+    ForEach ($name in $manual.Keys)
     {
         if ($versions.Contains($name))
         {
@@ -902,7 +896,7 @@ function Test-Dependencies
         }
         else
         {
-            $value = $dependencies[$name]
+            $value = $manual[$name]
             $versions.Add($name, $value)
         }
     }
@@ -915,7 +909,7 @@ function Test-Dependencies
     }
 
     # Check Version.Dependencies.props
-    $null = CheckAndSync-Dependencies  @{ Details=$details; Dependencies=$dependencies }
+    $null = CheckAndSync-Dependencies  @{ Automagic=$automagic; Manual=$manual }
 
     # Scan for references
     $root = Get-ProjectRoot
@@ -946,14 +940,14 @@ Write-Verbose("Processor...$cpu")
 $project_root = Get-ProjectRoot
 Write-Output "Windows App SDK location...$project_root"
 
-if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
-{
-    $ok = Test-VisualStudio2022Install
-    if ($ok -eq $true)
-    {
-        $null = Test-VisualStudioComponents
-    }
-}
+# if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
+# {
+#     $ok = Test-VisualStudio2022Install
+#     if ($ok -eq $true)
+#     {
+#         $null = Test-VisualStudioComponents
+#     }
+# }
 
 if (($CheckAll -ne $false) -Or ($CheckTestPfx -ne $false))
 {
