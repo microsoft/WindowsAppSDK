@@ -40,6 +40,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\..\..\eng\common\VersionInfo\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Microsoft.Windows.AppNotifications.Projection\Microsoft.Windows.AppNotifications.Projection.csproj" />
   </ItemGroup>
 
