@@ -34,8 +34,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{029519CF-B149-4346-85B9-4338820CC063}</ProjectGuid>
-    <RootNamespace>KozaniAppGraph</RootNamespace>
+    <ProjectGuid>{87262dfa-5c36-4e6c-bb1f-032ae0c217e2}</ProjectGuid>
+    <RootNamespace>KozaniPackage</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <CppWinRTModernIDL>true</CppWinRTModernIDL>
     <CppWinRTFastAbi>true</CppWinRTFastAbi>
@@ -44,7 +44,7 @@
     <CppWinRTNamespaceMergeDepth>9</CppWinRTNamespaceMergeDepth>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetName>KozaniAppGraph</TargetName>
+    <TargetName>KozaniPackage</TargetName>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -95,7 +95,7 @@
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>KozaniAppGraphDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>KozaniPackageDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -125,45 +125,45 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
-      <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>KozaniPackage.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
-      <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>KozaniPackage.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
-      <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>KozaniPackage.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
-      <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>KozaniPackage.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <Link>
-      <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>KozaniPackage.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <Link>
-      <ModuleDefinitionFile>KozaniAppGraph.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>KozaniPackage.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
-    <ClInclude Include="KozaniAppGraph.h" />
-    <ClInclude Include="KozaniAppGraphTracelogging.h" />
+    <ClInclude Include="KozaniPackage.h" />
+    <ClInclude Include="KozaniPackageTracelogging.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="KozaniAppGraph.cpp" />
-    <ClCompile Include="KozaniAppGraphActivity.cpp" />
-    <ClCompile Include="KozaniAppGraphTracelogging.cpp" />
+    <ClCompile Include="KozaniPackage.cpp" />
+    <ClCompile Include="KozaniPackageActivity.cpp" />
+    <ClCompile Include="KozaniPackageTracelogging.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -174,14 +174,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="$(MSBuildThisFileDirectory)KozaniAppGraph.idl" />
+    <Midl Include="$(MSBuildThisFileDirectory)KozaniPackage.idl" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="KozaniAppGraph.def" />
+    <None Include="KozaniPackage.def" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="KozaniAppGraph.rc">
+    <ResourceCompile Include="KozaniPackage.rc">
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemGroup>
@@ -208,3 +208,4 @@
     <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets'))" />
   </Target>
 </Project>
+

@@ -74,18 +74,11 @@ if ($Add -eq $true)
     }
 }
 
-#function Write-Verbose
-#{
-#    param(
-#        [Parameter(Mandatory=$true)]
-#        [string]$Message
-#    )
-#
-#    if ($Verbose -eq $true)
-#    {
-#        Write-Host $Message
-#    }
-#}
+if ($Name -NotMatch "^[A-Za-z0-9_]+$")
+{
+    Write-Output "ERROR: -Name must match the pattern [A-Za-z0-9_]+"
+    Exit 1
+}
 
 function Get-ProjectRoot
 {
@@ -282,6 +275,7 @@ function Add-Project
         $out = $out -Replace 'PurojekutoTenpuret', $Name
         $out = $out -Replace 'PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant()
         $out = $out -Replace 'PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant()
+        $out = $out.TrimEnd()
 
         $outfn = $f -Replace 'PurojekutoTenpuret', $Name
         $outfn = $outfn -Replace 'PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant()
