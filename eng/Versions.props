@@ -7,13 +7,13 @@
     <VersionDependenciesXmlFilename>$(MSBuildThisFileDirectory)Version.Dependencies.xml</VersionDependenciesXmlFilename>
     <VersionDependenciesXml>$([System.IO.File]::ReadAllText("$(VersionDependenciesXmlFilename)"))</VersionDependenciesXml>
     <!-- Dependencies: Maestro -->
-    <CsWinRTDependencyDotNetCoreRuntimePackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="CsWinRT.Dependency.DotNetCoreRuntime"\s+Version="(.*?)"').Groups[1].Value)</CsWinRTDependencyDotNetCoreRuntimePackageVersion>
-    <CsWinRTDependencyDotNetCoreSdkPackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="CsWinRT.Dependency.DotNetCoreSdk"\s+Version="(.*?)"').Groups[1].Value)</CsWinRTDependencyDotNetCoreSdkPackageVersion>
-    <CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="CsWinRT.Dependency.WindowsSdkVersionSuffix"\s+Version="(.*?)"').Groups[1].Value)</CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>
-    <MicrosoftFrameworkUdkPackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.FrameworkUdk"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftFrameworkUdkPackageVersion>
-    <MicrosoftWinAppSDKEngCommonPackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.WinAppSDK.EngCommon"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWinAppSDKEngCommonPackageVersion>
-    <MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsAppSDKAppLicensingInternalTransportPackagePackageVersion>
-    <MicrosoftWindowsCsWinRTPackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.Windows.CsWinRT"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsCsWinRTPackageVersion>
+    <CsWinRTDependencyDotNetCoreRuntimeVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="CsWinRT.Dependency.DotNetCoreRuntime"\s+Version="(.*?)"').Groups[1].Value)</CsWinRTDependencyDotNetCoreRuntimeVersion>
+    <CsWinRTDependencyDotNetCoreSdkVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="CsWinRT.Dependency.DotNetCoreSdk"\s+Version="(.*?)"').Groups[1].Value)</CsWinRTDependencyDotNetCoreSdkVersion>
+    <CsWinRTDependencyWindowsSdkVersionSuffixVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="CsWinRT.Dependency.WindowsSdkVersionSuffix"\s+Version="(.*?)"').Groups[1].Value)</CsWinRTDependencyWindowsSdkVersionSuffixVersion>
+    <MicrosoftFrameworkUdkVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.FrameworkUdk"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftFrameworkUdkVersion>
+    <MicrosoftWinAppSDKEngCommonVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.WinAppSDK.EngCommon"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWinAppSDKEngCommonVersion>
+    <MicrosoftWindowsAppSDKAppLicensingInternalTransportPackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsAppSDKAppLicensingInternalTransportPackageVersion>
+    <MicrosoftWindowsCsWinRTVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.Windows.CsWinRT"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsCsWinRTVersion>
 
     <!-- Dependencies: Manual -->
     <MicrosoftBuildTasksGitVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Microsoft.Build.Tasks.Git"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftBuildTasksGitVersion>

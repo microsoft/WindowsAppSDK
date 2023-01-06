@@ -109,7 +109,7 @@ $latestAlreadyInstalled = Is-Installed $dotNetSdkVersion
 $lkgAlreadyInstalled = $true
 
 # Only try to install the lkg sdk if specified
-if ((-not [string]::IsNullOrEmpty($dotNetSdkVersionLkg)) -and ($dotNetSdkVersionLkg -ine '$(CsWinRTDependencyDotNetCoreSdkPackageVersion)'))
+if ((-not [string]::IsNullOrEmpty($dotNetSdkVersionLkg)) -and ($dotNetSdkVersionLkg -ine '$(CsWinRTDependencyDotNetCoreSdkVersion)'))
 {
     $lkgAlreadyInstalled = Is-Installed $dotNetSdkVersionLkg
 }

@@ -774,7 +774,7 @@ function Build-Dependencies
     ForEach ($name in $automagic.Keys)
     {
         # NOTE: Create macros per name.Replace(".","").Append("PackageVersion")=value
-        $macro = $name.Replace(".","") + "PackageVersion"
+        $macro = $name.Replace(".","") + "Version"
         $value = $automagic[$name]
         $lines.Add("    <$($macro)>`$([System.Text.RegularExpressions.Regex]::Match(`$(VersionDetailsXml), 'Name=`"$($name)`"\s+Version=`"(.*?)`"').Groups[1].Value)</$macro>`r`n", $null)
 
@@ -820,7 +820,7 @@ function CheckAndSync-Dependencies
 
     $root = Get-ProjectRoot
     $path = Join-Path $root 'eng'
-    $filename = Join-Path $path 'Version.Dependencies.props'
+    $filename = Join-Path $path 'Versions.props'
     Write-Host "Reading $($filename)..."
     if (-not(Test-Path -Path $filename -PathType Leaf))
     {
@@ -909,7 +909,7 @@ function Test-Dependencies
         return
     }
 
-    # Check Version.Dependencies.props
+    # Check Versions.props
     $null = CheckAndSync-Dependencies  @{ Automagic=$automagic; Manual=$manual }
 
     # Scan for references
