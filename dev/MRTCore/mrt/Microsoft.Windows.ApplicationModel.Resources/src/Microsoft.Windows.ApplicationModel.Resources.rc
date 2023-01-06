@@ -2,5 +2,5 @@
 // Licensed under the MIT License.
 
 #include <winresrc.h>
-#define VERSIONINFO_FILENAME "Microsoft.Windows.ApplicationModel.Resources..dll"
-#include "..\..\..\..\common\WindowsAppSDK.ver"
+#define VERSIONINFO_FILENAME "Microsoft.Windows.ApplicationModel.Resources.dll"
+#include "..\..\..\..\..\eng\common\VersionInfo\AssemblyInfo.ver"

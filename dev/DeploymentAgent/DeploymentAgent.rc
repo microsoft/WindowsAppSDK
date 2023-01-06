@@ -4,4 +4,4 @@
 #include <winresrc.h>
 #define VERSIONINFO_FILENAME "DeploymentAgent.exe"
 #define VERSIONINFO_FILETYPE VFT_APP
-#include "..\common\WindowsAppSDK.ver"
+#include "..\..\eng\common\VersionInfo\AssemblyInfo.ver"
