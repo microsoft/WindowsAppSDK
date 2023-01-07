@@ -42,7 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\..\..\..\ProjectReunionInternal\dev\Common\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
+    <Compile Include="..\..\..\..\eng\common\VersionInfo\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
   </ItemGroup>
 
   <ItemGroup>
