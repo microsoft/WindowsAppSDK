@@ -99,7 +99,9 @@
     <ClInclude Include="MRM.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="MRM.rc" />
+    <ResourceCompile Include="MRM.rc">
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\..\..\..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MRM.def" />
