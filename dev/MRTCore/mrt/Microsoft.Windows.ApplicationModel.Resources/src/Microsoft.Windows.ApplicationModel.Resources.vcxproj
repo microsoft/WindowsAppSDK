@@ -140,9 +140,7 @@
     <None Include="Microsoft.Windows.ApplicationModel.Resources.def" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Microsoft.Windows.ApplicationModel.Resources.rc">
-      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\..\..\..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
+    <ResourceCompile Include="Microsoft.Windows.ApplicationModel.Resources.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
