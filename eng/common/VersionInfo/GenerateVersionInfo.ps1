@@ -123,7 +123,6 @@ VS_VERSION_INFO VERSIONINFO
         VALUE "Translation", 0x409, 1200
     END
  END
-
 "@
 
 Write-Host $assemblyInfoVer
