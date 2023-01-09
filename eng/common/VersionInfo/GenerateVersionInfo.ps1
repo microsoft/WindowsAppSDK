@@ -21,6 +21,9 @@ Param(
     [int]$ProductMinor
 )
 
+# Don't output file with Bom
+$utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+
 $scriptFullPath =  (Split-Path -Parent $MyInvocation.MyCommand.Definition)
 Write-Host "scriptFullPath: $scriptFullPath"
 
@@ -46,7 +49,7 @@ using System.Runtime.InteropServices;
 Write-Host $assemblyInfoCs
 $assemblyInfoCsPath = "$scriptFullPath/AssemblyInfo.cs"
 Write-Host "Writing $assemblyInfoCsPath..."
-$assemblyInfoCs | Out-File -Encoding "UTF8" -FilePath $assemblyInfoCsPath
+[System.IO.File]::WriteAllLines($assemblyInfoCsPath, $assemblyInfoCs, $utf8NoBomEncoding)
 
 # Generating AssemblyInfo.ver override
 $assemblyInfoVer = @"
@@ -128,4 +131,4 @@ VS_VERSION_INFO VERSIONINFO
 Write-Host $assemblyInfoVer
 $assemblyInfoVerPath = "$scriptFullPath/AssemblyInfo.ver"
 Write-Host "Writing $assemblyInfoVerPath..."
-$assemblyInfoVer | Out-File -Encoding "UTF8" -FilePath $assemblyInfoVerPath
+[System.IO.File]::WriteAllLines($assemblyInfoVerPath, $assemblyInfoVer, $utf8NoBomEncoding)
