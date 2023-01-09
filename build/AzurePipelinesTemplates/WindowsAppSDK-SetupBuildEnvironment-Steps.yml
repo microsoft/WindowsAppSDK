@@ -38,6 +38,12 @@ steps:
       -ProductMajor "$(major)"
       -ProductMinor "$(minor)"
 
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish BuildOutput'
+  inputs:
+    artifactName: VersionInfo
+    PathtoPublish: '$(Build.SourcesDirectory)\eng\common\VersionInfo'
+
 - task: powershell@2
   displayName: 'Create DynamicDependencies TerminalVelocity features'
   inputs:
