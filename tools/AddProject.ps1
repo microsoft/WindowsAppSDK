@@ -183,7 +183,23 @@ function Get-UpdatedContent
     )
 
     $ext = [System.IO.Path]::GetExtension($filename)
-    if ($ext -eq '.idl')
+    if ($ext -eq '.h')
+    {
+        $libid = "LIBID-00000000-0000-0000-0000-000000000000"
+        $newguid = $(New-Guid).Guid
+        $newlibid = "$($newguid)"
+        $content = $content -Replace $libid, $newlibid
+
+        $clsiduuid = "CLSID-UUID-00000000-0000-0000-0000-000000000000"
+        $newguid = $(New-Guid).Guid
+        $newclsiduuid = "$($newguid)"
+        $content = $content -Replace $clsiduuid, $newclsiduuid
+        $clsidguid = "CLSID-GUID-0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }"
+        $fields = $newguid -Split '-'
+        $newclsid_guid = "0x$($fields[0]), 0x$($fields[1]), 0x$($fields[2]), { 0x$($fields[3].Substring(0,2)), 0x$($fields[3].Substring(2,2)), 0x$($fields[4].Substring(0,2)), 0x$($fields[4].Substring(2,2)), 0x$($fields[4].Substring(4,2)), 0x$($fields[4].Substring(6,2)), 0x$($fields[4].Substring(8,2)), 0x$($fields[4].Substring(10,2)) }"
+        $content = $content -Replace $clsidguid, $newclsidguid
+    }
+    elseif ($ext -eq '.idl')
     {
         $uuid = "[uuid(00000000-0000-0000-0000-000000000000)]"
         $newguid = $(New-Guid).Guid

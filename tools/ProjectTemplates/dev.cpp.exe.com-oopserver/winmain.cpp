@@ -3,7 +3,7 @@
 
 #include "pch.h"
 
-#include "..\PurojekutoTenpuret-Constants.h"
+#include "..\PurojekutoTenpuret.ProxyStub\PurojekutoTenpuret-Constants.h"
 
 #include <PurojekutoTenpuret_h.h>
 
