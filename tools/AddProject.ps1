@@ -27,6 +27,12 @@
     AddProject -Add -Template dev.cpp.dll.winrt -Name EnvironmentManager
 #>
 
+# NOTE: Project Templates must be in a directory \tools\ProjectTemplates\<type>.<language>.<target>.<content>
+#       For example, \tools\ProjectTemplates\dev.cpp.exe.console for a \dev C++ project creating a console-mode EXE
+# NOTE: Project Templates have their name substituted for the placemarker.
+# NOTE: Project Templates MUST have a metadata file named PurojekutoTenpuret.Metadeta.
+# NOTE: The placemarker phrases "Purojekuto Tenpuret" and "Metadeta" are Japanese for "Project Template" and "metadata" :-)
+
 [CmdletBinding(SupportsShouldProcess=$true)]
 Param(
     [Switch]$List=$false,
@@ -62,22 +68,18 @@ if ($Add -eq $true)
         Write-Output "ERROR: -Add requires -Template parameter"
         Exit 1
     }
+
     if ([string]::IsNullOrEmpty($Name))
     {
         Write-Output "ERROR: -Add requires -Name parameter"
         Exit 1
     }
+
     if ([string]::IsNullOrEmpty($Feature))
     {
         Write-Output "ERROR: -Add requires -Feature parameter"
         Exit 1
     }
-}
-
-if ($Name -NotMatch "^[A-Za-z0-9_]+$")
-{
-    Write-Output "ERROR: -Name must match the pattern [A-Za-z0-9_]+"
-    Exit 1
 }
 
 function Get-ProjectRoot
@@ -192,6 +194,25 @@ function Get-UpdatedContent
     $content
 }
 
+function Get-ProjectTemplateMetadata
+{
+    param(
+        [string]$path,
+        [string]$id
+    )
+
+    $sourcedir = Join-Path $(Get-ProjectTemplatePath) $id
+    $filename = Join-Path $sourcedir "PurojekutoTenpuret.Metadeta"
+    if (-not(Test-Path -Path $filename -PathType Leaf))
+    {
+        Write-Host "ERROR: Metadata missing ($filename)"
+        Exit 1
+    }
+    $metadata = Get-Content $filename -EA:Stop -Raw | ConvertFrom-Json
+
+    $metadata
+}
+
 function Get-ProjectTemplates
 {
     $template_path = $(Get-ProjectTemplatePath)
@@ -210,6 +231,12 @@ function Get-ProjectTemplates
         $t | Add-Member -MemberType NoteProperty -Name 'Target' -Value $target
         $content = Get-TemplateContent $fields[3]
         $t | Add-Member -MemberType NoteProperty -Name 'Content' -Value $content
+
+        $metadata = Get-ProjectTemplateMetadata $template_path $id
+        $t | Add-Member -MemberType NoteProperty -Name 'Description' -Value $metadata.Description
+        $t | Add-Member -MemberType NoteProperty -Name 'Libraries' -Value $metadata.Libraries
+        $t | Add-Member -MemberType NoteProperty -Name 'Name_AllowedRegex' -Value $metadata.Name.AllowedRegex
+
         $templates += $t
     }
 
@@ -219,7 +246,7 @@ function Get-ProjectTemplates
 function List-ProjectTemplates
 {
     $templates = Get-ProjectTemplates
-    $templates | Sort-Object -Property Template | Format-Table Template,Type,Language,Target,Content -AutoSize | Out-Default
+    $templates | Sort-Object -Property Template | Format-Table Template,Type,Language,Target,Content,Description,Libraries -AutoSize | Out-Default
 }
 
 function Add-Project
@@ -242,6 +269,14 @@ function Add-Project
         Write-Host "ERROR: -Add requires -Name"
         Exit 1
     }
+    $sourcedir = Join-Path $(Get-ProjectTemplatePath) $id
+    $sourcemetadatafilename = Join-Path $sourcedir "PurojekutoTenpuret.Metadeta"
+    $sourcemetadata = Get-Content $sourcemetadatafilename -EA:Stop -Raw | ConvertFrom-Json
+    if ($Name -NotMatch $sourcemetadata.Name.AllowedRegex)
+    {
+        Write-Host "ERROR: -Name doesn't match template's required pattern `"$($sourcemetadata.Name.AllowedRegex)`""
+        Exit 1
+    }
 
     Write-Host "Creating project $Name from template $Template"
 
@@ -261,15 +296,13 @@ function Add-Project
     $null = New-Item $targetdir -ItemType Directory
 
     Write-Host "Creating project files..."
-    $sourcedir = Join-Path $(Get-ProjectTemplatePath) $id
-    $files = Get-ChildItem $sourcedir
+    $files = Get-ChildItem $sourcedir -Exclude 'PurojekutoTenpuret.Metadeta'
     $count = 0
     ForEach ($f in $files)
     {
         $source = $f.FullName
 
         # Change placemarkers in file content and filenames to the project name
-        # NOTE: The placemarker "Purojekuto Tenpuret" is Japanese for "Project Template" :-)
         $in = Get-Content -Path $source -Encoding utf8 -Raw
         $out = $(Get-UpdatedContent $source $in)
         $out = $out -Replace 'PurojekutoTenpuret', $Name
