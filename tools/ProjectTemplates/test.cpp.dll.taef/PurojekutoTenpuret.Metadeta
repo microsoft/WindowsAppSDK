@@ -1,0 +1,7 @@
+{
+    "Description" : "C++ test DLL",
+    "Libraries": "C++/WinRT, TAEF, WIL",
+    "Name": {
+        "AllowedRegex": "^[A-Za-z][A-Za-z0-9_]*$"
+    }
+}

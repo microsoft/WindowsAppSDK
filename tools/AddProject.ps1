@@ -183,7 +183,14 @@ function Get-UpdatedContent
     )
 
     $ext = [System.IO.Path]::GetExtension($filename)
-    if ($ext -eq '.vcxproj')
+    if ($ext -eq '.idl')
+    {
+        $uuid = "[uuid(00000000-0000-0000-0000-000000000000)]"
+        $newguid = $(New-Guid).Guid
+        $newuuid = "[uuid($($newguid))]"
+        $content = $content -Replace $uuid, $newuuid
+    }
+    elseif ($ext -eq '.vcxproj')
     {
         $projectguid = "<ProjectGuid>{00000000-0000-0000-0000-000000000000}</ProjectGuid>"
         $newguid = $(New-Guid).Guid
