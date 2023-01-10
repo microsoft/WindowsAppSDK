@@ -23,7 +23,7 @@ steps:
 - template: WindowsAppSDK-InstallWindowsSDK-Steps.yml
 
 - task: powershell@2
-  displayName: 'DevCheck: Setup development environment'
+  displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
   inputs:
     targetType: filePath
     filePath: DevCheck.ps1

@@ -19,9 +19,6 @@
 .PARAMETER CheckAll
     Check all. If not specified this is set to true if all other -Check... options are false
 
-.PARAMETER CheckDependencies
-    Verify dependencies in projects (*proj, packages.config, eng\Version.*.props) match defined dependencies (eng\Version.*.xml)
-
 .PARAMETER CheckTAEFService
     Check the TAEF service
 
@@ -49,9 +46,6 @@
 .PARAMETER RemoveTestPfx
     Remove the MSIX Test signing certificate (i.e. undoc CheckTestPfx)
 
-.PARAMETER SyncDependencies
-    Update dependencies (*proj, packages.config, eng\Version.*.props) to match defined dependencies (eng\Version.*.xml)
-
 .PARAMETER Verbose
     Display detailed information
 
@@ -76,8 +70,6 @@ Param(
 
     [Switch]$CheckVisualStudio=$false,
 
-    [Switch]$CheckDependencies=$false,
-
     [Switch]$Clean=$false,
 
     [Switch]$NoInteractive=$false,
@@ -90,25 +82,15 @@ Param(
 
     [Switch]$RemoveTestPfx=$false,
 
-    [Switch]$SyncDependencies=$false,
-
     [Switch]$Verbose=$false
 )
-
-Set-StrictMode -Version 3.0
-
-$ErrorActionPreference = "Stop"
 
 $global:issues = 0
 
 $remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
-if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false))
+if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And ($CheckVisualStudio -eq $false))
 {
     $CheckAll = $true
-}
-if ($SyncDependencies -eq $true)
-{
-    $CheckDependencies = $true
 }
 
 function Write-Verbose
@@ -201,7 +183,7 @@ function Get-VSWhere
                 $global:issues += 1
                 return
             }
-            $vswhere_url = 'https://github.com/microsoft/vswhere/releases/download/3.1.1/vswhere.exe'
+            $vswhere_url = 'https://github.com/microsoft/vswhere/releases/download/2.8.4/vswhere.exe'
             Write-Host "Downloading $vswhere from $vswhere_url..."
             Write-Verbose "Executing: curl.exe --output $vswhere -L -# $vswhere_url"
             $p = Start-Process curl.exe -ArgumentList "--output $vswhere -L -# $vswhere_url" -Wait -NoNewWindow -PassThru
@@ -212,7 +194,7 @@ function Get-VSWhere
     return $global:vswhere
 }
 
-function Run-Process([string]$exe, [string]$arguments, [Ref][string]$stderr, [int]$throwIfExitCodeIsFailure=$false)
+function Run-Process([string]$exe, [string]$arguments, [Ref][string]$stderr)
 {
     $pi = New-Object System.Diagnostics.ProcessStartInfo
     $pi.FileName = $exe
@@ -230,13 +212,6 @@ function Run-Process([string]$exe, [string]$arguments, [Ref][string]$stderr, [in
     $p.WaitForExit()
     $stdout = $p.StandardOutput.ReadToEnd()
     $stderr = $p.StandardError.ReadToEnd()
-    if ($throwIfExitCodeIsFailure -eq $true)
-    {
-        if ($p.ExitCode -ne 0)
-        {
-            throw $p.ExitCode
-        }
-    }
     return $stdout
 }
 
@@ -257,69 +232,14 @@ function Get-VisualStudio2022InstallPath
     return $global:vspath
 }
 
-function Test-VisualStudioComponent
-{
-    param(
-        [String]$component,
-        [String]$versionRange
-    )
-
-    $vswhere = Get-VSWhere
-    $args = " -latest -products * -version $versionRange -requires $component -property productDisplayVersion"
-    Write-Verbose "Executing $vswhere $args"
-    try
-    {
-        $value = Run-Process $vswhere $args -throwIfExitCodeIsFailure $true
-        $path = $path -replace [environment]::NewLine, ''
-        Write-Verbose "Visual Studio component $($component) = $($value)"
-        return 0
-    }
-    catch
-    {
-        $e = $_
-        Write-Host "...ERROR $($e): $($component) not found or valid"
-        return 1
-    }
-}
-
-function Test-VisualStudioComponents
-{
-    Write-Verbose "Detecting VisualStudio components..."
-    $root = Get-ProjectRoot
-    $path = Join-Path $root 'docs\Coding-Guidelines'
-    $filename = Join-Path $path 'VisualStudio2022.vsconfig'
-
-    $versionRange = "[17.0,18.0)"
-
-    $json = Get-Content $filename -EA:Stop -Raw | ConvertFrom-Json
-    Write-Host "...Scanning $($json.components.Length) components in $($filename)" -NoNewline
-    $errors = 0
-    $components = $json.components
-    ForEach ($component in $components)
-    {
-        Write-Host "." -NoNewline
-        $errors += (Test-VisualStudioComponent $component $versionRange)
-    }
-    if ($errors -gt 0)
-    {
-        Write-Host ""
-        return $false
-    }
-    Write-Host "OK"
-    return $true
-}
-
 function Test-VisualStudio2022Install
 {
-    $ok = $true
     $path = Get-VisualStudio2022InstallPath
     if ([string]::IsNullOrEmpty($path))
     {
         $global:issues++
-        $ok = $false
     }
     Write-Host "VisualStudio 2022...$path"
-    return $ok
 }
 
 function Test-DevTestPfx
@@ -347,7 +267,7 @@ function Test-DevTestPfx
         return $false
     }
 
-    $cert = Get-ChildItem -Path $cert_path
+    $cert = Get-ChildItem $cert_path
     $expiration = $cert.NotAfter
     $now = Get-Date
     if ($expiration -lt $now)
@@ -647,292 +567,6 @@ function Start-TAEFService
     }
 }
 
-function Get-DependencyVersions
-{
-    # Dependencies are defined in Version.Details.xml
-    #   - Automagically updated by Maestro
-    # Dependencies are defined in Version.Dependencies.xml
-    #   - Manually updated by human beings
-    # Return the pair of lists
-    $dependencies = @{ Automagic=$null; Manual=$null }
-
-    $root = Get-ProjectRoot
-    $path = Join-Path $root 'eng'
-
-    # Parse the Version.Details.xml dependencies
-    $versionDetailsFileName = Join-Path $path 'Version.Details.xml'
-    Write-Host "Reading $($versionDetailsFileName)..."
-    $automagicXml = [xml](Get-Content $versionDetailsFileName -EA:Stop)
-    $automagicVersions = [ordered]@{}
-    ForEach ($dependency in $automagicXml.SelectNodes("/Dependencies/ProductDependencies/Dependency"))
-    {
-        $name = $dependency.Name
-        $version = $dependency.Version
-        $automagicVersions.Add($name, $version)
-    }
-    ForEach ($dependency in $automagicXml.SelectNodes("/Dependencies/ToolsetDependencies/Dependency"))
-    {
-        $name = $dependency.Name
-        $version = $dependency.Version
-        $automagicVersions.Add($name, $version)
-    }
-    $dependencies.Automagic = $automagicVersions
-
-    # Parse The Version.Dependencies.xml dependencies
-    $versionDependenciesFileName = Join-Path $path 'Version.Dependencies.xml'
-    Write-Host "Reading $($versionDependenciesFileName)..."
-    $manualXml = [xml](Get-Content $versionDependenciesFileName -EA:Stop)
-    # Parse the Version.Dependencies.xml dependencies
-    $manualVersions = [ordered]@{}
-    ForEach ($dependency in $manualXml.SelectNodes("/Dependencies/Dependency"))
-    {
-        $name = $dependency.Name
-        $version = $dependency.Version
-        $manualVersions.Add($name, $version)
-    }
-    $dependencies.Manual = $manualVersions
-
-    if ($Verbose -eq $true)
-    {
-        ForEach ($list in @($dependencies.AutoMagic, $dependencies.Manual))
-        {
-            ForEach ($name in $list.Keys)
-            {
-                Write-Verbose "...$($name) = $($list[$name])"
-            }
-        }
-    }
-
-    $dependencies
-}
-
-function Test-PackagesConfig
-{
-    param(
-        [string] $filename,
-        $versions
-    )
-
-    $xml = [xml](Get-Content $filename -EA:Stop)
-    ForEach ($package in $xml.packages.package)
-    {
-        $name = $package.id
-        $version = $package.version
-
-        if (-not($versions.Contains($name)))
-        {
-            Write-Host "ERROR: Unknown package $name in $filename"
-            $global:issues++
-        }
-        elseif ($version -ne $versions[$name])
-        {
-            Write-Host "ERROR: Unknown version $name=$version in $filename"
-            $global:issues++
-        }
-
-        if (-not($package.HasAttribute("targetFramework")))
-        {
-            Write-Host "ERROR: targetFramework=""native"" missing in $filename"
-            $global:issues++
-        }
-        else
-        {
-            $targetFramework = $package.targetFramework
-            if (($targetFramework -ne "native") -And ($targetFramework -ne "net45"))
-            {
-                Write-Host "ERROR: targetFramework != ""native"" in $filename"
-                $global:issues++
-            }
-        }
-
-    }
-}
-
-function Build-Dependencies
-{
-    param(
-        [HashTable]$in
-    )
-
-    $automagic = $in["Automagic"]
-    $manual = $in["Manual"]
-
-    $output = @"
-<?xml version="1.0" encoding="utf-8"?>
-<!-- DO NOT EDIT!!! This is a generated file! See Version.Details.xml for more details -->
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <VersionDetailsXmlFilename>`$(MSBuildThisFileDirectory)Version.Details.xml</VersionDetailsXmlFilename>
-    <VersionDetailsXml>`$([System.IO.File]::ReadAllText(`"`$(VersionDetailsXmlFilename)`"))</VersionDetailsXml>
-    <VersionDependenciesXmlFilename>`$(MSBuildThisFileDirectory)Version.Dependencies.xml</VersionDependenciesXmlFilename>
-    <VersionDependenciesXml>`$([System.IO.File]::ReadAllText("`$(VersionDependenciesXmlFilename)"))</VersionDependenciesXml>
-
-"@
-
-    $output = $output + "    <!-- Dependencies: Maestro -->`r`n"
-    $lines = @{}
-    ForEach ($name in $automagic.Keys)
-    {
-        # NOTE: Create macros per name.Replace(".","").Append("PackageVersion")=value
-        $macro = $name.Replace(".","") + "PackageVersion"
-        $value = $automagic[$name]
-        $lines.Add("    <$($macro)>`$([System.Text.RegularExpressions.Regex]::Match(`$(VersionDetailsXml), 'Name=`"$($name)`"\s+Version=`"(.*?)`"').Groups[1].Value)</$macro>`r`n", $null)
-
-    }
-    $sortedLines = $lines.Keys | Sort-Object
-    $output = $output + [String]::Join("", $sortedLines)
-
-    $output = $output + "`r`n"
-    $output = $output + "    <!-- Dependencies: Manual -->`r`n"
-    $lines = @{}
-    ForEach ($name in $manual.Keys)
-    {
-        # NOTE: Create macros per name.Replace(".","").Append("Version")=value
-        $macro = $name.Replace(".","") + "Version"
-        $value = $manual[$name]
-        $lines.Add("    <$($macro)>`$([System.Text.RegularExpressions.Regex]::Match(`$(VersionDependenciesXml), 'Name=`"$($name)`"\s+Version=`"(.*?)`"').Groups[1].Value)</$macro>`r`n", $null)
-    }
-    $sortedLines = $lines.Keys | Sort-Object
-    $output = $output + [String]::Join("", $sortedLines)
-
-    $output = $output + @"
-
-"@
-
-    $output = $output + @"
-  </PropertyGroup>
-</Project>
-"@
-
-    $output
-}
-
-function CheckAndSync-Dependencies
-{
-    param(
-        [HashTable]$in
-    )
-
-    $automagic = $in["Automagic"]
-    $manual = $in["Manual"]
-
-    $expected = Build-Dependencies @{ Automagic=$automagic; Manual=$manual }
-
-    $root = Get-ProjectRoot
-    $path = Join-Path $root 'eng'
-    $filename = Join-Path $path 'Version.Dependencies.props'
-    Write-Host "Reading $($filename)..."
-    if (-not(Test-Path -Path $filename -PathType Leaf))
-    {
-        if ($SyncDependencies -eq $false)
-        {
-            Write-Host "ERROR: $filename not found. Create with 'DevCheck -SyncDependencies'"
-            $global:issues++
-            return
-        }
-    }
-    else
-    {
-        $content = Get-Content $filename -EA:Stop -Raw
-        if ($content.TrimEnd() -eq $expected.TrimEnd()) # Ignore trailing whitespace
-        {
-            Write-Host "Verify $($filename)...OK"
-            return
-        }
-        elseif ($SyncDependencies -eq $false)
-        {
-            Write-Host "ERROR: $($filename) out of date. Update with 'DevCheck -SyncDependencies'"
-            $global:issues++
-        }
-    }
-
-    if ($SyncDependencies -eq $true)
-    {
-        Write-Host "Updating $($filename)..."
-        Set-Content -Path $filename -Value $expected -Force
-    }
-}
-
-function Test-Dependencies
-{
-    # Get version information for dependencies
-    $fatal_errors = 0
-    $dependencies = Get-DependencyVersions
-    if ([string]::IsNullOrEmpty($dependencies))
-    {
-        $global:issues++
-        $fatal_errors++
-    }
-    $automagic = $dependencies.Automagic
-    $manual = $dependencies.Manual
-    if ([string]::IsNullOrEmpty($automagic))
-    {
-        $global:issues++
-        $fatal_errors++
-    }
-
-    # Merge the lists
-    $versions = [ordered]@{}
-    ForEach ($name in $automagic.Keys)
-    {
-        if ($versions.Contains($name))
-        {
-            Write-Host "ERROR: Dependency defined multiple times ($name)"
-            $global:issues++
-            $fatal_errors++
-        }
-        else
-        {
-            $value = $automagic[$name]
-            $versions.Add($name, $value)
-        }
-    }
-    ForEach ($name in $manual.Keys)
-    {
-        if ($versions.Contains($name))
-        {
-            Write-Host "ERROR: Dependency defined multiple times ($name)"
-            $global:issues++
-            $fatal_errors++
-        }
-        else
-        {
-            $value = $manual[$name]
-            $versions.Add($name, $value)
-        }
-    }
-    Write-Host "$($versions.Count) dependencies detected"
-
-    # Fatal errors detected?
-    if ($fatal_errors++ -gt 0)
-    {
-        return
-    }
-
-    # Check Version.Dependencies.props
-    $null = CheckAndSync-Dependencies  @{ Automagic=$automagic; Manual=$manual }
-
-    # Scan for references
-    $root = Get-ProjectRoot
-    $path = Join-Path $root 'dev'
-    $files = 0
-    Write-Host "Scanning packages.config..."
-    ForEach ($file in (Get-ChildItem -Path $path -Recurse -File 'packages.config'))
-    {
-        $null = Test-PackagesConfig $file.FullName $versions
-        $files++
-    }
-    Write-Host "Scanned $($files) packages.config"
-
-    $path = Join-Path $root 'test'
-    $files = 0
-    ForEach ($file in (Get-ChildItem -Path $path -Recurse -Filter '*.vcxproj'))
-    {
-        $files++
-    }
-    Write-Host "Scanned $($files) *.vcxproj"
-}
-
 Write-Output "Checking developer environment..."
 
 $cpu = Get-CpuArchitecture
@@ -943,11 +577,7 @@ Write-Output "Windows App SDK location...$project_root"
 
 if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
 {
-    $ok = Test-VisualStudio2022Install
-    if ($ok -eq $true)
-    {
-        $null = Test-VisualStudioComponents
-    }
+    Test-VisualStudio2022Install
 }
 
 if (($CheckAll -ne $false) -Or ($CheckTestPfx -ne $false))
@@ -985,12 +615,6 @@ if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
         $test = Start-TAEFService
     }
 }
-
-if (($CheckAll -ne $false) -Or ($CheckDependencies -ne $false))
-{
-    Test-Dependencies
-}
-
 
 if (($RemoveAll -ne $false) -Or ($RemoveTestCert -ne $false))
 {
