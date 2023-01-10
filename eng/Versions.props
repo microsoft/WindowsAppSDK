@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- This file has been deprecated in WindowsAppSDk related repositories. Please Use Version.Dependencies.props -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <MicrosoftWindowsCsWinRTPackageVersion>2.0.0</MicrosoftWindowsCsWinRTPackageVersion>
-    <CsWinRTDependencyDotNetCoreSdkPackageVersion>6.0.301</CsWinRTDependencyDotNetCoreSdkPackageVersion>
-    <CsWinRTDependencyDotNetCoreRuntimePackageVersion>6.0.6</CsWinRTDependencyDotNetCoreRuntimePackageVersion>
-    <CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>27</CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>
-    <!-- TODO: Fix DownloadDotNetCoreSdk.ps1 script so we don't need this property -->
-    <CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>$(CsWinRTDependencyDotNetCoreSdkPackageVersion)</CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>
-  </PropertyGroup>
 </Project>
