@@ -34,7 +34,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{4a466494-76c6-4bb6-83de-a4ee31d933ad}</ProjectGuid>
+    <ProjectGuid>{22747850-42de-489b-bd0d-f59db3de25ad}</ProjectGuid>
     <RootNamespace>KozaniSendToRemote</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <CppWinRTModernIDL>true</CppWinRTModernIDL>

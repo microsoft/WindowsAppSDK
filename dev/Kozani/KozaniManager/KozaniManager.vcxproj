@@ -33,7 +33,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{95a726b9-ab8e-407b-a19a-aef26de92421}</ProjectGuid>
+    <ProjectGuid>{92ef125d-1f6a-41a8-8737-84f6e54fa548}</ProjectGuid>
     <RootNamespace>KozaniManager</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>KozaniManager</ProjectName>
@@ -143,7 +143,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="winmain.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KozaniManager.ProxyStub\KozaniManager.ProxyStub.vcxproj">

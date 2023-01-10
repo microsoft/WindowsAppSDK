@@ -33,7 +33,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{e680b456-152c-4ec0-b2a1-8594e2aed914}</ProjectGuid>
+    <ProjectGuid>{9fab2fd0-0f63-42e3-a667-d80a734a57ec}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>MakeMSIXTestsTests</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>

@@ -33,7 +33,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{8c2c6f7b-0375-4853-a840-dd539242d204}</ProjectGuid>
+    <ProjectGuid>{b26d17f5-3c24-40a1-855e-58b4d3fcf44f}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>KozaniAppGraphTestsTests</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>

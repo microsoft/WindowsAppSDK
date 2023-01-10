@@ -34,7 +34,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{ff635170-cc02-47f1-b1e7-c7336ea0f80f}</ProjectGuid>
+    <ProjectGuid>{a732de46-be79-42e5-ac00-116d1b6a50a3}</ProjectGuid>
     <RootNamespace>MakeMSIX</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <CppWinRTModernIDL>true</CppWinRTModernIDL>
