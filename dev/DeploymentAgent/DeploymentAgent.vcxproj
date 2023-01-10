@@ -107,7 +107,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="DeploymentAgent.rc" />
+    <ResourceCompile Include="DeploymentAgent.rc">
+      <AdditionalIncludeDirectories>$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

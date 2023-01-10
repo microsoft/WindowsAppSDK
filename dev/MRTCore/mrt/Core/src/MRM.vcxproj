@@ -99,8 +99,9 @@
     <ClInclude Include="MRM.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="MRM.rc" />
-  </ItemGroup>
+    <ResourceCompile Include="MRM.rc">
+      <AdditionalIncludeDirectories>$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>  </ItemGroup>
   <ItemGroup>
     <None Include="MRM.def" />
     <None Include="packages.config" />

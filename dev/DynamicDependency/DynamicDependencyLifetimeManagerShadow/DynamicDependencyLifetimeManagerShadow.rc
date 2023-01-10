@@ -4,4 +4,4 @@
 #include <winresrc.h>
 #define VERSIONINFO_FILENAME "DynamicDependencyLifetimeManagerShadow.exe"
 #define VERSIONINFO_FILETYPE VFT_APP
-#include "..\..\..\eng\common\VersionInfo\AssemblyInfo.ver"
+#include "eng\common\VersionInfo\AssemblyInfo.ver"

@@ -3,4 +3,4 @@
 
 #include <winresrc.h>
 #define VERSIONINFO_FILENAME "PushNotificationsLongRunningTask.ProxyStub.dll"
-#include "..\..\..\eng\common\VersionInfo\AssemblyInfo.ver"
+#include "eng\common\VersionInfo\AssemblyInfo.ver"
