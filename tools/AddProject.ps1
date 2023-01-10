@@ -188,30 +188,30 @@ function Get-UpdatedContent
         $libid = "LIBID-00000000-0000-0000-0000-000000000000"
         $newguid = $(New-Guid).Guid
         $newlibid = "$($newguid)"
-        $content = $content -Replace $libid, $newlibid
+        $content = $content.Replace($libid, $newlibid)
 
         $clsiduuid = "CLSID-UUID-00000000-0000-0000-0000-000000000000"
         $newguid = $(New-Guid).Guid
-        $newclsiduuid = "$($newguid)"
-        $content = $content -Replace $clsiduuid, $newclsiduuid
+        $newclsid_uuid = "$($newguid)"
+        $content = $content.Replace($clsiduuid, $newclsid_uuid)
         $clsidguid = "CLSID-GUID-0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }"
         $fields = $newguid -Split '-'
         $newclsid_guid = "0x$($fields[0]), 0x$($fields[1]), 0x$($fields[2]), { 0x$($fields[3].Substring(0,2)), 0x$($fields[3].Substring(2,2)), 0x$($fields[4].Substring(0,2)), 0x$($fields[4].Substring(2,2)), 0x$($fields[4].Substring(4,2)), 0x$($fields[4].Substring(6,2)), 0x$($fields[4].Substring(8,2)), 0x$($fields[4].Substring(10,2)) }"
-        $content = $content -Replace $clsidguid, $newclsidguid
+        $content = $content.Replace($clsidguid, $newclsid_guid)
     }
     elseif ($ext -eq '.idl')
     {
         $uuid = "[uuid(00000000-0000-0000-0000-000000000000)]"
         $newguid = $(New-Guid).Guid
         $newuuid = "[uuid($($newguid))]"
-        $content = $content -Replace $uuid, $newuuid
+        $content = $content.Replace($uuid, $newuuid)
     }
     elseif ($ext -eq '.vcxproj')
     {
         $projectguid = "<ProjectGuid>{00000000-0000-0000-0000-000000000000}</ProjectGuid>"
         $newguid = $(New-Guid).Guid
         $newprojectguid = "<ProjectGuid>{$($newguid)}</ProjectGuid>"
-        $content = $content -Replace $projectguid, $newprojectguid
+        $content = $content.Replace($projectguid, $newprojectguid)
     }
 
     $content
@@ -328,14 +328,14 @@ function Add-Project
         # Change placemarkers in file content and filenames to the project name
         $in = Get-Content -Path $source -Encoding utf8 -Raw
         $out = $(Get-UpdatedContent $source $in)
-        $out = $out -Replace 'PurojekutoTenpuret', $Name
-        $out = $out -Replace 'PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant()
-        $out = $out -Replace 'PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant()
+        $out = $out.Replace('PurojekutoTenpuret', $Name)
+        $out = $out.Replace('PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant())
+        $out = $out.Replace('PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant())
         $out = $out.TrimEnd()
 
-        $outfn = $f -Replace 'PurojekutoTenpuret', $Name
-        $outfn = $outfn -Replace 'PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant()
-        $outfn = $outfn -Replace 'PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant()
+        $outfn = $f.Name.Replace('PurojekutoTenpuret', $Name)
+        $outfn = $outfn.Replace('PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant())
+        $outfn = $outfn.Replace('PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant())
         $target = Join-Path $targetdir $outfn
 
         Write-Host "Transforming $f to $outfn"
