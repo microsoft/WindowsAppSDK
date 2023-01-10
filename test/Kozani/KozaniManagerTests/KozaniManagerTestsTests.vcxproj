@@ -33,12 +33,12 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{8c2c6f7b-0375-4853-a840-dd539242d204}</ProjectGuid>
+    <ProjectGuid>{cb662e9f-320a-447c-9c9c-22e159999d46}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>KozaniAppGraphTestsTests</RootNamespace>
+    <RootNamespace>KozaniManagerTestsTests</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectSubType>NativeUnitTestProject</ProjectSubType>
-    <ProjectName>KozaniAppGraphTestsTests</ProjectName>
+    <ProjectName>KozaniManagerTestsTests</ProjectName>
   </PropertyGroup>
   <PropertyGroup>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -109,7 +109,7 @@
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="KozaniAppGraphTestsTests.cpp" />
+    <ClCompile Include="KozaniManagerTestsTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
