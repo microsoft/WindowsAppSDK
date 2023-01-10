@@ -27,4 +27,4 @@
 #include <appmodel.identity.h>
 #include <security.integritylevel.h>
 
-#include "MakeMSIX.h"
+#include "makemsix.h"

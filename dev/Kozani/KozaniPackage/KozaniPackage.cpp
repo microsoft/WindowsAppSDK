@@ -4,4 +4,3 @@
 #include "pch.h"
 
 #include "KozaniPackage.h"
-

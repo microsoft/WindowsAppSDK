@@ -16,4 +16,3 @@ namespace Microsoft.KozaniSendToRemote
         String User { get; };
     };
 }
-

@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#if !defined(KozaniSendToRemote_H)
-#define KozaniSendToRemote_H
+#if !defined(KOZANISENDTOREMOTE_H)
+#define KOZANISENDTOREMOTE_H
 
 #include <appmodel.h>
 
 #if defined(__cplusplus)
-#define KozaniSendToRemote_NOEXCEPT   noexcept
+#define KOZANISENDTOREMOTE_NOEXCEPT   noexcept
 #else
-#define KozaniSendToRemote_NOEXCEPT
+#define KOZANISENDTOREMOTE_NOEXCEPT
 #endif // defined(__cplusplus)
 
 //TODO Flat-C API
@@ -21,5 +21,4 @@
 
 #endif // defined(__cplusplus)
 
-#endif // KozaniSendToRemote_H
-
+#endif // KOZANISENDTOREMOTE_H

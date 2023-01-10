@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#if !defined(KozaniPackage_H)
-#define KozaniPackage_H
+#if !defined(KOZANIPACKAGE_H)
+#define KOZANIPACKAGE_H
 
 #include <appmodel.h>
 
 #if defined(__cplusplus)
-#define KozaniPackage_NOEXCEPT   noexcept
+#define KOZANIPACKAGE_NOEXCEPT   noexcept
 #else
-#define KozaniPackage_NOEXCEPT
+#define KOZANIPACKAGE_NOEXCEPT
 #endif // defined(__cplusplus)
 
 //TODO Flat-C API
@@ -21,5 +21,4 @@
 
 #endif // defined(__cplusplus)
 
-#endif // KozaniPackage_H
-
+#endif // KOZANIPACKAGE_H

@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#if !defined(MakeMSIX_H)
-#define MakeMSIX_H
+#if !defined(MAKEMSIX_H)
+#define MAKEMSIX_H
 
 #include <appmodel.h>
 
 #if defined(__cplusplus)
-#define MakeMSIX_NOEXCEPT   noexcept
+#define MAKEMSIX_NOEXCEPT   noexcept
 #else
-#define MakeMSIX_NOEXCEPT
+#define MAKEMSIX_NOEXCEPT
 #endif // defined(__cplusplus)
 
 //TODO Flat-C API
@@ -21,4 +21,4 @@
 
 #endif // defined(__cplusplus)
 
-#endif // MakeMSIX_H
+#endif // MAKEMSIX_H

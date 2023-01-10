@@ -18,4 +18,3 @@
 #include "KozaniSendToRemoteTracelogging.h"
 
 #endif //PCH_H
-

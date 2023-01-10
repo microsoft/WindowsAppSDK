@@ -1,0 +1,6 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include <winresrc.h>
+#define VERSIONINFO_FILENAME "KozaniHostRuntime.dll"
+#include "WindowsAppSDK.ver"

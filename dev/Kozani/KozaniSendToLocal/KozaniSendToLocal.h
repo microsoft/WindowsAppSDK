@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#if !defined(KozaniSendToLocal_H)
-#define KozaniSendToLocal_H
+#if !defined(KOZANISENDTOLOCAL_H)
+#define KOZANISENDTOLOCAL_H
 
 #include <appmodel.h>
 
 #if defined(__cplusplus)
-#define KozaniSendToLocal_NOEXCEPT   noexcept
+#define KOZANISENDTOLOCAL_NOEXCEPT   noexcept
 #else
-#define KozaniSendToLocal_NOEXCEPT
+#define KOZANISENDTOLOCAL_NOEXCEPT
 #endif // defined(__cplusplus)
 
 //TODO Flat-C API
@@ -21,5 +21,4 @@
 
 #endif // defined(__cplusplus)
 
-#endif // KozaniSendToLocal_H
-
+#endif // KOZANISENDTOLOCAL_H

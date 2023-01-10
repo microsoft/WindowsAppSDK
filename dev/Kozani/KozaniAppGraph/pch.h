@@ -18,4 +18,3 @@
 #include "KozaniAppGraphTracelogging.h"
 
 #endif //PCH_H
-

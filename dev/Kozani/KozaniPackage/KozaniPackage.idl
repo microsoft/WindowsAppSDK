@@ -16,4 +16,3 @@ namespace Microsoft.KozaniPackage
         String User { get; };
     };
 }
-

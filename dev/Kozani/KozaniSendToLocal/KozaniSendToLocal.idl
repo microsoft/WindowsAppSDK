@@ -16,4 +16,3 @@ namespace Microsoft.KozaniSendToLocal
         String User { get; };
     };
 }
-

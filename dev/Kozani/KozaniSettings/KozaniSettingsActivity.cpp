@@ -6,4 +6,3 @@
 #include "pch.h"
 
 #include "KozaniSettingsActivity.h"
-

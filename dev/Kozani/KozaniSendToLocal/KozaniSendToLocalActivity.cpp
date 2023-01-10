@@ -6,4 +6,3 @@
 #include "pch.h"
 
 #include "KozaniSendToLocalActivity.h"
-

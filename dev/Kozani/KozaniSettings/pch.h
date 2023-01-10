@@ -18,4 +18,3 @@
 #include "KozaniSettingsTracelogging.h"
 
 #endif //PCH_H
-

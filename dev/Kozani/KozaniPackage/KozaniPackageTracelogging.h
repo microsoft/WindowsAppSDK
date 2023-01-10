@@ -40,4 +40,3 @@ public:
     TraceLoggingValue(failure.uLineNumber,"Line"),\
     TraceLoggingValue(failure.pszModule, "Module"),\
     TraceLoggingValue(failure.pszMessage,"Message")
-

@@ -27,5 +27,4 @@
 #include <appmodel.identity.h>
 #include <security.integritylevel.h>
 
-#include "KozaniSettings.h"
-
+#include "kozanisettings.h"

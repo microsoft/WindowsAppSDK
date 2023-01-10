@@ -4,4 +4,3 @@
 #include <winresrc.h>
 #define VERSIONINFO_FILENAME "KozaniSendToRemote.dll"
 #include "WindowsAppSDK.ver"
-

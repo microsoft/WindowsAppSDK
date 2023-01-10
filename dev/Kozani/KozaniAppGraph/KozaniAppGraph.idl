@@ -16,4 +16,3 @@ namespace Microsoft.KozaniAppGraph
         String User { get; };
     };
 }
-
