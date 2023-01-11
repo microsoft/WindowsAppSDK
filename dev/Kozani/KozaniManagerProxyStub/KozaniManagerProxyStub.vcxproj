@@ -207,7 +207,7 @@
     <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" />
   </ImportGroup>
   <ItemGroup>
-    <PublicHeaders Include="$(OutDir)\KozaniManager_h.h" />
+    <PublicHeaders Include="$(IntDir)\KozaniManager_h.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KozaniManagerInterface\KozaniManagerInterface.vcxproj">

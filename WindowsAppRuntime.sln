@@ -464,6 +464,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KozaniSendToRemote", "dev\K
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KozaniSettings", "dev\Kozani\KozaniSettings\KozaniSettings.vcxproj", "{467A8832-DD54-4977-B98B-31EDC019D2C5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MakeMSIX", "dev\Kozani\MakeMSIX\MakeMSIX.vcxproj", "{A732DE46-BE79-42E5-AC00-116D1B6A50A3}"
 EndProject
@@ -506,6 +509,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KozaniRemoteManagerProxyStu
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KozaniHostRuntime", "dev\Kozani\KozaniHostRuntime\KozaniHostRuntime.vcxproj", "{84CC5D23-93D1-4319-BB94-FB7801E4F113}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
