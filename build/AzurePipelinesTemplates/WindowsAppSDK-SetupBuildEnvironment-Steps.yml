@@ -30,6 +30,14 @@ steps:
     arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
     workingDirectory: '$(Build.SourcesDirectory)'
 
+- task: PowerShell@2
+  displayName: GenerateVersionInfo
+  inputs:
+    filePath: '$(Build.SourcesDirectory)\eng\common\VersionInfo\GenerateVersionInfo.ps1'
+    arguments: >
+      -ProductMajor "$(major)"
+      -ProductMinor "$(minor)"
+
 - task: powershell@2
   displayName: 'Create DynamicDependencies TerminalVelocity features'
   inputs:
