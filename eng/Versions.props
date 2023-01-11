@@ -1,20 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- This file has been deprecated in WindowsAppSDk related repositories. Please Use Version.Dependencies.props -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <MicrosoftFrameworkUdkPackageVersion>1.3.0-CI-25260.1001.221205-1000.0</MicrosoftFrameworkUdkPackageVersion>
-    <MicrosoftWindowsCsWinRTPackageVersion>2.0.0</MicrosoftWindowsCsWinRTPackageVersion>
-    <CsWinRTDependencyDotNetCoreSdkPackageVersion>6.0.301</CsWinRTDependencyDotNetCoreSdkPackageVersion>
-    <CsWinRTDependencyDotNetCoreRuntimePackageVersion>6.0.6</CsWinRTDependencyDotNetCoreRuntimePackageVersion>
-    <CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>27</CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>
-    <!-- TODO: Fix DownloadDotNetCoreSdk.ps1 script so we don't need this property -->
-    <CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>$(CsWinRTDependencyDotNetCoreSdkPackageVersion)</CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>
-    <!-- ShortForm Version Fields -->
-    <CppWinRTVersion>2.0.220929.3</CppWinRTVersion>
-    <FrameworkUdkVersion>$(MicrosoftFrameworkUdkPackageVersion)</FrameworkUdkVersion>
-    <BuildTasksGitVersion>1.1.1</BuildTasksGitVersion>
-    <MicrosoftTaefVersion>10.58.210222006-develop</MicrosoftTaefVersion>
-    <SourceLinkCommonVersion>1.1.1</SourceLinkCommonVersion>
-    <SourceLinkGitHubVersion>1.1.1</SourceLinkGitHubVersion>
-    <WindowsImplementationLibraryVersion>1.0.220914.1</WindowsImplementationLibraryVersion>
-  </PropertyGroup>
 </Project>

@@ -93,11 +93,12 @@ public:
     END_ACTIVITY_CLASS();
 
     BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(InvokeAll, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper) noexcept try
+    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper, _In_ PCWSTR correlationVector) noexcept try
     {
         TraceLoggingClassWriteStart(
             InvokeAll,
             _GENERIC_PARTB_FIELDS_ENABLED,
+            TraceLoggingWideString(correlationVector ? correlationVector : L"", "CorrelationVector"),
             TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
             TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
     }
