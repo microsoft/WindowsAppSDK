@@ -2,5 +2,6 @@
 // Licensed under the MIT License.
 
 #include <winresrc.h>
-#define VERSIONINFO_FILENAME "MRM.dll"
+#define VERSIONINFO_FILENAME "DynamicDependency.DataStore.exe"
+#define VERSIONINFO_FILETYPE VFT_APP
 #include "eng\common\VersionInfo\AssemblyInfo.ver"
