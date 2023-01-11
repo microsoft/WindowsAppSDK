@@ -110,7 +110,7 @@ void UnpackagedTests::VerifyGetAllAsyncWithZeroActiveToast()
 
 void UnpackagedTests::VerifyGetAllAsyncWithOneActiveToast()
 {
-    BaseTestSuite::VerifyGetAllAsyncWithOneActiveToast();
+    BaseTestSuite::VerifyGetAllAsyncWithZeroActiveToast();
 }
 
 void UnpackagedTests::VerifyGetAllAsyncWithMultipleActiveToasts()

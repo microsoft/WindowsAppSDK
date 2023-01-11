@@ -15,18 +15,6 @@ interface IWpnForegroundSink : IUnknown
 };
 
 [object]
-[uuid(PUSHNOTIFICATIONS_FOREGROUNDSINK2_CLSID_UUID)]
-[pointer_default(unique)]
-interface IWpnForegroundSink2 : IUnknown
-{
-    HRESULT InvokeAllWithCorrelationVector(
-        [in] ULONG length,
-        [in, size_is(length)] byte* data,
-        [in] LPCWSTR correlationVector,
-        [out] BOOL* foregroundHandled);
-};
-
-[object]
 [uuid(PUSHNOTIFICATIONS_LRP_CLSID_UUID)]
 [pointer_default(unique)]
 interface INotificationsLongRunningPlatform : IUnknown
@@ -50,4 +38,13 @@ interface INotificationsLongRunningPlatform : IUnknown
     HRESULT RemoveToastRegistrationMapping([in] LPCWSTR processName);
 };
 
-declare_guid(CLSID_NotificationsLongRunningPlatform, PUSHNOTIFICATIONS_IMPL_CLSID_UUID);
+[uuid(PUSHNOTIFICATIONS_LIBID_UUID)]
+[version(1.0)]
+library NotificationsLongRunningPlatformLibrary
+{
+    [uuid(PUSHNOTIFICATIONS_IMPL_CLSID_UUID)]
+    coclass NotificationsLongRunningPlatform
+    {
+        [default] interface INotificationsLongRunningPlatform;
+    };
+};

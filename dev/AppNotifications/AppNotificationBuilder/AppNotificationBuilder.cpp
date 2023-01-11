@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-#include "externs.h"
 #include "AppNotificationBuilder.h"
 #include "AppNotificationBuilderTelemetry.h"
 #include <winrt/Windows.Globalization.h>
@@ -85,7 +84,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
             m_scenario = AppNotificationScenario::IncomingCall;
         }
         return *this;
-    }
+    }    
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAttributionText(hstring const& text)
     {
@@ -125,7 +124,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         THROW_HR_IF_MSG(E_INVALIDARG, alternateText.empty(), "You must provide an alternate text string calling SetInlineImage");
 
-        std::wstring hintCrop{ imageCrop == AppNotificationImageCrop::Circle ? L" hint-crop='circle'" : L"" };
+        std::wstring hintCrop { imageCrop == AppNotificationImageCrop::Circle ? L" hint-crop='circle'" : L"" };
         m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ls' alt='%ls'%ls/>", imageUri.ToString().c_str(), EncodeXml(alternateText).c_str(), hintCrop.c_str());
 
         return *this;
@@ -211,7 +210,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         return *this;
     }
-
+    
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddTextBox(hstring id)
     {
         ThrowIfMaxInputItemsExceeded();
@@ -371,32 +370,42 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::AppNotification AppNotificationBuilder::BuildNotification()
     {
-        auto logTelemetry{ AppNotificationBuilderTelemetry::BuildNotification::Start(g_telemetryHelper) };
+        HRESULT hr{ S_OK };
 
-        // Build the actions string and fill m_useButtonStyle
-        std::wstring actions{ GetActions() };
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationBuilderTelemetry::LogBuildNotification(hr);
+        }) };
 
-        auto xmlResult{ wil::str_printf<std::wstring>(L"<toast%ls%ls%ls%ls%ls><visual><binding template='ToastGeneric'>%ls%ls%ls%ls</binding></visual>%ls%ls</toast>",
-            m_timeStamp.c_str(),
-            GetDuration().c_str(),
-            GetScenario().c_str(),
-            GetArguments().c_str(),
-            GetButtonStyle().c_str(),
-            GetText().c_str(),
-            m_attributionText.c_str(),
-            GetImages().c_str(),
-            GetProgressBars().c_str(),
-            m_audio.c_str(),
-            actions.c_str()) };
+        try
+        {
+            // Build the actions string and fill m_useButtonStyle
+            std::wstring actions{ GetActions() };
 
-        THROW_HR_IF_MSG(E_FAIL, xmlResult.size() > c_maxAppNotificationPayload, "Maximum payload size exceeded");
+            auto xmlResult{ wil::str_printf<std::wstring>(L"<toast%ls%ls%ls%ls%ls><visual><binding template='ToastGeneric'>%ls%ls%ls%ls</binding></visual>%ls%ls</toast>",
+                m_timeStamp.c_str(),
+                GetDuration().c_str(),
+                GetScenario().c_str(),
+                GetArguments().c_str(),
+                GetButtonStyle().c_str(),
+                GetText().c_str(),
+                m_attributionText.c_str(),
+                GetImages().c_str(),
+                GetProgressBars().c_str(),
+                m_audio.c_str(),
+                actions.c_str()) };
 
-        winrt::Microsoft::Windows::AppNotifications::AppNotification appNotification{ xmlResult };
-        appNotification.Tag(m_tag);
-        appNotification.Group(m_group);
+            THROW_HR_IF_MSG(E_FAIL, xmlResult.size() > c_maxAppNotificationPayload, "Maximum payload size exceeded");
 
-        logTelemetry.Stop();
+            winrt::Microsoft::Windows::AppNotifications::AppNotification appNotification{ xmlResult };
+            appNotification.Tag(m_tag);
+            appNotification.Group(m_group);
 
-        return appNotification;
+            return appNotification;
+        }
+        catch (...)
+        {
+            hr = wil::ResultFromCaughtException();
+            throw;
+        }
     }
 }

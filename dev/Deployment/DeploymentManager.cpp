@@ -12,7 +12,7 @@
 #include "WindowsAppRuntime-License.h"
 
 using namespace winrt;
-using namespace winrt::Windows::Foundation;
+using namespace Windows::Foundation;
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {

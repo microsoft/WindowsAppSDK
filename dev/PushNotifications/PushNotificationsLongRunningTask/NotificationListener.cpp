@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -36,31 +36,39 @@ HRESULT NotificationListener::RuntimeClassInitialize(
 }
 CATCH_RETURN();
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived(
-    unsigned int payloadLength,
-    _In_ byte* payload,
-    _In_ HSTRING correlationVector) noexcept try
+STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept try
 {
-    auto logTelemetry = PushNotificationLongRunningTaskTelemetry::OnRawNotificationReceived::Start(correlationVector);
-    wil::scope_exit([&]() { logTelemetry.Stop(); });
+    HRESULT hr{ S_OK };
 
-    auto lock = m_lock.lock_exclusive();
+    auto logTelemetry{ wil::scope_exit([&]() {
+        PushNotificationLongRunningTaskTelemetry::LogOnRawNotificationReceived(hr, WindowsGetStringRawBuffer(correlationVector, nullptr));
+    }) };
 
-    winrt::com_array<uint8_t> payloadArray{ payload, payload + (payloadLength * sizeof(uint8_t)) };
-
-    if (!m_foregroundSinkManager->InvokeForegroundHandlers(m_appId, payloadArray, correlationVector, payloadLength))
+    try
     {
-        if (m_comServerClsid == winrt::guid())
-        {
-            THROW_IF_FAILED(PushNotificationHelpers::ProtocolLaunchHelper(m_processName, payloadLength, payload));
-        }
-        else
-        {
-            THROW_IF_FAILED(PushNotificationHelpers::PackagedAppLauncherByClsid(m_comServerClsid, payloadLength, payload));
-        }
-    }
+        auto lock = m_lock.lock_exclusive();
 
-    return S_OK;
+        winrt::com_array<uint8_t> payloadArray{ payload, payload + (payloadLength * sizeof(uint8_t)) };
+
+        if (!m_foregroundSinkManager->InvokeForegroundHandlers(m_appId, payloadArray, payloadLength))
+        {
+            if (m_comServerClsid == winrt::guid())
+            {
+                THROW_IF_FAILED(PushNotificationHelpers::ProtocolLaunchHelper(m_processName, payloadLength, payload));
+            }
+            else
+            {
+                THROW_IF_FAILED(PushNotificationHelpers::PackagedAppLauncherByClsid(m_comServerClsid, payloadLength, payload));
+            }
+        }
+
+        return hr;
+    }
+    catch (...)
+    {
+        hr = wil::ResultFromCaughtException();
+        throw;
+    }
 }
 CATCH_RETURN()
 

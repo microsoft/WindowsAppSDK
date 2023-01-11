@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-#include "externs.h"
 #include "AppNotificationTextProperties.h"
 #include "Microsoft.Windows.AppNotifications.Builder.AppNotificationTextProperties.g.cpp"
 #include "AppNotificationBuilderTelemetry.h"
@@ -29,14 +28,24 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::hstring AppNotificationTextProperties::ToString()
     {
-        auto logTelemetry{ AppNotificationBuilderTelemetry::TextPropertiesToString::Start(g_telemetryHelper) };
+        HRESULT hr{ S_OK };
 
-        std::wstring language{ !m_language.empty() ? wil::str_printf<std::wstring>(L" lang='%ls'", m_language.c_str()) : L"" };
-        std::wstring callScenarioAlign{ m_useCallScenarioAlign ? L" hint-callScenarioCenterAlign='true'" : L"" };
-        std::wstring hintMaxLines{ m_maxLines ? wil::str_printf<std::wstring>(L" hint-maxLines='%d'", m_maxLines) : L"" };
+        auto logTelemetry{ wil::scope_exit([&]() {
+            AppNotificationBuilderTelemetry::LogTextPropertiesToString(hr);
+        }) };
 
-        logTelemetry.Stop();
+        try
+        {
+            std::wstring language{ !m_language.empty() ? wil::str_printf<std::wstring>(L" lang='%ls'", m_language.c_str()) : L""};
+            std::wstring callScenarioAlign{ m_useCallScenarioAlign ? L" hint-callScenarioCenterAlign='true'" : L""};
+            std::wstring hintMaxLines{ m_maxLines ? wil::str_printf<std::wstring>(L" hint-maxLines='%d'", m_maxLines) : L"" };
 
-        return wil::str_printf<std::wstring>(L"<text%ls%ls%ls>", language.c_str(), hintMaxLines.c_str(), callScenarioAlign.c_str()).c_str();
+            return wil::str_printf<std::wstring>(L"<text%ls%ls%ls>", language.c_str(), hintMaxLines.c_str(), callScenarioAlign.c_str()).c_str();
+        }
+        catch (...)
+        {
+            hr = wil::ResultFromCaughtException();
+            throw;
+        }
     }
 }

@@ -18,8 +18,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> PushNotificationEventHandler;
 
     struct PushNotificationManager : PushNotificationManagerT<PushNotificationManager, 
-                                                                    IWpnForegroundSink,
-                                                                    IWpnForegroundSink2,
+                                                                    IWpnForegroundSink, 
                                                                     ABI::Microsoft::Internal::PushNotifications::INotificationListener,
                                                                     ABI::Microsoft::Internal::PushNotifications::INotificationListener2,
                                                                     winrt::Windows::ApplicationModel::Background::IBackgroundTask, 
@@ -42,13 +41,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         // IWpnForegroundSink
         IFACEMETHODIMP InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept;
 
-        // IWpnForegroundSink2
-        IFACEMETHODIMP InvokeAllWithCorrelationVector(
-            ULONG length,
-            _In_ byte* payload,
-            _In_ PCWSTR correlationVector,
-            _Out_ BOOL* foregroundHandled) noexcept;
-
         // IBackgroundTask
         void Run(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const& taskInstance);
 
@@ -69,11 +61,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties*) noexcept;
     private:
         bool IsBackgroundTaskRegistered(winrt::hstring const& backgroundTaskFullName);
-        void InvokeAllInternal(
-            ULONG length,
-            _In_ byte* payload,
-            _In_ PCWSTR correlationVector,
-            _Out_ BOOL* foregroundHandled);
 
         bool m_firstNotificationReceived{ false };
         winrt::event<PushNotificationEventHandler> m_foregroundHandlers;

@@ -15,16 +15,45 @@ class PushNotificationLongRunningTaskTelemetry : public wil::TraceLoggingProvide
     IMPLEMENT_TELEMETRY_CLASS(PushNotificationLongRunningTaskTelemetry, PushNotificationLongRunningTaskTelemetryProvider);
 
 public:
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(OnRawNotificationReceived, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(_In_ HSTRING correlationVector) noexcept try
+    DEFINE_EVENT_METHOD(LogOnRawNotificationReceived)(
+        winrt::hresult hr,
+        std::wstring const& correlationVector) noexcept try
     {
-        TraceLoggingClassWriteMeasure(
-            "OnRawNotificationReceived",
-            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
-            _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingWideString(wil::str_raw_ptr(correlationVector), "CorrelationVector"));
+        if (c_maxEventLimit >= UpdateLogEventCount())
+        {
+            TraceLoggingClassWriteMeasure(
+                "OnRawNotificationReceived",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(correlationVector.c_str(), "CorrelationVector"));
+        }
     }
     CATCH_LOG()
-    END_ACTIVITY_CLASS();
 
+private:
+    wil::srwlock m_lock;
+    ULONGLONG m_lastFiredTick = 0;
+    UINT m_eventCount = 0;
+
+    static constexpr ULONGLONG c_logPeriod = 1000; // One second
+    static constexpr UINT c_maxEventLimit = 10;
+
+    UINT UpdateLogEventCount()
+    {
+        ULONGLONG currentTick = GetTickCount64();
+
+        auto lock{ m_lock.lock_exclusive() };
+
+        // Only fire limiting events every log period to prevent too many events from being fired
+        if ((currentTick - m_lastFiredTick) > c_logPeriod)
+        {
+            m_eventCount = 0;
+            m_lastFiredTick = currentTick;
+        }
+
+        m_eventCount++;
+
+        return m_eventCount;
+    }
 };

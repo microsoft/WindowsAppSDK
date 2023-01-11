@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include <Windows.h>
@@ -28,54 +28,11 @@ typedef struct _MrmObjects
 } MrmObjects;
 
 constexpr wchar_t ResourceUriPrefix[] = L"ms-resource://";
-constexpr unsigned int ResourceUriPrefixLength = ARRAYSIZE(ResourceUriPrefix) - 1;
+constexpr int ResourceUriPrefixLength = ARRAYSIZE(ResourceUriPrefix) - 1;
 constexpr wchar_t c_defaultPriFilename[] = L"resources.pri";
 
 #define INDEX_RESOURCE_ID -1
 #define INDEX_RESOURCE_URI -2
-
-bool IsResourceUri(_In_ PCWSTR resourceId)
-{
-    return ((wcslen(resourceId) > static_cast<size_t>(ResourceUriPrefixLength)) && (CompareStringOrdinal(ResourceUriPrefix, ResourceUriPrefixLength, resourceId, ResourceUriPrefixLength, TRUE) == CSTR_EQUAL));
-}
-
-HRESULT GetRootAndRelativeIdFromUri(
-    _In_ PCWSTR resourceUri,
-    _Out_writes_z_(rootSize) PWSTR root,
-    unsigned int rootSize,
-    _Out_ unsigned int* indexOfRelatvieId)
-{
-    // We should have checked resourceUri length is longer than ResourceUriPrefixLength before calling this
-    unsigned int i = 0;
-    for (; i < rootSize; i++)
-    {
-        wchar_t currentCharacter = resourceUri[ResourceUriPrefixLength + i];
-        if (currentCharacter == L'\0')
-        {
-            // If the URI ends before it has any paths it is not a valid resource reference.
-            return E_INVALIDARG;
-        }
-
-        if (currentCharacter == L'/')
-        {
-            break;
-        }
-
-        root[i] = currentCharacter;
-    }
-
-    if (i == rootSize)
-    {
-        // The root resource map was too long.
-        return E_INVALIDARG;
-    }
-
-    root[i] = L'\0';
-
-    // The above loop ends at the slash, so go one after.
-    *indexOfRelatvieId = ResourceUriPrefixLength + i + 1;
-    return S_OK;
-}
 
 static HRESULT StringResultReleaseOwnershipBuffer(_Inout_ StringResult& result, _Outptr_ PWSTR* buffer)
 {
@@ -246,17 +203,43 @@ static HRESULT LoadResourceCandidate(
 
     if (index == INDEX_RESOURCE_URI)
     {
-        if (!IsResourceUri(resourceIdOrUri))
+        if ((wcslen(resourceIdOrUri) <= static_cast<size_t>(ResourceUriPrefixLength)) ||
+            (CompareStringOrdinal(ResourceUriPrefix, ResourceUriPrefixLength, resourceIdOrUri, ResourceUriPrefixLength, TRUE) !=
+             CSTR_EQUAL))
         {
             return E_INVALIDARG;
         }
 
         // Root resource maps are the authority of the URI, and are limited to 255 characters.
         wchar_t rootResourceMap[256] = {};
-        unsigned int relativeIdIndex = 0;
-        RETURN_IF_FAILED(GetRootAndRelativeIdFromUri(resourceIdOrUri, rootResourceMap, ARRAYSIZE(rootResourceMap), &relativeIdIndex));
-        
-        const wchar_t* relativeResourceId = &resourceIdOrUri[relativeIdIndex];
+        unsigned int i = 0;
+        for (; i < ARRAYSIZE(rootResourceMap); i++)
+        {
+            wchar_t currentCharacter = resourceIdOrUri[ResourceUriPrefixLength + i];
+            if (currentCharacter == L'\0')
+            {
+                // If the URI ends before it has any paths it is not a valid resource reference.
+                return E_INVALIDARG;
+            }
+
+            if (currentCharacter == L'/')
+            {
+                break;
+            }
+
+            rootResourceMap[i] = currentCharacter;
+        }
+
+        if (i == ARRAYSIZE(rootResourceMap))
+        {
+            // The root resource map was too long.
+            return E_INVALIDARG;
+        }
+
+        rootResourceMap[i] = L'\0';
+
+        // The above loop ends at the slash, so go one after.
+        const wchar_t* relativeResourceId = &resourceIdOrUri[ResourceUriPrefixLength + i + 1];
         if (relativeResourceId[0] == L'\0')
         {
             // There needs to be a resource left.
@@ -265,7 +248,7 @@ static HRESULT LoadResourceCandidate(
 
         const IResourceMapBase* internalResourceMap;
 
-        if (rootResourceMap[0] == L'\0')
+        if (i == 0)
         {
             // In full MRT, ms-resource:/// is a valid shortcut that refers to the primary resource map. Retain this functionality here.
             RETURN_IF_FAILED(resourceManagerObjects->priFile->GetPrimaryResourceMap(&internalResourceMap));
@@ -681,63 +664,26 @@ STDAPI MrmGetChildResourceMap(
     _In_ PCWSTR childResourceMapName,
     _Out_ MrmMapHandle* childResourceMap)
 {
-    MrmObjects* resourceManagerObjects = reinterpret_cast<MrmObjects*>(resourceManager);
     const ResourceMapSubtree* originalMapSubtree;
-    if (IsResourceUri(childResourceMapName))
+
+    if (resourceMap == nullptr)
     {
-        // If a full URI is passed in, we will respect the URI instead of trying to get the child map.
-        
-        // Root resource maps are the authority of the URI, and are limited to 255 characters.
-        wchar_t rootResourceMap[256] = {};
-        unsigned int relativeIdIndex = 0;
-        RETURN_IF_FAILED(GetRootAndRelativeIdFromUri(childResourceMapName, rootResourceMap, ARRAYSIZE(rootResourceMap), &relativeIdIndex));
-        
-        const IResourceMapBase* internalRootResourceMap;
-        if (rootResourceMap[0] == L'\0')
-        {
-            // In full MRT, ms-resource:/// is a valid shortcut that refers to the primary resource map. Retain this functionality here.
-            RETURN_IF_FAILED(resourceManagerObjects->priFile->GetPrimaryResourceMap(&internalRootResourceMap));
-        }
-        else
-        {
-            RETURN_IF_FAILED(resourceManagerObjects->priFile->GetResourceMapById(rootResourceMap, &internalRootResourceMap));
-        }
+        MrmObjects* resourceManagerObjects = reinterpret_cast<MrmObjects*>(resourceManager);
 
-        originalMapSubtree = internalRootResourceMap->GetRootSubtree();
+        const IResourceMapBase* internalResourceMap;
+        RETURN_IF_FAILED(resourceManagerObjects->priFile->GetPrimaryResourceMap(&internalResourceMap));
 
-        const wchar_t* relativeResourceId = &childResourceMapName[relativeIdIndex];
-        if (relativeResourceId[0] != L'\0')
-        {
-            const ResourceMapSubtree* childSubTree;
-            RETURN_IF_FAILED_WITH_EXPECTED(originalMapSubtree->GetSubtree(relativeResourceId, &childSubTree), HRESULT_FROM_WIN32(ERROR_MRM_MAP_NOT_FOUND));
-
-            *childResourceMap = reinterpret_cast<MrmMapHandle>(const_cast<ResourceMapSubtree*>(childSubTree));
-
-        }
-        else
-        {
-            *childResourceMap = reinterpret_cast<MrmMapHandle>(const_cast<ResourceMapSubtree*>(originalMapSubtree));
-        }
+        originalMapSubtree = internalResourceMap->GetRootSubtree();
     }
     else
     {
-        if (resourceMap == nullptr)
-        {
-            const IResourceMapBase* internalResourceMap;
-            RETURN_IF_FAILED(resourceManagerObjects->priFile->GetPrimaryResourceMap(&internalResourceMap));
-
-            originalMapSubtree = internalResourceMap->GetRootSubtree();
-        }
-        else
-        {
-            originalMapSubtree = reinterpret_cast<ResourceMapSubtree*>(resourceMap);
-        }
-
-        const ResourceMapSubtree* childSubTree;
-        RETURN_IF_FAILED_WITH_EXPECTED(originalMapSubtree->GetSubtree(childResourceMapName, &childSubTree), HRESULT_FROM_WIN32(ERROR_MRM_MAP_NOT_FOUND));
-
-        *childResourceMap = reinterpret_cast<MrmMapHandle>(const_cast<ResourceMapSubtree*>(childSubTree));
+        originalMapSubtree = reinterpret_cast<ResourceMapSubtree*>(resourceMap);
     }
+
+    const ResourceMapSubtree* childSubTree;
+    RETURN_IF_FAILED_WITH_EXPECTED(originalMapSubtree->GetSubtree(childResourceMapName, &childSubTree), HRESULT_FROM_WIN32(ERROR_MRM_MAP_NOT_FOUND));
+
+    *childResourceMap = reinterpret_cast<MrmMapHandle>(const_cast<ResourceMapSubtree*>(childSubTree));
     return S_OK;
 }
 
@@ -815,18 +761,9 @@ STDAPI MrmLoadStringOrEmbeddedResource(
     _Outptr_result_maybenull_ PWSTR* resourceString,
     _Out_ MrmResourceData* data)
 {
-    if (IsResourceUri(resourceId))
-    {
-        RETURN_IF_FAILED_WITH_EXPECTED(LoadStringOrEmbeddedResource(
-            resourceManager, resourceContext, nullptr, INDEX_RESOURCE_URI, resourceId, resourceType, resourceString, data, nullptr, nullptr, nullptr, nullptr),
-            HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
-    }
-    else
-    {
-        RETURN_IF_FAILED_WITH_EXPECTED(LoadStringOrEmbeddedResource(
-            resourceManager, resourceContext, resourceMap, INDEX_RESOURCE_ID, resourceId, resourceType, resourceString, data, nullptr, nullptr, nullptr, nullptr),
-            HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
-    }
+    RETURN_IF_FAILED_WITH_EXPECTED(LoadStringOrEmbeddedResource(
+        resourceManager, resourceContext, resourceMap, INDEX_RESOURCE_ID, resourceId, resourceType, resourceString, data, nullptr, nullptr, nullptr, nullptr),
+        HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
     return S_OK;
 }
 
@@ -842,40 +779,20 @@ STDAPI MrmLoadStringOrEmbeddedResourceWithQualifierValues(
     _Outptr_result_buffer_(*qualifierCount) PWSTR** qualifierNames,
     _Outptr_result_buffer_(*qualifierCount) PWSTR** qualifierValues)
 {
-    if (IsResourceUri(resourceId))
-    {
-        RETURN_IF_FAILED_WITH_EXPECTED(LoadStringOrEmbeddedResource(
-            resourceManager,
-            resourceContext,
-            nullptr,
-            INDEX_RESOURCE_URI,
-            resourceId,
-            resourceType,
-            resourceString,
-            data,
-            nullptr,
-            qualifierCount,
-            qualifierNames,
-            qualifierValues),
-            HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
-    }
-    else
-    {
-        RETURN_IF_FAILED_WITH_EXPECTED(LoadStringOrEmbeddedResource(
-            resourceManager,
-            resourceContext,
-            resourceMap,
-            INDEX_RESOURCE_ID,
-            resourceId,
-            resourceType,
-            resourceString,
-            data,
-            nullptr,
-            qualifierCount,
-            qualifierNames,
-            qualifierValues),
-            HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
-    }
+    RETURN_IF_FAILED_WITH_EXPECTED(LoadStringOrEmbeddedResource(
+        resourceManager,
+        resourceContext,
+        resourceMap,
+        INDEX_RESOURCE_ID,
+        resourceId,
+        resourceType,
+        resourceString,
+        data,
+        nullptr,
+        qualifierCount,
+        qualifierNames,
+        qualifierValues),
+        HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
     return S_OK;
 }
 

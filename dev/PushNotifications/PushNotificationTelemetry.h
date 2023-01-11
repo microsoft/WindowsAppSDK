@@ -17,91 +17,122 @@ class PushNotificationTelemetry : public wil::TraceLoggingProvider
     IMPLEMENT_TELEMETRY_CLASS(PushNotificationTelemetry, PushNotificationTelemetryProvider);
 
 public:
-
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(CreateChannelAsync, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper, const winrt::guid& remoteId) noexcept try
+    DEFINE_EVENT_METHOD(LogCreateChannelAsync)(
+        winrt::hresult hr,
+        const winrt::guid& remoteId) noexcept try
     {
-        TraceLoggingClassWriteStart(
-            CreateChannelAsync,
-            _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingGuid(remoteId, "RemoteId"),
-            TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
-            TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
+        if (m_telemetryHelper.ShouldLogEvent())
+        {
+            TraceLoggingClassWriteMeasure(
+                "CreateChannelAsync",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingGuid(remoteId, "RemoteId"),
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
     }
     CATCH_LOG()
-    END_ACTIVITY_CLASS();
 
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(CloseChannel, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper) noexcept try
+    DEFINE_EVENT_METHOD(LogCloseChannel)(
+        winrt::hresult hr) noexcept try
     {
-        TraceLoggingClassWriteStart(
-            CloseChannel,
-            _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
-            TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
+        if (m_telemetryHelper.ShouldLogEvent())
+        {
+            TraceLoggingClassWriteMeasure(
+                "CloseChannel",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
     }
     CATCH_LOG()
-    END_ACTIVITY_CLASS();
 
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(Register, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper) noexcept try
+    DEFINE_EVENT_METHOD(LogRegister)(
+        winrt::hresult hr) noexcept try
     {
-        TraceLoggingClassWriteStart(
-            Register,
-            _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
-            TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
+        if (m_telemetryHelper.ShouldLogEvent())
+        {
+            TraceLoggingClassWriteMeasure(
+                "Register",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance), 
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
     }
     CATCH_LOG()
-    END_ACTIVITY_CLASS();
 
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(Unregister, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper) noexcept try
+    DEFINE_EVENT_METHOD(LogUnregister)(
+        winrt::hresult hr) noexcept try
     {
-        TraceLoggingClassWriteStart(
-            Unregister,
-            _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
-            TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
+        if (m_telemetryHelper.ShouldLogEvent())
+        {
+            TraceLoggingClassWriteMeasure(
+                "Unregister",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
     }
     CATCH_LOG()
-    END_ACTIVITY_CLASS();
 
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(UnregisterAll, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper) noexcept try
+    DEFINE_EVENT_METHOD(LogUnregisterAll)(
+        winrt::hresult hr) noexcept try
     {
-        TraceLoggingClassWriteStart(
-            UnregisterAll,
-            _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
-            TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
+        if (m_telemetryHelper.ShouldLogEvent())
+        {
+            TraceLoggingClassWriteMeasure(
+                "UnregisterAll",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
     }
     CATCH_LOG()
-    END_ACTIVITY_CLASS();
 
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(OnRawNotificationReceived, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper, std::wstring const& correlationVector) noexcept try
+    DEFINE_EVENT_METHOD(LogOnRawNotificationReceived)(
+            winrt::hresult hr,
+            std::wstring const& correlationVector) noexcept try
     {
-        TraceLoggingClassWriteStart(
-            OnRawNotificationReceived,
-            _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingWideString(correlationVector.c_str(), "CorrelationVector"),
-            TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
-            TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
+        if (m_telemetryHelper.ShouldLogEvent())
+        {
+            TraceLoggingClassWriteMeasure(
+                "OnRawNotificationReceived",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingWideString(correlationVector.c_str(), "CorrelationVector"),
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
     }
     CATCH_LOG()
-    END_ACTIVITY_CLASS();
 
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(InvokeAll, PDT_ProductAndServicePerformance);
-    DEFINE_ACTIVITY_START(NotificationTelemetryHelper& notificationTelemetryHelper, _In_ PCWSTR correlationVector) noexcept try
+        DEFINE_EVENT_METHOD(LogInvokeAll)(
+            winrt::hresult hr) noexcept try
     {
-        TraceLoggingClassWriteStart(
-            InvokeAll,
-            _GENERIC_PARTB_FIELDS_ENABLED,
-            TraceLoggingWideString(correlationVector ? correlationVector : L"", "CorrelationVector"),
-            TraceLoggingBool(notificationTelemetryHelper.IsPackagedApp(), "IsAppPackaged"),
-            TraceLoggingWideString(notificationTelemetryHelper.GetAppName().c_str(), "AppName"));
+        if (m_telemetryHelper.ShouldLogEvent())
+        {
+            TraceLoggingClassWriteMeasure(
+                "InvokeAll",
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
+                TraceLoggingBool(m_telemetryHelper.IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(m_telemetryHelper.GetAppName().c_str(), "AppName"));
+        }
     }
     CATCH_LOG()
-    END_ACTIVITY_CLASS();
+
+private:
+    NotificationTelemetryHelper m_telemetryHelper;
 };

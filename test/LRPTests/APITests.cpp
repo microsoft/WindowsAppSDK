@@ -5,7 +5,6 @@
 #include <TestDef.h>
 #include <TlHelp32.h>
 #include <NotificationsLongRunningProcess_h.h>
-#include "NotificationPlatformActivation.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -29,24 +28,23 @@ namespace Test::LRP
             TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
 
-        wil::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
+        winrt::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
         {
-            auto notificationPlatform{ NotificationPlatform::GetNotificationPlatform() };
-            VERIFY_IS_NOT_NULL(notificationPlatform);
+            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
+            VERIFY_IS_NOT_NULL(notificationPlatform.get());
 
             return notificationPlatform;
         }
 
         TEST_CLASS_SETUP(ClassInit)
         {
-
-            ::Test::Bootstrap::SetupPackages(Test::Bootstrap::Packages::Framework | Test::Bootstrap::Packages::Singleton);
+            ::Test::Bootstrap::SetupPackages(Test::Bootstrap::Packages::Singleton);
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            ::Test::Bootstrap::CleanupPackages(Test::Bootstrap::Packages::Framework | Test::Bootstrap::Packages::Singleton);
+            ::Test::Bootstrap::CleanupPackages(Test::Bootstrap::Packages::Singleton);
             return true;
         }
 

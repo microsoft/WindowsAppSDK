@@ -5,8 +5,6 @@
 
 #include <wil/com.h>
 #include <wil/resource.h>
-#include "Microsoft.RoApi.h"
-#include "NotificationPlatformActivation.h"
 
 inline bool isRetriableRpcError(HRESULT hr)
 {
@@ -26,8 +24,9 @@ inline HRESULT StartupNotificationsLongRunningPlatform()
     {
         try
         {
-            ::Microsoft::RoApi::ClearRoActivateInstanceCache();
-            NotificationPlatform::GetNotificationPlatform();
+            wil::com_ptr<INotificationsLongRunningPlatform> longRunningProcessPlatform
+            { wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+
             break;
         }
         catch (...)

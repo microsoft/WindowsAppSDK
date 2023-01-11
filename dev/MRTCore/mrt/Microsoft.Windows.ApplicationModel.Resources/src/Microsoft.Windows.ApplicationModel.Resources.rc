@@ -1,6 +1,0 @@
-// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
-
-#include <winresrc.h>
-#define VERSIONINFO_FILENAME "Microsoft.Windows.ApplicationModel.Resources..dll"
-#include "..\..\..\..\common\WindowsAppSDK.ver"

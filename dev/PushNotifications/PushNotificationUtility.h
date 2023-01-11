@@ -8,13 +8,11 @@
 #include "../Common/AppModel.Identity.h"
 #include "wil/stl.h"
 #include "wil/win32_helpers.h"
-#include "LongRunningProcessSourcedTaskInstance.h"
+#include "PushBackgroundTaskInstance.h"
 #include <filesystem>
-#include <wil/resource.h>
 
 namespace winrt
 {
-    using namespace Windows::ApplicationModel::Background;
     using namespace Windows::Foundation;
 }
 namespace winrt::Microsoft::Windows::PushNotifications::Helpers
@@ -121,12 +119,18 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
     inline HRESULT PackagedAppLauncherByClsid(winrt::guid const& comServerClsid, unsigned int payloadLength, _In_reads_(payloadLength) byte* payload) noexcept try
     {
         auto payloadAsWideString{ Utf8BytesToWideString(payloadLength, payload) };
-        auto longRunningProcessSourcedTaskInstance{ winrt::make_self<LongRunningProcessSourcedTaskInstance>(payloadAsWideString) };
-        auto localBackgroundTask { winrt::create_instance<winrt::IBackgroundTask>(comServerClsid, CLSCTX_ALL) };
-        localBackgroundTask.Run(*longRunningProcessSourcedTaskInstance);
+        auto pushBackgroundTaskInstance{ winrt::make_self<PushBackgroundTaskInstance>(payloadAsWideString) };
+
+        auto localBackgroundTask = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(comServerClsid, CLSCTX_ALL);
+        localBackgroundTask.Run(*pushBackgroundTaskInstance);
         return S_OK;
     }
     CATCH_RETURN()
+
+    inline wil::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
+    {
+        return wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER);
+    }
 
     inline bool IsBackgroundTaskBuilderAvailable()
     {
