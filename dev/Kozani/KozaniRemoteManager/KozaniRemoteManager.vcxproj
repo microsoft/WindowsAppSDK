@@ -33,7 +33,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{30d94375-1569-4bda-98aa-41a73cd103f0}</ProjectGuid>
+    <ProjectGuid>{A11C6664-F26A-4E71-B440-2E4E1BA09A93}</ProjectGuid>
     <RootNamespace>KozaniRemoteManager</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>KozaniRemoteManager</ProjectName>
@@ -87,7 +87,7 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\KozaniRemoteManager.ProxyStub;$(OutDir)..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\KozaniRemoteManagerProxyStub;$(OutDir)..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PreprocessorDefinitions>_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -146,7 +146,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\KozaniRemoteManager.ProxyStub\KozaniRemoteManager.ProxyStub.vcxproj">
+    <ProjectReference Include="..\KozaniRemoteManagerProxyStub\KozaniRemoteManagerProxyStub.vcxproj">
       <Project>{11111111-1111-1111-1111-111111111111}</Project>
     </ProjectReference>
   </ItemGroup>

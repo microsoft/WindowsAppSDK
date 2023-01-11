@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" />
   <Import Project="$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props')" />
@@ -32,17 +32,13 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{133BFD48-FD50-4B35-9E0C-C6B362E13027}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{00000000-0000-0000-0000-000000000000}</ProjectGuid>
-    <RootNamespace>PurojekutoTenpuret.ProxyStub</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>PurojekutoTenpuret.ProxyStub</ProjectName>
+    <ProjectName>KozaniRemoteManagerInterface</ProjectName>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetName>PurojekutoTenpuret</TargetName>
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Makefile</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -65,7 +61,8 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Label="Shared" />
+  <ImportGroup Label="Shared">
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -86,119 +83,69 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <CustomBuildAfterTargets>PostBuildEvent</CustomBuildAfterTargets>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform) </NMakeBuildCommandLine>
+    <NMakeOutput>$(IntDir)KozaniRemoteManagerInterface.h</NMakeOutput>
+    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform)  rebuild</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(OutDir)</OutDir>
+    <IntDir>$(IntDir)</IntDir>
+    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <CustomBuildAfterTargets>PostBuildEvent</CustomBuildAfterTargets>
+    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform) </NMakeBuildCommandLine>
+    <NMakeOutput>$(IntDir)KozaniRemoteManagerInterface.h</NMakeOutput>
+    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform)  rebuild</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(OutDir)</OutDir>
+    <IntDir>$(IntDir)</IntDir>
+    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <CustomBuildAfterTargets>PostBuildEvent</CustomBuildAfterTargets>
+    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform) </NMakeBuildCommandLine>
+    <NMakeOutput>$(IntDir)KozaniRemoteManagerInterface.h</NMakeOutput>
+    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform)  rebuild</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(OutDir)</OutDir>
+    <IntDir>$(IntDir)</IntDir>
+    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <CustomBuildAfterTargets>PostBuildEvent</CustomBuildAfterTargets>
+    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform) </NMakeBuildCommandLine>
+    <NMakeOutput>$(IntDir)KozaniRemoteManagerInterface.h</NMakeOutput>
+    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform)  rebuild</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(OutDir)</OutDir>
+    <IntDir>$(IntDir)</IntDir>
+    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-    <CustomBuildAfterTargets>PostBuildEvent</CustomBuildAfterTargets>
+    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform) </NMakeBuildCommandLine>
+    <NMakeOutput>$(IntDir)KozaniRemoteManagerInterface.h</NMakeOutput>
+    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform)  rebuild</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(OutDir)</OutDir>
+    <IntDir>$(IntDir)</IntDir>
+    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-    <CustomBuildAfterTargets>PostBuildEvent</CustomBuildAfterTargets>
+    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform) </NMakeBuildCommandLine>
+    <NMakeOutput>$(IntDir)KozaniRemoteManagerInterface.h</NMakeOutput>
+    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) IntDir=$(IntDir) TargetName=$(TargetName) Configuration=$(Configuration) Platform=$(Platform)  rebuild</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(OutDir)</OutDir>
+    <IntDir>$(IntDir)</IntDir>
+    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
-    <ClCompile>
-      <PreprocessorDefinitions>_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>PurojekutoTenpuret.def</ModuleDefinitionFile>
-    </Link>
-    <Midl>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\IPurojekutoTenpuret</AdditionalIncludeDirectories>
-      <DllDataFileName>dlldata.c</DllDataFileName>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
-    </Midl>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
-    <ClCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
-    <ClCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
-    <ClCompile>
-      <PreprocessorDefinitions>WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="$(PlatformTarget)\$(Configuration)\dlldata.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(Configuration)\PurojekutoTenpuret_i.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(Configuration)\PurojekutoTenpuret_p.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="PurojekutoTenpuret.ProxyStub.rc">
-      <AdditionalIncludeDirectories>$(RepoRoot)\dev\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Midl Include="PurojekutoTenpuret.idl" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="PurojekutoTenpuret.def" />
-    <None Include="packages.config" />
+    <Xml Include="appxmanifest.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
@@ -207,17 +154,11 @@
     <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" />
   </ImportGroup>
   <ItemGroup>
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration)\PurojekutoTenpuret_h.h" />
+    <Midl Include="KozaniRemoteManagerInterface.idl" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IPurojekutoTenpuret\IPurojekutoTenpuret.vcxproj">
-      <Project>{22222222-2222-2222-2222-222222222222}</Project>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
-  <!-- Include header files from the dev chunks -->
-  <Target Name="CopyFiles" AfterTargets="AfterBuild">
-    <Copy SourceFiles="@(PublicHeaders)" DestinationFolder="$(OutDir)" />
-  </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>

@@ -15,39 +15,14 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PurojekutoTenpuret-Constants.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <Xml Include="appxmanifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(Configuration)\dlldata.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(Configuration)\PurojekutoTenpuret_i.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(Configuration)\PurojekutoTenpuret_p.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Midl Include="PurojekutoTenpuret.idl">
+    <Midl Include="KozaniManagerInterface.idl">
       <Filter>Source Files</Filter>
     </Midl>
   </ItemGroup>
   <ItemGroup>
-    <None Include="PurojekutoTenpuret.def">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
 </Project>

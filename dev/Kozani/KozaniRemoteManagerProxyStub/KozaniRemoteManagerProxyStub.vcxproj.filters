@@ -15,14 +15,36 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="appxmanifest.xml" />
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="IPurojekutoTenpuret.idl">
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PlatformTarget)\$(Configuration)\dlldata.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PlatformTarget)\$(Configuration)\KozaniRemoteManagerProxyStub_i.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PlatformTarget)\$(Configuration)\KozaniRemoteManagerProxyStub_p.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="KozaniRemoteManagerProxyStub.idl">
       <Filter>Source Files</Filter>
     </Midl>
   </ItemGroup>
   <ItemGroup>
+    <None Include="KozaniRemoteManagerProxyStub.def">
+      <Filter>Source Files</Filter>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
 </Project>

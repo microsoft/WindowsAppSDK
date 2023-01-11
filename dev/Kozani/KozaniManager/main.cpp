@@ -3,9 +3,9 @@
 
 #include "pch.h"
 
-#include "..\KozaniRemoteManager.ProxyStub\KozaniRemoteManager-Constants.h"
+#include "..\KozaniManager\KozaniManager-Constants.h"
 
-#include <KozaniRemoteManager_h.h>
+#include <KozaniManager_h.h>
 
 // Including this file once per binary will automatically opt WIL error handling macros into calling RoOriginateError when they
 // begin logging a new error.  This greatly improves the debuggability of errors that propagate before a failfast.
@@ -18,9 +18,9 @@ using namespace Microsoft::WRL;
 // Implement the LifetimeManager as a classic COM Out-of-Proc server, via WRL
 // See https://docs.microsoft.com/cpp/cppcx/wrl/how-to-create-a-classic-com-component-using-wrl?redirectedfrom=MSDN&view=vs-2019 for more details
 
-static constexpr GUID KozaniRemoteManager_guid { PR_KOZANIREMOTEMANAGER_CLSID_GUID };
+static constexpr GUID KozaniManager_guid { PR_KOZANIMANAGER_CLSID_GUID };
 
-struct __declspec(uuid(PR_KOZANIREMOTEMANAGER_CLSID_STRING)) KozaniRemoteManagerImpl WrlFinal : RuntimeClass<RuntimeClassFlags<ClassicCom>, IKozaniRemoteManager>
+struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFinal : RuntimeClass<RuntimeClassFlags<ClassicCom>, IKozaniManager>
 {
     STDMETHODIMP Initialize()
     {
@@ -32,7 +32,7 @@ struct __declspec(uuid(PR_KOZANIREMOTEMANAGER_CLSID_STRING)) KozaniRemoteManager
         return S_OK;
     }
 };
-CoCreatableClass(KozaniRemoteManagerImpl);
+CoCreatableClass(KozaniManagerImpl);
 
 wil::unique_event g_endOfTheLine;
 

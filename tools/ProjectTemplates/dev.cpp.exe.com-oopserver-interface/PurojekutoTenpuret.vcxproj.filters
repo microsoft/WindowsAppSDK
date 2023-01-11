@@ -15,20 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <Xml Include="appxmanifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="KozaniManager-Constants.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <Midl Include="PurojekutoTenpuret.idl">
+      <Filter>Source Files</Filter>
+    </Midl>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

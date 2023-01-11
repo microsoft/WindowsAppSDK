@@ -5,9 +5,9 @@ import "oaidl.idl";
 import "ocidl.idl";
 
 [object]
-[uuid(00000000-0000-0000-0000-000000000000)]
+[uuid(d04de8b9-d137-49b8-b5cc-e0fb15128471)]
 [pointer_default(unique)]
-interface PurojekutoTenpuretInterface : IUnknown
+interface IKozaniManager : IUnknown
 {
     HRESULT Initialize();
 

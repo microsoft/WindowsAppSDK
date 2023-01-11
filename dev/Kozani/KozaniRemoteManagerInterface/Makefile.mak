@@ -1,4 +1,4 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
 !IFDEF VERBOSE
@@ -23,22 +23,22 @@ ENV=arm64
 !ERROR "Unknown platform $(Platform)"
 !endif
 
-OutHeader=$(OutDir)$(TargetName)\PurojekutoTenpuret.h
+OutHeader=$(OutDir)$(TargetName)\KozaniRemoteManagerInterface.h
 
 all: build
 
-$(OutHeader): $(ProjectDir)PurojekutoTenpuret.idl
+$(OutHeader): $(ProjectDir)KozaniRemoteManagerInterface.idl
     @if not exist $(IntDir) md $(IntDir)
-    midl.exe /env $(ENV) /out $(IntDir) /h "PurojekutoTenpuret.h" /W1 /char signed /target "NT60" /notlb /nologo /dlldata "dlldata.c" "$(ProjectDir)PurojekutoTenpuret.idl"
-    @copy $(IntDir)PurojekutoTenpuret.h $(OutDir)$(TargetName)\PurojekutoTenpuret.h
-    @copy $(ProjectDir)PurojekutoTenpuret.idl $(OutDir)$(TargetName)\PurojekutoTenpuret.idl
+    midl.exe /env $(ENV) /out $(IntDir) /h "KozaniRemoteManagerInterface.h" /W1 /char signed /target "NT60" /notlb /nologo /dlldata "dlldata.c" "$(ProjectDir)KozaniRemoteManagerInterface.idl"
+    @copy $(IntDir)KozaniRemoteManagerInterface.h $(OutDir)$(TargetName)\KozaniRemoteManagerInterface.h
+    @copy $(ProjectDir)KozaniRemoteManagerInterface.idl $(OutDir)$(TargetName)\KozaniRemoteManagerInterface.idl
 
 build: $(OutHeader)
 
 clean:
     @if exist $(IntDir)dlldata.c del $(IntDir)dlldata.c /q
-    @if exist $(IntDir)PurojekutoTenpuret_p.c del $(IntDir)PurojekutoTenpuret_p.c /q
-    @if exist $(IntDir)PurojekutoTenpuret.h del $(IntDir)PurojekutoTenpuret.h /q
-    @if exist $(OutDir)$(TargetName)\PurojekutoTenpuret.h del $(OutDir)$(TargetName)\PurojekutoTenpuret.h /q
+    @if exist $(IntDir)KozaniRemoteManagerInterface_p.c del $(IntDir)KozaniRemoteManagerInterface_p.c /q
+    @if exist $(IntDir)KozaniRemoteManagerInterface.h del $(IntDir)KozaniRemoteManagerInterface.h /q
+    @if exist $(OutDir)$(TargetName)\KozaniRemoteManagerInterface.h del $(OutDir)$(TargetName)\KozaniRemoteManagerInterface.h /q
 
 rebuild: clean build

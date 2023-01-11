@@ -205,16 +205,48 @@ function Get-UpdatedContent
         $newguid = $(New-Guid).Guid
         $newuuid = "[uuid($($newguid))]"
         $content = $content.Replace($uuid, $newuuid)
+
+        $interface = "interface PurojekutoTenpuretInterface : IUnknown"
+        $newinterface = "interface I$($Name.Replace('Interface','')) : IUnknown"
+        $content = $content.Replace($interface, $newinterface)
+
+        $nameProxyStub = "PurojekutoTenpuretNoProxyStubSuffix"
+        $nameminusProxyStub = $Name.Replace("ProxyStub", "")
+        $content = $content.Replace($nameProxyStub, $nameminusProxyStub)
+
+        $nameProxyStub = "PUROJEKUTOTENPURETNOPROXYSTUBSUFFIX"
+        $nameminusProxyStub = $Name.Replace("ProxyStub", "").ToUpperInvariant()
+        $content = $content.Replace($nameProxyStub, $nameminusProxyStub)
     }
     elseif ($ext -eq '.vcxproj')
     {
+        $content = $content.Replace('PurojekutoTenpuretNoProxyStubSuffix', $Name.Replace('ProxyStub', ''))
+
         $projectguid = "<ProjectGuid>{00000000-0000-0000-0000-000000000000}</ProjectGuid>"
         $newguid = $(New-Guid).Guid
         $newprojectguid = "<ProjectGuid>{$($newguid)}</ProjectGuid>"
         $content = $content.Replace($projectguid, $newprojectguid)
+
+        $interfaceproject = "PurojekutoTenpuretInterface"
+        $newinterfaceproject = "$($Name.Replace('ProxyStub', ''))Interface"
+        $content = $content.Replace($interfaceproject, $newinterfaceproject)
     }
 
     $content
+}
+
+function Get-ProjectTemplateOutputFileName
+{
+    param(
+        [string]$filename
+    )
+
+    $outfn = $filename
+    $outfn = $outfn.Replace('PurojekutoTenpuretNoProxyStubSuffix', $Name.Replace('ProxyStub', ''))
+    $outfn = $outfn.Replace('PurojekutoTenpuret', $Name)
+    $outfn = $outfn.Replace('PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant())
+    $outfn = $outfn.Replace('PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant())
+    $outfn
 }
 
 function Get-ProjectTemplateMetadata
@@ -333,9 +365,7 @@ function Add-Project
         $out = $out.Replace('PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant())
         $out = $out.TrimEnd()
 
-        $outfn = $f.Name.Replace('PurojekutoTenpuret', $Name)
-        $outfn = $outfn.Replace('PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant())
-        $outfn = $outfn.Replace('PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant())
+        $outfn = Get-ProjectTemplateOutputFileName $f.Name
         $target = Join-Path $targetdir $outfn
 
         Write-Host "Transforming $f to $outfn"
