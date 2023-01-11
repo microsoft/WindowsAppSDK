@@ -18,7 +18,7 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KozaniSettingsTestsTests.cpp">
+    <ClCompile Include="KozaniPackageTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

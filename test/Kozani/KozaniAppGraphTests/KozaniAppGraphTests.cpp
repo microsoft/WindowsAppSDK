@@ -6,12 +6,12 @@
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
 
-namespace Test::PurojekutoTenpuret
+namespace Test::KozaniAppGraphTests
 {
-    class PurojekutoTenpuretTests
+    class KozaniAppGraphTests
     {
     public:
-        BEGIN_TEST_CLASS(PurojekutoTenpuretTests)
+        BEGIN_TEST_CLASS(KozaniAppGraphTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
         END_TEST_CLASS()
 
