@@ -5,6 +5,8 @@
 
 #include "PushNotification-Test-Constants.h"
 #include "BaseTestSuite.h"
+#include <sstream>
+#include <iostream>
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -105,6 +107,22 @@ void BaseTestSuite::ChannelRequestUsingRemoteId()
     {
         auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
         VERIFY_SUCCEEDED(ChannelRequestHelper(channelOperation));
+    }
+    else
+    {
+        auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
+        VERIFY_ARE_EQUAL(ChannelRequestHelper(channelOperation), E_FAIL);
+    }
+}
+
+void BaseTestSuite::ChannelRequestCheckExpirationTime()
+{
+    if (PushNotificationManager::Default().IsSupported())
+    {
+        auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
+        VERIFY_SUCCEEDED(ChannelRequestHelper(channelOperation));
+
+        auto channel{ channelOperation.GetResults() };
     }
     else
     {
