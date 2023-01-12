@@ -443,7 +443,9 @@
     <Midl Include="NotificationsLongRunningProcess.idl" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="PushNotificationsLongRunningTask.ProxyStub.rc" />
+    <ResourceCompile Include="PushNotificationsLongRunningTask.ProxyStub.rc">      
+      <AdditionalIncludeDirectories>$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

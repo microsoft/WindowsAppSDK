@@ -153,6 +153,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ResourceCompile Include="resource.rc">
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="winmain.cpp" />
   </ItemGroup>

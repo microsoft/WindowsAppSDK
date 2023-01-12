@@ -1,6 +1,27 @@
+// WARNING: the values in the AssemblyInfo file are defaults for use in dev-loop.
+// This file is meant to be overwritten by GenerateVersionInfo.ps1
+// Please modify the generation script in GenerateVersionInfo.ps1 to change any fields or values.
+
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
-#include "WindowsAppSDK-ProductInfo.h"
+
+#define STR1(x) #x
+#define DELIM STR1(.)
+#define STR2(a,b)       STR1(a) DELIM STR1(b)
+
+#ifndef WINDOWSAPPSDK_RELEASE_MAJOR
+#define WINDOWSAPPSDK_RELEASE_MAJOR     0
+#endif
+
+#ifndef WINDOWSAPPSDK_RELEASE_MINOR
+#define WINDOWSAPPSDK_RELEASE_MINOR     0
+#endif
+
+#define WINDOWSAPPSDK_PRODUCT_VERSION           WINDOWSAPPSDK_RELEASE_MAJOR, WINDOWSAPPSDK_RELEASE_MINOR
+#define WINDOWSAPPSDK_PRODUCT_VERSION_STRING    STR2(WINDOWSAPPSDK_RELEASE_MAJOR, WINDOWSAPPSDK_RELEASE_MINOR)
+#define WINDOWSAPPSDK_COMPANY_NAME              "Microsoft Corporation"
+#define WINDOWSAPPSDK_LEGAL_COPYRIGHT           "Copyright (c) Microsoft Corporation. All rights reserved."
+#define WINDOWSAPPSDK_PRODUCT_NAME              "Windows App SDK"
 
 // Assign default values for things not assigned.
 
