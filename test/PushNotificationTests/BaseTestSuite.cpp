@@ -5,8 +5,6 @@
 
 #include "PushNotification-Test-Constants.h"
 #include "BaseTestSuite.h"
-#include <sstream>
-#include <iostream>
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -20,6 +18,7 @@ using namespace winrt::Windows::Management::Deployment;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 using namespace winrt::Microsoft::Windows::PushNotifications;
+using namespace std::literals;
 
 void BaseTestSuite::ClassSetup()
 {
@@ -39,7 +38,7 @@ void BaseTestSuite::MethodSetup()
     if (!isSelfContained)
     {
         ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
-                                                         ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
+            ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
         VERIFY_IS_FALSE(::WindowsAppRuntime::SelfContained::IsSelfContained());
     }
     else
@@ -119,10 +118,24 @@ void BaseTestSuite::ChannelRequestCheckExpirationTime()
 {
     if (PushNotificationManager::Default().IsSupported())
     {
+        // Grab the time before/after getting the channel to check against the expiration.
+        // Need to subtract to account for synchronization issues with clock.
+        DateTime beforeRequestTime{ winrt::clock::now() - std::chrono::seconds(5) };
+
         auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
         VERIFY_SUCCEEDED(ChannelRequestHelper(channelOperation));
 
-        auto channel{ channelOperation.GetResults() };
+        DateTime afterRequestTime{ winrt::clock::now() };
+
+        auto channel{ channelOperation.GetResults().Channel() };
+        auto expirationTime{ channel.ExpirationTime() };
+
+        auto before{ beforeRequestTime + std::chrono::days(30) };
+        auto after{ afterRequestTime + std::chrono::days(30) };
+
+        // Need to add 30 days to match expiration time.
+        VERIFY_IS_GREATER_THAN(expirationTime, before);
+        VERIFY_IS_LESS_THAN(expirationTime, after);
     }
     else
     {

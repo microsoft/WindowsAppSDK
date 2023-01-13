@@ -24,6 +24,7 @@
 #include "PushNotificationReceivedEventArgs.h"
 #include <security.integritylevel.h>
 #include <NotificationPlatformActivation.h>
+#include <iostream>
 
 using namespace std::literals;
 using namespace Microsoft::Windows::AppNotifications::Helpers;
@@ -123,10 +124,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         // Need to manually convert from the ABI::DateTime type to the winrt::DateTime type since they have different contracts.
         FILETIME filetime;
-        LARGE_INTEGER largeInstant;
-        largeInstant.QuadPart = channelExpiryTime.UniversalTime;
-        filetime.dwLowDateTime = largeInstant.LowPart;
-        filetime.dwHighDateTime = largeInstant.HighPart;
+        LARGE_INTEGER largeTime;
+        largeTime.QuadPart = channelExpiryTime.UniversalTime;
+        filetime.dwLowDateTime = largeTime.LowPart;
+        filetime.dwHighDateTime = largeTime.HighPart;
 
         channelInfo.channelExpiryTime = winrt::clock::from_FILETIME(filetime);
         channelInfo.appId = winrt::hstring{ appId.get() };
