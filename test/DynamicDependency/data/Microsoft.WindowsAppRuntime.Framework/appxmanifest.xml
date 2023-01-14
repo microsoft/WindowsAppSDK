@@ -47,6 +47,23 @@
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
         <Path>Microsoft.WindowsAppRuntime.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.FindPackageOptions" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.FindRelatedPackagesOptions" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.Package" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.PackageApplications" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.PackageContentGroups" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.PackageDisplayInfo" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.PackageFamilyIdentity" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.PackageGraph" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.PackageIdentity" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.PackageInstallInfo" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.PackageLocation" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.PackageStatus" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.WindowsAppRuntime.dll</Path>
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions" ThreadingModel="both" />
