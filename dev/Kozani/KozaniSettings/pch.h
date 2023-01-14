@@ -15,6 +15,6 @@
 // add headers that you want to pre-compile here
 #include "framework.h"
 #include "KozaniSettingsActivity.h"
-#include "KozaniSettingsTracelogging.h"
+#include "KozaniSettingsTraceLogging.h"
 
 #endif //PCH_H

@@ -24,7 +24,10 @@
     <ClInclude Include="KozaniSendToLocal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KozaniSendToLocalTracelogging.h">
+    <ClInclude Include="KozaniSendToLocalTraceLogging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KozaniSendToLocalActivity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,10 +41,10 @@
     <ClCompile Include="KozaniSendToLocal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KozaniSendToLocalTracelogging.cpp">
+    <ClCompile Include="KozaniSendToLocalActivity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KozaniSendToLocalActivity.cpp">
+    <ClCompile Include="KozaniSendToLocalTraceLogging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

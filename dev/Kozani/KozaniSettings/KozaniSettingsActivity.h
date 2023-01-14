@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "KozaniSettingsTracelogging.h"
+#include "KozaniSettingsTraceLogging.h"
 
 namespace Microsoft::Kozani::KozaniSettings::Activity
 {

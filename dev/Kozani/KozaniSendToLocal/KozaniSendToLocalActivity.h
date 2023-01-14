@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "KozaniSendToLocalTracelogging.h"
+#include "KozaniSendToLocalTraceLogging.h"
 
 namespace Microsoft::Kozani::KozaniSendToLocal::Activity
 {

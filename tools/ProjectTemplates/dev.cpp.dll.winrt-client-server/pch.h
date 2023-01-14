@@ -15,6 +15,6 @@
 // add headers that you want to pre-compile here
 #include "framework.h"
 #include "PurojekutoTenpuretActivity.h"
-#include "PurojekutoTenpuretTracelogging.h"
+#include "PurojekutoTenpuretTraceLogging.h"
 
 #endif //PCH_H

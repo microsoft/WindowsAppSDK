@@ -24,7 +24,10 @@
     <ClInclude Include="KozaniPackage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KozaniPackageTracelogging.h">
+    <ClInclude Include="KozaniPackageTraceLogging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KozaniPackageActivity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,10 +41,10 @@
     <ClCompile Include="KozaniPackage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KozaniPackageTracelogging.cpp">
+    <ClCompile Include="KozaniPackageActivity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KozaniPackageActivity.cpp">
+    <ClCompile Include="KozaniPackageTraceLogging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -18,8 +18,8 @@ class AppGraph_TraceLogger final : public wil::TraceLoggingProvider
     IMPLEMENT_TRACELOGGING_CLASS(
         Microsoft_Kozani_AppGraph_TraceLogger,
         "Microsoft.Kozani.AppGraph",
-        // b4599732-6ae8-402b-9c69-97689105ab0b
-        (0xb4599732, 0x6ae8, 0x402b, 0x9c, 0x69, 0x97, 0x68, 0x91, 0x05, 0xab, 0x0b));
+        // 6b731824-91e7-47ae-ae99-e9dd6c6379dc
+        (0x6b731824, 0x91e7, 0x47ae, 0xae, 0x99, 0xe9, 0xdd, 0x6c, 0x63, 0x79, 0xdc));
 
 public:
 };

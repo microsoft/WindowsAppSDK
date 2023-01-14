@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "KozaniPackageTraceLogging.h"
+#include "KozaniRemoteManagerTraceLogging.h"
 
-namespace Microsoft::Kozani::KozaniPackage::Activity
+namespace Microsoft::Kozani::KozaniRemoteManager::Activity
 {
 }

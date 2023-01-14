@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "KozaniAppGraphTracelogging.h"
+#include "KozaniAppGraphTraceLogging.h"
 
 namespace Microsoft::Kozani::KozaniAppGraph::Activity
 {

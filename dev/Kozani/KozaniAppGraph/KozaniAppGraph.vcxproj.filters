@@ -24,7 +24,10 @@
     <ClInclude Include="KozaniAppGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KozaniAppGraphTracelogging.h">
+    <ClInclude Include="KozaniAppGraphTraceLogging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KozaniAppGraphActivity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,10 +41,10 @@
     <ClCompile Include="KozaniAppGraph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KozaniAppGraphTracelogging.cpp">
+    <ClCompile Include="KozaniAppGraphActivity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KozaniAppGraphActivity.cpp">
+    <ClCompile Include="KozaniAppGraphTraceLogging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

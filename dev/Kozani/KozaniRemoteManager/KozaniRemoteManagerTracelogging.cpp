@@ -3,8 +3,4 @@
 
 #pragma once
 
-#include "KozaniPackageTraceLogging.h"
-
-namespace Microsoft::Kozani::KozaniPackage::Activity
-{
-}
+#include "pch.h"

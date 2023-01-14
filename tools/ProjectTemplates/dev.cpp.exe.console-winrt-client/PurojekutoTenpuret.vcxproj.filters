@@ -24,7 +24,7 @@
     <ClInclude Include="PurojekutoTenpuret.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PurojekutoTenpuretTracelogging.h">
+    <ClInclude Include="PurojekutoTenpuretTraceLogging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,7 +38,7 @@
     <ClCompile Include="PurojekutoTenpuret.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PurojekutoTenpuretTracelogging.cpp">
+    <ClCompile Include="PurojekutoTenpuretTraceLogging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PurojekutoTenpuretActivity.cpp">

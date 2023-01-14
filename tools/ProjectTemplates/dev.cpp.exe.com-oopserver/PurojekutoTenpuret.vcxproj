@@ -147,7 +147,7 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PurojekutoTenpuretActivity.cpp" />
-    <ClCompile Include="PurojekutoTenpuretTracelogging.cpp" />
+    <ClCompile Include="PurojekutoTenpuretTraceLogging.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PurojekutoTenpuretProxyStub\PurojekutoTenpuretProxyStub.vcxproj">

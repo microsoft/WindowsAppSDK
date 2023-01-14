@@ -15,6 +15,6 @@
 // add headers that you want to pre-compile here
 #include "framework.h"
 #include "MakeMSIXActivity.h"
-#include "MakeMSIXTracelogging.h"
+#include "MakeMSIXTraceLogging.h"
 
 #endif //PCH_H

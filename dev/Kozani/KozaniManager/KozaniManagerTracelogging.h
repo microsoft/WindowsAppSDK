@@ -13,19 +13,19 @@ namespace Microsoft::Kozani
 {
 GUID& GetLifetimeActivityId() noexcept;
 
-class MakeMSIX_TraceLogger final : public wil::TraceLoggingProvider
+class Manager_TraceLogger final : public wil::TraceLoggingProvider
 {
     IMPLEMENT_TRACELOGGING_CLASS(
-        Microsoft_Kozani_MakeMSIX_TraceLogger,
-        "Microsoft.Kozani.MakeMSIX",
-        // aadd42f7-8804-4986-82da-c7517747634e
-        (0xaadd42f7, 0x8804, 0x4986, 0x82, 0xda, 0xc7, 0x51, 0x77, 0x47, 0x63, 0x4e));
+        Microsoft_Kozani_Manager_TraceLogger,
+        "Microsoft.Kozani.Manager",
+        // 43d44131-26c8-471e-b9d6-fba649e59cfa
+        (0x43d44131, 0x26c8, 0x471e, 0xb9, 0xd6, 0xfb, 0xa6, 0x49, 0xe5, 0x9c, 0xfa));
 
 public:
 };
 }
 
-#define _MICROSOFT_KOZANI_MAKEMSIX_WRITE_FAILURE_INFO \
+#define _MICROSOFT_KOZANI_MANAGER_WRITE_FAILURE_INFO \
     TraceLoggingValue(static_cast<uint32_t>(failure.type), "Type"),\
     TraceLoggingValue(failure.hr, "HResult"),\
     TraceLoggingValue(failure.pszFile, "File"),\
@@ -35,11 +35,11 @@ public:
 
 // In the future, if the project includes multiple modules and threads, we could log that data as well from FailureInfo
 // In the future and on need basis, we could log call stack as well
-#define MakeMSIX_WriteEventWithActivity(_eventname_,_activityId_,...) \
+#define KozaniManager_WriteEventWithActivity(_eventname_,_activityId_,...) \
     TraceLoggingWriteActivity(\
-        Microsoft_Kozani_MakeMSIX_TraceLogger::Provider(),\
+        Microsoft_Kozani_Manager_TraceLogger::Provider(),\
         _eventname_,\
         _activityId_,\
         nullptr,\
-        _MICROSOFT_KOZANI_MAKEMSIX_WRITE_FAILURE_INFO,\
+        _MICROSOFT_KOZANI_MANAGER_WRITE_FAILURE_INFO,\
         __VA_ARGS__)

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "PurojekutoTenpuretTracelogging.h"
+#include "PurojekutoTenpuretTraceLogging.h"
 
 namespace Microsoft::Tokucho::PurojekutoTenpuret::Activity
 {

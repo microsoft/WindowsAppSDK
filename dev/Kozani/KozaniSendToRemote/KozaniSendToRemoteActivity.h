@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "KozaniSendToRemoteTracelogging.h"
+#include "KozaniSendToRemoteTraceLogging.h"
 
 namespace Microsoft::Kozani::KozaniSendToRemote::Activity
 {

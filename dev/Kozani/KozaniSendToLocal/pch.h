@@ -15,6 +15,6 @@
 // add headers that you want to pre-compile here
 #include "framework.h"
 #include "KozaniSendToLocalActivity.h"
-#include "KozaniSendToLocalTracelogging.h"
+#include "KozaniSendToLocalTraceLogging.h"
 
 #endif //PCH_H

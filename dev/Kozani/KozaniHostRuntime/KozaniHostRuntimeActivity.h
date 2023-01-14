@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "KozaniHostRuntimeTracelogging.h"
+#include "KozaniHostRuntimeTraceLogging.h"
 
 namespace Microsoft::Kozani::KozaniHostRuntime::Activity
 {

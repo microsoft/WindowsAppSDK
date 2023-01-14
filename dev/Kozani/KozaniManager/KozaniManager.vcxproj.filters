@@ -21,6 +21,12 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="KozaniManagerActivity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KozaniManagerTraceLogging.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -28,6 +34,12 @@
     </ClInclude>
     <ClInclude Include="KozaniManager-Constants.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KozaniManagerActivity.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KozaniManagerTraceLogging.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

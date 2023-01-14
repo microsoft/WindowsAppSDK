@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "MakeMSIXTracelogging.h"
+#include "MakeMSIXTraceLogging.h"
 
 namespace Microsoft::Kozani::MakeMSIX::Activity
 {

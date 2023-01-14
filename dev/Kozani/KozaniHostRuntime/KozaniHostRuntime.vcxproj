@@ -156,14 +156,15 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="KozaniHostRuntime.h" />
-    <ClInclude Include="KozaniHostRuntimeTracelogging.h" />
+    <ClInclude Include="KozaniHostRuntimeActivity.h" />
+    <ClInclude Include="KozaniHostRuntimeTraceLogging.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="KozaniHostRuntime.cpp" />
     <ClCompile Include="KozaniHostRuntimeActivity.cpp" />
-    <ClCompile Include="KozaniHostRuntimeTracelogging.cpp" />
+    <ClCompile Include="KozaniHostRuntimeTraceLogging.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

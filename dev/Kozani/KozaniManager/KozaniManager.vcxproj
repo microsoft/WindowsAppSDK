@@ -132,6 +132,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="KozaniAppGraphActivity.cpp" />
+    <ClCompile Include="KozaniAppGraphTraceLogging.cpp" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>

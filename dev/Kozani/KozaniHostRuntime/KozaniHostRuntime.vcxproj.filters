@@ -24,7 +24,7 @@
     <ClInclude Include="KozaniHostRuntime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KozaniHostRuntimeTracelogging.h">
+    <ClInclude Include="KozaniHostRuntimeTraceLogging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,7 +38,7 @@
     <ClCompile Include="KozaniHostRuntime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KozaniHostRuntimeTracelogging.cpp">
+    <ClCompile Include="KozaniHostRuntimeTraceLogging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KozaniHostRuntimeActivity.cpp">

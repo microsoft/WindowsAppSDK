@@ -156,14 +156,15 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="KozaniPackage.h" />
-    <ClInclude Include="KozaniPackageTracelogging.h" />
+    <ClInclude Include="KozaniPackageActivity.h" />
+    <ClInclude Include="KozaniPackageTraceLogging.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="KozaniPackage.cpp" />
     <ClCompile Include="KozaniPackageActivity.cpp" />
-    <ClCompile Include="KozaniPackageTracelogging.cpp" />
+    <ClCompile Include="KozaniPackageTraceLogging.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

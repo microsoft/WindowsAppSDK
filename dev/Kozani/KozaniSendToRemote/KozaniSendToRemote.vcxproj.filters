@@ -24,7 +24,10 @@
     <ClInclude Include="KozaniSendToRemote.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KozaniSendToRemoteTracelogging.h">
+    <ClInclude Include="KozaniSendToRemoteTraceLogging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KozaniSendToRemoteActivity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,10 +41,10 @@
     <ClCompile Include="KozaniSendToRemote.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KozaniSendToRemoteTracelogging.cpp">
+    <ClCompile Include="KozaniSendToRemoteActivity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KozaniSendToRemoteActivity.cpp">
+    <ClCompile Include="KozaniSendToRemoteTraceLogging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

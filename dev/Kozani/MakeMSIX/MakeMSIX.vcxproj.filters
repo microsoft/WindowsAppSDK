@@ -24,7 +24,7 @@
     <ClInclude Include="MakeMSIX.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MakeMSIXTracelogging.h">
+    <ClInclude Include="MakeMSIXTraceLogging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,7 +38,7 @@
     <ClCompile Include="MakeMSIX.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MakeMSIXTracelogging.cpp">
+    <ClCompile Include="MakeMSIXTraceLogging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MakeMSIXActivity.cpp">

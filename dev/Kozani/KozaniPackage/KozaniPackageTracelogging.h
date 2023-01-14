@@ -5,38 +5,41 @@
 
 #include "pch.h"
 
+#incluide "Microsoft.TraceLogging.h"
+
 bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) noexcept;
 
+namespace Microsoft::Kozani
+{
 GUID& GetLifetimeActivityId() noexcept;
 
-class WindowsAppRuntimeKozaniPackage_TraceLogger final : public wil::TraceLoggingProvider
+class Package_TraceLogger final : public wil::TraceLoggingProvider
 {
     IMPLEMENT_TRACELOGGING_CLASS(
-        WindowsAppRuntimeKozaniPackage_TraceLogger,
-        "Microsoft.WindowsAppRuntime.KozaniPackage",
-        // {75f3d43c-eca9-420b-8600-320ad7e8cc97}
-        (0x75f3d43c, 0xeca9, 0x420b, 0x86, 0x00, 0x32, 0x0a, 0xd7, 0xe8, 0xcc, 0x97));
+        Microsoft_Kozani_Package_TraceLogger,
+        "Microsoft.Kozani.Package",
+        // 20042f04-7f33-4de2-ab4f-c31e267c891f
+        (0x20042f04, 0x7f33, 0x4de2, 0xab, 0x4f, 0xc3, 0x1e, 0x26, 0x7c, 0x89, 0x1f));
 
 public:
 };
+}
 
-#define KozaniPackage_TraceLoggingWString(_wstring_, _name_) TraceLoggingCountedWideString(_wstring_.c_str(),\
-     static_cast<ULONG>(_wstring_.size()), _name_)
-
-// In the future, if the project includes multiple modules and threads, we could log that data as well from FailureInfo
-// In the future and on need basis, we could log call stack as well
-#define KozaniPackage_WriteEventWithActivity(_eventname_,_activityId_,...) TraceLoggingWriteActivity(\
-        WindowsAppRuntimeKozaniPackage_TraceLogger::Provider(),\
-        _eventname_,\
-        _activityId_,\
-        nullptr,\
-        _WRITE_FAILURE_INFO,\
-        __VA_ARGS__)
-
-#define _WRITE_FAILURE_INFO \
+#define _MICROSOFT_KOZANI_PACKAGE_WRITE_FAILURE_INFO \
     TraceLoggingValue(static_cast<uint32_t>(failure.type), "Type"),\
     TraceLoggingValue(failure.hr, "HResult"),\
     TraceLoggingValue(failure.pszFile, "File"),\
     TraceLoggingValue(failure.uLineNumber,"Line"),\
     TraceLoggingValue(failure.pszModule, "Module"),\
     TraceLoggingValue(failure.pszMessage,"Message")
+
+// In the future, if the project includes multiple modules and threads, we could log that data as well from FailureInfo
+// In the future and on need basis, we could log call stack as well
+#define KozaniPackage_WriteEventWithActivity(_eventname_,_activityId_,...) \
+    TraceLoggingWriteActivity(\
+        Microsoft_Kozani_Package_TraceLogger::Provider(),\
+        _eventname_,\
+        _activityId_,\
+        nullptr,\
+        _MICROSOFT_KOZANI_PACKAGE_WRITE_FAILURE_INFO,\
+        __VA_ARGS__)
