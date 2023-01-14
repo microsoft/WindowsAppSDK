@@ -183,6 +183,7 @@ function Get-UpdatedContent
     )
 
     $featurenamespace = $Feature -Replace "[^A-Za-z0-9_]", ":"
+    $featuresymbol = $Feature -Replace "[^A-Za-z0-9_]", "_"
     $namenofeature = $Name.Replace($Feature, "")
 
     $ext = [System.IO.Path]::GetExtension($filename)
@@ -200,6 +201,17 @@ function Get-UpdatedContent
             $after = " an PurojekutoTenpuretNoFeaturePrefix"
             $content = $content.Replace($before, $after)
         }
+
+        $content = $content.Replace("TokuchoNamespace", "$($featurenamespace)")
+        $content = $content.Replace("TOKUCHONAMESPACE", "$($featurenamespace)".ToUpperInvariant())
+        $content = $content.Replace("tokuchonamespace", "$($featurenamespace)".ToLowerInvariant())
+        $content = $content.Replace("TokuchoSymbol", "$($featuresymbol)")
+        $CONTENT = $CONTENT.REPLACE("TOKUCHOSYMBOL", "$($featuresymbol)".ToUpperInvariant())
+        $CONTENT = $CONTENT.REPLACE("tokuchosymbol", "$($featuresymbol)".ToLowerInvariant())
+
+        $content = $content.Replace("PurojekutoTenpuretNoFeaturePrefix", $namenofeature)
+        $content = $content.Replace("PUROJEKUTOTENPURETNOFEATUREPREFIX", $namenofeature.ToUpperInvariant())
+        $content = $content.Replace("purojekutotenpuretnofeatureprefix", $namenofeature.ToLowerInvariant())
 
         $content = $content.Replace($Feature, $featurenamespace)
 
@@ -241,13 +253,16 @@ function Get-UpdatedContent
             $content = $content.Replace($before, $after)
         }
 
-        $before = "TokuchoNamespace"
-        $after = "$($featurenamespace)."
-        $content = $content.Replace($before, $after)
+        $content = $content.Replace("TokuchoNamespace", "$($featurenamespace)")
+        $content = $content.Replace("TOKUCHONAMESPACE", "$($featurenamespace)".ToUpperInvariant())
+        $content = $content.Replace("tokuchonamespace", "$($featurenamespace)".ToLowerInvariant())
+        $content = $content.Replace("TokuchoSymbol", "$($featuresymbol)")
+        $CONTENT = $CONTENT.REPLACE("TOKUCHOSYMBOL", "$($featuresymbol)".ToUpperInvariant())
+        $CONTENT = $CONTENT.REPLACE("tokuchosymbol", "$($featuresymbol)".ToLowerInvariant())
 
-        $before = "PurojekutoTenpuretNoFeaturePrefix"
-        $after = $namenofeature
-        $content = $content.Replace($before, $after)
+        $content = $content.Replace("PurojekutoTenpuretNoFeaturePrefix", $namenofeature)
+        $content = $content.Replace("PUROJEKUTOTENPURETNOFEATUREPREFIX", $namenofeature.ToUpperInvariant())
+        $content = $content.Replace("purojekutotenpuretnofeatureprefix", $namenofeature.ToLowerInvariant())
 
         $newguid = $(New-Guid).Guid
         $uuid = "[uuid(00000000-0000-0000-0000-000000000000)]"
@@ -409,6 +424,8 @@ function Add-Project
         $in = Get-Content -Path $source -Encoding utf8 -Raw
         $out = $(Get-UpdatedContent $source $in)
         $out = $out.Replace('Tokucho', $Feature)
+        $out = $out.Replace('Tokucho'.ToUpperInvariant(), $Name.ToUpperInvariant())
+        $out = $out.Replace('Tokucho'.ToLowerInvariant(), $Name.ToLowerInvariant())
         $out = $out.Replace('PurojekutoTenpuret', $Name)
         $out = $out.Replace('PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant())
         $out = $out.Replace('PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant())

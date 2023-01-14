@@ -21,6 +21,12 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PurojekutoTenpuretActivity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PurojekutoTenpuretTracelogging.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -28,6 +34,12 @@
     </ClInclude>
     <ClInclude Include="PurojekutoTenpuret-Constants.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PurojekutoTenpuretActivity.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PurojekutoTenpuretTracelogging.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

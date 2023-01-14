@@ -133,6 +133,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PurojekutoTenpuretActivity.h" />
+    <ClInclude Include="PurojekutoTenpuretTraceLogging.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -144,6 +146,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PurojekutoTenpuretActivity.cpp" />
+    <ClCompile Include="PurojekutoTenpuretTracelogging.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PurojekutoTenpuretProxyStub\PurojekutoTenpuretProxyStub.vcxproj">

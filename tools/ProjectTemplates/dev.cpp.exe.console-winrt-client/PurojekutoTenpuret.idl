@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-namespace Microsoft.TokuchoNamespacePurojekutoTenpuretNoFeaturePrefix
+namespace Microsoft.TokuchoNamespace.PurojekutoTenpuretNoFeaturePrefix
 {
     [contractversion(1)]
     apicontract PurojekutoTenpuretNoFeaturePrefixContract{};

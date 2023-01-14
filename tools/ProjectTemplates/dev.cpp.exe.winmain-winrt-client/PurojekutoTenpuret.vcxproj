@@ -156,7 +156,8 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="PurojekutoTenpuret.h" />
-    <ClInclude Include="PurojekutoTenpuretTracelogging.h" />
+    <ClInclude Include="PurojekutoTenpuretActivity.h" />
+    <ClInclude Include="PurojekutoTenpuretTraceLogging.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
