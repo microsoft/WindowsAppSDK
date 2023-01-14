@@ -5,6 +5,6 @@
 
 #include "PurojekutoTenpuretTracelogging.h"
 
-namespace WindowsAppRuntime::Kozani::AppGraph::Activity
+namespace Microsoft::Tokucho::PurojekutoTenpuret::Activity
 {
 }

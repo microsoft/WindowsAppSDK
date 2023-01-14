@@ -5,6 +5,6 @@
 
 #include "KozaniAppGraphTracelogging.h"
 
-namespace WindowsAppRuntime::Kozani::AppGraph::Activity
+namespace Microsoft::Kozani::KozaniAppGraph::Activity
 {
 }

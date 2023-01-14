@@ -5,6 +5,6 @@
 
 #include "MakeMSIXTracelogging.h"
 
-namespace WindowsAppRuntime::Kozani::AppGraph::Activity
+namespace Microsoft::Kozani::MakeMSIX::Activity
 {
 }

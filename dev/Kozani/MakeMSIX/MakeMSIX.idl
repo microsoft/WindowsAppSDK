@@ -1,18 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-namespace Microsoft.MakeMSIX
+namespace Microsoft.Kozani.MakeMSIX
 {
     [contractversion(1)]
     apicontract MakeMSIXContract{};
 
     [contract(MakeMSIXContract, 1)]
-    runtimeclass AppGraphManager
+    runtimeclass MakeMSIXManager
     {
-        /// Get an AppGraph manager for the caller's context.
-        static AppGraphManager Open();
-
-        /// Return the user.
-        String User { get; };
+        /// Get a MakeMSIX manager for the caller's context.
+        static MakeMSIXManager Open();
     };
 }

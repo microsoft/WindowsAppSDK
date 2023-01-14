@@ -1,18 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-namespace Microsoft.KozaniPackage
+namespace Microsoft.Kozani.Package
 {
     [contractversion(1)]
-    apicontract KozaniPackageContract{};
+    apicontract PackageContract{};
 
-    [contract(KozaniPackageContract, 1)]
-    runtimeclass AppGraphManager
+    [contract(PackageContract, 1)]
+    runtimeclass PackageManager
     {
-        /// Get an AppGraph manager for the caller's context.
-        static AppGraphManager Open();
-
-        /// Return the user.
-        String User { get; };
+        /// Get a Package manager for the caller's context.
+        static PackageManager Open();
     };
 }

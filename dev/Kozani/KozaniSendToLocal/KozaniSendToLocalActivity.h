@@ -5,6 +5,6 @@
 
 #include "KozaniSendToLocalTracelogging.h"
 
-namespace WindowsAppRuntime::Kozani::AppGraph::Activity
+namespace Microsoft::Kozani::KozaniSendToLocal::Activity
 {
 }

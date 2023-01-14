@@ -14,8 +14,8 @@ class WindowsAppRuntimePurojekutoTenpuret_TraceLogger final : public wil::TraceL
     IMPLEMENT_TRACELOGGING_CLASS(
         WindowsAppRuntimePurojekutoTenpuret_TraceLogger,
         "Microsoft.WindowsAppRuntime.PurojekutoTenpuret",
-        // {75f3d43c-eca9-420b-8600-320ad7e8cc97}
-        (0x75f3d43c, 0xeca9, 0x420b, 0x86, 0x00, 0x32, 0x0a, 0xd7, 0xe8, 0xcc, 0x97));
+        // PROVIDER-{00000000-0000-0000-0000-000000000000}
+        PROVIDER-(0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00));
 
 public:
 };

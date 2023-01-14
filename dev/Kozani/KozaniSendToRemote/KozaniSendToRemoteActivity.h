@@ -5,6 +5,6 @@
 
 #include "KozaniSendToRemoteTracelogging.h"
 
-namespace WindowsAppRuntime::Kozani::AppGraph::Activity
+namespace Microsoft::Kozani::KozaniSendToRemote::Activity
 {
 }

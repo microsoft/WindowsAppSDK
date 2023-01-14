@@ -1,18 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-namespace Microsoft.KozaniHostRuntime
+namespace Microsoft.Kozani.HostRuntime
 {
     [contractversion(1)]
-    apicontract KozaniHostRuntimeContract{};
+    apicontract HostRuntimeContract{};
 
-    [contract(KozaniHostRuntimeContract, 1)]
-    runtimeclass AppGraphManager
+    [contract(HostRuntimeContract, 1)]
+    runtimeclass HostRuntimeManager
     {
-        /// Get an AppGraph manager for the caller's context.
-        static AppGraphManager Open();
-
-        /// Return the user.
-        String User { get; };
+        /// Get a HostRuntime manager for the caller's context.
+        static HostRuntimeManager Open();
     };
 }

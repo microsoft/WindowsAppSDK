@@ -31,7 +31,7 @@
 #       For example, \tools\ProjectTemplates\dev.cpp.exe.console for a \dev C++ project creating a console-mode EXE
 # NOTE: Project Templates have their name substituted for the placemarker.
 # NOTE: Project Templates MUST have a metadata file named PurojekutoTenpuret.Metadeta.
-# NOTE: The placemarker phrases "Purojekuto Tenpuret" and "Metadeta" are Japanese for "Project Template" and "metadata" :-)
+# NOTE: The placemarker phrases "Tokucho", "Purojekuto Tenpuret" and "Metadeta" are Japanese for "Feature", "Project Template" and "metadata" :-)
 
 [CmdletBinding(SupportsShouldProcess=$true)]
 Param(
@@ -182,27 +182,75 @@ function Get-UpdatedContent
         [string]$content
     )
 
+    $featurenamespace = $Feature -Replace "[^A-Za-z0-9_]", ":"
+    $namenofeature = $Name.Replace($Feature, "")
+
     $ext = [System.IO.Path]::GetExtension($filename)
     if ($ext -eq '.h')
     {
-        $libid = "LIBID-00000000-0000-0000-0000-000000000000"
+        if ($Name -match "^[AEIOUaeiou]")
+        {
+            $before = " a PurojekutoTenpuret"
+            $after = " an PurojekutoTenpuret"
+            $content = $content.Replace($before, $after)
+        }
+        if ($namenofeature -match "^[AEIOUaeiou]")
+        {
+            $before = " a PurojekutoTenpuretNoFeaturePrefix"
+            $after = " an PurojekutoTenpuretNoFeaturePrefix"
+            $content = $content.Replace($before, $after)
+        }
+
+        $content = $content.Replace($Feature, $featurenamespace)
+
         $newguid = $(New-Guid).Guid
+        $libid = "LIBID-00000000-0000-0000-0000-000000000000"
         $newlibid = "$($newguid)"
         $content = $content.Replace($libid, $newlibid)
 
-        $clsiduuid = "CLSID-UUID-00000000-0000-0000-0000-000000000000"
         $newguid = $(New-Guid).Guid
+        $clsiduuid = "CLSID-UUID-00000000-0000-0000-0000-000000000000"
         $newclsid_uuid = "$($newguid)"
         $content = $content.Replace($clsiduuid, $newclsid_uuid)
         $clsidguid = "CLSID-GUID-0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }"
         $fields = $newguid -Split '-'
         $newclsid_guid = "0x$($fields[0]), 0x$($fields[1]), 0x$($fields[2]), { 0x$($fields[3].Substring(0,2)), 0x$($fields[3].Substring(2,2)), 0x$($fields[4].Substring(0,2)), 0x$($fields[4].Substring(2,2)), 0x$($fields[4].Substring(4,2)), 0x$($fields[4].Substring(6,2)), 0x$($fields[4].Substring(8,2)), 0x$($fields[4].Substring(10,2)) }"
         $content = $content.Replace($clsidguid, $newclsid_guid)
+
+        $newguid = $(New-Guid).Guid
+        $provider_guid = "PROVIDER-{00000000-0000-0000-0000-000000000000}"
+        $newprovider_guid = "$($newguid)"
+        $content = $content.Replace($provider_guid, $newprovider_guid)
+        $provider_value = "PROVIDER-(0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)"
+        $fields = $newguid -Split '-'
+        $newprovider_value = "(0x$($fields[0]), 0x$($fields[1]), 0x$($fields[2]), 0x$($fields[3].Substring(0,2)), 0x$($fields[3].Substring(2,2)), 0x$($fields[4].Substring(0,2)), 0x$($fields[4].Substring(2,2)), 0x$($fields[4].Substring(4,2)), 0x$($fields[4].Substring(6,2)), 0x$($fields[4].Substring(8,2)), 0x$($fields[4].Substring(10,2)))"
+        $content = $content.Replace($provider_value, $newprovider_value)
     }
     elseif ($ext -eq '.idl')
     {
-        $uuid = "[uuid(00000000-0000-0000-0000-000000000000)]"
+        if ($Name -match "^[AEIOUaeiou]")
+        {
+            $before = " a PurojekutoTenpuret"
+            $after = " an PurojekutoTenpuret"
+            $content = $content.Replace($before, $after)
+        }
+        if ($namenofeature -match "^[AEIOUaeiou]")
+        {
+            $before = " a PurojekutoTenpuretNoFeaturePrefix"
+            $after = " an PurojekutoTenpuretNoFeaturePrefix"
+            $content = $content.Replace($before, $after)
+        }
+
+        $before = "TokuchoNamespace"
+        $after = "$($featurenamespace)."
+        $content = $content.Replace($before, $after)
+
+        $before = "PurojekutoTenpuretNoFeaturePrefix"
+        $after = $namenofeature
+        $content = $content.Replace($before, $after)
+
         $newguid = $(New-Guid).Guid
+        $uuid = "[uuid(00000000-0000-0000-0000-000000000000)]"
         $newuuid = "[uuid($($newguid))]"
         $content = $content.Replace($uuid, $newuuid)
 
@@ -222,8 +270,8 @@ function Get-UpdatedContent
     {
         $content = $content.Replace('PurojekutoTenpuretNoProxyStubSuffix', $Name.Replace('ProxyStub', ''))
 
-        $projectguid = "<ProjectGuid>{00000000-0000-0000-0000-000000000000}</ProjectGuid>"
         $newguid = $(New-Guid).Guid
+        $projectguid = "<ProjectGuid>{00000000-0000-0000-0000-000000000000}</ProjectGuid>"
         $newprojectguid = "<ProjectGuid>{$($newguid)}</ProjectGuid>"
         $content = $content.Replace($projectguid, $newprojectguid)
 
@@ -360,6 +408,7 @@ function Add-Project
         # Change placemarkers in file content and filenames to the project name
         $in = Get-Content -Path $source -Encoding utf8 -Raw
         $out = $(Get-UpdatedContent $source $in)
+        $out = $out.Replace('Tokucho', $Feature)
         $out = $out.Replace('PurojekutoTenpuret', $Name)
         $out = $out.Replace('PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant())
         $out = $out.Replace('PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant())

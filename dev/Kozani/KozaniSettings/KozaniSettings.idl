@@ -1,18 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-namespace Microsoft.KozaniSettings
+namespace Microsoft.Kozani.Settings
 {
     [contractversion(1)]
-    apicontract KozaniSettingsContract{};
+    apicontract SettingsContract{};
 
-    [contract(KozaniSettingsContract, 1)]
-    runtimeclass AppGraphManager
+    [contract(SettingsContract, 1)]
+    runtimeclass SettingsManager
     {
-        /// Get an AppGraph manager for the caller's context.
-        static AppGraphManager Open();
-
-        /// Return the user.
-        String User { get; };
+        /// Get a Settings manager for the caller's context.
+        static SettingsManager Open();
     };
 }

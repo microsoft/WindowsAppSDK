@@ -1,18 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-namespace Microsoft.KozaniSendToRemote
+namespace Microsoft.Kozani.SendToRemote
 {
     [contractversion(1)]
-    apicontract KozaniSendToRemoteContract{};
+    apicontract SendToRemoteContract{};
 
-    [contract(KozaniSendToRemoteContract, 1)]
-    runtimeclass AppGraphManager
+    [contract(SendToRemoteContract, 1)]
+    runtimeclass SendToRemoteManager
     {
-        /// Get an AppGraph manager for the caller's context.
-        static AppGraphManager Open();
-
-        /// Return the user.
-        String User { get; };
+        /// Get a SendToRemote manager for the caller's context.
+        static SendToRemoteManager Open();
     };
 }

@@ -1,18 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-namespace Microsoft.PurojekutoTenpuret
+namespace Microsoft.TokuchoNamespacePurojekutoTenpuretNoFeaturePrefix
 {
     [contractversion(1)]
-    apicontract PurojekutoTenpuretContract{};
+    apicontract PurojekutoTenpuretNoFeaturePrefixContract{};
 
-    [contract(PurojekutoTenpuretContract, 1)]
-    runtimeclass AppGraphManager
+    [contract(PurojekutoTenpuretNoFeaturePrefixContract, 1)]
+    runtimeclass PurojekutoTenpuretNoFeaturePrefixManager
     {
-        /// Get an AppGraph manager for the caller's context.
-        static AppGraphManager Open();
-
-        /// Return the user.
-        String User { get; };
+        /// Get a PurojekutoTenpuretNoFeaturePrefix manager for the caller's context.
+        static PurojekutoTenpuretNoFeaturePrefixManager Open();
     };
 }

@@ -5,7 +5,7 @@ import "oaidl.idl";
 import "ocidl.idl";
 
 [object]
-[uuid(f580b10e-2016-45d6-8a68-b4cc4da99e62)]
+[uuid(fe870cd2-3919-415a-b89e-4d3e1e1d7a14)]
 [pointer_default(unique)]
 interface IKozaniRemoteManager : IUnknown
 {
