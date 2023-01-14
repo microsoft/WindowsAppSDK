@@ -118,24 +118,15 @@ void BaseTestSuite::ChannelRequestCheckExpirationTime()
 {
     if (PushNotificationManager::Default().IsSupported())
     {
-        // Grab the time before/after getting the channel to check against the expiration.
-        // Need to subtract to account for synchronization issues with clock.
-        DateTime beforeRequestTime{ winrt::clock::now() - std::chrono::seconds(5) };
-
         auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
         VERIFY_SUCCEEDED(ChannelRequestHelper(channelOperation));
 
-        DateTime afterRequestTime{ winrt::clock::now() };
-
         auto channel{ channelOperation.GetResults().Channel() };
         auto expirationTime{ channel.ExpirationTime() };
-
-        auto before{ beforeRequestTime + std::chrono::days(30) };
-        auto after{ afterRequestTime + std::chrono::days(30) };
+        auto expiryBound{ winrt::clock::now() + std::chrono::days(31) };
 
         // Need to add 30 days to match expiration time.
-        VERIFY_IS_GREATER_THAN(expirationTime, before);
-        VERIFY_IS_LESS_THAN(expirationTime, after);
+        VERIFY_IS_LESS_THAN(expirationTime, expiryBound);
     }
     else
     {

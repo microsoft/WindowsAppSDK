@@ -24,7 +24,6 @@
 #include "PushNotificationReceivedEventArgs.h"
 #include <security.integritylevel.h>
 #include <NotificationPlatformActivation.h>
-#include <iostream>
 
 using namespace std::literals;
 using namespace Microsoft::Windows::AppNotifications::Helpers;
