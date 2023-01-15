@@ -11,5 +11,7 @@ namespace Microsoft.Kozani.MakeMSIX
     {
         /// Get a MakeMSIX manager for the caller's context.
         static MakeMSIXManager Open();
+
+        void TODO_ReplaceMeWithRealContent();
     };
 }

@@ -11,5 +11,7 @@ namespace Microsoft.Kozani.Settings
     {
         /// Get a Settings manager for the caller's context.
         static SettingsManager Open();
+
+        void TODO_ReplaceMeWithRealContent();
     };
 }

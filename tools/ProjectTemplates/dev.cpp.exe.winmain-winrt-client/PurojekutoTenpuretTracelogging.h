@@ -9,11 +9,9 @@
 
 bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) noexcept;
 
-namespace Microsoft::TokuchoNamespace
-{
 GUID& GetLifetimeActivityId() noexcept;
 
-class PurojekutoTenpuretNoFeaturePrefix_TraceLogger final : public wil::TraceLoggingProvider
+class Microsoft_TokuchoSymbol_PurojekutoTenpuretNoFeaturePrefix_TraceLogger final : public wil::TraceLoggingProvider
 {
     IMPLEMENT_TRACELOGGING_CLASS(
         Microsoft_TokuchoSymbol_PurojekutoTenpuretNoFeaturePrefix_TraceLogger,
@@ -23,7 +21,6 @@ class PurojekutoTenpuretNoFeaturePrefix_TraceLogger final : public wil::TraceLog
 
 public:
 };
-}
 
 #define _MICROSOFT_TOKUCHOSYMBOL_PUROJEKUTOTENPURETNOFEATUREPREFIX_WRITE_FAILURE_INFO \
     TraceLoggingValue(static_cast<uint32_t>(failure.type), "Type"),\

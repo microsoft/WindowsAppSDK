@@ -11,5 +11,7 @@ namespace Microsoft.Kozani.Package
     {
         /// Get a Package manager for the caller's context.
         static PackageManager Open();
+
+        void TODO_ReplaceMeWithRealContent();
     };
 }

@@ -11,5 +11,7 @@ namespace Microsoft.Kozani.SendToRemote
     {
         /// Get a SendToRemote manager for the caller's context.
         static SendToRemoteManager Open();
+
+        void TODO_ReplaceMeWithRealContent();
     };
 }

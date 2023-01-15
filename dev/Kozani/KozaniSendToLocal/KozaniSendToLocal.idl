@@ -11,5 +11,7 @@ namespace Microsoft.Kozani.SendToLocal
     {
         /// Get a SendToLocal manager for the caller's context.
         static SendToLocalManager Open();
+
+        void TODO_ReplaceMeWithRealContent();
     };
 }

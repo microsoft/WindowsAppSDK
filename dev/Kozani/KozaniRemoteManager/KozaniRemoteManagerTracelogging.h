@@ -11,8 +11,6 @@
 
 bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) noexcept;
 
-//namespace Microsoft::Kozani
-//{
 GUID& GetLifetimeActivityId() noexcept;
 
 class Microsoft_Kozani_RemoteManager_TraceLogger final : public wil::TraceLoggingProvider
@@ -25,7 +23,6 @@ class Microsoft_Kozani_RemoteManager_TraceLogger final : public wil::TraceLoggin
 
 public:
 };
-//}
 
 #define _MICROSOFT_KOZANI_REMOTEMANAGER_WRITE_FAILURE_INFO \
     TraceLoggingValue(static_cast<uint32_t>(failure.type), "Type"),\

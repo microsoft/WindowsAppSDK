@@ -11,5 +11,7 @@ namespace Microsoft.Kozani.HostRuntime
     {
         /// Get a HostRuntime manager for the caller's context.
         static HostRuntimeManager Open();
+
+        void TODO_ReplaceMeWithRealContent();
     };
 }

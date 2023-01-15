@@ -11,5 +11,7 @@ namespace Microsoft.TokuchoNamespace.PurojekutoTenpuretNoFeaturePrefix
     {
         /// Get a PurojekutoTenpuretNoFeaturePrefix manager for the caller's context.
         static PurojekutoTenpuretNoFeaturePrefixManager Open();
+
+        void TODO_ReplaceMeWithRealContent();
     };
 }
