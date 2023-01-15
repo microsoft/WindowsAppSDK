@@ -190,7 +190,7 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="KozaniManagerProxyStub.rc">
-      <AdditionalIncludeDirectories>$(RepoRoot)\dev\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\Common;$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>

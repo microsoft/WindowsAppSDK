@@ -3,4 +3,4 @@
 
 #include <winresrc.h>
 #define VERSIONINFO_FILENAME "KozaniSettings.dll"
-#include "WindowsAppSDK.ver"
+#include "eng\common\VersionInfo\AssemblyInfo.ver"

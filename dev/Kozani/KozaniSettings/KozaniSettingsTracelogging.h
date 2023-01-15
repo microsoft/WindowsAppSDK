@@ -5,7 +5,7 @@
 
 #include "pch.h"
 
-#incluide "Microsoft.TraceLogging.h"
+#include "Microsoft.TraceLogging.h"
 
 bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) noexcept;
 

@@ -183,7 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MakeMSIX.rc">
-      <AdditionalIncludeDirectories>$(RepoRoot)\dev\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\Common;$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

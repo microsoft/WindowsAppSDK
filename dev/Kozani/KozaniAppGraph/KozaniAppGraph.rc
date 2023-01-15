@@ -3,4 +3,4 @@
 
 #include <winresrc.h>
 #define VERSIONINFO_FILENAME "KozaniAppGraph.dll"
-#include "WindowsAppSDK.ver"
+#include "eng\common\VersionInfo\AssemblyInfo.ver"

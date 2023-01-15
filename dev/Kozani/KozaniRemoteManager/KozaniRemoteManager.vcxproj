@@ -133,6 +133,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="KozaniRemoteManagerActivity.h" />
+    <ClInclude Include="KozaniRemoteManagerTraceLogging.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -144,6 +146,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="KozaniRemoteManagerActivity.cpp" />
+    <ClCompile Include="KozaniRemoteManagerTraceLogging.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KozaniRemoteManagerProxyStub\KozaniRemoteManagerProxyStub.vcxproj">
@@ -152,6 +156,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="KozaniRemoteManager.rc">
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\Common;$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
