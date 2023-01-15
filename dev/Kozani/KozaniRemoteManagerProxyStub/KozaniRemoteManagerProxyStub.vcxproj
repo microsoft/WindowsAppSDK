@@ -211,7 +211,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KozaniRemoteManagerInterface\KozaniRemoteManagerInterface.vcxproj">
-      <Project>{22222222-2222-2222-2222-222222222222}</Project>
+      <Project>{133BFD48-FD50-4B35-9E0C-C6B362E13027}</Project>
     </ProjectReference>
   </ItemGroup>
   <!-- Include header files from the dev chunks -->

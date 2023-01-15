@@ -149,7 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KozaniManagerProxyStub\KozaniManagerProxyStub.vcxproj">
-      <Project>{11111111-1111-1111-1111-111111111111}</Project>
+      <Project>{CFC67AC3-3DC3-4981-A9BB-BC5ED06542D4}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
