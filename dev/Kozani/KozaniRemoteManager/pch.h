@@ -19,3 +19,5 @@
 #include <wil/token_helpers.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
+
+#include <WindowsAppRuntimeInsights.h>

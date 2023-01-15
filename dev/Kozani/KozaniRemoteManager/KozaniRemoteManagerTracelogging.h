@@ -5,8 +5,6 @@
 
 #include "pch.h"
 
-#include <WindowsAppRuntimeInsights.h>
-
 #include "Microsoft.TraceLogging.h"
 
 bool __stdcall wilResultLoggingThreadCallback(const wil::FailureInfo& failure) noexcept;
@@ -18,8 +16,8 @@ class Microsoft_Kozani_RemoteManager_TraceLogger final : public wil::TraceLoggin
     IMPLEMENT_TRACELOGGING_CLASS(
         Microsoft_Kozani_RemoteManager_TraceLogger,
         "Microsoft.Kozani.RemoteManager",
-        // 7b5cabb7-8c65-4315-afad-be1d9810d1e2
-        (0x7b5cabb7, 0x8c65, 0x4315, 0xaf, 0xad, 0xbe, 0x1d, 0x98, 0x10, 0xd1, 0xe2));
+        // d8f82421-f1da-44b4-9bdf-4685a130b752
+        (0xd8f82421, 0xf1da, 0x44b4, 0x9b, 0xdf, 0x46, 0x85, 0xa1, 0x30, 0xb7, 0x52));
 
 public:
 };
