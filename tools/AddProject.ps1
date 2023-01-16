@@ -161,7 +161,7 @@ function Get-TemplateTarget
     {
         'DLL'
     }
-    elseif ($language -eq 'exe')
+    elseif ($target -eq 'exe')
     {
         'EXE'
     }
