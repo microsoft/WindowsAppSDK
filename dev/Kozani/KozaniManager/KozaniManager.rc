@@ -3,4 +3,5 @@
 
 #include <winresrc.h>
 #define VERSIONINFO_FILENAME "KozaniManager.exe"
+#define VERSIONINFO_FILETYPE VFT_APP
 #include "eng\common\VersionInfo\AssemblyInfo.ver"

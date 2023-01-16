@@ -32,7 +32,7 @@
     </ClInclude>
     <ClInclude Include="M.K.P.PackageManager.h">
       <Filter>Header Files</Filter>
-    </ClIncludee>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

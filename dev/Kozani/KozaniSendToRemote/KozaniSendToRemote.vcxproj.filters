@@ -30,6 +30,9 @@
     <ClInclude Include="KozaniSendToRemoteActivity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="M.K.STR.SendToRemoteManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -45,6 +48,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KozaniSendToRemoteTraceLogging.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="M.K.STR.SendToRemoteManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

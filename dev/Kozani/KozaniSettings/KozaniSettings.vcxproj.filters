@@ -30,6 +30,9 @@
     <ClInclude Include="KozaniSettingsActivity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="M.K.S.SettingsManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -45,6 +48,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KozaniSettingsTraceLogging.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="M.K.S.SettingsManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
