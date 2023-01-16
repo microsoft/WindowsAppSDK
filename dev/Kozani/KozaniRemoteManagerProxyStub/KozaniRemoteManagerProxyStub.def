@@ -1,3 +1,6 @@
-﻿EXPORTS
+﻿; Copyright (c) Microsoft Corporation and Contributors.
+; Licensed under the MIT License.
+
+EXPORTS
     DllCanUnloadNow         PRIVATE
     DllGetClassObject       PRIVATE

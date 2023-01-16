@@ -119,6 +119,18 @@ function Get-ProjectTemplatePath
     return $templates
 }
 
+function Get-Abbreviation
+{
+    param(
+        [string]$s
+    )
+
+    $s = $s -cReplace "[^A-Za-z]+", "."
+    $s = $s -cReplace "[^A-Z.]", ""
+
+    $s
+}
+
 function Get-TemplateLanguage
 {
     param(
@@ -183,6 +195,7 @@ function Get-UpdatedContent
     )
 
     $featurenamespace = $Feature -Replace "[^A-Za-z0-9_]", ":"
+    $featuredotnamespace = $Feature -Replace "[^A-Za-z0-9_]", "."
     $featuresymbol = $Feature -Replace "[^A-Za-z0-9_]", "_"
     $namenofeature = $Name.Replace($Feature, "")
 
@@ -205,6 +218,9 @@ function Get-UpdatedContent
         $content = $content.Replace("TokuchoNamespace", "$($featurenamespace)")
         $content = $content.Replace("TOKUCHONAMESPACE", "$($featurenamespace)".ToUpperInvariant())
         $content = $content.Replace("tokuchonamespace", "$($featurenamespace)".ToLowerInvariant())
+        $content = $content.Replace("TokuchoDotNamespace", "$($featuredotnamespace)")
+        $content = $content.Replace("TOKUCHODOTNAMESPACE", "$($featuredotnamespace)".ToUpperInvariant())
+        $content = $content.Replace("tokuchodotnamespace", "$($featuredotnamespace)".ToLowerInvariant())
         $content = $content.Replace("TokuchoSymbol", "$($featuresymbol)")
         $CONTENT = $CONTENT.REPLACE("TOKUCHOSYMBOL", "$($featuresymbol)".ToUpperInvariant())
         $CONTENT = $CONTENT.REPLACE("tokuchosymbol", "$($featuresymbol)".ToLowerInvariant())
@@ -304,7 +320,16 @@ function Get-ProjectTemplateOutputFileName
         [string]$filename
     )
 
+    $featureAbbreviation = Get-Abbreviation $Feature
+    $nameAbbreviation = Get-Abbreviation $Name
+
+    $namenofeature = $Name.Replace($Feature, "")
+    $namenofeatureAbbreviation = Get-Abbreviation $namenofeature
+
     $outfn = $filename
+    $outfn = $outfn.Replace('TokuchoAbbreviation', $featureAbbreviation)
+    $outfn = $outfn.Replace('PurojekutoTenpuretAbbreviation', $nameAbbreviation)
+    $outfn = $outfn.Replace('PurojekutoTenpuretNoFeaturePrefixAbbreviation', $namenofeatureAbbreviation)
     $outfn = $outfn.Replace('PurojekutoTenpuretNoProxyStubSuffix', $Name.Replace('ProxyStub', ''))
     $outfn = $outfn.Replace('PurojekutoTenpuret', $Name)
     $outfn = $outfn.Replace('PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant())

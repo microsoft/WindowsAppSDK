@@ -40,7 +40,7 @@
     <CppWinRTModernIDL>true</CppWinRTModernIDL>
     <CppWinRTFastAbi>true</CppWinRTFastAbi>
     <CppWinRTOptimized>true</CppWinRTOptimized>
-    <CppWinRTGenerateWindowsMetadata>true</CppWinRTGenerateWindowsMetadata>
+    <CppWinRTGenerateWindowsMetadata>false</CppWinRTGenerateWindowsMetadata>
     <CppWinRTNamespaceMergeDepth>9</CppWinRTNamespaceMergeDepth>
   </PropertyGroup>
   <PropertyGroup>
@@ -158,7 +158,6 @@
     <ClInclude Include="PurojekutoTenpuret.h" />
     <ClInclude Include="PurojekutoTenpuretActivity.h" />
     <ClInclude Include="PurojekutoTenpuretTraceLogging.h" />
-    <ClInclude Include="M.TokuchoAbbreviation.PurojekutoTenpuretAbbreviation.AppGraphManager.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -166,7 +165,6 @@
     <ClCompile Include="PurojekutoTenpuret.cpp" />
     <ClCompile Include="PurojekutoTenpuretActivity.cpp" />
     <ClCompile Include="PurojekutoTenpuretTraceLogging.cpp" />
-    <ClInclude Include="M.TokuchoAbbreviation.PurojekutoTenpuretAbbreviation.AppGraphManager.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -175,7 +173,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)PurojekutoTenpuret.idl" />
@@ -197,13 +194,6 @@
     <Import Project="$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" />
     <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" />
   </ImportGroup>
-  <Target Name="MakeStrippedMetadata" AfterTargets="CppWinRTMergeProjectWinMDInputs" BeforeTargets="ClCompile">
-    <PropertyGroup>
-      <_MdMergeParameters>-v @(CppWinRTMdMergeMetadataDirectories->'-metadata_dir "%(RelativeDir)."', ' ')</_MdMergeParameters>
-      <_MdMergeParameters>$(_MdMergeParameters) -o "$(OutDir)StrippedWinMD" @(CppWinRTMdMergeInputs->'-i "%(Identity)"', ' ') -partial -n:9 -createPublicMetadata -transformExperimental:transform</_MdMergeParameters>
-    </PropertyGroup>
-    <Exec Command="$(MdMergePath)mdmerge $(_MdMergeParameters)" />
-  </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
