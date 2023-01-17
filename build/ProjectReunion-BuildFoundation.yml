@@ -263,11 +263,11 @@ jobs:
       - BuildAndTestMRT
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
 
-- job: RunTestInPipeline
-  # Arm64 uses a different VM type than x64, thus requiring them to be in different
-  # pools, hence, we spilt the two scenarios into separate jobs.
+# Arm64 uses a different VM type than x64, thus requiring them to be in different
+# pools, hence, we spilt the two scenarios into separate jobs.
+- template: AzurePipelinesTemplates\WindowsAppSDK-RunTestsInPipeline-Job.yml
   steps:
-    - template: AzurePipelinesTemplates\WindowsAppSDK-RunTestsInPipeline-Job.yml
+    - template: 
       parameters:
         jobName: PipelineTestsX64
         isArm64Platfrom: false
