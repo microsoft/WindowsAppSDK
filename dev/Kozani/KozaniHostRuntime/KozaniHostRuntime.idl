@@ -1,0 +1,17 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace Microsoft.Kozani.HostRuntime
+{
+    [contractversion(1)]
+    apicontract HostRuntimeContract{};
+
+    [contract(HostRuntimeContract, 1)]
+    runtimeclass HostRuntimeManager
+    {
+        /// Get a HostRuntime manager for the caller's context.
+        static HostRuntimeManager Open();
+
+        void TODO_ReplaceMeWithRealContent();
+    };
+}
