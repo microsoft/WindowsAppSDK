@@ -48,6 +48,7 @@
   <ItemGroup>
     <CopyFileToFolders Include="$(TargetDir)..\NotificationActivation\NotificationActivation.exe" />
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
+    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
