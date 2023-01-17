@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
@@ -11,25 +11,27 @@
   <!-- Common (all Configurations) options -->
   <ItemDefinitionGroup>
     <ClCompile>
-      <!-- /std:c++17 Enable ISO C++17 Standard -->
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <!-- /std:c++20 Enable ISO C++20 Standard -->
+      <LanguageStandard>stdcpp20</LanguageStandard>
 
       <!-- /permissive- Enable Conformance mode (i.e. Disable 'permissive' mode) -->
       <ConformanceMode>true</ConformanceMode>
 
-      <!-- /W4 Enable max warning level -->
-      <WarningLevel>Level4</WarningLevel>
+      <!-- /GR- Disable RTTI (causes binary bloat) -->
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
 
       <!-- /sdk Enable additional security checks-->
       <SDLCheck>true</SDLCheck>
 
-      <!-- /GR- Disable RTTI (causes binary bloat) -->
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <!-- /W4 Enable max warning level -->
+      <WarningLevel>Level4</WarningLevel>
 
+      <!-- /Qspectre Specifies compiler generation of instructions to mitigate certain Spectre variant 1 security vulnerabilities. BinSkim asks for this. -->
       <!-- /ZH:SHA_256 Hash algorithm for file checksums in debug info -->
-      <!-- /d1trimfile:$(RepoRoot) If the prefix for a source file path name string matches "trim-string", 
-      then the prefix is removed and is replaced with the mapping-identifier (if present). Requires /Brepro. -->
-      <AdditionalOptions>%(AdditionalOptions) /d1trimfile:$(RepoRoot) /ZH:SHA_256</AdditionalOptions>
+      <!-- /await Enable coroutine support. -->
+      <!-- TODO:42560699 Replace /await with... /await:strict Enable coroutine support. Disable /await language extensions not adopted into C++20 -->
+      <!-- /d1trimfile:$(RepoRoot) If the prefix for a source file path name string matches "trim-string" the prefix is replaced with the mapping-identifier (if present). Requires /Brepro. -->
+      <AdditionalOptions>%(AdditionalOptions) /Qspectre /ZH:SHA_256 /await /d1trimfile:$(RepoRoot)</AdditionalOptions>
     </ClCompile>
     <Link>
       <!-- /DEBUG:FULL Create PDF containing full debug information -->
@@ -37,9 +39,17 @@
 
       <!-- /Brepro Enables deterministic output from the compiler toolchain -->
       <!-- /PDBALTPATH Stops pdb's basepath from appearing in the Debug Directories of the image header -->
-      <AdditionalOptions>%(AdditionalOptions) /Brepro /PDBALTPATH:$(TargetName).pdb</AdditionalOptions>
+      <!-- /CETCOMPAT enables Control-flow Enforcement Technology (CET) Shadow Stack mitigation.
+      BinSkim asks for this. /CETCOMPAT does not support arm64 -->
+      <AdditionalOptions Condition="'$(Platform)' == 'arm64'">%(AdditionalOptions) /Brepro /PDBALTPATH:$(TargetName).pdb</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Platform)' != 'arm64'">%(AdditionalOptions) /Brepro /PDBALTPATH:$(TargetName).pdb /CETCOMPAT</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
+
+  <!-- BinSkim emits errors or warnings without this settings -->
+  <PropertyGroup>
+    <SpectreMitigation>Spectre</SpectreMitigation>
+  </PropertyGroup>
 
   <!-- Debug-specific options -->
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">

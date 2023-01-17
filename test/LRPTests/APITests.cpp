@@ -5,6 +5,7 @@
 #include <TestDef.h>
 #include <TlHelp32.h>
 #include <NotificationsLongRunningProcess_h.h>
+#include "NotificationPlatformActivation.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -28,23 +29,24 @@ namespace Test::LRP
             TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser") // Need to run as non-elevated until LRP elevation support is enabled.
         END_TEST_CLASS()
 
-        winrt::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
+        wil::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
         {
-            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(winrt::guid_of<NotificationsLongRunningPlatform>(), CLSCTX_ALL) };
-            VERIFY_IS_NOT_NULL(notificationPlatform.get());
+            auto notificationPlatform{ NotificationPlatform::GetNotificationPlatform() };
+            VERIFY_IS_NOT_NULL(notificationPlatform);
 
             return notificationPlatform;
         }
 
         TEST_CLASS_SETUP(ClassInit)
         {
-            ::Test::Bootstrap::SetupPackages(Test::Bootstrap::Packages::Singleton);
+
+            ::Test::Bootstrap::SetupPackages(Test::Bootstrap::Packages::Framework | Test::Bootstrap::Packages::Singleton);
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            ::Test::Bootstrap::CleanupPackages(Test::Bootstrap::Packages::Singleton);
+            ::Test::Bootstrap::CleanupPackages(Test::Bootstrap::Packages::Framework | Test::Bootstrap::Packages::Singleton);
             return true;
         }
 

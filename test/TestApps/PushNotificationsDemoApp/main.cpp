@@ -6,11 +6,13 @@
 #include <winrt/Windows.ApplicationModel.Background.h>
 #include <MddBootstrap.h>
 #include <MddBootstrapTest.h>
-#include "WindowsAppRuntime.Test.AppModel.h"
 #include <propkey.h> //PKEY properties
 #include <propsys.h>
 #include <ShObjIdl_core.h>
-#include <WindowsAppRuntime.Test.Bootstrap.h>
+#include <roapi.h>
+#include <winstring.h>
+#include <wil/resource.h>
+#include "AppModel.PackageGraph.h"
 
 namespace winrt
 {
@@ -93,6 +95,9 @@ int main()
     Test::Bootstrap::SetupBootstrap();
     ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
         ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
+
+    THROW_HR_IF(E_FAIL, ::WindowsAppRuntime::SelfContained::IsSelfContained());
+
     if (!Test::AppModel::IsPackagedProcess())
     {
         // Not mandatory, but it's highly recommended to specify AppUserModelId

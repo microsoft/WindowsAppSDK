@@ -1,0 +1,15 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[object]
+[uuid(5882f14f-f954-4af9-bbeb-a7c1a2a6357e)]
+[pointer_default(unique)]
+interface IKozaniManager : IUnknown
+{
+    HRESULT Initialize();
+
+    HRESULT Shutdown();
+};

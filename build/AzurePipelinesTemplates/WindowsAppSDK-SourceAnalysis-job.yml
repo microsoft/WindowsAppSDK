@@ -18,9 +18,7 @@ jobs:
     parameters:
       globalsdl:
         tsa:
-          # Not filing bugs for issues found by the scans just yet.
-          #enabled: true    
-          enabled: false    
+          enabled: true
         codeql:
           tsandjs:
             enabled: true

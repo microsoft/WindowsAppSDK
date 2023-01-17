@@ -11,6 +11,7 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Microsoft.Test.DynamicDependency.Widgets.Widget1.cpp" />
     <ClCompile Include="Microsoft.Test.DynamicDependency.Widgets.Widget2.cpp" />
+    <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -21,6 +22,7 @@
   <ItemGroup>
     <None Include="module.def" />
     <None Include="appxmanifest.template" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="Widgets.idl" />

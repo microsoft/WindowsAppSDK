@@ -12,11 +12,11 @@ Development requires the following installed tools...
 **NOTE:** Visual Studio 2022 doesn't include this SDK but will use it if installed on the machine.
 
 2. Visual Studio 2022 with...
-   a. Workloads
+   * Workloads
       * .NET desktop development
       * Desktop development with C++
       * Universal Windows Platform development
-   b. Individual components
+   * Individual components
       * .NET 6.0 Runtime (LTS)
       * .NET SDK
       * Git for Windows
@@ -47,23 +47,24 @@ Development requires the following installed tools...
 via `More` / `Import configuration` and select `docs\Coding-Guidelines\VisualStudio2022.vsconfig`.
 
 3. Run NuGet Restore
-   a. Download nuget.exe version >= 6.2.1 from https://www.nuget.org/downloads
-      e.g. https://dist.nuget.org/win-x86-commandline/v6.2.1/nuget.exe
-   b. Open a command prompt
-   c. CD to the project root e.g. `cd c:\source\repos\windowsappsdk`
-   d. Run `nuget.exe restore`
+   * Download nuget.exe version >= 6.2.1 from https://www.nuget.org/downloads
+     e.g. https://dist.nuget.org/win-x86-commandline/v6.2.1/nuget.exe
+   * Open a command prompt
+   * CD to the project root e.g. `cd c:\source\repos\windowsappsdk`
+   * Run `nuget.exe restore`
 
 # One-Time Setup
 
-Run the `tools\DevCheck.cmd` from an elevated command prompt (e.g. right-click on "Command Prompt"
+Run the `DevCheck.cmd` from an elevated command prompt (e.g. right-click on "Command Prompt"
 in the Start Menu and select `Run as Administrator`) to update your development environment. The script:
 
 * Adds test certificate to the certificate store. Used to sign test packages for inner-loop development and testing
 * Installs the TAEF servce (TE.Service). Used by TAEF to enable test functionality (e.g. RunAs).
+* Verifies project's dependencies are sanctioned and using the correct version(s).
 
 This is needed once to enable your machine to develop Windows App SDK. It may be needed again in the
 future at rare intervals e.g. the test certificate usually expires a year from its issue date) or if
-the TAEF dependency has an update. When in doubt you can always run `tools\DevCheck.cmd` as it's
+a dependency has an update. When in doubt you can always run `DevCheck.cmd` as it's
 harmless if your configuration is current with no changes needed.
 
 # Tada!
@@ -109,3 +110,14 @@ Troubleshoot build problems by enabling binary logging (e.g. `msbuild...-bl`) an
 | Run tests only displaying per-tests reults and errors | `te.exe WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll /logoutput:low` |
 
 See TAEF documentation for more details.
+
+## Github PullRequest Tips
+
+To trigger validation, comment "/azp run" in your Pull Request.
+
+Main branch runs: https://dev.azure.com/ms/ProjectReunion/_build?definitionId=391
+
+Develop branch runs an internal pipeline by the name of "TransportPackage-Foundation-PR"
+You may also comment "/azp run TransportPackage-Foundation-PR" to specifically run that pipeline.
+The azure-pipelines[bot] may say "Azure Pipelines could not run because the pipeline triggers exclude this branch/path." 
+But this is inaccurate. The pipeline will run. 
