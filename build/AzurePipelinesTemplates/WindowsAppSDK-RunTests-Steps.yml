@@ -34,7 +34,6 @@ steps:
     # So we need to move the contents up one level.
     - powershell: |
         Move-Item -Path $(Build.SourcesDirectory)\BuildOutput\BuildOutput\${{ parameters.buildConfiguration }} -Destination $(Build.SourcesDirectory)\BuildOutput
-
       displayName: 'Move test binaries up one folder'
 
   - script: |
