@@ -11,6 +11,7 @@ parameters:
   type: boolean
   default: false
 
+jobs:
 - job: ${{ parameters.jobName }}
   strategy:
     # Debug/Release buildConfiguration below refers to the build of the tests/apps. The OS image bits are always Release build.
