@@ -14,18 +14,27 @@ steps:
       filePath: 'TestAll.ps1'
       arguments: -AzureBuildStep "DisplayInfo" -AzurePipelineBuild
 
-  - ${{ if eq(parameters.DownloadTestsArtifact, 'true') }}:
+  # - ${{ if eq(parameters.DownloadTestsArtifact, 'true') }}:
     # Download the test payload.
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        artifactName: Tests${{ parameters.ArtifactNameSuffix }}
-        downloadPath: '$(Build.SourcesDirectory)\BuildOutput'
-        itemPattern: '**/${{ parameters.buildConfiguration }}/${{ parameters.buildPlatform }}/**'
+    # - task: DownloadBuildArtifacts@0
+      # inputs:
+        # artifactName: Tests
+        # downloadPath: '$(Build.SourcesDirectory)\BuildOutput'
+        # itemPattern: '**/${{ parameters.buildConfiguration }}/${{ parameters.buildPlatform }}/**'
 
+  # Download the BuildOutput from the Build stage(s).
+  # We only bring down the relevant content for this build config (Debug/Release) & platform, to save some space and time.
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download: BuildOutput'
+    inputs:
+      artifactName: 'BuildOutput'
+      downloadPath: $(testPayloadDir)
+      
     # When we download the test payload artifact, it extracts the contents under a folder with the artifact name, and there is no way to disable this.
     # So we need to move the contents up one level.
     - powershell: |
-        Move-Item -Path $(Build.SourcesDirectory)\BuildOutput\Tests${{ parameters.ArtifactNameSuffix }}\${{ parameters.buildConfiguration }} -Destination $(Build.SourcesDirectory)\BuildOutput
+        Move-Item -Path $(Build.SourcesDirectory)\BuildOutput\BuildOutput\${{ parameters.buildConfiguration }} -Destination $(Build.SourcesDirectory)\BuildOutput
+
       displayName: 'Move test binaries up one folder'
 
   - script: |
@@ -69,7 +78,7 @@ steps:
     condition: succeededOrFailed()
     inputs:
       PathtoPublish: $(testOutputArtifactDir)
-      artifactName: TestResults${{ parameters.ArtifactNameSuffix }}
+      artifactName: TestResults
 
   - task: PublishTestResults@2
     displayName: 'Publish test results'

@@ -10,9 +10,6 @@ parameters:
 - name: isArm64Platfrom
   type: boolean
   default: false
-- name: isSelfContained
-  type: boolean
-  default: false
 
 jobs:
 - job: ${{ parameters.jobName }}
@@ -114,7 +111,6 @@ jobs:
   steps:
     - template: WindowsAppSDK-RunTests-Steps.yml
       parameters:
-        # ArtifactNameSuffix: $(ArtifactNameSuffix)
         buildPlatform: $(buildPlatform)
         buildConfiguration: $(buildConfiguration)
         testLocale: $(testLocale)
