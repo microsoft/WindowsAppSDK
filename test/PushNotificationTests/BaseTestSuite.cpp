@@ -124,7 +124,7 @@ void BaseTestSuite::ChannelRequestCheckExpirationTime()
 
         auto channel{ channelOperation.GetResults().Channel() };
         auto expirationTime{ channel.ExpirationTime() };
-        auto expiryBound{ winrt::clock::now() + days(30) + hours(1) };
+        auto expiryBound{ winrt::clock::now() + days(30) + minutes(1) };
 
         // Need to add 30 days to match expiration time.
         VERIFY_IS_LESS_THAN(expirationTime, expiryBound);
