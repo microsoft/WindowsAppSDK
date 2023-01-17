@@ -1,0 +1,85 @@
+parameters:
+  # ArtifactNameSuffix: ''
+  buildPlatform: ''
+  buildConfiguration: ''
+  ImageName: ''
+  DownloadTestsArtifact: 'true'
+  TaefSelect: '*'
+  BinaryCompatSwitch: ''
+  testLocale: ''
+steps:
+  - task: PowerShell@2
+    displayName: 'Display OS build/version info'
+    inputs:
+      filePath: 'TestAll.ps1'
+      arguments: -AzureBuildStep "DisplayInfo" -AzurePipelineBuild
+
+  - ${{ if eq(parameters.DownloadTestsArtifact, 'true') }}:
+    # Download the test payload.
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        artifactName: Tests${{ parameters.ArtifactNameSuffix }}
+        downloadPath: '$(Build.SourcesDirectory)\BuildOutput'
+        itemPattern: '**/${{ parameters.buildConfiguration }}/${{ parameters.buildPlatform }}/**'
+
+    # When we download the test payload artifact, it extracts the contents under a folder with the artifact name, and there is no way to disable this.
+    # So we need to move the contents up one level.
+    - powershell: |
+        Move-Item -Path $(Build.SourcesDirectory)\BuildOutput\Tests${{ parameters.ArtifactNameSuffix }}\${{ parameters.buildConfiguration }} -Destination $(Build.SourcesDirectory)\BuildOutput
+      displayName: 'Move test binaries up one folder'
+
+  - script: |
+      dir /s $(testPayloadDir)
+    displayName: 'DIAG: dir testPayloadDir'
+
+  - task: VisualStudioTestPlatformInstaller@1
+    inputs:
+      versionSelector: latestStable
+
+  - task: PowerShell@2
+    displayName: Add test locale to User Language List
+    inputs:
+      targetType: 'inline'
+      script: |
+            $langToAdd = "${{ parameters.testLocale }}"
+            
+            Write-Host "Adding $langToAdd to user language list"
+            $langList = Get-WinUserLanguageList
+            $langList.Insert(0, $langToAdd)
+            Set-WinUserLanguageList -LanguageList $langList -Force
+
+            Write-Host "Get-WinUserLanguageList:" 
+            Get-WinUserLanguageList
+
+  - task: PowerShell@2
+    displayName: 'Run TAEF Tests'
+    inputs:
+      filePath: 'TestAll.ps1'
+      arguments: >
+        -AzureBuildStep "RunTests" 
+        -Platform "${{ parameters.buildPlatform }}" 
+        -Configuration "${{ parameters.buildConfiguration }}"
+        -ImageName "${{ parameters.ImageName }}"
+        -TaefSelect "${{ parameters.TaefSelect }}"
+        -AzurePipelineBuild
+        ${{ parameters.BinaryCompatSwitch }}
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Build Artifacts'
+    condition: succeededOrFailed()
+    inputs:
+      PathtoPublish: $(testOutputArtifactDir)
+      artifactName: TestResults${{ parameters.ArtifactNameSuffix }}
+
+  - task: PublishTestResults@2
+    displayName: 'Publish test results'
+    condition: always()
+    inputs:
+      testResultsFormat: xUnit
+      testResultsFiles: testResults-*.xml
+      searchFolder: '$(testPayloadDir)'
+      mergeTestResults: true
+      failTaskOnFailedTests: true 
+      testRunTitle: '$(Agent.JobName)'
+      buildPlatform: ${{ parameters.buildPlatform }}
+      buildConfiguration: ${{ parameters.buildConfiguration }}

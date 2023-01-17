@@ -263,6 +263,20 @@ jobs:
       - BuildAndTestMRT
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
 
+jobs:
+  # Arm64 uses a different VM type than x64, thus requiring them to be in different
+  # pools, hence, we spilt the two scenarios into separate jobs.
+  - template: AzurePipelinesTemplates\WindowsAppSDK-RunTestInPipeline-Job.yml
+    parameters:
+      jobName: PipelineTestsX64
+      isArm64Platfrom: false
+      isSelfContained: false
+  - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
+    parameters:
+      jobName: PipelineTestsArm64
+      isArm64Platfrom: true
+      isSelfContained: false
+
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
   timeoutInMinutes: 120      

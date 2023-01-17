@@ -1,0 +1,121 @@
+# This runs the integration tests directly in the pipeline on the images hosted by the 'WinAppSDK-Test-Pool'.
+# This pool is a 1ES Hosted Pool with custom images, which lets us run tests on builds beyond what is
+# supported by Helix or the Azure DevOps Microsoft hosted agents. In case of arm64, we use the 
+# 'WinAppSDK-Test-Pool-Arm64' pool instead, and use parameter isArm64Platfrom to drive pool selection.
+
+parameters:
+- name: jobName
+  type: string
+  default: PipelineTests
+- name: isArm64Platfrom
+  type: boolean
+  default: false
+- name: isSelfContained
+  type: boolean
+  default: false
+
+jobs:
+- job: ${{ parameters.jobName }}
+  strategy:
+    # Debug/Release buildConfiguration below refers to the build of the tests/apps. The OS image bits are always Release build.
+    matrix:
+      # The test matrix for x64 is currently larger; this is where we exercise most variations.
+      ${{ if not( parameters.isArm64Platfrom ) }}:
+        RS5_x86chk:
+          imageName: Windows.10.Enterprise.RS5
+          buildPlatform: x86
+          buildConfiguration: debug
+          testLocale: en-US
+        19H2_de-DE_x64chk:
+          imageName: Windows.10.Enterprise.19H2.de-DE
+          buildPlatform: x86
+          buildConfiguration: debug
+          testLocale: de-DE
+        20H2_x64chk:
+          imageName: Windows.10.Enterprise.20H2
+          buildPlatform: x64
+          buildConfiguration: debug
+          testLocale: en-US
+        20H2_fr-FR_x64fre:
+          imageName: Windows.10.Enterprise.20H2.fr-FR
+          buildPlatform: x64
+          buildConfiguration: release
+          testLocale: fr-FR
+        20H2_zh-CN_x86fre:
+          imageName: Windows.10.Enterprise.20H2.zh-CN
+          buildPlatform: x86
+          buildConfiguration: release
+          testLocale: zh-CN
+        20H2_ja-JP_x64chk:
+          imageName: Windows.10.Enterprise.20H2.ja-JP
+          buildPlatform: x64
+          buildConfiguration: debug
+          testLocale: ja-JP
+        21H1_x64fre:
+          imageName: Windows.10.Enterprise.21h1
+          buildPlatform: x64
+          buildConfiguration: release
+          testLocale: en-US
+        21H2_MS_x64fre:
+          imageName: Windows.11.Enterprise.MultiSession.21h2
+          buildPlatform: x64
+          buildConfiguration: release
+          testLocale: en-US
+        22H2_x86fre:
+          imageName: Windows.10.Enterprise.22h2
+          buildPlatform: x86
+          buildConfiguration: release
+          testLocale: en-US
+        co_refresh_x64fre:
+          imageName: co_refresh
+          buildPlatform: x64
+          buildConfiguration: release
+          testLocale: en-US
+        rs_prerelease_x64fre:
+          imageName: rs_prerelease
+          buildPlatform: x64
+          buildConfiguration: release
+          testLocale: en-US
+        Server22_DC_x64fre:
+          imageName: Windows.Server.2022.DataCenter.WestUS3
+          buildPlatform: x64
+          buildConfiguration: release
+          testLocale: en-US
+      # The arm64 test matrix starts here.
+      ${{ if parameters.isArm64Platfrom }}:
+        Win11_Professional_arm64fre:
+          imageName: Windows.11.Professional.Arm64
+          buildPlatform: arm64
+          buildConfiguration: release
+          testLocale: en-US
+        Win11_Enterprise_arm64fre:
+          imageName: Windows.11.Enterprise.arm64
+          buildPlatform: arm64
+          buildConfiguration: release
+          testLocale: en-US
+        Server22_DC_arm64chk:
+          imageName: Windows.11.Server2022.DataCenter.arm64
+          buildPlatform: arm64
+          buildConfiguration: debug
+          testLocale: en-US
+  pool:
+    # arm64 and amd64 use different pools because their VM types are different.
+    ${{ if not( parameters.isArm64Platfrom ) }}:
+      name: 'WinAppSDK-Test-Pool'
+      demands: ImageOverride -equals $(imageName)
+    ${{ if parameters.isArm64Platfrom }}:
+      name: 'WinAppSDK-Test-Pool-Arm64'
+      demands: ImageOverride -equals $(imageName)
+  timeoutInMinutes: 60
+  variables:
+    testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
+    testPayloadDir: $(testPayloadArtifactDir)\Tests
+    testOutputArtifactDir: $(Build.SourcesDirectory)\PipelineTestOutput
+  steps:
+    - template: WindowsAppSDK-RunTests-Steps.yml
+      parameters:
+        # ArtifactNameSuffix: $(ArtifactNameSuffix)
+        buildPlatform: $(buildPlatform)
+        buildConfiguration: $(buildConfiguration)
+        testLocale: $(testLocale)
+        ImageName: $(imageName)
