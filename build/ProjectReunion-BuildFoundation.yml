@@ -267,7 +267,7 @@ jobs:
   # Arm64 uses a different VM type than x64, thus requiring them to be in different
   # pools, hence, we spilt the two scenarios into separate jobs.
   steps:
-    - template: AzurePipelinesTemplates\WindowsAppSDK-RunTestInPipeline-Job.yml
+    - template: AzurePipelinesTemplates\WindowsAppSDK-RunTestsInPipeline-Job.yml
       parameters:
         jobName: PipelineTestsX64
         isArm64Platfrom: false
