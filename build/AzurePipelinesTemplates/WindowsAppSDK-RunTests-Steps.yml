@@ -1,9 +1,7 @@
 parameters:
-  # ArtifactNameSuffix: ''
   buildPlatform: ''
   buildConfiguration: ''
   ImageName: ''
-  DownloadTestsArtifact: 'true'
   TaefSelect: '*'
   BinaryCompatSwitch: ''
   testLocale: ''
@@ -14,16 +12,16 @@ steps:
     displayName: 'Download: BuildOutput'
     inputs:
       artifactName: 'BuildOutput'
-      downloadPath: $(testPayloadDir)
+      downloadPath: $(Build.SourcesDirectory)\BuildOutput
       
   # When we download the test payload artifact, it extracts the contents under a folder with the artifact name, and there is no way to disable this.
   # So we need to move the contents up one level.
   - powershell: |
-      Move-Item -Path $(Build.SourcesDirectory)\BuildOutput\Tests${{ parameters.ArtifactNameSuffix }}\${{ parameters.buildConfiguration }} -Destination $(Build.SourcesDirectory)\BuildOutput
-    displayName: 'Move test binaries up one folder'
+      Move-Item -Path $(Build.SourcesDirectory)\BuildOutput\BuildOutput\${{ parameters.buildConfiguration }}\${{ parameters.buildPlatform }} -Destination $(Build.SourcesDirectory)\BuildOutput
+    displayName: 'Move test binaries to BuildOutput folder'
 
   - script: |
-      dir /s $(testPayloadDir)
+      dir /s $(Build.SourcesDirectory)\BuildOutput
     displayName: 'DIAG: dir testPayloadDir'
 
   # - task: PowerShell@2
@@ -77,7 +75,7 @@ steps:
     inputs:
       testResultsFormat: xUnit
       testResultsFiles: testResults-*.xml
-      searchFolder: '$(testPayloadDir)'
+      searchFolder: '$(Build.SourcesDirectory)\BuildOutput'
       mergeTestResults: true
       failTaskOnFailedTests: true 
       testRunTitle: '$(Agent.JobName)'

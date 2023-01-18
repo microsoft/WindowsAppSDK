@@ -111,7 +111,6 @@ jobs:
   timeoutInMinutes: 60
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
-    testPayloadDir: $(testPayloadArtifactDir)\Tests
     testOutputArtifactDir: $(Build.SourcesDirectory)\PipelineTestOutput
   steps:
     - template: WindowsAppSDK-RunTests-Steps.yml
