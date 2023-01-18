@@ -269,6 +269,9 @@ jobs:
   parameters:
     jobName: PipelineTestsX64
     isArm64Platfrom: false
+    dependsOn:
+      - Build
+      - BuildAndTestMRT
 
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
