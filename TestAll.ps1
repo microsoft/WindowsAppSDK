@@ -1,18 +1,16 @@
 #Requires -RunAsAdministrator
 
 Param(
-    [string]$WindowsAppSDKPackageVersion = "",
+    [string]$OutputFolder = "",
     [string]$AzureBuildStep = "all",
     [string]$Platform = "x64",
-    [string]$Configuration = "release,debug",
+    [string]$Configuration = "release",
     [string]$ImageName = "",
     [Alias('Select')]
     [string]$TaefSelect = "*",
     [Alias('Name')]
     [string]$TaefName = "*",
     [switch]$AzurePipelineBuild = $false,
-    [switch]$SelfContained = $false,
-    [switch]$BinaryCompat = $false,
     [switch]$Help = $false
 )
 
@@ -29,11 +27,6 @@ Description:
       Builds the WindowsAppSDK aggregate NuGet package.
 
 Switches:
-
-  -WindowsAppSDKPackageVersion <version>
-      Specifies which WindowsAppSDK package to test.
-      This defaults to the last package built by the BuildAll script.
-      Example: -WindowsAppSDKPackageVersion "1.0.20211201-1312-stable-dev"
 
   -Platform <platform>
       Only test the selected platform.
@@ -52,17 +45,6 @@ Switches:
       Alternative to "-Select "@Name='<testname>'".
       Example: -Name "WindowsAppSDK.Test.AppTests.TestClass1.Test1"
 
-  -SelfContained
-      Run the tests with test apps built in Self Contained mode.
-
-  -BinaryCompat
-      Run the tests with test apps built in the version specified in WindowsAppSDKPackageVersion 
-      but installs and runs against the WindowsAppSDK package built from BuildAll.ps1
-      Currently only works if WindowsAppSDKPackageVersion is 1.0.0
-
-  -AzurePipelineBuild
-      Used by Azure to specify this as an Azure build.
-
   -AzureBuildStep <step>
       Used by Azure to selectively run parts of the script in order to account for yaml-specific actions like signing.
       Example: -AzureBuildStep "CopyFilesFromTransportPackages"
@@ -78,49 +60,11 @@ Switches:
 }
 $lastexitcode = 0
 
-$env:Build_SourcesDirectory = (Split-Path $MyInvocation.MyCommand.Path)
-
-$env:AzurePipelineBuild = $AzurePipelineBuild;
-
-. build\Scripts\BLD-LocalDevInfoManager.ps1
-if (-Not [string]::IsNullOrWhiteSpace($WindowsAppSDKPackageVersion)) {
-    # If version is passed in, overwrite version from last build
-    $global:Build_Info.WindowsAppSDKPackageVersion = $WindowsAppSDKPackageVersion
-}
-if (($AzureBuildStep -eq "all") -And ([string]::IsNullOrWhiteSpace($global:Build_Info.WindowsAppSDKPackageVersion))) {
-    Write-Host "`nWindowsAppSDKPackageVersion is not set.  Either set it with -WindowsAppSDKPackageVersion or run BuildAll script first." -ForegroundColor RED
-    Exit
-}
-
-. build\Scripts\BLD-WindowsAppSdkVersions.ps1
-
-$env:Build_Platform = $Platform.ToLower()
-
-$env:Build_Configuration = $Configuration.ToLower()
-
 $ErrorActionPreference = "Stop"
 
 if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildTests")) 
 {
-    # The versions in $WinAppSDKTestNupkgVersionMap are produced in the pipeline:
-    # https://dev.azure.com/microsoft/ProjectReunion/_build?definitionId=78948
-    # Please see build\WindowsAppSDK-BuildBinaryCompatTest.yml for more details
-    $WinAppSDKTestNupkgVersionMap = @{ 
-        "1.0.0" = "1.0.0-20220202.9-CI"; 
-        "1.1.0" = "1.1.0-220803.4"
-    }
-    # NugetRestoreTests restore WinAppSDKTest Nupkg which contains the BuildOutput from the BuildTests yaml step 
-    # of the version found in the $WinAppSDKTestNupkgVersionMap's key
-    if ($BinaryCompat -and $AzurePipelineBuild) {
-        . build\scripts\BLD-NugetRestoreTests.ps1 -NugetVersion $WinAppSDKTestNupkgVersionMap[$WindowsAppSDKPackageVersion]
-    } 
-    else {
-        . build\scripts\BLD-BuildTests.ps1 -SelfContained $SelfContained -AzurePipelineBuild $AzurePipelineBuild
-    }
-}
-
-if (($AzureBuildStep -eq "all" -and $BinaryCompat) -Or ($AzureBuildStep -eq "MotifyTestsToBinaryCompat")) {
-    . build\scripts\BLD-MotifyTestsToBinaryCompat.ps1
+    .\BuildAll.ps1 -Platform $Platform -Configuration $Configuration
 }
 
 if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "DisplayInfo")) {
@@ -149,8 +93,16 @@ if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "DisplayInfo")) {
     Get-WinSystemLocale
 }
 
+$PlatConfig = Join-Path $Platform $Configuration
+$OutputFolderPath = Join-Path $OutputFolder $PlatConfig
+$tePath = (Join-Path $OutputFolderPath "PushNotificationTests\te.exe")
 if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "RunTests")) {
-    . build\scripts\BLD-RunTests.ps1 -TaefSelect $TaefSelect -TaefName $TaefName -BinaryCompat $BinaryCompat
+    .\DevCheck.ps1 -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService
+    .\DevCheck.ps1 -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService
+    
+    $dllFile = (Join-Path $OutputFolder "Release\x64\PushNotificationTests\PushNotificationTests.dll")
+    Write-Host "$tePath $($dllFile.FullName)"
+    & $tePath $dllFile
 }
 
 $TotalTime = (Get-Date)-$StartTime

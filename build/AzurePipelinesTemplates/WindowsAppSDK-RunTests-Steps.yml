@@ -13,15 +13,15 @@ steps:
     inputs:
       artifactName: 'BuildOutput'
       downloadPath: $(Build.SourcesDirectory)\BuildOutput
-      
+
   # When we download the test payload artifact, it extracts the contents under a folder with the artifact name, and there is no way to disable this.
   # So we need to move the contents up one level.
-  - powershell: |
-      Move-Item -Path $(Build.SourcesDirectory)\BuildOutput\BuildOutput\${{ parameters.buildConfiguration }}\${{ parameters.buildPlatform }} -Destination $(Build.SourcesDirectory)\BuildOutput
-    displayName: 'Move test binaries to BuildOutput folder'
+  #- powershell: |
+     # Move-Item -Path $(Build.SourcesDirectory)\BuildOutput\BuildOutput\${{ parameters.buildConfiguration }}\${{ parameters.buildPlatform }} -Destination $(Build.SourcesDirectory)\BuildOutput
+    # displayName: 'Move test binaries to BuildOutput folder'
 
   - script: |
-      dir /s $(Build.SourcesDirectory)\BuildOutput
+      dir /s $(Build.SourcesDirectory)\BuildOutput\BuildOutput
     displayName: 'DIAG: dir testPayloadDir'
 
   # - task: PowerShell@2
@@ -54,13 +54,12 @@ steps:
     inputs:
       filePath: 'TestAll.ps1'
       arguments: >
+        -OutputFolder "$(Build.SourcesDirectory)\BuildOutput\BuildOutput"
         -AzureBuildStep "RunTests" 
         -Platform "${{ parameters.buildPlatform }}" 
         -Configuration "${{ parameters.buildConfiguration }}"
         -ImageName "${{ parameters.ImageName }}"
         -TaefSelect "${{ parameters.TaefSelect }}"
-        -AzurePipelineBuild
-        ${{ parameters.BinaryCompatSwitch }}
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Build Artifacts'
