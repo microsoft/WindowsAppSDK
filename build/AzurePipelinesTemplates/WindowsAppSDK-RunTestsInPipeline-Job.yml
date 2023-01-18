@@ -4,15 +4,13 @@
 # 'WinAppSDK-Test-Pool-Arm64' pool instead, and use parameter isArm64Platfrom to drive pool selection.
 
 parameters:
+  dependsOn: ''
 - name: jobName
   type: string
   default: PipelineTests
 - name: isArm64Platfrom
   type: boolean
   default: false
-- name: dependsOn
-  type: [string]
-  default: []
   
 jobs:
 - job: ${{ parameters.jobName }}
