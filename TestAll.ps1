@@ -91,9 +91,9 @@ if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "DisplayInfo")) {
     Get-WinSystemLocale
 }
 
-$PlatConfig = Join-Path $Platform $Configuration
-$OutputFolderPath = Join-Path $OutputFolder $PlatConfig
-$tePath = (Join-Path $OutputFolderPath "PushNotificationTests\te.exe")
+$ConfigPlat = Join-Path $Configuration $Platform
+$OutputFolderPath = Join-Path $OutputFolder $ConfigPlat
+$tePath = (Join-Path $OutputFolderPath "PushNotificationTests\TE.exe")
 if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "RunTests")) {
     .\DevCheck.ps1 -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService
     .\DevCheck.ps1 -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService
