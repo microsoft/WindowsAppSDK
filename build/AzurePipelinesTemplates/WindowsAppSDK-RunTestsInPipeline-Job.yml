@@ -10,9 +10,13 @@ parameters:
 - name: isArm64Platfrom
   type: boolean
   default: false
+- name: dependsOn
+  type: [ string ]
+  default: []
 
 jobs:
 - job: ${{ parameters.jobName }}
+  dependsOn: ${{ parameters.dependsOn }}
   strategy:
     # Debug/Release buildConfiguration below refers to the build of the tests/apps. The OS image bits are always Release build.
     matrix:
