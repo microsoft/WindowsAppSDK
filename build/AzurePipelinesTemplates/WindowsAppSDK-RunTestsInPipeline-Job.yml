@@ -11,9 +11,9 @@ parameters:
   type: boolean
   default: false
 - name: dependsOn
-  type: [ string ]
+  type: [string]
   default: []
-
+  
 jobs:
 - job: ${{ parameters.jobName }}
   dependsOn: ${{ parameters.dependsOn }}
