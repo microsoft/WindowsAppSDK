@@ -62,10 +62,8 @@ $lastexitcode = 0
 
 $ErrorActionPreference = "Stop"
 
-if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildTests")) 
-{
-    .\BuildAll.ps1 -Platform $Platform -Configuration $Configuration
-}
+.\BuildAll.ps1 -Platform $Platform -Configuration $Configuration
+
 
 if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "DisplayInfo")) {
     # Display OS build/version info
