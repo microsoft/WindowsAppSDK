@@ -16,12 +16,6 @@ steps:
       artifactName: 'BuildOutput'
       downloadPath: $(testPayloadDir)
       
-  - task: PowerShell@2
-    displayName: 'Display OS build/version info'
-    inputs:
-      filePath: 'TestAll.ps1'
-      arguments: -AzureBuildStep "DisplayInfo" -AzurePipelineBuild
-
   # When we download the test payload artifact, it extracts the contents under a folder with the artifact name, and there is no way to disable this.
   # So we need to move the contents up one level.
   - powershell: |
@@ -32,6 +26,12 @@ steps:
       dir /s $(testPayloadDir)
     displayName: 'DIAG: dir testPayloadDir'
 
+  - task: PowerShell@2
+    displayName: 'Display OS build/version info'
+    inputs:
+      filePath: 'TestAll.ps1'
+      arguments: -AzureBuildStep "DisplayInfo" -AzurePipelineBuild
+      
   - task: VisualStudioTestPlatformInstaller@1
     inputs:
       versionSelector: latestStable
