@@ -8,20 +8,6 @@ parameters:
   BinaryCompatSwitch: ''
   testLocale: ''
 steps:
-  - task: PowerShell@2
-    displayName: 'Display OS build/version info'
-    inputs:
-      filePath: 'TestAll.ps1'
-      arguments: -AzureBuildStep "DisplayInfo" -AzurePipelineBuild
-
-  # - ${{ if eq(parameters.DownloadTestsArtifact, 'true') }}:
-    # Download the test payload.
-    # - task: DownloadBuildArtifacts@0
-      # inputs:
-        # artifactName: Tests
-        # downloadPath: '$(Build.SourcesDirectory)\BuildOutput'
-        # itemPattern: '**/${{ parameters.buildConfiguration }}/${{ parameters.buildPlatform }}/**'
-
   # Download the BuildOutput from the Build stage(s).
   # We only bring down the relevant content for this build config (Debug/Release) & platform, to save some space and time.
   - task: DownloadBuildArtifacts@0
@@ -30,6 +16,12 @@ steps:
       artifactName: 'BuildOutput'
       downloadPath: $(testPayloadDir)
       
+  - task: PowerShell@2
+    displayName: 'Display OS build/version info'
+    inputs:
+      filePath: 'TestAll.ps1'
+      arguments: -AzureBuildStep "DisplayInfo" -AzurePipelineBuild
+
   # When we download the test payload artifact, it extracts the contents under a folder with the artifact name, and there is no way to disable this.
   # So we need to move the contents up one level.
   - powershell: |
