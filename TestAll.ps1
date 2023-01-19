@@ -62,14 +62,6 @@ $lastexitcode = 0
 
 $ErrorActionPreference = "Stop"
 
-# Get VSWhere before calling BuildAll.ps1
-.\DevCheck.ps1 -NoInteractive -Verbose -CheckVisualStudio
-.\BuildAll.ps1 -Platform $Platform -Configuration $Configuration
-
-# After .sln restore, we can install the TAEF service
-.\DevCheck.ps1 -NoInteractive -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -CheckTAEFService 
-.\DevCheck.ps1 -NoInteractive -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -CheckTAEFService
-
 if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "DisplayInfo")) {
     # Display OS build/version info
     Get-Item -Path 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion'
