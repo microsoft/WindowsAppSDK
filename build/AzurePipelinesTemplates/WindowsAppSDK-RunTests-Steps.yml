@@ -18,7 +18,14 @@ steps:
   - task: DownloadBuildArtifacts@0
     displayName: 'Download: TAEF package'
     inputs:
-      artifactName: 'Packages'
+      artifactName: 'TaefPackage'
+      downloadPath: $(Build.SourcesDirectory)\BuildOutput
+
+    # We only bring down the relevant content for this build config (Debug/Release) & platform, to save some space and time.
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download: Test cert'
+    inputs:
+      artifactName: 'TestCert'
       downloadPath: $(Build.SourcesDirectory)\BuildOutput
 
   # When we download the test payload artifact, it extracts the contents under a folder with the artifact name, and there is no way to disable this.
@@ -32,8 +39,12 @@ steps:
     displayName: 'DIAG: dir testPayloadDir'
 
   - script: |
-      dir /s $(Build.SourcesDirectory)\BuildOutput\Packages
-    displayName: 'DIAG: dir testPayloadDir'
+      dir /s $(Build.SourcesDirectory)\BuildOutput\TaefPackage
+    displayName: 'DIAG: dir taefPackage'
+
+  - script: |
+      dir /s $(Build.SourcesDirectory)\BuildOutput\TestCert
+    displayName: 'DIAG: dir TestCert'
 
   # - task: PowerShell@2
     # displayName: 'Display OS build/version info'
@@ -59,7 +70,7 @@ steps:
 
             Write-Host "Get-WinUserLanguageList:" 
             Get-WinUserLanguageList
-            
+
   - task: PowerShell@2
     displayName: 'Run TAEF Tests'
     inputs:

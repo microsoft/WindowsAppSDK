@@ -148,6 +148,18 @@ jobs:
       PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
       artifactName: 'BuildOutput'
 
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: TAEF package'
+    inputs:
+      PathtoPublish: '$(build.SourcesDirectory)\packages\Microsoft.Taef.10.58.210222006-develop'
+      artifactName: 'TaefPackage'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Cert'
+    inputs:
+      PathtoPublish: '$(build.SourcesDirectory)\.user'
+      artifactName: 'TestCert'
+
 - job: BuildAnyCPU
   # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
   # Can be expanded to add any other binary as needed
