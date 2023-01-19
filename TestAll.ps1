@@ -62,6 +62,10 @@ $lastexitcode = 0
 
 $ErrorActionPreference = "Stop"
 
+# Get VSWhere before calling BuildAll.ps1
+.\DevCheck.ps1 -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService -CheckVisualStudio
+.\DevCheck.ps1 -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService -CheckVisualStudio
+
 .\BuildAll.ps1 -Platform $Platform -Configuration $Configuration
 
 if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "DisplayInfo")) {
@@ -93,11 +97,7 @@ if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "DisplayInfo")) {
 $ConfigPlat = Join-Path $Configuration $Platform
 $OutputFolderPath = Join-Path $OutputFolder $ConfigPlat
 $tePath = (Join-Path $OutputFolderPath "PushNotificationTests\TE.exe")
-if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "RunTests")) {
-    .\DevCheck.ps1 -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService -CheckVisualStudio
-    .\DevCheck.ps1 -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService -CheckVisualStudio
-    
-
+if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "RunTests")) {   
     $dllFile = (Join-Path $OutputFolder "Release\x86\PushNotificationTests\PushNotificationTests.dll")
     Write-Host "$tePath $dllFile"
     & $tePath $dllFile
