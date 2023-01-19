@@ -64,7 +64,6 @@ $ErrorActionPreference = "Stop"
 
 .\BuildAll.ps1 -Platform $Platform -Configuration $Configuration
 
-
 if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "DisplayInfo")) {
     # Display OS build/version info
     Get-Item -Path 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion'
@@ -95,8 +94,8 @@ $ConfigPlat = Join-Path $Configuration $Platform
 $OutputFolderPath = Join-Path $OutputFolder $ConfigPlat
 $tePath = (Join-Path $OutputFolderPath "PushNotificationTests\TE.exe")
 if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "RunTests")) {
-    .\DevCheck.ps1 -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService
-    .\DevCheck.ps1 -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService
+    .\DevCheck.ps1 -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService -CheckVisualStudio
+    .\DevCheck.ps1 -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService -CheckVisualStudio
     
 
     $dllFile = (Join-Path $OutputFolder "Release\x86\PushNotificationTests\PushNotificationTests.dll")
