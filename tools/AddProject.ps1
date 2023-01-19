@@ -194,13 +194,13 @@ function Get-UpdatedContent
         [string]$content
     )
 
-    $featurenamespace = $Feature -Replace "[^A-Za-z0-9_]", ":"
+    $featurenamespace = $Feature -Replace "[^A-Za-z0-9_]", "::"
     $featuredotnamespace = $Feature -Replace "[^A-Za-z0-9_]", "."
     $featuresymbol = $Feature -Replace "[^A-Za-z0-9_]", "_"
     $namenofeature = $Name.Replace($Feature, "")
 
     $ext = [System.IO.Path]::GetExtension($filename)
-    if ($ext -eq '.h')
+    if (($ext -eq '.h') -Or ($ext -eq '.cpp'))
     {
         if ($Name -match "^[AEIOUaeiou]")
         {
