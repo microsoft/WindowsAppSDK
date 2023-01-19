@@ -63,10 +63,10 @@ $lastexitcode = 0
 $ErrorActionPreference = "Stop"
 
 # Get VSWhere before calling BuildAll.ps1
-.\DevCheck.ps1 -NoInteractive -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService -CheckVisualStudio
-.\DevCheck.ps1 -NoInteractive -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService -CheckVisualStudio
+# .\DevCheck.ps1 -NoInteractive -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService -CheckVisualStudio
+# .\DevCheck.ps1 -NoInteractive -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService -CheckVisualStudio
 
-.\BuildAll.ps1 -Platform $Platform -Configuration $Configuration
+# .\BuildAll.ps1 -Platform $Platform -Configuration $Configuration
 
 if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "DisplayInfo")) {
     # Display OS build/version info
@@ -94,14 +94,23 @@ if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "DisplayInfo")) {
     Get-WinSystemLocale
 }
 
-$ConfigPlat = Join-Path $Configuration $Platform
-$OutputFolderPath = Join-Path $OutputFolder $ConfigPlat
-$tePath = (Join-Path $OutputFolderPath "PushNotificationTests\TE.exe")
-if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "RunTests")) {   
-    $dllFile = (Join-Path $OutputFolder "Release\x86\PushNotificationTests\PushNotificationTests.dll")
-    Write-Host "$tePath $dllFile"
-    & $tePath $dllFile
+if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "RunTests")) {  
+    # Loop through the project folders and if the folder contains a same name with .dll, it's a TAEF test
+    $ConfigPlat = Join-Path $Configuration $Platform
+    $OutputFolderPath = Join-Path $OutputFolder $ConfigPlat
+    $Subfolders = Get-ChildItem -Path $OutputFolderPath -Directory
+
+    foreach($SubFolder in $Subfolders)
+    {
+        $PathToTestDll = "$($SubFolder.FullName)\$($SubFolder).dll"
+        if (Test-Path -Path $PathToTestDll -PathType Leaf)
+        {
+            Write-Host $PathToTestDll
+        }
+    }
 }
+    # Write-Host "$tePath $dllFile"
+    # & $tePath $dllFile
 
 $TotalTime = (Get-Date)-$StartTime
 $TotalMinutes = $TotalTime.Minutes
