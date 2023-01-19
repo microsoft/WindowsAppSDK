@@ -63,8 +63,8 @@ $lastexitcode = 0
 $ErrorActionPreference = "Stop"
 
 # Get VSWhere before calling BuildAll.ps1
-.\DevCheck.ps1 -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService -CheckVisualStudio
-.\DevCheck.ps1 -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService -CheckVisualStudio
+.\DevCheck.ps1 -NoInteractive -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService -CheckVisualStudio
+.\DevCheck.ps1 -NoInteractive -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckTAEFService -CheckVisualStudio
 
 .\BuildAll.ps1 -Platform $Platform -Configuration $Configuration
 
