@@ -199,6 +199,12 @@ function Get-UpdatedContent
     $featuresymbol = $Feature -Replace "[^A-Za-z0-9_]", "_"
     $namenofeature = $Name.Replace($Feature, "")
 
+    $featureAbbreviation = Get-Abbreviation $Feature
+    $nameAbbreviation = Get-Abbreviation $Name
+
+    $namenofeature = $Name.Replace($Feature, "")
+    $namenofeatureAbbreviation = Get-Abbreviation $namenofeature
+
     $ext = [System.IO.Path]::GetExtension($filename)
     if ($ext -eq '.h')
     {
@@ -215,6 +221,9 @@ function Get-UpdatedContent
             $content = $content.Replace($before, $after)
         }
 
+        $content = $content.Replace('TokuchoAbbreviation', $featureAbbreviation)
+        $content = $content.Replace('TOKUCHOABBREVIATION', $featureAbbreviation.ToUpperInvariant())
+        $content = $content.Replace('tokuchoabbreviation', $featureAbbreviation.ToLowerInvariant())
         $content = $content.Replace("TokuchoNamespace", "$($featurenamespace)")
         $content = $content.Replace("TOKUCHONAMESPACE", "$($featurenamespace)".ToUpperInvariant())
         $content = $content.Replace("tokuchonamespace", "$($featurenamespace)".ToLowerInvariant())
@@ -225,6 +234,12 @@ function Get-UpdatedContent
         $CONTENT = $CONTENT.REPLACE("TOKUCHOSYMBOL", "$($featuresymbol)".ToUpperInvariant())
         $CONTENT = $CONTENT.REPLACE("tokuchosymbol", "$($featuresymbol)".ToLowerInvariant())
 
+        $content = $content.Replace('PurojekutoTenpuret', $nameAbbreviation)
+        $content = $content.Replace('PUROJEKUTOTENPURET', $nameAbbreviation.ToUpperInvariant())
+        $content = $content.Replace('purojekutotenpuret', $nameAbbreviation.ToLowerInvariant())
+        $content = $content.Replace('PurojekutoTenpuretNoFeaturePrefixAbbreviation', $namenofeatureAbbreviation)
+        $content = $content.Replace('PUROJEKUTOTENPURETNOFEATUREPREFIXABBREVIATION', $namenofeatureAbbreviation.ToUpperInvariant())
+        $content = $content.Replace('purojekutotenpuretnofeatureprefixabbreviation', $namenofeatureAbbreviation.ToLowerInvariant())
         $content = $content.Replace("PurojekutoTenpuretNoFeaturePrefix", $namenofeature)
         $content = $content.Replace("PUROJEKUTOTENPURETNOFEATUREPREFIX", $namenofeature.ToUpperInvariant())
         $content = $content.Replace("purojekutotenpuretnofeatureprefix", $namenofeature.ToLowerInvariant())
