@@ -16,8 +16,8 @@ class Microsoft_Kozani_ManagerRuntime_TraceLogger final : public wil::TraceLoggi
     IMPLEMENT_TRACELOGGING_CLASS(
         Microsoft_Kozani_ManagerRuntime_TraceLogger,
         "Microsoft.Kozani.ManagerRuntime",
-        // f10daf50-e063-47ac-a2f5-74e1003478d7
-        (0xf10daf50, 0xe063, 0x47ac, 0xa2, 0xf5, 0x74, 0xe1, 0x00, 0x34, 0x78, 0xd7));
+        // 24ccf6d3-5878-4a9f-82e3-fadbac2515e7
+        (0x24ccf6d3, 0x5878, 0x4a9f, 0x82, 0xe3, 0xfa, 0xdb, 0xac, 0x25, 0x15, 0xe7));
 
 public:
 };

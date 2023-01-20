@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Microsoft.KozaniAbbreviation.ManagerRuntimeAbbreviation.ManagerRuntimeManager.g.h"
+#include "Microsoft.Kozani.ManagerRuntime.ManagerRuntimeManager.g.h"
 
 namespace winrt::Microsoft::Kozani::ManagerRuntime::implementation
 {

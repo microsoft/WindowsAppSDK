@@ -30,6 +30,9 @@
     <ClInclude Include="KozaniManagerRuntimeActivity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="M.K.MR.ManagerRuntimeManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -45,6 +48,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KozaniManagerRuntimeTraceLogging.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="M.K.MR.ManagerRuntimeManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

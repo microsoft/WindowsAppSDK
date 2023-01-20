@@ -200,13 +200,18 @@ function Get-UpdatedContent
     $namenofeature = $Name.Replace($Feature, "")
 
     $featureAbbreviation = Get-Abbreviation $Feature
+    $content = Get-Substitution $content 'TokuchoAbbreviation' $featureAbbreviation
+
     $nameAbbreviation = Get-Abbreviation $Name
+    $content = Get-Substitution $content 'PurojekutoTenpuretAbbreviation' $nameAbbreviation
 
     $namenofeature = $Name.Replace($Feature, "")
     $namenofeatureAbbreviation = Get-Abbreviation $namenofeature
+    $content = Get-Substitution $content 'PurojekutoTenpuretNoFeaturePrefixAbbreviation' $namenofeatureAbbreviation
+    $content = Get-Substitution $content 'PurojekutoTenpuretNoFeaturePrefix' $namenofeature
 
     $ext = [System.IO.Path]::GetExtension($filename)
-    if ($ext -eq '.h')
+    if (($ext -eq '.h') -Or ($ext -eq '.cpp'))
     {
         if ($Name -match "^[AEIOUaeiou]")
         {
@@ -221,28 +226,11 @@ function Get-UpdatedContent
             $content = $content.Replace($before, $after)
         }
 
-        $content = $content.Replace('TokuchoAbbreviation', $featureAbbreviation)
-        $content = $content.Replace('TOKUCHOABBREVIATION', $featureAbbreviation.ToUpperInvariant())
-        $content = $content.Replace('tokuchoabbreviation', $featureAbbreviation.ToLowerInvariant())
-        $content = $content.Replace("TokuchoNamespace", "$($featurenamespace)")
-        $content = $content.Replace("TOKUCHONAMESPACE", "$($featurenamespace)".ToUpperInvariant())
-        $content = $content.Replace("tokuchonamespace", "$($featurenamespace)".ToLowerInvariant())
-        $content = $content.Replace("TokuchoDotNamespace", "$($featuredotnamespace)")
-        $content = $content.Replace("TOKUCHODOTNAMESPACE", "$($featuredotnamespace)".ToUpperInvariant())
-        $content = $content.Replace("tokuchodotnamespace", "$($featuredotnamespace)".ToLowerInvariant())
-        $content = $content.Replace("TokuchoSymbol", "$($featuresymbol)")
-        $CONTENT = $CONTENT.REPLACE("TOKUCHOSYMBOL", "$($featuresymbol)".ToUpperInvariant())
-        $CONTENT = $CONTENT.REPLACE("tokuchosymbol", "$($featuresymbol)".ToLowerInvariant())
+        $content = Get-Substitution $content 'TokuchoNamespace' $featurenamespace
+        $content = Get-Substitution $content 'TokuchoDotNamespace' $featuredotnamespace
+        $content = Get-Substitution $content 'TokuchoSymbol' $featuresymbol
 
-        $content = $content.Replace('PurojekutoTenpuret', $nameAbbreviation)
-        $content = $content.Replace('PUROJEKUTOTENPURET', $nameAbbreviation.ToUpperInvariant())
-        $content = $content.Replace('purojekutotenpuret', $nameAbbreviation.ToLowerInvariant())
-        $content = $content.Replace('PurojekutoTenpuretNoFeaturePrefixAbbreviation', $namenofeatureAbbreviation)
-        $content = $content.Replace('PUROJEKUTOTENPURETNOFEATUREPREFIXABBREVIATION', $namenofeatureAbbreviation.ToUpperInvariant())
-        $content = $content.Replace('purojekutotenpuretnofeatureprefixabbreviation', $namenofeatureAbbreviation.ToLowerInvariant())
-        $content = $content.Replace("PurojekutoTenpuretNoFeaturePrefix", $namenofeature)
-        $content = $content.Replace("PUROJEKUTOTENPURETNOFEATUREPREFIX", $namenofeature.ToUpperInvariant())
-        $content = $content.Replace("purojekutotenpuretnofeatureprefix", $namenofeature.ToLowerInvariant())
+        $content = Get-Substitution $content 'PurojekutoTenpuretNoFeaturePrefix' $namenofeature
 
         $content = $content.Replace($Feature, $featurenamespace)
 
@@ -284,16 +272,10 @@ function Get-UpdatedContent
             $content = $content.Replace($before, $after)
         }
 
-        $content = $content.Replace("TokuchoNamespace", "$($featurenamespace)")
-        $content = $content.Replace("TOKUCHONAMESPACE", "$($featurenamespace)".ToUpperInvariant())
-        $content = $content.Replace("tokuchonamespace", "$($featurenamespace)".ToLowerInvariant())
-        $content = $content.Replace("TokuchoSymbol", "$($featuresymbol)")
-        $CONTENT = $CONTENT.REPLACE("TOKUCHOSYMBOL", "$($featuresymbol)".ToUpperInvariant())
-        $CONTENT = $CONTENT.REPLACE("tokuchosymbol", "$($featuresymbol)".ToLowerInvariant())
+        $content = Get-Substitution $content 'TokuchoNamespace' $featurenamespace
+        $content = Get-Substitution $content 'TokuchoSymbol' $featuresymbol
 
-        $content = $content.Replace("PurojekutoTenpuretNoFeaturePrefix", $namenofeature)
-        $content = $content.Replace("PUROJEKUTOTENPURETNOFEATUREPREFIX", $namenofeature.ToUpperInvariant())
-        $content = $content.Replace("purojekutotenpuretnofeatureprefix", $namenofeature.ToLowerInvariant())
+        $content = Get-Substitution $content 'PurojekutoTenpuretNoFeaturePrefix' $namenofeature
 
         $newguid = $(New-Guid).Guid
         $uuid = "[uuid(00000000-0000-0000-0000-000000000000)]"
@@ -329,6 +311,20 @@ function Get-UpdatedContent
     $content
 }
 
+function Get-Substitution
+{
+    param(
+        [string]$s,
+        [string]$from,
+        [string]$to
+    )
+
+    $s = $s.Replace($from, $to)
+    $s = $s.Replace($from.ToUpperInvariant(), $to.ToUpperInvariant())
+    $s = $s.Replace($from.ToLowerInvariant(), $to.ToLowerInvariant())
+    $s
+}
+
 function Get-ProjectTemplateOutputFileName
 {
     param(
@@ -342,13 +338,13 @@ function Get-ProjectTemplateOutputFileName
     $namenofeatureAbbreviation = Get-Abbreviation $namenofeature
 
     $outfn = $filename
-    $outfn = $outfn.Replace('TokuchoAbbreviation', $featureAbbreviation)
-    $outfn = $outfn.Replace('PurojekutoTenpuretAbbreviation', $nameAbbreviation)
-    $outfn = $outfn.Replace('PurojekutoTenpuretNoFeaturePrefixAbbreviation', $namenofeatureAbbreviation)
-    $outfn = $outfn.Replace('PurojekutoTenpuretNoProxyStubSuffix', $Name.Replace('ProxyStub', ''))
-    $outfn = $outfn.Replace('PurojekutoTenpuret', $Name)
-    $outfn = $outfn.Replace('PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant())
-    $outfn = $outfn.Replace('PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant())
+    $outfn = Get-Substitution $outfn 'TokuchoAbbreviation' $featureAbbreviation
+    $outfn = Get-Substitution $outfn 'Tokucho' $feature
+    $outfn = Get-Substitution $outfn 'PurojekutoTenpuretAbbreviation' $nameAbbreviation
+    $outfn = Get-Substitution $outfn 'PurojekutoTenpuretNoFeaturePrefixAbbreviation' $namenofeatureAbbreviation
+    $outfn = Get-Substitution $outfn 'PurojekutoTenpuretNoFeaturePrefix' $namenofeature
+    $outfn = Get-Substitution $outfn 'PurojekutoTenpuretNoProxyStubSuffix' $Name.Replace('ProxyStub', '')
+    $outfn = Get-Substitution $outfn 'PurojekutoTenpuret' $Name
     $outfn
 }
 
@@ -463,12 +459,8 @@ function Add-Project
         # Change placemarkers in file content and filenames to the project name
         $in = Get-Content -Path $source -Encoding utf8 -Raw
         $out = $(Get-UpdatedContent $source $in)
-        $out = $out.Replace('Tokucho', $Feature)
-        $out = $out.Replace('Tokucho'.ToUpperInvariant(), $Name.ToUpperInvariant())
-        $out = $out.Replace('Tokucho'.ToLowerInvariant(), $Name.ToLowerInvariant())
-        $out = $out.Replace('PurojekutoTenpuret', $Name)
-        $out = $out.Replace('PurojekutoTenpuret'.ToUpperInvariant(), $Name.ToUpperInvariant())
-        $out = $out.Replace('PurojekutoTenpuret'.ToLowerInvariant(), $Name.ToLowerInvariant())
+        $out = Get-Substitution $out 'Tokucho' $Feature
+        $out = Get-Substitution $out 'PurojekutoTenpuret' $Name
         $out = $out.TrimEnd()
 
         $outfn = Get-ProjectTemplateOutputFileName $f.Name

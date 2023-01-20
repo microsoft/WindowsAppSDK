@@ -34,7 +34,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{400ed5ec-4530-4adb-8dce-9d1e6708a1f5}</ProjectGuid>
+    <ProjectGuid>{13987cb2-19cf-471f-8926-2bd6af5aac14}</ProjectGuid>
     <RootNamespace>KozaniManagerRuntime</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <CppWinRTModernIDL>true</CppWinRTModernIDL>
@@ -158,7 +158,7 @@
     <ClInclude Include="KozaniManagerRuntime.h" />
     <ClInclude Include="KozaniManagerRuntimeActivity.h" />
     <ClInclude Include="KozaniManagerRuntimeTraceLogging.h" />
-    <ClInclude Include="M.KozaniAbbreviation.KozaniManagerRuntimeAbbreviation.AppGraphManager.h" />
+    <ClInclude Include="M.K.MR.ManagerRuntimeManager.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -166,7 +166,7 @@
     <ClCompile Include="KozaniManagerRuntime.cpp" />
     <ClCompile Include="KozaniManagerRuntimeActivity.cpp" />
     <ClCompile Include="KozaniManagerRuntimeTraceLogging.cpp" />
-    <ClInclude Include="M.KozaniAbbreviation.KozaniManagerRuntimeAbbreviation.AppGraphManager.cpp" />
+    <ClInclude Include="M.K.MR.ManagerRuntimeManager.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
