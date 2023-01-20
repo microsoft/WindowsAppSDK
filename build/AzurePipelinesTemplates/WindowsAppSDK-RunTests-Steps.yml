@@ -46,6 +46,14 @@ steps:
       dir /s $(Build.SourcesDirectory)\BuildOutput\TestCert
     displayName: 'DIAG: dir TestCert'
 
+  - script: |
+      foreach($cerFile in (Get-ChildItem -Path '$(Build.SourcesDirectory)\BuildOutput\TestCert' '*.cer')
+      {
+        Write-Host "Adding cert '$cerFile'"
+        certutil -addstore TrustedPeople '$cerFile'
+      }
+    displayName: 'Install certificates in payload'  
+
   # - task: PowerShell@2
     # displayName: 'Display OS build/version info'
     # inputs:
