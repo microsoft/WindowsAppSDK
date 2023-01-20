@@ -5,6 +5,6 @@
 
 #include "PurojekutoTenpuretTraceLogging.h"
 
-namespace Microsoft::Tokucho::PurojekutoTenpuret::Activity
+namespace Microsoft::TokuchoNamespace::PurojekutoTenpuretNoNamespacePrefix::Activity
 {
 }

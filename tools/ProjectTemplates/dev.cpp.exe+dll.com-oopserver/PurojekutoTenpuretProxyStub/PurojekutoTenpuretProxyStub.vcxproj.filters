@@ -29,20 +29,20 @@
     <ClCompile Include="$(IntDir)\dlldata.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(IntDir)\KozaniManager_i.c">
+    <ClCompile Include="$(IntDir)\PurojekutoTenpuretNoProxyStubSuffix_i.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(IntDir)\KozaniManager_p.c">
+    <ClCompile Include="$(IntDir)\PurojekutoTenpuretNoProxyStubSuffix_p.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="KozaniManager.idl">
+    <Midl Include="PurojekutoTenpuretNoProxyStubSuffix.idl">
       <Filter>Source Files</Filter>
     </Midl>
   </ItemGroup>
   <ItemGroup>
-    <None Include="KozaniManagerProxyStub.def">
+    <None Include="PurojekutoTenpuretProxyStub.def">
       <Filter>Source Files</Filter>
     </None>
     <None Include="packages.config" />
