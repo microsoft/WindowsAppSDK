@@ -54,7 +54,7 @@ steps:
       }
     displayName: 'Install certificates in payload'  
 
- - task: powershell@2
+  - task: powershell@2
     displayName: 'Run TE.Service'
     inputs:
       targetType: filePath
