@@ -46,13 +46,16 @@ steps:
       dir /s $(Build.SourcesDirectory)\BuildOutput\TestCert
     displayName: 'DIAG: dir TestCert'
 
-  - script: |
-      foreach($cerFile in (Get-ChildItem -Path '$(Build.SourcesDirectory)\BuildOutput\TestCert' '*.cer')
-      {
-        Write-Host "Adding cert '$cerFile'"
-        certutil -addstore TrustedPeople '$cerFile'
-      }
-    displayName: 'Install certificates in payload'  
+  - task: powerShell@2
+    displayName: 'Install certificates in payload'
+    inputs:
+      targetType: 'inline'
+      script: |
+            foreach($cerFile in (Get-ChildItem -Path '$(Build.SourcesDirectory)\BuildOutput\TestCert' '*.cer'))
+            {
+              Write-Host "Adding cert '$cerFile'"
+              certutil -addstore TrustedPeople '$cerFile'
+            }
 
   - task: powershell@2
     displayName: 'Run TE.Service'
