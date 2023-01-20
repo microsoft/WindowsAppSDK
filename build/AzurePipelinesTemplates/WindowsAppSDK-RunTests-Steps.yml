@@ -58,6 +58,11 @@ steps:
               certutil -addstore root $($cerFile.FullName)
             }
 
+            Get-ChildItem -Path "cert:\LocalMachine\TrustedPeople" -Recurse
+            Get-ChildItem -Path "cert:\LocalMachine\Root" -Recurse
+            $thumbprint = Get-Content -Path '$(Build.SourcesDirectory)\BuildOutput\TestCert\winappsdk.certificate.test.thumbprint' -Encoding utf8
+            Write-Host 'Here is the thumbprint: $thumbprint'
+
   - task: powershell@2
     displayName: 'Run TE.Service'
     inputs:
