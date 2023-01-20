@@ -15,36 +15,34 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(IntDir)\dlldata.c">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(IntDir)\KozaniManager_i.c">
+    <ClCompile Include="PurojekutoTenpuretActivity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(IntDir)\KozaniManager_p.c">
+    <ClCompile Include="PurojekutoTenpuretTraceLogging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="KozaniManager.idl">
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PurojekutoTenpuret-Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PurojekutoTenpuretActivity.h">
       <Filter>Source Files</Filter>
-    </Midl>
+    </ClInclude>
+    <ClInclude Include="PurojekutoTenpuretTraceLogging.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="KozaniManagerProxyStub.def">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
 </Project>

@@ -15,36 +15,14 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <Xml Include="appxmanifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(IntDir)\dlldata.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(IntDir)\KozaniManager_i.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(IntDir)\KozaniManager_p.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Midl Include="KozaniManager.idl">
+    <Midl Include="PurojekutoTenpuretInterface.idl">
       <Filter>Source Files</Filter>
     </Midl>
   </ItemGroup>
   <ItemGroup>
-    <None Include="KozaniManagerProxyStub.def">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
 </Project>
