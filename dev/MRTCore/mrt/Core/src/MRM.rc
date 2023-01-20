@@ -3,4 +3,4 @@
 
 #include <winresrc.h>
 #define VERSIONINFO_FILENAME "MRM.dll"
-#include "..\..\..\..\common\WindowsAppSDK.ver"
+#include "eng\common\VersionInfo\AssemblyInfo.ver"

@@ -162,6 +162,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ResourceCompile Include="resource.rc">
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="NotificationListener.cpp" />
     <ClCompile Include="ForegroundSinkManager.cpp" />
     <ClCompile Include="pch.cpp" />
