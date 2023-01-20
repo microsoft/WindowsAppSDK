@@ -51,6 +51,7 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
+            reg add HKLM\Software\Policies\Microsoft\Windows\Appx /v AllowDevelopmentWithoutDevLicense /t REG_DWORD /d 1 /f
             foreach($cerFile in (Get-ChildItem -Path '$(Build.SourcesDirectory)\BuildOutput' '*.cer' -Recurse))
             {
               Write-Host "Adding cert $($cerFile.FullName)"
