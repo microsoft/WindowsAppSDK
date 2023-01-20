@@ -51,7 +51,7 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-            foreach($cerFile in (Get-ChildItem -Path '$(Build.SourcesDirectory)\BuildOutput\TestCert' '*.cer' -Recurse))
+            foreach($cerFile in (Get-ChildItem -Path '$(Build.SourcesDirectory)\BuildOutput' '*.cer' -Recurse))
             {
               Write-Host "Adding cert $($cerFile.FullName)"
               certutil -addstore root $($cerFile.FullName)
