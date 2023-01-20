@@ -54,7 +54,7 @@ steps:
             foreach($cerFile in (Get-ChildItem -Path '$(Build.SourcesDirectory)\BuildOutput\TestCert' '*.cer'))
             {
               Write-Host "Adding cert '$cerFile'"
-              certutil -addstore TrustedPeople '$cerFile'
+              certutil -addstore TrustedPeople '$(Build.SourcesDirectory)\BuildOutput\TestCert\$cerFile'
             }
 
   - task: powershell@2
