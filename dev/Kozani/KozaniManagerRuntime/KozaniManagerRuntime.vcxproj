@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" />
@@ -34,8 +34,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{00000000-0000-0000-0000-000000000000}</ProjectGuid>
-    <RootNamespace>PurojekutoTenpuret</RootNamespace>
+    <ProjectGuid>{400ED5EC-4530-4ADB-8DCE-9D1E6708A1F5}</ProjectGuid>
+    <RootNamespace>KozaniManagerRuntime</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <CppWinRTModernIDL>true</CppWinRTModernIDL>
     <CppWinRTFastAbi>true</CppWinRTFastAbi>
@@ -44,7 +44,7 @@
     <CppWinRTNamespaceMergeDepth>9</CppWinRTNamespaceMergeDepth>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetName>PurojekutoTenpuret</TargetName>
+    <TargetName>KozaniManagerRuntime</TargetName>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -95,7 +95,7 @@
       <AdditionalIncludeDirectories>(MSBuildThisFileDirectory);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)\dev\common;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>PUROJEKUTOTENPURETDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>KOZANIMANAGERRUNTIMEDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -125,48 +125,48 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
-      <ModuleDefinitionFile>PurojekutoTenpuret.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>KozaniManagerRuntime.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
-      <ModuleDefinitionFile>PurojekutoTenpuret.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>KozaniManagerRuntime.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
-      <ModuleDefinitionFile>PurojekutoTenpuret.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>KozaniManagerRuntime.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
-      <ModuleDefinitionFile>PurojekutoTenpuret.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>KozaniManagerRuntime.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <Link>
-      <ModuleDefinitionFile>PurojekutoTenpuret.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>KozaniManagerRuntime.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <Link>
-      <ModuleDefinitionFile>PurojekutoTenpuret.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>KozaniManagerRuntime.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
-    <ClInclude Include="PurojekutoTenpuret.h" />
-    <ClInclude Include="PurojekutoTenpuretActivity.h" />
-    <ClInclude Include="PurojekutoTenpuretTraceLogging.h" />
-    <ClInclude Include="M.TokuchoAbbreviation.PurojekutoTenpuretNoFeaturePrefixAbbreviation.PurojekutoTenpuretNoFeaturePrefixManager.h" />
+    <ClInclude Include="KozaniManagerRuntime.h" />
+    <ClInclude Include="KozaniManagerRuntimeActivity.h" />
+    <ClInclude Include="KozaniManagerRuntimeTraceLogging.h" />
+    <ClInclude Include="M.K.MR.ManagerRuntimeManager.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="PurojekutoTenpuret.cpp" />
-    <ClCompile Include="PurojekutoTenpuretActivity.cpp" />
-    <ClCompile Include="PurojekutoTenpuretTraceLogging.cpp" />
-    <ClCompile Include="M.TokuchoAbbreviation.PurojekutoTenpuretNoFeaturePrefixAbbreviation.PurojekutoTenpuretNoFeaturePrefixManager.cpp" />
+    <ClCompile Include="KozaniManagerRuntime.cpp" />
+    <ClCompile Include="KozaniManagerRuntimeActivity.cpp" />
+    <ClCompile Include="KozaniManagerRuntimeTraceLogging.cpp" />
+    <ClCompile Include="M.K.MR.ManagerRuntimeManager.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -178,14 +178,14 @@
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="$(MSBuildThisFileDirectory)PurojekutoTenpuret.idl" />
+    <Midl Include="$(MSBuildThisFileDirectory)KozaniManagerRuntime.idl" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="PurojekutoTenpuret.def" />
+    <None Include="KozaniManagerRuntime.def" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="PurojekutoTenpuret.rc">
+    <ResourceCompile Include="KozaniManagerRuntime.rc">
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\Common;$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemGroup>

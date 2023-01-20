@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Microsoft.TokuchoAbbreviation.PurojekutoTenpuretNoFeaturePrefixAbbreviation.PurojekutoTenpuretNoFeaturePrefixManager.g.h"
+#include "Microsoft.Tokucho.PurojekutoTenpuretNoFeaturePrefix.PurojekutoTenpuretNoFeaturePrefixManager.g.h"
 
 namespace winrt::Microsoft::TokuchoNamespace::PurojekutoTenpuretNoFeaturePrefix::implementation
 {
