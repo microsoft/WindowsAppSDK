@@ -51,10 +51,10 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-            foreach($cerFile in (Get-ChildItem -Path '$(Build.SourcesDirectory)\BuildOutput\TestCert' '*.cer'))
+            foreach($cerFile in (Get-ChildItem -Path '$(Build.SourcesDirectory)\BuildOutput\TestCert' '*.cer' -Recurse))
             {
-              Write-Host "Adding cert '$cerFile'"
-              certutil -addstore TrustedPeople '$(Build.SourcesDirectory)\BuildOutput\TestCert\$cerFile'
+              Write-Host "Adding cert $($cerFile.FullName)"
+              certutil -addstore TrustedPeople $($cerFile)
             }
 
   - task: powershell@2
