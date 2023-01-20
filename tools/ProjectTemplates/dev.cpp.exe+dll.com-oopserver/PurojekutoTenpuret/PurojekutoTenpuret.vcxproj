@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" />
@@ -33,14 +33,14 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{CFC67AC3-3DC3-4981-A9BB-BC5ED06542D4}</ProjectGuid>
-    <RootNamespace>KozaniManagerProxyStub</RootNamespace>
+    <ProjectGuid>{00000000-0000-0000-0000-000000000000}</ProjectGuid>
+    <RootNamespace>PurojekutoTenpuret</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>KozaniManagerProxyStub</ProjectName>
+    <ProjectName>PurojekutoTenpuret</ProjectName>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetName>KozaniManagerProxyStub</TargetName>
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <TargetName>PurojekutoTenpuret</TargetName>
+    <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -56,11 +56,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -85,43 +85,24 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <CustomBuildAfterTargets>PostBuildEvent</CustomBuildAfterTargets>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <CustomBuildAfterTargets>PostBuildEvent</CustomBuildAfterTargets>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <CustomBuildAfterTargets>PostBuildEvent</CustomBuildAfterTargets>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <CustomBuildAfterTargets>PostBuildEvent</CustomBuildAfterTargets>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-    <CustomBuildAfterTargets>PostBuildEvent</CustomBuildAfterTargets>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-    <CustomBuildAfterTargets>PostBuildEvent</CustomBuildAfterTargets>
-  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <PreprocessorDefinitions>_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>(MSBuildThisFileDirectory);$(OutDir)..\PurojekutoTenpuretProxyStub;$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)\dev\common;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>(MSBuildThisFileDirectory);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)\dev\common;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>KozaniManagerProxyStub.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>$(OutDir)\..\KozaniManagerInterface;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DllDataFileName>dlldata.c</DllDataFileName>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </Midl>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
@@ -151,61 +132,11 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PurojekutoTenpuretActivity.h" />
+    <ClInclude Include="PurojekutoTenpuretTraceLogging.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(IntDir)\dlldata.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-      <!-- ARM64 builds of MIDL generated files require #define WIN32 or else build error
-              dlldata.c(24,1): error C2061: syntax error: identifier 'PROXYFILE_LIST_START'
-           "This only happens for ARM64.  This lead to investigating why dlldata.c was written certain ways
-            and why was this failing. Turns out almost the entire file of rpcproxy.h is excluded if you don't
-            have WIN32 or _M_AMD64 defined. The fact WIN32 has 32 seems just a relic of the old 16bit -> 32bit
-            subsystem shift, and these days really just means the Win32 subsystem and not a specific architecture."
-           TL;DR make sure ARM64 builds #define WIN32 or MIDL-generated dlldata.c won't compile
-        -->
-      <PreprocessorDefinitions Condition="'$(Platform)'=='ARM64'">WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="$(IntDir)\KozaniManager_i.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-      <!-- ARM64 builds of MIDL generated files require #define WIN32 or else build error
-              dlldata.c(24,1): error C2061: syntax error: identifier 'PROXYFILE_LIST_START'
-           "This only happens for ARM64.  This lead to investigating why dlldata.c was written certain ways
-            and why was this failing. Turns out almost the entire file of rpcproxy.h is excluded if you don't
-            have WIN32 or _M_AMD64 defined. The fact WIN32 has 32 seems just a relic of the old 16bit -> 32bit
-            subsystem shift, and these days really just means the Win32 subsystem and not a specific architecture."
-           TL;DR make sure ARM64 builds #define WIN32 or MIDL-generated dlldata.c won't compile
-        -->
-      <PreprocessorDefinitions Condition="'$(Platform)'=='ARM64'">WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="$(IntDir)\KozaniManager_p.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-      <!-- ARM64 builds of MIDL generated files require #define WIN32 or else build error
-              dlldata.c(24,1): error C2061: syntax error: identifier 'PROXYFILE_LIST_START'
-           "This only happens for ARM64.  This lead to investigating why dlldata.c was written certain ways
-            and why was this failing. Turns out almost the entire file of rpcproxy.h is excluded if you don't
-            have WIN32 or _M_AMD64 defined. The fact WIN32 has 32 seems just a relic of the old 16bit -> 32bit
-            subsystem shift, and these days really just means the Win32 subsystem and not a specific architecture."
-           TL;DR make sure ARM64 builds #define WIN32 or MIDL-generated dlldata.c won't compile
-        -->
-      <PreprocessorDefinitions Condition="'$(Platform)'=='ARM64'">WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -214,41 +145,35 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="PurojekutoTenpuretActivity.cpp" />
+    <ClCompile Include="PurojekutoTenpuretTraceLogging.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="KozaniManagerProxyStub.rc">
+    <ProjectReference Include="..\PurojekutoTenpuretProxyStub\PurojekutoTenpuretProxyStub.vcxproj">
+      <Project>{MACRO-UUID-0002}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PurojekutoTenpuret.rc">
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\Common;$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Midl Include="KozaniManager.idl" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="KozaniManagerProxyStub.def" />
-    <None Include="packages.config" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(RepoRoot)\packages\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
     <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets')" />
     <Import Project="$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" />
     <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" />
   </ImportGroup>
-  <ItemGroup>
-    <PublicHeaders Include="$(IntDir)\KozaniManager_h.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\KozaniManagerInterface\KozaniManagerInterface.vcxproj">
-      <Project>{5C0E77FA-B6F4-4B3F-AAE5-AB85CF97816F}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <!-- Include header files from the dev chunks -->
-  <Target Name="CopyFiles" AfterTargets="AfterBuild">
-    <Copy SourceFiles="@(PublicHeaders)" DestinationFolder="$(OutDir)" />
-  </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
+    <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
     <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props'))" />
     <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets'))" />
     <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props'))" />

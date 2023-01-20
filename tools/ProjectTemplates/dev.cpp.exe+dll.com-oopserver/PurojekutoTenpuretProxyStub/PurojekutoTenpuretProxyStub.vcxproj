@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" />
@@ -33,13 +33,13 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{CFC67AC3-3DC3-4981-A9BB-BC5ED06542D4}</ProjectGuid>
-    <RootNamespace>KozaniManagerProxyStub</RootNamespace>
+    <ProjectGuid>{MACRO-UUID-0002}</ProjectGuid>
+    <RootNamespace>PurojekutoTenpuretProxyStub</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>KozaniManagerProxyStub</ProjectName>
+    <ProjectName>PurojekutoTenpuretProxyStub</ProjectName>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetName>KozaniManagerProxyStub</TargetName>
+    <TargetName>PurojekutoTenpuretProxyStub</TargetName>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -114,10 +114,10 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>KozaniManagerProxyStub.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>PurojekutoTenpuretProxyStub.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>$(OutDir)\..\KozaniManagerInterface;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OutDir)\..\PurojekutoTenpuretInterface;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(IntDir)</OutputDirectory>
@@ -172,7 +172,7 @@
         -->
       <PreprocessorDefinitions Condition="'$(Platform)'=='ARM64'">WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="$(IntDir)\KozaniManager_i.c">
+    <ClCompile Include="$(IntDir)\PurojekutoTenpuretNoProxyStubSuffix_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">NotUsing</PrecompiledHeader>
@@ -189,7 +189,7 @@
         -->
       <PreprocessorDefinitions Condition="'$(Platform)'=='ARM64'">WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="$(IntDir)\KozaniManager_p.c">
+    <ClCompile Include="$(IntDir)\PurojekutoTenpuretNoProxyStubSuffix_p.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">NotUsing</PrecompiledHeader>
@@ -216,15 +216,15 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="KozaniManagerProxyStub.rc">
+    <ResourceCompile Include="PurojekutoTenpuretProxyStub.rc">
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\Common;$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="KozaniManager.idl" />
+    <Midl Include="PurojekutoTenpuretNoProxyStubSuffix.idl" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="KozaniManagerProxyStub.def" />
+    <None Include="PurojekutoTenpuretProxyStub.def" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
@@ -234,11 +234,11 @@
     <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" />
   </ImportGroup>
   <ItemGroup>
-    <PublicHeaders Include="$(IntDir)\KozaniManager_h.h" />
+    <PublicHeaders Include="$(IntDir)\PurojekutoTenpuretNoProxyStubSuffix_h.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\KozaniManagerInterface\KozaniManagerInterface.vcxproj">
-      <Project>{5C0E77FA-B6F4-4B3F-AAE5-AB85CF97816F}</Project>
+    <ProjectReference Include="..\PurojekutoTenpuretInterface\PurojekutoTenpuretInterface.vcxproj">
+      <Project>{MACRO-UUID-0001}</Project>
     </ProjectReference>
   </ItemGroup>
   <!-- Include header files from the dev chunks -->
