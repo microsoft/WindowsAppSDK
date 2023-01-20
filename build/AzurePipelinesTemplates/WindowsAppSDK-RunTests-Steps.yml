@@ -18,8 +18,8 @@ steps:
   - task: DownloadBuildArtifacts@0
     displayName: 'Download: TAEF package'
     inputs:
-      artifactName: 'TaefPackage'
-      downloadPath: $(Build.SourcesDirectory)\BuildOutput
+      artifactName: 'packages'
+      downloadPath: $(Build.SourcesDirectory)
 
     # We only bring down the relevant content for this build config (Debug/Release) & platform, to save some space and time.
   - task: DownloadBuildArtifacts@0
@@ -39,7 +39,7 @@ steps:
     displayName: 'DIAG: dir testPayloadDir'
 
   - script: |
-      dir /s $(Build.SourcesDirectory)\BuildOutput\TaefPackage
+      dir /s $(Build.SourcesDirectory)\packages
     displayName: 'DIAG: dir taefPackage'
 
   - script: |
@@ -53,6 +53,14 @@ steps:
         certutil -addstore TrustedPeople '$cerFile'
       }
     displayName: 'Install certificates in payload'  
+
+ - task: powershell@2
+    displayName: 'Run TE.Service'
+    inputs:
+      targetType: filePath
+      filePath: DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -CheckTAEFService
+      workingDirectory: '$(Build.SourcesDirectory)'
 
   # - task: PowerShell@2
     # displayName: 'Display OS build/version info'
