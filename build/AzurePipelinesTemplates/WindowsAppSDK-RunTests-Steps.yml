@@ -80,7 +80,7 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-            $(Build.SourcesDirectory)\packages\vcredist.${{ parameters.buildPlatform }}.exe /quiet /install /norestart
+            $(Build.SourcesDirectory)\packages\vc_redist.${{ parameters.buildPlatform }}.exe /quiet /install /norestart
 
   - task: powershell@2
     displayName: 'Run TE.Service'
