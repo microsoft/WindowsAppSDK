@@ -149,15 +149,17 @@ jobs:
       artifactName: 'BuildOutput'
 
   - task: PowerShell@2
-    name: DownloadDotNetInstaller
+    displayName: 'Download dotnet installer'
     inputs:
-      filePath: '$(build.SourcesDirectory)\build\Scripts\DownloadDotNetInstaller.ps1'
+      targetType: filePath
+      filePath: build\scripts\DownloadDotNetRuntimeInstaller.ps1
       arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
 
   - task: PowerShell@2
-    name: DownloadVCRedistInstaller
+    displayName: 'Download vcredist installer'
     inputs:
-      filePath: '$(build.SourcesDirectory)\build\Scripts\DownloadVCRedistInstaller.ps1'
+      targetType: filePath
+      filePath: build\scripts\DownloadVCRedistInstaller.ps1
       arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
 
   - task: PublishBuildArtifacts@1
