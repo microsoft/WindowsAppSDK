@@ -149,16 +149,16 @@ jobs:
       artifactName: 'BuildOutput'
 
   - task: PowerShell@2
-      name: Download the dotnet installer
-      inputs:
-        filePath: '$(build.SourcesDirectory)\build\Scripts\DownloadDotNetInstaller.ps1'
-        arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
+    name: Download the dotnet installer
+    inputs:
+      filePath: '$(build.SourcesDirectory)\build\Scripts\DownloadDotNetInstaller.ps1'
+      arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
 
   - task: PowerShell@2
-      name: Download the VC Redist installer
-      inputs:
-        filePath: '$(build.SourcesDirectory)\build\Scripts\DownloadVCRedistInstaller.ps1'
-        arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
+    name: Download the VC Redist installer
+    inputs:
+      filePath: '$(build.SourcesDirectory)\build\Scripts\DownloadVCRedistInstaller.ps1'
+      arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: TAEF package'
