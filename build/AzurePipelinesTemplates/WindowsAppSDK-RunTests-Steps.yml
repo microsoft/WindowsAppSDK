@@ -68,11 +68,19 @@ steps:
               certutil -addstore TrustedPeople $($cerFile.FullName)
               certutil -addstore root $($cerFile.FullName)
             }
+  - task: powerShell@2
+    displayName: 'Run dotnet installer'
+    inputs:
+      targetType: 'inline'
+      script: |
+            $(Build.SourcesDirectory)\packages\dotnet-windowsdesktop-runtime-installer.exe /quiet /install /norestart
 
-            Get-ChildItem -Path "cert:\LocalMachine\TrustedPeople" -Recurse
-            Get-ChildItem -Path "cert:\LocalMachine\Root" -Recurse
-            $thumbprint = Get-Content -Path '$(Build.SourcesDirectory)\BuildOutput\TestCert\winappsdk.certificate.test.thumbprint' -Encoding utf8
-            Write-Host 'Here is the thumbprint: $thumbprint'
+  - task: powerShell@2
+    displayName: 'Run VC redist installer'
+    inputs:
+      targetType: 'inline'
+      script: |
+            $(Build.SourcesDirectory)\packages\vcredist.${{ parameters.buildPlatform }}.exe /quiet /install /norestart
 
   - task: powershell@2
     displayName: 'Run TE.Service'
@@ -82,11 +90,7 @@ steps:
       arguments: -NoInteractive -Offline -Verbose -CheckTAEFService
       workingDirectory: '$(Build.SourcesDirectory)'
 
-  # - task: PowerShell@2
-    # displayName: 'Display OS build/version info'
-    # inputs:
-      # filePath: 'TestAll.ps1'
-      # arguments: "DisplayInfo"
+
 
   - task: VisualStudioTestPlatformInstaller@1
     inputs:
