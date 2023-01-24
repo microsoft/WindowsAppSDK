@@ -16,6 +16,7 @@
     <MicrosoftWindowsCsWinRTPackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.Windows.CsWinRT"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsCsWinRTPackageVersion>
 
     <!-- Dependencies: Manual -->
+    <GoogleProtobufToolsVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Google.Protobuf.Tools"\s+Version="(.*?)"').Groups[1].Value)</GoogleProtobufToolsVersion>
     <MicrosoftBuildTasksGitVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Microsoft.Build.Tasks.Git"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftBuildTasksGitVersion>
     <MicrosoftSourceLinkCommonVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Microsoft.SourceLink.Common"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftSourceLinkCommonVersion>
     <MicrosoftSourceLinkGitHubVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Microsoft.SourceLink.GitHub"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftSourceLinkGitHubVersion>
