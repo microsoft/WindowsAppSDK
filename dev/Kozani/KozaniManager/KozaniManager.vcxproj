@@ -133,6 +133,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="KozaniManager-Constants.h" />
+    <ClInclude Include="KozaniManager-Override.h" />
     <ClInclude Include="KozaniManagerActivity.h" />
     <ClInclude Include="KozaniManagerTraceLogging.h" />
   </ItemGroup>
@@ -168,6 +170,7 @@
     <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets')" />
     <Import Project="$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" />
     <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" />
+    <Import Project="$(RepoRoot)\packages\Google.Protobuf.Tools.$(GoogleProtobufToolsVersion)\build\Google.Protobuf.Tools.targets" Condition="Exists('$(RepoRoot)\packages\Google.Protobuf.Tools.$(GoogleProtobufToolsVersion)\build\Google.Protobuf.Tools.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -180,5 +183,6 @@
     <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets'))" />
     <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props'))" />
     <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets'))" />
+    <Error Condition="!Exists('$(RepoRoot)\packages\Google.Protobuf.Tools.$(GoogleProtobufToolsVersion)\build\Google.Protobuf.Tools.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Google.Protobuf.Tools.$(GoogleProtobufToolsVersion)\build\Google.Protobuf.Tools.targets'))" />
   </Target>
 </Project>

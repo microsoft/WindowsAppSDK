@@ -133,6 +133,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="KozaniRemoteManager-Constants.h" />
+    <ClInclude Include="KozaniRemoteManager-Override.h" />
     <ClInclude Include="KozaniRemoteManagerActivity.h" />
     <ClInclude Include="KozaniRemoteManagerTraceLogging.h" />
   </ItemGroup>
