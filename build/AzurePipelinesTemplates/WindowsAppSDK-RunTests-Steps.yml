@@ -80,7 +80,7 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-            $package = $(Build.SourcesDirectory)\packages\Microsoft.VCLibs.${{ parameters.buildPlatform }}.14.00.Desktop.appx
+            $package = "$(Build.SourcesDirectory)\packages\Microsoft.VCLibs.${{ parameters.buildPlatform }}.14.00.Desktop.appx"
             Add-AppxPackage $package -ErrorAction SilentlyContinue
 
   - task: powerShell@2
