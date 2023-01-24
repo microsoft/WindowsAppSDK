@@ -16,7 +16,7 @@ steps:
 
   # We only bring down the relevant content for this build config (Debug/Release) & platform, to save some space and time.
   - task: DownloadBuildArtifacts@0
-    displayName: 'Download: TAEF package'
+    displayName: 'Download test dependencies'
     inputs:
       artifactName: 'packages'
       downloadPath: $(Build.SourcesDirectory)
@@ -76,7 +76,15 @@ steps:
             $(Build.SourcesDirectory)\packages\dotnet-windowsdesktop-runtime-installer.exe /quiet /install /norestart
 
   - task: powerShell@2
-    displayName: 'Run VC redist installer'
+    displayName: 'Install VCLibs.Desktop'
+    inputs:
+      targetType: 'inline'
+      script: |
+            $package = $(Build.SourcesDirectory)\packages\Microsoft.VCLibs.${{ parameters.buildPlatform }}.14.00.Desktop.appx
+            Add-AppxPackage $package -ErrorAction SilentlyContinue
+
+  - task: powerShell@2
+    displayName: 'Install vc_redist'
     inputs:
       targetType: 'inline'
       script: |
