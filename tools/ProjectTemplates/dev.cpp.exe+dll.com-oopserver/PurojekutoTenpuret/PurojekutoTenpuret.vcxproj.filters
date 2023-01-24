@@ -35,11 +35,14 @@
     <ClInclude Include="PurojekutoTenpuret-Constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PurojekutoTenpuret-Override.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="PurojekutoTenpuretActivity.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PurojekutoTenpuretTraceLogging.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
