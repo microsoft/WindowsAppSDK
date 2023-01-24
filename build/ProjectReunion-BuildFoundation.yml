@@ -163,11 +163,11 @@ jobs:
       arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
 
   - task: PowerShell@2
-      displayName: 'Download desktop bridge CRT'
-      inputs:
-        targetType: filePath
-        filePath: build\scripts\DownloadVCLibsDesktop.ps1
-        arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
+    displayName: 'Download desktop bridge CRT'
+    inputs:
+      targetType: filePath
+      filePath: build\scripts\DownloadVCLibsDesktop.ps1
+      arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: TAEF package'
