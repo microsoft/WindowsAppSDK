@@ -714,6 +714,7 @@ function Test-PackagesConfig
     )
 
     $xml = [xml](Get-Content $filename -EA:Stop)
+    $changed = $false
     ForEach ($package in $xml.packages.package)
     {
         $name = $package.id
@@ -726,8 +727,17 @@ function Test-PackagesConfig
         }
         elseif ($version -ne $versions[$name])
         {
-            Write-Host "ERROR: Unknown version $name=$version in $filename"
-            $global:issues++
+            if ($SyncDependencies -eq $true)
+            {
+                Write-Host "Updating $name $($version) -> $($versions[$name]) in $filename"
+                $package.version = $versions[$name]
+                $changed = $true
+            }
+            else
+            {
+                Write-Host "ERROR: Unknown version $name=$version in $filename"
+                $global:issues++
+            }
         }
 
         if (-not($package.HasAttribute("targetFramework")))
@@ -745,6 +755,17 @@ function Test-PackagesConfig
             }
         }
 
+    }
+
+    if ($changed -eq $true)
+    {
+        $xml.Save($filename)
+
+        # Save() doesn't add a newline at the end-of-file
+        # No newline at end-of-file makes git, GitHub diff and other tools cranky
+        # Make sure they're not cranky
+        $content = Get-Content $filename -EA:Stop -Encoding utf8
+        Set-Content -Path $filename -Value $content -Force -Encoding utf8
     }
 }
 
