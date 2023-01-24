@@ -129,8 +129,9 @@ namespace AppNotifications::Test
             break;
 
         case ExpectedTransientProperties::DEFAULT:
+            // The default priority value is Default, and the default for SuppressDisplay is false.
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::AppNotifications::AppNotificationPriority::Default, actual.Priority());
-            VERIFY_IS_TRUE(actual.SuppressDisplay());
+            VERIFY_IS_FALSE(actual.SuppressDisplay());
             break;
 
         case ExpectedTransientProperties::UNKNOWN:

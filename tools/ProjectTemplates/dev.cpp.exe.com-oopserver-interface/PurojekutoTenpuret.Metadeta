@@ -1,0 +1,7 @@
+{
+    "Description" : "IDL for COM interface(s)",
+    "Libraries": "",
+    "Name": {
+        "AllowedRegex": "^[A-Za-z][A-Za-z0-9_]*Interface$"
+    }
+}

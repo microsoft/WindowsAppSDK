@@ -261,6 +261,11 @@
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="WindowsAppRunTime.rc">      
+      <AdditionalIncludeDirectories>$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="WindowsAppRuntime.def" />
     <None Include="packages.config" />
   </ItemGroup>

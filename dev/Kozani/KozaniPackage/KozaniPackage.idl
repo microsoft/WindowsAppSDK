@@ -1,0 +1,17 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace Microsoft.Kozani.Package
+{
+    [contractversion(1)]
+    apicontract PackageContract{};
+
+    [contract(PackageContract, 1)]
+    runtimeclass PackageManager
+    {
+        /// Get a Package manager for the caller's context.
+        static PackageManager Open();
+
+        void TODO_ReplaceMeWithRealContent();
+    };
+}

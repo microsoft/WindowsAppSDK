@@ -6,10 +6,13 @@
 #include <winrt/Windows.ApplicationModel.Core.h>
 #include "PushNotificationUtility.h"
 #include <algorithm>
+#include "NotificationTelemetryHelper.h"
 
 inline const winrt::hstring STORED_PUSH_MANAGER_KEY = L"StoredPushManagerKey";
 inline const winrt::hstring STORED_APPNOTIFICATION_MANAGER_KEY = L"StoredAppNotificationManagerKey";
 inline const DWORD c_receiveArgsTimeoutInMSec{ 2000 };
+
+inline NotificationTelemetryHelper g_telemetryHelper{};
 
 namespace PushNotificationHelpers
 {

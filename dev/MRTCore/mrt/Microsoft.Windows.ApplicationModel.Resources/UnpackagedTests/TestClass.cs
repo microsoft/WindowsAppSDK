@@ -84,6 +84,11 @@ namespace MrtCoreUnpackagedTests
         public static void TestSetup()
         {
             Cleanup();
+
+            if (m_exeFolder != m_assemblyFolder)
+            {
+                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
+            }
         }
 
         [TestCleanup]
@@ -167,11 +172,6 @@ namespace MrtCoreUnpackagedTests
 
         private void ResourceManagerWithFileImpl()
         {
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
-            }
-
             var resourceManager = new ResourceManager("resources.pri.standalone");
             var resourceMap = resourceManager.MainResourceMap;
             var map = resourceMap.GetSubtree("resources");
@@ -201,11 +201,6 @@ namespace MrtCoreUnpackagedTests
                 return;
             }
 
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
-            }
-
             CommonTestCode.ResourceLoaderTest.GetStringTest();
         }
 
@@ -216,11 +211,6 @@ namespace MrtCoreUnpackagedTests
             {
                 // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
                 return;
-            }
-
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
             }
 
             CommonTestCode.ResourceLoaderTest.GetStringTest_NonDefaultNamespace();
@@ -235,11 +225,6 @@ namespace MrtCoreUnpackagedTests
                 return;
             }
 
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
-            }
-
             CommonTestCode.ResourceLoaderTest.GetStringForUriTest();
         }
 
@@ -250,11 +235,6 @@ namespace MrtCoreUnpackagedTests
             {
                 // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
                 return;
-            }
-
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
             }
 
             CommonTestCode.ResourceLoaderTest.GetStringForUriTest_ImplicitRootNamespace();
@@ -269,11 +249,6 @@ namespace MrtCoreUnpackagedTests
                 return;
             }
 
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
-            }
-
             CommonTestCode.ResourceLoaderTest.GetDefaultResourceFilePathTest();
         }
 
@@ -284,11 +259,6 @@ namespace MrtCoreUnpackagedTests
             {
                 // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
                 return;
-            }
-
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
             }
 
             CommonTestCode.ResourceLoaderTest.ReturnSameResultAsResourceManager();
@@ -303,11 +273,6 @@ namespace MrtCoreUnpackagedTests
                 return;
             }
 
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
-            }
-
             CommonTestCode.ResourceManagerTest.ValueAsStringTest_StringResource_Succeeds();
         }
 
@@ -318,11 +283,6 @@ namespace MrtCoreUnpackagedTests
             {
                 // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
                 return;
-            }
-
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
             }
 
             CommonTestCode.ResourceManagerTest.ValueAsStringTest_FileResource_Succeeds();
@@ -337,11 +297,6 @@ namespace MrtCoreUnpackagedTests
                 return;
             }
 
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
-            }
-
             CommonTestCode.ResourceManagerTest.ValueAsBlobTest_Succeeds();
         }
 
@@ -352,11 +307,6 @@ namespace MrtCoreUnpackagedTests
             {
                 // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
                 return;
-            }
-
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
             }
 
             CommonTestCode.ResourceManagerTest.GetKindTest();
@@ -371,11 +321,6 @@ namespace MrtCoreUnpackagedTests
                 return;
             }
 
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
-            }
-
             CommonTestCode.ResourceManagerTest.GetSubtreeTest();
         }
 
@@ -386,11 +331,6 @@ namespace MrtCoreUnpackagedTests
             {
                 // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
                 return;
-            }
-
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
             }
 
             CommonTestCode.ResourceManagerTest.TryGetSubtreeTest();
@@ -405,11 +345,6 @@ namespace MrtCoreUnpackagedTests
                 return;
             }
 
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
-            }
-
             CommonTestCode.ResourceManagerTest.SubtreeNotFoundTest();
         }
 
@@ -420,11 +355,6 @@ namespace MrtCoreUnpackagedTests
             {
                 // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
                 return;
-            }
-
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
             }
 
             CommonTestCode.ResourceManagerTest.ResourceNotFoundTest();
@@ -439,11 +369,6 @@ namespace MrtCoreUnpackagedTests
                 return;
             }
 
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
-            }
-
             CommonTestCode.ResourceManagerTest.NoResourceFileTest();
         }
 
@@ -456,12 +381,31 @@ namespace MrtCoreUnpackagedTests
                 return;
             }
 
-            if (m_exeFolder != m_assemblyFolder)
+            CommonTestCode.ResourceManagerTest.ResourceEnumTest();
+        }
+
+        [TestMethod]
+        public void ResourceManager_GetValueFullUriTest()
+        {
+            if (m_rs5)
             {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
             }
 
-            CommonTestCode.ResourceManagerTest.ResourceEnumTest();
+            CommonTestCode.ResourceManagerTest.GetValueFullUriTest();
+        }
+
+        [TestMethod]
+        public void ResourceManager_GetSubtreeFullUriTest()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceManagerTest.GetSubtreeFullUriTest();
         }
 
         [TestMethod]
@@ -471,11 +415,6 @@ namespace MrtCoreUnpackagedTests
             {
                 // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
                 return;
-            }
-
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
             }
 
             CommonTestCode.ResourceContextTest.LanguageContextTest();
@@ -490,11 +429,6 @@ namespace MrtCoreUnpackagedTests
                 return;
             }
 
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
-            }
-
             CommonTestCode.ResourceContextTest.NonLanguageContextTest();
         }
 
@@ -505,11 +439,6 @@ namespace MrtCoreUnpackagedTests
             {
                 // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
                 return;
-            }
-
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
             }
 
             CommonTestCode.ResourceContextTest.ResourceEnumWithContextTest();
@@ -524,11 +453,6 @@ namespace MrtCoreUnpackagedTests
                 return;
             }
 
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
-            }
-
             CommonTestCode.ResourceContextTest.ResourceNotFoundWithContextTest();
         }
 
@@ -539,11 +463,6 @@ namespace MrtCoreUnpackagedTests
             {
                 // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
                 return;
-            }
-
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
             }
 
             CommonTestCode.ResourceContextTest.NoResourceFileWithContextTest();

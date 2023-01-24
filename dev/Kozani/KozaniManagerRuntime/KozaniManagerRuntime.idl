@@ -1,0 +1,17 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace Microsoft.Kozani.ManagerRuntime
+{
+    [contractversion(1)]
+    apicontract ManagerRuntimeContract{};
+
+    [contract(ManagerRuntimeContract, 1)]
+    runtimeclass ManagerRuntimeManager
+    {
+        /// Get a ManagerRuntime manager for the caller's context.
+        static ManagerRuntimeManager Open();
+
+        void TODO_ReplaceMeWithRealContent();
+    };
+}

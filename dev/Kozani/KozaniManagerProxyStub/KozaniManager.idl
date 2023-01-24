@@ -1,0 +1,20 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+#include "..\KozaniManager\KozaniManager-Constants.h"
+
+#include "KozaniManagerInterface.idl"
+
+[uuid(PR_KOZANIMANAGER_LIBID_UUID)]
+[version(1.0)]
+library KozaniManager
+{
+    [uuid(PR_KOZANIMANAGER_CLSID_UUID)]
+    coclass KozaniManager
+    {
+        [default] interface IKozaniManager;
+    };
+};
