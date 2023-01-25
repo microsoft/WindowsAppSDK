@@ -63,8 +63,6 @@ PublishFile $FullBuildOutput\KozaniPackage\StrippedWinMD\Microsoft.Kozani.Packag
 PublishFile $FullBuildOutput\KozaniSendToLocal\StrippedWinMD\Microsoft.Kozani.SendToLocal.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\KozaniSendToRemote\StrippedWinMD\Microsoft.Kozani.SendToRemote.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\KozaniSettings\StrippedWinMD\Microsoft.Kozani.Settings.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
-PublishFile $FullBuildOutput\KozaniHostRuntime\StrippedWinMD\Microsoft.Kozani.HostRuntime.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
-PublishFile $FullBuildOutput\KozaniManager\StrippedWinMD\Microsoft.Kozani.Manager.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\KozaniManagerRuntime\StrippedWinMD\Microsoft.Kozani.ManagerRuntime.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 #
 ### Kozani DLLs/EXEs in MSIX Framework package
@@ -78,20 +76,7 @@ PublishFile $FullBuildOutput\KozaniSendToRemote\KozaniSendToRemote.dll $FullPubl
 PublishFile $FullBuildOutput\KozaniSendToRemote\KozaniSendToRemote.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\KozaniSettings\KozaniSettings.dll $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\KozaniSettings\KozaniSettings.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
-#
-### Kozani DLLs/EXEs in MSIX Singleton package
-PublishFile $FullBuildOutput\KozaniHostRuntime\KozaniHostRuntime.exe $FullPublishDir\Microsoft.WindowsAppRuntime\
-PublishFile $FullBuildOutput\KozaniHostRuntime\KozaniHostRuntime.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
-PublishFile $FullBuildOutput\KozaniManager\KozaniManager.exe $FullPublishDir\Microsoft.WindowsAppRuntime\
-PublishFile $FullBuildOutput\KozaniManager\KozaniManager.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
-PublishFile $FullBuildOutput\KozaniManagerRuntime\KozaniManagerRuntime.exe $FullPublishDir\Microsoft.WindowsAppRuntime\
-PublishFile $FullBuildOutput\KozaniManagerRuntime\KozaniManagerRuntime.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
-PublishFile $FullBuildOutput\KozaniManagerProxyStub\KozaniManagerProxyStub.dll $FullPublishDir\Microsoft.WindowsAppRuntime\
-PublishFile $FullBuildOutput\KozaniManagerProxyStub\KozaniManagerProxyStub.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
-PublishFile $FullBuildOutput\KozaniRemoteManager\KozaniRemoteManager.exe $FullPublishDir\Microsoft.WindowsAppRuntime\
-PublishFile $FullBuildOutput\KozaniRemoteManager\KozaniRemoteManager.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
-PublishFile $FullBuildOutput\KozaniRemoteManagerProxyStub\KozaniRemoteManagerProxyStub.dll $FullPublishDir\Microsoft.WindowsAppRuntime\
-PublishFile $FullBuildOutput\KozaniRemoteManagerProxyStub\KozaniRemoteManagerProxyStub.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
+
 
 #
 PublishFile $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.exe $FullPublishDir\DynamicDependency.DataStore\
@@ -210,7 +195,7 @@ PublishFile $FullBuildOutput\KozaniHostRuntime\KozaniHostRuntime.exe $NugetDir\r
 PublishFile $FullBuildOutput\KozaniHostRuntime\KozaniHostRuntime.pdb $NugetDir\runtimes\win10-$Platform\native
 PublishFile $FullBuildOutput\KozaniManager\KozaniManager.exe $NugetDir\runtimes\win10-$Platform\native
 PublishFile $FullBuildOutput\KozaniManager\KozaniManager.pdb $NugetDir\runtimes\win10-$Platform\native
-PublishFile $FullBuildOutput\KozaniManagerRuntime\KozaniManagerRuntime.exe $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniManagerRuntime\KozaniManagerRuntime.dll $NugetDir\runtimes\win10-$Platform\native
 PublishFile $FullBuildOutput\KozaniManagerRuntime\KozaniManagerRuntime.pdb $NugetDir\runtimes\win10-$Platform\native
 PublishFile $FullBuildOutput\KozaniManagerProxyStub\KozaniManagerProxyStub.dll $NugetDir\runtimes\win10-$Platform\native
 PublishFile $FullBuildOutput\KozaniManagerProxyStub\KozaniManagerProxyStub.pdb $NugetDir\runtimes\win10-$Platform\native
@@ -249,6 +234,8 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsApp
 # Tools
 PublishFile $FullBuildOutput\WindowsAppRuntime_MSIXInstallFromPath\WindowsAppRuntime_MSIXInstallFromPath.exe $NugetDir\tools\$Platform
 PublishFile $FullBuildOutput\WindowsAppRuntime_MSIXInstallFromPath\WindowsAppRuntime_MSIXInstallFromPath.pdb $NugetDir\tools\$Platform
+PublishFile $FullBuildOutput\MakeMSIX\MakeMSIX.exe $NugetDir\tools\$Platform
+PublishFile $FullBuildOutput\MakeMSIX\MakeMSIX.pdb $NugetDir\tools\$Platform
 #
 # WinMD for UWP apps
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\uap10.0
