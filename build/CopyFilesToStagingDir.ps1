@@ -55,7 +55,43 @@ PublishFile $FullBuildOutput\RestartAgent\RestartAgent.exe $FullPublishDir\Micro
 PublishFile $FullBuildOutput\RestartAgent\RestartAgent.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\DeploymentAgent\DeploymentAgent.exe $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\DeploymentAgent\DeploymentAgent.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
-
+#
+## Publish Kozani Artifacts
+### Kozani WINMDs in MSIX Framework package
+PublishFile $FullBuildOutput\KozaniAppGraph\StrippedWinMD\Microsoft.Kozani.AppGraph.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniPackage\StrippedWinMD\Microsoft.Kozani.Package.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniSendToLocal\StrippedWinMD\Microsoft.Kozani.SendToLocal.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniSendToRemote\StrippedWinMD\Microsoft.Kozani.SendToRemote.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniSettings\StrippedWinMD\Microsoft.Kozani.Settings.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniHostRuntime\StrippedWinMD\Microsoft.Kozani.HostRuntime.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniManager\StrippedWinMD\Microsoft.Kozani.Manager.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniManagerRuntime\StrippedWinMD\Microsoft.Kozani.ManagerRuntime.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+#
+### Kozani DLLs/EXEs in MSIX Framework package
+PublishFile $FullBuildOutput\KozaniAppGraph\KozaniAppGraph.dll $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniAppGraph\KozaniAppGraph.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniPackage\KozaniPackage.dll $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniPackage\KozaniPackage.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniSendToLocal\KozaniSendToLocal.dll $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniSendToLocal\KozaniSendToLocal.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniSendToRemote\KozaniSendToRemote.dll $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniSendToRemote\KozaniSendToRemote.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniSettings\KozaniSettings.dll $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniSettings\KozaniSettings.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
+#
+### Kozani DLLs/EXEs in MSIX Singleton package
+PublishFile $FullBuildOutput\KozaniHostRuntime\KozaniHostRuntime.exe $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniHostRuntime\KozaniHostRuntime.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniManager\KozaniManager.exe $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniManager\KozaniManager.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniManagerRuntime\KozaniManagerRuntime.exe $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniManagerRuntime\KozaniManagerRuntime.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniManagerProxyStub\KozaniManagerProxyStub.dll $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniManagerProxyStub\KozaniManagerProxyStub.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniRemoteManager\KozaniRemoteManager.exe $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniRemoteManager\KozaniRemoteManager.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniRemoteManagerProxyStub\KozaniRemoteManagerProxyStub.dll $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\KozaniRemoteManagerProxyStub\KozaniRemoteManagerProxyStub.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
 
 #
 PublishFile $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.exe $FullPublishDir\DynamicDependency.DataStore\
@@ -94,6 +130,20 @@ PublishFile $FullBuildOutput\DynamicDependencyLifetimeManagerShadow\DynamicDepen
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.pdb $symbolsOutputDir
 PublishFile $FullBuildOutput\RestartAgent\RestartAgent.pdb $symbolsOutputDir
 PublishFile $FullBuildOutput\DeploymentAgent\DeploymentAgent.pdb $symbolsOutputDir
+#
+## Publish Kozani pdbs:
+PublishFile $FullBuildOutput\KozaniAppGraph\KozaniAppGraph.pdb $symbolsOutputDir
+PublishFile $FullBuildOutput\KozaniSendToLocal\KozaniSendToLocal.pdb $symbolsOutputDir
+PublishFile $FullBuildOutput\KozaniSendToRemote\KozaniSendToRemote.pdb $symbolsOutputDir
+PublishFile $FullBuildOutput\KozaniPackage\KozaniPackage.pdb $symbolsOutputDir
+PublishFile $FullBuildOutput\KozaniSettings\KozaniSettings.pdb $symbolsOutputDir
+PublishFile $FullBuildOutput\KozaniHostRuntime\KozaniHostRuntime.pdb $symbolsOutputDir
+PublishFile $FullBuildOutput\KozaniManager\KozaniManager.pdb $symbolsOutputDir
+PublishFile $FullBuildOutput\KozaniManagerRuntime\KozaniManagerRuntime.pdb $symbolsOutputDir
+PublishFile $FullBuildOutput\KozaniManagerProxyStub\KozaniManagerProxyStub.pdb $symbolsOutputDir
+PublishFile $FullBuildOutput\KozaniRemoteManager\KozaniRemoteManager.pdb $symbolsOutputDir
+PublishFile $FullBuildOutput\KozaniRemoteManagerProxyStub\KozaniRemoteManagerProxyStub.pdb $symbolsOutputDir
+
 
 # Copy files to Full Nuget package (alphabetical by category)
 #
@@ -142,6 +192,33 @@ PublishFile $FullBuildOutput\RestartAgent\RestartAgent.exe $NugetDir\runtimes\wi
 PublishFile $FullBuildOutput\RestartAgent\RestartAgent.pdb $NugetDir\runtimes\win10-$Platform\native
 PublishFile $FullBuildOutput\DeploymentAgent\DeploymentAgent.exe $NugetDir\runtimes\win10-$Platform\native
 PublishFile $FullBuildOutput\DeploymentAgent\DeploymentAgent.pdb $NugetDir\runtimes\win10-$Platform\native
+#
+## Kozani - Framework package - DLLs/EXEs
+PublishFile $FullBuildOutput\KozaniAppGraph\KozaniAppGraph.dll $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniAppGraph\KozaniAppGraph.pdb $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniSendToLocal\KozaniSendToLocal.dll $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniSendToLocal\KozaniSendToLocal.pdb $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniSendToRemote\KozaniSendToRemote.dll $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniSendToRemote\KozaniSendToRemote.pdb $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniPackage\KozaniPackage.dll $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniPackage\KozaniPackage.pdb $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniSettings\KozaniSettings.dll $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniSettings\KozaniSettings.pdb $NugetDir\runtimes\win10-$Platform\native
+#
+## Kozani - Singleton package - DLLs/EXEs
+PublishFile $FullBuildOutput\KozaniHostRuntime\KozaniHostRuntime.exe $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniHostRuntime\KozaniHostRuntime.pdb $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniManager\KozaniManager.exe $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniManager\KozaniManager.pdb $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniManagerRuntime\KozaniManagerRuntime.exe $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniManagerRuntime\KozaniManagerRuntime.pdb $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniManagerProxyStub\KozaniManagerProxyStub.dll $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniManagerProxyStub\KozaniManagerProxyStub.pdb $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniRemoteManager\KozaniRemoteManager.exe $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniRemoteManager\KozaniRemoteManager.pdb $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniRemoteManagerProxyStub\KozaniRemoteManagerProxyStub.dll $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\KozaniRemoteManagerProxyStub\KozaniRemoteManagerProxyStub.pdb $NugetDir\runtimes\win10-$Platform\native
+
 #
 # MSIX Main package
 PublishFile $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.exe $NugetDir\runtimes\win10-$Platform\native
