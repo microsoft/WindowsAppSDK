@@ -39,7 +39,7 @@ indent_size = 4
 indent_style = tab
 
 # Visual Studio removes the last empty line, so don't fight it
-[*.{vcxproj}]
+[*.{vcxproj,csproj,wapproj}]
 insert_final_newline = false
 
 # YAML overrides
