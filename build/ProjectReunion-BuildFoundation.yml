@@ -305,13 +305,13 @@ jobs:
     dependsOn:
       - Build
 
-- template: WindowsAppSDK-RunTestsInPipeline-Job.yml
+- template: AzurePipelinesTemplates\WindowsAppSDK-RunTestsInPipeline-Job.yml
   parameters:
     jobName: PipelineTestsArm64
     isArm64Platfrom: true
     dependsOn:
       - Build
-      
+
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
   timeoutInMinutes: 120      
