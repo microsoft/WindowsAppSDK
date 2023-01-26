@@ -74,10 +74,8 @@ BOOL WindowsAppRuntimeInstaller::InstallActivity::Context::LogInstallerCommandLi
 
 BOOL WindowsAppRuntimeInstaller::InstallActivity::Context::LogInstallerFailureEvent(HRESULT hresult)
 {
-    DWORD eventId{ static_cast<DWORD>(hresult) };
     if (m_hEventLog)
     {
-        WCHAR message[1024]{};
         std::wstring customMessage{};
 
         switch (m_installStage)

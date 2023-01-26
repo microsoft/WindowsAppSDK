@@ -20,6 +20,8 @@ steps:
         ob_sdl_binskim_scanOutputDirectoryOnly: true
         ob_sdl_binskim_break: false 
       globalsdl:
+        tsa:
+          enabled: true
         binskim:
           enabled: true
           break: true

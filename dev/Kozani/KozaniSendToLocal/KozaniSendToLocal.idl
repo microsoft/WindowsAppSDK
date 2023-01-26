@@ -1,0 +1,17 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace Microsoft.Kozani.SendToLocal
+{
+    [contractversion(1)]
+    apicontract SendToLocalContract{};
+
+    [contract(SendToLocalContract, 1)]
+    runtimeclass SendToLocalManager
+    {
+        /// Get a SendToLocal manager for the caller's context.
+        static SendToLocalManager Open();
+
+        void TODO_ReplaceMeWithRealContent();
+    };
+}

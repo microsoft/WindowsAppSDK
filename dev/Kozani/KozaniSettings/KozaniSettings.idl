@@ -1,0 +1,17 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace Microsoft.Kozani.Settings
+{
+    [contractversion(1)]
+    apicontract SettingsContract{};
+
+    [contract(SettingsContract, 1)]
+    runtimeclass SettingsManager
+    {
+        /// Get a Settings manager for the caller's context.
+        static SettingsManager Open();
+
+        void TODO_ReplaceMeWithRealContent();
+    };
+}

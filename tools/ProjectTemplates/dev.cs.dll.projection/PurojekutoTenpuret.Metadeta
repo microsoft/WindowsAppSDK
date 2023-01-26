@@ -1,0 +1,7 @@
+{
+    "Description": "C# DLL WinRT projection via C#/WinRT",
+    "Libraries": "C#/WinRT",
+    "Name": {
+        "AllowedRegex": "^([A-Za-z][A-Za-z0-9_]*)(\\.[A-Za-z][A-Za-z0-9_]*)*$"
+    }
+}

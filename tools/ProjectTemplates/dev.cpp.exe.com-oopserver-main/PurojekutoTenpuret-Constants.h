@@ -1,0 +1,18 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+// Rely on _STRINGIZE(x) in yvals_core.h
+#ifndef _STRINGIZE
+#define _STRINGIZEX(x)  #x
+#define _STRINGIZE(x)   _STRINGIZEX(x)
+#endif
+
+#define PR_PUROJEKUTOTENPURET_LIBID_UUID        LIBID-00000000-0000-0000-0000-000000000000
+
+#define PR_PUROJEKUTOTENPURET_CLSID_UUID        CLSID-UUID-00000000-0000-0000-0000-000000000000
+#define PR_PUROJEKUTOTENPURET_CLSID_STRING      _STRINGIZE(PR_PUROJEKUTOTENPURET_CLSID_UUID)
+#define PR_PUROJEKUTOTENPURET_CLSID_GUID        CLSID-GUID-0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
+
+#if defined(WINDOWSAPPSDK_BUILD_PIPELINE) && (WINDOWSAPPSDK_BUILD_PIPELINE == 1)
+#include "PurojekutoTenpuret-Override.h"
+#endif

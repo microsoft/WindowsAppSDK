@@ -36,9 +36,6 @@
     <ClInclude Include="EnvironmentManagerCentennialTests.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EnvironmentManagerUWPTests.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="EnvironmentManagerWin32Tests.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -48,9 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EnvironmentManagerCentennialTests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnvironmentManagerUWPTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EnvironmentManagerWin32Tests.cpp">
