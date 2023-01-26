@@ -17,6 +17,9 @@
 
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <ProjectRoot>$(MSBuildThisFileDirectory)</ProjectRoot>
+    <NugetPackageDirectory>$(ProjectRoot)packages</NugetPackageDirectory>
   </PropertyGroup>
 
   <!-- Compilation differs for the build pipeline vs local development -->
