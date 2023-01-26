@@ -21,16 +21,16 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PurojekutoTenpuret.h">
+    <ClInclude Include="KozaniManagerRuntime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PurojekutoTenpuretTraceLogging.h">
+    <ClInclude Include="KozaniManagerRuntimeTraceLogging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PurojekutoTenpuretActivity.h">
+    <ClInclude Include="KozaniManagerRuntimeActivity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="M.TokuchoAbbreviation.PurojekutoTenpuretNoFeaturePrefixAbbreviation.PurojekutoTenpuretNoFeaturePrefixManager.h">
+    <ClInclude Include="M.K.MR.ManagerRuntimeManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -41,30 +41,30 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PurojekutoTenpuret.cpp">
+    <ClCompile Include="KozaniManagerRuntime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PurojekutoTenpuretActivity.cpp">
+    <ClCompile Include="KozaniManagerRuntimeActivity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PurojekutoTenpuretTraceLogging.cpp">
+    <ClCompile Include="KozaniManagerRuntimeTraceLogging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="M.TokuchoAbbreviation.PurojekutoTenpuretNoFeaturePrefixAbbreviation.PurojekutoTenpuretNoFeaturePrefixManager.cpp">
+    <ClCompile Include="M.K.MR.ManagerRuntimeManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="$(MSBuildThisFileDirectory)PurojekutoTenpuret.idl" />
+    <Midl Include="$(MSBuildThisFileDirectory)KozaniManagerRuntime.idl" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="PurojekutoTenpuret.def">
+    <None Include="KozaniManagerRuntime.def">
       <Filter>Source Files</Filter>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="PurojekutoTenpuret.rc">
+    <ResourceCompile Include="KozaniManagerRuntime.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

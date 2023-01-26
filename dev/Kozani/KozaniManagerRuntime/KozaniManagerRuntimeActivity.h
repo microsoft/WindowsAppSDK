@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "PurojekutoTenpuretTraceLogging.h"
+#include "KozaniManagerRuntimeTraceLogging.h"
 
-namespace Microsoft::TokuchoNamespace::PurojekutoTenpuret::Activity
+namespace Microsoft::Kozani::KozaniManagerRuntime::Activity
 {
 }

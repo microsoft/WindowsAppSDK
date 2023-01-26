@@ -3,9 +3,9 @@
 
 #include "pch.h"
 
-#include "M.TokuchoAbbreviation.PurojekutoTenpuretNoFeaturePrefixAbbreviation.PurojekutoTenpuretNoFeaturePrefixAbbreviationManager.h"
+#include "M.TokuchoAbbreviation.PurojekutoTenpuretNoFeaturePrefixAbbreviation.PurojekutoTenpuretNoFeaturePrefixManager.h"
 
-#include "Microsoft.TokuchoDotNamespace.PurojekutoTenpuretNoFeaturePrefixAbbreviation.PurojekutoTenpuretNoFeaturePrefixAbbreviationManager.g.cpp"
+#include "Microsoft.TokuchoDotNamespace.PurojekutoTenpuretNoFeaturePrefix.PurojekutoTenpuretNoFeaturePrefixManager.g.cpp"
 
 namespace winrt::Microsoft::TokuchoNamespace::PurojekutoTenpuretNoFeaturePrefix::implementation
 {
