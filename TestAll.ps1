@@ -74,8 +74,10 @@ if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "DisplayInfo")) {
     Get-WinSystemLocale
 }
 
+$ConfigPlat = Join-Path $Configuration $Platform
+$OutputFolderPath = Join-Path $OutputFolder $ConfigPlat
 if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "RunTests")) {   
-    foreach ($testmd in (Get-ChildItem -Recurse -Filter "*.testmd" $OutputFolder))
+    foreach ($testmd in (Get-ChildItem -Recurse -Filter "*.testmd" $OutputFolderPath))
     {
         $testJson = Get-Content -Raw $testmd.FullName | ConvertFrom-Json
         Write-Host $testJson.Tests
