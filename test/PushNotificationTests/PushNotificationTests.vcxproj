@@ -122,6 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="PushNotificationTests.testmd" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.PushNotifications">
@@ -151,6 +152,7 @@
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
     <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
     <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll" DestinationFolder="$(OutDir)" />
+    <Copy SourceFiles="PushNotificationTests.testmd" DestinationFolder="$(OutDir)" />
   </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

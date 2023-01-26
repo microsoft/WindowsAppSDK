@@ -6,10 +6,6 @@ Param(
     [string]$Platform = "x64",
     [string]$Configuration = "release",
     [string]$ImageName = "",
-    [Alias('Select')]
-    [string]$TaefSelect = "*",
-    [Alias('Name')]
-    [string]$TaefName = "*",
     [switch]$AzurePipelineBuild = $false,
     [switch]$Help = $false
 )
@@ -37,14 +33,6 @@ Switches:
       Example: -Configuration debug
       Example: -Configuration "debug,release"
 
-  -Select <query>
-      The selection criteria to be used when selecting tests from each test binary.
-      Example: -Select "@Name='WindowsAppSDK.Test.AppTests.TestClass1.Test1'"
-
-  -Name <testname>
-      Alternative to "-Select "@Name='<testname>'".
-      Example: -Name "WindowsAppSDK.Test.AppTests.TestClass1.Test1"
-
   -AzureBuildStep <step>
       Used by Azure to selectively run parts of the script in order to account for yaml-specific actions like signing.
       Example: -AzureBuildStep "CopyFilesFromTransportPackages"
@@ -59,8 +47,6 @@ Switches:
   Exit
 }
 $lastexitcode = 0
-
-$ErrorActionPreference = "Stop"
 
 if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "DisplayInfo")) {
     # Display OS build/version info
@@ -88,13 +74,27 @@ if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "DisplayInfo")) {
     Get-WinSystemLocale
 }
 
-$ConfigPlat = Join-Path $Configuration $Platform
-$OutputFolderPath = Join-Path $OutputFolder $ConfigPlat
-$tePath = (Join-Path $OutputFolderPath "PushNotificationTests\TE.exe")
 if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "RunTests")) {   
-    $dllFile = (Join-Path $OutputFolder "Release\x86\PushNotificationTests\PushNotificationTests.dll")
-    Write-Host "$tePath $dllFile"
-    & $tePath $dllFile
+    foreach ($testmd in (Get-ChildItem -Recurse -Filter "*.testmd" $OutputFolder))
+    {
+        $testJson = Get-Content -Raw $testmd.FullName | ConvertFrom-Json
+        Write-Host $testJson.Tests
+        foreach($testConfig in $testJson.Tests)
+        {
+            Write-Host $testConfig.Description
+            if($testConfig.Status -eq "Enabled")
+            {
+                $testFolder = Split-Path -parent $testmd.FullName
+                $tePath = Join-Path $testFolder "te.exe"
+                $dllFile = Join-Path $testFolder $testConfig.Filename
+                & $tePath $dllFile
+            }
+            else
+            {
+                Write-Host "Test is disabled. Not running."
+            }
+        }
+    }
 }
 
 $TotalTime = (Get-Date)-$StartTime

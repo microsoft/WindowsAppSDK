@@ -129,7 +129,6 @@ steps:
         -Platform "${{ parameters.buildPlatform }}" 
         -Configuration "${{ parameters.buildConfiguration }}"
         -ImageName "${{ parameters.ImageName }}"
-        -TaefSelect "${{ parameters.TaefSelect }}"
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Build Artifacts'
