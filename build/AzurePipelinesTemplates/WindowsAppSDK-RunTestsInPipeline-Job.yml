@@ -98,7 +98,7 @@ jobs:
         Server22_DC_arm64chk:
           imageName: Windows.11.Server2022.DataCenter.arm64
           buildPlatform: arm64
-          buildConfiguration: debug
+          buildConfiguration: release
           testLocale: en-US
   pool:
     # arm64 and amd64 use different pools because their VM types are different.
@@ -111,7 +111,6 @@ jobs:
   timeoutInMinutes: 60
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
-    testOutputArtifactDir: $(Build.SourcesDirectory)\PipelineTestOutput
   steps:
     - template: WindowsAppSDK-RunTests-Steps.yml
       parameters:

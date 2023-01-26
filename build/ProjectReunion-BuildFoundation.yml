@@ -170,13 +170,13 @@ jobs:
       arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: TAEF package'
+    displayName: 'Publish artifact: Test dependencies'
     inputs:
       PathtoPublish: '$(build.SourcesDirectory)\packages'
       artifactName: 'packages'
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: Cert'
+    displayName: 'Publish artifact: Test cert'
     inputs:
       PathtoPublish: '$(build.SourcesDirectory)\.user'
       artifactName: 'TestCert'
@@ -304,8 +304,14 @@ jobs:
     isArm64Platfrom: false
     dependsOn:
       - Build
-      - BuildAndTestMRT
 
+- template: WindowsAppSDK-RunTestsInPipeline-Job.yml
+  parameters:
+    jobName: PipelineTestsArm64
+    isArm64Platfrom: true
+    dependsOn:
+      - Build
+      
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
   timeoutInMinutes: 120      

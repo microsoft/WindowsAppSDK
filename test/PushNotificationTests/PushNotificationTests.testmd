@@ -6,13 +6,6 @@
             "Parameters": "",
             "Architectures": ["x86", "x64", "arm64"],
             "Status": "Enabled" 
-        },
-        {
-            "Description": "Disabled test",
-            "Filename": "PushNotificationTests.dll",
-            "Parameters": "",
-            "Architectures": ["x86", "x64", "arm64"],
-            "Status": "Disabled"    
         }
     ]
 }

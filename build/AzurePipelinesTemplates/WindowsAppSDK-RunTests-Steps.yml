@@ -16,38 +16,20 @@ steps:
 
   # We only bring down the relevant content for this build config (Debug/Release) & platform, to save some space and time.
   - task: DownloadBuildArtifacts@0
-    displayName: 'Download test dependencies'
+    displayName: 'Download: Test dependencies'
     inputs:
       artifactName: 'packages'
       downloadPath: $(Build.SourcesDirectory)
 
     # We only bring down the relevant content for this build config (Debug/Release) & platform, to save some space and time.
   - task: DownloadBuildArtifacts@0
-    displayName: 'Download: Test cert'
+    displayName: 'Download: WinAppSDK Test Certificate'
     inputs:
       artifactName: 'TestCert'
       downloadPath: $(Build.SourcesDirectory)\BuildOutput
 
-  # When we download the test payload artifact, it extracts the contents under a folder with the artifact name, and there is no way to disable this.
-  # So we need to move the contents up one level.
-  #- powershell: |
-     # Move-Item -Path $(Build.SourcesDirectory)\BuildOutput\BuildOutput\${{ parameters.buildConfiguration }}\${{ parameters.buildPlatform }} -Destination $(Build.SourcesDirectory)\BuildOutput
-    # displayName: 'Move test binaries to BuildOutput folder'
-
-  - script: |
-      dir /s $(Build.SourcesDirectory)\BuildOutput\BuildOutput
-    displayName: 'DIAG: dir testPayloadDir'
-
-  - script: |
-      dir /s $(Build.SourcesDirectory)\packages
-    displayName: 'DIAG: dir taefPackage'
-
-  - script: |
-      dir /s $(Build.SourcesDirectory)\BuildOutput\TestCert
-    displayName: 'DIAG: dir TestCert'
-
   - task: powerShell@2
-    displayName: 'Install certificates in payload'
+    displayName: 'Enable developer mode'
     inputs:
       targetType: 'inline'
       script: |
@@ -58,16 +40,20 @@ steps:
             }
 
             New-ItemProperty -Path $RegistryKeyPath -Name AllowDevelopmentWithoutDevLicense -PropertyType DWORD -Value 1 -Force
-            New-ItemProperty -Path $RegistryKeyPath -Name AllowAllTrustedApps -PropertyType DWORD -Value 1 -Force
             reg add HKLM\Software\Policies\Microsoft\Windows\Appx /v AllowDevelopmentWithoutDevLicense /t REG_DWORD /d 1 /f
-            reg add HKLM\Software\Policies\Microsoft\Windows\Appx /v AllowAllTrustedApps /t REG_DWORD /d 1 /f
 
+  - task: powerShell@2
+    displayName: 'Install certificates in payload'
+    inputs:
+      targetType: 'inline'
+      script: |
             foreach($cerFile in (Get-ChildItem -Path '$(Build.SourcesDirectory)\BuildOutput' '*.cer' -Recurse))
             {
               Write-Host "Adding cert $($cerFile.FullName)"
               certutil -addstore TrustedPeople $($cerFile.FullName)
               certutil -addstore root $($cerFile.FullName)
             }
+
   - task: powerShell@2
     displayName: 'Run dotnet installer'
     inputs:
@@ -98,8 +84,6 @@ steps:
       arguments: -NoInteractive -Offline -Verbose -CheckTAEFService
       workingDirectory: '$(Build.SourcesDirectory)'
 
-
-
   - task: VisualStudioTestPlatformInstaller@1
     inputs:
       versionSelector: latestStable
@@ -129,23 +113,3 @@ steps:
         -Platform "${{ parameters.buildPlatform }}" 
         -Configuration "${{ parameters.buildConfiguration }}"
         -ImageName "${{ parameters.ImageName }}"
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Build Artifacts'
-    condition: succeededOrFailed()
-    inputs:
-      PathtoPublish: $(testOutputArtifactDir)
-      artifactName: TestResults
-
-  - task: PublishTestResults@2
-    displayName: 'Publish test results'
-    condition: always()
-    inputs:
-      testResultsFormat: xUnit
-      testResultsFiles: testResults-*.xml
-      searchFolder: '$(Build.SourcesDirectory)\BuildOutput'
-      mergeTestResults: true
-      failTaskOnFailedTests: true 
-      testRunTitle: '$(Agent.JobName)'
-      buildPlatform: ${{ parameters.buildPlatform }}
-      buildConfiguration: ${{ parameters.buildConfiguration }}
