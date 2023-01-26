@@ -224,6 +224,9 @@ namespace Test::DynamicDependency
         static MddPackageDependencyProcessorArchitectures GetCurrentArchitectureAsFilter();
 
     private:
+        static void VerifyPackageGraphRevisionId(
+            const UINT32 expectedPackageGraphRevisionId);
+
         static void VerifyGenerationId(
             const UINT32 expectedGenerationId);
 

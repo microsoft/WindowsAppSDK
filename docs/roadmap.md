@@ -35,10 +35,10 @@ Headline features for this release include:
 - **Mica** & **Background Acrylic** styles are available for WinUI 3 content.  
 - **Improved default and custom title bar** with new functionalities like z-order, sizing/resizing, tall title bar, and extended show.
 - Apps using the Windows App SDK can **run with elevated permissions**.
-- Apps that deploy with all their dependencies together are now able to include the Windows App SDK as well.  **(self-contained deployment)**
-- Apps can **push notifications** regardless of being packaged/unpackaged, or whether the app is published in the Store.
-- The **environment variables** PATH, and PATHEXT can be managed and tracked at runtime using new convenient APIs.  
-- Apps can **restart** manually or register themselves to be restarted if it was running when a system update occurs.
+- Apps can deploy **self-contained** with Windows App SDK as an included dependency.
+- Apps can **push notifications** regardless of packaging type, and where the app is published.
+- The **environment variables** PATH and PATHEXT can be managed and tracked at runtime using new convenient APIs.  
+- Apps can **restart** manually or register themselves to be restarted after a system update occurs.
 
 A list of 1.2 features, aimed to ship near the end of 2022, will be shared in a future roadmap update.
 

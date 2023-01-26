@@ -117,5 +117,13 @@
             <ActivatableClass ActivatableClassId="Microsoft.Windows.System.EnvironmentManager" ThreadingModel="both" />
         </InProcessServer>
     </Extension>
+    <Extension Category="windows.activatableClass.proxyStub">
+      <ProxyStub ClassId="71201C0F-21E1-4B80-945F-7B0A10F90883">
+          <Path>PushNotificationsLongRunningTask.ProxyStub.dll</Path>
+          <Interface Name="IWpnForegroundSink" InterfaceId="25604D55-9B17-426F-9D67-2B11B3A65598"/>
+          <Interface Name="IWpnForegroundSink2" InterfaceId="559B4205-F810-4947-B02B-3EA9A311C6AD"/>
+          <Interface Name="INotificationsLongRunningPlatform" InterfaceId="60FC21B2-B396-4D49-94F0-7555869FB93C"/>
+      </ProxyStub>
+    </Extension>
   </Extensions>
 </Package>

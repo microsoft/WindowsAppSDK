@@ -1,0 +1,15 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[object]
+[uuid(00000000-0000-0000-0000-000000000000)]
+[pointer_default(unique)]
+interface PurojekutoTenpuretInterface : IUnknown
+{
+    HRESULT Initialize();
+
+    HRESULT Shutdown();
+};
