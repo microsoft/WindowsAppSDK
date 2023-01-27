@@ -6,6 +6,7 @@ Param(
 
 $ProgressPreference = "SilentlyContinue"
 $ErrorActionPreference = "Stop"
+Set-StrictMode -Version 3.0
 
 $outputPath = Join-Path $OutputDirectory "vc_redist.$Platform.exe"
 if(!(Test-Path $OutputDirectory))

@@ -1,11 +1,13 @@
-[CmdLetBinding()]
-Param(
-    [string]$Platform = "x64",
-    [string]$OutputDirectory = ""
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$Platform,
+    [Parameter(Mandatory=$true)]
+    [string]$OutputDirectory
 )
 
 $ProgressPreference = "SilentlyContinue"
 $ErrorActionPreference = "Stop"
+Set-StrictMode -Version 3.0
 
 $outputPath = Join-Path $OutputDirectory "dotnet-windowsdesktop-runtime-installer.exe"
 if(!(Test-Path $OutputDirectory))

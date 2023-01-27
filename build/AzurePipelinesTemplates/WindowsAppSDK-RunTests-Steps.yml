@@ -109,7 +109,7 @@ steps:
       filePath: 'TestAll.ps1'
       arguments: >
         -OutputFolder "$(Build.SourcesDirectory)\BuildOutput\BuildOutput"
-        -AzureBuildStep "RunTests" 
         -Platform "${{ parameters.buildPlatform }}" 
         -Configuration "${{ parameters.buildConfiguration }}"
-        -ImageName "${{ parameters.ImageName }}"
+        -AzureBuildStep "RunTests"
+        

@@ -148,27 +148,6 @@ jobs:
       PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
       artifactName: 'BuildOutput'
 
-  - task: PowerShell@2
-    displayName: 'Download dotnet installer'
-    inputs:
-      targetType: filePath
-      filePath: build\scripts\DownloadDotNetRuntimeInstaller.ps1
-      arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
-
-  - task: PowerShell@2
-    displayName: 'Download vcredist installer'
-    inputs:
-      targetType: filePath
-      filePath: build\scripts\DownloadVCRedistInstaller.ps1
-      arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
-
-  - task: PowerShell@2
-    displayName: 'Download desktop bridge CRT'
-    inputs:
-      targetType: filePath
-      filePath: build\scripts\DownloadVCLibsDesktop.ps1
-      arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
-
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Test dependencies'
     inputs:
@@ -304,13 +283,14 @@ jobs:
     isArm64Platfrom: false
     dependsOn:
       - Build
-
+      - BuildAndTestMRT
 - template: AzurePipelinesTemplates\WindowsAppSDK-RunTestsInPipeline-Job.yml
   parameters:
     jobName: PipelineTestsArm64
     isArm64Platfrom: true
     dependsOn:
       - Build
+      - BuildAndTestMRT
 
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
