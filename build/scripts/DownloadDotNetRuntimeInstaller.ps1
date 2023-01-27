@@ -10,9 +10,9 @@ $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 3.0
 
 $outputPath = Join-Path $OutputDirectory "dotnet-windowsdesktop-runtime-installer.exe"
-if(!(Test-Path $OutputDirectory))
+if(-not(Test-Path $OutputDirectory))
 {
-    New-Item -ItemType Directory -Path $OutputDirectory | Out-Null
+    $null = New-Item -ItemType Directory -Path $OutputDirectory
 }
 
 # Find direct download links at https://dotnet.microsoft.com/download/dotnet/5.0
@@ -34,7 +34,7 @@ else
 }
 
 
-if(!(Test-Path $outputPath))
+if(-not(Test-Path $outputPath))
 {
     Write-Host "Downloading $downloadurl to $outputPath"
     Invoke-WebRequest $downloadurl -OutFile $outputPath

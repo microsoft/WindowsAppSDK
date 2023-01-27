@@ -1,7 +1,8 @@
-[CmdLetBinding()]
-Param(
-    [string]$Platform = "x64",
-    [string]$OutputDirectory = ""
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$Platform,
+    [Parameter(Mandatory=$true)]
+    [string]$OutputDirectory
 )
 
 $ProgressPreference = "SilentlyContinue"
@@ -9,15 +10,15 @@ $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 3.0
 
 $outputPath = Join-Path $OutputDirectory "vc_redist.$Platform.exe"
-if(!(Test-Path $OutputDirectory))
+if(-not(Test-Path $OutputDirectory))
 {
-    New-Item -ItemType Directory -Path $OutputDirectory | Out-Null
+    $null New-Item -ItemType Directory -Path $OutputDirectory
 }
 
 # Find direct download links at https://dotnet.microsoft.com/download/dotnet/5.0
 $downloadurl = "https://aka.ms/vs/17/release/vc_redist.$Platform.exe"
 
-if(!(Test-Path $outputPath))
+if(-not(Test-Path $outputPath))
 {
     Write-Host "Downloading $downloadurl to $outputPath"
     Invoke-WebRequest $downloadurl -OutFile $outputPath
