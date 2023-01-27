@@ -119,7 +119,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         THROW_IF_FAILED(operationalCode);
 
-        winrt::copy_from_abi(channelInfo.channelExpiryTime, &channelExpiryTime);
+        // Need to manually convert from the ABI::DateTime type to the winrt::DateTime type since they have different contracts.
+        FILETIME filetime;
+        LARGE_INTEGER largeTime;
+        largeTime.QuadPart = channelExpiryTime.UniversalTime;
+        filetime.dwLowDateTime = largeTime.LowPart;
+        filetime.dwHighDateTime = largeTime.HighPart;
+
+        channelInfo.channelExpiryTime = winrt::clock::from_FILETIME(filetime);
         channelInfo.appId = winrt::hstring{ appId.get() };
         channelInfo.channelId = winrt::hstring{ channelId.get() };
         channelInfo.channelUri = winrt::hstring{ channelUri.get() };
