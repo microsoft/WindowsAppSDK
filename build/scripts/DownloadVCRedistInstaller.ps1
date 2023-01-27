@@ -12,7 +12,7 @@ Set-StrictMode -Version 3.0
 $outputPath = Join-Path $OutputDirectory "vc_redist.$Platform.exe"
 if(-not(Test-Path $OutputDirectory))
 {
-    $null New-Item -ItemType Directory -Path $OutputDirectory
+    $null = New-Item -ItemType Directory -Path $OutputDirectory
 }
 
 # Find direct download links at https://dotnet.microsoft.com/download/dotnet/5.0
