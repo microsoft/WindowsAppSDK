@@ -6,9 +6,11 @@
 
 .DESCRIPTION
     Review the current environment and fix or warn if anything is amiss. This includes...
-    * TAEF service is installed and running
+    * Developer mode is enabled
     * Test certificate to sign test MSIX packages is installed
+    * TAEF service is installed and running
     * Visual Studio 2022 is installed and properly configured
+    * Dependencies in use are in the approved list of packages and versions
 
 .PARAMETER CertPassword
     Password for new certificates
