@@ -22,6 +22,9 @@
 .PARAMETER CheckDependencies
     Verify dependencies in projects (*proj, packages.config, eng\Version.*.props) match defined dependencies (eng\Version.*.xml)
 
+.PARAMETER CheckDeveloperMode
+    Check developer mode
+
 .PARAMETER CheckTAEFService
     Check the TAEF service
 
@@ -78,6 +81,8 @@ Param(
 
     [Switch]$CheckDependencies=$false,
 
+    [Switch]$CheckDeveloperMode=$false,
+
     [Switch]$Clean=$false,
 
     [Switch]$NoInteractive=$false,
@@ -102,7 +107,7 @@ $ErrorActionPreference = "Stop"
 $global:issues = 0
 
 $remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
-if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false))
+if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($CheckDeveloperMode -eq $false))
 {
     $CheckAll = $true
 }
@@ -933,6 +938,33 @@ function Test-Dependencies
     Write-Host "Scanned $($files) *.vcxproj"
 }
 
+function Get-DeveloperMode
+{
+    $regkey = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock'
+    if (Test-Path -Path $regkey -PathType Container)
+    {
+        $value = Get-ItemProperty -Path $regkey -Name AllowDevelopmentWithoutDevLicense
+        return $value.AllowDevelopmentWithoutDevLicense -eq 1
+    }
+
+    return $false
+}
+
+function Test-DeveloperMode
+{
+    $developermode = Get-DeveloperMode
+    if ($developermode -eq $true)
+    {
+        Write-Host "Developer mode...Enabled"
+    }
+    else
+    {
+        Write-Host "ERROR: Developer mode is not enabled. Enable it via Settings"
+        $global:issues++
+        $fatal_errors++
+    }
+}
+
 Write-Output "Checking developer environment..."
 
 $cpu = Get-CpuArchitecture
@@ -991,6 +1023,10 @@ if (($CheckAll -ne $false) -Or ($CheckDependencies -ne $false))
     Test-Dependencies
 }
 
+if (($CheckAll -ne $false) -Or ($CheckDeveloperMode -ne $false))
+{
+    Test-DeveloperMode
+}
 
 if (($RemoveAll -ne $false) -Or ($RemoveTestCert -ne $false))
 {
