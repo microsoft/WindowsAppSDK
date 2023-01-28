@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -352,8 +352,8 @@ namespace Test::AppNotification::Builder
                 .SetToolTip(L"toolTip"))
             };
             auto expected{ L"<toast useButtonStyle='true'><visual><binding template='ToastGeneric'></binding></visual><actions><action content='content' arguments='key=value' imageUri='http://www.microsoft.com/' hint-inputId='inputId' hint-buttonStyle='Success' hint-toolTip='toolTip'/></actions></toast>"};
-
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+            auto actual{ builder.BuildNotification().Payload() };
+            VERIFY_ARE_EQUAL(actual, expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddButtonWithEmptyKey)
@@ -631,8 +631,8 @@ namespace Test::AppNotification::Builder
                     .AddItem(L"item1", L"item1 text")
                     .AddItem(L"item1", L"item2 text") };
             auto expected{ L"<input id='comboBox1' type='selection'><selection id='item1' content='item2 text'/></input>" };
-
-            VERIFY_ARE_EQUAL(comboBox.as<winrt::Windows::Foundation::IStringable>().ToString(), expected);
+            auto actual{ comboBox.as<winrt::Windows::Foundation::IStringable>().ToString() };
+            VERIFY_ARE_EQUAL(actual, expected);
         }
 
         TEST_METHOD(AppNotificationComboBoxSetSelectedItemWithoutAnId)
@@ -666,5 +666,31 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(Decode(LR"(&%3B"%3D'%25<>)"), LR"(&;"='%<>)");
             VERIFY_ARE_EQUAL(Decode(L"%3B%3D%25"), L";=%");
         }
+
+        TEST_METHOD(AppNotificationBuilderAddSnoozeButton)
+        {
+            auto builder{ winrt::AppNotificationBuilder()
+                .SetScenario(winrt::AppNotificationScenario::Reminder)
+                .AddText(L"Adaptive Tiles Meeting", winrt::AppNotificationTextProperties()
+                    .SetMaxLines(1))
+                .AddText(L"Conf Room 2001 / Building 135")
+                .AddText(L"10:00 AM - 10:30 AM")
+                .AddComboBox(winrt::AppNotificationComboBox(L"snoozeTime")
+                    .AddItem(L"1", L"1 minute")
+                    .AddItem(L"15", L"15 minutes")
+                    .AddItem(L"60", L"1 hour")
+                    .AddItem(L"240", L"4 hours")
+                    .AddItem(L"1440", L"1 day")
+                    .SetSelectedItem(L"15"))
+                .AddButton(winrt::AppNotificationButton(L"")
+                    .SetSnooze(L"snoozeTime"))
+                .AddButton(winrt::AppNotificationButton(L"")
+                    .SetDismiss())
+            };
+            auto expected{ L"<toast scenario='reminder'><visual><binding template='ToastGeneric'><text hint-maxLines='1'>Adaptive Tiles Meeting</text><text>Conf Room 2001 / Building 135</text><text>10:00 AM - 10:30 AM</text></binding></visual><actions><input id='snoozeTime' type='selection' defaultInput='15'><selection id='1' content='1 minute'/><selection id='15' content='15 minutes'/><selection id='60' content='1 hour'/><selection id='240' content='4 hours'/><selection id='1440' content='1 day'/></input><action content='' arguments='snooze' activationType='system' hint-inputId='snoozeTime'/><action content='' arguments='dismiss' activationType='system'/></actions></toast>" };
+            auto actual{ builder.BuildNotification().Payload() };
+            VERIFY_ARE_EQUAL(actual, expected);
+        }
+
     };
 }

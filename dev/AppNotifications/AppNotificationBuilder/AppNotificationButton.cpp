@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -29,6 +29,18 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         THROW_HR_IF_MSG(E_INVALIDARG, m_protocolUri, "You cannot add an argument after calling SetInvokeUri");
 
         m_arguments.Insert(EncodeArgument(key.c_str()), EncodeArgument(value.c_str()));
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetSnooze(winrt::hstring const& value)
+    {
+        m_snooze = true;
+        return SetInputId(value);
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetDismiss()
+    {
+        m_dismiss = true;
         return *this;
     }
 
@@ -85,6 +97,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         {
             std::wstring protocolTargetPfn{ !m_targetApplicationPfn.empty() ? wil::str_printf<std::wstring>(L" protocolActivationTargetApplicationPfn='%ls'", m_targetApplicationPfn.c_str()) : L"" };
             return wil::str_printf<std::wstring>(L" arguments='%ws' activationType='protocol'%ls", m_protocolUri.ToString().c_str(), protocolTargetPfn.c_str());
+        }
+        else if (m_snooze)
+        {
+            return wil::str_printf<std::wstring>(L" arguments='snooze' activationType='system'");
+        }
+        else if (m_dismiss)
+        {
+            return wil::str_printf<std::wstring>(L" arguments='dismiss' activationType='system'");
         }
         else
         {

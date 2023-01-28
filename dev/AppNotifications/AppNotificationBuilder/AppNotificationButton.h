@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -18,6 +18,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         void Arguments(winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& value) { m_arguments = value; };
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> Arguments() { return m_arguments; };
+
+        void Snooze(bool value) { m_snooze = value; };
+        bool Snooze() { return m_snooze; };
+
+        void Dismiss(bool value) { m_dismiss = value; };
+        bool Dismiss() { return m_dismiss; };
 
         void Icon(winrt::Windows::Foundation::Uri const& value) { m_iconUri = value; };
         winrt::Windows::Foundation::Uri Icon() { return m_iconUri; };
@@ -43,6 +49,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         // Fluent setters
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AddArgument(winrt::hstring const& key, winrt::hstring const& value);
 
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetSnooze(winrt::hstring const& value);
+
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetDismiss();
+
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetIcon(winrt::Windows::Foundation::Uri const& value);
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetToolTip(winrt::hstring const& value);
@@ -62,10 +72,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     private:
         std::wstring GetActivationArguments();
+        std::wstring GetActivationArguments2();
         std::wstring GetButtonStyle();
 
         winrt::hstring m_content{};
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_arguments { winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
+        bool m_snooze{};
+        bool m_dismiss{};
         winrt::Windows::Foundation::Uri m_iconUri{ nullptr };
         winrt::Windows::Foundation::Uri m_protocolUri{ nullptr };
         winrt::hstring m_targetApplicationPfn{};
