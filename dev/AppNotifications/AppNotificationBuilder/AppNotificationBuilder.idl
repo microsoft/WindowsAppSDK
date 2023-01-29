@@ -34,7 +34,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
     [contract(AppNotificationBuilderContract, 1)]
     enum AppNotificationButtonType
     {
-        Default,
+        Standard,
         Snooze,
         Dismiss,
     };
