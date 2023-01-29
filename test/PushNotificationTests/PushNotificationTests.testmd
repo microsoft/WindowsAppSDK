@@ -4,7 +4,7 @@
             "Description": "Enabled: This module tests the push notifications component in WinAppSDK.",
             "Filename": "PushNotificationTests.dll",
             "Parameters": "",
-            "Architectures": ["x86", "x64", "arm64"],
+            "Architectures": ["x64"],
             "Status": "Enabled" 
         }
     ]

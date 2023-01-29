@@ -47,18 +47,23 @@ $outputFolderPath = Join-Path $OutputFolder $configPlat
 foreach ($testmd in (Get-ChildItem -Recurse -Filter "*.testmd" $outputFolderPath))
 {
     $testJson = Get-Content -Raw $testmd.FullName | ConvertFrom-Json
-    Write-Host $testJson.Tests
     foreach ($testConfig in $testJson.Tests)
     {
         Write-Host $testConfig.Description
-        if ($testConfig.Status -eq "Enabled")
+        $validPlatform = $testConfig.Architectures.Contains($Platform)
+        $testEnabled = $testConfig.Status -eq "Enabled"
+        if ($validPlatform -and $testEnabled)
         {
             $testFolder = Split-Path -parent $testmd.FullName
             $tePath = Join-Path $testFolder "te.exe"
             $dllFile = Join-Path $testFolder $testConfig.Filename
             & $tePath $dllFile
         }
-        else
+        elseif (-not($validPlatform))
+        {
+            Write-Host "$Platform not listed in supported architectures."
+        }
+        elseif (-not($testEnabled))
         {
             Write-Host "Test is disabled. Not running."
         }
