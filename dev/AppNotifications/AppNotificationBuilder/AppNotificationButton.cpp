@@ -13,6 +13,23 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
     AppNotificationButton::AppNotificationButton(winrt::hstring const& content) : m_content(content) { };
 
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::MakeSnoozeButton(winrt::hstring const& inputId)
+    {
+        auto snoozeButton{ winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton(L"") };
+        snoozeButton.ButtonType(AppNotificationButtonType::Snooze);
+        snoozeButton.InputId(inputId);
+
+        return snoozeButton;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::MakeDismissButton()
+    {
+        auto dismissButton{ winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton(L"") };
+        dismissButton.ButtonType(AppNotificationButtonType::Dismiss);
+
+        return dismissButton;
+    }
+
     bool AppNotificationButton::IsToolTipSupported()
     {
         return WindowsVersion::IsWindows10_20H1OrGreater();

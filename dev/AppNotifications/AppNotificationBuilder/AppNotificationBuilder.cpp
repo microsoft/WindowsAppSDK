@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -253,7 +253,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         dismissButton.ButtonType(AppNotificationButtonType::Dismiss);
 
         return AddButton(dismissButton);
-
     }
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddComboBox(AppNotificationComboBox const& value)

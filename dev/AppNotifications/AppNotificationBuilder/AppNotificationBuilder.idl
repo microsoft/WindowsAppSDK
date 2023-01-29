@@ -45,6 +45,9 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationButton();
         AppNotificationButton(String content);
 
+        static AppNotificationButton MakeSnoozeButton(String inputId);
+        static AppNotificationButton MakeDismissButton();
+
         String Content;
         AppNotificationButtonType ButtonType;
         Windows.Foundation.Collections.IMap<String, String> Arguments;

@@ -12,6 +12,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         AppNotificationButton() = default;
         AppNotificationButton(winrt::hstring const& content);
 
+        static winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton MakeSnoozeButton(winrt::hstring const& inputId);
+        static winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton MakeDismissButton();
+
         // Properties
         void Content(winrt::hstring const& value) { m_content = value; };
         winrt::hstring Content() { return m_content; };
@@ -45,10 +48,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         // Fluent setters
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AddArgument(winrt::hstring const& key, winrt::hstring const& value);
-
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetSnooze(winrt::hstring const& value);
-
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetDismiss();
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetIcon(winrt::Windows::Foundation::Uri const& value);
 
