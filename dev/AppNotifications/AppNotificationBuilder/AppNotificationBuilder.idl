@@ -32,12 +32,21 @@ namespace Microsoft.Windows.AppNotifications.Builder
     };
 
     [contract(AppNotificationBuilderContract, 1)]
+    enum AppNotificationButtonType
+    {
+        Default,
+        Snooze,
+        Dismiss,
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
     runtimeclass AppNotificationButton
     {
         AppNotificationButton();
         AppNotificationButton(String content);
 
         String Content;
+        AppNotificationButtonType ButtonType;
         Windows.Foundation.Collections.IMap<String, String> Arguments;
         Windows.Foundation.Uri Icon;
         String ToolTip;
@@ -48,12 +57,6 @@ namespace Microsoft.Windows.AppNotifications.Builder
         String TargetAppId;
 
         AppNotificationButton AddArgument(String key, String value);
-
-        // Specifies the ID of an existing TextBox next to which the button will be placed.
-        AppNotificationButton SetSnooze(String value);
-
-        // Specifies the ID of an existing TextBox next to which the button will be placed.
-        AppNotificationButton SetDismiss();
 
         // Sets the Icon for the button.
         AppNotificationButton SetIcon(Windows.Foundation.Uri value);
@@ -237,6 +240,8 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Adds a button to the AppNotificationBuilder
         AppNotificationBuilder AddButton(AppNotificationButton value);
+        AppNotificationBuilder AddSnoozeButton(String id);
+        AppNotificationBuilder AddDismissButton();
 
         AppNotificationBuilder AddComboBox(AppNotificationComboBox value);
 

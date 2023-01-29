@@ -238,6 +238,24 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddSnoozeButton(hstring const& id)
+    {
+        auto snoozeButton{ winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton(L"") };
+        snoozeButton.ButtonType(AppNotificationButtonType::Snooze);
+        snoozeButton.InputId(id);
+
+        return AddButton(snoozeButton);
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddDismissButton()
+    {
+        auto dismissButton{ winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton(L"") };
+        dismissButton.ButtonType(AppNotificationButtonType::Dismiss);
+
+        return AddButton(dismissButton);
+
+    }
+
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddComboBox(AppNotificationComboBox const& value)
     {
         ThrowIfMaxInputItemsExceeded();

@@ -53,6 +53,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         // Adds a button to the AppNotificationBuilder
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddButton(AppNotificationButton const& value);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddSnoozeButton(hstring const& id);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddDismissButton();
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddProgressBar(AppNotificationProgressBar const& value);
 

@@ -32,18 +32,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetSnooze(winrt::hstring const& value)
-    {
-        m_snooze = true;
-        return SetInputId(value);
-    }
-
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetDismiss()
-    {
-        m_dismiss = true;
-        return *this;
-    }
-
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetIcon(winrt::Windows::Foundation::Uri const& value)
     {
         m_iconUri = value;
@@ -98,11 +86,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
             std::wstring protocolTargetPfn{ !m_targetApplicationPfn.empty() ? wil::str_printf<std::wstring>(L" protocolActivationTargetApplicationPfn='%ls'", m_targetApplicationPfn.c_str()) : L"" };
             return wil::str_printf<std::wstring>(L" arguments='%ws' activationType='protocol'%ls", m_protocolUri.ToString().c_str(), protocolTargetPfn.c_str());
         }
-        else if (m_snooze)
+        else if (m_buttonType == AppNotificationButtonType::Snooze)
         {
             return wil::str_printf<std::wstring>(L" arguments='snooze' activationType='system'");
         }
-        else if (m_dismiss)
+        else if (m_buttonType == AppNotificationButtonType::Dismiss)
         {
             return wil::str_printf<std::wstring>(L" arguments='dismiss' activationType='system'");
         }
