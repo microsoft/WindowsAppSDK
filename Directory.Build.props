@@ -18,7 +18,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
 
-    <NugetPackageDirectory>$(RepoRoot)packages</NugetPackageDirectory>
+    <NugetPackageDirectory>$(RepoRoot)\packages</NugetPackageDirectory>
   </PropertyGroup>
 
   <!-- Compilation differs for the build pipeline vs local development -->
