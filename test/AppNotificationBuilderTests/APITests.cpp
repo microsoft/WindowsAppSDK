@@ -352,8 +352,8 @@ namespace Test::AppNotification::Builder
                 .SetToolTip(L"toolTip"))
             };
             auto expected{ L"<toast useButtonStyle='true'><visual><binding template='ToastGeneric'></binding></visual><actions><action content='content' arguments='key=value' imageUri='http://www.microsoft.com/' hint-inputId='inputId' hint-buttonStyle='Success' hint-toolTip='toolTip'/></actions></toast>"};
-            auto actual{ builder.BuildNotification().Payload() };
-            VERIFY_ARE_EQUAL(actual, expected);
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderAddButtonWithEmptyKey)
@@ -631,8 +631,8 @@ namespace Test::AppNotification::Builder
                     .AddItem(L"item1", L"item1 text")
                     .AddItem(L"item1", L"item2 text") };
             auto expected{ L"<input id='comboBox1' type='selection'><selection id='item1' content='item2 text'/></input>" };
-            auto actual{ comboBox.as<winrt::Windows::Foundation::IStringable>().ToString() };
-            VERIFY_ARE_EQUAL(actual, expected);
+
+            VERIFY_ARE_EQUAL(comboBox.as<winrt::Windows::Foundation::IStringable>().ToString(), expected);
         }
 
         TEST_METHOD(AppNotificationComboBoxSetSelectedItemWithoutAnId)
@@ -686,8 +686,8 @@ namespace Test::AppNotification::Builder
                 .AddDismissButton()
             };
             auto expected{ L"<toast scenario='reminder'><visual><binding template='ToastGeneric'><text hint-maxLines='1'>Adaptive Tiles Meeting</text><text>Conf Room 2001 / Building 135</text><text>10:00 AM - 10:30 AM</text></binding></visual><actions><input id='snoozeTime' type='selection' defaultInput='15'><selection id='1' content='1 minute'/><selection id='15' content='15 minutes'/><selection id='60' content='1 hour'/><selection id='240' content='4 hours'/><selection id='1440' content='1 day'/></input><action content='' arguments='snooze' activationType='system' hint-inputId='snoozeTime'/><action content='' arguments='dismiss' activationType='system'/></actions></toast>" };
-            auto actual{ builder.BuildNotification().Payload() };
-            VERIFY_ARE_EQUAL(actual, expected);
+;
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
     };

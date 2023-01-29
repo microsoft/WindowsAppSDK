@@ -69,7 +69,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     private:
         std::wstring GetActivationArguments();
-        std::wstring GetActivationArguments2();
         std::wstring GetButtonStyle();
 
         winrt::hstring m_content{};
