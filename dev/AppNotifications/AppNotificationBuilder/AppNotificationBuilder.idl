@@ -189,6 +189,13 @@ namespace Microsoft.Windows.AppNotifications.Builder
     };
 
     [contract(AppNotificationBuilderContract, 1)]
+    static runtimeclass AppNotificationFactory
+    {
+        static AppNotificationButton MakeSnoozeButton(String id);
+        static AppNotificationButton MakeDismissButton();
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
     runtimeclass AppNotificationBuilder
     {
         AppNotificationBuilder();

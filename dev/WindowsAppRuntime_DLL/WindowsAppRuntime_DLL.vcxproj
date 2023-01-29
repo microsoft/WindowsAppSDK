@@ -244,9 +244,11 @@
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\AppNotifications\AppNotificationBuilder\AppNotificationFactory.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\AppNotifications\AppNotificationBuilder\AppNotificationFactory.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="COMExports.cpp" />
     <ClCompile Include="WindowsAppRuntime_EnsureIsLoaded.cpp" />
@@ -261,7 +263,7 @@
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="WindowsAppRunTime.rc">      
+    <ResourceCompile Include="WindowsAppRunTime.rc">
       <AdditionalIncludeDirectories>$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemGroup>
