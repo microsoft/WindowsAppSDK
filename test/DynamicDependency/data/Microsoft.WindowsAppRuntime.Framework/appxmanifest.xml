@@ -103,6 +103,8 @@
             <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationProgressBar" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationComboBox" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationFactory" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationGroup" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationSubgroup" ThreadingModel="both" />
         </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">

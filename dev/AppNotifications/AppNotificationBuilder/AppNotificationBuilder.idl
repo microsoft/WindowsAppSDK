@@ -9,6 +9,39 @@ namespace Microsoft.Windows.AppNotifications.Builder
     apicontract AppNotificationBuilderContract {}
 
     [contract(AppNotificationBuilderContract, 1)]
+    enum AppNotificationTextStyle
+    {
+        Default,
+        Caption,
+        CaptionSubtle,
+        Body,
+        BodySubtle,
+        Base,
+        BaseSubtle,
+        Subtitle,
+        SubtitleSubtle,
+        Title,
+        TitleSubtle,
+        TitleNumeral,
+        Subheader,
+        SubheaderSubtle,
+        SubheaderNumeral,
+        Header,
+        HeaderSubtle,
+        HeaderNumeral,
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
+    enum AppNotificationTextAlign
+    {
+        Default,
+        Auto,
+        Left,
+        Center,
+        Right,
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
     runtimeclass AppNotificationTextProperties
     {
         // Contains the set of <text> attributes
@@ -17,10 +50,18 @@ namespace Microsoft.Windows.AppNotifications.Builder
         String Language;
         Boolean IncomingCallAlignment;
         Int32 MaxLines;
+        AppNotificationTextStyle Style;
+        Boolean Wrap;
+        Int32 MinLines;
+        AppNotificationTextAlign Align;
 
         AppNotificationTextProperties SetLanguage(String value);
         AppNotificationTextProperties SetIncomingCallAlignment();
         AppNotificationTextProperties SetMaxLines(Int32 value);
+        AppNotificationTextProperties SetStyle(AppNotificationTextStyle Style);
+        AppNotificationTextProperties SetWrap();
+        AppNotificationTextProperties SetMinLines(Int32 value);
+        AppNotificationTextProperties SetAlign(AppNotificationTextAlign Align);
     };
 
     [contract(AppNotificationBuilderContract, 1)]
@@ -128,6 +169,29 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Sets the default selection to be displayed by the AppNotificationComboBox
         AppNotificationComboBox SetSelectedItem(String id);
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
+    runtimeclass AppNotificationSubgroup
+    {
+        AppNotificationSubgroup();
+
+        // Adds text to the AppNotificationSubgroup.
+        AppNotificationSubgroup AddText(String text);
+        AppNotificationSubgroup AddText(String text, AppNotificationTextProperties properties);
+
+        // Sets the full-width inline-image that appears when you expand the AppNotification
+        AppNotificationSubgroup SetInlineImage(Windows.Foundation.Uri imageUri);
+        AppNotificationSubgroup SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
+        AppNotificationSubgroup SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imagecrop, String alternateText);
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
+    runtimeclass AppNotificationGroup
+    {
+        AppNotificationGroup();
+
+        AppNotificationGroup AddSubgroup(AppNotificationSubgroup subgroup);
     };
 
     [contract(AppNotificationBuilderContract, 1)]
@@ -259,6 +323,8 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Constructs a WindowsAppSDK AppNotification object with the XML payload
         Microsoft.Windows.AppNotifications.AppNotification BuildNotification();
+
+        AppNotificationBuilder AddGroup(AppNotificationGroup value);
 
         // AppNotification properties
         AppNotificationBuilder SetTag(String value);

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
@@ -60,6 +60,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddComboBox(AppNotificationComboBox const& value);
 
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddGroup(AppNotificationGroup const& value);
+
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetTag(winrt::hstring const& value);
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetGroup(winrt::hstring const& value);
 
@@ -77,6 +79,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::wstring GetImages();
         std::wstring GetActions();
         std::wstring GetProgressBars();
+        std::wstring GetGroups();
 
         std::wstring m_timeStamp{};
         AppNotificationDuration m_duration{ AppNotificationDuration::Default };
@@ -93,6 +96,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::vector<AppNotificationProgressBar> m_progressBarList{};
         std::vector<std::wstring> m_textBoxList{};
         std::vector<AppNotificationComboBox> m_comboBoxList{};
+        std::vector<AppNotificationGroup> m_groupList{};
         winrt::hstring m_tag{};
         winrt::hstring m_group{};
     };
