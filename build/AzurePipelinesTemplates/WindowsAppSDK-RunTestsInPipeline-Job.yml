@@ -23,17 +23,17 @@ jobs:
     matrix:
       # The test matrix for x64 is currently larger; this is where we exercise most variations.
       ${{ if not( parameters.isArm64Platfrom ) }}:
-        RS5_x86chk:
+        RS5_x86fre:
           imageName: Windows.10.Enterprise.RS5
           buildPlatform: x86
           buildConfiguration: release
           testLocale: en-US
-        19H2_de-DE_x64chk:
+        19H2_de-DE_x64fre:
           imageName: Windows.10.Enterprise.19H2.de-DE
           buildPlatform: x86
           buildConfiguration: release
           testLocale: de-DE
-        20H2_x64chk:
+        20H2_x64fre:
           imageName: Windows.10.Enterprise.20H2
           buildPlatform: x64
           buildConfiguration: release
@@ -48,7 +48,7 @@ jobs:
           buildPlatform: x86
           buildConfiguration: release
           testLocale: zh-CN
-        20H2_ja-JP_x64chk:
+        20H2_ja-JP_x64fre:
           imageName: Windows.10.Enterprise.20H2.ja-JP
           buildPlatform: x64
           buildConfiguration: release
@@ -95,7 +95,7 @@ jobs:
           buildPlatform: arm64
           buildConfiguration: release
           testLocale: en-US
-        Server22_DC_arm64chk:
+        Server22_DC_arm64fre:
           imageName: Windows.11.Server2022.DataCenter.arm64
           buildPlatform: arm64
           buildConfiguration: release

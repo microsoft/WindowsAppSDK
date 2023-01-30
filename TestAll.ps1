@@ -44,7 +44,7 @@ Set-StrictMode -Version 3.0
 
 $configPlat = Join-Path $Configuration $Platform
 $outputFolderPath = Join-Path $OutputFolder $configPlat 
-foreach ($testmd in (Get-ChildItem -Recurse -Filter "*.testmd" $outputFolderPath))
+foreach ($testmd in (Get-ChildItem -Recurse -Filter "*.testdef" $outputFolderPath))
 {
     $testJson = Get-Content -Raw $testmd.FullName | ConvertFrom-Json
     foreach ($testConfig in $testJson.Tests)
