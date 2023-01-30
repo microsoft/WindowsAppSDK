@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{9C1A6C58-52D6-4514-9120-5C339C5DF4BE}</ProjectGuid>
+    <ProjectGuid>{d4d29026-c15c-49a3-bec5-4d477028962c}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>Microsoft.WindowsAppRuntime.Framework</ProjectName>
+    <ProjectName>KozaniManager.Msix</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -68,31 +68,20 @@
     <NMakeBuildCommandLine>REM Nothing to do!</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>REM TODO Clean then Build</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>REM TODO Clean</NMakeCleanCommandLine>
-
-    <MakeMsixOutputFilename>$(MSBuildProjectName).msix</MakeMsixOutputFilename>
+    <MakeMsixOutputFilename>KozaniManager.msix</MakeMsixOutputFilename>
+    <TargetBasename>KozaniManager</TargetBasename>
+    <TargetExe>$(TargetBasename)</TargetExe>
+    <TargetExeDir>$(OutDir)$(TargetExe)</TargetExeDir>
+    <TargetExeFile>$(TargetExeDir)\$(TargetExe).exe</TargetExeFile>
+    <TargetExeProxyStub>$(TargetBasename)ProxyStub</TargetExeProxyStub>
+    <TargetExeProxyStubDir>$(OutDir)$(TargetExeProxyStub)</TargetExeProxyStubDir>
+    <TargetExeProxyStubFile>$(TargetExeProxyStubDir)\$(TargetExeProxyStub).dll</TargetExeProxyStubFile>
   </PropertyGroup>
   <ItemGroup>
+    <MakeMsixInputAssets Include="$(MSBuildThisFileDirectory)\Assets\*" />
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)appxmanifest.xml" />
-    <MakeMsixInputs Include="$(MSBuildThisFileDirectory)logo.png" />
-    <MakeMsixInputsWithLocations Include="$(OutDir)..\RestartAgent\RestartAgent.exe">
-      <TargetFile>RestartAgent.exe</TargetFile>
-    </MakeMsixInputsWithLocations>
-    <MakeMsixInputsWithLocations Include="$(OutDir)..\RestartAgent\RestartAgent.pdb">
-      <TargetFile>RestartAgent.pdb</TargetFile>
-    </MakeMsixInputsWithLocations>
-    <MakeMsixInputsWithLocations Include="$(OutDir)..\DeploymentAgent\DeploymentAgent.exe">
-      <TargetFile>DeploymentAgent.exe</TargetFile>
-    </MakeMsixInputsWithLocations>
-    <MakeMsixInputsWithLocations Include="$(OutDir)..\DeploymentAgent\DeploymentAgent.pdb">
-      <TargetFile>DeploymentAgent.pdb</TargetFile>
-    </MakeMsixInputsWithLocations>
-    <MakeMsixInputs Include="$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.dll" />
-    <MakeMsixInputs Include="$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.pdb" />
-    <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll" />
-    <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb" />
-    <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" />
-    <MakeMsixInputs Include="$(OutDir)..\KozaniManagerRuntime\KozaniManagerRuntime.dll" />
-    <MakeMsixInputs Include="$(OutDir)..\KozaniManagerRuntime\KozaniManagerRuntime.pdb" />
+    <MakeMsixInputs Include="$(TargetExeFile)" />
+    <MakeMsixInputs Include="$(TargetExeProxyStubFile)" />
   </ItemGroup>
   <PropertyGroup>
     <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
@@ -103,8 +92,17 @@
     <Xml Include="appxmanifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\dev\WindowsAppRuntime_DLL\WindowsAppRuntime_DLL.vcxproj">
-      <Project>{b73ad907-6164-4294-88fb-f3c9c10da1f1}</Project>
+    <ProjectReference Include="..\..\..\..\dev\Kozani\KozaniManagerProxyStub\KozaniManagerProxyStub.vcxproj">
+      <Project>{cfc67ac3-3dc3-4981-a9bb-bc5ed06542d4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\dev\Kozani\KozaniManagerRuntime\KozaniManagerRuntime.vcxproj">
+      <Project>{400ed5ec-4530-4adb-8dce-9d1e6708a1f5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\dev\Kozani\KozaniManager\KozaniManager.vcxproj">
+      <Project>{829cdb09-eefe-4188-a045-3fc6be7bd96b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\KozaniManagerRuntimeTestApp\KozaniManagerRuntimeTestApp.vcxproj">
+      <Project>{be868094-3408-4c05-b0e3-82427d46aafc}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -13,6 +13,9 @@
 
 #include <wrl\module.h>
 
+//#include <winrt/Microsoft.Kozani.ManagerRuntime.h>
+#include <windows.applicationmodel.activation.h>
+
 using namespace Microsoft::WRL;
 
 // Implement the LifetimeManager as a classic COM Out-of-Proc server, via WRL
@@ -22,13 +25,21 @@ static constexpr GUID KozaniManager_guid { PR_KOZANIMANAGER_CLSID_GUID };
 
 struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFinal : RuntimeClass<RuntimeClassFlags<ClassicCom>, IKozaniManager>
 {
-    STDMETHODIMP Initialize()
+    STDMETHODIMP ActivateRemoteApplication(
+        INT32 activationKind,
+        LPCWSTR appUserModelId,
+        LPCWSTR connectionRdpFilePath,
+        LPCWSTR additionalSettingsFilePath,
+        ::IInspectable* activatedEventArgs,
+        IKozaniStausCallback* statusCallback,
+        DWORD associatedLocalProcessId)
     {
-        return S_OK;
-    }
+        // ToDo: temporary code to enable initial testing of the in-proc WinRT API and OOP COM API. Will be replaced with real impl later. 
+        if (statusCallback != nullptr)
+        {
+            RETURN_IF_FAILED(statusCallback->OnActivated(associatedLocalProcessId));
+        }
 
-    STDMETHODIMP Shutdown()
-    {
         return S_OK;
     }
 };

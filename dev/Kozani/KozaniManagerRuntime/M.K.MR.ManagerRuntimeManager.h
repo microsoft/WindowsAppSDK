@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include "Microsoft.Kozani.ManagerRuntime.ManagerRuntimeManager.g.h"
+#include <KozaniManager_h.h>
+#include "ManagerRuntimeManager.g.h"
 
 namespace winrt::Microsoft::Kozani::ManagerRuntime::implementation
 {
@@ -11,8 +12,16 @@ namespace winrt::Microsoft::Kozani::ManagerRuntime::implementation
     {
         ManagerRuntimeManager() = default;
 
-        static winrt::Microsoft::Kozani::ManagerRuntime::ManagerRuntimeManager Open();
-        void TODO_ReplaceMeWithRealContent();
+        void ActivateRemoteApplication(
+            Windows::ApplicationModel::Activation::ActivationKind activationKind,
+            winrt::hstring appUserModelId,
+            winrt::hstring connectionRdpFilePath,
+            winrt::hstring additionalSettingsFilePath,
+            Windows::ApplicationModel::Activation::IActivatedEventArgs args,
+            IInspectable statusCallback);
+
+    private:
+        wil::com_ptr<IKozaniManager> m_kozaniManager;
     };
 }
 namespace winrt::Microsoft::Kozani::ManagerRuntime::factory_implementation
