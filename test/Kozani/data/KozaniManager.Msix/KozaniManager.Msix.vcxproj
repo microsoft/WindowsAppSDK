@@ -95,14 +95,8 @@
     <ProjectReference Include="..\..\..\..\dev\Kozani\KozaniManagerProxyStub\KozaniManagerProxyStub.vcxproj">
       <Project>{cfc67ac3-3dc3-4981-a9bb-bc5ed06542d4}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\dev\Kozani\KozaniManagerRuntime\KozaniManagerRuntime.vcxproj">
-      <Project>{400ed5ec-4530-4adb-8dce-9d1e6708a1f5}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\dev\Kozani\KozaniManager\KozaniManager.vcxproj">
       <Project>{829cdb09-eefe-4188-a045-3fc6be7bd96b}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\KozaniManagerRuntimeTestApp\KozaniManagerRuntimeTestApp.vcxproj">
-      <Project>{be868094-3408-4c05-b0e3-82427d46aafc}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
