@@ -16,8 +16,14 @@
 #include <wrl.h>
 #pragma warning(pop)
 
+#include <wil/cppwinrt.h>
 #include <wil/token_helpers.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
+
+#include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.Foundation.Collections.h>
+
+#include <wil/com.h>
 
 #include <WindowsAppRuntimeInsights.h>
