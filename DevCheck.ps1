@@ -45,6 +45,9 @@
 .PARAMETER Offline
     Do not access the network
 
+.PARAMETER OnlineVSWhere
+    Download and use the latest vswhere.exe on the network
+
 .PARAMETER RemoveAll
     Remove all.
 
@@ -90,6 +93,8 @@ Param(
     [Switch]$NoInteractive=$false,
 
     [Switch]$Offline=$false,
+
+    [Switch]$OnlineVSWhere=$false,
 
     [Switch]$RemoveAll=$false,
 
@@ -186,6 +191,46 @@ function Get-CpuArchitecture
     }
 }
 
+function Get-VSWhereOffline
+{
+    # Absolute Path = "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+
+    $programfilesx86 = [Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFilesX86)
+    $path = Join-Path $programfilesx86 "Microsoft Visual Studio\Installer\vswhere.exe"
+    if (-not(Test-Path -Path $path -PathType Leaf))
+    {
+        return $null
+    }
+    $path
+}
+
+function Get-VSWhereOnline
+{
+    $path = Join-Path $env:TEMP 'vswhere.exe'
+    if ($Clean -eq $true -And (Test-Path -Path $path -PathType Leaf))
+    {
+        Write-Verbose "Found $path. Deleting per -Clean..."
+        Remove-Item -Path $path -Force
+    }
+    if (-not(Test-Path -Path $path -PathType Leaf))
+    {
+        if ($Offline -eq $true)
+        {
+            return $null
+        }
+        $vswhere_url = 'https://github.com/microsoft/vswhere/releases/download/3.1.1/vswhere.exe'
+        Write-Host "Downloading $vswhere from $vswhere_url..."
+        Write-Verbose "Executing: curl.exe --output $vswhere -L -# $vswhere_url"
+        $null = Start-Process curl.exe -ArgumentList "--output $vswhere -L -# $vswhere_url" -Wait -NoNewWindow -PassThru
+
+    }
+    if (-not(Test-Path -Path $path -PathType Leaf))
+    {
+        return $null
+    }
+    $path
+}
+
 # Home of vswhere.exe: https://github.com/microsoft/vswhere
 $vswhere = ''
 $vswhere_url = ''
@@ -194,25 +239,24 @@ function Get-VSWhere
     if ([string]::IsNullOrEmpty($global:vswhere))
     {
         Write-Verbose "Detecting vswhere.exe..."
-        $vswhere = Join-Path $env:TEMP 'vswhere.exe'
-        if ($Clean -eq $true -And (Test-Path -Path $vswhere -PathType Leaf))
+        if ($OnlineVSWhere -eq $false)
         {
-            Write-Verbose "Found $vswhere. Deleting per -Clean..."
-            Remove-Item -Path $vswhere -Force
+            $global:vswhere = Get-VSWhereOffline
         }
-        if (-not(Test-Path -Path $vswhere -PathType Leaf))
+        if ([string]::IsNullOrEmpty($global:vswhere))
         {
-            if ($Offline -eq $true)
+            if ($Offline -eq $false)
             {
-                Write-Host "vswhere.exe not detected"
-                $global:issues += 1
-                return
+                $global:vswhere = Get-VSWhereOnline
             }
-            $vswhere_url = 'https://github.com/microsoft/vswhere/releases/download/3.1.1/vswhere.exe'
-            Write-Host "Downloading $vswhere from $vswhere_url..."
-            Write-Verbose "Executing: curl.exe --output $vswhere -L -# $vswhere_url"
-            $p = Start-Process curl.exe -ArgumentList "--output $vswhere -L -# $vswhere_url" -Wait -NoNewWindow -PassThru
         }
+        if ([string]::IsNullOrEmpty($global:vswhere))
+        {
+            Write-Host "ERROR: vswhere.exe not found" -ForegroundColor Red -BackgroundColor Black
+            $global:issues += 1
+            return $null
+        }
+
         Write-Verbose "Using $vswhere"
         $global:vswhere = $vswhere
     }
@@ -254,6 +298,10 @@ function Get-VisualStudio2022InstallPath
     {
         Write-Verbose "Detecting VisualStudio 2022..."
         $vswhere = Get-VSWhere
+        if ([string]::IsNullOrEmpty($global:vswhere))
+        {
+            return $null
+        }
         $args = " -latest -products * -version [17.0,18.0) -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath"
         Write-Verbose "Executing $vswhere $args"
         $path = Run-Process $vswhere $args
@@ -272,6 +320,10 @@ function Test-VisualStudioComponent
     )
 
     $vswhere = Get-VSWhere
+    if ([string]::IsNullOrEmpty($global:vswhere))
+    {
+        return 0
+    }
     $args = " -latest -products * -version $versionRange -requires $component -property productDisplayVersion"
     Write-Verbose "Executing $vswhere $args"
     try
@@ -284,7 +336,7 @@ function Test-VisualStudioComponent
     catch
     {
         $e = $_
-        Write-Host "...ERROR $($e): $($component) not found or valid"
+        Write-Host "...ERROR $($e): $($component) not found or valid" -ForegroundColor Red -BackgroundColor Black
         return 1
     }
 }
@@ -729,7 +781,7 @@ function Test-PackagesConfig
 
         if (-not($versions.Contains($name)))
         {
-            Write-Host "ERROR: Unknown package $name in $filename"
+            Write-Host "ERROR: Unknown package $name in $filename" -ForegroundColor Red -BackgroundColor Black
             $global:issues++
         }
         elseif ($version -ne $versions[$name])
@@ -742,14 +794,14 @@ function Test-PackagesConfig
             }
             else
             {
-                Write-Host "ERROR: Unknown version $name=$version in $filename"
+                Write-Host "ERROR: Unknown version $name=$version in $filename" -ForegroundColor Red -BackgroundColor Black
                 $global:issues++
             }
         }
 
         if (-not($package.HasAttribute("targetFramework")))
         {
-            Write-Host "ERROR: targetFramework=""native"" missing in $filename"
+            Write-Host "ERROR: targetFramework=""native"" missing in $filename" -ForegroundColor Red -BackgroundColor Black
             $global:issues++
         }
         else
@@ -757,7 +809,7 @@ function Test-PackagesConfig
             $targetFramework = $package.targetFramework
             if (($targetFramework -ne "native") -And ($targetFramework -ne "net45"))
             {
-                Write-Host "ERROR: targetFramework != ""native"" in $filename"
+                Write-Host "ERROR: targetFramework != ""native"" in $filename" -ForegroundColor Red -BackgroundColor Black
                 $global:issues++
             }
         }
@@ -854,7 +906,7 @@ function CheckAndSync-Dependencies
     {
         if ($SyncDependencies -eq $false)
         {
-            Write-Host "ERROR: $filename not found. Create with 'DevCheck -SyncDependencies'"
+            Write-Host "ERROR: $filename not found. Create with 'DevCheck -SyncDependencies'" -ForegroundColor Red -BackgroundColor Black
             $global:issues++
             return
         }
@@ -869,7 +921,7 @@ function CheckAndSync-Dependencies
         }
         elseif ($SyncDependencies -eq $false)
         {
-            Write-Host "ERROR: $($filename) out of date. Update with 'DevCheck -SyncDependencies'"
+            Write-Host "ERROR: $($filename) out of date. Update with 'DevCheck -SyncDependencies'" -ForegroundColor Red -BackgroundColor Black
             $global:issues++
         }
     }
@@ -905,7 +957,7 @@ function Test-Dependencies
     {
         if ($versions.Contains($name))
         {
-            Write-Host "ERROR: Dependency defined multiple times ($name)"
+            Write-Host "ERROR: Dependency defined multiple times ($name)" -ForegroundColor Red -BackgroundColor Black
             $global:issues++
             $fatal_errors++
         }
@@ -919,7 +971,7 @@ function Test-Dependencies
     {
         if ($versions.Contains($name))
         {
-            Write-Host "ERROR: Dependency defined multiple times ($name)"
+            Write-Host "ERROR: Dependency defined multiple times ($name)" -ForegroundColor Red -BackgroundColor Black
             $global:issues++
             $fatal_errors++
         }
@@ -982,7 +1034,7 @@ function Test-DeveloperMode
     }
     else
     {
-        Write-Host "ERROR: Developer mode is not enabled. Enable it via Settings"
+        Write-Host "ERROR: Developer mode is not enabled. Enable it via Settings" -ForegroundColor Red -BackgroundColor Black
         $global:issues++
         $fatal_errors++
     }
