@@ -39,16 +39,16 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="TE.Managed, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net45\TE.Managed.dll</HintPath>
+      <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net452\TE.Managed.dll</HintPath>
     </Reference>
     <Reference Include="TE.Model.Managed, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net45\TE.Model.Managed.dll</HintPath>
+      <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net452\TE.Model.Managed.dll</HintPath>
     </Reference>
     <Reference Include="Wex.Common.Managed, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net45\Wex.Common.Managed.dll</HintPath>
+      <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net452\Wex.Common.Managed.dll</HintPath>
     </Reference>
     <Reference Include="Wex.Logger.Interop, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net45\Wex.Logger.Interop.dll</HintPath>
+      <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net452\Wex.Logger.Interop.dll</HintPath>
     </Reference>
     <Reference Include="Windows.Foundation.FoundationContract">
       <HintPath>C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.FoundationContract\4.0.0.0\Windows.Foundation.FoundationContract.winmd</HintPath>
