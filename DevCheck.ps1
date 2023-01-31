@@ -441,6 +441,7 @@ function Repair-DevTestPfx
 
     # -CertPassword <password> is a required parameter for this work
     $password = ''
+    $password_plaintext = $null
     if (-not [string]::IsNullOrEmpty($CertPassword))
     {
         $password_plaintext = $CertPassword
@@ -459,7 +460,7 @@ function Repair-DevTestPfx
     {
         $password = Get-Content -Path $pwd_file -Encoding utf8
     }
-    elseif ($NoInteractive -eq $false)
+    if ([string]::IsNullOrEmpty($password_plaintext) -And ($NoInteractive -eq $false))
     {
         $password_plaintext = Read-Host -Prompt 'Creating test certificate. Please enter a password'
     }
