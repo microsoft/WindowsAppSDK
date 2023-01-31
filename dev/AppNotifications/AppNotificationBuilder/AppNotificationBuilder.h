@@ -62,6 +62,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddGroup(AppNotificationGroup const& value);
 
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetHeader(AppNotificationHeader const& value);
+
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetTag(winrt::hstring const& value);
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetGroup(winrt::hstring const& value);
 
@@ -85,6 +87,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         AppNotificationDuration m_duration{ AppNotificationDuration::Default };
         AppNotificationScenario m_scenario{ AppNotificationScenario::Default };
         bool m_useButtonStyle{};
+        AppNotificationHeader m_header{ nullptr };
         std::vector<winrt::hstring> m_textLines{};
         winrt::hstring m_attributionText{};
         winrt::hstring m_inlineImage{};

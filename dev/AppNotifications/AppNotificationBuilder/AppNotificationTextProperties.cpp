@@ -59,7 +59,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         {
         case AppNotificationTextStyle::Base:
             style = L"base";
-        break;
+            break;
 
         case AppNotificationTextStyle::CaptionSubtle:
             style = L"captionSubtle";

@@ -105,6 +105,7 @@
             <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationFactory" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationGroup" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationSubgroup" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationHeader" ThreadingModel="both" />
         </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">

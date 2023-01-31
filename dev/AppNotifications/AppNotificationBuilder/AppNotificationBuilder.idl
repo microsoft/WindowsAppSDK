@@ -9,6 +9,15 @@ namespace Microsoft.Windows.AppNotifications.Builder
     apicontract AppNotificationBuilderContract {}
 
     [contract(AppNotificationBuilderContract, 1)]
+    runtimeclass AppNotificationHeader
+    {
+        AppNotificationHeader();
+        AppNotificationHeader(String id, String title);
+
+        AppNotificationHeader AddArgument(String key, String value);
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
     enum AppNotificationTextStyle
     {
         Default,
@@ -321,10 +330,12 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         AppNotificationBuilder AddProgressBar(AppNotificationProgressBar value);
 
+        AppNotificationBuilder AddGroup(AppNotificationGroup value);
+
+        AppNotificationBuilder SetHeader(AppNotificationHeader value);
+
         // Constructs a WindowsAppSDK AppNotification object with the XML payload
         Microsoft.Windows.AppNotifications.AppNotification BuildNotification();
-
-        AppNotificationBuilder AddGroup(AppNotificationGroup value);
 
         // AppNotification properties
         AppNotificationBuilder SetTag(String value);

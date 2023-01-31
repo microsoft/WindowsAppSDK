@@ -21,6 +21,7 @@
     <ClInclude Include="..\AppNotifications\AppNotificationBuilder\AppNotificationFactory.h" />
     <ClInclude Include="..\AppNotifications\AppNotificationBuilder\AppNotificationGroup.h" />
     <ClInclude Include="..\AppNotifications\AppNotificationBuilder\AppNotificationSubgroup.h" />
+    <ClInclude Include="..\AppNotifications\AppNotificationBuilder\AppNotificationHeader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -41,6 +42,7 @@
     <ClCompile Include="..\AppNotifications\AppNotificationBuilder\AppNotificationFactory.cpp" />
     <ClCompile Include="..\AppNotifications\AppNotificationBuilder\AppNotificationGroup.cpp" />
     <ClCompile Include="..\AppNotifications\AppNotificationBuilder\AppNotificationSubgroup.cpp" />
+    <ClCompile Include="..\AppNotifications\AppNotificationBuilder\AppNotificationHeader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

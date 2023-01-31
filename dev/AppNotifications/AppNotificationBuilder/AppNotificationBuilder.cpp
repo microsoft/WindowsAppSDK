@@ -271,6 +271,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetHeader(AppNotificationHeader const& value)
+    {
+        m_header = value;
+ 
+        return *this;
+    }
+
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetTag(hstring const& value)
     {
         m_tag = value;
@@ -411,12 +418,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         // Build the actions string and fill m_useButtonStyle
         std::wstring actions{ GetActions() };
 
-        auto xmlResult{ wil::str_printf<std::wstring>(L"<toast%ls%ls%ls%ls%ls><visual><binding template='ToastGeneric'>%ls%ls%ls%ls%ls</binding></visual>%ls%ls</toast>",
+        auto xmlResult{ wil::str_printf<std::wstring>(L"<toast%ls%ls%ls%ls%ls>%ls<visual><binding template='ToastGeneric'>%ls%ls%ls%ls%ls</binding></visual>%ls%ls</toast>",
             m_timeStamp.c_str(),
             GetDuration().c_str(),
             GetScenario().c_str(),
             GetArguments().c_str(),
             GetButtonStyle().c_str(),
+            m_header != nullptr ? m_header.as<winrt::Windows::Foundation::IStringable>().ToString().c_str() : L"",
             GetText().c_str(),
             m_attributionText.c_str(),
             GetImages().c_str(),

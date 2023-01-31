@@ -756,6 +756,19 @@ namespace Test::AppNotification::Builder
                             .SetAlign(winrt::AppNotificationTextAlign::Right))))
             };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'><text>Reminder: Windows Launch Party</text><text>4:00 PM, 10/21/2021</text><group><subgroup><text hint-style='base'>52 attendees</text><text hint-style='captionSubtle'>23 minute drive</text></subgroup><subgroup><text hint-style='captionSubtle' hint-align='right'>1 Microsoft Way</text><text hint-style='captionSubtle' hint-align='right'>Bellevue, WA 98008</text></subgroup></group></binding></visual></toast>" };
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderHeaders)
+        {
+            auto builder{ winrt::AppNotificationBuilder()
+                .SetHeader(winrt::AppNotificationHeader(L"6289", L"Camping!!")
+                    .AddArgument(L"action", L"openConversation")
+                    .AddArgument(L"id", L"6289"))
+                .AddText(L"Anyone have a sleeping bag I can borrow?")
+            };
+            auto expected{ L"<toast><header id='6289' title='Camping!!' arguments='action=openConversation;id=6289'/><visual><binding template='ToastGeneric'><text>Anyone have a sleeping bag I can borrow?</text></binding></visual></toast>" };
             auto actual{ builder.BuildNotification().Payload() };
             VERIFY_ARE_EQUAL(actual, expected);
         }
