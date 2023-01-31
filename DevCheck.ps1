@@ -109,7 +109,7 @@ $ErrorActionPreference = "Stop"
 $global:issues = 0
 
 $remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
-if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($CheckDeveloperMode -eq $false))
+if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And ($CheckDeveloperMode -eq $false))
 {
     $CheckAll = $true
 }
