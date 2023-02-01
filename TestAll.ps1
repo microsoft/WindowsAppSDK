@@ -57,7 +57,7 @@ foreach ($testmd in (Get-ChildItem -Recurse -Filter "*.testdef" $outputFolderPat
             $testFolder = Split-Path -parent $testmd.FullName
             $tePath = Join-Path $testFolder "te.exe"
             $dllFile = Join-Path $testFolder $testConfig.Filename
-            & $tePath $dllFile
+            & $tePath $dllFile $testConfig.Parameters
         }
         elseif (-not($validPlatform))
         {
