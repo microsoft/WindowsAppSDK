@@ -46,6 +46,7 @@ class PackagedTests : BaseTestSuite
 
     TEST_METHOD(ChannelRequestUsingNullRemoteId);
     TEST_METHOD(ChannelRequestUsingRemoteId);
+    TEST_METHOD(ChannelRequestCheckExpirationTime);
     BEGIN_TEST_METHOD(MultipleChannelClose) // Currently failing 
         TEST_METHOD_PROPERTY(L"Ignore", L"true")
     END_TEST_METHOD()
