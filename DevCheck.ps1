@@ -109,7 +109,7 @@ $ErrorActionPreference = "Stop"
 $global:issues = 0
 
 $remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
-if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($CheckDeveloperMode -eq $false))
+if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And ($CheckDeveloperMode -eq $false))
 {
     $CheckAll = $true
 }
@@ -720,7 +720,9 @@ function Test-PackagesConfig
         $versions
     )
 
+    Write-Verbose "Scanning $filename"
     $xml = [xml](Get-Content $filename -EA:Stop)
+    $changed = $false
     ForEach ($package in $xml.packages.package)
     {
         $name = $package.id
@@ -733,8 +735,17 @@ function Test-PackagesConfig
         }
         elseif ($version -ne $versions[$name])
         {
+            if ($SyncDependencies -eq $true)
+            {
+                Write-Host "Updating $name $($version) -> $($versions[$name]) in $filename"
+                $package.version = $versions[$name]
+                $changed = $true
+            }
+            else
+            {
             Write-Host "ERROR: Unknown version $name=$version in $filename"
             $global:issues++
+        }
         }
 
         if (-not($package.HasAttribute("targetFramework")))
@@ -752,6 +763,33 @@ function Test-PackagesConfig
             }
         }
 
+    }
+
+    if ($changed -eq $true)
+    {
+        $xml.Save($filename)
+
+        # Save() doesn't add a newline at the end-of-file
+        # No newline at end-of-file makes git, GitHub diff and other tools cranky
+        # Make sure they're not cranky
+        $content = Get-Content $filename -EA:Stop -Encoding utf8
+        Set-Content -Path $filename -Value $content -Force -Encoding utf8
+    }
+}
+
+function Test-VcxProj
+{
+    param(
+        [string] $filename,
+        $versions
+    )
+
+    Write-Verbose "Scanning $filename"
+    $xml = [xml](Get-Content $filename -EA:Stop)
+    $changed = $false
+    ForEach ($package in $xml.project.import.project)
+    {
+        Write-Verbose "TODO scan packages/dependencies in .vcxproj"
     }
 }
 
@@ -919,23 +957,31 @@ function Test-Dependencies
     # Check Version.Dependencies.props
     $null = CheckAndSync-Dependencies  @{ Automagic=$automagic; Manual=$manual }
 
-    # Scan for references
+    # Scan for references - packages.config
     $root = Get-ProjectRoot
-    $path = Join-Path $root 'dev'
     $files = 0
-    Write-Host "Scanning packages.config..."
-    ForEach ($file in (Get-ChildItem -Path $path -Recurse -File 'packages.config'))
+    ForEach ($subtree in 'dev', 'test', 'installer', 'tools')
     {
-        $null = Test-PackagesConfig $file.FullName $versions
-        $files++
+        $path = Join-Path $root $subtree
+        Write-Host "Scanning packages.config..."
+        ForEach ($file in (Get-ChildItem -Path $path -Recurse -File 'packages.config'))
+        {
+            $null = Test-PackagesConfig $file.FullName $versions
+            $files++
+        }
     }
     Write-Host "Scanned $($files) packages.config"
 
-    $path = Join-Path $root 'test'
     $files = 0
-    ForEach ($file in (Get-ChildItem -Path $path -Recurse -Filter '*.vcxproj'))
+    ForEach ($subtree in 'dev', 'test', 'installer', 'tools')
     {
-        $files++
+        $path = Join-Path $root $subtree
+        Write-Host "Scanning *.vcxproj..."
+        ForEach ($file in (Get-ChildItem -Path $path -Recurse -File '*.vcxproj'))
+        {
+            $null = Test-VcxProj $file.FullName $versions
+            $files++
+        }
     }
     Write-Host "Scanned $($files) *.vcxproj"
 }
