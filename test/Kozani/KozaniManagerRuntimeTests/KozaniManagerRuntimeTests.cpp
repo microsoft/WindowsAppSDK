@@ -19,14 +19,14 @@ namespace Test::KozaniManagerRuntimeTests
     struct MyKozaniStatusCallback : winrt::implements<MyKozaniStatusCallback, IKozaniStatusCallback, winrt::Windows::Foundation::IInspectable>
     {
 #pragma region IKozaniStatusCallback_methods
-        HRESULT OnActivated(DWORD pid)
+        STDMETHODIMP OnActivated(DWORD pid)
         {
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"IKozaniStausCallback::OnActivated is called. pid = %u", pid));
             m_isActivated = true;
             return S_OK;
         }
 
-        HRESULT OnActivationFailed(
+        STDMETHODIMP OnActivationFailed(
             DWORD errorCode,
             PCWSTR errorMessage)
         {
@@ -37,7 +37,7 @@ namespace Test::KozaniManagerRuntimeTests
             return S_OK;
         }
 
-        HRESULT OnClosed()
+        STDMETHODIMP OnClosed()
         {
             WEX::Logging::Log::Comment(L"IKozaniStausCallback::OnClosed is called.");
             m_isClosed = true;
