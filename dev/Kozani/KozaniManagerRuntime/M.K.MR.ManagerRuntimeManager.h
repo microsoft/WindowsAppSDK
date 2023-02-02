@@ -10,7 +10,9 @@ namespace winrt::Microsoft::Kozani::ManagerRuntime::implementation
 {
     struct ManagerRuntimeManager : ManagerRuntimeManagerT<ManagerRuntimeManager>
     {
-        ManagerRuntimeManager() = default;
+        ManagerRuntimeManager();
+
+        static winrt::Microsoft::Kozani::ManagerRuntime::ManagerRuntimeManager Create();
 
         void ActivateRemoteApplication(
             Windows::ApplicationModel::Activation::ActivationKind activationKind,

@@ -16,9 +16,9 @@ namespace KozaniManagerTestPackage
 
 namespace Test::KozaniManagerRuntimeTests
 {
-    struct MyKozaniStatusCallback : winrt::implements<MyKozaniStatusCallback, IKozaniStausCallback, winrt::Windows::Foundation::IInspectable>
+    struct MyKozaniStatusCallback : winrt::implements<MyKozaniStatusCallback, IKozaniStatusCallback, winrt::Windows::Foundation::IInspectable>
     {
-#pragma region IKozaniStausCallback_methods
+#pragma region IKozaniStatusCallback_methods
         HRESULT OnActivated(DWORD pid)
         {
             WEX::Logging::Log::Comment(WEX::Common::String().Format(L"IKozaniStausCallback::OnActivated is called. pid = %u", pid));
@@ -43,7 +43,7 @@ namespace Test::KozaniManagerRuntimeTests
             m_isClosed = true;
             return S_OK;
         }
-#pragma endregion IKozaniStausCallback_methods
+#pragma endregion IKozaniStatusCallback_methods
 
         bool IsActivated()
         {
@@ -61,9 +61,9 @@ namespace Test::KozaniManagerRuntimeTests
         }
 
     private:
-        bool m_isActivated;
-        bool m_isActivationFailed;
-        bool m_isClosed;
+        bool m_isActivated{};
+        bool m_isActivationFailed{};
+        bool m_isClosed{};
     };
 
     class KozaniManagerRuntimeTests
@@ -87,26 +87,17 @@ namespace Test::KozaniManagerRuntimeTests
             return true;
         }
 
-        TEST_METHOD(ActivateRemoteApplicationTests)
+        TEST_METHOD(ActivateRemoteApplication_Launch)
         {
-            try
-            {
-                winrt::Microsoft::Kozani::ManagerRuntime::ManagerRuntimeManager runtimeManager;
-                auto statusCallback{ winrt::make_self<MyKozaniStatusCallback>() };
+            auto runtimeManager{ winrt::Microsoft::Kozani::ManagerRuntime::ManagerRuntimeManager::Create() };
+            auto statusCallback{ winrt::make_self<MyKozaniStatusCallback>() };
 
-                runtimeManager.ActivateRemoteApplication(winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch,
-                    L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", L"c:\\data\\connection.rdp", L"c:\\data\\additionalSettings.txt", 
-                    nullptr,    // IActivatedEventArgs
-                    statusCallback.as<winrt::Windows::Foundation::IInspectable>());
+            runtimeManager.ActivateRemoteApplication(winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch,
+                L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", L"c:\\data\\connection.rdp", L"c:\\data\\additionalSettings.txt",
+                nullptr,    // IActivatedEventArgs
+                statusCallback.as<winrt::Windows::Foundation::IInspectable>());
 
-                VERIFY_IS_TRUE(statusCallback->IsActivated(), L"IKozaniStausCallback::OnActivated() should have been called.");
-            }
-            catch (const winrt::hresult_error& e)
-            {
-                VERIFY_FAIL(WEX::Common::String().Format(
-                    L"ActivateRemoteApplication() failed with 0x%x, error message: %s",
-                    e.code(), e.message().c_str()));
-            }
+            VERIFY_IS_TRUE(statusCallback->IsActivated(), L"IKozaniStausCallback::OnActivated() should have been called.");
         }
     };
 }

@@ -8,7 +8,7 @@ import "inspectable.idl";
 [object]
 [uuid(5239c3b0-9e90-11ed-87cd-0800200c9a66)]
 [pointer_default(unique)]
-interface IKozaniStausCallback : IInspectable
+interface IKozaniStatusCallback : IInspectable
 {
     HRESULT OnActivated(DWORD pid);
 
@@ -30,6 +30,6 @@ interface IKozaniManager : IUnknown
         [in, string] LPCWSTR connectionRdpFilePath,
         [in, string] LPCWSTR additionalSettingsFilePath,
         [in] IInspectable* activatedEventArgs,
-        [in] IKozaniStausCallback* statusCallback,
+        [in] IKozaniStatusCallback* statusCallback,
         DWORD associatedLocalProcessId);
 };

@@ -43,9 +43,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="KozaniManager.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>

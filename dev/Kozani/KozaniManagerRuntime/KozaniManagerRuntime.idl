@@ -9,7 +9,7 @@ namespace Microsoft.Kozani.ManagerRuntime
     [contract(ManagerRuntimeContract, 1)]
     runtimeclass ManagerRuntimeManager
     {
-        ManagerRuntimeManager();
+        static ManagerRuntimeManager Create();
 
         void ActivateRemoteApplication(
             Windows.ApplicationModel.Activation.ActivationKind activationKind,
