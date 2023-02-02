@@ -5,7 +5,7 @@ import "..\AppNotifications\AppNotifications.idl";
 
 namespace Microsoft.Windows.AppNotifications.Builder
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract AppNotificationBuilderContract {}
 
     [contract(AppNotificationBuilderContract, 1)]
@@ -118,7 +118,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationComboBox SetSelectedItem(String id);
     };
 
-    [contract(AppNotificationBuilderContract, 1)]
+    [contract(AppNotificationBuilderContract, 2)]
     runtimeclass AppNotificationComboBox2
     {
         AppNotificationComboBox2(String id);
@@ -251,6 +251,9 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationBuilder AddButton(AppNotificationButton value);
 
         AppNotificationBuilder AddComboBox(AppNotificationComboBox value);
+
+        [contract(AppNotificationBuilderContract, 2)]
+        AppNotificationBuilder AddComboBox(AppNotificationComboBox2 value);
 
         AppNotificationBuilder AddProgressBar(AppNotificationProgressBar value);
 

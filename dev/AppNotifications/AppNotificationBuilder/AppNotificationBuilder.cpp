@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -242,7 +242,16 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         ThrowIfMaxInputItemsExceeded();
 
-        m_comboBoxList.push_back(value);
+        m_comboBoxList.push_back(value.as<winrt::Windows::Foundation::IStringable>());
+
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddComboBox(AppNotificationComboBox2 const& value)
+    {
+        ThrowIfMaxInputItemsExceeded();
+
+        m_comboBoxList.push_back(value.as<winrt::Windows::Foundation::IStringable>());
 
         return *this;
     }
@@ -336,7 +345,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         for (auto input : m_comboBoxList)
         {
-            result.append(input.as<winrt::Windows::Foundation::IStringable>().ToString().c_str());
+            result.append(input.ToString().c_str());
         }
 
         for (auto input : m_buttonList)
