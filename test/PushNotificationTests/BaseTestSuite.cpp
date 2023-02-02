@@ -18,6 +18,8 @@ using namespace winrt::Windows::Management::Deployment;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 using namespace winrt::Microsoft::Windows::PushNotifications;
+using namespace std::literals;
+using namespace std::chrono;
 
 void BaseTestSuite::ClassSetup()
 {
@@ -37,7 +39,7 @@ void BaseTestSuite::MethodSetup()
     if (!isSelfContained)
     {
         ::WindowsAppRuntime::VersionInfo::TestInitialize(::Test::Bootstrap::TP::WindowsAppRuntimeFramework::c_PackageFamilyName,
-                                                         ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
+            ::Test::Bootstrap::TP::WindowsAppRuntimeMain::c_PackageFamilyName);
         VERIFY_IS_FALSE(::WindowsAppRuntime::SelfContained::IsSelfContained());
     }
     else
@@ -105,6 +107,29 @@ void BaseTestSuite::ChannelRequestUsingRemoteId()
     {
         auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
         VERIFY_SUCCEEDED(ChannelRequestHelper(channelOperation));
+    }
+    else
+    {
+        auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
+        VERIFY_ARE_EQUAL(ChannelRequestHelper(channelOperation), E_FAIL);
+    }
+}
+
+void BaseTestSuite::ChannelRequestCheckExpirationTime()
+{
+    if (PushNotificationManager::Default().IsSupported())
+    {
+        auto channelOperation{ PushNotificationManager::Default().CreateChannelAsync(c_azureRemoteId) };
+        VERIFY_SUCCEEDED(ChannelRequestHelper(channelOperation));
+
+        auto channel{ channelOperation.GetResults().Channel() };
+        auto expirationTime{ channel.ExpirationTime() };
+        auto expiryLowerBound{ winrt::clock::now() };
+        auto expiryUpperBound{ expiryLowerBound + (hours(24) * 30) + minutes(1) };
+
+        // Need to add 30 days to match expiration time.
+        VERIFY_IS_GREATER_THAN(expirationTime, expiryLowerBound);
+        VERIFY_IS_LESS_THAN(expirationTime, expiryUpperBound);
     }
     else
     {
