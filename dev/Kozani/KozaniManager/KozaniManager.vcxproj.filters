@@ -32,9 +32,6 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KozaniManager-Constants.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="KozaniManagerActivity.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -44,5 +41,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="KozaniManager.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
