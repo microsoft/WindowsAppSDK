@@ -1,14 +1,14 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import "..\AppNotifications\AppNotifications.idl";
 
 namespace Microsoft.Windows.AppNotifications.Builder
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract AppNotificationBuilderContract {}
 
-    [contract(AppNotificationBuilderContract, 1)]
+    [contract(AppNotificationBuilderContract, 2)]
     runtimeclass AppNotificationHeader
     {
         AppNotificationHeader();
@@ -17,7 +17,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationHeader AddArgument(String key, String value);
     };
 
-    [contract(AppNotificationBuilderContract, 1)]
+    [contract(AppNotificationBuilderContract, 2)]
     enum AppNotificationTextStyle
     {
         Default,
@@ -40,7 +40,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         HeaderNumeral,
     };
 
-    [contract(AppNotificationBuilderContract, 1)]
+    [contract(AppNotificationBuilderContract, 2)]
     enum AppNotificationTextAlign
     {
         Default,
@@ -50,7 +50,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Right,
     };
 
-    [contract(AppNotificationBuilderContract, 2)]
+    [contract(AppNotificationBuilderContract, 1)]
     runtimeclass AppNotificationTextProperties
     {
         // Contains the set of <text> attributes
@@ -59,17 +59,27 @@ namespace Microsoft.Windows.AppNotifications.Builder
         String Language;
         Boolean IncomingCallAlignment;
         Int32 MaxLines;
+
+        [contract(AppNotificationBuilderContract, 2)]
         AppNotificationTextStyle Style;
+        [contract(AppNotificationBuilderContract, 2)]
         Boolean Wrap;
+        [contract(AppNotificationBuilderContract, 2)]
         Int32 MinLines;
+        [contract(AppNotificationBuilderContract, 2)]
         AppNotificationTextAlign Align;
 
         AppNotificationTextProperties SetLanguage(String value);
         AppNotificationTextProperties SetIncomingCallAlignment();
         AppNotificationTextProperties SetMaxLines(Int32 value);
+
+        [contract(AppNotificationBuilderContract, 2)]
         AppNotificationTextProperties SetStyle(AppNotificationTextStyle Style);
+        [contract(AppNotificationBuilderContract, 2)]
         AppNotificationTextProperties SetWrap();
+        [contract(AppNotificationBuilderContract, 2)]
         AppNotificationTextProperties SetMinLines(Int32 value);
+        [contract(AppNotificationBuilderContract, 2)]
         AppNotificationTextProperties SetAlign(AppNotificationTextAlign Align);
     };
 
@@ -81,7 +91,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Critical,
     };
 
-    [contract(AppNotificationBuilderContract, 1)]
+    [contract(AppNotificationBuilderContract, 2)]
     enum AppNotificationButtonType
     {
         Standard,
@@ -89,16 +99,19 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Dismiss,
     };
 
-    [contract(AppNotificationBuilderContract, 2)]
+    [contract(AppNotificationBuilderContract, 1)]
     runtimeclass AppNotificationButton
     {
         AppNotificationButton();
         AppNotificationButton(String content);
 
+        [contract(AppNotificationBuilderContract, 2)]
         static AppNotificationButton MakeSnoozeButton(String inputId);
+        [contract(AppNotificationBuilderContract, 2)]
         static AppNotificationButton MakeDismissButton();
 
         String Content;
+        [contract(AppNotificationBuilderContract, 2)]
         AppNotificationButtonType ButtonType;
         Windows.Foundation.Collections.IMap<String, String> Arguments;
         Windows.Foundation.Uri Icon;
@@ -180,7 +193,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationComboBox SetSelectedItem(String id);
     };
 
-    [contract(AppNotificationBuilderContract, 1)]
+    [contract(AppNotificationBuilderContract, 2)]
     runtimeclass AppNotificationSubgroup
     {
         AppNotificationSubgroup();
@@ -195,7 +208,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationSubgroup SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imagecrop, String alternateText);
     };
 
-    [contract(AppNotificationBuilderContract, 1)]
+    [contract(AppNotificationBuilderContract, 2)]
     runtimeclass AppNotificationGroup
     {
         AppNotificationGroup();
@@ -272,6 +285,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // Adds arguments to the launch attribute to return when AppNotification is clicked.
         AppNotificationBuilder AddArgument(String key, String value);
 
+        [contract(AppNotificationBuilderContract, 2)]
         AppNotificationBuilder SetHeader(AppNotificationHeader value);
         
         // Sets the timeStamp of the AppNotification to when it was constructed instead of when it was sent.
@@ -323,6 +337,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         AppNotificationBuilder AddProgressBar(AppNotificationProgressBar value);
 
+        [contract(AppNotificationBuilderContract, 2)]
         AppNotificationBuilder AddGroup(AppNotificationGroup value);
 
         // Constructs a WindowsAppSDK AppNotification object with the XML payload
