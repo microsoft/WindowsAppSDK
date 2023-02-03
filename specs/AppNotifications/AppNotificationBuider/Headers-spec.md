@@ -1,6 +1,4 @@
-# Header
-
-## Proposal
+# Headers
 
 Headers let developers identify related notifications so they can be grouped together in Notification Center.
 ![AppNotification Header Example](toast-content-headers.png)
