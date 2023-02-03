@@ -1,10 +1,10 @@
 # Groups and Subgroups
 
-Using Groups and Subgroups, developers gain extra control on how they organize text and images in their AppNotifications as shown in the bottom part of the AppNotification in the image below where the text is split into two columns, one of which is right aligned and some of the text is bolded.  
+Using Groups and Subgroups, developers gain extra control on how they organize text and images in their AppNotifications as shown in the bottom part of the AppNotification in the image below where the text is split into two columns, one of which is right aligned and some of the text is bolded.
 
 ![AppNotification Group and Subgroup Example](toast-content-columns.png)
 
-The kind of fancy formating shown in the above image can be achieved with the following xml but it cannot be acheived using the AppNotificationBuilder at the moment.
+The kind of fancy formatting shown in the above image can be achieved with the following xml, but it cannot be achieved using the AppNotificationBuilder at the moment.
 
 ```xml
 <toast>
@@ -41,7 +41,7 @@ runtimeclass AppNotificationGroup
 };
 ```
 
-The new AppNotificationSubgroup runtimeclass is where things really happen. The Subgroup class holds the texts and images to be organized and formatied according to the extended capabilities afforded by groups and subgroups.
+The new AppNotificationSubgroup runtimeclass is where things really happen. The Subgroup class holds the texts and images to be organized and formatted according to the extended capabilities afforded by groups and subgroups.
 
 ```idl
 [contract(AppNotificationBuilderContract, 2)]
@@ -60,7 +60,7 @@ runtimeclass AppNotificationSubgroup
 };
 ```
 
-AppNotificationTextProperties needs to be expended to support the extended text formating afforded by the groups and subgroups feature. The propose additions (properties and methods) to the existing AppNotificationTextProperties runtimeclass are shown below (they are identified by a version 2 contract).
+AppNotificationTextProperties needs to be expanded to support the extended text formatting afforded by the groups and subgroups feature. The proposed additions (properties and methods) to the existing AppNotificationTextProperties runtimeclass are shown below (they are identified by a version 2 contract).
 
 ```idl
 [contract(AppNotificationBuilderContract, 1)]
@@ -97,7 +97,7 @@ runtimeclass AppNotificationTextProperties
 };
 ```
 
-Below is the enum to be use to specify the text style when calling the new SetStyle method from the AppNotificationTextProperties above.
+Below is the enum to be used to specify the text style when calling the new SetStyle method from the AppNotificationTextProperties above.
 
 ```idl
 [contract(AppNotificationBuilderContract, 2)]
@@ -124,7 +124,7 @@ enum AppNotificationTextStyle
 };
 ```
 
-And below is the enum to be use to specify the text style when calling the new SetAlign method from the AppNotificationTextProperties.
+And below is the enum to be used to specify the text style when calling the new SetAlign method from the AppNotificationTextProperties.
 
 ```idl
 [contract(AppNotificationBuilderContract, 2)]
@@ -138,7 +138,7 @@ enum AppNotificationTextAlign
 };
 ```
 
-Finally, AppNotificationBuilder requires a new AddGroup method so that goups and their subgroups can be embeded into the final AppNotification.
+Finally, AppNotificationBuilder requires a new AddGroup method so that groups and their subgroups can be embedded into the final AppNotification.
 
 ```idl
 [contract(AppNotificationBuilderContract, 1)]
@@ -176,4 +176,4 @@ auto builder{ winrt::AppNotificationBuilder()
 ```
 
 # Additional Notes
-* The new AddGroup is very simillar in name to the SetGroup method that already exists in the AppNotificationBuilder runtimeclass. It's unfortunate as this may be a source of coionfusion for developpers.
+* The new AddGroup is very similar in name to the SetGroup method that already exists in the AppNotificationBuilder runtimeclass. It's unfortunate as this may be a source of confusion for developers.

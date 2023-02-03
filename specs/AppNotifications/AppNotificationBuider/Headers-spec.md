@@ -3,7 +3,7 @@
 Headers let developers identify related notifications so they can be grouped together in Notification Center.
 ![AppNotification Header Example](toast-content-headers.png)
 
-Developers can specify a Header when defining a notification in raw xml, but the AppNotificationBuilder doesn't support  it.
+Developers can specify a Header when defining a notification in raw xml, but the AppNotificationBuilder doesn't support it.
 
 ```xml
 <toast>
@@ -59,5 +59,5 @@ auto builder{ winrt::AppNotificationBuilder()
 # Additional Notes
 * The new AppNotificationHeader runtimeclass is needed because a Header can have a variable number of arguments.
 
-* I thought about factoring out a runtimeclass specifically for holding arguments, similar to how AppNotificationTextProperties hold properties for text items but this would require changes to published API and the gain would be marginal at best as the xml required to define the arguments in a Header differs from the xml defining the arguments in the notification itself.  
+* I thought about factoring out a runtimeclass specifically for holding arguments, similar to how AppNotificationTextProperties hold properties for text items, but this would require changes to a published API and the gain would be marginal at best as the xml required to define the arguments in a Header differs from the xml defining the arguments in the notification itself.
 
