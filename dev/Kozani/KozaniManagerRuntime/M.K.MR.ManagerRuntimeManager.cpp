@@ -5,16 +5,35 @@
 
 #include "M.K.MR.ManagerRuntimeManager.h"
 
-#include "Microsoft.Kozani.ManagerRuntime.ManagerRuntimeManager.g.cpp"
+#include "ManagerRuntimeManager.g.cpp"
 
 namespace winrt::Microsoft::Kozani::ManagerRuntime::implementation
 {
-    winrt::Microsoft::Kozani::ManagerRuntime::ManagerRuntimeManager ManagerRuntimeManager::Open()
+    ManagerRuntimeManager::ManagerRuntimeManager()
     {
-        throw hresult_not_implemented();
+        m_kozaniManager = wil::CoCreateInstance<KozaniManager, IKozaniManager>(CLSCTX_LOCAL_SERVER);
     }
-    void ManagerRuntimeManager::TODO_ReplaceMeWithRealContent()
+
+    winrt::Microsoft::Kozani::ManagerRuntime::ManagerRuntimeManager ManagerRuntimeManager::Create()
     {
-        throw hresult_not_implemented();
+        return winrt::make<winrt::Microsoft::Kozani::ManagerRuntime::implementation::ManagerRuntimeManager>();
+    }
+
+    void ManagerRuntimeManager::ActivateRemoteApplication(
+        Windows::ApplicationModel::Activation::ActivationKind activationKind,
+        winrt::hstring appUserModelId,
+        winrt::hstring connectionRdpFilePath,
+        winrt::hstring additionalSettingsFilePath,
+        Windows::ApplicationModel::Activation::IActivatedEventArgs args,
+        IInspectable statusCallback)
+    {
+        winrt::check_hresult(m_kozaniManager->ActivateRemoteApplication(
+            static_cast<INT32>(activationKind),
+            appUserModelId.c_str(),
+            connectionRdpFilePath.c_str(),
+            additionalSettingsFilePath.c_str(),
+            reinterpret_cast<::IInspectable*>(winrt::get_abi(args)),
+            reinterpret_cast<::IKozaniStatusCallback*>(winrt::get_abi(statusCallback)),
+            GetCurrentProcessId()));
     }
 }
