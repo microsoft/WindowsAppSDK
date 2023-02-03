@@ -11,8 +11,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         AppNotificationComboBox(winrt::hstring const& id);
 
         // Properties
-        void Items(winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& value) { m_items = value; };
-        winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> Items() { return m_items; };
+        void Items(winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& value);
+        winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> Items();
 
         void ItemList(winrt::Windows::Foundation::Collections::IVector<AppNotificationComboBoxItem> const& value) { m_itemList = value; };
         winrt::Windows::Foundation::Collections::IVector<AppNotificationComboBoxItem> ItemList() { return m_itemList; };
@@ -35,7 +35,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     private:
         winrt::hstring m_id{};
-        winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_items{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
         winrt::Windows::Foundation::Collections::IVector<AppNotificationComboBoxItem> m_itemList{ winrt::single_threaded_vector<AppNotificationComboBoxItem>() };
         winrt::hstring m_title{};
         winrt::hstring m_selectedItem{};

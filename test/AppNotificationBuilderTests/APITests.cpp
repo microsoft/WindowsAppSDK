@@ -656,6 +656,40 @@ namespace Test::AppNotification::Builder
             VERIFY_THROWS_HR(winrt::AppNotificationComboBox(L""), E_INVALIDARG);
         }
 
+        TEST_METHOD(AppNotificationComboxBoxGetItemsProperty)
+        {
+            auto comboBox{ winrt::AppNotificationComboBox(L"comboBox1")
+                    .AddItem(L"item5", L"item5 text")
+                    .AddItem(L"item4", L"item4 text")
+                    .AddItem(L"item3", L"item3 text")
+                    .AddItem(L"item2", L"item2 text")
+                    .AddItem(L"item1", L"item1 text") };
+
+            auto items{ comboBox.Items() };
+            VERIFY_ARE_EQUAL(lstrcmp(items.Lookup(L"item1").c_str(), L"item1 text"), 0);
+            VERIFY_ARE_EQUAL(lstrcmp(items.Lookup(L"item2").c_str(), L"item2 text"), 0);
+            VERIFY_ARE_EQUAL(lstrcmp(items.Lookup(L"item3").c_str(), L"item3 text"), 0);
+            VERIFY_ARE_EQUAL(lstrcmp(items.Lookup(L"item4").c_str(), L"item4 text"), 0);
+            VERIFY_ARE_EQUAL(lstrcmp(items.Lookup(L"item5").c_str(), L"item5 text"), 0);
+        }
+
+        TEST_METHOD(AppNotificationComboxBoxSetItemsProperty)
+        {
+            winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> items{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
+            items.Insert(L"item1", L"item1 text");
+            items.Insert(L"item2", L"item2 text");
+            items.Insert(L"item3", L"item3 text");
+            items.Insert(L"item4", L"item4 text");
+            items.Insert(L"item5", L"item5 text");
+
+            auto comboBox{ winrt::AppNotificationComboBox(L"comboBox1") };
+            comboBox.Items(items);
+
+            auto expected{ L"<input id='comboBox1' type='selection'><selection id='item1' content='item1 text'/><selection id='item2' content='item2 text'/><selection id='item3' content='item3 text'/><selection id='item4' content='item4 text'/><selection id='item5' content='item5 text'/></input>" };
+            auto actual{ comboBox.as<winrt::Windows::Foundation::IStringable>().ToString() };
+            VERIFY_ARE_EQUAL(actual, expected);
+        }
+
         TEST_METHOD(AppNotificationBuilderEscapeXmlCharacters)
         {
             auto builder{ winrt::AppNotificationBuilder().AddText(LR"(&"'<>)") };
