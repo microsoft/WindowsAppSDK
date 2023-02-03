@@ -70,7 +70,7 @@ enum AppNotificationButtonType
 ```
 These are the only changes to the API required to implement the feature.
 
-Once support for snooze and dismiss buttons is added to the AppNotificationBuilder, developers will be able to create AppNotifications, like the one shown at the beginning of this document, using the code as shown below.
+Once support for snooze and dismiss buttons has been added to the AppNotificationBuilder, developers will be able to create AppNotifications, like the one shown at the beginning of this document, using the code as shown below.
 
 ```c++
 auto builder{ winrt::AppNotificationBuilder()
