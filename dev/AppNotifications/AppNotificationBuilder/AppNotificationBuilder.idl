@@ -99,12 +99,22 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationProgressBar BindValueStringOverride();
     };
 
+    [contract(AppNotificationBuilderContract, 2)]
+    struct AppNotificationComboBoxItem
+    {
+        String Id;
+        String Content;
+    };
+
     [contract(AppNotificationBuilderContract, 1)]
     runtimeclass AppNotificationComboBox
     {
         AppNotificationComboBox(String id);
 
+        [deprecated("Use ItemList instead of Items. For more info, see MSDN.", deprecate, AppNotificationBuilderContract, 2)]
         Windows.Foundation.Collections.IMap<String, String> Items;
+        [contract(AppNotificationBuilderContract, 2)]
+        Windows.Foundation.Collections.IVector<AppNotificationComboBoxItem> ItemList;
         String Title;
         String SelectedItem;
 
@@ -116,24 +126,6 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Sets the default selection to be displayed by the AppNotificationComboBox
         AppNotificationComboBox SetSelectedItem(String id);
-    };
-
-    [contract(AppNotificationBuilderContract, 2)]
-    runtimeclass AppNotificationComboBox2
-    {
-        AppNotificationComboBox2(String id);
-
-        String Title;
-        String SelectedItem;
-
-        // Add a selection to the AppNotificationComboBox. The id parameter identifies the item the user selected.
-        AppNotificationComboBox2 AddItem(String id, String content);
-
-        // Adds a title to display on top
-        AppNotificationComboBox2 SetTitle(String value);
-
-        // Sets the default selection to be displayed by the AppNotificationComboBox
-        AppNotificationComboBox2 SetSelectedItem(String id);
     };
 
     [contract(AppNotificationBuilderContract, 1)]
@@ -251,9 +243,6 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationBuilder AddButton(AppNotificationButton value);
 
         AppNotificationBuilder AddComboBox(AppNotificationComboBox value);
-
-        [contract(AppNotificationBuilderContract, 2)]
-        AppNotificationBuilder AddComboBox(AppNotificationComboBox2 value);
 
         AppNotificationBuilder AddProgressBar(AppNotificationProgressBar value);
 

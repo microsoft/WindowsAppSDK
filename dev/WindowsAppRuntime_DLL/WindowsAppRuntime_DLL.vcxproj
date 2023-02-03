@@ -244,11 +244,9 @@
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\AppNotifications\AppNotificationBuilder\AppNotificationComboBox2.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\AppNotifications\AppNotificationBuilder\AppNotificationComboBox2.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="COMExports.cpp" />
     <ClCompile Include="WindowsAppRuntime_EnsureIsLoaded.cpp" />

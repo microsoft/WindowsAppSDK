@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -16,12 +16,28 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         m_id = EncodeXml(id).c_str();
     };
 
+    bool AppNotificationComboBox::HasItem(winrt::hstring const& encodedId)
+    {
+        for (auto item : m_itemList)
+        {
+            if (lstrcmp(item.Id.c_str(), encodedId.c_str()) == 0)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationComboBox AppNotificationComboBox::AddItem(winrt::hstring const& id, winrt::hstring const& content)
     {
-        THROW_HR_IF_MSG(E_INVALIDARG, m_items.Size() >= c_maxSelectionElements, "Maximum number of items added");
+        THROW_HR_IF_MSG(E_INVALIDARG, m_itemList.Size() >= c_maxSelectionElements, "Maximum number of items added");
         THROW_HR_IF_MSG(E_INVALIDARG, id.empty(), "You must provide an id for the item");
 
-        m_items.Insert(EncodeXml(id).c_str(), EncodeXml(content).c_str());
+        winrt::hstring encodedId{ EncodeXml(id).c_str() };
+        THROW_HR_IF_MSG(E_INVALIDARG, HasItem(encodedId.c_str()), "An item with Id: %ls already exist", id.c_str());
+
+        m_itemList.Append(AppNotificationComboBoxItem{ encodedId, EncodeXml(content).c_str() });
 
         return *this;
     }
@@ -46,9 +62,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         std::wstring items{};
 
-        for (auto pair : m_items)
+        for (auto item : m_itemList)
         {
-            items.append(wil::str_printf<std::wstring>(L"<selection id='%ls' content='%ls'/>", pair.Key().c_str(), pair.Value().c_str()));
+            items.append(wil::str_printf<std::wstring>(L"<selection id='%ls' content='%ls'/>", item.Id.c_str(), item.Content.c_str()));
         }
 
         return items;

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -13,6 +13,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         // Properties
         void Items(winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& value) { m_items = value; };
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> Items() { return m_items; };
+
+        void ItemList(winrt::Windows::Foundation::Collections::IVector<AppNotificationComboBoxItem> const& value) { m_itemList = value; };
+        winrt::Windows::Foundation::Collections::IVector<AppNotificationComboBoxItem> ItemList() { return m_itemList; };
 
         void Title(winrt::hstring const& value) { m_title = value; };
         winrt::hstring Title() { return m_title; };
@@ -33,9 +36,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     private:
         winrt::hstring m_id{};
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_items{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
+        winrt::Windows::Foundation::Collections::IVector<AppNotificationComboBoxItem> m_itemList{ winrt::single_threaded_vector<AppNotificationComboBoxItem>() };
         winrt::hstring m_title{};
         winrt::hstring m_selectedItem{};
 
+        bool HasItem(winrt::hstring const& encodedId);
         std::wstring GetSelectionItems();
     };
 }

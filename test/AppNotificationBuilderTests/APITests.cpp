@@ -559,20 +559,6 @@ namespace Test::AppNotification::Builder
                     .AddItem(L"item1", L"item1 text")
                     .SetTitle(L"ComboBox Title")
                     .SetSelectedItem(L"item2"))};
-            auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><input id='comboBox1' type='selection' title='ComboBox Title' defaultInput='item2'><selection id='item1' content='item1 text'/><selection id='item2' content='item2 text'/><selection id='item3' content='item3 text'/></input></actions></toast>" };
-
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
-        }
-
-        TEST_METHOD(AppNotificationBuilderAddComboBox2)
-        {
-            auto builder{ winrt::AppNotificationBuilder()
-                .AddComboBox(winrt::AppNotificationComboBox2(L"comboBox1")
-                    .AddItem(L"item3", L"item3 text")
-                    .AddItem(L"item2", L"item2 text")
-                    .AddItem(L"item1", L"item1 text")
-                    .SetTitle(L"ComboBox Title")
-                    .SetSelectedItem(L"item2")) };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><input id='comboBox1' type='selection' title='ComboBox Title' defaultInput='item2'><selection id='item3' content='item3 text'/><selection id='item2' content='item2 text'/><selection id='item1' content='item1 text'/></input></actions></toast>" };
 
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
@@ -586,7 +572,7 @@ namespace Test::AppNotification::Builder
                 .AddTextBox(L"input3")
                 .AddComboBox(winrt::AppNotificationComboBox(L"comboBox1")
                     .AddItem(L"item1", L"item1 text"))
-                .AddComboBox(winrt::AppNotificationComboBox2(L"comboBox2")
+                .AddComboBox(winrt::AppNotificationComboBox(L"comboBox2")
                     .AddItem(L"item1", L"item1 text"))
                 .AddComboBox(winrt::AppNotificationComboBox(L"comboBox3")
                     .AddItem(L"item1", L"item1 text")), E_INVALIDARG);
@@ -597,32 +583,21 @@ namespace Test::AppNotification::Builder
             VERIFY_THROWS_HR(winrt::AppNotificationBuilder()
                 .AddComboBox(winrt::AppNotificationComboBox(L"comboBox1")
                     .AddItem(L"item1", L"item1 text"))
-                .AddComboBox(winrt::AppNotificationComboBox2(L"comboBox2")
+                .AddComboBox(winrt::AppNotificationComboBox(L"comboBox2")
                     .AddItem(L"item1", L"item1 text"))
                 .AddComboBox(winrt::AppNotificationComboBox(L"comboBox3")
                     .AddItem(L"item1", L"item1 text"))
-                .AddComboBox(winrt::AppNotificationComboBox2(L"comboBox4")
+                .AddComboBox(winrt::AppNotificationComboBox(L"comboBox4")
                     .AddItem(L"item1", L"item1 text"))
                 .AddComboBox(winrt::AppNotificationComboBox(L"comboBox5")
                     .AddItem(L"item1", L"item1 text"))
-                .AddComboBox(winrt::AppNotificationComboBox2(L"comboBox6")
+                .AddComboBox(winrt::AppNotificationComboBox(L"comboBox6")
                     .AddItem(L"item1", L"item1 text")), E_INVALIDARG);
         }
 
         TEST_METHOD(AppNotificationComboBoxAddTooManySelectionItems)
         {
             VERIFY_THROWS_HR(winrt::AppNotificationComboBox(L"comboBox1")
-                    .AddItem(L"item1", L"item1 text")
-                    .AddItem(L"item2", L"item2 text")
-                    .AddItem(L"item3", L"item3 text")
-                    .AddItem(L"item4", L"item4 text")
-                    .AddItem(L"item5", L"item5 text")
-                    .AddItem(L"item6", L"item6 text"), E_INVALIDARG);
-        }
-
-        TEST_METHOD(AppNotificationComboBox2AddTooManySelectionItems)
-        {
-            VERIFY_THROWS_HR(winrt::AppNotificationComboBox2(L"comboBox1")
                     .AddItem(L"item1", L"item1 text")
                     .AddItem(L"item2", L"item2 text")
                     .AddItem(L"item3", L"item3 text")
@@ -644,35 +619,9 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(comboBox.as<winrt::Windows::Foundation::IStringable>().ToString(), expected);
         }
 
-        TEST_METHOD(AppNotificationComboBox2AddFiveSelectionItems)
-        {
-            auto comboBox{ winrt::AppNotificationComboBox2(L"comboBox1")
-                    .AddItem(L"item1", L"item1 text")
-                    .AddItem(L"item2", L"item2 text")
-                    .AddItem(L"item3", L"item3 text")
-                    .AddItem(L"item4", L"item4 text")
-                    .AddItem(L"item5", L"item5 text") };
-            auto expected{ L"<input id='comboBox1' type='selection'><selection id='item1' content='item1 text'/><selection id='item2' content='item2 text'/><selection id='item3' content='item3 text'/><selection id='item4' content='item4 text'/><selection id='item5' content='item5 text'/></input>" };
-
-            VERIFY_ARE_EQUAL(comboBox.as<winrt::Windows::Foundation::IStringable>().ToString(), expected);
-        }
-
         TEST_METHOD(AppNotificationComboBoxAddFiveSelectionItemsDescendingOrder)
         {
             auto comboBox{ winrt::AppNotificationComboBox(L"comboBox1")
-                    .AddItem(L"item5", L"item5 text")
-                    .AddItem(L"item4", L"item4 text")
-                    .AddItem(L"item3", L"item3 text")
-                    .AddItem(L"item2", L"item2 text")
-                    .AddItem(L"item1", L"item1 text") };
-            auto expected{ L"<input id='comboBox1' type='selection'><selection id='item1' content='item1 text'/><selection id='item2' content='item2 text'/><selection id='item3' content='item3 text'/><selection id='item4' content='item4 text'/><selection id='item5' content='item5 text'/></input>" };
-
-            VERIFY_ARE_EQUAL(comboBox.as<winrt::Windows::Foundation::IStringable>().ToString(), expected);
-        }
-
-        TEST_METHOD(AppNotificationComboBox2AddFiveSelectionItemsDescendingOrder)
-        {
-            auto comboBox{ winrt::AppNotificationComboBox2(L"comboBox1")
                     .AddItem(L"item5", L"item5 text")
                     .AddItem(L"item4", L"item4 text")
                     .AddItem(L"item3", L"item3 text")
@@ -689,25 +638,9 @@ namespace Test::AppNotification::Builder
                 .AddItem(L"", L"item text"), E_INVALIDARG);
         }
 
-        TEST_METHOD(AppNotificationComboBox2AddSelectionItemWithoutAnId)
-        {
-            VERIFY_THROWS_HR(winrt::AppNotificationComboBox2(L"comboBox1")
-                .AddItem(L"", L"item text"), E_INVALIDARG);
-        }
-
         TEST_METHOD(AppNotificationComboBoxAddTwoSelectionItemsWithSameId)
         {
-            auto comboBox{ winrt::AppNotificationComboBox(L"comboBox1")
-                    .AddItem(L"item1", L"item1 text")
-                    .AddItem(L"item1", L"item2 text") };
-            auto expected{ L"<input id='comboBox1' type='selection'><selection id='item1' content='item2 text'/></input>" };
-
-            VERIFY_ARE_EQUAL(comboBox.as<winrt::Windows::Foundation::IStringable>().ToString(), expected);
-        }
-
-        TEST_METHOD(AppNotificationComboBox2AddTwoSelectionItemsWithSameId)
-        {
-            VERIFY_THROWS_HR( winrt::AppNotificationComboBox2(L"comboBox1")
+            VERIFY_THROWS_HR( winrt::AppNotificationComboBox(L"comboBox1")
                     .AddItem(L"item1", L"item1 text")
                     .AddItem(L"item1", L"item2 text"), E_INVALIDARG);
         }
@@ -718,20 +651,9 @@ namespace Test::AppNotification::Builder
                 .SetSelectedItem(L""), E_INVALIDARG);
         }
 
-        TEST_METHOD(AppNotificationComboBox2SetSelectedItemWithoutAnId)
-        {
-            VERIFY_THROWS_HR(winrt::AppNotificationComboBox2(L"comboBox1")
-                .SetSelectedItem(L""), E_INVALIDARG);
-        }
-
         TEST_METHOD(AppNotificationCreateComboBoxWithoutAnId)
         {
             VERIFY_THROWS_HR(winrt::AppNotificationComboBox(L""), E_INVALIDARG);
-        }
-
-        TEST_METHOD(AppNotificationCreateComboBox2WithoutAnId)
-        {
-            VERIFY_THROWS_HR(winrt::AppNotificationComboBox2(L""), E_INVALIDARG);
         }
 
         TEST_METHOD(AppNotificationBuilderEscapeXmlCharacters)
