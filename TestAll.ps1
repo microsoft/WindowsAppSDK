@@ -23,10 +23,10 @@
     Set the base folder for the script to look for testdefs
 
 .PARAMETER Platform
-    Only run tests for the selected platform(s)
+    Only run tests for the selected platform
 
 .PARAMETER Configuration
-    Only run tests the selected configuration(s)
+    Only run tests the selected configuration
 
 .PARAMETER List
     List the tests available in BuildOutput with their settings
@@ -52,11 +52,11 @@ $StartTime = Get-Date
 $lastexitcode = 0
 Set-StrictMode -Version 3.0
 
-$configPlat = Join-Path $Configuration $Platform
-$outputFolderPath = Join-Path $OutputFolder $configPlat 
-
 function Get-TaefTests
 {
+    $configPlat = Join-Path $Configuration $Platform
+    $outputFolderPath = Join-Path $OutputFolder $configPlat
+
     $tests = @()
     foreach ($testdef in (Get-ChildItem -Recurse -Filter "*.testdef" $outputFolderPath))
     {
