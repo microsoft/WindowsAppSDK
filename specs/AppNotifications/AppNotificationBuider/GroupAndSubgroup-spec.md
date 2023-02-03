@@ -52,4 +52,116 @@ auto builder{ winrt::AppNotificationBuilder()
                 .SetStyle(winrt::AppNotificationTextStyle::CaptionSubtle)
                     .SetAlign(winrt::AppNotificationTextAlign::Right))))
 };
-```c++
+```
+
+```idl
+[contract(AppNotificationBuilderContract, 2)]
+enum AppNotificationTextStyle
+{
+    Default,
+    Caption,
+    CaptionSubtle,
+    Body,
+    BodySubtle,
+    Base,
+    BaseSubtle,
+    Subtitle,
+    SubtitleSubtle,
+    Title,
+    TitleSubtle,
+    TitleNumeral,
+    Subheader,
+    SubheaderSubtle,
+    SubheaderNumeral,
+    Header,
+    HeaderSubtle,
+    HeaderNumeral,
+};
+```
+
+```idl
+[contract(AppNotificationBuilderContract, 2)]
+enum AppNotificationTextAlign
+{
+    Default,
+    Auto,
+    Left,
+    Center,
+    Right,
+};
+```
+
+```idl
+[contract(AppNotificationBuilderContract, 1)]
+runtimeclass AppNotificationTextProperties
+{
+    // Contains the set of <text> attributes
+    AppNotificationTextProperties();
+
+    String Language;
+    Boolean IncomingCallAlignment;
+    Int32 MaxLines;
+
+    [contract(AppNotificationBuilderContract, 2)]
+    AppNotificationTextStyle Style;
+    [contract(AppNotificationBuilderContract, 2)]
+    Boolean Wrap;
+    [contract(AppNotificationBuilderContract, 2)]
+    Int32 MinLines;
+    [contract(AppNotificationBuilderContract, 2)]
+    AppNotificationTextAlign Align;
+
+    AppNotificationTextProperties SetLanguage(String value);
+    AppNotificationTextProperties SetIncomingCallAlignment();
+    AppNotificationTextProperties SetMaxLines(Int32 value);
+
+    [contract(AppNotificationBuilderContract, 2)]
+    AppNotificationTextProperties SetStyle(AppNotificationTextStyle Style);
+    [contract(AppNotificationBuilderContract, 2)]
+    AppNotificationTextProperties SetWrap();
+    [contract(AppNotificationBuilderContract, 2)]
+    AppNotificationTextProperties SetMinLines(Int32 value);
+    [contract(AppNotificationBuilderContract, 2)]
+    AppNotificationTextProperties SetAlign(AppNotificationTextAlign Align);
+};
+```
+
+```idl
+[contract(AppNotificationBuilderContract, 2)]
+runtimeclass AppNotificationSubgroup
+{
+    AppNotificationSubgroup();
+
+    // Adds text to the AppNotificationSubgroup.
+    AppNotificationSubgroup AddText(String text);
+    AppNotificationSubgroup AddText(String text, AppNotificationTextProperties properties);
+
+    // Sets the full-width inline-image that appears when you expand the AppNotification
+    AppNotificationSubgroup SetInlineImage(Windows.Foundation.Uri imageUri);
+    AppNotificationSubgroup SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
+    AppNotificationSubgroup SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imagecrop, String alternateText);
+};
+```
+
+```idl
+[contract(AppNotificationBuilderContract, 2)]
+runtimeclass AppNotificationGroup
+{
+    AppNotificationGroup();
+
+    AppNotificationGroup AddSubgroup(AppNotificationSubgroup subgroup);
+};
+```
+
+```idl
+[contract(AppNotificationBuilderContract, 1)]
+runtimeclass AppNotificationBuilder
+{
+    ...
+
+    [contract(AppNotificationBuilderContract, 2)]
+    AppNotificationBuilder AddGroup(AppNotificationGroup value);
+
+    ...
+};
+```
