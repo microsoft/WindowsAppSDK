@@ -35,7 +35,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{400ED5EC-4530-4ADB-8DCE-9D1E6708A1F5}</ProjectGuid>
-    <RootNamespace>KozaniManagerRuntime</RootNamespace>
+    <RootNamespace>Microsoft.Kozani.ManagerRuntime</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <CppWinRTModernIDL>true</CppWinRTModernIDL>
     <CppWinRTFastAbi>true</CppWinRTFastAbi>
@@ -92,7 +92,7 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>(MSBuildThisFileDirectory);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)\dev\common;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>(MSBuildThisFileDirectory);$(OutDir)..\KozaniManagerProxyStub;$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)\dev\common;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PreprocessorDefinitions>KOZANIMANAGERRUNTIMEDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -188,6 +188,11 @@
     <ResourceCompile Include="KozaniManagerRuntime.rc">
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\Common;$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\KozaniManagerProxyStub\KozaniManagerProxyStub.vcxproj">
+      <Project>{cfc67ac3-3dc3-4981-a9bb-bc5ed06542d4}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
