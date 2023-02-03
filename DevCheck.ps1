@@ -605,7 +605,7 @@ function Repair-TAEFService
 
     $root = Get-ProjectRoot
     $cpu = Get-CpuArchitecture
-    $taef = 'Microsoft.Taef.10.58.210222006-develop'
+    $taef = 'Microsoft.Taef.10.75.221207001'
     $path = "$root\packages\$taef\build\Binaries\$cpu\Wex.Services.exe"
     if (-not(Test-Path -Path $path -PathType Leaf))
     {
