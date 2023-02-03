@@ -23,11 +23,11 @@ steps:
 - template: WindowsAppSDK-InstallWindowsSDK-Steps.yml
 
 - task: powershell@2
-  displayName: 'DevCheck: Setup development environment'
+  displayName: 'DevCheck: Setup/Verify development environment'
   inputs:
     targetType: filePath
     filePath: DevCheck.ps1
-    arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
+    arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: PowerShell@2

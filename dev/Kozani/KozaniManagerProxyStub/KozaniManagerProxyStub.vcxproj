@@ -165,7 +165,7 @@
       <!-- ARM64 builds of MIDL generated files require #define WIN32 or else build error
               dlldata.c(24,1): error C2061: syntax error: identifier 'PROXYFILE_LIST_START'
            "This only happens for ARM64.  This lead to investigating why dlldata.c was written certain ways
-            and why was this failing. Turns out almost the entire file of rpcproxy.h is excluded if you don’t
+            and why was this failing. Turns out almost the entire file of rpcproxy.h is excluded if you don't
             have WIN32 or _M_AMD64 defined. The fact WIN32 has 32 seems just a relic of the old 16bit -> 32bit
             subsystem shift, and these days really just means the Win32 subsystem and not a specific architecture."
            TL;DR make sure ARM64 builds #define WIN32 or MIDL-generated dlldata.c won't compile
@@ -182,7 +182,7 @@
       <!-- ARM64 builds of MIDL generated files require #define WIN32 or else build error
               dlldata.c(24,1): error C2061: syntax error: identifier 'PROXYFILE_LIST_START'
            "This only happens for ARM64.  This lead to investigating why dlldata.c was written certain ways
-            and why was this failing. Turns out almost the entire file of rpcproxy.h is excluded if you don’t
+            and why was this failing. Turns out almost the entire file of rpcproxy.h is excluded if you don't
             have WIN32 or _M_AMD64 defined. The fact WIN32 has 32 seems just a relic of the old 16bit -> 32bit
             subsystem shift, and these days really just means the Win32 subsystem and not a specific architecture."
            TL;DR make sure ARM64 builds #define WIN32 or MIDL-generated dlldata.c won't compile
@@ -199,7 +199,7 @@
       <!-- ARM64 builds of MIDL generated files require #define WIN32 or else build error
               dlldata.c(24,1): error C2061: syntax error: identifier 'PROXYFILE_LIST_START'
            "This only happens for ARM64.  This lead to investigating why dlldata.c was written certain ways
-            and why was this failing. Turns out almost the entire file of rpcproxy.h is excluded if you don’t
+            and why was this failing. Turns out almost the entire file of rpcproxy.h is excluded if you don't
             have WIN32 or _M_AMD64 defined. The fact WIN32 has 32 seems just a relic of the old 16bit -> 32bit
             subsystem shift, and these days really just means the Win32 subsystem and not a specific architecture."
            TL;DR make sure ARM64 builds #define WIN32 or MIDL-generated dlldata.c won't compile

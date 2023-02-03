@@ -4,7 +4,7 @@
            e.g. if B depends on A v1 and A v2 is published, Maestro updates B's Version.Details.xml to A v2
         2. Dependencies in Version.Dependencies.xml are only changed by explicit (manual) developer action
            e.g. if B depends on A v1 and A v2 is published, B is unchanged
-        3. Dependencies' versions in Version.Details.xml and Version.Dependencies.xml are TheMasterSourceOfTruth(TM). 
+        3. Dependencies' versions in Version.Details.xml and Version.Dependencies.xml are TheMasterSourceOfTruth(TM).
             These are literal values. No macro expansion or magic substitution will occur
         4. <ProductDependencies><Dependency> are listed in sorted order (alphabetically, case-insensitive)
         5. <ToolsetDependencies><Dependency> are listed in sorted order (alphabetically, case-insensitive)
@@ -22,15 +22,15 @@
        17. Version.Dependencies.props is a generated file. DO NOT EDIT. Use DevCheck -SyncDependencies
        18. POLICY: Dependencies on Transport Packages are expressed as <ProductDependencies> in Version.Details.xml
        19. POLICY: Dependencies on non-Transport Packages are expressed as <ToolsetDependencies> in Version.Dependencies.xml
-       20. POLICY: Update Version.Dependencies.props via "DevCheck -CheckDependencies -SyncDependencies". 
+       20. POLICY: Update Version.Dependencies.props via "DevCheck -CheckDependencies -SyncDependencies".
             NOTE: This is required when adding or removing a dependency
     -->
 <Dependencies>
   <Dependency Name="Microsoft.Build.Tasks.Git"                Version="1.1.1"/>
   <Dependency Name="Microsoft.SourceLink.Common"              Version="1.1.1"/>
   <Dependency Name="Microsoft.SourceLink.GitHub"              Version="1.1.1"/>
-  <Dependency Name="Microsoft.Taef"                           Version="10.58.210222006-develop"/>
+  <Dependency Name="Microsoft.Taef"                           Version="10.75.221207001"/>
   <Dependency Name="Microsoft.Telemetry.Inbox.Native"         Version="10.0.19041.1-191206-1406.vb-release.x86fre" />
-  <Dependency Name="Microsoft.Windows.CppWinRT"               Version="2.0.220929.3"/>
+  <Dependency Name="Microsoft.Windows.CppWinRT"               Version="2.0.221121.5"/>
   <Dependency Name="Microsoft.Windows.ImplementationLibrary"  Version="1.0.220914.1"/>
 </Dependencies>
