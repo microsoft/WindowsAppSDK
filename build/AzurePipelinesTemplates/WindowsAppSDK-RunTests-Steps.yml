@@ -138,4 +138,6 @@ steps:
         -OutputFolder "$(Build.SourcesDirectory)\BuildOutput\BuildOutput"
         -Platform "${{ parameters.buildPlatform }}" 
         -Configuration "${{ parameters.buildConfiguration }}"
+        -Test
+        -List
                 

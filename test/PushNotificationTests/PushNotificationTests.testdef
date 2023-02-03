@@ -1,9 +1,9 @@
 {
     "Tests": [
         {
-            "Description": "This module tests the push notifications component in WinAppSDK.",
+            "Description": "Test unpackaged scenarios for PushNotifications",
             "Filename": "PushNotificationTests.dll",
-            "Parameters": "",
+            "Parameters": "/name:UnpackagedTests#metadataSet1::VerifyForegroundHandlerFails",
             "Architectures": ["x64"],
             "Status": "Enabled" 
         }
