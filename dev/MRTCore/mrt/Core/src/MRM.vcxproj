@@ -107,7 +107,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include=$(MRTCoreRoot)\mrt\mrm\mrmmin\mrmmin.vcxproj">
+    <ProjectReference Include="$(MRTCoreRoot)\mrt\mrm\mrmmin\mrmmin.vcxproj">
       <Project>{ab199369-87e7-44b4-ae83-7cf5c068efeb}</Project>
     </ProjectReference>
   </ItemGroup>
