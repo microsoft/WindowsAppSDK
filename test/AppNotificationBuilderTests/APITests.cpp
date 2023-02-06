@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -300,11 +300,35 @@ namespace Test::AppNotification::Builder
         {
             auto builder{ winrt::AppNotificationBuilder()
                 .AddButton(winrt::AppNotificationButton(L"content")
-                .AddArgument(L"key", L"value"))
+                .AddArgument(L"key%", L"value=90%"))
             };
-            auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><action content='content' arguments='key=value'/></actions></toast>" };
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><action content='content' arguments='key%25=value%3D90%25'/></actions></toast>" };
 
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderAddButtonUsingProperties)
+        {
+            auto button{ winrt::AppNotificationButton(L"content") };
+            std::map<winrt::hstring, winrt::hstring> map{ {L"key%", L"value=90%"} };
+            button.Arguments(winrt::single_threaded_map<winrt::hstring, winrt::hstring>(std::move(map)));
+
+            auto builder{ winrt::AppNotificationBuilder()
+                .AddButton(button)
+            };
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><action content='content' arguments='key%25=value%3D90%25'/></actions></toast>" };
+            auto actual{ builder.BuildNotification().Payload() };
+            VERIFY_ARE_EQUAL(actual, expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderCanUsePropertyToRetrieveButtonArguments)
+        {
+            auto button{ winrt::AppNotificationButton(L"content")
+                .AddArgument(L"key%", L"value=90%")
+            };
+
+            auto actual{ button.Arguments() };
+            VERIFY_ARE_EQUAL(actual.Lookup(L"key%"), L"value=90%");
         }
 
         TEST_METHOD(AppNotificationBuilderAddButtonWithPlacement)

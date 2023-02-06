@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -28,7 +28,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         THROW_HR_IF_MSG(E_INVALIDARG, key.empty(), "You must provide a key when adding an argument");
         THROW_HR_IF_MSG(E_INVALIDARG, m_protocolUri, "You cannot add an argument after calling SetInvokeUri");
 
-        m_arguments.Insert(EncodeArgument(key.c_str()), EncodeArgument(value.c_str()));
+        m_arguments.Insert(key.c_str(), value.c_str());
         return *this;
     }
 
@@ -88,16 +88,18 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         }
         else
         {
+            //m_arguments.Insert(EncodeArgument(key.c_str()), EncodeArgument(value.c_str()));
+
             std::wstring arguments;
             for (auto pair : m_arguments)
             {
                 if (!pair.Value().empty())
                 {
-                    arguments.append(wil::str_printf<std::wstring>(L"%ls=%ls;", pair.Key().c_str(), pair.Value().c_str()));
+                    arguments.append(wil::str_printf<std::wstring>(L"%ls=%ls;", EncodeArgument(pair.Key().c_str()).c_str(), EncodeArgument(pair.Value().c_str()).c_str()));
                 }
                 else
                 {
-                    arguments.append(wil::str_printf<std::wstring>(L"%ls;", pair.Key().c_str()));
+                    arguments.append(wil::str_printf<std::wstring>(L"%ls;", EncodeArgument(pair.Key().c_str()).c_str()));
                 }
             }
             arguments.pop_back();
