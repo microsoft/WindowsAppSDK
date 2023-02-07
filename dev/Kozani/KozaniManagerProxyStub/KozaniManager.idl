@@ -3,6 +3,7 @@
 
 import "oaidl.idl";
 import "ocidl.idl";
+import "tsvirtualchannels.idl";
 
 #include "..\KozaniManager\KozaniManager-Constants.h"
 
@@ -16,5 +17,11 @@ library KozaniManager
     coclass KozaniManager
     {
         [default] interface IKozaniManager;
+    };
+
+    [uuid(PR_KOZANIDVC_CLSID_UUID)]
+    coclass KozaniManagerDvc
+    {
+        [default] interface IWTSPlugin;
     };
 };
