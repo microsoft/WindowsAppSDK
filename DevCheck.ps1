@@ -274,7 +274,7 @@ function Get-VSWhereOffline
     {
         return $null
     }
-    $path
+    return $path
 }
 
 function Get-VSWhereOnline
@@ -301,7 +301,7 @@ function Get-VSWhereOnline
     {
         return $null
     }
-    $path
+    return $path
 }
 
 # Home of vswhere.exe: https://github.com/microsoft/vswhere
@@ -724,7 +724,7 @@ function Test-TAEFServiceVersion
 
     if ($cmp -lt 0)
     {
-        Write-Host "ERROR: TAEF service older than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)" -ForegroundColor Red -BackgroundColor Black
+        Write-Warning "WARNING: TAEF service older than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)"
         return 'OlderVersion'
     }
     elseif ($cmp -gt 0)
@@ -970,7 +970,7 @@ function Get-DependencyVersions
         }
     }
 
-    $dependencies
+    return $dependencies
 }
 
 function Test-PackagesConfig
@@ -1109,7 +1109,7 @@ function Build-Dependencies
 </Project>
 "@
 
-    $output
+    return $output
 }
 
 function CheckAndSync-Dependencies
