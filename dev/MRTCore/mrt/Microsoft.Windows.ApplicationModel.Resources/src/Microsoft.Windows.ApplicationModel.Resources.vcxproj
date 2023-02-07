@@ -149,7 +149,7 @@
     <None Include="PropertySheet.props" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\src\MRM.vcxproj">
+    <ProjectReference Include="$(MRTCoreRoot)\mrt\core\src\MRM.vcxproj">
       <Project>{CF03CC8D-FFF1-4CDC-B773-D219AD4E6F76}</Project>
       <Name>MRM</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

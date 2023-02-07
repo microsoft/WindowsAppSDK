@@ -57,6 +57,12 @@
 .PARAMETER RemoveTestPfx
     Remove the MSIX Test signing certificate (i.e. undoc CheckTestPfx)
 
+.PARAMETER StartTAEFService
+    Start the TAEF service
+
+.PARAMETER StopTAEFService
+    Stop the TAEF service
+
 .PARAMETER SyncDependencies
     Update dependencies (*proj, packages.config, eng\Version.*.props) to match defined dependencies (eng\Version.*.xml)
 
@@ -102,6 +108,10 @@ Param(
 
     [Switch]$RemoveTestPfx=$false,
 
+    [Switch]$StartTAEFService=$false,
+
+    [Switch]$StopTAEFService=$false,
+
     [Switch]$SyncDependencies=$false,
 
     [Switch]$Verbose=$false
@@ -113,8 +123,10 @@ $ErrorActionPreference = "Stop"
 
 $global:issues = 0
 
+$global:isadmin = $null
+
 $remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
-if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And ($CheckDeveloperMode -eq $false))
+if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAEFService -eq $false) -And ($StopTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And ($CheckDeveloperMode -eq $false))
 {
     $CheckAll = $true
 }
@@ -138,7 +150,11 @@ function Write-Verbose
 
 function Get-IsAdmin
 {
-    return [Security.Principal.WindowsIdentity]::GetCurrent().Groups -contains 'S-1-5-32-544'
+    if ($global:isadmin -eq $null)
+    {
+        $global:isadmin = [Security.Principal.WindowsIdentity]::GetCurrent().Groups -contains 'S-1-5-32-544'
+    }
+    return $global:isadmin
 }
 
 function Get-ProjectRoot
@@ -191,6 +207,63 @@ function Get-CpuArchitecture
     }
 }
 
+function Test-SemVer
+{
+    param(
+        [string]$left,
+        [string]$right
+    )
+
+    $lefty = $left.Split('.')
+    $righty = $right.Split('.')
+
+    $cmp = [int]$lefty[0] - [int]$righty[0]
+    if ($cmp -ne 0)
+    {
+        return $cmp
+    }
+
+    $cmp = [int]$lefty[1] - [int]$righty[1]
+    if ($cmp -ne 0)
+    {
+        return $cmp
+    }
+
+    $null = $lefty[2] -Match "(\d+)(-[^+]+)?(\+.+)?$"
+    $lefty2 = $Matches[1]
+    $lefty2prerelease = $Matches[2]
+    $null = $righty[2] -Match "(\d+)(-[^+]+)?(\+.+)?$"
+    $righty2 = $Matches[1]
+    $righty2prerelease = $Matches[2]
+    $cmp = [int]$lefty2 - [int]$righty2
+    if ($cmp -ne 0)
+    {
+        return $cmp
+    }
+    if ($lefty2prerelease -ilt $righty2prerelease)
+    {
+        return -1
+    }
+    elseif ($lefty2prerelease -igt $righty2prerelease)
+    {
+        return 1
+    }
+    else
+    {
+        return 0
+    }
+}
+
+function Get-TAEFPackageVersion
+{
+    $root = Get-ProjectRoot
+    $filename = Join-Path $root 'eng'
+    $filename = Join-Path $filename 'Version.Dependencies.xml'
+    $xml = [xml](Get-Content $filename -EA:Stop)
+    $taef = $xml.SelectSingleNode("/Dependencies/Dependency[@Name='Microsoft.Taef']")
+    return $taef.Version
+}
+
 function Get-VSWhereOffline
 {
     # Absolute Path = "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
@@ -201,7 +274,7 @@ function Get-VSWhereOffline
     {
         return $null
     }
-    $path
+    return $path
 }
 
 function Get-VSWhereOnline
@@ -228,7 +301,7 @@ function Get-VSWhereOnline
     {
         return $null
     }
-    $path
+    return $path
 }
 
 # Home of vswhere.exe: https://github.com/microsoft/vswhere
@@ -626,27 +699,90 @@ function Remove-DevTestCert
     return $true
 }
 
+function Get-TAEFServiceImagePath
+{
+    $path = Get-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Te.Service | Select-Object 'ImagePath'
+    $path.ImagePath
+}
+
+function Test-TAEFServiceVersion
+{
+    $path = Get-TAEFServiceImagePath
+    if ([string]::IsNullOrEmpty($path))
+    {
+        return $null
+    }
+    if (-not($path -imatch '^.*Microsoft.Taef[\.](.+?)\\'))
+    {
+        return $null
+    }
+    $actual_taef_version = $Matches[1]
+
+    $expected_taef_version = Get-TAEFPackageVersion
+
+    $cmp = Test-SemVer $actual_taef_version $expected_taef_version
+
+    if ($cmp -lt 0)
+    {
+        Write-Warning "WARNING: TAEF service older than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)"
+        return 'OlderVersion'
+    }
+    elseif ($cmp -gt 0)
+    {
+        Write-Warning "WARNING: TAEF service newer than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)"
+        return 'NewerVersion'
+    }
+    else
+    {
+        Write-Verbose "Expected TAEF service is registered ($actual_taef_version)"
+        return 'OK'
+    }
+}
+
 function Test-TAEFService
 {
+    $taef_version_status = Test-TAEFServiceVersion
+    if ([string]::IsNullOrEmpty($taef_version_status))
+    {
+        Write-Host "TAEF service...Not Installed"
+        return 'NotFound'
+    }
+
+    # Double-check the TAEF service is known as a service as far as Windows is concerned
     $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
     if ([string]::IsNullOrEmpty($service))
     {
         Write-Host "TAEF service...Not Installed"
         return 'NotFound'
     }
-    elseif ($service.Status -ne "Running")
+
+    if ($service.Status -ne "Running")
     {
         Write-Host "TAEF service...Not running ($service.Status)"
-        return 'NotRunning'
+        if ($taef_version_status -eq 'OlderVersion')
+        {
+            return 'NotRunning-OlderVersion'
+        }
+        else
+        {
+            return 'NotRunning'
+        }
     }
     else
     {
         Write-Host "TAEF service...Running"
-        return 'Running'
+        if ($taef_version_status -eq 'OlderVersion')
+        {
+            return 'Running-OlderVersion'
+        }
+        else
+        {
+            return 'Running'
+        }
     }
 }
 
-function Repair-TAEFService
+function Install-TAEFService
 {
     $isadmin = Get-IsAdmin
     if ($isadmin -eq $false)
@@ -658,7 +794,8 @@ function Repair-TAEFService
 
     $root = Get-ProjectRoot
     $cpu = Get-CpuArchitecture
-    $taef = 'Microsoft.Taef.10.58.210222006-develop'
+    $taef_version = Get-TAEFPackageVersion
+    $taef = "Microsoft.Taef.$($taef_version)"
     $path = "$root\packages\$taef\build\Binaries\$cpu\Wex.Services.exe"
     if (-not(Test-Path -Path $path -PathType Leaf))
     {
@@ -683,6 +820,39 @@ function Repair-TAEFService
     }
 }
 
+function Uninstall-TAEFService
+{
+    $isadmin = Get-IsAdmin
+    if ($isadmin -eq $false)
+    {
+        Write-Host "Uninstall TAEF service...Access Denied. Run from an admin prompt"
+        $global:issues += 1
+        return
+    }
+
+    $ok = Stop-TAEFService
+    if ($ok -ne $true)
+    {
+        return $ok
+    }
+
+    $filename = Get-TAEFServiceImagePath
+    $args = '/remove:TE.Service'
+    $output = Run-Process $filename $args
+    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    if (-not([string]::IsNullOrEmpty($service)))
+    {
+        Write-Host "Uninstall TAEF service...Failed"
+        $global:issues += 1
+        return 'UninstallError'
+    }
+    else
+    {
+        Write-Host "Uninstall TAEF service...OK"
+        return 'NotRunning'
+    }
+}
+
 function Start-TAEFService
 {
     $isadmin = Get-IsAdmin
@@ -703,6 +873,43 @@ function Start-TAEFService
     else
     {
         Write-Host "Start TAEF service...OK"
+        return $true
+    }
+}
+
+function Stop-TAEFService
+{
+    $isadmin = Get-IsAdmin
+    if ($isadmin -eq $false)
+    {
+        Write-Host "Stop TAEF service...Access Denied. Run from an admin prompt"
+        $global:issues += 1
+        return $false
+    }
+
+    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    if ($service -eq $null)
+    {
+        return 'NotFound'
+    }
+    elseif ($service.Status -ne "Stopped")
+    {
+        $ok = Stop-Service 'TE.Service'
+    }
+    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    if ($service -eq $null)
+    {
+        return 'NotFound'
+    }
+    elseif ($service.Status -ne "Stopped")
+    {
+        Write-Host "Stop TAEF service...Failed"
+        $global:issues += 1
+        return $false
+    }
+    else
+    {
+        Write-Host "Stop TAEF service...OK"
         return $true
     }
 }
@@ -763,7 +970,7 @@ function Get-DependencyVersions
         }
     }
 
-    $dependencies
+    return $dependencies
 }
 
 function Test-PackagesConfig
@@ -902,7 +1109,7 @@ function Build-Dependencies
 </Project>
 "@
 
-    $output
+    return $output
 }
 
 function CheckAndSync-Dependencies
@@ -1102,7 +1309,7 @@ if (($CheckAll -ne $false) -Or ($CheckTestCert -ne $false))
     $test = Test-DevTestCert
     if ($test -ne $true)
     {
-        Repair-DevTestCert
+        $null = Repair-DevTestCert
     }
 }
 
@@ -1111,32 +1318,61 @@ if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
     $test = Test-TAEFService
     if ($test -eq 'NotFound')
     {
-        $test = Repair-TAEFService
+        $test = Install-TAEFService
     }
-    if ($test -eq 'NotRunning')
+    elseif ($test -eq 'NotRunning-OlderVersion')
+    {
+        $test = Uninstall-TAEFService
+        $test = Install-TAEFService
+        $test = Start-TAEFService
+    }
+    elseif ($test -eq 'NotRunning')
     {
         $test = Start-TAEFService
+    }
+    elseif ($test -eq 'Running-OlderVersion')
+    {
+        $test = Stop-TAEFService
+        if ($test -ne $false)
+        {
+            if ($test -eq $true)
+            {
+                $test = Uninstall-TAEFService
+            }
+            $test = Install-TAEFService
+            $test = Start-TAEFService
+        }
     }
 }
 
 if (($CheckAll -ne $false) -Or ($CheckDependencies -ne $false))
 {
-    Test-Dependencies
+    $null = Test-Dependencies
 }
 
 if (($CheckAll -ne $false) -Or ($CheckDeveloperMode -ne $false))
 {
-    Test-DeveloperMode
+    $null = Test-DeveloperMode
+}
+
+if ($StartTAEFService -eq $true)
+{
+    $null = Start-TAEFService
+}
+
+if ($StopTAEFService -eq $true)
+{
+    $null = Stop-TAEFService
 }
 
 if (($RemoveAll -ne $false) -Or ($RemoveTestCert -ne $false))
 {
-    $test = Remove-DevTestCert
+    $null = Remove-DevTestCert
 }
 
 if (($RemoveAll -ne $false) -Or ($RemoveTestPfx -ne $false))
 {
-    $test = Remove-DevTestPfx
+    $null = Remove-DevTestPfx
 }
 
 if ($global:issues -eq 0)
