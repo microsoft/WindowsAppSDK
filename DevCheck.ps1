@@ -229,24 +229,22 @@ function Test-SemVer
         return $cmp
     }
 
-    $cmp = [int]$lefty[1] - [int]$righty[1]
+    $null = $lefty[2] -Match "(\d+)(-[^+]+)?(\+.+)?$"
+    $lefty2 = $Matches[1]
+    $lefty2prerelease = $Matches[2]
+    $null = $righty[2] -Match "(\d+)(-[^+]+)?(\+.+)?$"
+    $righty2 = $Matches[1]
+    $righty2prerelease = $Matches[2]
+    $cmp = [int]$lefty2 - [int]$righty2
     if ($cmp -ne 0)
     {
         return $cmp
     }
-
-    $lefty2 = $lefty -Match "(\d+)(-[^+]+)?(\+.+)?$"
-    $righty2 = $righty -Match "(\d+)(-[^+]+)?(\+.+)?$"
-    $cmp = [int]$lefty2[0] - [int]$righty2[0]
-    if ($cmp -ne 0)
-    {
-        return $cmp
-    }
-    if ($lefty2[1] -ilt $righty2[1])
+    if ($lefty2prerelease -ilt $righty2prerelease)
     {
         return -1
     }
-    elseif ($lefty2[1] -igt $righty2[1])
+    elseif ($lefty2prerelease -igt $righty2prerelease)
     {
         return 1
     }
