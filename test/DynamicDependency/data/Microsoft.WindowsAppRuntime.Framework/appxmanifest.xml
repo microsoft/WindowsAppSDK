@@ -116,6 +116,12 @@
             <ActivatableClass ActivatableClassId="Microsoft.Windows.System.EnvironmentManager" ThreadingModel="both" />
         </InProcessServer>
     </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>KozaniManagerRuntime.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Kozani.ManagerRuntime.ManagerRuntimeManager" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
     <Extension Category="windows.activatableClass.proxyStub">
       <ProxyStub ClassId="71201C0F-21E1-4B80-945F-7B0A10F90883">
           <Path>PushNotificationsLongRunningTask.ProxyStub.dll</Path>

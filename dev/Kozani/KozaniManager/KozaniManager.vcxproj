@@ -158,6 +158,9 @@
     <ProjectReference Include="..\KozaniManagerProxyStub\KozaniManagerProxyStub.vcxproj">
       <Project>{CFC67AC3-3DC3-4981-A9BB-BC5ED06542D4}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\KozaniManagerRuntime\KozaniManagerRuntime.vcxproj">
+      <Project>{400ed5ec-4530-4adb-8dce-9d1e6708a1f5}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

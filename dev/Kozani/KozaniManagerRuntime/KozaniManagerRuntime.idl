@@ -9,9 +9,14 @@ namespace Microsoft.Kozani.ManagerRuntime
     [contract(ManagerRuntimeContract, 1)]
     runtimeclass ManagerRuntimeManager
     {
-        /// Get a ManagerRuntime manager for the caller's context.
-        static ManagerRuntimeManager Open();
+        static ManagerRuntimeManager Create();
 
-        void TODO_ReplaceMeWithRealContent();
+        void ActivateRemoteApplication(
+            Windows.ApplicationModel.Activation.ActivationKind activationKind,
+            String appUserModelId,
+            String connectionRdpFilePath,
+            String additionalSettingsFilePath,
+            Windows.ApplicationModel.Activation.IActivatedEventArgs args,   // optional, can be nullptr
+            IInspectable statusCallback);
     };
 }
