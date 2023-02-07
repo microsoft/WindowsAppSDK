@@ -168,7 +168,7 @@
     <CopyFileToFolders Include="$(BaseOutputPath)MRM\mrm.pdb" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\MRM.vcxproj">
+    <ProjectReference Include="$(MRTCoreRoot)\mrt\Core\src\MRM.vcxproj">
       <Project>{cf03cc8d-fff1-4cdc-b773-d219ad4e6f76}</Project>
     </ProjectReference>
   </ItemGroup>

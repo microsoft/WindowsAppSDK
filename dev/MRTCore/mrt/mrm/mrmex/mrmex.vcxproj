@@ -107,7 +107,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\WindowsAppRuntime_Insights;..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MRTCoreRoot)\mrt\mrm\include</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -150,18 +150,18 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\mrm\build\AIDict.h" />
-    <ClInclude Include="..\include\mrm\build\Atoms.h" />
-    <ClInclude Include="..\include\mrm\build\Base.h" />
-    <ClInclude Include="..\include\mrm\build\DefList.h" />
-    <ClInclude Include="..\include\mrm\build\FileBuilder.h" />
-    <ClInclude Include="..\include\mrm\build\FileListBuilder.h" />
-    <ClInclude Include="..\include\mrm\build\HNamesBuilder.h" />
-    <ClInclude Include="..\include\mrm\build\MrmBuilders.h" />
-    <ClInclude Include="..\include\mrm\build\ResourcePackMerge.h" />
-    <ClInclude Include="..\include\mrm\build\SectionBuilders.h" />
-    <ClInclude Include="..\include\mrm\build\SectionCopiers.h" />
-    <ClInclude Include="..\include\mrm\build\WriteableStringPool.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\AIDict.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\Atoms.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\Base.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\DefList.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\FileBuilder.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\FileListBuilder.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\HNamesBuilder.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\MrmBuilders.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\ResourcePackMerge.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\SectionBuilders.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\SectionCopiers.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\WriteableStringPool.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
