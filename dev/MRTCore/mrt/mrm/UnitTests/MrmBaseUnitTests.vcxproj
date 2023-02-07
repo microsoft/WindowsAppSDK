@@ -91,13 +91,13 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\WindowsAppRuntime_Insights;..\include;..\mrmmin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MRTCoreRoot)\mrt\mrm\include;$(MRTCoreRoot)\mrt\mrm\mrmmin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4309;4838;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\WindowsAppRuntime_Insights;..\include;..\mrmmin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MRTCoreRoot)\mrt\mrm\include;$(MRTCoreRoot)\mrt\mrm\mrmmin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4309;4838;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -222,10 +222,10 @@
     <ClInclude Include="testUtils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\mrmex\mrmex.vcxproj">
+    <ProjectReference Include="$(MRTCoreRoot)\mrt\mrm\mrmex\mrmex.vcxproj">
       <Project>{c3dbe42d-246e-45f1-8b66-8a8556c0784b}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\mrmmin\mrmmin.vcxproj">
+    <ProjectReference Include="$(MRTCoreRoot)\mrt\mrm\mrmmin\mrmmin.vcxproj">
       <Project>{ab199369-87e7-44b4-ae83-7cf5c068efeb}</Project>
     </ProjectReference>
   </ItemGroup>

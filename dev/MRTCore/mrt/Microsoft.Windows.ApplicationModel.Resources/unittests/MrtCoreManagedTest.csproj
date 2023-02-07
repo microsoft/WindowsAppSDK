@@ -121,7 +121,7 @@
     <SDKReference Include="TestPlatform.Universal, Version=$(UnitTestPlatformVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\TestCommon\CommonTestCode.cs">
+    <Compile Include="$(MRTCoreRoot)\mrt\Microsoft.Windows.ApplicationModel.Resources\TestCommon\CommonTestCode.cs">
       <Link>CommonTestCode.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -174,7 +174,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\Microsoft.Windows.ApplicationModel.Resources.vcxproj">
+    <ProjectReference Include="$(MRTCoreRoot)\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.vcxproj">
       <Project>{9b3b03bc-1bc0-43ea-b3ff-d5214f3cf5cf}</Project>
       <Name>Microsoft.Windows.ApplicationModel.Resources</Name>
     </ProjectReference>

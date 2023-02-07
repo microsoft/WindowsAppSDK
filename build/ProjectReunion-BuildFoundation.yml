@@ -85,7 +85,7 @@ jobs:
     displayName: 'NuGet restore of packages'
     inputs:
       command: 'custom'
-      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile dev\WindowsAppRuntime_Insights\nuget.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
+      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile NuGet.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
@@ -108,7 +108,7 @@ jobs:
       inputs:
         restoreSolution: build/packages.config
         feedsToUse: config
-        nugetConfigPath: build/licensing.nuget.config
+        nugetConfigPath: NuGet.config
         restoreDirectory: packages
 
     - task: CopyFiles@2
@@ -175,7 +175,7 @@ jobs:
     displayName: 'NuGet restore of packages'
     inputs:
       command: 'custom'
-      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile dev\WindowsAppRuntime_Insights\nuget.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
+      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile NuGet.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
@@ -244,7 +244,7 @@ jobs:
     displayName: 'NuGet restore of packages'
     inputs:
       command: 'custom'
-      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile dev\WindowsAppRuntime_Insights\nuget.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
+      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile NuGet.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestMRT-Steps.yml
 
