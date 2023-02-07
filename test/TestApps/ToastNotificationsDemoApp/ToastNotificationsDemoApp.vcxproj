@@ -223,7 +223,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="ToastNotificationsDemoApp.rc" />
+    <ResourceCompile Include="ToastNotificationsDemoApp.rc">      
+      <AdditionalIncludeDirectories>$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon1.ico" />

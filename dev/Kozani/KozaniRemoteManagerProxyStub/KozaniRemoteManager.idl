@@ -1,0 +1,20 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+#include "..\KozaniRemoteManager\KozaniRemoteManager-Constants.h"
+
+#include "KozaniRemoteManagerInterface.idl"
+
+[uuid(PR_KOZANIREMOTEMANAGER_LIBID_UUID)]
+[version(1.0)]
+library KozaniRemoteManager
+{
+    [uuid(PR_KOZANIREMOTEMANAGER_CLSID_UUID)]
+    coclass KozaniRemoteManager
+    {
+        [default] interface IKozaniRemoteManager;
+    };
+};
