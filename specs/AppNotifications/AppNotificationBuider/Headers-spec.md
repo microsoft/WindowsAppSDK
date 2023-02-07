@@ -28,6 +28,10 @@ runtimeclass AppNotificationHeader
     AppNotificationHeader();
     AppNotificationHeader(String id, String title);
 
+    String Id;
+    String Title;
+    Windows.Foundation.Collections.IMap<String, String> Arguments;
+
     AppNotificationHeader AddArgument(String key, String value);
 };
 ```

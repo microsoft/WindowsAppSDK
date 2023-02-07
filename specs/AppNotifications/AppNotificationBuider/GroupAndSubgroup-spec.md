@@ -37,6 +37,8 @@ runtimeclass AppNotificationGroup
 {
     AppNotificationGroup();
 
+    Windows.Foundation.Collections.IVector<AppNotificationSubgroup> subgroups;
+
     AppNotificationGroup AddSubgroup(AppNotificationSubgroup subgroup);
 };
 ```
