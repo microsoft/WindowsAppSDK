@@ -20,8 +20,8 @@ points if there's a gist or existing repo we can look at with you.
 4. **[WinUI topics](https://github.com/microsoft/microsoft-ui-xaml)**<br>
    Please file WinUI issues and feedback in the [WinUI repository](https://github.com/microsoft/microsoft-ui-xaml). Check out their amazing guide to [general contributing](https://github.com/microsoft/microsoft-ui-xaml/blob/main/CONTRIBUTING.md) as well as [contributing feedback and requests](https://github.com/microsoft/microsoft-ui-xaml/blob/main/CONTRIBUTING_feedback_and_requests.md)!
 
-5. **[Code contributions](docs/contributor-guide.md)**<br>
-   Learn how to contribute code and other artifacts following the [developer guidelines](docs/Coding-Guidelines.md).
+5. **[Code contributions](https://github.com/microsoft/WindowsAppSDK/blob/main/docs/Coding-Guidelines.md)**<br>
+   Learn how to contribute code and other artifacts following the [developer guidelines](https://github.com/microsoft/WindowsAppSDK/blob/main/docs/Coding-Guidelines.md).
 
 Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
