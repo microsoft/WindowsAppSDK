@@ -22,6 +22,7 @@
 
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+    <PackageDependency Name="Microsoft.WindowsAppRuntime.Framework-4.1" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
   </Dependencies>
 
   <Resources>
@@ -59,6 +60,12 @@
                 <com:ComInterface>
                     <com:ProxyStub Id="25604D55-9B17-426F-9D67-2B11B3A65598" DisplayName="PushNotificationsLongRunningTask ProxyStub" Path="PushNotificationsLongRunningTask.ProxyStub.dll"/>
                     <com:Interface Id="25604D55-9B17-426F-9D67-2B11B3A65598" ProxyStubClsid="25604D55-9B17-426F-9D67-2B11B3A65598"/> <!-- IID_IWpnForegroundSink -->
+                </com:ComInterface>
+            </com:Extension>
+            <com:Extension Category="windows.comInterface">
+                <com:ComInterface>
+                    <com:ProxyStub Id="559B4205-F810-4947-B02B-3EA9A311C6AD" DisplayName="PushNotificationsLongRunningTask ProxyStub" Path="PushNotificationsLongRunningTask.ProxyStub.dll"/>
+                    <com:Interface Id="559B4205-F810-4947-B02B-3EA9A311C6AD" ProxyStubClsid="559B4205-F810-4947-B02B-3EA9A311C6AD"/> <!-- IID_IWpnForegroundSink2 -->
                 </com:ComInterface>
             </com:Extension>
             <uap5:Extension

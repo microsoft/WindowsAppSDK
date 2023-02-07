@@ -272,6 +272,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="DynamicDependencyLifetimeManager.ProxyStub.rc">      
+      <AdditionalIncludeDirectories>$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
     <Midl Include="DynamicDependencyLifetimeManager.idl" />
   </ItemGroup>
   <ItemGroup>

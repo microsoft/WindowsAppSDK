@@ -22,7 +22,7 @@ parameters:
     default: 'ProjectReunionInternal'
 
 steps:
-  - checkout: git://ProjectReunion/WindowsAppSDKAggregator
+  - checkout: git://ProjectReunion/WindowsAppSDKAggregator@release/1.3-experimental1
 
   - task: AzureKeyVault@1
     inputs:

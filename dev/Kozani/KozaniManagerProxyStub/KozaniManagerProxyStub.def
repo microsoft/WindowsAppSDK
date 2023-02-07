@@ -1,0 +1,3 @@
+﻿EXPORTS
+    DllCanUnloadNow         PRIVATE
+    DllGetClassObject       PRIVATE
