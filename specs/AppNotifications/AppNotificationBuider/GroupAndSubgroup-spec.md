@@ -170,10 +170,10 @@ auto builder{ winrt::AppNotificationBuilder()
         .AddSubgroup(winrt::AppNotificationSubgroup()
             .AddText(L"1 Microsoft Way", winrt::AppNotificationTextProperties()
                 .SetStyle(winrt::AppNotificationTextStyle::CaptionSubtle)
-                    .SetAlign(winrt::AppNotificationTextAlign::Right))
+                .SetAlign(winrt::AppNotificationTextAlign::Right))
             .AddText(L"Bellevue, WA 98008", winrt::AppNotificationTextProperties()
                 .SetStyle(winrt::AppNotificationTextStyle::CaptionSubtle)
-                    .SetAlign(winrt::AppNotificationTextAlign::Right))))
+                .SetAlign(winrt::AppNotificationTextAlign::Right))))
 };
 ```
 
