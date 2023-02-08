@@ -31,6 +31,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         m_arguments = value;
     }
 
+    void AppNotificationButton::ToolTip(winrt::hstring const& value)
+    {
+        m_toolTip = value;
+    }
+
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::AddArgument(winrt::hstring const& key, winrt::hstring const& value)
     {
         THROW_HR_IF_MSG(E_INVALIDARG, key.empty(), "You must provide a key when adding an argument");
@@ -48,7 +53,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetToolTip(winrt::hstring const& value)
     {
-        m_toolTip = EncodeXml(value.c_str()).c_str();
+        m_toolTip = value;
         return *this;
     }
 
@@ -138,7 +143,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
             m_iconUri ? wil::str_printf<std::wstring>(L" imageUri='%ls'", m_iconUri.ToString().c_str()).c_str() : L"",
             !m_inputId.empty() ? wil::str_printf<std::wstring>(L" hint-inputId='%ls'", m_inputId.c_str()).c_str() : L"",
             GetButtonStyle().c_str(),
-            !m_toolTip.empty() ? wil::str_printf<std::wstring>(L" hint-toolTip='%ls'", m_toolTip.c_str()).c_str() : L"") };
+            !m_toolTip.empty() ? wil::str_printf<std::wstring>(L" hint-toolTip='%ls'", EncodeXml(m_toolTip.c_str()).c_str()).c_str() : L"") };
 
         logTelemetry.Stop();
 

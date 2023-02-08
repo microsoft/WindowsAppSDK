@@ -317,8 +317,8 @@ namespace Test::AppNotification::Builder
                 .AddButton(button)
             };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><action content='content' arguments='key%25=value%3D90%25'/></actions></toast>" };
-            auto actual{ builder.BuildNotification().Payload() };
-            VERIFY_ARE_EQUAL(actual, expected);
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
         TEST_METHOD(AppNotificationBuilderCanUsePropertyToRetrieveButtonArguments)
@@ -327,8 +327,7 @@ namespace Test::AppNotification::Builder
                 .AddArgument(L"key%", L"value=90%")
             };
 
-            auto actual{ button.Arguments() };
-            VERIFY_ARE_EQUAL(actual.Lookup(L"key%"), L"value=90%");
+            VERIFY_ARE_EQUAL(button.Arguments().Lookup(L"key%"), L"value=90%");
         }
 
         TEST_METHOD(AppNotificationBuilderAddButtonWithPlacement)
@@ -358,26 +357,61 @@ namespace Test::AppNotification::Builder
         {
             auto builder{ winrt::AppNotificationBuilder()
                 .AddButton(winrt::AppNotificationButton(L"content")
-                .SetInvokeUri(c_sampleUri))
+                    .SetInvokeUri(c_sampleUri))
             };
             auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><action content='content' arguments='http://www.microsoft.com/' activationType='protocol'/></actions></toast>" };
 
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
-        TEST_METHOD(AppNotificationBuilderAddButtonWithProperties)
+        TEST_METHOD(AppNotificationBuilderAddButtonWithPropertiesUsingFluentSetters)
         {
             auto builder{ winrt::AppNotificationBuilder()
                 .AddButton(winrt::AppNotificationButton(L"content")
-                .AddArgument(L"key", L"value")
-                .SetButtonStyle(winrt::AppNotificationButtonStyle::Success)
-                .SetIcon(c_sampleUri)
-                .SetInputId(L"inputId")
-                .SetToolTip(L"toolTip"))
+                    .AddArgument(L"key%", L"value=90%")
+                    .SetButtonStyle(winrt::AppNotificationButtonStyle::Success)
+                    .SetIcon(c_sampleUri)
+                    .SetInputId(L"inputId")
+                    .SetToolTip(L"tool&Tip"))
             };
-            auto expected{ L"<toast useButtonStyle='true'><visual><binding template='ToastGeneric'></binding></visual><actions><action content='content' arguments='key=value' imageUri='http://www.microsoft.com/' hint-inputId='inputId' hint-buttonStyle='Success' hint-toolTip='toolTip'/></actions></toast>"};
+            auto expected{ L"<toast useButtonStyle='true'><visual><binding template='ToastGeneric'></binding></visual><actions><action content='content' arguments='key%25=value%3D90%25' imageUri='http://www.microsoft.com/' hint-inputId='inputId' hint-buttonStyle='Success' hint-toolTip='tool&amp;Tip'/></actions></toast>" };
 
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderAddButtonWithProperties)
+        {
+            auto button{ winrt::AppNotificationButton(L"content") };
+            std::map<winrt::hstring, winrt::hstring> map{ {L"key%", L"value=90%"} };
+            button.Arguments(winrt::single_threaded_map<winrt::hstring, winrt::hstring>(std::move(map)));
+            button.ButtonStyle(winrt::AppNotificationButtonStyle::Success);
+            button.Icon(c_sampleUri);
+            button.InputId(L"inputId");
+            button.ToolTip(L"tool&Tip");
+
+            auto builder{ winrt::AppNotificationBuilder()
+                .AddButton(button)
+            };
+            auto expected{ L"<toast useButtonStyle='true'><visual><binding template='ToastGeneric'></binding></visual><actions><action content='content' arguments='key%25=value%3D90%25' imageUri='http://www.microsoft.com/' hint-inputId='inputId' hint-buttonStyle='Success' hint-toolTip='tool&amp;Tip'/></actions></toast>" };
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationButtonToolTipProperySetThroughFluentSetterIsNotReturnedXmlEncoded)
+        {
+            auto button{ winrt::AppNotificationButton(L"content")
+                    .SetToolTip(L"tool&Tip")
+            };
+
+            VERIFY_ARE_EQUAL(button.ToolTip(), L"tool&Tip");
+        }
+
+        TEST_METHOD(AppNotificationButtonToolTipProperySetThroughPropertyIsNotReturnedXmlEncoded)
+        {
+            auto button{ winrt::AppNotificationButton(L"content") };
+            button.ToolTip(L"tool&Tip");
+
+            VERIFY_ARE_EQUAL(button.ToolTip(), L"tool&Tip");
         }
 
         TEST_METHOD(AppNotificationBuilderAddButtonWithEmptyKey)
@@ -391,7 +425,6 @@ namespace Test::AppNotification::Builder
         {
             auto button{ winrt::AppNotificationButton(L"content") };
 
-            //std::map<winrt::hstring, winrt::hstring> map{ {L"key", L"value"}, {L"", L"value"} };
             VERIFY_THROWS_HR(button.Arguments(std::map<winrt::hstring, winrt::hstring> { {L"key", L"value"}, {L"", L"value"} }), E_INVALIDARG);
         }
 
