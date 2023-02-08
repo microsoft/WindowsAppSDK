@@ -148,6 +148,18 @@ jobs:
       PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
       artifactName: 'BuildOutput'
 
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Test dependencies'
+    inputs:
+      PathtoPublish: '$(build.SourcesDirectory)\packages'
+      artifactName: 'packages'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Test cert'
+    inputs:
+      PathtoPublish: '$(build.SourcesDirectory)\.user'
+      artifactName: 'TestCert'
+
 - job: BuildAnyCPU
   # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
   # Can be expanded to add any other binary as needed
@@ -262,6 +274,23 @@ jobs:
       - BuildAnyCPU
       - BuildAndTestMRT
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
+
+# Arm64 uses a different VM type than x64, thus requiring them to be in different
+# pools, hence, we spilt the two scenarios into separate jobs.
+- template: AzurePipelinesTemplates\WindowsAppSDK-RunTestsInPipeline-Job.yml
+  parameters:
+    jobName: PipelineTestsX64
+    isArm64Platfrom: false
+    dependsOn:
+      - Build
+      - BuildAndTestMRT
+- template: AzurePipelinesTemplates\WindowsAppSDK-RunTestsInPipeline-Job.yml
+  parameters:
+    jobName: PipelineTestsArm64
+    isArm64Platfrom: true
+    dependsOn:
+      - Build
+      - BuildAndTestMRT
 
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
