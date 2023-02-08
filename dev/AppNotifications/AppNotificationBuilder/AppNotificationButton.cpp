@@ -23,6 +23,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return WindowsVersion::IsWindows10_20H1OrGreater();
     }
 
+    void AppNotificationButton::Arguments(winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& value)
+    {
+        THROW_HR_IF_MSG(E_INVALIDARG, value.HasKey(L""), "All provided arguments must have non-empty keys");
+        THROW_HR_IF_MSG(E_INVALIDARG, m_protocolUri, "You cannot add an argument after calling SetInvokeUri");
+
+        m_arguments = value;
+    }
+
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::AddArgument(winrt::hstring const& key, winrt::hstring const& value)
     {
         THROW_HR_IF_MSG(E_INVALIDARG, key.empty(), "You must provide a key when adding an argument");

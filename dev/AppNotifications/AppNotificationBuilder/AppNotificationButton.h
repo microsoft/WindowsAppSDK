@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -16,7 +16,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         void Content(winrt::hstring const& value) { m_content = value; };
         winrt::hstring Content() { return m_content; };
 
-        void Arguments(winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& value) { m_arguments = value; };
+        void Arguments(winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& value);
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> Arguments() { return m_arguments; };
 
         void Icon(winrt::Windows::Foundation::Uri const& value) { m_iconUri = value; };

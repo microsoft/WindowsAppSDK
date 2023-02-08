@@ -387,6 +387,14 @@ namespace Test::AppNotification::Builder
                     .AddArgument(L"", L"value")), E_INVALIDARG);
         }
 
+        TEST_METHOD(AppNotificationBuilderAddButtonWithEmptyKeyUsingProperty)
+        {
+            auto button{ winrt::AppNotificationButton(L"content") };
+
+            //std::map<winrt::hstring, winrt::hstring> map{ {L"key", L"value"}, {L"", L"value"} };
+            VERIFY_THROWS_HR(button.Arguments(std::map<winrt::hstring, winrt::hstring> { {L"key", L"value"}, {L"", L"value"} }), E_INVALIDARG);
+        }
+
         TEST_METHOD(AppNotificationBuilderAddButtonWithArgumentAndProtocol)
         {
             VERIFY_THROWS_HR(winrt::AppNotificationBuilder()
@@ -398,6 +406,21 @@ namespace Test::AppNotification::Builder
                 .AddButton(winrt::AppNotificationButton(L"content")
                     .SetInvokeUri(c_sampleUri)
                     .AddArgument(L"key", L"value")), E_INVALIDARG);
+        }
+
+        TEST_METHOD(AppNotificationBuilderAddButtonWithArgumentAndProtocolUsingProperties)
+        {
+            auto button{ winrt::AppNotificationButton(L"content") };
+            button.InvokeUri(c_sampleUri);
+
+            std::map<winrt::hstring, winrt::hstring> map{ {L"key", L"value"} };
+            VERIFY_THROWS_HR(button.Arguments(winrt::single_threaded_map<winrt::hstring, winrt::hstring>(std::move(map))), E_INVALIDARG);
+#if 0
+            VERIFY_THROWS_HR(winrt::AppNotificationBuilder()
+                .AddButton(winrt::AppNotificationButton(L"content")
+                    .SetInvokeUri(c_sampleUri)
+                    .AddArgument(L"key", L"value")), E_INVALIDARG);
+#endif
         }
 
         TEST_METHOD(AppNotificationBuilderSetAudioWithUri)
