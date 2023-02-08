@@ -144,9 +144,8 @@ This component is part of the Windows App SDK Family of functionality, building
 on the identity + packaging + deployment transparent ideas that Windows App SDK
 supports for your app as well.
 
-* **[C++/WinRT](https://github.com/microsoft/cppwinrt)**,
-**[Rust/WinRT](https://github.com/microsoft/winrt-rs)**,
-and **[C#/WinRT](https://github.com/microsoft/cswinrt)**
+* **[C++/WinRT](https://github.com/microsoft/cppwinrt)** and
+**[C#/WinRT](https://github.com/microsoft/cswinrt)**
 provide language-native projections of Windows,
 Windows App SDK, and your own custom types defined in metadata. Consume APIs from
 the Windows Kit, produce them for use by other supported projections, and create your
