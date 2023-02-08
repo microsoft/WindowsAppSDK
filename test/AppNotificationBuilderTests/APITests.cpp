@@ -458,6 +458,24 @@ namespace Test::AppNotification::Builder
                     .AddArgument(L"key", L"value")), E_INVALIDARG);
         }
 
+        TEST_METHOD(AppNotificationButtonAddProtocolAfterArgumentsUsingProperties)
+        {
+            auto button(winrt::AppNotificationButton(L"content"));
+            std::map<winrt::hstring, winrt::hstring> map{ {L"key", L"value"} };
+            button.Arguments(std::move(map));
+
+            VERIFY_THROWS_HR(button.InvokeUri(c_sampleUri), E_INVALIDARG);
+        }
+
+        TEST_METHOD(AppNotificationButtonAddArgumentsAfterProtocolUsingProperties)
+        {
+            auto button(winrt::AppNotificationButton(L"content"));
+            button.InvokeUri(c_sampleUri);
+            std::map<winrt::hstring, winrt::hstring> map{ {L"key", L"value"} };
+
+            VERIFY_THROWS_HR(button.Arguments(std::move(map)), E_INVALIDARG);
+        }
+
         TEST_METHOD(AppNotificationBuilderAddButtonWithArgumentAndProtocolUsingProperties)
         {
             auto button{ winrt::AppNotificationButton(L"content") };

@@ -34,7 +34,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         void InputId(winrt::hstring const& value) { m_inputId = value; };
         winrt::hstring InputId() { return m_inputId; };
 
-        void InvokeUri(winrt::Windows::Foundation::Uri const& value) { m_protocolUri = value; };
+        void InvokeUri(winrt::Windows::Foundation::Uri const& value);
         winrt::Windows::Foundation::Uri InvokeUri() { return m_protocolUri; };
 
         void TargetAppId(winrt::hstring const& value) { m_targetApplicationPfn = value; };

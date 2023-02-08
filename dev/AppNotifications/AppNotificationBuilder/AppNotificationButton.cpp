@@ -26,10 +26,17 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     void AppNotificationButton::Arguments(winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& value)
     {
         THROW_HR_IF_MSG(E_INVALIDARG, value.HasKey(L""), "All provided arguments must have non-empty keys");
-        THROW_HR_IF_MSG(E_INVALIDARG, m_protocolUri, "You cannot add an argument after calling SetInvokeUri");
+        THROW_HR_IF_MSG(E_INVALIDARG, m_protocolUri, "You cannot add an argument after InvokeUri has been set");
 
         m_arguments = value;
     }
+
+    void AppNotificationButton::InvokeUri(winrt::Windows::Foundation::Uri const& value)
+    {
+        THROW_HR_IF_MSG(E_INVALIDARG, m_arguments.Size() > 0u, "You cannot set a protocol activation uri when arguments are presents");
+
+        m_protocolUri = value;
+    };
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::AddArgument(winrt::hstring const& key, winrt::hstring const& value)
     {
