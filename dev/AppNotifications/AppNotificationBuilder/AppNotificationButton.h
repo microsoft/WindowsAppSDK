@@ -22,7 +22,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         void Icon(winrt::Windows::Foundation::Uri const& value) { m_iconUri = value; };
         winrt::Windows::Foundation::Uri Icon() { return m_iconUri; };
 
-        void ToolTip(winrt::hstring const& value);
+        void ToolTip(winrt::hstring const& value) { m_toolTip = value; };
         winrt::hstring ToolTip() { return m_toolTip; };
 
         void ContextMenuPlacement(bool const& value) { m_useContextMenuPlacement = value; };
