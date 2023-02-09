@@ -769,6 +769,20 @@ namespace Test::AppNotification::Builder
                     .AddItem(L"item6", L"item6 text"), E_INVALIDARG);
         }
 
+        TEST_METHOD(AppNotificationComboBoxAddTooManySelectionItemsUsingProperties)
+        {
+            winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> items{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
+            items.Insert(L"item1", L"item1 text");
+            items.Insert(L"item2", L"item2 text");
+            items.Insert(L"item3", L"item3 text");
+            items.Insert(L"item4", L"item4 text");
+            items.Insert(L"item5", L"item5 text");
+            items.Insert(L"item6", L"item6 text");
+
+            auto comboBox{ winrt::AppNotificationComboBox(L"comboBox1") };
+            VERIFY_THROWS_HR(comboBox.Items(items), E_INVALIDARG);
+        }
+
         TEST_METHOD(AppNotificationComboBoxAddFiveSelectionItems)
         {
             auto comboBox{ winrt::AppNotificationComboBox(L"comboBox1")
@@ -786,6 +800,17 @@ namespace Test::AppNotification::Builder
         {
             VERIFY_THROWS_HR(winrt::AppNotificationComboBox(L"comboBox1")
                 .AddItem(L"", L"item text"), E_INVALIDARG);
+        }
+
+        TEST_METHOD(AppNotificationComboBoxAddSelectionItemWithoutAnIdUsingProperties)
+        {
+            winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> items{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
+            items.Insert(L"item1", L"item1 text");
+            items.Insert(L"", L"item2 text");
+            items.Insert(L"item3", L"item3 text");
+
+            auto comboBox{ winrt::AppNotificationComboBox(L"comboBox1") };
+            VERIFY_THROWS_HR(comboBox.Items(items), E_INVALIDARG);
         }
 
         TEST_METHOD(AppNotificationComboBoxAddTwoSelectionItemsWithSameId)
@@ -807,6 +832,80 @@ namespace Test::AppNotification::Builder
         TEST_METHOD(AppNotificationCreateComboBoxWithoutAnId)
         {
             VERIFY_THROWS_HR(winrt::AppNotificationComboBox(L""), E_INVALIDARG);
+        }
+
+        TEST_METHOD(AppNotificationComboBoxOutputIsProperlyXmlEncoded)
+        {
+            auto builder{ winrt::AppNotificationBuilder()
+                .AddComboBox(winrt::AppNotificationComboBox(L"comboBox&1")
+                    .AddItem(L"item&1", L"item1 & text")
+                    .AddItem(L"item&2", L"item2 & text")
+                    .AddItem(L"item&3", L"item3 & text")
+                    .SetTitle(L"ComboBox & Title")
+                    .SetSelectedItem(L"item&2")) };
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><input id='comboBox&amp;1' type='selection' title='ComboBox &amp; Title' defaultInput='item&amp;2'><selection id='item&amp;1' content='item1 &amp; text'/><selection id='item&amp;2' content='item2 &amp; text'/><selection id='item&amp;3' content='item3 &amp; text'/></input></actions></toast>" };
+            auto actual{ builder.BuildNotification().Payload() };
+            VERIFY_ARE_EQUAL(actual, expected);
+
+        }
+
+        TEST_METHOD(AppNotificationComboBoxOutpuIsProperlyXmlEncodedUsingProperties)
+        {
+            auto comboBox{ winrt::AppNotificationComboBox(L"comboBox&1") };
+            winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> items{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
+            items.Insert(L"item&1", L"item1 & text");
+            items.Insert(L"item&2", L"item2 & text");
+            items.Insert(L"item&3", L"item3 & text");
+
+            comboBox.Items(items);
+            comboBox.Title(L"ComboBox & Title");
+            comboBox.SetSelectedItem(L"item&2");
+
+            auto builder{ winrt::AppNotificationBuilder()
+                .AddComboBox(comboBox) };
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'></binding></visual><actions><input id='comboBox&amp;1' type='selection' title='ComboBox &amp; Title' defaultInput='item&amp;2'><selection id='item&amp;1' content='item1 &amp; text'/><selection id='item&amp;2' content='item2 &amp; text'/><selection id='item&amp;3' content='item3 &amp; text'/></input></actions></toast>" };
+            auto actual{ builder.BuildNotification().Payload() };
+            VERIFY_ARE_EQUAL(actual, expected);
+        }
+
+        TEST_METHOD(AppNotificationComboBoxPropertiesAreAsSetByCaller)
+        {
+            auto comboBox{ winrt::AppNotificationComboBox(L"comboBox&1")
+                    .AddItem(L"item&1", L"item1 & text")
+                    .AddItem(L"item&2", L"item2 & text")
+                    .AddItem(L"item&3", L"item3 & text")
+                    .SetTitle(L"ComboBox & Title")
+                    .SetSelectedItem(L"item&2") };
+
+            auto items{ comboBox.Items() };
+            VERIFY_ARE_EQUAL(items.Lookup(L"item&1"), L"item1 & text");
+            VERIFY_ARE_EQUAL(items.Lookup(L"item&2"), L"item2 & text");
+            VERIFY_ARE_EQUAL(items.Lookup(L"item&3"), L"item3 & text");
+            VERIFY_ARE_EQUAL(comboBox.Title(), L"ComboBox & Title");
+            VERIFY_ARE_EQUAL(comboBox.SelectedItem(), L"item&2");
+        }
+
+        TEST_METHOD(AppNotificationComboBoxPropertiesAreAsSetByCallerUsingProperties)
+        {
+            auto comboBox{ winrt::AppNotificationComboBox(L"comboBox&1") };
+            winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> items{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
+            items.Insert(L"item&1", L"item1 & text");
+            items.Insert(L"item&2", L"item2 & text");
+            items.Insert(L"item&3", L"item3 & text");
+
+            comboBox.Items(items);
+            comboBox.Title(L"ComboBox & Title");
+            comboBox.SelectedItem(L"item&2");
+
+            auto builder{ winrt::AppNotificationBuilder()
+                .AddComboBox(comboBox) };
+
+            auto actualItems{ comboBox.Items() };
+            VERIFY_ARE_EQUAL(actualItems.Lookup(L"item&1"), L"item1 & text");
+            VERIFY_ARE_EQUAL(actualItems.Lookup(L"item&2"), L"item2 & text");
+            VERIFY_ARE_EQUAL(actualItems.Lookup(L"item&3"), L"item3 & text");
+            VERIFY_ARE_EQUAL(comboBox.Title(), L"ComboBox & Title");
+            VERIFY_ARE_EQUAL(comboBox.SelectedItem(), L"item&2");
         }
 
         TEST_METHOD(AppNotificationBuilderEscapeXmlCharacters)

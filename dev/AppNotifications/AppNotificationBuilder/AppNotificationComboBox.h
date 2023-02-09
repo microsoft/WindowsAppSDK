@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -11,13 +11,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         AppNotificationComboBox(winrt::hstring const& id);
 
         // Properties
-        void Items(winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& value) { m_items = value; };
+        void Items(winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& value);
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> Items() { return m_items; };
 
         void Title(winrt::hstring const& value) { m_title = value; };
         winrt::hstring Title() { return m_title; };
 
-        void SelectedItem(winrt::hstring const& value) { m_selectedItem = value; };
+        void SelectedItem(winrt::hstring const& value);
         winrt::hstring SelectedItem() { return m_selectedItem; };
 
         // Fluent Setters
