@@ -49,16 +49,21 @@ The new AppNotificationSubgroup runtimeclass is where things really happen. The 
 [contract(AppNotificationBuilderContract, 2)]
 runtimeclass AppNotificationSubgroup
 {
-    AppNotificationSubgroup();
+        AppNotificationSubgroup();
 
-    // Adds text to the AppNotificationSubgroup.
-    AppNotificationSubgroup AddText(String text);
-    AppNotificationSubgroup AddText(String text, AppNotificationTextProperties properties);
+        Boolean TextStacking;
+        Int32 Weight;
 
-    // Sets the full-width inline-image that appears when you expand the AppNotification
-    AppNotificationSubgroup SetInlineImage(Windows.Foundation.Uri imageUri);
-    AppNotificationSubgroup SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
-    AppNotificationSubgroup SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imagecrop, String alternateText);
+        AppNotificationSubgroup SetTextStacking();
+        AppNotificationSubgroup SetWeight(Int32 weight);
+
+        // Adds text to the AppNotificationSubgroup.
+        AppNotificationSubgroup AddText(String text);
+        AppNotificationSubgroup AddText(String text, AppNotificationTextProperties properties);
+
+        // Sets the image for the AppNotificationSubgroup.
+        AppNotificationSubgroup SetImage(Windows.Foundation.Uri imageUri);
+        AppNotificationSubgroup SetImage(Windows.Foundation.Uri imageUri, AppNotificationImageProperties properties);
 };
 ```
 
@@ -133,6 +138,41 @@ enum AppNotificationTextAlign
     Left,
     Center,
     Right,
+};
+```
+
+Contrary to images in an basic AppNotification, Images in subgroup support a wide range of options, which reuqires the introduction of a new ImageProperties call.
+
+```idl
+[contract(AppNotificationBuilderContract, 2)]
+runtimeclass AppNotificationImageProperties
+{
+    AppNotificationImageProperties();
+
+    Boolean ImageQuery;
+    String AlternateText;
+    AppNotificationImageAlign Align;
+    AppNotificationImageCrop Crop
+    Boolean RemoveMargin;
+
+    AppNotificationImageProperties SetImageQuery();
+    AppNotificationImageProperties SetAlternateText(String alternateText);
+    AppNotificationImageProperties SetAlign(AppNotificationImageAlign align);
+    AppNotificationImageProperties SetCrop(AppNotificationImageCrop crop);
+    AppNotificationImageProperties SetRemoveMargin();
+};
+```
+
+ImageCrop in the AppNotificationImageProperties class above, uses the same enum for the Crop property that already exists for base AppNotifications. Sionce there are no equivalent support for Align in base AppNotifications, we're introducing our own here.
+
+```idl
+[contract(AppNotificationBuilderContract, 2)]
+enum AppNotificationImageAlign
+{
+    Default,
+    Left,
+    Right,
+    Stretch,
 };
 ```
 

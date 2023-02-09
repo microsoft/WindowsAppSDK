@@ -195,6 +195,33 @@ namespace Microsoft.Windows.AppNotifications.Builder
     };
 
     [contract(AppNotificationBuilderContract, 2)]
+    enum AppNotificationImageAlign
+    {
+        Default,
+        Left,
+        Right,
+        Stretch,
+    };
+
+    [contract(AppNotificationBuilderContract, 2)]
+    runtimeclass AppNotificationImageProperties
+    {
+        AppNotificationImageProperties();
+
+        Boolean ImageQuery;
+        String AlternateText;
+        AppNotificationImageAlign Align;
+        AppNotificationImageCrop Crop
+        Boolean RemoveMargin;
+
+        AppNotificationImageProperties SetImageQuery();
+        AppNotificationImageProperties SetAlternateText(String alternateText);
+        AppNotificationImageProperties SetAlign(AppNotificationImageAlign align);
+        AppNotificationImageProperties SetCrop(AppNotificationImageCrop crop);
+        AppNotificationImageProperties SetRemoveMargin();
+    };
+
+    [contract(AppNotificationBuilderContract, 2)]
     runtimeclass AppNotificationSubgroup
     {
         AppNotificationSubgroup();
@@ -204,9 +231,8 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationSubgroup AddText(String text, AppNotificationTextProperties properties);
 
         // Sets the full-width inline-image that appears when you expand the AppNotification
-        AppNotificationSubgroup SetInlineImage(Windows.Foundation.Uri imageUri);
-        AppNotificationSubgroup SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
-        AppNotificationSubgroup SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imagecrop, String alternateText);
+        AppNotificationSubgroup SetImage(Windows.Foundation.Uri imageUri);
+        AppNotificationSubgroup SetImage(Windows.Foundation.Uri imageUri, AppNotificationImageProperties properties);
     };
 
     [contract(AppNotificationBuilderContract, 2)]
