@@ -79,9 +79,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetInvokeUri(winrt::Windows::Foundation::Uri const& protocolUri)
     {
-        THROW_HR_IF_MSG(E_INVALIDARG, m_arguments.Size() > 0u, "You cannot add a protocol activation uri after calling AddArgument");
-
-        m_protocolUri = protocolUri;
+        InvokeUri(protocolUri);
         return *this;
     }
 
@@ -103,8 +101,6 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         }
         else
         {
-            //m_arguments.Insert(EncodeArgument(key.c_str()), EncodeArgument(value.c_str()));
-
             std::wstring arguments;
             for (auto pair : m_arguments)
             {

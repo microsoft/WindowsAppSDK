@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -19,13 +19,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     void AppNotificationProgressBar::Title(winrt::hstring const& value)
     {
-        m_title = EncodeXml(value).c_str();
+        m_title = value;
         m_titleBindMode = BindMode::Value;
     }
 
     void AppNotificationProgressBar::Status(winrt::hstring const& value)
     {
-        m_status = EncodeXml(value).c_str();
+        m_status = value;
         m_statusBindMode = BindMode::Value;
     }
 
@@ -39,7 +39,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     void AppNotificationProgressBar::ValueStringOverride(winrt::hstring const& value)
     {
-        m_valueStringOverride = EncodeXml(value).c_str();
+        m_valueStringOverride = value;
         m_valueStringOverrideBindMode = BindMode::Value;
     }
 
@@ -103,10 +103,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         auto logTelemetry{ AppNotificationBuilderTelemetry::ProgressBarToString::Start(g_telemetryHelper) };
 
-        auto title{ wil::str_printf<std::wstring>(L" title='%ls'", m_titleBindMode == BindMode::Value ? m_title.c_str() : L"{progressTitle}") };
-        auto status{ wil::str_printf<std::wstring>(L" status='%ls'", m_statusBindMode == BindMode::Value ? m_status.c_str() : L"{progressStatus}") };
+        auto title{ wil::str_printf<std::wstring>(L" title='%ls'", m_titleBindMode == BindMode::Value ? EncodeXml(m_title.c_str()).c_str() : L"{progressTitle}")};
+        auto status{ wil::str_printf<std::wstring>(L" status='%ls'", m_statusBindMode == BindMode::Value ? EncodeXml(m_status.c_str()).c_str() : L"{progressStatus}")};
         auto value{ wil::str_printf<std::wstring>(L" value='%ls'", m_valueBindMode == BindMode::Value ? wil::str_printf<std::wstring>(L"%g", m_value).c_str() : L"{progressValue}") };
-        auto valueStringOverride{ wil::str_printf < std::wstring>(L" valueStringOverride='%ls'", m_valueStringOverrideBindMode == BindMode::Value ? m_valueStringOverride.c_str() : L"{progressValueString}") };
+        auto valueStringOverride{ wil::str_printf < std::wstring>(L" valueStringOverride='%ls'", m_valueStringOverrideBindMode == BindMode::Value ? EncodeXml(m_valueStringOverride.c_str()).c_str() : L"{progressValueString}")};
 
         logTelemetry.Stop();
 

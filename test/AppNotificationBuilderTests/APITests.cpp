@@ -624,6 +624,54 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(progressBar.as<winrt::Windows::Foundation::IStringable>().ToString(), expected);
         }
 
+        TEST_METHOD(AppNotificationProgressBarProperlyEncodesTextInXml)
+        {
+            auto progressBar{ winrt::AppNotificationProgressBar()
+                .SetTitle(L"Title & special chars")
+                .SetStatus(L"Status & special chars")
+                .SetValueStringOverride(L"Value string & special chars") };
+            auto expected{ L"<progress title='Title &amp; special chars' status='Status &amp; special chars' value='{progressValue}' valueStringOverride='Value string &amp; special chars'/>" };
+
+            auto actual{ progressBar.as<winrt::Windows::Foundation::IStringable>().ToString() };
+            VERIFY_ARE_EQUAL(actual, expected);
+        }
+
+        TEST_METHOD(AppNotificationProgressBarProperlyEncodesTextInXmlUsingProperties)
+        {
+            auto progressBar{ winrt::AppNotificationProgressBar() };
+            progressBar.Title(L"Title & special chars");
+            progressBar.Status(L"Status & special chars");
+            progressBar.ValueStringOverride(L"Value string & special chars");
+            auto expected{ L"<progress title='Title &amp; special chars' status='Status &amp; special chars' value='{progressValue}' valueStringOverride='Value string &amp; special chars'/>" };
+
+            auto actual{ progressBar.as<winrt::Windows::Foundation::IStringable>().ToString() };
+            VERIFY_ARE_EQUAL(actual, expected);
+        }
+
+        TEST_METHOD(AppNotificationProgressBarCanRetrieveValueAsSet)
+        {
+            auto progressBar{ winrt::AppNotificationProgressBar()
+                .SetTitle(L"Title & special chars")
+                .SetStatus(L"Status & special chars")
+                .SetValueStringOverride(L"Value string & special chars") };
+
+            VERIFY_ARE_EQUAL(progressBar.Title(), L"Title & special chars");
+            VERIFY_ARE_EQUAL(progressBar.Status(), L"Status & special chars");
+            VERIFY_ARE_EQUAL(progressBar.ValueStringOverride(), L"Value string & special chars");
+        }
+
+        TEST_METHOD(AppNotificationProgressBarCanRetrieveValueAsSetUsingProperties)
+        {
+            auto progressBar{ winrt::AppNotificationProgressBar() };
+            progressBar.Title(L"Title & special chars");
+            progressBar.Status(L"Status & special chars");
+            progressBar.ValueStringOverride(L"Value string & special chars");
+
+            VERIFY_ARE_EQUAL(progressBar.Title(), L"Title & special chars");
+            VERIFY_ARE_EQUAL(progressBar.Status(), L"Status & special chars");
+            VERIFY_ARE_EQUAL(progressBar.ValueStringOverride(), L"Value string & special chars");
+        }
+
         TEST_METHOD(AppNotificationBuilderAddTextBox)
         {
             auto builder{ winrt::AppNotificationBuilder()
