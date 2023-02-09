@@ -24,7 +24,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         for (auto item : value)
         {
-            THROW_HR_IF_MSG(E_INVALIDARG, item.Key().empty(), "You must provide an id for the item");
+            THROW_HR_IF_MSG(E_INVALIDARG, item.Key().empty(), "You must provide an id for every item");
 
             m_itemList.Append(AppNotificationComboBoxItem{ item.Key().c_str(), item.Value().c_str() });
         }
