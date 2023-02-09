@@ -78,8 +78,6 @@ runtimeclass AppNotificationTextProperties
     [contract(AppNotificationBuilderContract, 2)]
     AppNotificationTextStyle Style;
     [contract(AppNotificationBuilderContract, 2)]
-    Boolean Wrap;
-    [contract(AppNotificationBuilderContract, 2)]
     Int32 MinLines;
     [contract(AppNotificationBuilderContract, 2)]
     AppNotificationTextAlign Align;
@@ -90,8 +88,6 @@ runtimeclass AppNotificationTextProperties
 
     [contract(AppNotificationBuilderContract, 2)]
     AppNotificationTextProperties SetStyle(AppNotificationTextStyle Style);
-    [contract(AppNotificationBuilderContract, 2)]
-    AppNotificationTextProperties SetWrap();
     [contract(AppNotificationBuilderContract, 2)]
     AppNotificationTextProperties SetMinLines(Int32 value);
     [contract(AppNotificationBuilderContract, 2)]
