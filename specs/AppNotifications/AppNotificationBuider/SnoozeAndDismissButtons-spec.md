@@ -32,7 +32,7 @@ Below is the xml required to display the above notification.
 
 Everything in the xml snippet above but the last two lines is currently supported in the AppNotificationBuilder.
 
-Support for the Snooze and Dismiss System Actions ca be achieved by adding two new factory methods to the AppNotificationButton class. 
+Support for the Snooze and Dismiss System Actions can be achieved by adding two new factory methods to the AppNotificationButton class. 
 The snooze and dismiss buttons are simple variations on the standard buttons but would be somewhat awkward to construct using the current API. 
 The two additional factory methods make constructing the new buttons easy and since they return an AppNotificationButton, developers can use the fluent API to further configure the buttons, just like for a standard button.
 
