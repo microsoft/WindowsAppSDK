@@ -4,6 +4,7 @@
   <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" />
   <Import Project="$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props')" />
   <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props')" />
+  <Import Project="$(RepoRoot)\packages\Google.Protobuf.Tools.$(GoogleProtobufToolsVersion)\build\Google.Protobuf.Tools.targets" Condition="Exists('$(RepoRoot)\packages\Google.Protobuf.Tools.$(GoogleProtobufToolsVersion)\build\Google.Protobuf.Tools.targets')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -42,6 +43,9 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ProtocExe>$(protoc_windows64)</ProtocExe>
   </PropertyGroup>
   <PropertyGroup>
     <BuildGenerateSourcesTargets>
@@ -132,10 +136,10 @@
     <None Include="PurojekutoTenpuret.proto" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Target Name="BuildProtoCpp" BeforeTargets="PrepareForBuild" Inputs="@(ProtoFile)" Outputs="@(ProtoFile->'proto\cpp\%(Filename).pb.cc')">
-    <MakeDir Directories="proto\cpp" />
+  <Target Name="BuildProtoCpp" BeforeTargets="PrepareForBuild" Inputs="@(ProtoFile)" Outputs="@(ProtoFile->'protobuf\cpp\%(Filename).pb.cc')">
+    <MakeDir Directories="$(IntDir)proto\cpp" />
     <Message Text="Generating Protobuf C++ files..." />
-    <Exec Command="$(ProtocExe) %(ProtoFile.Identity) --cpp_out=&quot;$(IntDir)proto\cpp&quot; --proto_path=proto " ContinueOnError="false" CustomErrorRegularExpression="\w+\.proto:\d+:\d+:.*" />
+    <Exec Command="$(ProtocExe) %(ProtoFile.Identity) --cpp_out=&quot;$(IntDir)proto\cpp&quot; --proto_path= " ContinueOnError="false" CustomErrorRegularExpression="\w+\.proto:\d+:\d+:.*" />
     <ItemGroup>
       <ClInclude Include="$(IntDir)\proto\cpp\%(ProtoFile.Filename).pb.h" />
     </ItemGroup>
@@ -144,8 +148,8 @@
     </ItemGroup>
   </Target>
   <Target Name="CleanProto" AfterTargets="AfterCppClean">
-    <Message Text="Cleaning protobuf generated files..." />
-    <RemoveDir Directories="proto" ContinueOnError="true" />
+    <Message Text="Cleaning Protobuf generated files..." />
+    <RemoveDir Directories="$(IntDir)proto" ContinueOnError="true" />
   </Target>
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets')" />
@@ -162,5 +166,6 @@
     <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets'))" />
     <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props'))" />
     <Error Condition="!Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets'))" />
+    <Error Condition="!Exists('$(RepoRoot)\Packages\Google.Protobuf.Tools.$(GoogleProtobufToolsVersion)\build\Google.Protobuf.Tools.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoRoot)\Packages\Google.Protobuf.Tools.$(GoogleProtobufToolsVersion)\build\Google.Protobuf.Tools.targets'))" />
   </Target>
 </Project>

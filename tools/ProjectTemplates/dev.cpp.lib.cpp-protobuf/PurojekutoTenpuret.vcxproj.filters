@@ -16,5 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="PurojekutoTenpuret.proto" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
