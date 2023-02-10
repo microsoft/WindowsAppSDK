@@ -59,11 +59,11 @@ runtimeclass AppNotificationSubgroup
 
         // Adds text to the AppNotificationSubgroup.
         AppNotificationSubgroup AddText(String text);
-        AppNotificationSubgroup AddText(String text, AppNotificationTextProperties properties);
+        AppNotificationSubgroup AddText(String text, AppNotificationExtendedTextProperties properties);
 
         // Sets the image for the AppNotificationSubgroup.
         AppNotificationSubgroup SetImage(Windows.Foundation.Uri imageUri);
-        AppNotificationSubgroup SetImage(Windows.Foundation.Uri imageUri, AppNotificationImageProperties properties);
+        AppNotificationSubgroup SetImage(Windows.Foundation.Uri imageUri, AppNotificationExtendedImageProperties properties);
 };
 ```
 
