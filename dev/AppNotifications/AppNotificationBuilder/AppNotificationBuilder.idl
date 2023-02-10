@@ -56,18 +56,17 @@ namespace Microsoft.Windows.AppNotifications.Builder
     };
 
     [contract(AppNotificationBuilderContract, 2)]
-    runtimeclass AppNotificationExtrendedTextProperties : AppNotificationTextProperties
+    runtimeclass AppNotificationExtendedTextProperties : AppNotificationTextProperties
     {
-        // Contains the set of <text> attributes
-        AppNotificationExtrendedTextProperties();
+        AppNotificationExtendedTextProperties();
 
         AppNotificationTextStyle Style;
         Int32 MinLines;
         AppNotificationTextAlign Align;
 
-        AppNotificationTextProperties SetStyle(AppNotificationTextStyle Style);
-        AppNotificationTextProperties SetMinLines(Int32 value);
-        AppNotificationTextProperties SetAlign(AppNotificationTextAlign Align);
+        AppNotificationExtendedTextProperties SetStyle(AppNotificationTextStyle Style);
+        AppNotificationExtendedTextProperties SetMinLines(Int32 value);
+        AppNotificationExtendedTextProperties SetAlign(AppNotificationTextAlign Align);
     };
 
     [contract(AppNotificationBuilderContract, 1)]

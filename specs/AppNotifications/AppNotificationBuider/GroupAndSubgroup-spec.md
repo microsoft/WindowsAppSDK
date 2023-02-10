@@ -70,33 +70,18 @@ runtimeclass AppNotificationSubgroup
 AppNotificationTextProperties needs to be expanded to support the extended text formatting afforded by the groups and subgroups feature. The proposed additions (properties and methods) to the existing AppNotificationTextProperties runtimeclass are shown below (they are identified by a version 2 contract).
 
 ```idl
-[contract(AppNotificationBuilderContract, 1)]
-runtimeclass AppNotificationTextProperties
+[contract(AppNotificationBuilderContract, 2)]
+runtimeclass AppNotificationExtrendedTextProperties : AppNotificationTextProperties
 {
-    // Contains the set of <text> attributes
-    AppNotificationTextProperties();
+    AppNotificationExtrendedTextProperties();
 
-    String Language;
-    Boolean IncomingCallAlignment;
-    Int32 MaxLines;
-
-    [contract(AppNotificationBuilderContract, 2)]
     AppNotificationTextStyle Style;
-    [contract(AppNotificationBuilderContract, 2)]
     Int32 MinLines;
-    [contract(AppNotificationBuilderContract, 2)]
     AppNotificationTextAlign Align;
 
-    AppNotificationTextProperties SetLanguage(String value);
-    AppNotificationTextProperties SetIncomingCallAlignment();
-    AppNotificationTextProperties SetMaxLines(Int32 value);
-
-    [contract(AppNotificationBuilderContract, 2)]
-    AppNotificationTextProperties SetStyle(AppNotificationTextStyle Style);
-    [contract(AppNotificationBuilderContract, 2)]
-    AppNotificationTextProperties SetMinLines(Int32 value);
-    [contract(AppNotificationBuilderContract, 2)]
-    AppNotificationTextProperties SetAlign(AppNotificationTextAlign Align);
+    AppNotificationExtrendedTextProperties SetStyle(AppNotificationTextStyle Style);
+    AppNotificationExtrendedTextProperties SetMinLines(Int32 value);
+    AppNotificationExtrendedTextProperties SetAlign(AppNotificationTextAlign Align);
 };
 ```
 
@@ -151,15 +136,62 @@ runtimeclass AppNotificationImageProperties
 
     Boolean ImageQuery;
     String AlternateText;
-    AppNotificationImageAlign Align;
     AppNotificationImageCrop Crop
-    Boolean RemoveMargin;
 
     AppNotificationImageProperties SetImageQuery();
     AppNotificationImageProperties SetAlternateText(String alternateText);
-    AppNotificationImageProperties SetAlign(AppNotificationImageAlign align);
     AppNotificationImageProperties SetCrop(AppNotificationImageCrop crop);
+};
+```
+
+```idl
+[contract(AppNotificationBuilderContract, 2)]
+runtimeclass AppNotificationExtendedImageProperties : AppNotificationImageProperties
+{
+    AppNotificationExtendedImageProperties();
+
+
+    AppNotificationImageAlign Align;
+    Boolean RemoveMargin;
+
+    AppNotificationImageProperties SetAlign(AppNotificationImageAlign align);
     AppNotificationImageProperties SetRemoveMargin();
+};
+```
+
+```idl
+[contract(AppNotificationBuilderContract, 2)]
+enum AppNotificationTextStacking
+{
+    Default,
+    Top,
+    Center,
+    Bottom,
+};
+```
+
+```idl
+[contract(AppNotificationBuilderContract, 2)]
+runtimeclass AppNotificationExtendedImageProperties : AppNotificationImageProperties
+{
+    AppNotificationExtendedImageProperties();
+
+    AppNotificationImageAlign Align;
+    Boolean RemoveMargin;
+
+    AppNotificationImageProperties SetAlign(AppNotificationImageAlign align);
+    AppNotificationImageProperties SetRemoveMargin();
+};
+```
+
+```idl
+[contract(AppNotificationBuilderContract, 2)]
+enum AppNotificationTextStacking
+{
+    Default,
+    Top,
+    Center,
+    Bottom,
 };
 ```
 
@@ -182,6 +214,30 @@ Finally, AppNotificationBuilder requires a new AddGroup method so that groups an
 [contract(AppNotificationBuilderContract, 1)]
 runtimeclass AppNotificationBuilder
 {
+    ...
+
+    // Sets the full-width inline-image that appears when you expand the AppNotification
+    AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri);
+    [contract(AppNotificationBuilderContract, 2)]
+    AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageProperties properties);
+    [deprecated("Use the AppNotificationImageProperties version of this function instead of this one. For more info, see MSDN.", deprecate, AppNotificationBuilderContract, 2)]
+    AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
+    [deprecated("Use the AppNotificationImageProperties version of this function instead of this one. For more info, see MSDN.", deprecate, AppNotificationBuilderContract, 2)]
+    AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imagecrop, String alternateText);
+
+    // Sets the image that replaces the app logo
+    AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri);
+    [contract(AppNotificationBuilderContract, 2)]
+    AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageProperties properties);
+    [deprecated("Use the AppNotificationImageProperties version of this function instead of this one. For more info, see MSDN.", deprecate, AppNotificationBuilderContract, 2)]
+    AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
+    [deprecated("Use the AppNotificationImageProperties version of this function instead of this one. For more info, see MSDN.", deprecate, AppNotificationBuilderContract, 2)]
+    AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop, String alternateText);
+
+    // Sets the image that displays within the banner of the AppNotification.
+    AppNotificationBuilder SetHeroImage(Windows.Foundation.Uri imageUri);
+    AppNotificationBuilder SetHeroImage(Windows.Foundation.Uri imageUri, String alternateText);
+
     ...
 
     [contract(AppNotificationBuilderContract, 2)]
