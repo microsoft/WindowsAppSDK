@@ -71,17 +71,17 @@ AppNotificationTextProperties needs to be expanded to support the extended text 
 
 ```idl
 [contract(AppNotificationBuilderContract, 2)]
-runtimeclass AppNotificationExtrendedTextProperties : AppNotificationTextProperties
+runtimeclass AppNotificationExtendedTextProperties : AppNotificationTextProperties
 {
-    AppNotificationExtrendedTextProperties();
+    AppNotificationExtendedTextProperties();
 
     AppNotificationTextStyle Style;
     Int32 MinLines;
     AppNotificationTextAlign Align;
 
-    AppNotificationExtrendedTextProperties SetStyle(AppNotificationTextStyle Style);
-    AppNotificationExtrendedTextProperties SetMinLines(Int32 value);
-    AppNotificationExtrendedTextProperties SetAlign(AppNotificationTextAlign Align);
+    AppNotificationExtendedTextProperties SetStyle(AppNotificationTextStyle Style);
+    AppNotificationExtendedTextProperties SetMinLines(Int32 value);
+    AppNotificationExtendedTextProperties SetAlign(AppNotificationTextAlign Align);
 };
 ```
 

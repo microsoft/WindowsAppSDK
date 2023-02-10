@@ -237,7 +237,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Adds text to the AppNotificationSubgroup.
         AppNotificationSubgroup AddText(String text);
-        AppNotificationSubgroup AddText(String text, AppNotificationExtrendedTextProperties properties);
+        AppNotificationSubgroup AddText(String text, AppNotificationExtendedTextProperties properties);
 
         // Sets the full-width inline-image that appears when you expand the AppNotification
         AppNotificationSubgroup SetImage(Windows.Foundation.Uri imageUri);
