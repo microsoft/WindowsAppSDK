@@ -1,5 +1,7 @@
 git clone https://github.com/microsoft/vcpkg
-vcpkg\vcpkg install protobuf:x86-windows protobuf:x64-windows
+cd vcpkg
+.\bootstrap-vcpkg.bat
+vcpkg\vcpkg install protobuf:x86-windows protobuf:x64-windows protobuf:arm64-windows
 vcpkg\vcpkg export --nuget protobuf:x86-windows protobuf:x64-windows
 Install-Package "vcpkg-export-20230209-230909" -Source "C:\source\repos\vcpkg"
 
@@ -19,3 +21,8 @@ https://protobuf.dev/programming-guides/dos-donts/
 https://dev.azure.com/msaosp/Latte/_git/win32client?path=/Build/readme.txt&version=GBdevelop&_a=contents
 https://dev.azure.com/msaosp/Latte/_git/win32client?path=/Build/bin&version=GBdevelop&_a=contents
 https://dev.azure.com/msaosp/Latte/_git/win32client
+
+
+
+Protobuf Triplet: x64-windows-static
+vcpkg help triplet
