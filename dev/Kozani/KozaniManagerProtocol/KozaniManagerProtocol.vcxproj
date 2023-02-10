@@ -4,7 +4,7 @@
   <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" />
   <Import Project="$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props')" />
   <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.props')" />
-  <Import Project="$(NugetPackageDirectory)\Google.Protobuf.Tools.$(GoogleProtobufToolsVersion)\build\Google.Protobuf.Tools.targets" Condition="Exists('$(NugetPackageDirectory)\Google.Protobuf.Tools.$(GoogleProtobufToolsVersion)\build\Google.Protobuf.Tools.targets')" />
+  <Import Project="$(RepoRoot)\packages\Google.Protobuf.Tools.$(GoogleProtobufToolsVersion)\build\Google.Protobuf.Tools.targets" Condition="Exists('$(RepoRoot)\packages\Google.Protobuf.Tools.$(GoogleProtobufToolsVersion)\build\Google.Protobuf.Tools.targets')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -139,7 +139,7 @@
   <Target Name="BuildProtoCpp" BeforeTargets="PrepareForBuild" Inputs="@(ProtoFile)" Outputs="@(ProtoFile->'protobuf\cpp\%(Filename).pb.cc')">
     <MakeDir Directories="$(IntDir)proto\cpp" />
     <Message Text="Generating Protobuf C++ files..." />
-    <Exec Command="$(ProtocExe) %(ProtoFile.Identity) --cpp_out=&quot;$(IntDir)proto\cpp&quot; --proto_path=$(MSBuildThisFileDirectory)" ContinueOnError="false" CustomErrorRegularExpression="\w+\.proto:\d+:\d+:.*" />
+    <Exec Command="$(ProtocExe) %(ProtoFile.Identity) --cpp_out=&quot;$(IntDir)proto\cpp&quot; --proto_path= " ContinueOnError="false" CustomErrorRegularExpression="\w+\.proto:\d+:\d+:.*" />
     <ItemGroup>
       <ClInclude Include="$(IntDir)\proto\cpp\%(ProtoFile.Filename).pb.h" />
     </ItemGroup>
@@ -155,7 +155,6 @@
     <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets')" />
     <Import Project="$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" />
     <Import Project="$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('$(RepoRoot)\packages\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" />
-    <Import Project="$(RepoRoot)\Packages\Google.Protobuf.Tools.$(GoogleProtobufToolsVersion)\build\Google.Protobuf.Tools.targets" Condition="Exists('$(RepoRoot)\Packages\Google.Protobuf.Tools.$(GoogleProtobufToolsVersion)\build\Google.Protobuf.Tools.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
