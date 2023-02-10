@@ -1,0 +1,21 @@
+git clone https://github.com/microsoft/vcpkg
+vcpkg\vcpkg install protobuf:x86-windows protobuf:x64-windows
+vcpkg\vcpkg export --nuget protobuf:x86-windows protobuf:x64-windows
+Install-Package "vcpkg-export-20230209-230909" -Source "C:\source\repos\vcpkg"
+
+
+https://github.com/protocolbuffers/protobuf#protocol-compiler-installation
+https://github.com/protocolbuffers/protobuf/blob/main/src/README.md
+https://github.com/protocolbuffers/protobuf/tree/main/src
+
+https://github.com/Microsoft/vcpkg
+https://vcpkg.io/en/docs/users/buildsystems/msbuild-integration.html
+https://devblogs.microsoft.com/cppblog/vcpkg-introducing-export-command/
+
+https://protobuf.dev/
+https://protobuf.dev/programming-guides/proto3/
+https://protobuf.dev/programming-guides/dos-donts/
+
+https://dev.azure.com/msaosp/Latte/_git/win32client?path=/Build/readme.txt&version=GBdevelop&_a=contents
+https://dev.azure.com/msaosp/Latte/_git/win32client?path=/Build/bin&version=GBdevelop&_a=contents
+https://dev.azure.com/msaosp/Latte/_git/win32client

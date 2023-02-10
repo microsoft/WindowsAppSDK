@@ -1,4 +1,0 @@
-git clone https://github.com/microsoft/vcpkg
-vcpkg\vcpkg install protobuf:x86-windows protobuf:x64-windows
-vcpkg\vcpkg export --nuget protobuf:x86-windows protobuf:x64-windows
-Install-Package "vcpkg-export-20230209-230909" -Source "C:\source\repos\vcpkg"
