@@ -10,18 +10,29 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         AppNotificationSubgroup() = default;
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup AddText(hstring const& text);
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup AddText(hstring const& text, AppNotificationTextProperties const& properties);
+        void TextStacking(AppNotificationTextStacking const& value) { m_textStacking = value; };
+        AppNotificationTextStacking TextStacking() { return m_textStacking; };
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri);
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop);
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop, winrt::hstring const& alternateText);
+        void Weight(int const& value) { m_weight = value; };
+        int Weight() { return m_weight; };
+
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup SetTextStacking(AppNotificationTextStacking const& textStacking);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup SetWeight(int weight);
+
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup AddText(hstring const& text);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup AddText(hstring const& text, AppNotificationExtendedTextProperties const& properties);
+
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup SetImage(winrt::Windows::Foundation::Uri const& imageUri);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup SetImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationExtendedImageProperties const& imageCrop);
 
         // IStringable
         winrt::hstring ToString();
 
     private:
         std::wstring GetText();
+
+        AppNotificationTextStacking m_textStacking{};
+        int m_weight{};
 
         std::vector<winrt::hstring> m_textLines{};
     };

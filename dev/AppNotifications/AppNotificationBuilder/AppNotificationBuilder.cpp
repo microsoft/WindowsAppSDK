@@ -107,6 +107,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageProperties const& /*properties*/)
+    {
+        return *this;
+    }
+
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop)
     {
         if (imageCrop == AppNotificationImageCrop::Circle)
@@ -134,6 +139,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri)
     {
         m_appLogoOverride = wil::str_printf<std::wstring>(L"<image placement='appLogoOverride' src='%ls'/>", imageUri.ToString().c_str());
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageProperties const& /*properties*/)
+    {
         return *this;
     }
 

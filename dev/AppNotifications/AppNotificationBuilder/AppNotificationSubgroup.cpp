@@ -19,6 +19,18 @@ using namespace winrt::Windows::Globalization::DateTimeFormatting;
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup AppNotificationSubgroup::SetTextStacking(AppNotificationTextStacking const& textStacking)
+    {
+        m_textStacking = textStacking;
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup AppNotificationSubgroup::SetWeight(int weight)
+    {
+        m_weight = weight;
+        return *this;
+    }
+
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup AppNotificationSubgroup::AddText(hstring const& text)
     {
         //THROW_HR_IF_MSG(E_INVALIDARG, m_textLines.size() >= c_maxTextElements, "Maximum number of text elements added");
@@ -27,7 +39,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup AppNotificationSubgroup::AddText(hstring const& text, AppNotificationTextProperties const& properties)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup AppNotificationSubgroup::AddText(hstring const& text, AppNotificationExtendedTextProperties const& properties)
     {
         //THROW_HR_IF_MSG(E_INVALIDARG, m_textLines.size() >= c_maxTextElements, "Maximum number of text elements added");
 
@@ -41,32 +53,22 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup AppNotificationSubgroup::SetInlineImage(winrt::Windows::Foundation::Uri const& /*imageUri*/)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup AppNotificationSubgroup::SetImage(winrt::Windows::Foundation::Uri const& /*imageUri*/)
     {
         //m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ls'/>", imageUri.ToString().c_str());
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup AppNotificationSubgroup::SetInlineImage(winrt::Windows::Foundation::Uri const& /*imageUri*/, AppNotificationImageCrop const& imageCrop)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup AppNotificationSubgroup::SetImage(winrt::Windows::Foundation::Uri const& /*imageUri*/, AppNotificationExtendedImageProperties const& /*properties*/)
     {
-        if (imageCrop == AppNotificationImageCrop::Circle)
+        //if (imageCrop == AppNotificationImageCrop::Circle)
         {
             //m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ls' hint-crop='circle'/>", imageUri.ToString().c_str());
         }
-        else
+        //else
         {
             //SetInlineImage(imageUri);
         }
-
-        return *this;
-    }
-
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationSubgroup AppNotificationSubgroup::SetInlineImage(winrt::Windows::Foundation::Uri const& /*imageUri*/, AppNotificationImageCrop const& imageCrop, hstring const& alternateText)
-    {
-        THROW_HR_IF_MSG(E_INVALIDARG, alternateText.empty(), "You must provide an alternate text string calling SetInlineImage");
-
-        std::wstring hintCrop{ imageCrop == AppNotificationImageCrop::Circle ? L" hint-crop='circle'" : L"" };
-        //m_inlineImage = wil::str_printf<std::wstring>(L"<image src='%ls' alt='%ls'%ls/>", imageUri.ToString().c_str(), EncodeXml(alternateText).c_str(), hintCrop.c_str());
 
         return *this;
     }

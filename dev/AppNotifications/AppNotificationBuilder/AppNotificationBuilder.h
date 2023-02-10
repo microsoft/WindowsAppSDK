@@ -27,11 +27,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         // Inline image component APIs
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageProperties const& properties);
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop);
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop, winrt::hstring const& alternateText);
 
         // AppLogoOverride component APIs
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageProperties const& properties);
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop);
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop, winrt::hstring const& alternateText);
 

@@ -3,37 +3,25 @@
 
 #include "pch.h"
 #include "externs.h"
-#include "AppNotificationTextProperties.h"
-#include "Microsoft.Windows.AppNotifications.Builder.AppNotificationTextProperties.g.cpp"
+#include "AppNotificationExtendedImageProperties.h"
+#include "Microsoft.Windows.AppNotifications.Builder.AppNotificationExtendedImageProperties.g.cpp"
 #include "AppNotificationBuilderTelemetry.h"
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties AppNotificationTextProperties::SetLanguage(winrt::hstring const& value)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationExtendedImageProperties AppNotificationExtendedImageProperties::SetAlign(AppNotificationImageAlign const& /*align*/)
     {
-        m_language = value;
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties AppNotificationTextProperties::SetIncomingCallAlignment()
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationExtendedImageProperties AppNotificationExtendedImageProperties::SetRemoveMargin()
     {
-        m_useCallScenarioAlign = true;
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationTextProperties AppNotificationTextProperties::SetMaxLines(int const& value)
+    winrt::hstring AppNotificationExtendedImageProperties::ToString()
     {
-        m_maxLines = value;
-        return *this;
-    }
-
-    winrt::hstring AppNotificationTextProperties::ToString()
-    {
-        return ToStringInternal();
-    }
-
-    winrt::hstring AppNotificationTextProperties::ToStringInternal()
-    {
+#if 0
         auto logTelemetry{ AppNotificationBuilderTelemetry::TextPropertiesToString::Start(g_telemetryHelper) };
 
         std::wstring language{ !m_language.empty() ? wil::str_printf<std::wstring>(L" lang='%ls'", m_language.c_str()) : L"" };
@@ -42,5 +30,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         logTelemetry.Stop();
 
         return wil::str_printf<std::wstring>(L"<text%ls%ls%ls>", language.c_str(), hintMaxLines.c_str(), callScenarioAlign.c_str()).c_str();
+#endif
+        return wil::str_printf<std::wstring>(L"<text%ls%ls%ls>", L"", L"", L"").c_str();
     }
 }

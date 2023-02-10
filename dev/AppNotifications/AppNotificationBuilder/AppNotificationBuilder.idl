@@ -5,19 +5,38 @@ import "..\AppNotifications\AppNotifications.idl";
 
 namespace Microsoft.Windows.AppNotifications.Builder
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract AppNotificationBuilderContract {}
 
-    [contract(AppNotificationBuilderContract, 1)]
+    [contract(AppNotificationBuilderContract, 2)]
     runtimeclass AppNotificationHeader
     {
         AppNotificationHeader();
         AppNotificationHeader(String id, String title);
 
+        String Id;
+        String Title;
+        Windows.Foundation.Collections.IMap<String, String> Arguments;
+
         AppNotificationHeader AddArgument(String key, String value);
     };
 
     [contract(AppNotificationBuilderContract, 1)]
+    unsealed runtimeclass AppNotificationTextProperties
+    {
+        // Contains the set of <text> attributes
+        AppNotificationTextProperties();
+
+        String Language;
+        Boolean IncomingCallAlignment;
+        Int32 MaxLines;
+
+        AppNotificationTextProperties SetLanguage(String value);
+        AppNotificationTextProperties SetIncomingCallAlignment();
+        AppNotificationTextProperties SetMaxLines(Int32 value);
+    };
+
+    [contract(AppNotificationBuilderContract, 2)]
     enum AppNotificationTextStyle
     {
         Default,
@@ -40,7 +59,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         HeaderNumeral,
     };
 
-    [contract(AppNotificationBuilderContract, 1)]
+    [contract(AppNotificationBuilderContract, 2)]
     enum AppNotificationTextAlign
     {
         Default,
@@ -50,27 +69,18 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Right,
     };
 
-    [contract(AppNotificationBuilderContract, 1)]
-    runtimeclass AppNotificationTextProperties
+    [contract(AppNotificationBuilderContract, 2)]
+    runtimeclass AppNotificationExtendedTextProperties : AppNotificationTextProperties
     {
-        // Contains the set of <text> attributes
-        AppNotificationTextProperties();
+        AppNotificationExtendedTextProperties();
 
-        String Language;
-        Boolean IncomingCallAlignment;
-        Int32 MaxLines;
         AppNotificationTextStyle Style;
-        Boolean Wrap;
         Int32 MinLines;
         AppNotificationTextAlign Align;
 
-        AppNotificationTextProperties SetLanguage(String value);
-        AppNotificationTextProperties SetIncomingCallAlignment();
-        AppNotificationTextProperties SetMaxLines(Int32 value);
-        AppNotificationTextProperties SetStyle(AppNotificationTextStyle Style);
-        AppNotificationTextProperties SetWrap();
-        AppNotificationTextProperties SetMinLines(Int32 value);
-        AppNotificationTextProperties SetAlign(AppNotificationTextAlign Align);
+        AppNotificationExtendedTextProperties SetStyle(AppNotificationTextStyle Style);
+        AppNotificationExtendedTextProperties SetMinLines(Int32 value);
+        AppNotificationExtendedTextProperties SetAlign(AppNotificationTextAlign Align);
     };
 
     [contract(AppNotificationBuilderContract, 1)]
@@ -81,7 +91,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Critical,
     };
 
-    [contract(AppNotificationBuilderContract, 1)]
+    [contract(AppNotificationBuilderContract, 2)]
     enum AppNotificationButtonType
     {
         Standard,
@@ -95,10 +105,13 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationButton();
         AppNotificationButton(String content);
 
+        [contract(AppNotificationBuilderContract, 2)]
         static AppNotificationButton MakeSnoozeButton(String inputId);
+        [contract(AppNotificationBuilderContract, 2)]
         static AppNotificationButton MakeDismissButton();
 
         String Content;
+        [contract(AppNotificationBuilderContract, 2)]
         AppNotificationButtonType ButtonType;
         Windows.Foundation.Collections.IMap<String, String> Arguments;
         Windows.Foundation.Uri Icon;
@@ -180,25 +193,77 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationComboBox SetSelectedItem(String id);
     };
 
-    [contract(AppNotificationBuilderContract, 1)]
+    [contract(AppNotificationBuilderContract, 2)]
+    enum AppNotificationImageAlign
+    {
+        Default,
+        Left,
+        Right,
+        Stretch,
+    };
+
+    [contract(AppNotificationBuilderContract, 2)]
+    unsealed runtimeclass AppNotificationImageProperties
+    {
+        AppNotificationImageProperties();
+
+        Boolean ImageQuery;
+        String AlternateText;
+        AppNotificationImageCrop Crop;
+
+        AppNotificationImageProperties SetImageQuery();
+        AppNotificationImageProperties SetAlternateText(String alternateText);
+        AppNotificationImageProperties SetCrop(AppNotificationImageCrop crop);
+    };
+
+    [contract(AppNotificationBuilderContract, 2)]
+    runtimeclass AppNotificationExtendedImageProperties : AppNotificationImageProperties
+    {
+        AppNotificationExtendedImageProperties();
+
+
+        AppNotificationImageAlign Align;
+        Boolean RemoveMargin;
+
+        AppNotificationImageProperties SetAlign(AppNotificationImageAlign align);
+        AppNotificationImageProperties SetRemoveMargin();
+    };
+
+    [contract(AppNotificationBuilderContract, 2)]
+    enum AppNotificationTextStacking
+    {
+        Default,
+        Top,
+        Center,
+        Bottom,
+    };
+
+    [contract(AppNotificationBuilderContract, 2)]
     runtimeclass AppNotificationSubgroup
     {
         AppNotificationSubgroup();
 
+        AppNotificationTextStacking TextStacking;
+        Int32 Weight;
+
+        AppNotificationSubgroup SetTextStacking(AppNotificationTextStacking textStacking);
+        AppNotificationSubgroup SetWeight(Int32 weight);
+
         // Adds text to the AppNotificationSubgroup.
         AppNotificationSubgroup AddText(String text);
-        AppNotificationSubgroup AddText(String text, AppNotificationTextProperties properties);
+        AppNotificationSubgroup AddText(String text, AppNotificationExtendedTextProperties properties);
 
         // Sets the full-width inline-image that appears when you expand the AppNotification
-        AppNotificationSubgroup SetInlineImage(Windows.Foundation.Uri imageUri);
-        AppNotificationSubgroup SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
-        AppNotificationSubgroup SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imagecrop, String alternateText);
+        AppNotificationSubgroup SetImage(Windows.Foundation.Uri imageUri);
+        AppNotificationSubgroup SetImage(Windows.Foundation.Uri imageUri, AppNotificationExtendedImageProperties properties);
     };
 
-    [contract(AppNotificationBuilderContract, 1)]
+    [contract(AppNotificationBuilderContract, 2)]
     runtimeclass AppNotificationGroup
     {
         AppNotificationGroup();
+
+        Windows.Foundation.Collections.IVector<AppNotificationSubgroup> Subgroups;
 
         AppNotificationGroup AddSubgroup(AppNotificationSubgroup subgroup);
     };
@@ -279,6 +344,9 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // Adds arguments to the launch attribute to return when AppNotification is clicked.
         AppNotificationBuilder AddArgument(String key, String value);
 
+        [contract(AppNotificationBuilderContract, 2)]
+        AppNotificationBuilder SetHeader(AppNotificationHeader value);
+        
         // Sets the timeStamp of the AppNotification to when it was constructed instead of when it was sent.
         AppNotificationBuilder SetTimeStamp(Windows.Foundation.DateTime value);
 
@@ -297,12 +365,20 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Sets the full-width inline-image that appears when you expand the AppNotification
         AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri);
+        [contract(AppNotificationBuilderContract, 2)]
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageProperties properties);
+        [deprecated("Use the AppNotificationImageProperties version of this function instead of this one. For more info, see MSDN.", deprecate, AppNotificationBuilderContract, 2)]
         AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
+        [deprecated("Use the AppNotificationImageProperties version of this function instead of this one. For more info, see MSDN.", deprecate, AppNotificationBuilderContract, 2)]
         AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imagecrop, String alternateText);
 
         // Sets the image that replaces the app logo
         AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri);
+        [contract(AppNotificationBuilderContract, 2)]
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageProperties properties);
+        [deprecated("Use the AppNotificationImageProperties version of this function instead of this one. For more info, see MSDN.", deprecate, AppNotificationBuilderContract, 2)]
         AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
+        [deprecated("Use the AppNotificationImageProperties version of this function instead of this one. For more info, see MSDN.", deprecate, AppNotificationBuilderContract, 2)]
         AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop, String alternateText);
 
         // Sets the image that displays within the banner of the AppNotification.
@@ -330,9 +406,8 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         AppNotificationBuilder AddProgressBar(AppNotificationProgressBar value);
 
+        [contract(AppNotificationBuilderContract, 2)]
         AppNotificationBuilder AddGroup(AppNotificationGroup value);
-
-        AppNotificationBuilder SetHeader(AppNotificationHeader value);
 
         // Constructs a WindowsAppSDK AppNotification object with the XML payload
         Microsoft.Windows.AppNotifications.AppNotification BuildNotification();

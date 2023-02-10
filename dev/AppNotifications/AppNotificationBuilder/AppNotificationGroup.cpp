@@ -21,7 +21,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationGroup AppNotificationGroup::AddSubgroup(AppNotificationSubgroup value)
     {
-        m_subgroupList.push_back(value);
+        m_subgroups.Append(value);
 
         return *this;
     }
@@ -29,7 +29,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     std::wstring AppNotificationGroup::GetSubgroups()
     {
         std::wstring result{};
-        for (auto subgroup : m_subgroupList)
+        for (auto subgroup : m_subgroups)
         {
             result.append(subgroup.as<winrt::Windows::Foundation::IStringable>().ToString());
         }

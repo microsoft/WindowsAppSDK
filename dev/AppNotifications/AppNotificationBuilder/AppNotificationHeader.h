@@ -11,6 +11,15 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         AppNotificationHeader() = default;
         AppNotificationHeader(winrt::hstring const& id, winrt::hstring const& title);
 
+        void Id(winrt::hstring const& value) { m_id = value; };
+        winrt::hstring Id() { return m_id; };
+
+        void Title(winrt::hstring const& value) { m_title = value; };
+        winrt::hstring Title() { return m_title; };
+
+        void Arguments(winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& value) { m_arguments = value; };
+        winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> Arguments() { return m_arguments; };
+
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationHeader AddArgument(winrt::hstring const& key, winrt::hstring const& value);
 
         // IStringable

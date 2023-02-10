@@ -10,6 +10,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         AppNotificationGroup() = default;
 
+        void Subgroups(winrt::Windows::Foundation::Collections::IVector<AppNotificationSubgroup> const& value) { m_subgroups = value; };
+        winrt::Windows::Foundation::Collections::IVector<AppNotificationSubgroup> Subgroups() { return m_subgroups; };
+
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationGroup AddSubgroup(AppNotificationSubgroup value);
 
         // IStringable
@@ -18,7 +21,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     private:
         std::wstring GetSubgroups();
 
-        std::vector<AppNotificationSubgroup> m_subgroupList{};
+        winrt::Windows::Foundation::Collections::IVector<AppNotificationSubgroup> m_subgroups{ winrt::single_threaded_vector<AppNotificationSubgroup>() };
     };
 }
 
