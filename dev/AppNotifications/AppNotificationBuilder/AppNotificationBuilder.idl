@@ -12,14 +12,28 @@ namespace Microsoft.Windows.AppNotifications.Builder
     runtimeclass AppNotificationHeader
     {
         AppNotificationHeader();
+        AppNotificationHeader(String id, String title);
 
         String Id;
         String Title;
         Windows.Foundation.Collections.IMap<String, String> Arguments;
 
-        AppNotificationHeader(String id, String title);
-
         AppNotificationHeader AddArgument(String key, String value);
+    };
+
+    [contract(AppNotificationBuilderContract, 1)]
+    unsealed runtimeclass AppNotificationTextProperties
+    {
+        // Contains the set of <text> attributes
+        AppNotificationTextProperties();
+
+        String Language;
+        Boolean IncomingCallAlignment;
+        Int32 MaxLines;
+
+        AppNotificationTextProperties SetLanguage(String value);
+        AppNotificationTextProperties SetIncomingCallAlignment();
+        AppNotificationTextProperties SetMaxLines(Int32 value);
     };
 
     [contract(AppNotificationBuilderContract, 2)]
@@ -189,13 +203,13 @@ namespace Microsoft.Windows.AppNotifications.Builder
     };
 
     [contract(AppNotificationBuilderContract, 2)]
-    runtimeclass AppNotificationImageProperties
+    unsealed runtimeclass AppNotificationImageProperties
     {
         AppNotificationImageProperties();
 
         Boolean ImageQuery;
         String AlternateText;
-        AppNotificationImageCrop Crop
+        AppNotificationImageCrop Crop;
 
         AppNotificationImageProperties SetImageQuery();
         AppNotificationImageProperties SetAlternateText(String alternateText);
@@ -249,7 +263,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
     {
         AppNotificationGroup();
 
-        Windows.Foundation.Collections.IVector<AppNotificationSubgroup> subgroups;
+        Windows.Foundation.Collections.IVector<AppNotificationSubgroup> Subgroups;
 
         AppNotificationGroup AddSubgroup(AppNotificationSubgroup subgroup);
     };

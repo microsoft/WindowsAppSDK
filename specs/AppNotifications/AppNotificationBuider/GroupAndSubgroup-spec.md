@@ -37,7 +37,7 @@ runtimeclass AppNotificationGroup
 {
     AppNotificationGroup();
 
-    Windows.Foundation.Collections.IVector<AppNotificationSubgroup> subgroups;
+    Windows.Foundation.Collections.IVector<AppNotificationSubgroup> Subgroups;
 
     AppNotificationGroup AddSubgroup(AppNotificationSubgroup subgroup);
 };
@@ -130,13 +130,13 @@ Contrary to images in an basic AppNotification, Images in subgroup support a wid
 
 ```idl
 [contract(AppNotificationBuilderContract, 2)]
-runtimeclass AppNotificationImageProperties
+unsealed runtimeclass AppNotificationImageProperties
 {
     AppNotificationImageProperties();
 
     Boolean ImageQuery;
     String AlternateText;
-    AppNotificationImageCrop Crop
+    AppNotificationImageCrop Crop;
 
     AppNotificationImageProperties SetImageQuery();
     AppNotificationImageProperties SetAlternateText(String alternateText);
