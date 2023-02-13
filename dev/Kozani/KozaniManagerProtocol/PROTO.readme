@@ -2,13 +2,11 @@ git clone https://github.com/microsoft/vcpkg
 cd vcpkg
 .\bootstrap-vcpkg.bat
 .\vcpkg install protobuf:x86-windows protobuf:x64-windows protobuf:arm64-windows
-.\vcpkg export --nuget protobuf:x86-windows protobuf:x64-windows protobuf:arm64-windows
+.\vcpkg export protobuf:x86-windows protobuf:x64-windows protobuf:arm64-windows --nuget --nuget-id=Microsoft.WindowsAppSDK.Protobuf --nuget-version=3.21.12 --nuget-description="See https://github.com/microsoft/WindowsAppSDK/tree/main/tools/nuget/README.md for more info"
 
-  --output=...                    Specify the output name (used to construct filename)
-  --output-dir=...                Specify the output directory for produced artifacts
-  --nuget-id=...                  Specify the id for the exported NuGet package (overrides --output)
-  --nuget-description=...         Specify a description for the exported NuGet package
-  --nuget-version=...
+
+
+
 
 Install-Package "vcpkg-export-20230209-230909" -Source "C:\source\repos\vcpkg"
 
