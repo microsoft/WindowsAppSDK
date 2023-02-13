@@ -701,7 +701,13 @@ function Remove-DevTestCert
 
 function Get-TAEFServiceImagePath
 {
-    $path = Get-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Te.Service | Select-Object 'ImagePath'
+    $regkey = 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Te.Service'
+    if (-not(Test-Path -Path $regkey))
+    {
+        return $null
+    }
+
+    $path = Get-ItemProperty -Path $regkey | Select-Object 'ImagePath'
     $path.ImagePath
 }
 
