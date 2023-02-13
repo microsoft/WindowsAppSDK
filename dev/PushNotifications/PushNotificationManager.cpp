@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -188,10 +188,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         // All packaged processes are triggered through COM via Long Running Process or the Background Infra OS component
         if (AppModel::Identity::IsPackagedProcess())
         {
-            THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec));
-            auto lock{ m_lock.lock_shared() };
-            THROW_HR_IF(E_UNEXPECTED, !m_backgroundTaskArgs);
-            eventArgs = m_backgroundTaskArgs;
+            if (m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec))
+            {
+                auto lock{ m_lock.lock_shared() };
+                eventArgs = m_backgroundTaskArgs;
+            }
+            else
+            {
+                LOG_HR_MSG(HRESULT_FROM_WIN32(ERROR_TIMEOUT), "Could not process background activation for push notification.");
+            }
         }
         else // The process was launched via ShellExecute and we need to parse the uri (Only unpackaged)
         {
@@ -207,7 +212,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 }
             }
 
-            THROW_HR_IF_NULL_MSG(E_UNEXPECTED, eventArgs, "Could not serialize payload from command line Uri!");
+            LOG_HR_IF_MSG(E_UNEXPECTED, eventArgs, "Could not serialize payload from command line Uri!");
         }
 
         return eventArgs;

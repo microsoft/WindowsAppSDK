@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -98,7 +98,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             return m_activatedEventArgs;
         }
 
-        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec));
+        LOG_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec), "Could not process app notifcation from background.");
         return m_activatedEventArgs;
     }
 
