@@ -212,13 +212,4 @@
   <data name="1035" xml:space="preserve">
     <value>專案，可用於建立使用 Windows UI 程式庫 (WinUI 3) 之桌面及通用 Windows 平台 (UWP) 應用程式的 C++/WinRT Windows 執行階段元件(.winmd)。</value>
   </data>
-  <data name="1037" xml:space="preserve">
-    <value>空白應用程式 (UWP 中的 WinUI 3)</value>
-  </data>
-  <data name="1038" xml:space="preserve">
-    <value>[實驗性] 空白應用程式 (UWP 中的 WinUI 3)</value>
-  </data>
-  <data name="1039" xml:space="preserve">
-    <value>專案，用於建立使用 Windows UI 程式庫 (WinUI 3) 的通用 Windows 平台 (UWP) 應用程式。需要 Windows 應用程式 SDK 實驗性支援。</value>
-  </data>
 </root>
