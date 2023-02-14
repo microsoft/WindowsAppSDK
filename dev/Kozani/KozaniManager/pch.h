@@ -31,3 +31,5 @@
 #include <wil/com.h>
 
 #include <WindowsAppRuntimeInsights.h>
+
+#include "Logging.h"

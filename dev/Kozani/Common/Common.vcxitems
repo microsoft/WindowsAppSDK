@@ -17,6 +17,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Logging.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)KozaniDvcProtocol.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Logging.h" />
   </ItemGroup>
 </Project>

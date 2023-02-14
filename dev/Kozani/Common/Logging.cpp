@@ -21,10 +21,12 @@ void LogDebugMessage(PCSTR formatString, ...)
         {
             OutputDebugStringA("Cannot construct debug message. StringCchVPrintfA() failed. Input format string: ");
             OutputDebugStringA(formatString);
+            OutputDebugStringA("\n");
         }
         else
         {
             OutputDebugStringA(debugMsg);
+            OutputDebugStringA("\n");
         }
     }
 }

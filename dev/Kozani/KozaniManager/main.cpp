@@ -62,7 +62,17 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
     auto& module = Module<OutOfProc>::Create(EndOfTheLine);
     RETURN_IF_FAILED(module.RegisterObjects());
 
+    module.IncrementObjectCount();
+
+    LogDebugMessage("Entering g_endOfTheLine.wait()");
     g_endOfTheLine.wait();
+    LogDebugMessage("Exited g_endOfTheLine.wait()");
+
+    Sleep(10000);
+
+    LogDebugMessage("Entering g_endOfTheLine.wait()");
+    g_endOfTheLine.wait();
+    LogDebugMessage("Exited g_endOfTheLine.wait()");
 
     (void)LOG_IF_FAILED(module.UnregisterObjects());
     module.Terminate();

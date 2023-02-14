@@ -7,7 +7,6 @@
 #include <wrl\module.h>
 #include <KozaniManager_h.h>
 
-#include "Logging.h"
 #include "..\KozaniManager\KozaniManager-Constants.h"
 #include "KozaniManagerActivity.h"
 

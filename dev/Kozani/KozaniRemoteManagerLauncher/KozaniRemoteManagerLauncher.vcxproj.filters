@@ -15,45 +15,51 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="KozaniDvcServer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="KozaniRemoteManagerTraceLogging.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ConnectionManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KozaniDvcServer.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="KozaniRemoteManagerLauncher.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KozaniRemoteManagerTraceLogging.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="KozaniRemoteManagerLauncherTraceLogging.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ConnectionManager.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="KozaniRemoteManagerLauncherActivity.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KozaniRemoteManagerLauncher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KozaniRemoteManagerLauncherTraceLogging.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KozaniRemoteManagerLauncherActivity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="KozaniRemoteManagerLauncher.def">
+      <Filter>Source Files</Filter>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="KozaniRemoteManager.rc">
+    <ResourceCompile Include="KozaniRemoteManagerLauncher.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
   </ItemGroup>
 </Project>
