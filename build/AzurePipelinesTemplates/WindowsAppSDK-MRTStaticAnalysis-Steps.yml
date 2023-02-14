@@ -1,0 +1,91 @@
+#name: $(BuildDefinitionName)-$(date:yyMM).$(date:dd)$(rev:rrr)
+parameters:
+  MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
+  MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
+  runSDLBinaryAnalysis: false
+  enablePREFast: true
+
+steps:
+#- task: BatchScript@1
+#  displayName: Set up environment
+#  inputs:
+#    filename: '${{ parameters.MRTSourcesDirectory }}\build\init.cmd'
+#    arguments: /envonly $(buildPlatform)fre
+#    modifyEnvironment: true
+
+#- template: AzurePipelinesTemplates\WindowsAppSDK-InstallWindowsSDK-Steps.yml
+
+#- task: NuGetToolInstaller@1
+#  displayName: 'Use NuGet 5.11'
+#  inputs:
+#    versionSpec: 5.11
+#  continueOnError: true
+
+# Start restoring packages for C++ projects. The C# ones will be restored by the build task
+# Note: 'NuGetCommand@2' is ambiguous so the specific task GUID must be used instead.
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  displayName: 'NuGet restore of core'
+  inputs:
+    command: 'custom'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\core\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+
+# NuGetCommand@2
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  displayName: 'NuGet restore of applicationmodel'
+  inputs:
+    command: 'custom'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  displayName: 'NuGet restore of mrmex'
+  inputs:
+    command: 'custom'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\mrmex\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  displayName: 'NuGet restore of mrmmin'
+  inputs:
+    command: 'custom'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\mrmmin\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  displayName: 'NuGet restore of mrm unittests'
+  inputs:
+    command: 'custom'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\unittests\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+
+#- task: powershell@2
+#  displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
+#  inputs:
+#    targetType: filePath
+#    filePath: tools\DevCheck.ps1
+#    arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
+#    workingDirectory: '$(Build.SourcesDirectory)'
+
+#- task: powershell@2
+#  name: UpdateTraceloggingConfig
+#  inputs:
+#    targetType: 'inline'
+#    script: |
+#      $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
+#     if (($srcPath -ne $null)){
+#        $destinationPath = Get-Childitem -Path '${{ parameters.MRTSourcesDirectory }}\mrt\packages' -File 'Traceloggingconfig.h' -Recurse
+#       if (($destinationPath -ne $null)){
+#          Write-Host $srcPath.FullName, $destinationPath.FullName
+#          Copy-Item -Force $srcPath.FullName $destinationPath.FullName
+#        }
+#      }
+
+- task: MSBuild@1
+  displayName: 'build MrtCore'
+  inputs:
+    platform: '$(buildPlatform)'
+    solution: '${{ parameters.MRTSourcesDirectory }}\mrt\MrtCore.sln'
+    configuration: '$(buildConfiguration)'
+    msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+
+- ${{ if eq(parameters.runSDLBinaryAnalysis, 'true') }}:
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
+    parameters:
+      outputDirectory: '${{ parameters.MRTBinariesDirectory }}'
+      enablePREFast: ${{ parameters.enablePREFast }}
