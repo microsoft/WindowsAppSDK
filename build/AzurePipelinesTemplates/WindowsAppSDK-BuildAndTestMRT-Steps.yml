@@ -1,3 +1,9 @@
+# alam start
+parameters:
+  RunSDLBinaryAnalysis: true
+  EnablePREFast: true
+# alam end
+
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
@@ -14,7 +20,7 @@ steps:
       MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
       MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
       runSDLBinaryAnalysis: ${{parameters.RunSDLBinaryAnalysis}}
-      enablePREFast: ${{parameters.EnablePREFast}}
+      EnablePREFast: ${{parameters.EnablePREFast}}
 # alam end
 
 # component detection must happen *within* the build task
