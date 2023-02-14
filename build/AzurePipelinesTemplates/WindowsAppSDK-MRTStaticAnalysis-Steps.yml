@@ -85,7 +85,7 @@ steps:
     msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
 - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
-  - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
+  - template: WindowsAppSDK-BinaryAnalysis-steps.yml
     parameters:
       outputDirectory: '${{ parameters.MRTBinariesDirectory }}'
       EnablePREFast: ${{ parameters.EnablePREFast }}
