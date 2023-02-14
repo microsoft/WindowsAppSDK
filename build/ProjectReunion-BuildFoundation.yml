@@ -247,6 +247,11 @@ jobs:
       arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile NuGet.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestMRT-Steps.yml
+    # alam start
+    parameters:
+      EnablePREFast: ${{ parameters.enablePREFast }}
+      RunSDLBinaryAnalysis: ${{ parameters.RunSDLBinaryAnalysis }}
+    # alam end
 
   - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
@@ -414,12 +419,10 @@ jobs:
         }
         Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
         Write-Host "##vso[task.setvariable variable=packageVersion;isOutput=true;]$packageVersion"
-
         Write-Host $packageVersion
         [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
         $publicNuspec.package.metadata.version = $packageVersion
         Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
-
   - task: PowerShell@2
     name: PackNuget
     inputs:
@@ -521,7 +524,6 @@ jobs:
         downloadPath: '$(Build.artifactStagingDirectory)'
         itemPattern: |
           **/*.nupkg
-
     - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(parameters.PublishPackage, 'true')) }}:
       # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
       - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
