@@ -7,6 +7,16 @@ steps:
     filePath: 'BuildAll.ps1'
     arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
 
+# alam start
+- ${{ if and(eq(parameters.RunSDLBinaryAnalysis, 'true'), eq(parameters.EnablePREFast, 'true')) }}:
+  - template: WindowsAppSDK-MRTStaticAnalysis-Steps.yml
+    parameters:
+      MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
+      MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
+      runSDLBinaryAnalysis: ${{parameters.RunSDLBinaryAnalysis}}
+      enablePREFast: ${{parameters.EnablePREFast}}
+# alam end
+
 # component detection must happen *within* the build task
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 
