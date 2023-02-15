@@ -68,7 +68,6 @@ SET _NUGETARGS=%~dp0\Microsoft.WindowsAppSDK.Protobuf.nuspec -Version %_VERSION%
 ECHO %_NUGET% pack %_NUGETARGS%
 %_NUGET% pack %_NUGETARGS%
 
-DIR %_TO%
 GOTO Cleanup
 
 :Cleanup
