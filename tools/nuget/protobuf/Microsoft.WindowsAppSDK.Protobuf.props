@@ -1,0 +1,16 @@
+﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <protoc_tools>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)/../tools/'))</protoc_tools>
+    <protoc_windows_arm64>$([System.IO.Path]::GetFullPath('$(protoc_tools)/windows_arm64/protoc.exe'))</protoc_windows_arm64>
+    <protoc_windows_x64>$([System.IO.Path]::GetFullPath('$(protoc_tools)/windows_x64/protoc.exe'))</protoc_windows_x64>
+    <protoc_windows_x86>$([System.IO.Path]::GetFullPath('$(protoc_tools)/windows_x86/protoc.exe'))</protoc_windows_x86>
+    <ProtocExe>$(protoc_windows_x64)</ProtocExe>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ProtoIncludes>$(MSBuildThisFileDirectory)/../include</ProtoIncludes>
+    <ProtoLibs>libprotobuf.lib</ProtoIncludes>
+    <ProtoLibDirs>$(MSBuildThisFileDirectory)/../lib/win10-$(PlatformTarget)</ProtoIncludes>
+  </PropertyGroup>
+</Project>
