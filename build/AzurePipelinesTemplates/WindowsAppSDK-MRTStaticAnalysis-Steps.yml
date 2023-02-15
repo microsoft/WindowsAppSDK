@@ -47,15 +47,16 @@ steps:
     arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\unittests\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
 - task: MSBuild@1
+  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
   displayName: 'build MrtCore for Static Analysis'
   inputs:
     platform: '$(buildPlatform)'
     solution: '${{ parameters.MRTSourcesDirectory }}\mrt\MrtCore.sln'
     configuration: '$(buildConfiguration)'
-    msbuildArguments: '/restore /binaryLogger:$(MRTBinariesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+    msbuildArguments: '/restore /binaryLogger:${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
-#- ${{ if and(eq(parameters.RunSDLBinaryAnalysis, 'true'), eq(parameters.EnablePREFast, 'true')) }}:
 - task: SDLNativeRules@3
+  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
   displayName: 'Guardian: PreFast@3'
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
