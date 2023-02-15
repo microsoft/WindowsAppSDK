@@ -30,7 +30,8 @@ md %_TO%
 
 ECHO Building nuget's \build...
 md %_TO%\build >NUL
-REM TODO
+copy %~dp0\*.props %_TO%\build\* >NUL
+copy %~dp0\*.targets %_TO%\build\* >NUL
 
 ECHO Building nuget's \include...
 REM Include files are the same regardless of architecture
@@ -62,8 +63,8 @@ XCOPY %_FROM%\x64-windows-static\tools\protobuf\* %_TO%\tools\x64\* >NUL
 md %_TO%\tools\x86 >NUL
 XCOPY %_FROM%\x86-windows-static\tools\protobuf\* %_TO%\tools\x86\* >NUL
 
-COPY %_FROM%\x64-windows-static\share\protobuf\copyright %_TO%\LICENSE >NUL
-SET _NUGETARGS=Microsoft.WindowsAppSDK.Protobuf.nuspec -Version %_VERSION% -BasePath %_TO%
+copy %_FROM%\x64-windows-static\share\protobuf\copyright %_TO%\LICENSE >NUL
+SET _NUGETARGS=%~dp0\Microsoft.WindowsAppSDK.Protobuf.nuspec -Version %_VERSION% -BasePath %_TO%
 ECHO %_NUGET% pack %_NUGETARGS%
 %_NUGET% pack %_NUGETARGS%
 

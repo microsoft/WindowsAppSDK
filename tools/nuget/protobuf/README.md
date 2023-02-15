@@ -48,7 +48,7 @@ cd vcpkg
 .\bootstrap-vcpkg.bat
 .\vcpkg install protobuf:x86-windows-static protobuf:x64-windows-static protobuf:arm64-windows-static
 cd /d c:\source\repos\windowsappsdk\tools\nuget
-protobuf\Protobuf-MakeNuget.cmd c:\source\repos\vcpkg . 3.21.12
+protobuf\protobuf-makenuget.cmd c:\source\repos\vcpkg . 3.21.12
 ```
 
 NOTE: Replace the `3.21.12` parameter with the version you're creating.
