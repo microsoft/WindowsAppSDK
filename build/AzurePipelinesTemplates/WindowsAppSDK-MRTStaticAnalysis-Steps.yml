@@ -13,14 +13,6 @@ steps:
 #    arguments: /envonly $(buildPlatform)fre
 #    modifyEnvironment: true
 
-#- template: AzurePipelinesTemplates\WindowsAppSDK-InstallWindowsSDK-Steps.yml
-
-#- task: NuGetToolInstaller@1
-#  displayName: 'Use NuGet 5.11'
-#  inputs:
-#    versionSpec: 5.11
-#  continueOnError: true
-
 # Start restoring packages for C++ projects. The C# ones will be restored by the build task
 # Note: 'NuGetCommand@2' is ambiguous so the specific task GUID must be used instead.
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
@@ -54,38 +46,24 @@ steps:
     command: 'custom'
     arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\unittests\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
-#- task: powershell@2
-#  displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
-#  inputs:
-#    targetType: filePath
-#    filePath: tools\DevCheck.ps1
-#    arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
-#    workingDirectory: '$(Build.SourcesDirectory)'
-
-#- task: powershell@2
-#  name: UpdateTraceloggingConfig
-#  inputs:
-#    targetType: 'inline'
-#    script: |
-#      $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
-#     if (($srcPath -ne $null)){
-#        $destinationPath = Get-Childitem -Path '${{ parameters.MRTSourcesDirectory }}\mrt\packages' -File 'Traceloggingconfig.h' -Recurse
-#       if (($destinationPath -ne $null)){
-#          Write-Host $srcPath.FullName, $destinationPath.FullName
-#          Copy-Item -Force $srcPath.FullName $destinationPath.FullName
-#        }
-#      }
-
 - task: MSBuild@1
-  displayName: 'build MrtCore'
+  displayName: 'build MrtCore for Static Analysis'
   inputs:
     platform: '$(buildPlatform)'
     solution: '${{ parameters.MRTSourcesDirectory }}\mrt\MrtCore.sln'
     configuration: '$(buildConfiguration)'
-    msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+    msbuildArguments: '/restore /binaryLogger:$(MRTBinariesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
-- ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
-  - template: WindowsAppSDK-BinaryAnalysis-steps.yml
-    parameters:
-      outputDirectory: '${{ parameters.MRTBinariesDirectory }}'
-      EnablePREFast: ${{ parameters.EnablePREFast }}
+- ${{ if and(eq(parameters.RunSDLBinaryAnalysis, 'true'), eq(parameters.EnablePREFast, 'true')) }}:
+  - task: SDLNativeRules@3
+    displayName: 'Guardian: PreFast@3'
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    continueOnError: true
+    inputs:
+      userProvideBuildInfo: 'auto'
+
+  #- template: WindowsAppSDK-BinaryAnalysis-steps.yml
+  #  parameters:
+  #    outputDirectory: '${{ parameters.MRTBinariesDirectory }}'
+  #    EnablePREFast: ${{ parameters.EnablePREFast }}
