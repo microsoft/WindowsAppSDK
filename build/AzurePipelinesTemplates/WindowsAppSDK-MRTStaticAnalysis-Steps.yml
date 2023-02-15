@@ -54,14 +54,14 @@ steps:
     configuration: '$(buildConfiguration)'
     msbuildArguments: '/restore /binaryLogger:$(MRTBinariesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
-- ${{ if and(eq(parameters.RunSDLBinaryAnalysis, 'true'), eq(parameters.EnablePREFast, 'true')) }}:
-  - task: SDLNativeRules@3
-    displayName: 'Guardian: PreFast@3'
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-    continueOnError: true
-    inputs:
-      userProvideBuildInfo: 'auto'
+#- ${{ if and(eq(parameters.RunSDLBinaryAnalysis, 'true'), eq(parameters.EnablePREFast, 'true')) }}:
+- task: SDLNativeRules@3
+  displayName: 'Guardian: PreFast@3'
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  continueOnError: true
+  inputs:
+    userProvideBuildInfo: 'auto'
 
   #- template: WindowsAppSDK-BinaryAnalysis-steps.yml
   #  parameters:
