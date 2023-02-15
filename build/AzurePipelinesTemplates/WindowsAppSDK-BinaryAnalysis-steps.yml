@@ -21,7 +21,10 @@ steps:
         ob_sdl_binskim_break: false 
       globalsdl:
         tsa:
-          enabled: true
+          # alam start
+          # enabled: true
+          enabled: false
+          # alam end
         binskim:
           enabled: true
           break: true
@@ -34,9 +37,5 @@ steps:
             enabled: true
           # ToDo: set the following to true once pre-existing errors are resolved.
           break: false
-        # The following scans we already did during in the SourceAnalysis job, not repeating here.
-        # ToDo: Consider disabling Antimalware also, but how?
-        credscan:
-          enabled: false
-        policheck:
-          enabled: false
+        # Don't bother to disable tools already invoked earlier during SourceAnalysis, because the target location for 
+        # that is the source tree, while the target here is the build output, so new issues might be found in this round.
