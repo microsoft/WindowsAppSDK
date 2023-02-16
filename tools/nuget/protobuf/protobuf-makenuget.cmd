@@ -29,9 +29,9 @@ IF EXIST %_TO% rd /s/q %_TO%
 md %_TO%
 
 ECHO Building nuget's \build...
-md %_TO%\build >NUL
-copy %~dp0\*.props %_TO%\build\* >NUL
-copy %~dp0\*.targets %_TO%\build\* >NUL
+md %_TO%\build\native >NUL
+copy %~dp0\*.props %_TO%\build\native\* >NUL
+copy %~dp0\*.targets %_TO%\build\native\* >NUL
 
 ECHO Building nuget's \include...
 REM Include files are the same regardless of architecture
