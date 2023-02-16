@@ -223,7 +223,14 @@ Try {
         # Init mrtcore
         foreach($platformToRun in $platform.Split(","))
         {
+            # alam start
+            #& $MRTSourcesDirectory\build\init.cmd /envonly $platformToRun\fre
             & $MRTSourcesDirectory\build\init.cmd /envonly $platformToRun\fre
+            if ($lastexitcode -ne 0)
+            {
+                write-host "ERROR: init.cmd /envonly $platformToRun\fre FAILED."
+            }
+            # alam end
         }
 
         if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMRT")) 
