@@ -7,20 +7,41 @@ parameters:
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
-- task: PowerShell@2
-  name: BuildBinaries
-  inputs:
-    filePath: 'BuildAll.ps1'
-    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
-
 # alam start
+#- task: PowerShell@2
+#  name: BuildBinaries
+#  inputs:
+#    filePath: 'BuildAll.ps1'
+#    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
+
 - ${{ if and(eq(parameters.RunSDLBinaryAnalysis, 'true'), eq(parameters.EnablePREFast, 'true')) }}:
+  - task: PowerShell@2
+    condition: or(ne(variables['buildPlatform'], 'x64'), ne(variables['buildConfiguration'], 'Release'))
+    name: BuildBinaries
+    inputs:
+      filePath: 'BuildAll.ps1'
+      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
+
+  - task: PowerShell@2
+    condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+    name: BuildBinaries (PreFastSetup)
+    inputs:
+      filePath: 'BuildAll.ps1'
+      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "PreFastSetup"
+
   - template: WindowsAppSDK-MRTStaticAnalysis-Steps.yml
     parameters:
       MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
       MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
       runSDLBinaryAnalysis: ${{parameters.RunSDLBinaryAnalysis}}
       EnablePREFast: ${{parameters.EnablePREFast}}
+
+- ${{ if or(ne(parameters.RunSDLBinaryAnalysis, 'true'), ne(parameters.EnablePREFast, 'true')) }}:
+  - task: PowerShell@2
+    name: BuildBinaries
+    inputs:
+      filePath: 'BuildAll.ps1'
+      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
 # alam end
 
 # component detection must happen *within* the build task
