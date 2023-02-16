@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <ProtoIncludes>$(MSBuildThisFileDirectory)/../include</ProtoIncludes>
-    <ProtoLibs>libprotobuf.lib</ProtoIncludes>
-    <ProtoLibDirs>$(MSBuildThisFileDirectory)/../lib/win10-$(PlatformTarget)</ProtoIncludes>
+    <ProtoLibs>libprotobuf.lib</ProtoLibs>
+    <ProtoLibDirs>$(MSBuildThisFileDirectory)/../lib/win10-$(PlatformTarget)</ProtoLibDirs>
   </PropertyGroup>
 </Project>
