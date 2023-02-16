@@ -126,76 +126,148 @@ jobs:
         flattenFolders: false
         overWrite: true
 
+  # alam start
+  #  - task: PowerShell@2
+  #    name: BuildBinaries
+  #    inputs:
+  #      filePath: 'BuildAll.ps1'
+  #      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
+
+  - ${{ if and(eq(parameters.RunSDLBinaryAnalysis, 'true'), eq(parameters.EnablePREFast, 'true')) }}:
+    - task: PowerShell@2
+      condition: or(ne(variables['buildPlatform'], 'x64'), ne(variables['buildConfiguration'], 'Release'))
+      name: BuildBinaries
+      inputs:
+        filePath: 'BuildAll.ps1'
+        arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
+
+    - task: PowerShell@2
+      condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+      name: BuildBinaries (PreFastSetup)
+      inputs:
+        filePath: 'BuildAll.ps1'
+        arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "PreFastSetup"
+
+    - powershell: |
+        # Some builds have "-branchname" appended, but when this happens the environment variable 
+        # TFS_BUILDNUMBER has the un-modified version.
+        if ($env:TFS_BUILDNUMBER)
+        {
+          $env:BUILD_BUILDNUMBER = $env:TFS_BUILDNUMBER
+        }
+        $yymm = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 10, 4)
+        $dd = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 5, 2)
+        $revision = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 3, 3)
+        Write-Host "##vso[task.setvariable variable=builddate]$yymm$dd"
+        Write-Host "##vso[task.setvariable variable=builddate_yymm]$yymm"
+        Write-Host "##vso[task.setvariable variable=builddate_dd]$dd"
+        Write-Host "##vso[task.setvariable variable=buildrevision]$revision"
+        Write-Host builddate=$yymm$dd
+        Write-Host builddate_yymm=$yymm
+        Write-Host builddate_dd=$dd
+        Write-Host buildrevision=$revision
+      condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+      displayName: 'Get build revision number'
+
+    - script: |
+        "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath > %TEMP%\vsinstalldir.txt
+        set /p _VSINSTALLDIR15=<%TEMP%\vsinstalldir.txt
+        del %TEMP%\vsinstalldir.txt
+        call "%_VSINSTALLDIR15%\Common7\Tools\VsDevCmd.bat"
+        echo VCToolsInstallDir = %VCToolsInstallDir%
+        echo ##vso[task.setvariable variable=VCToolsInstallDir]%VCToolsInstallDir%
+      condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+      displayName: 'Retrieve VC tools directory'
+
+    - task: VSBuild@1
+      condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+      displayName: 'Build solution ${{ parameters.solutionPath }}'
+      inputs:
+        solution: ${{ parameters.solutionPath }}
+        # vsVersion: 16.0
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+        msbuildArgs: '/restore /p:AppxSymbolPackageEnabled=false /binaryLogger:BuildOutput/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:WindowsAppSDKVersionBuild=$(builddate_yymm) /p:WindowsAppSDKVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode="Optimize" /p:WindowsAppSDKBuildPipeline=1 /p:WindowsAppSDKCleanIntermediateFiles=true'
+
+    - task: SDLNativeRules@3
+      condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+      displayName: 'Guardian: PreFast@3'
+      env:
+        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      continueOnError: true
+      inputs:
+        userProvideBuildInfo: 'auto'
+
+  - ${{ if or(ne(parameters.RunSDLBinaryAnalysis, 'true'), ne(parameters.EnablePREFast, 'true')) }}:
     - task: PowerShell@2
       name: BuildBinaries
       inputs:
         filePath: 'BuildAll.ps1'
         arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
 
-  # alam start
-    - ${{ if and(eq(parameters.RunSDLBinaryAnalysis, 'true'), eq(parameters.enablePREFast, 'true')) }}:
-      - task: PowerShell@2
-        condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
-        name: GenerateDynamicDependencyOverrides
-        inputs:
-          filePath: 'tools\GenerateDynamicDependencyOverrides.ps1'
-          arguments: -Path "build\override"
 
-      - task: PowerShell@2
-        condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
-        name: GeneratePushNotificationsOverrides
-        inputs:
-          filePath: 'tools\GeneratePushNotificationsOverrides.ps1'
-          arguments: -Path "build\override"
+    #- ${{ if and(eq(parameters.RunSDLBinaryAnalysis, 'true'), eq(parameters.enablePREFast, 'true')) }}:
+    #  - task: PowerShell@2
+    #    condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+    #    name: GenerateDynamicDependencyOverrides
+    #    inputs:
+    #      filePath: 'tools\GenerateDynamicDependencyOverrides.ps1'
+    #      arguments: -Path "build\override"
 
-      - powershell: |
-          # Some builds have "-branchname" appended, but when this happens the environment variable 
-          # TFS_BUILDNUMBER has the un-modified version.
-          if ($env:TFS_BUILDNUMBER)
-          {
-            $env:BUILD_BUILDNUMBER = $env:TFS_BUILDNUMBER
-          }
-          $yymm = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 10, 4)
-          $dd = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 5, 2)
-          $revision = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 3, 3)
-          Write-Host "##vso[task.setvariable variable=builddate]$yymm$dd"
-          Write-Host "##vso[task.setvariable variable=builddate_yymm]$yymm"
-          Write-Host "##vso[task.setvariable variable=builddate_dd]$dd"
-          Write-Host "##vso[task.setvariable variable=buildrevision]$revision"
-          Write-Host builddate=$yymm$dd
-          Write-Host builddate_yymm=$yymm
-          Write-Host builddate_dd=$dd
-          Write-Host buildrevision=$revision
-        displayName: 'Get build revision number'
+    #  - task: PowerShell@2
+    #    condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+    #    name: GeneratePushNotificationsOverrides
+    #    inputs:
+    #      filePath: 'tools\GeneratePushNotificationsOverrides.ps1'
+    #      arguments: -Path "build\override"
 
-      - script: |
-          "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath > %TEMP%\vsinstalldir.txt
-          set /p _VSINSTALLDIR15=<%TEMP%\vsinstalldir.txt
-          del %TEMP%\vsinstalldir.txt
-          call "%_VSINSTALLDIR15%\Common7\Tools\VsDevCmd.bat"
-          echo VCToolsInstallDir = %VCToolsInstallDir%
-          echo ##vso[task.setvariable variable=VCToolsInstallDir]%VCToolsInstallDir%
-        displayName: 'Retrieve VC tools directory'
+    #  - powershell: |
+    #      # Some builds have "-branchname" appended, but when this happens the environment variable 
+    #      # TFS_BUILDNUMBER has the un-modified version.
+    #      if ($env:TFS_BUILDNUMBER)
+    #      {
+    #        $env:BUILD_BUILDNUMBER = $env:TFS_BUILDNUMBER
+    #      }
+    #      $yymm = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 10, 4)
+    #      $dd = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 5, 2)
+    #      $revision = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 3, 3)
+    #      Write-Host "##vso[task.setvariable variable=builddate]$yymm$dd"
+    #      Write-Host "##vso[task.setvariable variable=builddate_yymm]$yymm"
+    #      Write-Host "##vso[task.setvariable variable=builddate_dd]$dd"
+    #      Write-Host "##vso[task.setvariable variable=buildrevision]$revision"
+    #      Write-Host builddate=$yymm$dd
+    #      Write-Host builddate_yymm=$yymm
+    #      Write-Host builddate_dd=$dd
+    #      Write-Host buildrevision=$revision
+    #    displayName: 'Get build revision number'
 
-      - task: VSBuild@1
-        condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
-        displayName: 'Build solution ${{ parameters.solutionPath }}'
-        inputs:
-          solution: ${{ parameters.solutionPath }}
-          # vsVersion: 16.0
-          platform: '$(buildPlatform)'
-          configuration: '$(buildConfiguration)'
-          msbuildArgs: '/restore /p:AppxSymbolPackageEnabled=false /binaryLogger:BuildOutput/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:WindowsAppSDKVersionBuild=$(builddate_yymm) /p:WindowsAppSDKVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode="Optimize" /p:WindowsAppSDKBuildPipeline=1 /p:WindowsAppSDKCleanIntermediateFiles=true'
+    #  - script: |
+    #      "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath > %TEMP%\vsinstalldir.txt
+    #      set /p _VSINSTALLDIR15=<%TEMP%\vsinstalldir.txt
+    #      del %TEMP%\vsinstalldir.txt
+    #      call "%_VSINSTALLDIR15%\Common7\Tools\VsDevCmd.bat"
+    #      echo VCToolsInstallDir = %VCToolsInstallDir%
+    #      echo ##vso[task.setvariable variable=VCToolsInstallDir]%VCToolsInstallDir%
+    #    displayName: 'Retrieve VC tools directory'
 
-      - task: SDLNativeRules@3
-        condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
-        displayName: 'Guardian: PreFast@3'
-        env:
-          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-        continueOnError: true
-        inputs:
-          userProvideBuildInfo: 'auto'
+    #  - task: VSBuild@1
+    #    condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+    #    displayName: 'Build solution ${{ parameters.solutionPath }}'
+    #    inputs:
+    #      solution: ${{ parameters.solutionPath }}
+    #      # vsVersion: 16.0
+    #      platform: '$(buildPlatform)'
+    #      configuration: '$(buildConfiguration)'
+    #      msbuildArgs: '/restore /p:AppxSymbolPackageEnabled=false /binaryLogger:BuildOutput/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:WindowsAppSDKVersionBuild=$(builddate_yymm) /p:WindowsAppSDKVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode="Optimize" /p:WindowsAppSDKBuildPipeline=1 /p:WindowsAppSDKCleanIntermediateFiles=true'
 
+    #  - task: SDLNativeRules@3
+    #    condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+    #    displayName: 'Guardian: PreFast@3'
+    #    env:
+    #      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    #    continueOnError: true
+    #    inputs:
+    #      userProvideBuildInfo: 'auto'
   # alam end
 
   # component detection must happen *within* the build task
