@@ -45,6 +45,12 @@ if /i "%1"=="" (
     set amd64=1
     set fre=1
     set _archIsSet=1
+    @REM alam start
+) else if /i "%1"=="x64\fre" (
+    set amd64=1
+    set fre=1
+    set _archIsSet=1
+    @REM alam end
 ) else if /i "%1"=="x64chk" (
     set amd64=1
     set chk=1
@@ -78,6 +84,10 @@ if /i "%1"=="" (
     echo.
     echo            ^<arch^> :          x86 ^| ^(x64^|amd64^) ^| arm ^| arm64
     echo            ^<flavor^> :        chk ^| fre
+    @REM alam start
+    echo.
+    echo Invalidate: %1.
+    @REM alam end
     exit /b 1
 )
 shift
