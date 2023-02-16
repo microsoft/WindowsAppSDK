@@ -16,12 +16,12 @@
     <MicrosoftWindowsCsWinRTPackageVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDetailsXml), 'Name="Microsoft.Windows.CsWinRT"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsCsWinRTPackageVersion>
 
     <!-- Dependencies: Manual -->
-    <GoogleProtobufToolsVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Google.Protobuf.Tools"\s+Version="(.*?)"').Groups[1].Value)</GoogleProtobufToolsVersion>
     <MicrosoftBuildTasksGitVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Microsoft.Build.Tasks.Git"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftBuildTasksGitVersion>
     <MicrosoftSourceLinkCommonVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Microsoft.SourceLink.Common"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftSourceLinkCommonVersion>
     <MicrosoftSourceLinkGitHubVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Microsoft.SourceLink.GitHub"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftSourceLinkGitHubVersion>
     <MicrosoftTaefVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Microsoft.Taef"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftTaefVersion>
     <MicrosoftTelemetryInboxNativeVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Microsoft.Telemetry.Inbox.Native"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftTelemetryInboxNativeVersion>
+    <MicrosoftWindowsAppSDKProtobufVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Microsoft.WindowsAppSDK.Protobuf"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsAppSDKProtobufVersion>
     <MicrosoftWindowsCppWinRTVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Microsoft.Windows.CppWinRT"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsCppWinRTVersion>
     <MicrosoftWindowsImplementationLibraryVersion>$([System.Text.RegularExpressions.Regex]::Match($(VersionDependenciesXml), 'Name="Microsoft.Windows.ImplementationLibrary"\s+Version="(.*?)"').Groups[1].Value)</MicrosoftWindowsImplementationLibraryVersion>
   </PropertyGroup>
