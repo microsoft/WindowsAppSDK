@@ -106,10 +106,20 @@ Try {
     if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildBinaries") -Or ($AzureBuildStep -eq "BuildMRT") -Or ($AzureBuildStep -eq "PreFastSetup"))) 
     {
         & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile nuget.config
+        # alam start
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: restore WindowsAppRuntime.sln FAILED."
+            exit 1
+        }
+        # alam end
         & .\.nuget\nuget.exe restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" -configfile nuget.config
 
         if ($lastexitcode -ne 0)
         {
+            # alam start
+            write-host "ERROR: restore Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
+            # alam end
             exit 1
         }
 
@@ -129,6 +139,9 @@ Try {
 
         if ($lastexitcode -ne 0)
         {
+            # alam start
+            write-host "ERROR: Copy-Item -Force $srcPath.FullName $destPath.FullName FAILED."
+            # alam end
             exit 1
         }
     }
@@ -150,6 +163,9 @@ Try {
                                 /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline
                 if ($lastexitcode -ne 0)
                 {
+                    # alam start
+                    write-host "ERROR: msbuild.exe /restore WindowsAppRuntime.sln FAILED."
+                    # alam end
                     exit 1
                 }
             }
@@ -163,13 +179,44 @@ Try {
 
         #Restore packages from mrt.
         & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\MrtCore.sln" -ConfigFile nuget.config
+        # alam start
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: restore MrtCore.sln FAILED."
+            exit 1
+        }
+        # alam end
         & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config" -ConfigFile nuget.config
+        # alam start
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: restore Microsoft.Windows.ApplicationModel.Resources\src\packages.config FAILED."
+            exit 1
+        }
+        # alam end
         & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config" -ConfigFile nuget.config
+        # alam start
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: restore mrm\mrmex\packages.config FAILED."
+            exit 1
+        }
+        # alam end
         & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmmin\packages.config" -ConfigFile nuget.config
+        # alam start
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: restore mrmmin\packages.config FAILED."
+            exit 1
+        }
+        # alam end
         & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\unittests\packages.config" -ConfigFile nuget.config
 
         if ($lastexitcode -ne 0)
         {
+            # alam start
+            write-host "ERROR: restore unittests\packages.config FAILED."
+            # alam end
             exit 1
         }
 
@@ -194,6 +241,9 @@ Try {
 
                     if ($lastexitcode -ne 0)
                     {
+		            # alam start
+		            write-host "ERROR: msbuild restore '$MRTSourcesDirectory\mrt\MrtCore.sln' FAILED."
+		            # alam end
                         exit 1
                     }
                 }
@@ -209,6 +259,9 @@ Try {
         & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=AnyCPU
         if ($lastexitcode -ne 0)
         {
+            # alam start
+            write-host "ERROR: msbuild restore Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
+            # alam end
             exit 1
         }
     }
@@ -235,6 +288,9 @@ Try {
                 .\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$BasePath" -Platform $PlatformToRun -Configuration $ConfigurationToRun
                 if ($lastexitcode -ne 0)
                 {
+	              # alam start
+      	        write-host "ERROR: msCopyFilesToStagingDir.ps1 FAILED."
+            	  # alam end
                     exit 1
                 }
             }
@@ -302,10 +358,20 @@ Try {
         #------------------
 
         Copy-Item -Path "$nuSpecsPath\AppxManifest.xml" -Destination "$BasePath"
+        # alam start
+        if ($lastexitcode -ne 0)
+        {
+      	write-host "ERROR: Copy-Item -Path AppxManifest.xml FAILED."
+            exit 1
+        }
+        # alam end
         Copy-Item -Path "LICENSE" -Destination "$BasePath" -force
 
         if ($lastexitcode -ne 0)
         {
+	      # alam start
+      	write-host "ERROR: Copy-Item -Path LICENSE FAILED."
+         	# alam end
             exit 1
         }
 
@@ -322,6 +388,9 @@ Try {
 
         if ($lastexitcode -ne 0)
         {
+	      # alam start
+      	write-host "ERROR: xslt.Transform FAILED."
+         	# alam end
             exit 1
         }
     }
@@ -340,6 +409,9 @@ Try {
 
         if ($lastexitcode -ne 0)
         {
+	      # alam start
+      	write-host "ERROR: nuget.exe pack $nuspecPath FAILED."
+         	# alam end
             exit 1
         }
     }
