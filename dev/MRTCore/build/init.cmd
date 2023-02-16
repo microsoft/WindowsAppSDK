@@ -110,10 +110,16 @@ if "%DevEnvDir%" == "" (
     call %RepoRoot%\DevCmd.cmd /PreserveContext /prerelease -arch=%_BuildArch% -host_arch=amd64
     if errorlevel 1 (echo Could not set up a developer command prompt && exit /b %ERRORLEVEL%)
 )
+    @REM alam start
+    echo DevCmd.cmd succeeded.
+    @REM alam end
 
 set _subfolder=\
 
 call:AddPathIfExists "%VSINSTALLDIR%\MSBuild\Current\Bin%_subfolder%"
+    @REM alam start
+    echo AddPathIfExists returned %ERRORLEVEL%
+    @REM alam end
 
 set PATH=%RepoRoot%\.buildtools\MSBuild\Current\Bin;%RepoRoot%\.tools;%RepoRoot%\.tools\VSS.NuGet.AuthHelper;%RepoRoot%\tools;%RepoRoot%\dxaml\scripts;%PATH%
 
@@ -129,13 +135,23 @@ if not exist %TEMP% mkdir %TEMP%
 rem call %RepoRoot%\scripts\init\SetDotnetVars.cmd %RepoRoot%
 
 if "%EnvOnly%"=="" (
+    @REM alam start
+    echo EnvOnly environment variable NOT set
+    @REM alam end
     powershell -ExecutionPolicy Bypass -NoProfile -Command %RepoRoot%\init.ps1
+@REM alam start
+) else (
+    echo EnvOnly environment variable IS set, skipped init.ps1.
+    @REM alam end
 )
 
 set EnvironmentInitialized=1
 
 title DCPP %_BuildArch%%_BuildType% 2019
 rem doskey /macrofile=%RepoRoot%\scripts\aliases
+    @REM alam start
+    echo title DCPP returned %ERRORLEVEL%
+    @REM alam end
 goto:eof
 
 
@@ -155,4 +171,3 @@ set _A=%1
 echo Could not find path: %_A:~1,-1%
 set _A=
 exit /b 4
-
