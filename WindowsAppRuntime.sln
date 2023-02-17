@@ -619,9 +619,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{9CE0ED94-0
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KozaniManager.Msix", "test\Kozani\data\KozaniManager.Msix\KozaniManager.Msix.vcxproj", "{D4D29026-C15C-49A3-BEC5-4D477028962C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "KozaniManagerProtocol", "KozaniManagerProtocol", "{82197F64-3A88-4C48-AEF9-7E62E71D75BB}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "KozaniProtocol", "KozaniProtocol", "{82197F64-3A88-4C48-AEF9-7E62E71D75BB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KozaniManagerProtocol", "dev\Kozani\KozaniManagerProtocol\KozaniManagerProtocol.vcxproj", "{3F28C3ED-2548-4530-8B6C-832FAE0E993D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KozaniProtocol", "dev\Kozani\KozaniProtocol\KozaniProtocol.vcxproj", "{3F28C3ED-2548-4530-8B6C-832FAE0E993D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
