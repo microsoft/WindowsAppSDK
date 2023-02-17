@@ -141,7 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Microsoft.Kozani.IPC.Client.Activation.h" />
+    <ClInclude Include="Microsoft.Kozani.Activation.h" />
     <ClInclude Include="KozaniManager-Constants.h" />
     <ClInclude Include="KozaniManager-Override.h" />
     <ClInclude Include="KozaniManagerActivity.h" />
@@ -158,7 +158,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Microsoft.Kozani.IPC.Client.Activation.cpp" />
+    <ClCompile Include="Microsoft.Kozani.Activation.cpp" />
     <ClCompile Include="KozaniManagerActivity.cpp" />
     <ClCompile Include="KozaniManagerTraceLogging.cpp" />
   </ItemGroup>

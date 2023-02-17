@@ -21,7 +21,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Microsoft.Kozani.IPC.Client.Activation.cpp">
+    <ClCompile Include="Microsoft.Kozani.Activation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KozaniManagerActivity.cpp">
@@ -35,7 +35,7 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Microsoft.Kozani.IPC.Client.Activation.h">
+    <ClInclude Include="Microsoft.Kozani.Activation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="KozaniManager-Constants.h">

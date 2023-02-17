@@ -3,9 +3,9 @@
 
 #include "pch.h"
 
-#include "Microsoft.Kozani.IPC.Client.Activation.h"
+#include "Microsoft.Kozani.Activation.h"
 
-std::string Microsoft::Kozani::IPC::Client::Activation::ActivateApp(
+std::string Microsoft::Kozani::Activation::ActivateApp(
     std::int64_t cookie,
     PCWSTR appUserModelId,
     ::IInspectable* activatedEventArgs)
@@ -15,7 +15,7 @@ std::string Microsoft::Kozani::IPC::Client::Activation::ActivateApp(
     return ActivateApp(cookie, appUserModelId, args);
 }
 
-std::string Microsoft::Kozani::IPC::Client::Activation::ActivateApp(
+std::string Microsoft::Kozani::Activation::ActivateApp(
     std::int64_t cookie,
     PCWSTR appUserModelId,
     winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs& args)
@@ -30,7 +30,7 @@ std::string Microsoft::Kozani::IPC::Client::Activation::ActivateApp(
     THROW_HR_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), "ActivationKind:%d", activationKind);
 }
 
-std::string Microsoft::Kozani::IPC::Client::Activation::ActivateApp(
+std::string Microsoft::Kozani::Activation::ActivateApp(
     std::int64_t cookie,
     PCWSTR appUserModelId,
     winrt::Windows::ApplicationModel::Activation::LaunchActivatedEventArgs& args)
@@ -39,7 +39,7 @@ std::string Microsoft::Kozani::IPC::Client::Activation::ActivateApp(
     return ActivateApp_Launch(cookie, appUserModelId, arguments.c_str());
 }
 
-std::string Microsoft::Kozani::IPC::Client::Activation::ActivateApp_Launch(
+std::string Microsoft::Kozani::Activation::ActivateApp_Launch(
     std::int64_t cookie,
     PCWSTR appUserModelId,
     PCWSTR arguments)
@@ -49,7 +49,7 @@ std::string Microsoft::Kozani::IPC::Client::Activation::ActivateApp_Launch(
     return ActivateApp_Launch(cookie, appUserModelIdUtf8, argumentsUtf8);
 }
 
-std::string Microsoft::Kozani::IPC::Client::Activation::ActivateApp_Launch(
+std::string Microsoft::Kozani::Activation::ActivateApp_Launch(
     std::int64_t cookie,
     const std::string& appUserModelId,
     const std::string& arguments)

@@ -5,7 +5,7 @@
 
 #include "KozaniProtobufMessages.h"
 
-namespace Microsoft::Kozani::IPC::Client::Activation
+namespace Microsoft::Kozani::Activation
 {
 std::string ActivateApp(
     std::int64_t cookie,

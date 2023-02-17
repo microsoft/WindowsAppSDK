@@ -7,7 +7,7 @@
 
 #include <KozaniManager_h.h>
 
-#include "Microsoft.Kozani.IPC.Client.Activation.h"
+#include "Microsoft.Kozani.Activation.h"
 
 // Including this file once per binary will automatically opt WIL error handling macros into calling RoOriginateError when they
 // begin logging a new error.  This greatly improves the debuggability of errors that propagate before a failfast.
@@ -37,7 +37,7 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
     {
         // Serialize the message
         const std::int64_t cookie{};
-        std::string messageBytes{ ::Microsoft::Kozani::IPC::Client::Activation::ActivateApp(cookie, appUserModelId, activatedEventArgs) };
+        std::string messageBytes{ ::Microsoft::Kozani::Activation::ActivateApp(cookie, appUserModelId, activatedEventArgs) };
 
         // TODO: https://task.ms/42882034 temporary code to enable initial testing of the in-proc WinRT API and OOP COM API. Will be replaced with real impl later.
         if (statusCallback != nullptr)
