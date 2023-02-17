@@ -45,15 +45,6 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup>
-    <ProtocExe>$(protoc_windows64)</ProtocExe>
-  </PropertyGroup>
-  <PropertyGroup>
-    <BuildGenerateSourcesTargets>
-      $(BuildGenerateSourcesTargets);
-      BuildProtoCpp;
-    </BuildGenerateSourcesTargets>
-  </PropertyGroup>
-  <PropertyGroup>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup>
@@ -136,21 +127,6 @@
     <None Include="Kozani.Activation.proto" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Target Name="BuildProtoCpp" BeforeTargets="PrepareForBuild" Inputs="@(ProtoFile)" Outputs="@(ProtoFile->'protobuf\cpp\%(Filename).pb.cc')">
-    <MakeDir Directories="$(IntDir)proto\cpp" />
-    <Message Text="Generating Protobuf C++ files..." />
-    <Exec Command="$(ProtocExe) %(ProtoFile.Identity) --cpp_out=&quot;$(IntDir)proto\cpp&quot; --proto_path= " ContinueOnError="false" CustomErrorRegularExpression="\w+\.proto:\d+:\d+:.*" />
-    <ItemGroup>
-      <ClInclude Include="$(IntDir)\proto\cpp\%(ProtoFile.Filename).pb.h" />
-    </ItemGroup>
-    <ItemGroup>
-      <ClCompile Include="$(IntDir)\proto\cpp\%(ProtoFile.Filename).pb.cc" />
-    </ItemGroup>
-  </Target>
-  <Target Name="CleanProto" AfterTargets="AfterCppClean">
-    <Message Text="Cleaning Protobuf generated files..." />
-    <RemoveDir Directories="$(IntDir)proto" ContinueOnError="true" />
-  </Target>
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets')" />
     <Import Project="$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" />
