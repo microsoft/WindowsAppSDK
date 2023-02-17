@@ -88,14 +88,15 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>(MSBuildThisFileDirectory);$(OutDir)..\KozaniManagerProxyStub;$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)\dev\common;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>(MSBuildThisFileDirectory);$(OutDir)..\KozaniManagerProtocol;$(OutDir)..\KozaniManagerProxyStub;$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)\dev\common;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PreprocessorDefinitions>_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>KozaniMangerProtocol.lib;onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir)..\KozaniManagerProtocol;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
