@@ -67,8 +67,6 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                 }
                 throw;
             }
-            
-            
         }
         
         m_dvcServer->SendConnectionAck(connectionId);

@@ -28,6 +28,8 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         void OpenDvc();
         void StartDvcListenerThread();
         void DvcListenerThreadExiting(HRESULT errorCode, PCSTR erroMessage = "") noexcept;
+        void SendDvcProtocolData(BYTE* data, UINT32 size);
+        void ReportDvcWriterError(HRESULT errorCode);
 
     private:
         ConnectionManager* m_connectionManager{};
@@ -38,5 +40,6 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         wil::unique_event m_dvcThreadStarted;
         std::thread m_dvcListenerThread;
         HRESULT m_errorFromDvcListener{};
+        HRESULT m_errorFromDvcWriter{};
     };
 }

@@ -137,6 +137,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="KozaniManager-Constants.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="KozaniManagerActivity.h" />
     <ClInclude Include="KozaniManagerTraceLogging.h" />

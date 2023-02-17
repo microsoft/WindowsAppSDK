@@ -38,6 +38,9 @@
     <ClInclude Include="KozaniManagerTraceLogging.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="KozaniManager-Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

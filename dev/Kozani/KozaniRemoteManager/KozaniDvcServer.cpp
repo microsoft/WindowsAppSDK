@@ -253,8 +253,14 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
         if (FAILED(m_errorFromDvcListener))
         {
-            // DVC listener thread has encountered error before m_connectionManager. Return the failure right away.
+            // DVC listener thread has encountered error before m_connectionManager is set. Return the failure right away.
             return m_errorFromDvcListener;
+        }
+
+        if (FAILED(m_errorFromDvcWriter))
+        {
+            // DVC writer has encountered error before m_connectionManager is set. Return the failure right away.
+            return m_errorFromDvcWriter;
         }
 
         m_connectionManager = connectionManager;
@@ -263,6 +269,60 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
     void KozaniDvcServer::SendConnectionAck(PCSTR connectionId)
     {
-        //ProtocolDataUnitType::ConnectionAck
+        std::vector<BYTE> ackPDURaw{ CreateConnectionAckPDU(connectionId) };
+        SendDvcProtocolData(ackPDURaw.data(), ackPDURaw.size());
+    }
+
+    void KozaniDvcServer::SendDvcProtocolData(BYTE* data, UINT32 size)
+    {
+        auto lockDvc{ std::unique_lock<std::recursive_mutex>(m_dvcLock) };
+
+        if (!m_dvcHandle)
+        {
+            if (FAILED(m_errorFromDvcListener) || FAILED(m_errorFromDvcWriter))
+            {
+                // Error has been reported before - nothing to do.
+                return;
+            }
+
+            THROW_WIN32_MSG(ERROR_INVALID_STATE, "DVC handle is closed.");
+        }
+
+        DWORD bytesWritten{};
+        if (!::WriteFile(m_dvcHandle.get(), data, size, &bytesWritten, nullptr))
+        {
+            DWORD error = GetLastError();
+            ReportDvcWriterError(HRESULT_FROM_WIN32(error));
+            THROW_WIN32_MSG(error, "DVC WriteFile failed.");
+        }
+            
+        if (bytesWritten != size)
+        {
+            ReportDvcWriterError(E_UNEXPECTED);
+            THROW_WIN32_MSG(E_UNEXPECTED, "DVC WriteFile only writes %u bytes while %u bytes are expected.", bytesWritten, size);
+        }
+        
+        return;
+    }
+
+    void KozaniDvcServer::ReportDvcWriterError(HRESULT errorCode)
+    {
+        auto lock{ m_connectionManagerLock.lock_exclusive() };
+
+        m_errorFromDvcWriter = errorCode;
+
+        // Failure to write to DVC channel is fatal. Will notify the DVC listener thread to exit.
+        m_dvcThreadExit.SetEvent();
+
+        {
+            // Close the DVC handle as this DVC server is going to be shut down. 
+            auto lockDvc{ std::unique_lock<std::recursive_mutex>(m_dvcLock) };
+            m_dvcHandle.reset();
+        }
+
+        if (m_connectionManager != nullptr)
+        {
+            m_connectionManager->ReportDvcServerError(errorCode);
+        }
     }
 }
