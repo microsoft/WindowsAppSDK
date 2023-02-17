@@ -41,16 +41,22 @@ if /i "%1"=="" (
     set x86=1
     set fre=1
     set _archIsSet=1
+@REM alam start
+) else if /i "%1"=="x86\fre" (
+    set x86=1
+    set fre=1
+    set _archIsSet=1
+@REM alam end
 ) else if /i "%1"=="x64fre" (
     set amd64=1
     set fre=1
     set _archIsSet=1
-    @REM alam start
+@REM alam start
 ) else if /i "%1"=="x64\fre" (
     set amd64=1
     set fre=1
     set _archIsSet=1
-    @REM alam end
+@REM alam end
 ) else if /i "%1"=="x64chk" (
     set amd64=1
     set chk=1
@@ -59,6 +65,12 @@ if /i "%1"=="" (
     set amd64=1
     set fre=1
     set _archIsSet=1
+@REM alam start
+) else if /i "%1"=="amd64\fre" (
+    set amd64=1
+    set fre=1
+    set _archIsSet=1
+@REM alam end
 ) else if /i "%1"=="amd64chk" (
     set amd64=1
     set chk=1
@@ -67,6 +79,12 @@ if /i "%1"=="" (
     set arm=1
     set fre=1
     set _archIsSet=1
+@REM alam start
+) else if /i "%1"=="arm\fre" (
+    set arm=1
+    set fre=1
+    set _archIsSet=1
+@REM alam end
 ) else if /i "%1"=="armchk" (
     set arm=1
     set chk=1
@@ -75,6 +93,12 @@ if /i "%1"=="" (
     set arm64=1
     set fre=1
     set _archIsSet=1
+@REM alam start
+) else if /i "%1"=="arm64\fre" (
+    set arm64=1
+    set fre=1
+    set _archIsSet=1
+@REM alam end
 ) else if /i "%1"=="arm64chk" (
     set arm64=1
     set chk=1
