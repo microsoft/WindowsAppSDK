@@ -2,7 +2,6 @@
   <!-- This csproj is to facilitate restoring dependencies from Maestro. These versions are pulled from eng/version.details.xml -->
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
     <Platforms>x64;x86</Platforms>
     <PlatformTarget>AnyCPU</PlatformTarget>
 
