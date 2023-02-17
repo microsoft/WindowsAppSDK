@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -6,6 +6,8 @@
 #include "..\KozaniManager\KozaniManager-Constants.h"
 
 #include <KozaniManager_h.h>
+
+#include "Microsoft.Kozani.IPC.Client.Activation.h"
 
 // Including this file once per binary will automatically opt WIL error handling macros into calling RoOriginateError when they
 // begin logging a new error.  This greatly improves the debuggability of errors that propagate before a failfast.
@@ -31,16 +33,20 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
         PCWSTR additionalSettingsFilePath,
         ::IInspectable* activatedEventArgs,
         IKozaniStatusCallback* statusCallback,
-        DWORD associatedLocalProcessId)
+        DWORD associatedLocalProcessId) try
     {
-        // TODO: https://task.ms/42882034 temporary code to enable initial testing of the in-proc WinRT API and OOP COM API. Will be replaced with real impl later. 
+        // Serialize the message
+        const std::int64_t cookie{};
+        std::string messageBytes{ ::Microsoft::Kozani::IPC::Client::Activation::ActivateApp(cookie, appUserModelId, activatedEventArgs) };
+
+        // TODO: https://task.ms/42882034 temporary code to enable initial testing of the in-proc WinRT API and OOP COM API. Will be replaced with real impl later.
         if (statusCallback != nullptr)
         {
             RETURN_IF_FAILED(statusCallback->OnActivated(associatedLocalProcessId));
         }
 
         return S_OK;
-    }
+    } CATCH_RETURN();
 };
 CoCreatableClass(KozaniManagerImpl);
 
@@ -53,6 +59,10 @@ void EndOfTheLine()
 
 int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
+    // Verify that the version of the library that we linked against is
+    // compatible with the version of the headers we compiled against.
+    GOOGLE_PROTOBUF_VERIFY_VERSION;
+
     RETURN_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
 
     wil::unique_event endOfTheLine(::CreateEventW(nullptr, TRUE, FALSE, nullptr));
@@ -68,6 +78,8 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
     module.Terminate();
 
     ::CoUninitialize();
+
+    google::protobuf::ShutdownProtobufLibrary();
 
     return 0;
 }

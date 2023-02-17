@@ -52,6 +52,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <UseDebugLibraries>true</UseDebugLibraries>
+    <!-- We only use protobuf Release builds so make sure HybridCRT uses the Release CRT if you use protobufs (for now) -->
+    <HybridCrtConfiguration>Release</HybridCrtConfiguration>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -106,7 +108,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <!-- We only use protobuf Release builds so don't define _DEBUG if you use protobufs (for now) -->
+      <!-- <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions> -->
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
