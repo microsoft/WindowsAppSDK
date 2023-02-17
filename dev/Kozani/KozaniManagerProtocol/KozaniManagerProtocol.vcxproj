@@ -146,4 +146,11 @@
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.WindowsAppSDK.Protobuf.$(MicrosoftWindowsAppSDKProtobufVersion)\build\native\Microsoft.WindowsAppSDK.Protobuf.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.WindowsAppSDK.Protobuf.$(MicrosoftWindowsAppSDKProtobufVersion)\build\native\Microsoft.WindowsAppSDK.Protobuf.props'))" />
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.WindowsAppSDK.Protobuf.$(MicrosoftWindowsAppSDKProtobufVersion)\build\native\Microsoft.WindowsAppSDK.Protobuf.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.WindowsAppSDK.Protobuf.$(MicrosoftWindowsAppSDKProtobufVersion)\build\native\Microsoft.WindowsAppSDK.Protobuf.targets'))" />
   </Target>
+  <!-- Include header files from the dev chunks -->
+  <Target Name="CopyFiles" AfterTargets="AfterBuild">
+    <Copy SourceFiles="@(PublicHeaders)" DestinationFolder="$(OutDir)" />
+  </Target>
+  <ItemGroup>
+    <PublicHeaders Include="$(IntDir)proto\cpp\Kozani.Activation.pb.h" />
+  </ItemGroup>
 </Project>
