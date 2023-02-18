@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
+#include <fstream> 
 
 #include "..\KozaniManager\KozaniManager-Constants.h"
 
@@ -19,10 +20,54 @@
 
 using namespace Microsoft::WRL;
 
+namespace Microsoft::Kozani::Manager
+{
+    const UINT32 MaxConnectionRdpFileSize = 64 * 1024;
+}
+
+namespace KM = Microsoft::Kozani::Manager;
+
 // Implement the LifetimeManager as a classic COM Out-of-Proc server, via WRL
 // See https://docs.microsoft.com/cpp/cppcx/wrl/how-to-create-a-classic-com-component-using-wrl?redirectedfrom=MSDN&view=vs-2019 for more details
 
 static constexpr GUID KozaniManager_guid { PR_KOZANIMANAGER_CLSID_GUID };
+
+static std::string GetConnectionId(PCWSTR connectionRdpFilePath)
+{
+    std::fstream ff(connectionRdpFilePath, std::fstream::in);
+    //ff.getline()
+    //ff.failbit
+    //ff.rdstate() 
+    
+    //rdpFile.
+    //std::fstream
+    std::string line;
+    if (!std::getline(ff, line))
+    {
+        std::istream ii();
+        if (!ii)
+        {
+
+        }
+    }
+
+
+    wil::unique_hfile rdpFile{ ::CreateFileW(connectionRdpFilePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, nullptr) };
+    if (!rdpFile)
+    {
+        THROW_LAST_ERROR_MSG("Failed to open connection RDP file: %ls", connectionRdpFilePath);
+    }
+
+    LARGE_INTEGER fileSize{};
+    THROW_IF_WIN32_BOOL_FALSE(GetFileSizeEx(rdpFile.get(), &fileSize));
+    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_FILE_TOO_LARGE), (fileSize.QuadPart > KM::MaxConnectionRdpFileSize), 
+        "Unsupported: Connection RDP file too large. File path: %ls, file size: %I64u, max supported size: %u", 
+        connectionRdpFilePath, fileSize.QuadPart, KM::MaxConnectionRdpFileSize);
+
+    //std::filebuf dd;
+    //dd
+    return "";
+}
 
 struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFinal : RuntimeClass<RuntimeClassFlags<ClassicCom>, IKozaniManager>
 {
@@ -33,7 +78,7 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
         PCWSTR additionalSettingsFilePath,
         ::IInspectable* activatedEventArgs,
         IKozaniStatusCallback* statusCallback,
-        DWORD associatedLocalProcessId) try
+        DWORD associatedLocalProcessId) noexcept try
     {
         // Serialize the message
         const std::int64_t cookie{};
