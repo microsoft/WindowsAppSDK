@@ -5,6 +5,7 @@ parameters:
   default:
     develop: develop
     main: main
+    release/1.3-stable: release/1.3-stable
 
 jobs:
 - job: SyncMirror

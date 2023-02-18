@@ -21,6 +21,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Microsoft.Kozani.Activation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="KozaniManagerActivity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -32,11 +35,23 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Microsoft.Kozani.Activation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KozaniManager-Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KozaniManager-Override.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="KozaniManagerActivity.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="KozaniManagerTraceLogging.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KozaniProtobufMessages.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="KozaniManager-Constants.h">
       <Filter>Header Files</Filter>
@@ -44,13 +59,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="KozaniManager.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
   </ItemGroup>
 </Project>

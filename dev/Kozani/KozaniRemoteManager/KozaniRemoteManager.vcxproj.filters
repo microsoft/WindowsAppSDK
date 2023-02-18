@@ -38,8 +38,11 @@
     <ClInclude Include="KozaniDvcServer.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="KozaniRemoteManagerActivity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="KozaniRemoteManagerTraceLogging.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ConnectionManager.h">
       <Filter>Source Files</Filter>

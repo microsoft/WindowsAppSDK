@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="PushNotificationTests.testmd" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
@@ -60,5 +61,8 @@
     <Xml Include="PushNotifications-AppxManifest.xml">
       <Filter>Source Files</Filter>
     </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
   </ItemGroup>
 </Project>
