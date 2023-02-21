@@ -322,7 +322,7 @@ function Get-VSWhere
             {
                 $global:vswhere = Get-VSWhereOnline
             }
-            }
+        }
         if ([string]::IsNullOrEmpty($global:vswhere))
         {
             Write-Host "ERROR: vswhere.exe not found" -ForegroundColor Red -BackgroundColor Black
@@ -1010,8 +1010,8 @@ function Test-PackagesConfig
             else
             {
                 Write-Host "ERROR: Unknown version $name=$version in $filename" -ForegroundColor Red -BackgroundColor Black
-            $global:issues++
-        }
+                $global:issues++
+            }
         }
 
         if (-not($package.HasAttribute("targetFramework")))
