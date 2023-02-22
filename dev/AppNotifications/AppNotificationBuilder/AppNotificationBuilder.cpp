@@ -107,7 +107,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageProperties const& /*properties*/)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& /*imageUri*/, AppNotificationImageProperties const& /*properties*/)
     {
         return *this;
     }

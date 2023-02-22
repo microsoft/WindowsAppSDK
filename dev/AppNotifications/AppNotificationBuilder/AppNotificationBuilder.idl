@@ -22,7 +22,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
     };
 
     [contract(AppNotificationBuilderContract, 1)]
-    unsealed runtimeclass AppNotificationTextProperties
+    runtimeclass AppNotificationTextProperties
     {
         // Contains the set of <text> attributes
         AppNotificationTextProperties();
@@ -70,14 +70,26 @@ namespace Microsoft.Windows.AppNotifications.Builder
     };
 
     [contract(AppNotificationBuilderContract, 2)]
-    runtimeclass AppNotificationExtendedTextProperties : AppNotificationTextProperties
+    runtimeclass AppNotificationExtendedTextProperties
     {
         AppNotificationExtendedTextProperties();
 
+        // AppNotificationTextProperties
+        String Language;
+        Boolean IncomingCallAlignment;
+        Int32 MaxLines;
+
+        // AppNotificationExtendedTextProperties
         AppNotificationTextStyle Style;
         Int32 MinLines;
         AppNotificationTextAlign Align;
 
+        // AppNotificationTextProperties
+        AppNotificationExtendedTextProperties SetLanguage(String value);
+        AppNotificationExtendedTextProperties SetIncomingCallAlignment();
+        AppNotificationExtendedTextProperties SetMaxLines(Int32 value);
+
+        // AppNotificationExtendedTextProperties
         AppNotificationExtendedTextProperties SetStyle(AppNotificationTextStyle Style);
         AppNotificationExtendedTextProperties SetMinLines(Int32 value);
         AppNotificationExtendedTextProperties SetAlign(AppNotificationTextAlign Align);

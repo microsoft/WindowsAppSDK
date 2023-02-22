@@ -30,7 +30,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         // IStringable
         winrt::hstring ToString();
 
-    protected:
+    private:
         virtual winrt::hstring ToStringInternal();
 
         int m_maxLines{ 0 };

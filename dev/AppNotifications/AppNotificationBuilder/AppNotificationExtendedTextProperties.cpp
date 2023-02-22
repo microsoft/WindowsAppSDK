@@ -9,6 +9,11 @@
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
+    AppNotificationExtendedTextProperties::AppNotificationExtendedTextProperties()
+    {
+        m_basicTextProperties = winrt::make_self<AppNotificationTextProperties>();
+    }
+
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationExtendedTextProperties AppNotificationExtendedTextProperties::SetStyle(AppNotificationTextStyle const& value)
     {
         m_style = value;
@@ -24,6 +29,27 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationExtendedTextProperties AppNotificationExtendedTextProperties::SetAlign(AppNotificationTextAlign const& value)
     {
         m_align = value;
+
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationExtendedTextProperties AppNotificationExtendedTextProperties::SetLanguage(winrt::hstring const& value)
+    {
+        Language(value);
+
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationExtendedTextProperties AppNotificationExtendedTextProperties::SetIncomingCallAlignment()
+    {
+        IncomingCallAlignment();
+
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationExtendedTextProperties AppNotificationExtendedTextProperties::SetMaxLines(int const& value)
+    {
+        MaxLines(value);
 
         return *this;
     }
@@ -60,17 +86,27 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return align;
     }
 
+    winrt::hstring AppNotificationExtendedTextProperties::ToString()
+    {
+        return ToStringInternal();
+    }
+
     winrt::hstring AppNotificationExtendedTextProperties::ToStringInternal()
     {
         auto logTelemetry{ AppNotificationBuilderTelemetry::TextPropertiesToString::Start(g_telemetryHelper) };
 
-        std::wstring language{ !m_language.empty() ? wil::str_printf<std::wstring>(L" lang='%ls'", m_language.c_str()) : L"" };
-        std::wstring callScenarioAlign{ m_useCallScenarioAlign ? L" hint-callScenarioCenterAlign='true'" : L"" };
-        std::wstring hintMaxLines{ m_maxLines ? wil::str_printf<std::wstring>(L" hint-maxLines='%d'", m_maxLines) : L"" };
+        auto languageProp{ m_basicTextProperties->Language() };
+        auto incomingCallAlignment{ m_basicTextProperties->IncomingCallAlignment() };
+        auto maxLines{ m_basicTextProperties->MaxLines() };
+
+        std::wstring language{ !languageProp.empty() ? wil::str_printf<std::wstring>(L" lang='%ls'", languageProp.c_str()) : L"" };
+        std::wstring callScenarioAlign{ incomingCallAlignment ? L" hint-callScenarioCenterAlign='true'" : L"" };
+        std::wstring hintMaxLines{ maxLines ? wil::str_printf<std::wstring>(L" hint-maxLines='%d'", maxLines) : L"" };
+
         std::wstring style{ (m_style != AppNotificationTextStyle::Default) ? wil::str_printf<std::wstring>(L" hint-style='%ls'", StyleToString().c_str()) : L"" };
         std::wstring align{ (m_align != AppNotificationTextAlign::Default) ? wil::str_printf<std::wstring>(L" hint-align='%ls'", AlignToString().c_str()) : L"" };
         logTelemetry.Stop();
 
-        return wil::str_printf<std::wstring>(L"<text%ls%ls%ls%ls%ls>", language.c_str(), hintMaxLines.c_str(), callScenarioAlign.c_str(), style.c_str(), align.c_str()).c_str();
+        return wil::str_printf<std::wstring>(L"<text%ls%ls%ls%ls%ls>", language.c_str(), callScenarioAlign.c_str(), hintMaxLines.c_str(), style.c_str(), align.c_str()).c_str();
     }
 }

@@ -244,23 +244,9 @@
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\AppNotifications\AppNotificationBuilder\AppNotificationExtendedImageProperties.h" />
-    <ClInclude Include="..\AppNotifications\AppNotificationBuilder\AppNotificationExtendedTextProperties.h" />
-    <ClInclude Include="..\AppNotifications\AppNotificationBuilder\AppNotificationFactory.h" />
-    <ClInclude Include="..\AppNotifications\AppNotificationBuilder\AppNotificationGroup.h" />
-    <ClInclude Include="..\AppNotifications\AppNotificationBuilder\AppNotificationHeader.h" />
-    <ClInclude Include="..\AppNotifications\AppNotificationBuilder\AppNotificationImageProperties.h" />
-    <ClInclude Include="..\AppNotifications\AppNotificationBuilder\AppNotificationSubgroup.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\AppNotifications\AppNotificationBuilder\AppNotificationExtendedImageProperties.cpp" />
-    <ClCompile Include="..\AppNotifications\AppNotificationBuilder\AppNotificationExtendedTextProperties.cpp" />
-    <ClCompile Include="..\AppNotifications\AppNotificationBuilder\AppNotificationFactory.cpp" />
-    <ClCompile Include="..\AppNotifications\AppNotificationBuilder\AppNotificationGroup.cpp" />
-    <ClCompile Include="..\AppNotifications\AppNotificationBuilder\AppNotificationHeader.cpp" />
-    <ClCompile Include="..\AppNotifications\AppNotificationBuilder\AppNotificationImageProperties.cpp" />
-    <ClCompile Include="..\AppNotifications\AppNotificationBuilder\AppNotificationSubgroup.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="COMExports.cpp" />
     <ClCompile Include="WindowsAppRuntime_EnsureIsLoaded.cpp" />
@@ -275,7 +261,7 @@
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="WindowsAppRunTime.rc">
+    <ResourceCompile Include="WindowsAppRunTime.rc">      
       <AdditionalIncludeDirectories>$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemGroup>

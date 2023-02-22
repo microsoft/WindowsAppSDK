@@ -19,8 +19,15 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationBuilder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationButton.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationExtendedImageProperties.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationExtendedTextProperties.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationFactory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationGroup.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationHeader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationImageProperties.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationProgressBar.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationComboBox.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationSubgroup.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationTextProperties.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -28,8 +35,15 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationBuilderTelemetry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationBuilderUtility.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationButton.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationExtendedImageProperties.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationExtendedTextProperties.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationFactory.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationGroup.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationHeader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationImageProperties.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationProgressBar.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationComboBox.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationSubgroup.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationTextProperties.h" />
   </ItemGroup>
 </Project>
