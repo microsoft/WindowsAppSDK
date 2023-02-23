@@ -74,25 +74,25 @@ namespace Microsoft.Windows.AppNotifications.Builder
     {
         AppNotificationExtendedTextProperties();
 
-        // AppNotificationTextProperties
-        String Language;
-        Boolean IncomingCallAlignment;
-        Int32 MaxLines;
-
         // AppNotificationExtendedTextProperties
         AppNotificationTextStyle Style;
         Int32 MinLines;
         AppNotificationTextAlign Align;
 
         // AppNotificationTextProperties
-        AppNotificationExtendedTextProperties SetLanguage(String value);
-        AppNotificationExtendedTextProperties SetIncomingCallAlignment();
-        AppNotificationExtendedTextProperties SetMaxLines(Int32 value);
+        String Language;
+        Boolean IncomingCallAlignment;
+        Int32 MaxLines;
 
         // AppNotificationExtendedTextProperties
         AppNotificationExtendedTextProperties SetStyle(AppNotificationTextStyle Style);
         AppNotificationExtendedTextProperties SetMinLines(Int32 value);
         AppNotificationExtendedTextProperties SetAlign(AppNotificationTextAlign Align);
+
+        // AppNotificationTextProperties
+        AppNotificationExtendedTextProperties SetLanguage(String value);
+        AppNotificationExtendedTextProperties SetIncomingCallAlignment();
+        AppNotificationExtendedTextProperties SetMaxLines(Int32 value);
     };
 
     [contract(AppNotificationBuilderContract, 1)]
@@ -215,7 +215,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
     };
 
     [contract(AppNotificationBuilderContract, 2)]
-    unsealed runtimeclass AppNotificationImageProperties
+    runtimeclass AppNotificationImageProperties
     {
         AppNotificationImageProperties();
 
@@ -229,16 +229,27 @@ namespace Microsoft.Windows.AppNotifications.Builder
     };
 
     [contract(AppNotificationBuilderContract, 2)]
-    runtimeclass AppNotificationExtendedImageProperties : AppNotificationImageProperties
+    runtimeclass AppNotificationExtendedImageProperties
     {
         AppNotificationExtendedImageProperties();
 
-
+        // AppNotificationExtendedImageProperties
         AppNotificationImageAlign Align;
         Boolean RemoveMargin;
 
-        AppNotificationImageProperties SetAlign(AppNotificationImageAlign align);
-        AppNotificationImageProperties SetRemoveMargin();
+        // AppNotificationImageProperties
+        Boolean ImageQuery;
+        String AlternateText;
+        AppNotificationImageCrop Crop;
+
+        // AppNotificationExtendedImageProperties
+        AppNotificationExtendedImageProperties SetAlign(AppNotificationImageAlign align);
+        AppNotificationExtendedImageProperties SetRemoveMargin();
+
+        // AppNotificationImageProperties
+        AppNotificationExtendedImageProperties SetImageQuery();
+        AppNotificationExtendedImageProperties SetAlternateText(String alternateText);
+        AppNotificationExtendedImageProperties SetCrop(AppNotificationImageCrop crop);
     };
 
     [contract(AppNotificationBuilderContract, 2)]

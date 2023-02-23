@@ -49,13 +49,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::hstring ToString();
 
     private:
-        winrt::com_ptr<AppNotificationTextProperties> m_basicTextProperties;
         virtual winrt::hstring ToStringInternal();
 
+        winrt::com_ptr<AppNotificationTextProperties> m_basicTextProperties;
         std::wstring StyleToString();
         std::wstring AlignToString();
 
         AppNotificationTextStyle m_style{ AppNotificationTextStyle::Default };
+
         int m_minLines;
         AppNotificationTextAlign m_align;
     };

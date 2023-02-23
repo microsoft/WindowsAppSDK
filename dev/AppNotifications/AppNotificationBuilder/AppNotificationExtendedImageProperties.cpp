@@ -9,6 +9,11 @@
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
+    AppNotificationExtendedImageProperties::AppNotificationExtendedImageProperties()
+    {
+        m_basicImageProperties = winrt::make_self<AppNotificationImageProperties>();
+    }
+
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationExtendedImageProperties AppNotificationExtendedImageProperties::SetAlign(AppNotificationImageAlign const& /*align*/)
     {
         return *this;
@@ -16,6 +21,27 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationExtendedImageProperties AppNotificationExtendedImageProperties::SetRemoveMargin()
     {
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationExtendedImageProperties AppNotificationExtendedImageProperties::SetImageQuery()
+    {
+        m_basicImageProperties->SetImageQuery();
+
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationExtendedImageProperties AppNotificationExtendedImageProperties::SetAlternateText(winrt::hstring const& alternateText)
+    {
+        m_basicImageProperties->SetAlternateText(alternateText);
+
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationExtendedImageProperties AppNotificationExtendedImageProperties::SetCrop(AppNotificationImageCrop const& crop)
+    {
+        m_basicImageProperties->SetCrop(crop);
+
         return *this;
     }
 
