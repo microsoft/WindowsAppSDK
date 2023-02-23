@@ -33,4 +33,8 @@
   <ItemGroup>
     <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
   </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="data\MissingConnectionId.rdp" />
+    <CopyFileToFolders Include="data\connection.rdp" />
+  </ItemGroup>
 </Project>

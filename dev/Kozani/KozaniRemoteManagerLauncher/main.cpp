@@ -8,10 +8,10 @@
 #include <wil/result_originate.h>
 
 #include <KozaniRemoteManager_h.h>
+#include "KozaniDvc-Constants.h"
 
 using namespace winrt::Windows::Foundation;
-
-const char c_connectionIdSwitch[] = "-connectionId";
+using namespace Microsoft::Kozani::Dvc;
 
 int main(int argc, char* argv[]) try
 {
@@ -20,7 +20,7 @@ int main(int argc, char* argv[]) try
         return E_INVALIDARG;
     }
 
-    if (_stricmp(argv[1], c_connectionIdSwitch) != 0)
+    if (_stricmp(argv[1], Constants::ConnectionIdSwitch) != 0)
     {
         return E_INVALIDARG;
     }

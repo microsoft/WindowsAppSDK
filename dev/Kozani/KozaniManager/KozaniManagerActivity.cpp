@@ -12,6 +12,8 @@
 
 using namespace Microsoft::WRL;
 
+extern volatile LONG g_newConnectionCount;
+
 class KozaniDvcCallback : public Microsoft::WRL::RuntimeClass<
     Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
     IWTSVirtualChannelCallback>
@@ -60,6 +62,8 @@ struct __declspec(uuid(PR_KOZANIDVC_CLSID_STRING)) KozaniDvcImpl WrlFinal : Runt
         IWTSVirtualChannelManager* pChannelMgr) override
     {
         // Called early in MSRDC launch, before a connection to a new remote session.
+        InterlockedIncrement(&g_newConnectionCount);
+
         LogDebugMessage("IWTSPlugin::Initialize() - pChannelMgr=0x%I64x\n", (UINT64)pChannelMgr);
 
         m_spChannelMgr = pChannelMgr;

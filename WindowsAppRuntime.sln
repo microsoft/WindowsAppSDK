@@ -628,6 +628,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KozaniRemoteManagerLauncher", "dev\Kozani\KozaniRemoteManagerLauncher\KozaniRemoteManagerLauncher.vcxproj", "{45C50DA4-F2C7-4A4B-8493-50E5DF17B527}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KozaniRemoteManager.Msix", "test\Kozani\data\KozaniRemoteManager.Msix\KozaniRemoteManager.Msix.vcxproj", "{A18E00C4-3668-4289-ABFC-D1DF330DA6BF}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "KozaniProtocol", "KozaniProtocol", "{82197F64-3A88-4C48-AEF9-7E62E71D75BB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KozaniProtocol", "dev\Kozani\KozaniProtocol\KozaniProtocol.vcxproj", "{3F28C3ED-2548-4530-8B6C-832FAE0E993D}"
@@ -2446,6 +2447,7 @@ Global
 		dev\EnvironmentManager\API\Microsoft.Process.Environment.vcxitems*{2f3fad1b-d3df-4866-a3a3-c2c777d55638}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{412d023e-8635-4ad2-a0ea-e19e08d36915}*SharedItemsImports = 4
 		dev\Kozani\Common\Common.vcxitems*{431f959d-6323-4c1d-8bc3-78b1eb8b3554}*SharedItemsImports = 9
+		dev\Kozani\Common\Common.vcxitems*{45c50da4-f2c7-4a4b-8493-50e5df17b527}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{4b30c685-8490-440f-9879-a75d45daa361}*SharedItemsImports = 4
 		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{56371ca6-144b-4989-a4e9-391ad4fa7651}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{56a1d696-feda-4333-bf37-772ebececb10}*SharedItemsImports = 4

@@ -6,5 +6,6 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Logging.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)KozaniDvcProtocol.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)KozaniDvc-Constants.h" />
   </ItemGroup>
 </Project>
