@@ -25,7 +25,7 @@ parameters:
     type: boolean
     default: true
 
-stages:
+jobs:
 - template: ProjectReunion-BuildFoundation.yml
   parameters:
     ReleaseSigning: ${{ parameters.ReleaseSigning }}
