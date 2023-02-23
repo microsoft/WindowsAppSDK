@@ -1,4 +1,12 @@
 # https://aka.ms/yaml
+# Initially, this pipeline was cloned from ProjectReunion-BuildFoundation.yml.
+name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+variables:
+- template: WindowsAppSDK-Versions.yml
+- template: WindowsAppSDK-CommonVariables.yml
+- name: buildPool
+  value: 'ProjectReunionESPool-2022'
+
 parameters:
   - name: "ReleaseSigning"
     type: boolean
@@ -12,7 +20,7 @@ parameters:
   - name: "GenerateSBOM"
     type: boolean
     default: False
-  # A main goal of this pipeline is to run time consuming static analysis, such as PREFast, weekly, 
+  # A main goal of this pipeline is to run time consuming static analysis, such as PREFast, weekly;
   # hence the following 2 paramters default to true.
   - name: "RunSDLBinaryAnalysis"
     displayName: "Run SDL's Binary Analysis (PREFast, BinSkim)"
@@ -25,13 +33,481 @@ parameters:
     type: boolean
     default: true
 
+resources:
+  repositories:
+  - repository: templates_onebranch
+    type: git
+    name: OneBranch.Pipelines/GovernedTemplates
+    ref: refs/heads/main
+
 jobs:
-- template: ProjectReunion-BuildFoundation.yml
+# This relatively low-cost job is always run, in parallel w/ the Build job.
+- template: AzurePipelinesTemplates\WindowsAppSDK-SourceAnalysis-job.yml
+
+- job: VerifyCopyrightHeaders
+  dependsOn: []
+  pool: ProjectReunionESPool-2022
+  steps:
+  - task: powershell@2
+    displayName: 'Verify copyright headers'
+    inputs:
+      targetType: filePath
+      filePath: tools\VerifyCopyrightHeaders.ps1
+
+- job: Build
+  pool: ProjectReunionESPool-2022
+  timeoutInMinutes: 120
+  strategy:
+    maxParallel: 10
+    matrix:
+      Release_x86:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
+        PGOBuildMode: 'Optimize'
+      Release_x64:
+        buildPlatform: 'x64'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
+        PGOBuildMode: 'Optimize'
+      Release_Arm64:
+        buildPlatform: 'arm64'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
+  steps:
+  # Required by the Packaged ES SDL Templates.
+  - checkout: self
+    persistCredentials: true
+
+  - task: NuGetToolInstaller@1
+
+  - task: NuGetAuthenticate@1
+    inputs:
+      nuGetServiceConnections: 'TelemetryInternal'
+
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore of packages'
+    inputs:
+      command: 'custom'
+      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile dev\WindowsAppRuntime_Insights\nuget.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
+
+  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+
+  - task: NuGetAuthenticate@1
+    inputs:
+      nuGetServiceConnections: 'ProjectReunionInternal'
+
+  - ${{ if eq(parameters.enableLicenseInstall, true) }}:
+    # Copy MSIX license installation header into the correct source location.
+    # Restore transport package dependencies. This is only enbaled in release-signed builds.
+    - task: PowerShell@2
+      name: ConvertVersionDetailsToPackageConfig
+      displayName: "Convert VersionDetails To PackageConfig"
+      inputs:
+        filePath: '$(Build.SourcesDirectory)\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
+        arguments: -versionDetailsPath '$(Build.SourcesDirectory)\eng\Version.Details.xml' -packageConfigPath '$(Build.SourcesDirectory)\build\packages.config'
+
+    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+      displayName: RestoreNuGetPackages
+      inputs:
+        restoreSolution: build/packages.config
+        feedsToUse: config
+        nugetConfigPath: build/licensing.nuget.config
+        restoreDirectory: packages
+
+    - task: CopyFiles@2
+      displayName: 'Extract license header to source location'
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)\build\packages\$(AppLicensingInternalPackageName).$(AppLicensingInternalPackageVersion)\src'
+        Contents: |
+          *.h
+        TargetFolder: '$(Build.SourcesDirectory)\dev\Licensing'
+        flattenFolders: false
+        overWrite: true
+
+  - task: PowerShell@2
+    name: BuildBinaries
+    inputs:
+      filePath: 'BuildAll.ps1'
+      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
+
+  # component detection must happen *within* the build task
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+
+  - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
+    - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
+      parameters:
+        outputDirectory: BuildOutput
+        enablePREFast: ${{ parameters.enablePREFast }}
+
+  - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
+    - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+      displayName: 'SBOM Generation Task'
+      inputs:
+        BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget'
+    inputs:
+      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
+      artifactName: 'BuildOutput'
+
+- job: BuildAnyCPU
+  # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
+  # Can be expanded to add any other binary as needed
+  pool: ProjectReunionESPool-2022
+  steps:
+  - task: NuGetToolInstaller@1
+
+  - task: NuGetAuthenticate@1
+    inputs:
+      nuGetServiceConnections: 'TelemetryInternal'
+
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore of packages'
+    inputs:
+      command: 'custom'
+      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile dev\WindowsAppRuntime_Insights\nuget.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
+
+  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+
+  - task: PowerShell@2
+    name: BuildBinaries
+    inputs:
+      filePath: 'BuildAll.ps1'
+      arguments: -AzureBuildStep "BuildAnyCPU"
+
+  - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
+    - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
+      parameters:
+        outputDirectory: BuildOutput
+        enablePREFast: ${{ parameters.enablePREFast }}
+
+  # component detection must happen *within* the build task
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+
+  - task: ComponentGovernanceComponentDetection@0
+    inputs:
+      scanType: 'Register'
+      verbosity: 'Verbose'
+      alertWarningLevel: 'Medium'
+      failOnAlert: true
+
+  - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
+    - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+      displayName: 'SBOM Generation Task'
+      inputs:
+        BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget'
+    inputs:
+      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
+      artifactName: 'BuildOutput'
+
+- job: BuildAndTestMRT
+  pool: ProjectReunionESPool-2022
+  timeoutInMinutes: 120
+  strategy:
+    maxParallel: 10
+    matrix:
+      Release_x86:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
+        PGOBuildMode: 'Optimize'
+      Release_x64:
+        buildPlatform: 'x64'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
+        PGOBuildMode: 'Optimize'
+      Release_Arm64:
+        buildPlatform: 'arm64'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
+  steps:
+  - task: NuGetToolInstaller@1
+
+  - task: NuGetAuthenticate@1
+    inputs:
+      nuGetServiceConnections: 'TelemetryInternal'
+      
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore of packages'
+    inputs:
+      command: 'custom'
+      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile dev\WindowsAppRuntime_Insights\nuget.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
+
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestMRT-Steps.yml
+
+  - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
+    - template: AzurePipelinesTemplates\WindowsAppSDK-BinaryAnalysis-steps.yml
+      parameters:
+        outputDirectory: 'BuildOutput'
+        enablePREFast: ${{ parameters.enablePREFast }}
+
+  - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
+    - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+      displayName: 'SBOM Generation Task'
+      inputs:
+        BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget'
+    inputs:
+      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
+      artifactName: 'BuildOutput'
+
+- template: AzurePipelinesTemplates\WindowsAppSDK-RunHelixTests-Job.yml
   parameters:
-    ReleaseSigning: ${{ parameters.ReleaseSigning }}
-    IgnoreFailures: ${{ parameters.IgnoreFailures }}
-    PublishPackage: ${{ parameters.PublishPackage }}
-    GenerateSBOM: ${{ parameters.GenerateSBOM }}
-    RunSDLBinaryAnalysis: ${{ parameters.RunSDLBinaryAnalysis }}
-    enablePREFast: ${{ parameters.enablePREFast }}
-    enableLicenseInstall: ${{ parameters.enableLicenseInstall }}
+    jobName: 'TestInHelix'
+    dependsOn:
+      - Build
+      - BuildAnyCPU
+      - BuildAndTestMRT
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
+
+- job: StageAndPack
+  pool: ProjectReunionESPool-2022
+  timeoutInMinutes: 120      
+  dependsOn:
+  - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+    - TestInHelix
+  - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+    - Build
+    - BuildAnyCPU
+    - BuildAndTestMRT
+  condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
+  steps:
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      artifactName: BuildOutput
+      downloadPath: '$(Build.SourcesDirectory)'
+
+  - task: PowerShell@2
+    name: StageFiles
+    inputs:
+      filePath: 'BuildAll.ps1'
+      arguments: -Platform "x86,x64,arm64" -Configuration "release" -AzureBuildStep "StageFiles"
+
+  - task: EsrpCodeSigning@1
+    inputs:
+      ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+      FolderPath: '$(Build.SourcesDirectory)\BuildOutput\FullNuget'
+      Pattern: |
+        **/*.winmd
+        **/*.dll
+        **/*.exe
+      UseMinimatch: true
+      signConfigType: 'inlineSignParams'
+      inlineOperation: |
+        [
+          {
+            "keyCode": "CP-230012",
+            "operationSetCode": "SigntoolSign",
+            "parameters": [
+              {
+                "parameterName": "OpusName",
+                "parameterValue": "Microsoft"
+              },
+              {
+                "parameterName": "OpusInfo",
+                "parameterValue": "http://www.microsoft.com"
+              },
+              {
+                "parameterName": "PageHash",
+                "parameterValue": "/NPH"
+              },
+              {
+                "parameterName": "FileDigest",
+                "parameterValue": "/fd sha256"
+              },
+              {
+                "parameterName": "TimeStamp",
+                "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+              }
+            ],
+            "toolName": "signtool.exe",
+            "toolVersion": "6.2.9304.0"
+          }
+        ]
+      SessionTimeout: '60'
+      MaxConcurrency: '50'
+      MaxRetryAttempts: '5'
+    condition:
+      eq(${{ parameters.ReleaseSigning }}, true)
+
+  - task: CopyFiles@2
+    displayName: 'Copy symbols to artifact staging directory'
+    condition: always()
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)\BuildOutput\FullNuget
+      contents: |
+        **\*.pdb
+      targetFolder: $(Build.ArtifactStagingDirectory)\symbols
+
+  - task: PublishSymbols@2
+    displayName: 'Publish private symbols to internal server (without source indexing)'
+    inputs:
+      searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+      symbolServerType: 'TeamServices'
+    # This ADO task does not support indexing of github sources currently :-(
+      indexSources: false
+      detailedLog: true
+    # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
+    # To work around this issue, we just force LIB to be any dir that we know exists.
+    env:
+      LIB: $(Build.SourcesDirectory)
+
+  - task: PublishSymbols@2
+    displayName: 'Publish symbols to public server(without source indexing)'
+    inputs:
+      searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+      symbolServerType: 'TeamServices'
+    # This ADO task does not support indexing of github sources currently :-(
+      indexSources: false
+      detailedLog: true
+    # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
+    # To work around this issue, we just force LIB to be any dir that we know exists.
+    env:
+      LIB: $(Build.SourcesDirectory)
+      ArtifactServices_Symbol_AccountName: microsoftpublicsymbols
+      ArtifactServices_Symbol_PAT: $(WinSDKLab_microsoftpublicsymbols_PAT)
+
+  - task: PowerShell@2
+    name: SetVersion
+    displayName: Update metapackage version
+    inputs:
+      targetType: 'inline'
+      script: |
+        $packageVersion = '$(version)'
+        $pipelineType = '$(PipelineType)'
+        $sourceBranchName = '$(Build.SourceBranchName)'
+        if ($sourceBranchName -eq 'main' -or $sourceBranchName -eq 'develop')
+        {
+          $packageVersion = $packageVersion + '.' + $sourceBranchName + '.' + $pipelineType
+        }
+        Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
+        Write-Host "##vso[task.setvariable variable=packageVersion;isOutput=true;]$packageVersion"
+        Write-Host $packageVersion
+        [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
+        $publicNuspec.package.metadata.version = $packageVersion
+        Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
+  - task: PowerShell@2
+    name: PackNuget
+    inputs:
+      filePath: 'BuildAll.ps1'
+      arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
+
+  - task: EsrpCodeSigning@1
+    inputs:
+      ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+      FolderPath: $(build.artifactStagingDirectory)\FullNuget
+      Pattern: 'Microsoft.WindowsAppSDK.Foundation*.nupkg'
+      UseMinimatch: true
+      signConfigType: 'inlineSignParams'
+      inlineOperation: |
+        [
+          {
+            "KeyCode" : "CP-401405",
+            "OperationCode" : "NuGetSign",
+            "Parameters" : {},
+            "ToolName" : "sign",
+            "ToolVersion" : "1.0"
+          },
+          {
+              "KeyCode" : "CP-401405",
+              "OperationCode" : "NuGetVerify",
+              "Parameters" : {},
+              "ToolName" : "sign",
+              "ToolVersion" : "1.0"
+          }
+        ]
+      SessionTimeout: '60'
+      MaxConcurrency: '50'
+      MaxRetryAttempts: '5'
+    condition:
+        eq(${{ parameters.ReleaseSigning }}, true)
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: NugetContent'
+    inputs:
+      PathtoPublish: '$(Build.SourcesDirectory)\BuildOutput\FullNuget'
+      artifactName: 'NugetContent'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: TransportPackage'
+    inputs:
+      PathtoPublish: '$(build.artifactStagingDirectory)\FullNuget'
+      artifactName: 'TransportPackage'
+
+# Build WinAppSDK and Run Integration Test from TestAll.ps1
+- job: WinAppSDKIntegrationBuildAndTest
+  dependsOn: ['StageAndPack']
+  condition: succeeded()
+  pool: ProjectReunionESPool-2022
+  variables:
+    WindowsAppSDKTransportPackageVersion: $[ dependencies.StageAndPack.outputs['SetVersion.packageVersion'] ]
+    VersionWithDevTag: $[format('{0}.{1}.{2}-{3}.{4}.{5}', variables['major'], variables['minor'], variables['patch'], 'dev', variables['versionDate'], variables['versionCounter'])]
+  steps:
+    #TODO: Remove the two template calls once Add-AppxPackage has been resolved
+    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
+      parameters:
+        AzureSubscriptionServiceConnection: 'ProjectReunion Resource Manager'
+        NuGetServiceConnectionName: 'ProjectReunionInternal'
+
+    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
+      parameters:
+        TransportPackageArtifactName: 'TransportPackage'
+        WindowsAppSDKPackageVersion: $(VersionWithDevTag)
+        BuildType:  'stable'
+        TransportPackages: 
+          FoundationPackage:
+            Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
+            Version: $(WindowsAppSDKTransportPackageVersion)
+
+    # TODO: Reenable, Add-AppxPackage currently does not work on 2022 images. See issue #2908
+    # - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
+    #   parameters:
+    #     WindowsAppSDKPackageVersion: $(VersionWithDevTag)
+    #     TestSelection: '*Foundation_*'
+    #     TransportPackageArtifactName: 'FullNuget'
+    #     BuildType: 'stable'
+    #     TransportPackages: 
+    #       FoundationPackage:
+    #         Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
+    #         Version: $(WindowsAppSDKTransportPackageVersion)
+
+# Publish
+- job: Publish
+  dependsOn: 
+  - StageAndPack
+  - WinAppSDKIntegrationBuildAndTest
+  condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
+  pool: ProjectReunionESPool-2022
+  variables:
+    WindowsAppSDKPackageVersion: $[ dependencies.StageAndPack.outputs['SetVersion.packageVersion'] ]
+  steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        artifactName: TransportPackage
+        downloadPath: '$(Build.artifactStagingDirectory)'
+        itemPattern: |
+          **/*.nupkg
+    - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(parameters.PublishPackage, 'true')) }}:
+      # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
+      - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+        displayName: 'NuGet push to ProjectReunion.nuget.internal'
+        inputs:
+          command: 'push'
+          packagesToPush: '$(Build.artifactStagingDirectory)/TransportPackage/*.nupkg;!$(Build.artifactStagingDirectory)/TransportPackage/*.symbols.nupkg'
+          verbosityPush: 'Detailed'
+          nuGetFeedType: 'internal'
+          #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
+          publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
+
+      - template: ..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
+        parameters:
+          AssetNames: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
+          AssetVersions: $(WindowsAppSDKPackageVersion)
+          TriggerSubscription: true
