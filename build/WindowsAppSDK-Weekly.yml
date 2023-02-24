@@ -40,7 +40,7 @@ resources:
     ref: refs/heads/main
 
 jobs:
-- template: AzurePipelinesTemplates\ProjectReunion-BuildFoundation-job.yml
+- template: AzurePipelinesTemplates\WindowsAppSDK-BuildFoundation-job.yml
   parameters:
     ReleaseSigning: ${{parameters.ReleaseSigning}}
     IgnoreFailures: ${{parameters.IgnoreFailures}}
