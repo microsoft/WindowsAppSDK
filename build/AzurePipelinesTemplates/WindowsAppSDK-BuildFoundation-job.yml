@@ -269,8 +269,6 @@ jobs:
     - Build
     - BuildAnyCPU
     - BuildAndTestMRT
-  # ToDo: Skip this for weekly pipeline?
-  # condition: and(or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true')), ne(${{ parameters.isWeeklyRun }}, 'true') )
   condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
   steps:
   - task: DownloadBuildArtifacts@0
@@ -342,7 +340,7 @@ jobs:
 
   - task: PublishSymbols@2
     # ToDo: This task currently fails when running in the weekly pipeline due to inability to authenticate into https://app.vssps.visualstudio.com.
-    # This issue is deemed 
+    # This issue is deemed unimportant ATM for the weekly pipeline run whose goal is static analysis.
     condition: ne(${{ parameters.isWeeklyRun }}, 'true')
     displayName: 'Publish private symbols to internal server (without source indexing)'
     inputs:
@@ -358,6 +356,7 @@ jobs:
 
   - task: PublishSymbols@2
     # ToDo: This task currently fails when running in the weekly pipeline due to inability to authenticate into https://app.vssps.visualstudio.com.
+    # This issue is deemed unimportant ATM for the weekly pipeline run whose goal is static analysis.
     condition: ne(${{ parameters.isWeeklyRun }}, 'true')
     displayName: 'Publish symbols to public server(without source indexing)'
     inputs:
