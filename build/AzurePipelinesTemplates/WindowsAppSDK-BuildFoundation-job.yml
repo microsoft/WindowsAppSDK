@@ -122,7 +122,10 @@ jobs:
     - template: WindowsAppSDK-BinaryAnalysis-steps.yml
       parameters:
         outputDirectory: BuildOutput
-        enablePREFast: ${{ parameters.enablePREFast }}
+        # ToDo: PREFast currently throws a warning for "found nothing to scan" because it does not support the direct call to msbuild.exe in
+        # BuildAll.ps1 above. Therefore, skipping PreFast ATM, until Bug 43206167 is fixed.
+        # enablePREFast: ${{ parameters.enablePREFast }}
+        enablePREFast: False
 
   - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
     - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
@@ -165,7 +168,9 @@ jobs:
     - template: WindowsAppSDK-BinaryAnalysis-steps.yml
       parameters:
         outputDirectory: BuildOutput
-        enablePREFast: ${{ parameters.enablePREFast }}
+        # Currently, this BuildAnyCPU job does not build any native code, while PREFast supports native C/C++ code only,
+        # So to avoid the PREFast warning of "found nothing to scan", just skip PREFast for now for cleaner logs.
+        enablePREFast: false
 
   # component detection must happen *within* the build task
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
@@ -228,7 +233,10 @@ jobs:
     - template: WindowsAppSDK-BinaryAnalysis-steps.yml
       parameters:
         outputDirectory: 'BuildOutput'
-        enablePREFast: ${{ parameters.enablePREFast }}
+        # ToDo: PREFast currently throws a warning for "found nothing to scan" because it does not support the direct call to msbuild.exe in
+        # BuildAll.ps1 above. Therefore, skipping PreFast ATM, until Bug 43206167 is fixed.
+        # enablePREFast: ${{ parameters.enablePREFast }}
+        enablePREFast: false
 
   - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
     - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
@@ -333,7 +341,8 @@ jobs:
       targetFolder: $(Build.ArtifactStagingDirectory)\symbols
 
   - task: PublishSymbols@2
-    # ToDo: This task currently fails when running in the weekly pipeline due to inability to authorize into https://app.vssps.visualstudio.com.
+    # ToDo: This task currently fails when running in the weekly pipeline due to inability to authenticate into https://app.vssps.visualstudio.com.
+    # This issue is deemed 
     condition: ne(${{ parameters.isWeeklyRun }}, 'true')
     displayName: 'Publish private symbols to internal server (without source indexing)'
     inputs:
@@ -348,7 +357,7 @@ jobs:
       LIB: $(Build.SourcesDirectory)
 
   - task: PublishSymbols@2
-    # ToDo: This task currently fails when running in the weekly pipeline due to inability to authorize into https://app.vssps.visualstudio.com.
+    # ToDo: This task currently fails when running in the weekly pipeline due to inability to authenticate into https://app.vssps.visualstudio.com.
     condition: ne(${{ parameters.isWeeklyRun }}, 'true')
     displayName: 'Publish symbols to public server(without source indexing)'
     inputs:
