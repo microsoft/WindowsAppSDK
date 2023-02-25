@@ -667,52 +667,6 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(Decode(L"%3B%3D%25"), L";=%");
         }
 
-        TEST_METHOD(AppNotificationBuilderAddSnoozeButton)
-        {
-            auto builder{ winrt::AppNotificationBuilder()
-                .SetScenario(winrt::AppNotificationScenario::Reminder)
-                .AddText(L"Adaptive Tiles Meeting", winrt::AppNotificationTextProperties()
-                    .SetMaxLines(1))
-                .AddText(L"Conf Room 2001 / Building 135")
-                .AddText(L"10:00 AM - 10:30 AM")
-                .AddComboBox(winrt::AppNotificationComboBox(L"snoozeTime")
-                    .AddItem(L"1", L"1 minute")
-                    .AddItem(L"15", L"15 minutes")
-                    .AddItem(L"60", L"1 hour")
-                    .AddItem(L"240", L"4 hours")
-                    .AddItem(L"1440", L"1 day")
-                    .SetSelectedItem(L"15"))
-                .AddSnoozeButton(L"snoozeTime")
-                .AddDismissButton()
-            };
-            auto expected{ L"<toast scenario='reminder'><visual><binding template='ToastGeneric'><text hint-maxLines='1'>Adaptive Tiles Meeting</text><text>Conf Room 2001 / Building 135</text><text>10:00 AM - 10:30 AM</text></binding></visual><actions><input id='snoozeTime' type='selection' defaultInput='15'><selection id='1' content='1 minute'/><selection id='15' content='15 minutes'/><selection id='60' content='1 hour'/><selection id='240' content='4 hours'/><selection id='1440' content='1 day'/></input><action content='' arguments='snooze' activationType='system' hint-inputId='snoozeTime'/><action content='' arguments='dismiss' activationType='system'/></actions></toast>" };
-;
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
-        }
-
-        TEST_METHOD(AppNotificationBuilderAddSnoozeButtonFactory)
-        {
-            auto builder{ winrt::AppNotificationBuilder()
-                .SetScenario(winrt::AppNotificationScenario::Reminder)
-                .AddText(L"Adaptive Tiles Meeting", winrt::AppNotificationTextProperties()
-                    .SetMaxLines(1))
-                .AddText(L"Conf Room 2001 / Building 135")
-                .AddText(L"10:00 AM - 10:30 AM")
-                .AddComboBox(winrt::AppNotificationComboBox(L"snoozeTime")
-                    .AddItem(L"1", L"1 minute")
-                    .AddItem(L"15", L"15 minutes")
-                    .AddItem(L"60", L"1 hour")
-                    .AddItem(L"240", L"4 hours")
-                    .AddItem(L"1440", L"1 day")
-                    .SetSelectedItem(L"15"))
-                .AddButton(winrt::AppNotificationFactory::MakeSnoozeButton(L"snoozeTime"))
-                .AddButton(winrt::AppNotificationFactory::MakeDismissButton())
-            };
-            auto expected{ L"<toast scenario='reminder'><visual><binding template='ToastGeneric'><text hint-maxLines='1'>Adaptive Tiles Meeting</text><text>Conf Room 2001 / Building 135</text><text>10:00 AM - 10:30 AM</text></binding></visual><actions><input id='snoozeTime' type='selection' defaultInput='15'><selection id='1' content='1 minute'/><selection id='15' content='15 minutes'/><selection id='60' content='1 hour'/><selection id='240' content='4 hours'/><selection id='1440' content='1 day'/></input><action content='' arguments='snooze' activationType='system' hint-inputId='snoozeTime'/><action content='' arguments='dismiss' activationType='system'/></actions></toast>" };
-
-            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
-        }
-
         TEST_METHOD(AppNotificationBuilderAddSnoozeButtonFactory2)
         {
             auto builder{ winrt::AppNotificationBuilder()

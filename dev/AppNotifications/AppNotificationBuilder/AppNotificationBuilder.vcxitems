@@ -21,7 +21,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationButton.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationExtendedImageProperties.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationExtendedTextProperties.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationFactory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationGroup.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationHeader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppNotificationImageProperties.cpp" />
@@ -37,7 +36,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationButton.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationExtendedImageProperties.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationExtendedTextProperties.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationFactory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationGroup.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationHeader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppNotificationImageProperties.h" />
