@@ -49,39 +49,57 @@ The new AppNotificationSubgroup runtimeclass is where things really happen. The 
 [contract(AppNotificationBuilderContract, 2)]
 runtimeclass AppNotificationSubgroup
 {
-        AppNotificationSubgroup();
+    AppNotificationSubgroup();
 
-        Boolean TextStacking;
-        Int32 Weight;
+    Boolean TextStacking;
+    Int32 Weight;
 
-        AppNotificationSubgroup SetTextStacking();
-        AppNotificationSubgroup SetWeight(Int32 weight);
+    AppNotificationSubgroup SetTextStacking();
+    AppNotificationSubgroup SetWeight(Int32 weight);
 
-        // Adds text to the AppNotificationSubgroup.
-        AppNotificationSubgroup AddText(String text);
-        AppNotificationSubgroup AddText(String text, AppNotificationExtendedTextProperties properties);
+    // Adds text to the AppNotificationSubgroup.
+    AppNotificationSubgroup AddText(String text);
+    AppNotificationSubgroup AddText(String text, AppNotificationExtendedTextProperties properties);
 
-        // Sets the image for the AppNotificationSubgroup.
-        AppNotificationSubgroup SetImage(Windows.Foundation.Uri imageUri);
-        AppNotificationSubgroup SetImage(Windows.Foundation.Uri imageUri, AppNotificationExtendedImageProperties properties);
+    // Sets the image for the AppNotificationSubgroup.
+    AppNotificationSubgroup SetImage(Windows.Foundation.Uri imageUri);
+    AppNotificationSubgroup SetImage(Windows.Foundation.Uri imageUri, AppNotificationExtendedImageProperties properties);
 };
 ```
 
-AppNotificationTextProperties needs to be expanded to support the extended text formatting afforded by the groups and subgroups feature. The proposed additions (properties and methods) to the existing AppNotificationTextProperties runtimeclass are shown below (they are identified by a version 2 contract).
+The Groups and Subgroups feature in AppNotifications offers users a wider range of text formatting options than those available in the main body of a notification. To enable support for these extended formatting options, we are proposing adding a new runtime class called AppNotificationExtendedTextProperties.
+
+We took care to give the new runtime class a name that is not specific to the Groups and Subgroups feature, ensuring that it can be easily adapted and re-used in the future as needed.
+
+While we initially considered having the new AppNotificationExtendedTextProperties class derive from the existing AppNotificationTextProperties class, doing so requires unsealing the later, which would break the contract. Unfortunately, there is a bug in the MIDL compiler that prevented us from proceeding with this approach. Nonetheless, where appropriate, the two classes will share code internally to ensure consistent behavior.
+
+Although we also considered adding the new text formatting options directly to the existing AppNotificationTextProperties API, we ultimately decided that doing so could potentially create confusion, as some of the formatting options may not be applicable in all scenarios. As a result, we determined that the creation of a new runtime class specifically designed to handle the extended formatting options was the most efficient and effective solution.
 
 ```idl
 [contract(AppNotificationBuilderContract, 2)]
-runtimeclass AppNotificationExtendedTextProperties : AppNotificationTextProperties
+runtimeclass AppNotificationExtendedTextProperties
 {
     AppNotificationExtendedTextProperties();
 
+    // AppNotificationExtendedTextProperties
     AppNotificationTextStyle Style;
     Int32 MinLines;
     AppNotificationTextAlign Align;
 
+    // AppNotificationTextProperties
+    String Language;
+    Boolean IncomingCallAlignment;
+    Int32 MaxLines;
+
+    // AppNotificationExtendedTextProperties
     AppNotificationExtendedTextProperties SetStyle(AppNotificationTextStyle Style);
     AppNotificationExtendedTextProperties SetMinLines(Int32 value);
     AppNotificationExtendedTextProperties SetAlign(AppNotificationTextAlign Align);
+
+    // AppNotificationTextProperties
+    AppNotificationExtendedTextProperties SetLanguage(String value);
+    AppNotificationExtendedTextProperties SetIncomingCallAlignment();
+    AppNotificationExtendedTextProperties SetMaxLines(Int32 value);
 };
 ```
 
@@ -91,24 +109,24 @@ Below is the enum to be used to specify the text style when calling the new SetS
 [contract(AppNotificationBuilderContract, 2)]
 enum AppNotificationTextStyle
 {
-    Default,
-    Caption,
-    CaptionSubtle,
-    Body,
-    BodySubtle,
-    Base,
-    BaseSubtle,
-    Subtitle,
-    SubtitleSubtle,
-    Title,
-    TitleSubtle,
-    TitleNumeral,
-    Subheader,
-    SubheaderSubtle,
-    SubheaderNumeral,
-    Header,
-    HeaderSubtle,
-    HeaderNumeral,
+    Default, 	      ///< Default value. Style is determined by the renderer.
+    Caption,          ///< Smaller than paragraph font size.
+    CaptionSubtle,    ///< Same as Caption but with subtle opacity.
+    Body,             ///< Paragraph font size.
+    BodySubtle,       ///< Same as Body but with subtle opacity.
+    Base,             ///< Paragraph font size, bold weight. Essentially the bold version of Body.
+    BaseSubtle,       ///< Same as Base but with subtle opacity.
+    Subtitle,         ///< H4 font size.
+    SubtitleSubtle,   ///< Same as Subtitle but with subtle opacity.
+    Title,            ///< H3 font size.
+    TitleSubtle,      ///< Same as Title but with subtle opacity.
+    TitleNumeral,     ///< Same as Title but with top/bottom padding removed.
+    Subheader,        ///< H2 font size.
+    SubheaderSubtle,  ///< Same as Subheader but with subtle opacity.
+    SubheaderNumeral, ///< Same as Subheader but with top/bottom padding removed.
+    Header,           ///< H1 font size.
+    HeaderSubtle,     ///< Same as Header but with subtle opacity.
+    HeaderNumeral,    ///< Same as Header but with top/bottom padding removed.
 };
 ```
 
@@ -118,11 +136,11 @@ And below is the enum to be used to specify the text style when calling the new 
 [contract(AppNotificationBuilderContract, 2)]
 enum AppNotificationTextAlign
 {
-    Default,
-    Auto,
-    Left,
-    Center,
-    Right,
+    Default, ///< Default value. Alignment is automatically determined by the renderer.
+    Auto,    ///< Alignment determined by the current language and culture.
+    Left,    ///< Horizontally align the text to the left.
+    Center,  ///< Horizontally align the text in the center.
+    Right,   ///< Horizontally align the text to the right.
 };
 ```
 
@@ -146,16 +164,17 @@ unsealed runtimeclass AppNotificationImageProperties
 
 ```idl
 [contract(AppNotificationBuilderContract, 2)]
-runtimeclass AppNotificationExtendedImageProperties : AppNotificationImageProperties
+runtimeclass AppNotificationImageProperties
 {
-    AppNotificationExtendedImageProperties();
+    AppNotificationImageProperties();
 
+    Boolean ImageQuery;
+    String AlternateText;
+    AppNotificationImageCrop Crop;
 
-    AppNotificationImageAlign Align;
-    Boolean RemoveMargin;
-
-    AppNotificationImageProperties SetAlign(AppNotificationImageAlign align);
-    AppNotificationImageProperties SetRemoveMargin();
+    AppNotificationImageProperties SetImageQuery();
+    AppNotificationImageProperties SetAlternateText(String alternateText);
+    AppNotificationImageProperties SetCrop(AppNotificationImageCrop crop);
 };
 ```
 
@@ -172,15 +191,27 @@ enum AppNotificationTextStacking
 
 ```idl
 [contract(AppNotificationBuilderContract, 2)]
-runtimeclass AppNotificationExtendedImageProperties : AppNotificationImageProperties
+runtimeclass AppNotificationExtendedImageProperties
 {
     AppNotificationExtendedImageProperties();
 
+    // AppNotificationExtendedImageProperties
     AppNotificationImageAlign Align;
     Boolean RemoveMargin;
 
-    AppNotificationImageProperties SetAlign(AppNotificationImageAlign align);
-    AppNotificationImageProperties SetRemoveMargin();
+    // AppNotificationImageProperties
+    Boolean ImageQuery;
+    String AlternateText;
+    AppNotificationImageCrop Crop;
+
+    // AppNotificationExtendedImageProperties
+    AppNotificationExtendedImageProperties SetAlign(AppNotificationImageAlign align);
+    AppNotificationExtendedImageProperties SetRemoveMargin();
+
+    // AppNotificationImageProperties
+    AppNotificationExtendedImageProperties SetImageQuery();
+    AppNotificationExtendedImageProperties SetAlternateText(String alternateText);
+    AppNotificationExtendedImageProperties SetCrop(AppNotificationImageCrop crop);
 };
 ```
 
@@ -188,10 +219,10 @@ runtimeclass AppNotificationExtendedImageProperties : AppNotificationImageProper
 [contract(AppNotificationBuilderContract, 2)]
 enum AppNotificationTextStacking
 {
-    Default,
-    Top,
-    Center,
-    Bottom,
+    Default, ///< Default value. Renderer automatically selects the default vertical alignment. 
+    Top,     ///< Vertical align to the top.
+    Center,  ///< Vertical align to the center.
+    Bottom,  ///< Vertical align to the bottom.
 };
 ```
 
@@ -201,10 +232,11 @@ ImageCrop in the AppNotificationImageProperties class above, uses the same enum 
 [contract(AppNotificationBuilderContract, 2)]
 enum AppNotificationImageAlign
 {
-    Default,
-    Left,
-    Right,
-    Stretch,
+    Default, ///< Default value. Alignment behavior determined by renderer. 
+    Stretch, ///< Image stretches to fill available width (and potentially available height too, depending on where the image is placed).
+    Left,    ///< Align the image to the left, displaying the image at its native resolution.
+    Center,  ///< Align the image in the center horizontally, displayign the image at its native resolution.
+    Right,   ///< Align the image to the right, displaying the image at its native resolution.
 };
 ```
 
