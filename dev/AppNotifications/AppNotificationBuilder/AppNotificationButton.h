@@ -71,7 +71,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::wstring GetButtonStyle();
 
         winrt::hstring m_content{};
-        AppNotificationButtonType m_buttonType{ AppNotificationButtonType::Standard };
+        AppNotificationButtonType m_buttonType{ AppNotificationButtonType::Custom };
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_arguments { winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
         winrt::Windows::Foundation::Uri m_iconUri{ nullptr };
         winrt::Windows::Foundation::Uri m_protocolUri{ nullptr };

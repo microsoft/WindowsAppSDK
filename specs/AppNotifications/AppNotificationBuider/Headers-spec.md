@@ -25,6 +25,7 @@ Adding support for Headers to the AppNotificationBuilder is straightforward. All
 [contract(AppNotificationBuilderContract, 2)]
 runtimeclass AppNotificationHeader
 {
+    // A custom header that groups multiple notifications together within Action Center.
     AppNotificationHeader();
     AppNotificationHeader(String id, String title);
 
