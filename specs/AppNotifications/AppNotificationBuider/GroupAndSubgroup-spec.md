@@ -149,7 +149,7 @@ Contrary to images in an basic AppNotification, Images in subgroup support a wid
 
 ```idl
 [contract(AppNotificationBuilderContract, 2)]
-unsealed runtimeclass AppNotificationImageProperties
+runtimeclass AppNotificationImageProperties
 {
     AppNotificationImageProperties();
 
