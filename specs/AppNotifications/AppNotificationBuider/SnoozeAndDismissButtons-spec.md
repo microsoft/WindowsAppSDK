@@ -63,7 +63,7 @@ The ButtonType property from above does that, and below is the corresponding enu
 [contract(AppNotificationBuilderContract, 2)]
 enum AppNotificationButtonType
 {
-    Standard,
+    Custom,
     Snooze,
     Dismiss,
 };

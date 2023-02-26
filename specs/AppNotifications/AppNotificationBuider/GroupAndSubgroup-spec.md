@@ -79,6 +79,7 @@ Although we also considered adding the new text formatting options directly to t
 [contract(AppNotificationBuilderContract, 2)]
 runtimeclass AppNotificationExtendedTextProperties
 {
+    // Contains the set of extended <text> attributes
     AppNotificationExtendedTextProperties();
 
     // AppNotificationExtendedTextProperties
@@ -109,24 +110,24 @@ Below is the enum to be used to specify the text style when calling the new SetS
 [contract(AppNotificationBuilderContract, 2)]
 enum AppNotificationTextStyle
 {
-    Default, 	      ///< Default value. Style is determined by the renderer.
-    Caption,          ///< Smaller than paragraph font size.
-    CaptionSubtle,    ///< Same as Caption but with subtle opacity.
-    Body,             ///< Paragraph font size.
-    BodySubtle,       ///< Same as Body but with subtle opacity.
-    Base,             ///< Paragraph font size, bold weight. Essentially the bold version of Body.
-    BaseSubtle,       ///< Same as Base but with subtle opacity.
-    Subtitle,         ///< H4 font size.
-    SubtitleSubtle,   ///< Same as Subtitle but with subtle opacity.
-    Title,            ///< H3 font size.
-    TitleSubtle,      ///< Same as Title but with subtle opacity.
-    TitleNumeral,     ///< Same as Title but with top/bottom padding removed.
-    Subheader,        ///< H2 font size.
-    SubheaderSubtle,  ///< Same as Subheader but with subtle opacity.
-    SubheaderNumeral, ///< Same as Subheader but with top/bottom padding removed.
-    Header,           ///< H1 font size.
-    HeaderSubtle,     ///< Same as Header but with subtle opacity.
-    HeaderNumeral,    ///< Same as Header but with top/bottom padding removed.
+    Default, 	      // Default value. Style is determined by the renderer.
+    Caption,          // Smaller than paragraph font size.
+    CaptionSubtle,    // Same as Caption but with subtle opacity.
+    Body,             // Paragraph font size.
+    BodySubtle,       // Same as Body but with subtle opacity.
+    Base,             // Paragraph font size, bold weight. Essentially the bold version of Body.
+    BaseSubtle,       // Same as Base but with subtle opacity.
+    Subtitle,         // H4 font size.
+    SubtitleSubtle,   // Same as Subtitle but with subtle opacity.
+    Title,            // H3 font size.
+    TitleSubtle,      // Same as Title but with subtle opacity.
+    TitleNumeral,     // Same as Title but with top/bottom padding removed.
+    Subheader,        // H2 font size.
+    SubheaderSubtle,  // Same as Subheader but with subtle opacity.
+    SubheaderNumeral, // Same as Subheader but with top/bottom padding removed.
+    Header,           // H1 font size.
+    HeaderSubtle,     // Same as Header but with subtle opacity.
+    HeaderNumeral,    // Same as Header but with top/bottom padding removed.
 };
 ```
 
@@ -136,11 +137,11 @@ And below is the enum to be used to specify the text style when calling the new 
 [contract(AppNotificationBuilderContract, 2)]
 enum AppNotificationTextAlign
 {
-    Default, ///< Default value. Alignment is automatically determined by the renderer.
-    Auto,    ///< Alignment determined by the current language and culture.
-    Left,    ///< Horizontally align the text to the left.
-    Center,  ///< Horizontally align the text in the center.
-    Right,   ///< Horizontally align the text to the right.
+    Default, // Default value. Alignment is automatically determined by the renderer.
+    Auto,    // Alignment determined by the current language and culture.
+    Left,    // Horizontally align the text to the left.
+    Center,  // Horizontally align the text in the center.
+    Right,   // Horizontally align the text to the right.
 };
 ```
 
@@ -166,6 +167,7 @@ unsealed runtimeclass AppNotificationImageProperties
 [contract(AppNotificationBuilderContract, 2)]
 runtimeclass AppNotificationImageProperties
 {
+    // Contains the set of <image> attributes
     AppNotificationImageProperties();
 
     Boolean ImageQuery;
@@ -193,6 +195,7 @@ enum AppNotificationTextStacking
 [contract(AppNotificationBuilderContract, 2)]
 runtimeclass AppNotificationExtendedImageProperties
 {
+    // Contains the set of extended <image> attributes
     AppNotificationExtendedImageProperties();
 
     // AppNotificationExtendedImageProperties
@@ -219,10 +222,10 @@ runtimeclass AppNotificationExtendedImageProperties
 [contract(AppNotificationBuilderContract, 2)]
 enum AppNotificationTextStacking
 {
-    Default, ///< Default value. Renderer automatically selects the default vertical alignment. 
-    Top,     ///< Vertical align to the top.
-    Center,  ///< Vertical align to the center.
-    Bottom,  ///< Vertical align to the bottom.
+    Default, // Default value. Renderer automatically selects the default vertical alignment. 
+    Top,     // Vertical align to the top.
+    Center,  // Vertical align to the center.
+    Bottom,  // Vertical align to the bottom.
 };
 ```
 
@@ -232,11 +235,11 @@ ImageCrop in the AppNotificationImageProperties class above, uses the same enum 
 [contract(AppNotificationBuilderContract, 2)]
 enum AppNotificationImageAlign
 {
-    Default, ///< Default value. Alignment behavior determined by renderer. 
-    Stretch, ///< Image stretches to fill available width (and potentially available height too, depending on where the image is placed).
-    Left,    ///< Align the image to the left, displaying the image at its native resolution.
-    Center,  ///< Align the image in the center horizontally, displayign the image at its native resolution.
-    Right,   ///< Align the image to the right, displaying the image at its native resolution.
+    Default, // Default value. Alignment behavior determined by renderer. 
+    Stretch, // Image stretches to fill available width (and potentially available height too, depending on where the image is placed).
+    Left,    // Align the image to the left, displaying the image at its native resolution.
+    Center,  // Align the image in the center horizontally, displayign the image at its native resolution.
+    Right,   // Align the image to the right, displaying the image at its native resolution.
 };
 ```
 
