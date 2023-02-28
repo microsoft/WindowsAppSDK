@@ -6,9 +6,11 @@
 
 .DESCRIPTION
     Review the current environment and fix or warn if anything is amiss. This includes...
-    * TAEF service is installed and running
+    * Developer mode is enabled
     * Test certificate to sign test MSIX packages is installed
+    * TAEF service is installed and running
     * Visual Studio 2022 is installed and properly configured
+    * Dependencies in use are in the approved list of packages and versions
 
 .PARAMETER CertPassword
     Password for new certificates
@@ -21,6 +23,9 @@
 
 .PARAMETER CheckDependencies
     Verify dependencies in projects (*proj, packages.config, eng\Version.*.props) match defined dependencies (eng\Version.*.xml)
+
+.PARAMETER CheckDeveloperMode
+    Check developer mode
 
 .PARAMETER CheckTAEFService
     Check the TAEF service
@@ -40,6 +45,9 @@
 .PARAMETER Offline
     Do not access the network
 
+.PARAMETER OnlineVSWhere
+    Download and use the latest vswhere.exe on the network
+
 .PARAMETER RemoveAll
     Remove all.
 
@@ -48,6 +56,12 @@
 
 .PARAMETER RemoveTestPfx
     Remove the MSIX Test signing certificate (i.e. undoc CheckTestPfx)
+
+.PARAMETER StartTAEFService
+    Start the TAEF service
+
+.PARAMETER StopTAEFService
+    Stop the TAEF service
 
 .PARAMETER SyncDependencies
     Update dependencies (*proj, packages.config, eng\Version.*.props) to match defined dependencies (eng\Version.*.xml)
@@ -78,17 +92,25 @@ Param(
 
     [Switch]$CheckDependencies=$false,
 
+    [Switch]$CheckDeveloperMode=$false,
+
     [Switch]$Clean=$false,
 
     [Switch]$NoInteractive=$false,
 
     [Switch]$Offline=$false,
 
+    [Switch]$OnlineVSWhere=$false,
+
     [Switch]$RemoveAll=$false,
 
     [Switch]$RemoveTestCert=$false,
 
     [Switch]$RemoveTestPfx=$false,
+
+    [Switch]$StartTAEFService=$false,
+
+    [Switch]$StopTAEFService=$false,
 
     [Switch]$SyncDependencies=$false,
 
@@ -101,8 +123,10 @@ $ErrorActionPreference = "Stop"
 
 $global:issues = 0
 
+$global:isadmin = $null
+
 $remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
-if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false))
+if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAEFService -eq $false) -And ($StopTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And ($CheckDeveloperMode -eq $false))
 {
     $CheckAll = $true
 }
@@ -126,7 +150,11 @@ function Write-Verbose
 
 function Get-IsAdmin
 {
-    return [Security.Principal.WindowsIdentity]::GetCurrent().Groups -contains 'S-1-5-32-544'
+    if ($global:isadmin -eq $null)
+    {
+        $global:isadmin = [Security.Principal.WindowsIdentity]::GetCurrent().Groups -contains 'S-1-5-32-544'
+    }
+    return $global:isadmin
 }
 
 function Get-ProjectRoot
@@ -179,6 +207,103 @@ function Get-CpuArchitecture
     }
 }
 
+function Test-SemVer
+{
+    param(
+        [string]$left,
+        [string]$right
+    )
+
+    $lefty = $left.Split('.')
+    $righty = $right.Split('.')
+
+    $cmp = [int]$lefty[0] - [int]$righty[0]
+    if ($cmp -ne 0)
+    {
+        return $cmp
+    }
+
+    $cmp = [int]$lefty[1] - [int]$righty[1]
+    if ($cmp -ne 0)
+    {
+        return $cmp
+    }
+
+    $null = $lefty[2] -Match "(\d+)(-[^+]+)?(\+.+)?$"
+    $lefty2 = $Matches[1]
+    $lefty2prerelease = $Matches[2]
+    $null = $righty[2] -Match "(\d+)(-[^+]+)?(\+.+)?$"
+    $righty2 = $Matches[1]
+    $righty2prerelease = $Matches[2]
+    $cmp = [int]$lefty2 - [int]$righty2
+    if ($cmp -ne 0)
+    {
+        return $cmp
+    }
+    if ($lefty2prerelease -ilt $righty2prerelease)
+    {
+        return -1
+    }
+    elseif ($lefty2prerelease -igt $righty2prerelease)
+    {
+        return 1
+    }
+    else
+    {
+        return 0
+    }
+}
+
+function Get-TAEFPackageVersion
+{
+    $root = Get-ProjectRoot
+    $filename = Join-Path $root 'eng'
+    $filename = Join-Path $filename 'Version.Dependencies.xml'
+    $xml = [xml](Get-Content $filename -EA:Stop)
+    $taef = $xml.SelectSingleNode("/Dependencies/Dependency[@Name='Microsoft.Taef']")
+    return $taef.Version
+}
+
+function Get-VSWhereOffline
+{
+    # Absolute Path = "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+
+    $programfilesx86 = [Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFilesX86)
+    $path = Join-Path $programfilesx86 "Microsoft Visual Studio\Installer\vswhere.exe"
+    if (-not(Test-Path -Path $path -PathType Leaf))
+    {
+        return $null
+    }
+    return $path
+}
+
+function Get-VSWhereOnline
+{
+    $path = Join-Path $env:TEMP 'vswhere.exe'
+    if ($Clean -eq $true -And (Test-Path -Path $path -PathType Leaf))
+    {
+        Write-Verbose "Found $path. Deleting per -Clean..."
+        Remove-Item -Path $path -Force
+    }
+    if (-not(Test-Path -Path $path -PathType Leaf))
+    {
+        if ($Offline -eq $true)
+        {
+            return $null
+        }
+        $vswhere_url = 'https://github.com/microsoft/vswhere/releases/download/3.1.1/vswhere.exe'
+        Write-Host "Downloading $vswhere from $vswhere_url..."
+        Write-Verbose "Executing: curl.exe --output $vswhere -L -# $vswhere_url"
+        $null = Start-Process curl.exe -ArgumentList "--output $vswhere -L -# $vswhere_url" -Wait -NoNewWindow -PassThru
+
+    }
+    if (-not(Test-Path -Path $path -PathType Leaf))
+    {
+        return $null
+    }
+    return $path
+}
+
 # Home of vswhere.exe: https://github.com/microsoft/vswhere
 $vswhere = ''
 $vswhere_url = ''
@@ -187,25 +312,24 @@ function Get-VSWhere
     if ([string]::IsNullOrEmpty($global:vswhere))
     {
         Write-Verbose "Detecting vswhere.exe..."
-        $vswhere = Join-Path $env:TEMP 'vswhere.exe'
-        if ($Clean -eq $true -And (Test-Path -Path $vswhere -PathType Leaf))
+        if ($OnlineVSWhere -eq $false)
         {
-            Write-Verbose "Found $vswhere. Deleting per -Clean..."
-            Remove-Item -Path $vswhere -Force
+            $global:vswhere = Get-VSWhereOffline
         }
-        if (-not(Test-Path -Path $vswhere -PathType Leaf))
+        if ([string]::IsNullOrEmpty($global:vswhere))
         {
-            if ($Offline -eq $true)
+            if ($Offline -eq $false)
             {
-                Write-Host "vswhere.exe not detected"
-                $global:issues += 1
-                return
+                $global:vswhere = Get-VSWhereOnline
             }
-            $vswhere_url = 'https://github.com/microsoft/vswhere/releases/download/3.1.1/vswhere.exe'
-            Write-Host "Downloading $vswhere from $vswhere_url..."
-            Write-Verbose "Executing: curl.exe --output $vswhere -L -# $vswhere_url"
-            $p = Start-Process curl.exe -ArgumentList "--output $vswhere -L -# $vswhere_url" -Wait -NoNewWindow -PassThru
         }
+        if ([string]::IsNullOrEmpty($global:vswhere))
+        {
+            Write-Host "ERROR: vswhere.exe not found" -ForegroundColor Red -BackgroundColor Black
+            $global:issues += 1
+            return $null
+        }
+
         Write-Verbose "Using $vswhere"
         $global:vswhere = $vswhere
     }
@@ -247,6 +371,10 @@ function Get-VisualStudio2022InstallPath
     {
         Write-Verbose "Detecting VisualStudio 2022..."
         $vswhere = Get-VSWhere
+        if ([string]::IsNullOrEmpty($global:vswhere))
+        {
+            return $null
+        }
         $args = " -latest -products * -version [17.0,18.0) -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath"
         Write-Verbose "Executing $vswhere $args"
         $path = Run-Process $vswhere $args
@@ -265,6 +393,10 @@ function Test-VisualStudioComponent
     )
 
     $vswhere = Get-VSWhere
+    if ([string]::IsNullOrEmpty($global:vswhere))
+    {
+        return 0
+    }
     $args = " -latest -products * -version $versionRange -requires $component -property productDisplayVersion"
     Write-Verbose "Executing $vswhere $args"
     try
@@ -277,7 +409,7 @@ function Test-VisualStudioComponent
     catch
     {
         $e = $_
-        Write-Host "...ERROR $($e): $($component) not found or valid"
+        Write-Host "...ERROR $($e): $($component) not found or valid" -ForegroundColor Red -BackgroundColor Black
         return 1
     }
 }
@@ -382,6 +514,7 @@ function Repair-DevTestPfx
 
     # -CertPassword <password> is a required parameter for this work
     $password = ''
+    $password_plaintext = $null
     if (-not [string]::IsNullOrEmpty($CertPassword))
     {
         $password_plaintext = $CertPassword
@@ -400,7 +533,7 @@ function Repair-DevTestPfx
     {
         $password = Get-Content -Path $pwd_file -Encoding utf8
     }
-    elseif ($NoInteractive -eq $false)
+    if ([string]::IsNullOrEmpty($password_plaintext) -And ($NoInteractive -eq $false))
     {
         $password_plaintext = Read-Host -Prompt 'Creating test certificate. Please enter a password'
     }
@@ -566,27 +699,96 @@ function Remove-DevTestCert
     return $true
 }
 
+function Get-TAEFServiceImagePath
+{
+    $regkey = 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Te.Service'
+    if (-not(Test-Path -Path $regkey))
+    {
+        return $null
+    }
+
+    $path = Get-ItemProperty -Path $regkey | Select-Object 'ImagePath'
+    $path.ImagePath
+}
+
+function Test-TAEFServiceVersion
+{
+    $path = Get-TAEFServiceImagePath
+    if ([string]::IsNullOrEmpty($path))
+    {
+        return $null
+    }
+    if (-not($path -imatch '^.*Microsoft.Taef[\.](.+?)\\'))
+    {
+        return $null
+    }
+    $actual_taef_version = $Matches[1]
+
+    $expected_taef_version = Get-TAEFPackageVersion
+
+    $cmp = Test-SemVer $actual_taef_version $expected_taef_version
+
+    if ($cmp -lt 0)
+    {
+        Write-Warning "WARNING: TAEF service older than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)"
+        return 'OlderVersion'
+    }
+    elseif ($cmp -gt 0)
+    {
+        Write-Warning "WARNING: TAEF service newer than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)"
+        return 'NewerVersion'
+    }
+    else
+    {
+        Write-Verbose "Expected TAEF service is registered ($actual_taef_version)"
+        return 'OK'
+    }
+}
+
 function Test-TAEFService
 {
+    $taef_version_status = Test-TAEFServiceVersion
+    if ([string]::IsNullOrEmpty($taef_version_status))
+    {
+        Write-Host "TAEF service...Not Installed"
+        return 'NotFound'
+    }
+
+    # Double-check the TAEF service is known as a service as far as Windows is concerned
     $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
     if ([string]::IsNullOrEmpty($service))
     {
         Write-Host "TAEF service...Not Installed"
         return 'NotFound'
     }
-    elseif ($service.Status -ne "Running")
+
+    if ($service.Status -ne "Running")
     {
         Write-Host "TAEF service...Not running ($service.Status)"
-        return 'NotRunning'
+        if ($taef_version_status -eq 'OlderVersion')
+        {
+            return 'NotRunning-OlderVersion'
+        }
+        else
+        {
+            return 'NotRunning'
+        }
     }
     else
     {
         Write-Host "TAEF service...Running"
-        return 'Running'
+        if ($taef_version_status -eq 'OlderVersion')
+        {
+            return 'Running-OlderVersion'
+        }
+        else
+        {
+            return 'Running'
+        }
     }
 }
 
-function Repair-TAEFService
+function Install-TAEFService
 {
     $isadmin = Get-IsAdmin
     if ($isadmin -eq $false)
@@ -598,7 +800,8 @@ function Repair-TAEFService
 
     $root = Get-ProjectRoot
     $cpu = Get-CpuArchitecture
-    $taef = 'Microsoft.Taef.10.58.210222006-develop'
+    $taef_version = Get-TAEFPackageVersion
+    $taef = "Microsoft.Taef.$($taef_version)"
     $path = "$root\packages\$taef\build\Binaries\$cpu\Wex.Services.exe"
     if (-not(Test-Path -Path $path -PathType Leaf))
     {
@@ -623,6 +826,39 @@ function Repair-TAEFService
     }
 }
 
+function Uninstall-TAEFService
+{
+    $isadmin = Get-IsAdmin
+    if ($isadmin -eq $false)
+    {
+        Write-Host "Uninstall TAEF service...Access Denied. Run from an admin prompt"
+        $global:issues += 1
+        return
+    }
+
+    $ok = Stop-TAEFService
+    if ($ok -ne $true)
+    {
+        return $ok
+    }
+
+    $filename = Get-TAEFServiceImagePath
+    $args = '/remove:TE.Service'
+    $output = Run-Process $filename $args
+    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    if (-not([string]::IsNullOrEmpty($service)))
+    {
+        Write-Host "Uninstall TAEF service...Failed"
+        $global:issues += 1
+        return 'UninstallError'
+    }
+    else
+    {
+        Write-Host "Uninstall TAEF service...OK"
+        return 'NotRunning'
+    }
+}
+
 function Start-TAEFService
 {
     $isadmin = Get-IsAdmin
@@ -643,6 +879,43 @@ function Start-TAEFService
     else
     {
         Write-Host "Start TAEF service...OK"
+        return $true
+    }
+}
+
+function Stop-TAEFService
+{
+    $isadmin = Get-IsAdmin
+    if ($isadmin -eq $false)
+    {
+        Write-Host "Stop TAEF service...Access Denied. Run from an admin prompt"
+        $global:issues += 1
+        return $false
+    }
+
+    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    if ($service -eq $null)
+    {
+        return 'NotFound'
+    }
+    elseif ($service.Status -ne "Stopped")
+    {
+        $ok = Stop-Service 'TE.Service'
+    }
+    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    if ($service -eq $null)
+    {
+        return 'NotFound'
+    }
+    elseif ($service.Status -ne "Stopped")
+    {
+        Write-Host "Stop TAEF service...Failed"
+        $global:issues += 1
+        return $false
+    }
+    else
+    {
+        Write-Host "Stop TAEF service...OK"
         return $true
     }
 }
@@ -703,7 +976,7 @@ function Get-DependencyVersions
         }
     }
 
-    $dependencies
+    return $dependencies
 }
 
 function Test-PackagesConfig
@@ -713,7 +986,9 @@ function Test-PackagesConfig
         $versions
     )
 
+    Write-Verbose "Scanning $filename"
     $xml = [xml](Get-Content $filename -EA:Stop)
+    $changed = $false
     ForEach ($package in $xml.packages.package)
     {
         $name = $package.id
@@ -721,18 +996,27 @@ function Test-PackagesConfig
 
         if (-not($versions.Contains($name)))
         {
-            Write-Host "ERROR: Unknown package $name in $filename"
+            Write-Host "ERROR: Unknown package $name in $filename" -ForegroundColor Red -BackgroundColor Black
             $global:issues++
         }
         elseif ($version -ne $versions[$name])
         {
-            Write-Host "ERROR: Unknown version $name=$version in $filename"
-            $global:issues++
+            if ($SyncDependencies -eq $true)
+            {
+                Write-Host "Updating $name $($version) -> $($versions[$name]) in $filename"
+                $package.version = $versions[$name]
+                $changed = $true
+            }
+            else
+            {
+                Write-Host "ERROR: Unknown version $name=$version in $filename" -ForegroundColor Red -BackgroundColor Black
+                $global:issues++
+            }
         }
 
         if (-not($package.HasAttribute("targetFramework")))
         {
-            Write-Host "ERROR: targetFramework=""native"" missing in $filename"
+            Write-Host "ERROR: targetFramework=""native"" missing in $filename" -ForegroundColor Red -BackgroundColor Black
             $global:issues++
         }
         else
@@ -740,11 +1024,38 @@ function Test-PackagesConfig
             $targetFramework = $package.targetFramework
             if (($targetFramework -ne "native") -And ($targetFramework -ne "net45"))
             {
-                Write-Host "ERROR: targetFramework != ""native"" in $filename"
+                Write-Host "ERROR: targetFramework != ""native"" in $filename" -ForegroundColor Red -BackgroundColor Black
                 $global:issues++
             }
         }
 
+    }
+
+    if ($changed -eq $true)
+    {
+        $xml.Save($filename)
+
+        # Save() doesn't add a newline at the end-of-file
+        # No newline at end-of-file makes git, GitHub diff and other tools cranky
+        # Make sure they're not cranky
+        $content = Get-Content $filename -EA:Stop -Encoding utf8
+        Set-Content -Path $filename -Value $content -Force -Encoding utf8
+    }
+}
+
+function Test-VcxProj
+{
+    param(
+        [string] $filename,
+        $versions
+    )
+
+    Write-Verbose "Scanning $filename"
+    $xml = [xml](Get-Content $filename -EA:Stop)
+    $changed = $false
+    ForEach ($package in $xml.project.import.project)
+    {
+        Write-Verbose "TODO scan packages/dependencies in .vcxproj"
     }
 }
 
@@ -804,7 +1115,7 @@ function Build-Dependencies
 </Project>
 "@
 
-    $output
+    return $output
 }
 
 function CheckAndSync-Dependencies
@@ -826,7 +1137,7 @@ function CheckAndSync-Dependencies
     {
         if ($SyncDependencies -eq $false)
         {
-            Write-Host "ERROR: $filename not found. Create with 'DevCheck -SyncDependencies'"
+            Write-Host "ERROR: $filename not found. Create with 'DevCheck -SyncDependencies'" -ForegroundColor Red -BackgroundColor Black
             $global:issues++
             return
         }
@@ -841,7 +1152,7 @@ function CheckAndSync-Dependencies
         }
         elseif ($SyncDependencies -eq $false)
         {
-            Write-Host "ERROR: $($filename) out of date. Update with 'DevCheck -SyncDependencies'"
+            Write-Host "ERROR: $($filename) out of date. Update with 'DevCheck -SyncDependencies'" -ForegroundColor Red -BackgroundColor Black
             $global:issues++
         }
     }
@@ -877,7 +1188,7 @@ function Test-Dependencies
     {
         if ($versions.Contains($name))
         {
-            Write-Host "ERROR: Dependency defined multiple times ($name)"
+            Write-Host "ERROR: Dependency defined multiple times ($name)" -ForegroundColor Red -BackgroundColor Black
             $global:issues++
             $fatal_errors++
         }
@@ -891,7 +1202,7 @@ function Test-Dependencies
     {
         if ($versions.Contains($name))
         {
-            Write-Host "ERROR: Dependency defined multiple times ($name)"
+            Write-Host "ERROR: Dependency defined multiple times ($name)" -ForegroundColor Red -BackgroundColor Black
             $global:issues++
             $fatal_errors++
         }
@@ -912,25 +1223,60 @@ function Test-Dependencies
     # Check Version.Dependencies.props
     $null = CheckAndSync-Dependencies  @{ Automagic=$automagic; Manual=$manual }
 
-    # Scan for references
+    # Scan for references - packages.config
     $root = Get-ProjectRoot
-    $path = Join-Path $root 'dev'
     $files = 0
-    Write-Host "Scanning packages.config..."
-    ForEach ($file in (Get-ChildItem -Path $path -Recurse -File 'packages.config'))
+    ForEach ($subtree in 'dev', 'test', 'installer', 'tools')
     {
-        $null = Test-PackagesConfig $file.FullName $versions
-        $files++
+        $path = Join-Path $root $subtree
+        Write-Host "Scanning packages.config..."
+        ForEach ($file in (Get-ChildItem -Path $path -Recurse -File 'packages.config'))
+        {
+            $null = Test-PackagesConfig $file.FullName $versions
+            $files++
+        }
     }
     Write-Host "Scanned $($files) packages.config"
 
-    $path = Join-Path $root 'test'
     $files = 0
-    ForEach ($file in (Get-ChildItem -Path $path -Recurse -Filter '*.vcxproj'))
+    ForEach ($subtree in 'dev', 'test', 'installer', 'tools')
     {
-        $files++
+        $path = Join-Path $root $subtree
+        Write-Host "Scanning *.vcxproj..."
+        ForEach ($file in (Get-ChildItem -Path $path -Recurse -File '*.vcxproj'))
+        {
+            $null = Test-VcxProj $file.FullName $versions
+            $files++
+        }
     }
     Write-Host "Scanned $($files) *.vcxproj"
+}
+
+function Get-DeveloperMode
+{
+    $regkey = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock'
+    if (Test-Path -Path $regkey -PathType Container)
+    {
+        $value = Get-ItemProperty -Path $regkey -Name AllowDevelopmentWithoutDevLicense
+        return $value.AllowDevelopmentWithoutDevLicense -eq 1
+    }
+
+    return $false
+}
+
+function Test-DeveloperMode
+{
+    $developermode = Get-DeveloperMode
+    if ($developermode -eq $true)
+    {
+        Write-Host "Developer mode...Enabled"
+    }
+    else
+    {
+        Write-Host "ERROR: Developer mode is not enabled. Enable it via Settings" -ForegroundColor Red -BackgroundColor Black
+        $global:issues++
+        $fatal_errors++
+    }
 }
 
 Write-Output "Checking developer environment..."
@@ -969,7 +1315,7 @@ if (($CheckAll -ne $false) -Or ($CheckTestCert -ne $false))
     $test = Test-DevTestCert
     if ($test -ne $true)
     {
-        Repair-DevTestCert
+        $null = Repair-DevTestCert
     }
 }
 
@@ -978,28 +1324,61 @@ if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
     $test = Test-TAEFService
     if ($test -eq 'NotFound')
     {
-        $test = Repair-TAEFService
+        $test = Install-TAEFService
     }
-    if ($test -eq 'NotRunning')
+    elseif ($test -eq 'NotRunning-OlderVersion')
+    {
+        $test = Uninstall-TAEFService
+        $test = Install-TAEFService
+        $test = Start-TAEFService
+    }
+    elseif ($test -eq 'NotRunning')
     {
         $test = Start-TAEFService
+    }
+    elseif ($test -eq 'Running-OlderVersion')
+    {
+        $test = Stop-TAEFService
+        if ($test -ne $false)
+        {
+            if ($test -eq $true)
+            {
+                $test = Uninstall-TAEFService
+            }
+            $test = Install-TAEFService
+            $test = Start-TAEFService
+        }
     }
 }
 
 if (($CheckAll -ne $false) -Or ($CheckDependencies -ne $false))
 {
-    Test-Dependencies
+    $null = Test-Dependencies
 }
 
+if (($CheckAll -ne $false) -Or ($CheckDeveloperMode -ne $false))
+{
+    $null = Test-DeveloperMode
+}
+
+if ($StartTAEFService -eq $true)
+{
+    $null = Start-TAEFService
+}
+
+if ($StopTAEFService -eq $true)
+{
+    $null = Stop-TAEFService
+}
 
 if (($RemoveAll -ne $false) -Or ($RemoveTestCert -ne $false))
 {
-    $test = Remove-DevTestCert
+    $null = Remove-DevTestCert
 }
 
 if (($RemoveAll -ne $false) -Or ($RemoveTestPfx -ne $false))
 {
-    $test = Remove-DevTestPfx
+    $null = Remove-DevTestPfx
 }
 
 if ($global:issues -eq 0)

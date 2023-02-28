@@ -30,6 +30,9 @@
     <ClInclude Include="PurojekutoTenpuretActivity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="M.TokuchoAbbreviation.PurojekutoTenpuretNoFeaturePrefixAbbreviation.PurojekutoTenpuretNoFeaturePrefixManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -47,6 +50,9 @@
     <ClCompile Include="PurojekutoTenpuretTraceLogging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="M.TokuchoAbbreviation.PurojekutoTenpuretNoFeaturePrefixAbbreviation.PurojekutoTenpuretNoFeaturePrefixManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)PurojekutoTenpuret.idl" />
@@ -61,8 +67,5 @@
     <ResourceCompile Include="PurojekutoTenpuret.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
   </ItemGroup>
 </Project>

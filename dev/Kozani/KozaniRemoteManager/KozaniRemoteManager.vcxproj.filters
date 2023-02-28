@@ -32,14 +32,17 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KozaniRemoteManager-Constants.h">
+    <ClInclude Include="PurojekutoTenpuret-Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PurojekutoTenpuret-Override.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="KozaniRemoteManagerActivity.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="KozaniRemoteManagerTraceLogging.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

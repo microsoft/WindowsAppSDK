@@ -1,0 +1,143 @@
+parameters:
+  buildPlatform: ''
+  buildConfiguration: ''
+  ImageName: ''
+  TaefSelect: '*'
+  BinaryCompatSwitch: ''
+  testLocale: ''
+steps:
+  # Download the BuildOutput from the Build stage(s).
+  # We only bring down the relevant content for this build config (Debug/Release) & platform, to save some space and time.
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download: BuildOutput'
+    inputs:
+      artifactName: 'BuildOutput'
+      downloadPath: $(Build.SourcesDirectory)\BuildOutput
+
+  # We only bring down the relevant content for this build config (Debug/Release) & platform, to save some space and time.
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download: Test dependencies'
+    inputs:
+      artifactName: 'packages'
+      downloadPath: $(Build.SourcesDirectory)
+
+    # We only bring down the relevant content for this build config (Debug/Release) & platform, to save some space and time.
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download: WinAppSDK Test Certificate'
+    inputs:
+      artifactName: 'TestCert'
+      downloadPath: $(Build.SourcesDirectory)\BuildOutput
+
+  - task: powerShell@2
+    displayName: 'Enable developer mode'
+    inputs:
+      targetType: 'inline'
+      script: |
+            $RegistryKeyPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock"
+            if (-not(Test-Path -Path $RegistryKeyPath))
+            {
+                New-Item -Path $RegistryKeyPath -ItemType Directory -Force
+            }
+
+            New-ItemProperty -Path $RegistryKeyPath -Name AllowDevelopmentWithoutDevLicense -PropertyType DWORD -Value 1 -Force
+            reg add HKLM\Software\Policies\Microsoft\Windows\Appx /v AllowDevelopmentWithoutDevLicense /t REG_DWORD /d 1 /f
+
+  - task: powerShell@2
+    displayName: 'Install certificates in payload'
+    inputs:
+      targetType: 'inline'
+      script: |
+            foreach($cerFile in (Get-ChildItem -Path '$(Build.SourcesDirectory)\BuildOutput' '*.cer' -Recurse))
+            {
+              Write-Host "Adding cert $($cerFile.FullName)"
+              certutil -addstore TrustedPeople $($cerFile.FullName)
+              certutil -addstore root $($cerFile.FullName)
+            }
+
+  - task: powerShell@2
+    displayName: 'Run dotnet installer'
+    inputs:
+      targetType: 'inline'
+      script: |
+            $(Build.SourcesDirectory)\packages\dotnet-windowsdesktop-runtime-installer.exe /quiet /install /norestart
+
+  - task: powerShell@2
+    displayName: 'Install VCLibs.Desktop'
+    inputs:
+      targetType: 'inline'
+      script: |
+            $package = "$(Build.SourcesDirectory)\packages\Microsoft.VCLibs.${{ parameters.buildPlatform }}.14.00.Desktop.appx"
+            Add-AppxPackage $package -ErrorAction SilentlyContinue
+
+  - task: powerShell@2
+    displayName: 'Install vc_redist'
+    inputs:
+      targetType: 'inline'
+      script: |
+            $(Build.SourcesDirectory)\packages\vc_redist.${{ parameters.buildPlatform }}.exe /quiet /install /norestart
+
+  - task: powershell@2
+    displayName: 'Run TE.Service'
+    inputs:
+      targetType: filePath
+      filePath: DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -CheckTAEFService
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+  - task: VisualStudioTestPlatformInstaller@1
+    inputs:
+      versionSelector: latestStable
+
+  - task: PowerShell@2
+    displayName: Add test locale to User Language List
+    inputs:
+      targetType: 'inline'
+      script: |
+            $langToAdd = "${{ parameters.testLocale }}"
+            
+            Write-Host "Adding $langToAdd to user language list"
+            $langList = Get-WinUserLanguageList
+            $langList.Insert(0, $langToAdd)
+            Set-WinUserLanguageList -LanguageList $langList -Force
+
+            Write-Host "Get-WinUserLanguageList:" 
+            Get-WinUserLanguageList
+
+  - task: PowerShell@2
+    displayName: Display OS build/version/language info
+    inputs:
+      targetType: 'inline'
+      script: |
+            Get-Item -Path 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion'
+            Write-Host (reg query "HKLM\SYSTEM\CurrentControlSet\Control\MUI" /s)
+            Write-Host (reg query "HKLM\SYSTEM\CurrentControlSet\Control\Nls" /s)
+            Write-Host (reg query "HKCU\Control Panel\International" /s)
+
+            Write-Host "Get-WmiObject -Class Win32_OperatingSystem" 
+            $OSInfo = Get-WmiObject -Class Win32_OperatingSystem
+            $languagePacks = $OSInfo.MUILanguages
+            $languagePacks
+
+            Write-Host "dism /online /Get-Intl" 
+            dism /online /Get-Intl
+
+            Write-Host "Get-WinUserLanguageList" 
+            Get-WinUserLanguageList
+
+            Write-Host "Get-WinUILanguageOverride"
+            Get-WinUILanguageOverride
+
+            Write-Host "Get-WinSystemLocale"
+            Get-WinSystemLocale
+  
+  - task: PowerShell@2
+    displayName: 'Run TAEF Tests'
+    inputs:
+      filePath: 'TestAll.ps1'
+      arguments: >
+        -OutputFolder "$(Build.SourcesDirectory)\BuildOutput\BuildOutput"
+        -Platform "${{ parameters.buildPlatform }}" 
+        -Configuration "${{ parameters.buildConfiguration }}"
+        -Test
+        -List
+                

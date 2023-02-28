@@ -65,9 +65,8 @@ points if there's a gist or existing repo we can look at with you.
 3. **[Vote on or suggest features](https://portal.productboard.com/winappsdk/1-windows-app-sdk)**<br>
    What components or features do you want to see in the Windows App SDK? Tell us on our [productboard portal](https://portal.productboard.com/winappsdk/1-windows-app-sdk)!
 
-**Over time, we will add Windows App SDK code into this repo and provide code contribution/developer guidelines.**
-
-Read more about the [contribution guide here](docs/contributor-guide.md).
+4. **[Code contributions](docs/contributor-guide.md)**<br>
+   More information regarding [contributing and developer guidelines here](docs/contributor-guide.md).
 
 ## Data collection
 

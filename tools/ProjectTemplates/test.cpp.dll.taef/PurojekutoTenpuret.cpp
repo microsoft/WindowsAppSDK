@@ -6,7 +6,7 @@
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
 
-namespace Test::PurojekutoTenpuret
+namespace Test::TokuchoNamespace::PurojekutoTenpuretNoFeaturePrefix
 {
     class PurojekutoTenpuret
     {
