@@ -73,7 +73,7 @@ jobs:
     displayName: 'NuGet restore of packages'
     inputs:
       command: 'custom'
-      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile dev\WindowsAppRuntime_Insights\nuget.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
+      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile Nuget.config -PackagesDirectory dev\packages'
 
   - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
@@ -96,7 +96,7 @@ jobs:
       inputs:
         restoreSolution: build/packages.config
         feedsToUse: config
-        nugetConfigPath: build/licensing.nuget.config
+        nugetConfigPath: Nuget.config
         restoreDirectory: packages
 
     - task: CopyFiles@2
@@ -139,6 +139,18 @@ jobs:
       PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
       artifactName: 'BuildOutput'
 
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Test dependencies'
+    inputs:
+      PathtoPublish: '$(build.SourcesDirectory)\packages'
+      artifactName: 'packages'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Test cert'
+    inputs:
+      PathtoPublish: '$(build.SourcesDirectory)\.user'
+      artifactName: 'TestCert'
+
 - job: BuildAnyCPU
   # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
   # Can be expanded to add any other binary as needed
@@ -154,7 +166,7 @@ jobs:
     displayName: 'NuGet restore of packages'
     inputs:
       command: 'custom'
-      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile dev\WindowsAppRuntime_Insights\nuget.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
+      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile Nuget.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
 
   - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
@@ -225,7 +237,7 @@ jobs:
     displayName: 'NuGet restore of packages'
     inputs:
       command: 'custom'
-      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile dev\WindowsAppRuntime_Insights\nuget.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
+      arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile Nuget.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
 
   - template: WindowsAppSDK-BuildAndTestMRT-Steps.yml
 
@@ -258,6 +270,23 @@ jobs:
       - BuildAnyCPU
       - BuildAndTestMRT
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
+
+# Arm64 uses a different VM type than x64, thus requiring them to be in different
+# pools, hence, we spilt the two scenarios into separate jobs.
+- template: AzurePipelinesTemplates\WindowsAppSDK-RunTestsInPipeline-Job.yml
+  parameters:
+    jobName: PipelineTestsX64
+    isArm64Platfrom: false
+    dependsOn:
+      - Build
+      - BuildAndTestMRT
+- template: AzurePipelinesTemplates\WindowsAppSDK-RunTestsInPipeline-Job.yml
+  parameters:
+    jobName: PipelineTestsArm64
+    isArm64Platfrom: true
+    dependsOn:
+      - Build
+      - BuildAndTestMRT
 
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
