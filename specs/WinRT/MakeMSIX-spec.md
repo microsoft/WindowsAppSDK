@@ -336,19 +336,9 @@ packages.
 In the long term it's likely that these differences in the information and flags required to support creating a bundle
 and creating a package will only continue to grow.
 
-Unpack and Unbundle is a somewhat different story. MSIXMgr defines an unpack command which in some ways looks more like a
-"convert" than an "unpack" (i.e. "unpack" msix to folder, "pack" folder to vhdx). This means that the msixmgr unpack command
-needs to take many more options to define the "unpack" destination than the makeappx unpack command which always unpacks
-to a folder. With the set of options to describe the output it looks more like the "pack\bundle" commands of the other tools.
-In an api that supported creation of the CIM, VHD, VHDX file as well as creation of msix and msixbundle files, callers might
-find it strange to need to first pack their directory to an msix, and then create the vhdx from the msix, rather than just
-creating the vhdx directly. However, signing is not integrated into any of these tools, and is a separate step that
-is done after packaging is complete. This may prevent direct creation of VHDX files from the layout directory if
-signing tools don't support this scenario (TODO: sreading, looking into this)
-
-If defined as an atomic operation where a package is unpacked to a folder, it is less likely that differences
-will arise between unbundle and unpack. However, as seen with the existing makemsix tool, as long as pack and bundle
-are separate operations it may not be especially useful for unbundle and unpack to be joined. Unpacking of
+Unpack and Unbundle is a somewhat different story. If defined as an atomic operation where a package is unpacked to a folder,
+it is less likely that differences will arise between unbundle and unpack. However, as seen with the existing makemsix tool,
+as long as pack and bundle are separate operations it may not be especially useful for unbundle and unpack to be joined. Unpacking of
 all bundled packages might save time if someone wanted to examine the manifest of a main package inside the bundle,
 as might be an expected use case for a command line tool.
 But in cases where the api is actually being used programattically, to do something like extract all packages and update
@@ -357,9 +347,21 @@ unpacked package. In such a case merging the unbundle and unpack command into on
 the caller, especially if pack and bundle have not also been merged to allow callers to use one call to package all subfolders
 with appxmanifests and then bundle all of them together.
 
-For these reasons pack, bundle, unpack, unbundle have been left as separate commands. The MSIXMgr "unpack" command
-is implemented here as another form of pack.
+For these reasons pack, bundle, unpack, unbundle have been left as separate commands. 
 
+MSIXMgr defines an unpack command which has fairly different usage from the makeappx unpack command.
+The msixmgr unpack command mostly takes options that affect the phase of the operation that creates the vhdx\cim. 
+With the set of options to describe the output it looks more like the "pack\bundle" commands of the other tools.
+In an api that supports creation of the CIM, VHD, VHDX file as well as creation of msix and msixbundle files, callers may
+find it strange at first to need to first pack their directory to an msix, and then create the vhdx from the msix, rather than just
+creating the vhdx directly. However, signing is not integrated into any of these tools, and is a separate step that
+is done after packaging is complete. The Appx SIP knows how to sign packages, but not vhdx and other mounted directories. The result
+is that creating a vhdx with an appx signature file (appxsignature.p7x) requires first creating the package, then signing it, then
+creating the vhdx.
+
+The msixmgr command line supports adding all packages in a folder to an image at once, but does not currently support expandable vhdx files.
+CIM files meanwhile are always expandable. This means that the caller needs to know up front the size of all unpacked packages only when
+creating vhds. This api proposes adding support for dynamic vhds\vhdx files in order to ease that burden .
 
 # Examples
 
@@ -369,23 +371,55 @@ is implemented here as another form of pack.
     TEST_METHOD(TestPack)
     {
         winrt::init_apartment();
-        auto packOptions = PackOptions();
-        packOptions.OverwriteFiles(true);
-        //PackOptions.KozaniPackageFilePath(L"E:\\vm\\apps\\kozaniPackage.msix");
-        packOptions.PackageFilePath(L"E:\\test\\packagedOutput.msix");
-        
-        PackagingResult result{ MakeMSIXManager::Pack(L"E:\\test\\unpackedPackageInput", packOptions).get()};
-        VERIFY_IS_TRUE(SUCCEEDED(result.Status() == PackagingResultStatus::Ok));
-        VERIFY_IS_TRUE(SUCCEEDED(result.ExtendedErrorCode()));
 
-        auto kozaniPackOptions = PackOptions();
-        kozaniPackOptions.OverwriteFiles(true);
-        kozaniPackOptions.CreateAsKozaniPackage(true);
-        kozaniPackOptions.PackageFilePath(L"E:\\test\\kozaniPackagedOutput.msix");
+        // Create package from folder.
+        std::wstring packageOutputFilePath{ L"E:\\test\\packagedOutput.msix" };
+        try
+        {
+            PackOptions packOptions = PackOptions();
+            packOptions.OverwriteFiles(true);
+            packOptions.PackageFilePath(packageOutputFilePath);
 
-        PackagingResult kozaniResult{ MakeMSIXManager::Pack(L"E:\\test\\unpackedPackageInput", kozaniPackOptions).get() };
-        VERIFY_IS_TRUE(SUCCEEDED(kozaniResult.Status() == PackagingResultStatus::Ok));
-        VERIFY_IS_TRUE(SUCCEEDED(kozaniResult.ExtendedErrorCode()));
+            MakeMSIXManager::Pack(L"E:\\test\\unpackedPackageInput", packOptions).get();
+        }
+        catch (winrt::hresult_error const& ex)
+        {
+            OutputDebugString(ex.message().c_str());
+            winrt::check_hresult(ex.code());
+        }
+
+        // Create kozani package from package.
+        try
+        {
+            CreateKozaniPackageOptions kozaniPackOptions = CreateKozaniPackageOptions();
+            kozaniPackOptions.OverwriteFiles(true);
+            kozaniPackOptions.PackageFilePath(L"E:\\test\\kozaniPackagedOutput.msix");
+            MakeMSIXManager::CreateKozaniPackage(packageOutputFilePath, kozaniPackOptions).get();
+        }
+        catch (winrt::hresult_error const& ex)
+        {
+            OutputDebugString(ex.message().c_str());
+            winrt::check_hresult(ex.code());
+        }
+
+        // Create app attach vhd from package.
+        try
+        {
+            std::wstring appAttachImageFilePath{ L"E:\\test\\appAttachOutput.vhdx" };
+            CreateMountableImageOptions mountableImageOptions = CreateMountableImageOptions();
+            mountableImageOptions.DynamicallyExpandable(true);
+            mountableImageOptions.MaximumExpandableImageSizeMegabytes(100);
+            MakeMSIXManager::CreateMountableImage(appAttachImageFilePath, mountableImageOptions).get();
+
+            AddPackageToImageOptions addToImageOptions = AddPackageToImageOptions();
+            addToImageOptions.PackageRootDirectoryInImage(L"WindowsApps");
+            MakeMSIXManager::AddPackageToImage(packageOutputFilePath, appAttachImageFilePath, addToImageOptions).get();
+        }
+        catch (winrt::hresult_error const& ex)
+        {
+            OutputDebugString(ex.message().c_str());
+            winrt::check_hresult(ex.code());
+        }
     }
 ```
 
@@ -395,13 +429,20 @@ is implemented here as another form of pack.
     TEST_METHOD(TestBundle)
     {
         winrt::init_apartment();
-        auto bundleOptions = BundleOptions();
-        bundleOptions.OverwriteFiles(true);
-        bundleOptions.BundleFilePath(L"E:\\test\\bundledOutput.msixbundle");
+        try
+        {
+            auto bundleOptions = BundleOptions();
+            bundleOptions.OverwriteFiles(true);
+            bundleOptions.BundleFilePath(L"E:\\test\\bundledOutput.msixbundle");
+            bundleOptions.BundleVersion(winrt::Windows::ApplicationModel::PackageVersion(1, 1, 0, 0));
 
-        PackagingResult result{ MakeMSIXManager::Bundle(L"E:\\test\\unbundledPackageInput", bundleOptions).get() };
-        VERIFY_IS_TRUE(SUCCEEDED(result.Status() == PackagingResultStatus::Ok));
-        VERIFY_IS_TRUE(SUCCEEDED(result.ExtendedErrorCode()));
+            MakeMSIXManager::Bundle(L"E:\\test\\unbundledPackageInput", bundleOptions).get();
+        }
+        catch (winrt::hresult_error const& ex)
+        {
+            OutputDebugString(ex.message().c_str());
+            winrt::check_hresult(ex.code());
+        }
     }
 ```
 
@@ -411,13 +452,19 @@ is implemented here as another form of pack.
     TEST_METHOD(TestUnpack)
     {
         winrt::init_apartment();
-        auto unpackOptions = UnpackOptions();
-        unpackOptions.OverwriteFiles(true);
-        unpackOptions.UnpackedPackageRootDirectory(L"E:\\test\\unpackedPackageOutput");
+        try
+        {
+            auto unpackOptions = UnpackOptions();
+            unpackOptions.OverwriteFiles(true);
+            unpackOptions.UnpackedPackageRootDirectory(L"E:\\test\\unpackedPackageOutput");
 
-        PackagingResult result{ MakeMSIXManager::Unpack(L"E:\\test\\package.msix", unpackOptions).get() };
-        VERIFY_IS_TRUE(SUCCEEDED(result.Status() == PackagingResultStatus::Ok));
-        VERIFY_IS_TRUE(SUCCEEDED(result.ExtendedErrorCode()));
+            MakeMSIXManager::Unpack(L"E:\\test\\package.msix", unpackOptions).get();
+        }
+        catch (winrt::hresult_error const& ex)
+        {
+            OutputDebugString(ex.message().c_str());
+            winrt::check_hresult(ex.code());
+        }
     }
 ```
 
@@ -427,27 +474,31 @@ is implemented here as another form of pack.
     TEST_METHOD(TestUnbundle)
     {
         winrt::init_apartment();
-        std::wstring outputDir{ L"E:\\test\\unpackedBundleOutput" };
-        auto unbundleOptions = UnbundleOptions();
-        unbundleOptions.OverwriteFiles(true);
-        unbundleOptions.UnbundledPackageRootDirectory(outputDir);
-
-        PackagingResult result{ MakeMSIXManager::Unbundle(L"E:\\test\\bundle.msixbundle", unbundleOptions).get() };
-        VERIFY_IS_TRUE(SUCCEEDED(result.Status() == PackagingResultStatus::Ok));
-        VERIFY_IS_TRUE(SUCCEEDED(result.ExtendedErrorCode()));
-
-        // Iterate through packages and unpack each one.
-        for (const auto& file : std::filesystem::directory_iterator(outputDir))
+        try
         {
-            auto unpackOptions = UnpackOptions();
-            unpackOptions.OverwriteFiles(true);
-            std::filesystem::path outputDirForPackage{ outputDir };
-            outputDirForPackage /= file.path().filename();
-            unpackOptions.UnpackedPackageRootDirectory(outputDirForPackage.c_str());
+            std::wstring outputDir{ L"E:\\test\\unpackedBundleOutput" };
+            auto unbundleOptions = UnbundleOptions();
+            unbundleOptions.OverwriteFiles(true);
+            unbundleOptions.UnbundledPackageRootDirectory(outputDir);
 
-            PackagingResult unpackResult{ MakeMSIXManager::Unpack(file.path().c_str(), unpackOptions).get()};
-            VERIFY_IS_TRUE(SUCCEEDED(unpackResult.Status() == PackagingResultStatus::Ok));
-            VERIFY_IS_TRUE(SUCCEEDED(unpackResult.ExtendedErrorCode()));
+            MakeMSIXManager::Unbundle(L"E:\\test\\bundle.msixbundle", unbundleOptions).get();
+
+            // Iterate through packages and unpack each one.
+            for (const auto& file : std::filesystem::directory_iterator(outputDir))
+            {
+                auto unpackOptions = UnpackOptions();
+                unpackOptions.OverwriteFiles(true);
+                std::filesystem::path outputDirForPackage{ outputDir };
+                outputDirForPackage /= file.path().stem();
+                unpackOptions.UnpackedPackageRootDirectory(outputDirForPackage.c_str());
+
+                MakeMSIXManager::Unpack(file.path().c_str(), unpackOptions).get();
+            }
+        }
+        catch (winrt::hresult_error const& ex)
+        {
+            OutputDebugString(ex.message().c_str());
+            winrt::check_hresult(ex.code());
         }
     }
 ```
@@ -463,34 +514,6 @@ namespace Microsoft.Kozani.MakeMSIX
     [contractversion(1)]
     apicontract MakeMSIXContract{};
 
-    /// <summary>
-    /// Result of the packaging operation
-    /// </summary>
-    [contract(MakeMSIXContract, 1)]
-    enum PackagingResultStatus
-    {
-        Ok,
-        InvalidOptions,
-        FileAlreadyExistsError,
-        InternalError,
-    };
-
-    /// <summary>
-    /// Result of the packaging operation
-    /// </summary>
-    [contract(MakeMSIXContract, 1)]
-    runtimeclass PackagingResult
-    {
-        /// <summary>
-        /// Status of the overall operation.
-        /// </summary>
-        PackagingResultStatus Status { get; };
-        /// <summary>
-        /// Error code of the overall operation.
-        /// </summary>
-        HRESULT ExtendedErrorCode { get; };
-    };
-
     /// Options for creating a package
     [contract(MakeMSIXContract, 1)]
     runtimeclass PackOptions
@@ -505,27 +528,48 @@ namespace Microsoft.Kozani.MakeMSIX
         /// </summary>
         String PackageFilePath{ get; set; };
 
-        // API REVIEW NOTE: Two options here. Needing to create a traditional package
-        // and a Kozani package at the same time may be fairly common for certain users
-        // but most users will not ever need to create Kozani packages.
-        // Either require the caller to make two separate calls, or allow creation of both
-        // packages in one call. My preference is separate calls, which makes it clearer
-        // that Kozani packages are optional.
-
         /// <summary>
-        /// If true, writes a Kozani package to PackageFilePath.
+        /// Overwrite PackageFilePath if it already exists.
+        /// Defaults to true.
+        /// </summary>
+        Boolean OverwriteFiles{ get; set; };
+        /// <summary>
+        /// Validates elements of the package during creation.
         /// Defaults to false.
         /// </summary>
-        Boolean CreateAsKozaniPackage{ get; set; };
+        Boolean ValidateFiles{ get; set; };
+    };
+    
+    /// Options for creating a Kozani package
+    [contract(MakeMSIXContract, 1)]
+    runtimeclass CreateKozaniPackageOptions
+    {
         /// <summary>
-        /// Output path for the Kozani package file.
-        /// At least one of PackageFilePath and KozaniPackageFilePath must be set.
+        /// 
         /// </summary>
-        String KozaniPackageFilePath{ get; set; };
-
+        CreateKozaniPackageOptions();
 
         /// <summary>
-        /// Overwrite PackageFilePath and KozaniPackageFilePath if they already exist.
+        /// Output path for the full packaged file.
+        /// Format must match input file. If packageFilePathToConvert is an appx or msix, then PackageFilePath must be an appx or msix.
+        /// If packageFilePathToConvert is an appxbundle or msixbundle, then PackageFilePath must be an appxbundle or msixbundle.
+        /// </summary>
+        String PackageFilePath{ get; set; };
+
+        /// <summary>
+        /// Optional replacement package publisher.
+        /// If not set, publisher from appxmanifest.xml is unchaged.
+        /// </summary>
+        String PackagePublisher{ get; set; };
+
+        /// <summary>
+        /// Optional replacement package name.
+        /// If not set, name from appxmanifest.xml is unchaged.
+        /// </summary>
+        String PackageName{ get; set; };
+
+        /// <summary>
+        /// Overwrite PackageFilePath if it already exists.
         /// Defaults to true.
         /// </summary>
         Boolean OverwriteFiles{ get; set; };
@@ -557,8 +601,15 @@ namespace Microsoft.Kozani.MakeMSIX
         Boolean OverwriteFiles{ get; set; };
 
         /// <summary>
-        /// Sets the version in the AppxBundleManifest.xml during packaging if
-        /// the source layout is a bundle.
+        /// Create as a flat bundle. Package locations will be stored as external path references
+        /// rather than being stored inside the msixbundle file itself. 
+        /// Defaults to false.
+        /// </summary>
+        Boolean FlatBundle{ get; set; };
+
+        /// <summary>
+        /// Optional. Sets the version in the AppxBundleManifest.xml
+        /// If not set the version is created based on the current time.
         /// </summary>
         Windows.ApplicationModel.PackageVersion BundleVersion{ get; set; };
     };
@@ -577,13 +628,13 @@ namespace Microsoft.Kozani.MakeMSIX
         /// <summary>
         /// The output folder to unpack the package into.
         /// </summary>
-        String UnpackedPackageRootDirectory;
+        String UnpackedPackageRootDirectory{ get; set; };
         /// <summary>
         /// If true, the operation will overwrite existing files in the UnpackedPackageRootDirectory
         /// when unpacking.
         /// If false, the operation will fail if a file already exists.
         /// </summary>
-        Boolean OverwriteFiles;
+        Boolean OverwriteFiles{ get; set; };
     };
 
     /// <summary>
@@ -600,13 +651,59 @@ namespace Microsoft.Kozani.MakeMSIX
         /// <summary>
         /// The output folder to unpack the bundle package into.
         /// </summary>
-        String UnbundledPackageRootDirectory;
+        String UnbundledPackageRootDirectory{ get; set; };
         /// <summary>
         /// If true, the operation will overwrite existing files in the UnbundledPackageRootDirectory
         /// when unpacking.
         /// If false, the operation will fail if a file already exists.
         /// </summary>
-        Boolean OverwriteFiles;
+        Boolean OverwriteFiles{ get; set; };
+    };
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    [contract(MakeMSIXContract, 1)]
+    runtimeclass CreateMountableImageOptions
+    {
+        /// <summary>
+        /// Created by callers to pass options into CreateMountableImage
+        /// </summary>
+        CreateMountableImageOptions();
+        /// <summary>
+        /// Fixed image size in GB. Valid for vhds and vhdx. CIM images automatically expand.
+        /// Default is 0.
+        /// </summary>
+        UInt32 FixedImageSize{ get; set; };
+
+        /// <summary>
+        /// Make image file expandable. 
+        /// Default is true
+        /// </summary>
+        Boolean DynamicallyExpandable{ get; set; };
+        /// <summary>
+        /// Fixed image size in GB. Valid for vhds and vhdx. CIM images have no limit.
+        /// Default is 1.
+        /// </summary>
+        UInt32 MaximumExpandableImageSize{ get; set; };
+    };
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [contract(MakeMSIXContract, 1)]
+    runtimeclass AddPackageToImageOptions
+    {
+        /// <summary>
+        /// Created by callers to pass options into AddPackageToImage
+        /// </summary>
+        AddPackageToImageOptions();
+
+        /// <summary>
+        /// Root directory on an image to unpack packages to. 
+        /// Required parameter for adding to CIM files. Optional for vhd\vhdx.
+        /// </summary>
+        String PackageRootDirectoryInImage{ get; set; };
     };
 
     /// <summary>
@@ -618,19 +715,49 @@ namespace Microsoft.Kozani.MakeMSIX
         /// <summary>
         /// Creates packages from the directoryPathToPack as specified by the packOptions.
         /// </summary>
-        static Windows.Foundation.IAsyncOperation<PackagingResult> Pack(String directoryPathToPack, PackOptions packOptions);
+        static Windows.Foundation.IAsyncAction Pack(String directoryPathToPack, PackOptions packOptions);
         /// <summary>
         /// Creates bundles from the directoryPathToBundle as specified by the bundleOptions.
         /// </summary>
-        static Windows.Foundation.IAsyncOperation<PackagingResult> Bundle(String directoryPathToBundle, BundleOptions bundleOptions);
+        static Windows.Foundation.IAsyncAction Bundle(String directoryPathToBundle, BundleOptions bundleOptions);
         /// <summary>
         /// Unpacks a package at packageFilePathToUnpack as specified by the unpackOptions.
         /// </summary>
-        static Windows.Foundation.IAsyncOperation<PackagingResult> Unpack(String packageFilePathToUnpack, UnpackOptions unpackOptions);
+        static Windows.Foundation.IAsyncAction Unpack(String packageFilePathToUnpack, UnpackOptions unpackOptions);
         /// <summary>
         /// Unbundles a package at bundleFilePathToUnbundle as specified by the unbundleOptions.
         /// </summary>
-        static Windows.Foundation.IAsyncOperation<PackagingResult> Unbundle(String bundleFilePathToUnbundle, UnbundleOptions unbundleOptions);
+        static Windows.Foundation.IAsyncAction Unbundle(String bundleFilePathToUnbundle, 
+            UnbundleOptions unbundleOptions);
+        /// <summary>
+        /// Creates a Kozani package from an existing package.
+        /// packageFilePathToConvert can be an appx, appxbundle, msix, or msixbundle
+        /// </summary>
+        static Windows.Foundation.IAsyncAction CreateKozaniPackage(String packageFilePathToConvert,
+            CreateKozaniPackageOptions createKozaniPackageOptions);
+        
+
+        /// <summary>
+        /// Mount the image at imageFilePathToMount
+        /// </summary>
+        static Windows.Foundation.IAsyncAction Mount(String imageFilePathToMount, Boolean readOnly);
+
+        /// <summary>
+        /// Unmount the image that was mounted from imageFilePathToUnmount
+        /// </summary>
+        static Windows.Foundation.IAsyncAction Unmount(String imageFilePathToUnmount);
+
+        /// <summary>
+        /// Create mountable image at imageFilePath. Valid file extensions are vhd, vhdx, and CIM.
+        /// </summary>
+        static Windows.Foundation.IAsyncAction CreateMountableImage(String imageFilePath, 
+            CreateMountableImageOptions createMountableImageOptions);
+
+        /// <summary>
+        /// Add the package at packageFilePath to the image at imageFilePath.
+        /// </summary>
+        static Windows.Foundation.IAsyncAction AddPackageToImage(String packageFilePath, String imageFilePath, 
+            AddPackageToImageOptions addPackageToImageOptions);
     };
 }
 
