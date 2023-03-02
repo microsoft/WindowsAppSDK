@@ -1,0 +1,11 @@
+{
+    "Tests": [
+        {
+            "Description": "Dynamic Dependencies Win32 API",
+            "Filename": "DynamicDependency_Test_Win32.dll",
+            "Parameters": "",
+            "Architectures": ["x86", "x64", "arm64"],
+            "Status": "Enabled"
+        }
+    ]
+}
