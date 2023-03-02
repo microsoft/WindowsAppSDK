@@ -286,7 +286,7 @@ jobs:
       filePath: 'BuildAll.ps1'
       arguments: -Platform "x86,x64,arm64" -Configuration "release" -AzureBuildStep "StageFiles"
 
-  - task: EsrpCodeSigning@1
+  - task: EsrpCodeSigning@2
     inputs:
       ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
       FolderPath: '$(Build.SourcesDirectory)\BuildOutput\FullNuget'
@@ -397,7 +397,7 @@ jobs:
       filePath: 'BuildAll.ps1'
       arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
 
-  - task: EsrpCodeSigning@1
+  - task: EsrpCodeSigning@2
     inputs:
       ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
       FolderPath: $(build.artifactStagingDirectory)\FullNuget
