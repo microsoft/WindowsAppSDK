@@ -726,5 +726,28 @@ namespace Test::AppNotification::Builder
             auto actual{ builder.BuildNotification().Payload() };
             VERIFY_ARE_EQUAL(actual, expected);
         }
+
+        TEST_METHOD(AppNotificationBuilderHeadersWithMultipleNotifications)
+        {
+            auto header{ winrt::AppNotificationHeader(L"6289", L"Camping!!")
+                .AddArgument(L"action", L"openConversation")
+                .AddArgument(L"id", L"6289") };
+
+            auto builder1{ winrt::AppNotificationBuilder()
+                .SetHeader(header)
+                .AddText(L"Camping this weekend?")
+            };
+            auto expected1{ L"<toast><header id='6289' title='Camping!!' arguments='action=openConversation;id=6289'/><visual><binding template='ToastGeneric'><text>Camping this weekend?</text></binding></visual></toast>" };
+            auto actual1{ builder1.BuildNotification().Payload() };
+            VERIFY_ARE_EQUAL(actual1, expected1);
+
+            auto builder2{ winrt::AppNotificationBuilder()
+                .SetHeader(header)
+                .AddText(L"Anyone have a sleeping bag I can borrow?")
+            };
+            auto expected2{ L"<toast><header id='6289' title='Camping!!' arguments='action=openConversation;id=6289'/><visual><binding template='ToastGeneric'><text>Anyone have a sleeping bag I can borrow?</text></binding></visual></toast>" };
+            auto actual2{ builder2.BuildNotification().Payload() };
+            VERIFY_ARE_EQUAL(actual2, expected2);
+        }
     };
 }
