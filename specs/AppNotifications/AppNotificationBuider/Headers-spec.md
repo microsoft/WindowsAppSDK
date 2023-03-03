@@ -61,6 +61,28 @@ auto builder{ winrt::AppNotificationBuilder()
     .AddText(L"Anyone have a sleeping bag I can borrow?") };
 ```
 
+Additionally, the AppNotificationHeader runtime class can be instanciated outside the builder pattern, allowing i the same header to be re-used in multiple notifications.
+
+```c++
+auto header{ winrt::AppNotificationHeader(L"6289", L"Camping!!")
+    .AddArgument(L"action", L"openConversation")
+    .AddArgument(L"id", L"6289") };
+
+auto builder1{ winrt::AppNotificationBuilder()
+    .SetHeader(header)
+    .AddText(L"Camping this weekend?")
+};
+
+auto builder2{ winrt::AppNotificationBuilder()
+    .SetHeader(header)
+    .AddText(L"Anyone have a sleeping bag I can borrow?")
+};
+```
+
+The above usage produces the results bellow.
+
+![AppNotification Header Example](HeaderExample.png)
+
 # Additional Notes
 * The new AppNotificationHeader runtimeclass is needed because a Header can have a variable number of arguments.
 
