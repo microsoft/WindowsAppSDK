@@ -14,7 +14,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         void Items(winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& value);
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> Items();
 
-        void ItemList(winrt::Windows::Foundation::Collections::IVector<AppNotificationComboBoxItem> const& value) { m_itemList = value; };
+        void ItemList(winrt::Windows::Foundation::Collections::IVector<AppNotificationComboBoxItem> const& value);
         winrt::Windows::Foundation::Collections::IVector<AppNotificationComboBoxItem> ItemList() { return m_itemList; };
 
         void Title(winrt::hstring const& value) { m_title = value; };

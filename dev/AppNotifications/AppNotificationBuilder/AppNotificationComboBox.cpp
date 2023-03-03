@@ -41,6 +41,22 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         }
 
         return items;
+    } 
+
+    void AppNotificationComboBox::ItemList(winrt::Windows::Foundation::Collections::IVector<AppNotificationComboBoxItem> const& value)
+    {
+        THROW_HR_IF_MSG(E_INVALIDARG, value.Size() > c_maxSelectionElements, "Maximum number of items added");
+
+        winrt::Windows::Foundation::Collections::IVector<AppNotificationComboBoxItem> itemList{ winrt::single_threaded_vector<AppNotificationComboBoxItem>() };
+
+        for (auto item : value)
+        {
+            THROW_HR_IF_MSG(E_INVALIDARG, item.Id.empty(), "You must provide an id for every item");
+
+            itemList.Append(item);
+        }
+
+        m_itemList = itemList;
     }
 
     bool AppNotificationComboBox::HasItem(winrt::hstring const& encodedId)
