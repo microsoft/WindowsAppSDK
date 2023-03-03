@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MicroAppHostWPF": {
+      "commandName": "Project",
+      "commandLineArgs": "Registration.json\r\n"
+    }
+  }
+}

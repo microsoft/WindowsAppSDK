@@ -1,0 +1,27 @@
+{
+  "inputs":
+    {
+      "person": 
+      {
+        "entityType": "Person",
+        "attributes": 
+        [
+          {
+            "name": "name",
+            "description": "Person's name"
+          }
+        ]
+      }
+    },
+  "outputs":
+    {
+      "result": "What to say to the person"
+    },
+  "tasks": 
+  {
+    "sayHello": "Says hello to the person",
+    "sayGoodbye": "Says goodbye to the person"
+  },
+  "$schema": "http://microapps.io/schemas/microapp-registration.json",
+  "version": "0.1"
+}
