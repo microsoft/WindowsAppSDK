@@ -690,6 +690,33 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(actual, expected);
         }
 
+        TEST_METHOD(AppNotificationComboxBoxSetItemsPropertyDoesNotHaveSideEffectsOnError)
+        {
+            winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> items{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
+            items.Insert(L"item1", L"item1 text");
+            items.Insert(L"item2", L"item2 text");
+            items.Insert(L"item3", L"item3 text");
+            items.Insert(L"item4", L"item4 text");
+            items.Insert(L"item5", L"item5 text");
+
+            auto comboBox{ winrt::AppNotificationComboBox(L"comboBox1") };
+            comboBox.Items(items);
+
+            winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> itemsWithError{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
+            itemsWithError.Insert(L"item6", L"item6 text");
+            itemsWithError.Insert(L"item7", L"item7 text");
+            itemsWithError.Insert(L"", L"item8 text");      // Empty ID isn't allowed
+            itemsWithError.Insert(L"item9", L"item9 text");
+            itemsWithError.Insert(L"item10", L"item10 text");
+
+            VERIFY_THROWS_HR(comboBox.Items(itemsWithError), E_INVALIDARG);
+
+            // Verify object state hasn't been modified.
+            auto expected{ L"<input id='comboBox1' type='selection'><selection id='item1' content='item1 text'/><selection id='item2' content='item2 text'/><selection id='item3' content='item3 text'/><selection id='item4' content='item4 text'/><selection id='item5' content='item5 text'/></input>" };
+            auto actual{ comboBox.as<winrt::Windows::Foundation::IStringable>().ToString() };
+            VERIFY_ARE_EQUAL(actual, expected);
+        }
+
         TEST_METHOD(AppNotificationBuilderEscapeXmlCharacters)
         {
             auto builder{ winrt::AppNotificationBuilder().AddText(LR"(&"'<>)") };
