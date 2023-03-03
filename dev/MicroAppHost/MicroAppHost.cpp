@@ -2,27 +2,52 @@
 //
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <codecvt>
+#include <locale>
 #include <wil/stl.h>
 #include <wil/resource.h>
+#include <winrt/Windows.ApplicationModel.Activation.h>
+#include <winrt/Windows.Data.Json.h>
+#include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.UI.Xaml.h>
+#include <winrt/Windows.UI.Xaml.Controls.h>
+#include <winrt/Windows.UI.Xaml.Hosting.h>
+#include <winrt/Windows.UI.Xaml.Media.h>
+#include <winrt/Windows.UI.Xaml.Media.Imaging.h>
+#include <winrt/Windows.UI.Xaml.Shapes.h>
+#include <winrt/Windows.UI.Xaml.Input.h>
+
+using namespace winrt;
+using namespace Windows::Data::Json;
+using namespace Windows::Foundation;
+using namespace Windows::Foundation::Collections;
+using namespace Windows::UI::Xaml;
+using namespace Windows::UI::Xaml::Controls;
+using namespace Windows::UI::Xaml::Hosting;
+using namespace Windows::UI::Xaml::Media;
+using namespace Windows::UI::Xaml::Media::Imaging;
+using namespace Windows::UI::Xaml::Shapes;
+using namespace Windows::UI::Xaml::Input;
 
 int main()
 {
     int argc;
     wil::unique_hlocal_ptr<PWSTR[]> argv{ CommandLineToArgvW(GetCommandLineW(), &argc)};
 
-    for (int i = 0; i < argc; i++)
+    std::wifstream registrationJson(argv.get()[1]);
+    std::wstring content((std::istreambuf_iterator<wchar_t>(registrationJson)), (std::istreambuf_iterator<wchar_t>()));
+
+    JsonValue jsonValue = JsonValue::Parse(winrt::to_hstring(content.c_str()));
+
+    // Print the contents of the JSON file
+    std::wstringstream buffer;
+    buffer << jsonValue.Stringify().c_str();
+    std::wcout << buffer.str() << std::endl;
+
+    /*for (int i = 0; i < argc; i++)
     {
         std::wcout << "Arg" << i << " " << argv.get()[i] << std::endl;
-    }
+    }*/
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
