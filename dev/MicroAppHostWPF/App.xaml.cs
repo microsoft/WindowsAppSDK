@@ -10,6 +10,8 @@ namespace MicroAppHostWPF
     /// </summary>
     public partial class App : Application
     {
+        public static JsonDocument g_registrationJson { get; set; }
+
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             // Check if a file path was passed in the command line arguments
@@ -23,7 +25,7 @@ namespace MicroAppHostWPF
                 Console.WriteLine(fileContents);
 
                 // Parse the file string to a JsonDocument
-                JsonDocument doc = JsonDocument.Parse(fileContents);
+                App.g_registrationJson = JsonDocument.Parse(fileContents);
             }
 
         }
