@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
+// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -19,14 +19,15 @@ namespace Test::Packages
     {
         // Build the target package's .msix filename. It's under the Solution's $(OutDir)
         // NOTE: It could live in ...\Something.msix\... or ...\Something\...
-        auto solutionOutDirPath = TF::GetSolutionOutDirPath();
+        auto solutionOutDirPath{ TF::GetSolutionOutDirPath() };
         //
         // Look in ...\Something.msix\...
-        auto msix(solutionOutDirPath);
+        auto msix{ solutionOutDirPath };
         msix /= packageDirName;
         msix += L".msix";
         msix /= packageDirName;
         msix += L".msix";
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"msix: %s", msix.c_str()));
         if (!std::filesystem::is_regular_file(msix))
         {
             // Look in ...\Something\...
@@ -34,9 +35,11 @@ namespace Test::Packages
             msix /= packageDirName;
             msix /= packageDirName;
             msix += L".msix";
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"msix pre-is_regular_file: %s", msix.c_str()));
             VERIFY_IS_TRUE(std::filesystem::is_regular_file(msix));
         }
-        auto msixUri = winrt::Windows::Foundation::Uri(msix.c_str());
+        auto msixUri{ winrt::Windows::Foundation::Uri(msix.c_str()) };
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"msixUri: %s", msixUri.ToString().c_str()));
 
         // Install the package
         winrt::Windows::Management::Deployment::PackageManager packageManager;
@@ -44,7 +47,7 @@ namespace Test::Packages
         auto deploymentResult{ packageManager.AddPackageAsync(msixUri, nullptr, options).get() };
         if (FAILED(deploymentResult.ExtendedErrorCode()))
         {
-            auto message = wil::str_printf<wil::unique_process_heap_string>(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode().value, deploymentResult.ErrorText().c_str());
+            auto message{ wil::str_printf<wil::unique_process_heap_string>(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode().value, deploymentResult.ErrorText().c_str()) };
             VERIFY_FAIL(message.get());
         }
     }
@@ -63,7 +66,7 @@ namespace Test::Packages
         auto deploymentResult{ packageManager.RemovePackageAsync(packageFullName).get() };
         if (!deploymentResult)
         {
-            auto message = wil::str_printf<wil::unique_process_heap_string>(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode().value, deploymentResult.ErrorText().c_str());
+            auto message{ wil::str_printf<wil::unique_process_heap_string>(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode().value, deploymentResult.ErrorText().c_str()) };
             VERIFY_FAIL(message.get());
         }
     }
@@ -73,7 +76,7 @@ namespace Test::Packages
         // Check if the package is registered to the current user via GetPackagePath().
         // GetPackagePath() fails if the package isn't registerd to the current user.
         // Simplest and most portable test across the platforms we might run on
-        const auto path = GetPackagePath(packageFullName);
+        const auto path{ GetPackagePath(packageFullName) };
         return !path.empty();
     }
 
@@ -87,7 +90,7 @@ namespace Test::Packages
         }
 
         VERIFY_ARE_EQUAL(ERROR_INSUFFICIENT_BUFFER, rc);
-        auto path = wil::make_process_heap_string(nullptr, pathLength);
+        auto path{ wil::make_process_heap_string(nullptr, pathLength) };
         VERIFY_ARE_EQUAL(ERROR_SUCCESS, GetPackagePathByFullName(packageFullName, &pathLength, path.get()));
         return std::wstring(path.get());
     }
@@ -243,7 +246,7 @@ namespace Test::Packages
     std::filesystem::path GetWindowsAppRuntimeFrameworkMsixPath()
     {
         // Determine the location of Windows App SDK's Framework's msix. See GetSolutionOutDirPath() for more details.
-        auto path = TF::GetSolutionOutDirPath();
+        auto path{ TF::GetSolutionOutDirPath() };
         path /= L"Microsoft.WindowsAppRuntime.Framework";
         path /= L"Microsoft.WindowsAppRuntime.Framework.msix";
         return path;
