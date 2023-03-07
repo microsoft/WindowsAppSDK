@@ -7,13 +7,16 @@ namespace Test::FileSystem
 {
     std::filesystem::path GetModulePath(HMODULE hmodule)
     {
-        auto path = GetModuleFileName(hmodule);
-        return path.remove_filename();
+        auto path{ GetModuleFileName(hmodule) };
+        const auto modulePath{ path.remove_filename() };
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetModulePath(%p): %s", hmodule, modulePath.c_str()));
+        return modulePath;
     }
 
     std::filesystem::path GetModuleFileName(HMODULE hmodule)
     {
-        auto moduleFileName = wil::GetModuleFileNameW(hmodule);
+        auto moduleFileName{ wil::GetModuleFileNameW(hmodule) };
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetModuleFileName(%p): %s", hmodule, moduleFileName.get()));
         return std::filesystem::path(moduleFileName.get());
     }
 
@@ -28,9 +31,10 @@ namespace Test::FileSystem
 
     std::filesystem::path GetTestAbsolutePath()
     {
-        auto path = GetTestAbsoluteFilename();
+        auto path{ GetTestAbsoluteFilename() };
         path = path.remove_filename();
         path = path.parent_path();
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetTestAbsolutePath(): %s", path.c_str()));
         return path;
     }
 
@@ -49,28 +53,31 @@ namespace Test::FileSystem
         //        Microsoft.WindowsAppRuntime.Bootstrap.dll
 
         // Find the test dll's directory
-        auto testPath = GetTestAbsoluteFilename();
+        auto testPath{ GetTestAbsoluteFilename() };
 
         // Find the common parent directory
-        auto path = testPath.parent_path().parent_path();
+        auto path{ testPath.parent_path().parent_path() };
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetSolutionOutDirPath(): %s", path.c_str()));
         return path;
     }
 
     std::filesystem::path GetBootstrapAbsoluteFilename()
     {
         // Determine the location of the bootstrap dll. See GetSolutionOutDirPath() for more details.
-        auto path = GetSolutionOutDirPath();
+        auto path{ GetSolutionOutDirPath() };
         path /= L"WindowsAppRuntime_BootstrapDLL";
         path /= L"Microsoft.WindowsAppRuntime.Bootstrap.dll";
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetBootstrapAbsoluteFilename(): %s", path.c_str()));
         return path;
     }
 
     std::filesystem::path GetWindowsAppRuntimeDllAbsoluteFilename()
     {
         // Determine the location of the dll. See GetSolutionOutDirPath() for more details.
-        auto path = GetSolutionOutDirPath();
+        auto path{ GetSolutionOutDirPath() };
         path /= L"WindowsAppRuntime_DLL";
         path /= L"Microsoft.WindowsAppRuntime.dll";
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetWindowsAppRuntimeDllAbsoluteFilename(): %s", path.c_str()));
         return path;
     }
 }
