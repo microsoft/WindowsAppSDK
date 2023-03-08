@@ -8,14 +8,12 @@ namespace Security::User
 {
 inline bool IsLocalSystem(HANDLE token = nullptr)
 {
-    BYTE localSystemSidBuffer[ SECURITY_MAX_SID_SIZE ];
+    BYTE localSystemSidBuffer[SECURITY_MAX_SID_SIZE]{};
     PSID localSystemSid{ reinterpret_cast<PSID>(localSystemSidBuffer) };
     DWORD localSystemSidBufferSize{ ARRAYSIZE(localSystemSidBuffer) };
     THROW_IF_WIN32_BOOL_FALSE(CreateWellKnownSid(WinLocalSystemSid, nullptr, localSystemSid, &localSystemSidBufferSize));
 
-    wistd::unique_ptr<TOKEN_USER> user{
-        wil::get_token_information<TOKEN_USER>(
-            !token ? GetCurrentThreadEffectiveToken() : token) };
+    wistd::unique_ptr<TOKEN_USER> user{ wil::get_token_information<TOKEN_USER>(!token ? GetCurrentThreadEffectiveToken() : token) };
     PSID userSid{ user->User.Sid };
 
     return !!EqualSid(userSid, localSystemSid);

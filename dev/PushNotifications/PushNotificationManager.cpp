@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -121,7 +121,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         THROW_IF_FAILED(operationalCode);
 
-        winrt::copy_from_abi(channelInfo.channelExpiryTime, &channelExpiryTime);
+        // Need to manually convert from the ABI::DateTime type to the winrt::DateTime type since they have different contracts.
+        FILETIME filetime;
+        LARGE_INTEGER largeTime;
+        largeTime.QuadPart = channelExpiryTime.UniversalTime;
+        filetime.dwLowDateTime = largeTime.LowPart;
+        filetime.dwHighDateTime = largeTime.HighPart;
+
+        channelInfo.channelExpiryTime = winrt::clock::from_FILETIME(filetime);
         channelInfo.appId = winrt::hstring{ appId.get() };
         channelInfo.channelId = winrt::hstring{ channelId.get() };
         channelInfo.channelUri = winrt::hstring{ channelUri.get() };
@@ -787,7 +794,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         _Out_ BOOL* foregroundHandled)
     {
         auto logTelemetry{ PushNotificationTelemetry::InvokeAll::Start(g_telemetryHelper, correlationVector) };
-        wil::scope_exit([&]() { logTelemetry.Stop(); });
 
         auto args{ winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length) };
 
@@ -801,6 +807,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             *foregroundHandled = false;
         }
+
+        logTelemetry.Stop();
     }
 
     IFACEMETHODIMP PushNotificationManager::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept try
