@@ -217,9 +217,6 @@ jobs:
       projects: build\Helix\RunTestsInHelix.proj
       custom: msbuild
       arguments: '$(helixCommonArgs) /p:HelixTargetQueues=$(helixTargetQueuesClosed)'
-  # alam start
-    condition: false
-  # alam end
 
   # This script updates the test results based on the retry logic. It updates the test results in the Pipeline to show 'sub results' in cases where a test was re-run.
   - task: powershell@2
