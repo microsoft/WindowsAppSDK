@@ -4,9 +4,11 @@ parameters:
   condition: ''
   maxParallel: 10
   matrix:
-    Release_x86:
-      buildPlatform: 'x86'
-      buildConfiguration: 'Release'
+    # alam start
+    # Release_x86:
+    #   buildPlatform: 'x86'
+    #   buildConfiguration: 'Release'
+    # alam end
     Release_x64:
       buildPlatform: 'x64'
       buildConfiguration: 'Release'
