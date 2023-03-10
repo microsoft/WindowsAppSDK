@@ -86,6 +86,12 @@ jobs:
       displayName: WindowsAppSDK.Helix.Test
       solutionPath: test\WindowsAppSDK.Helix.Test\WindowsAppSDK.Helix.Test.sln
 
+  # alam start
+  - script: |
+      dir /s $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
+    displayName: 'Display output folder'
+  # alam end
+
   # Note: 'NuGetCommand@2' is ambiguous so the specific task GUID must be used instead.
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     displayName: 'NuGet restore build/Helix/packages.config'
@@ -137,6 +143,9 @@ jobs:
       contents: |
         Microsoft.Windows.ApplicationModel.Resources.winmd
       targetFolder: $(testPayloadDir)
+  # alam start
+    condition: false
+  # alam end
 
   # TODO: This test needs to be converted to TAEF to run in Helix.
   # - task: powershell@2
@@ -153,8 +162,14 @@ jobs:
     inputs:
       PathtoPublish: $(helixWorkItemsDir)
       artifactName: HelixWorkItems_$(buildPlatform)_$(buildConfiguration)
+  # alam start
+    condition: false
+  # alam end
 
   - task: NuGetToolInstaller@1
+  # alam start
+    condition: false
+  # alam end
 
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     displayName: 'NuGet restore Helix/RunTestsInHelix.proj'
@@ -165,12 +180,18 @@ jobs:
       feedsToUse: config
       nugetConfigPath: nuget.config
       restoreDirectory: packages
+  # alam start
+    condition: false
+  # alam end
 
   # Run the tests in Helix
   # By executing 'dotnet msbuild' against RunTestsInHelix.proj the test payload and the work items to execute get sent to Helix.
   - task: DotNetCoreCLI@2
     displayName: 'Run tests in Helix (open queues)'
-    condition: and(succeeded(), eq(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
+    # alam start
+    #  condition: and(succeeded(), eq(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
+    condition: false
+    # alam end
     timeoutInMinutes: 45
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -182,7 +203,11 @@ jobs:
 
   - task: DotNetCoreCLI@2
     displayName: 'Run tests in Helix (closed queues)'
-    condition: and(succeeded(), ne(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
+    # alam start
+    # condition: and(succeeded(), ne(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
+    condition: false
+    # alam end
+
     timeoutInMinutes: 45
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -192,6 +217,9 @@ jobs:
       projects: build\Helix\RunTestsInHelix.proj
       custom: msbuild
       arguments: '$(helixCommonArgs) /p:HelixTargetQueues=$(helixTargetQueuesClosed)'
+  # alam start
+    condition: false
+  # alam end
 
   # This script updates the test results based on the retry logic. It updates the test results in the Pipeline to show 'sub results' in cases where a test was re-run.
   - task: powershell@2
@@ -209,7 +237,10 @@ jobs:
   # This outputs any failed test to the build log. It is not required, but it makes it easier to see at a glance what failed.
   - task: powershell@2
     displayName: 'OutputTestResults.ps1'
-    condition: succeededOrFailed()
+    # alam start
+    # condition: succeededOrFailed()
+    condition: false
+    # alam end
     timeoutInMinutes: 15
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -223,7 +254,10 @@ jobs:
   # full logs and any supporting files can be downloaded from the Pipeline.
   - task: powershell@2
     displayName: 'ProcessHelixFiles.ps1'
-    condition: succeededOrFailed()
+    # alam start
+    # condition: succeededOrFailed()
+    condition: false
+    # alam end
     timeoutInMinutes: 15
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -238,7 +272,10 @@ jobs:
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Helix files'
-    condition: succeededOrFailed()
+    # alam start
+    # condition: succeededOrFailed()
+    condition: false
+    # alam end
     inputs:
       PathtoPublish: $(helixTestOutputBaseDir)
       artifactName: HelixTestOutput_$(buildPlatform)_$(buildConfiguration)
