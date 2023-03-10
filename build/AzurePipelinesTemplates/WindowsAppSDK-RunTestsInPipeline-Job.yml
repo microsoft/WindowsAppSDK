@@ -64,21 +64,21 @@ jobs:
         #   buildPlatform: x64
         #   buildConfiguration: release
         #   testLocale: en-US
-        22H2_x86fre:
-          imageName: Windows.10.Enterprise.22h2
-          buildPlatform: x86
-          buildConfiguration: release
-          testLocale: en-US
+        # 22H2_x86fre:
+        #   imageName: Windows.10.Enterprise.22h2
+        #   buildPlatform: x86
+        #   buildConfiguration: release
+        #   testLocale: en-US
         # co_refresh_x64fre:
         #   imageName: co_refresh
         #   buildPlatform: x64
         #   buildConfiguration: release
         #   testLocale: en-US
-        # rs_prerelease_x64fre:
-        #   imageName: rs_prerelease
-        #   buildPlatform: x64
-        #   buildConfiguration: release
-        #   testLocale: en-US
+        rs_prerelease_x64fre:
+          imageName: rs_prerelease
+          buildPlatform: x64
+          buildConfiguration: release
+          testLocale: en-US
         # Server22_DC_x64fre:
         #   imageName: Windows.Server.2022.DataCenter.WestUS3
         #   buildPlatform: x64
