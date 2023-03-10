@@ -308,7 +308,7 @@ jobs:
     - BuildAndTestMRT
   # alam start
   # condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
-    condition: false
+  condition: false
   # alam end
   steps:
   - task: DownloadBuildArtifacts@0
