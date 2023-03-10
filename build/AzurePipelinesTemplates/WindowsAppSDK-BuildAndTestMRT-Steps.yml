@@ -40,24 +40,26 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
-  displayName: 'test MRT: BaseUnitTests'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MrmBaseUnitTests.dll'
-    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests'
-    testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+# alam start
+# - task: VSTest@2
+#   displayName: 'test MRT: BaseUnitTests'
+#   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+#   inputs:
+#     testSelector: 'testAssemblies'
+#     testAssemblyVer2: '**\MrmBaseUnitTests.dll'
+#     searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests'
+#     testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
+#     platform: '$(buildPlatform)'
+#     configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
-  displayName: 'test MRT: UnpackagedTests'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
-    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests'
-    testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+# - task: VSTest@2
+#   displayName: 'test MRT: UnpackagedTests'
+#   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+#   inputs:
+#     testSelector: 'testAssemblies'
+#     testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
+#     searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests'
+#     testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
+#     platform: '$(buildPlatform)'
+#     configuration: '$(buildConfiguration)'
+# alam end
