@@ -4,6 +4,6 @@
     "areaPath": "OS\\Windows Client and Services\\ADEPT\\OWL (Open Windows pLatform)\\Rendering\\WinAppSDK Engineering System",
     "iterationPath": "OS\\2211",
     "notificationAliases": [ "WinAppSDK-Build@microsoft.com" ],
-    "ignoreBranchName": true,
+    "branchName": "main",
     "codebaseName": "WinAppSDK-Foundation"
 }
