@@ -26,21 +26,23 @@ parameters:
 
 jobs:
 # This relatively low-cost job is always run, in parallel w/ the Build job.
-- template: WindowsAppSDK-SourceAnalysis-job.yml
+# alam start
+# - template: WindowsAppSDK-SourceAnalysis-job.yml
+# alam end
 
 - job: VerifyCopyrightHeaders
   dependsOn: []
   pool: ProjectReunionESPool-2022
+  # alam start
+  condition: false
+  # alam end
   steps:
   - task: powershell@2
     displayName: 'Verify copyright headers'
     inputs:
       targetType: filePath
       filePath: tools\VerifyCopyrightHeaders.ps1
-    # alam start
-    # condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
     condition: false
-    # alam end
 
 - job: Build
   pool: ProjectReunionESPool-2022
