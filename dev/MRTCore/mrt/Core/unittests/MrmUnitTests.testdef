@@ -4,7 +4,7 @@
             "Description": "Mrm Unit Tests (TAEF)",
             "Filename": "MrmUnitTests.dll",
             "Parameters": "",
-            "Architectures": ["x64", "x86, "arm64"],
+            "Architectures": ["x64", "x86", "arm64"],
             "Status": "Enabled"
         }
     ]
