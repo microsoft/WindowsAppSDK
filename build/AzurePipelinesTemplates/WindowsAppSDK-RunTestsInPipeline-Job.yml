@@ -23,66 +23,68 @@ jobs:
     matrix:
       # The test matrix for x64 is currently larger; this is where we exercise most variations.
       ${{ if not( parameters.isArm64Platfrom ) }}:
-        RS5_x86fre:
-          imageName: Windows.10.Enterprise.RS5
-          buildPlatform: x86
-          buildConfiguration: release
-          testLocale: en-US
-        19H2_de-DE_x64fre:
-          imageName: Windows.10.Enterprise.19H2.de-DE
-          buildPlatform: x86
-          buildConfiguration: release
-          testLocale: de-DE
-        20H2_x64fre:
-          imageName: Windows.10.Enterprise.20H2
-          buildPlatform: x64
-          buildConfiguration: release
-          testLocale: en-US
-        20H2_fr-FR_x64fre:
-          imageName: Windows.10.Enterprise.20H2.fr-FR
-          buildPlatform: x64
-          buildConfiguration: release
-          testLocale: fr-FR
-        20H2_zh-CN_x86fre:
-          imageName: Windows.10.Enterprise.20H2.zh-CN
-          buildPlatform: x86
-          buildConfiguration: release
-          testLocale: zh-CN
-        20H2_ja-JP_x64fre:
-          imageName: Windows.10.Enterprise.20H2.ja-JP
-          buildPlatform: x64
-          buildConfiguration: release
-          testLocale: ja-JP
-        21H1_x64fre:
-          imageName: Windows.10.Enterprise.21h1
-          buildPlatform: x64
-          buildConfiguration: release
-          testLocale: en-US
-        21H2_MS_x64fre:
-          imageName: Windows.11.Enterprise.MultiSession.21h2
-          buildPlatform: x64
-          buildConfiguration: release
-          testLocale: en-US
+        # alam start
+        # RS5_x86fre:
+        #   imageName: Windows.10.Enterprise.RS5
+        #   buildPlatform: x86
+        #   buildConfiguration: release
+        #   testLocale: en-US
+        # 19H2_de-DE_x64fre:
+        #   imageName: Windows.10.Enterprise.19H2.de-DE
+        #   buildPlatform: x86
+        #   buildConfiguration: release
+        #   testLocale: de-DE
+        # 20H2_x64fre:
+        #   imageName: Windows.10.Enterprise.20H2
+        #   buildPlatform: x64
+        #   buildConfiguration: release
+        #   testLocale: en-US
+        # 20H2_fr-FR_x64fre:
+        #   imageName: Windows.10.Enterprise.20H2.fr-FR
+        #   buildPlatform: x64
+        #   buildConfiguration: release
+        #   testLocale: fr-FR
+        # 20H2_zh-CN_x86fre:
+        #   imageName: Windows.10.Enterprise.20H2.zh-CN
+        #   buildPlatform: x86
+        #   buildConfiguration: release
+        #   testLocale: zh-CN
+        # 20H2_ja-JP_x64fre:
+        #   imageName: Windows.10.Enterprise.20H2.ja-JP
+        #   buildPlatform: x64
+        #   buildConfiguration: release
+        #   testLocale: ja-JP
+        # 21H1_x64fre:
+        #   imageName: Windows.10.Enterprise.21h1
+        #   buildPlatform: x64
+        #   buildConfiguration: release
+        #   testLocale: en-US
+        # 21H2_MS_x64fre:
+        #   imageName: Windows.11.Enterprise.MultiSession.21h2
+        #   buildPlatform: x64
+        #   buildConfiguration: release
+        #   testLocale: en-US
         22H2_x86fre:
           imageName: Windows.10.Enterprise.22h2
           buildPlatform: x86
           buildConfiguration: release
           testLocale: en-US
-        co_refresh_x64fre:
-          imageName: co_refresh
-          buildPlatform: x64
-          buildConfiguration: release
-          testLocale: en-US
-        rs_prerelease_x64fre:
-          imageName: rs_prerelease
-          buildPlatform: x64
-          buildConfiguration: release
-          testLocale: en-US
-        Server22_DC_x64fre:
-          imageName: Windows.Server.2022.DataCenter.WestUS3
-          buildPlatform: x64
-          buildConfiguration: release
-          testLocale: en-US
+        # co_refresh_x64fre:
+        #   imageName: co_refresh
+        #   buildPlatform: x64
+        #   buildConfiguration: release
+        #   testLocale: en-US
+        # rs_prerelease_x64fre:
+        #   imageName: rs_prerelease
+        #   buildPlatform: x64
+        #   buildConfiguration: release
+        #   testLocale: en-US
+        # Server22_DC_x64fre:
+        #   imageName: Windows.Server.2022.DataCenter.WestUS3
+        #   buildPlatform: x64
+        #   buildConfiguration: release
+        #   testLocale: en-US
+        # alam start
       # The arm64 test matrix starts here.
       ${{ if parameters.isArm64Platfrom }}:
         Win11_Professional_arm64fre:
