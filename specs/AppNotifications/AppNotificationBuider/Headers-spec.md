@@ -1,9 +1,26 @@
-# Headers
 
-Headers let developers identify related notifications so they can be grouped together in Notification Center.
+
+# Background
+
+[App notifications](https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/notifications/app-notifications/app-notifications-quickstart?tabs=cs)
+in the Windows App SDK are messages that your app can construct and deliver to
+your user while they are not currently inside your app, for example:
+
+![App notification example](app-notification-example.jpg)
+
+App notifications are defined in XML, and the
+[AppNotificationBuilder](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder)
+API provides a programattic way to build that XML.
+
+The `AppNotificationBuilder` though does not support the 
+[`header`](https://learn.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/toast-schema#toastheader)
+feature of the XML.
+
+Headers let developers identify related notifications so they can be grouped together in Notification Center, such as "Camping!!" in this example:
+
 ![AppNotification Header Example](toast-content-headers.png)
 
-Developers can specify a Header when defining a notification in raw xml, but the AppNotificationBuilder doesn't support it.
+The above notification is defined by:
 
 ```xml
 <toast>
@@ -19,39 +36,16 @@ Developers can specify a Header when defining a notification in raw xml, but the
 </toast>
 ```
 
-Adding support for Headers to the AppNotificationBuilder is straightforward. All is needed is a new Header runtime class to represent the Header.
+The new API in this spec provides a way to build this with the `AppNotificationBuilder`.
 
-```idl
-[contract(AppNotificationBuilderContract, 2)]
-runtimeclass AppNotificationHeader
-{
-    // A custom header that groups multiple notifications together within Action Center.
-    AppNotificationHeader();
-    AppNotificationHeader(String id, String title);
+# API Pages
 
-    String Id;
-    String Title;
-    Windows.Foundation.Collections.IMap<String, String> Arguments;
+## AppNotificationHeader class
 
-    AppNotificationHeader AddArgument(String key, String value);
-};
-```
+Specifies a custom header that groups multiple notifications together within the notification.
 
-Along with a new SetHeader function in the AppNotificationBuilder itself to set the Header.
-
-```idl
-[contract(AppNotificationBuilderContract, 1)]
-runtimeclass AppNotificationBuilder
-{
-    ...
-
-    [contract(AppNotificationBuilderContract, 2)]
-    AppNotificationBuilder SetHeader(AppNotificationHeader value);
-
-    ...
-```
-
-Using the updated AppNotificationBuilder, developers can quickly set a header on any AppNotification. 
+In the following example, `AppNotificationBuilder` sets a header onto an
+[AppNotification](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/Microsoft.Windows.AppNotifications.AppNotification).
 
 ```c++
 auto builder{ winrt::AppNotificationBuilder()
@@ -61,7 +55,8 @@ auto builder{ winrt::AppNotificationBuilder()
     .AddText(L"Anyone have a sleeping bag I can borrow?") };
 ```
 
-Additionally, the AppNotificationHeader runtime class can be instanciated outside the builder pattern, allowing i the same header to be re-used in multiple notifications.
+This example uses the same header in multiple notifications:
+
 
 ```c++
 auto header{ winrt::AppNotificationHeader(L"6289", L"Camping!!")
@@ -83,7 +78,37 @@ The above usage produces the results bellow.
 
 ![AppNotification Header Example](HeaderExample.png)
 
-# Additional Notes
+
+
+# API Details
+
+```idl
+[contract(AppNotificationBuilderContract, 2)]
+runtimeclass AppNotificationHeader
+{
+    AppNotificationHeader();
+    AppNotificationHeader(String id, String title);
+
+    String Id;
+    String Title;
+    Windows.Foundation.Collections.IMap<String, String> Arguments;
+
+    AppNotificationHeader AddArgument(String key, String value);
+};
+
+[contract(AppNotificationBuilderContract, 1)]
+runtimeclass AppNotificationBuilder
+{
+    ...
+
+    [contract(AppNotificationBuilderContract, 2)]
+    AppNotificationBuilder SetHeader(AppNotificationHeader value);
+
+    ...
+```
+
+# Appendix
+
 * The new AppNotificationHeader runtimeclass is needed because a Header can have a variable number of arguments.
 
 * I thought about factoring out a runtimeclass specifically for holding arguments, similar to how AppNotificationTextProperties hold properties for text items, but this would require changes to a published API and the gain would be marginal at best as the xml required to define the arguments in a Header differs from the xml defining the arguments in the notification itself.
