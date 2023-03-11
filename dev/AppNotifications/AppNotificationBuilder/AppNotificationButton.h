@@ -12,12 +12,18 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         AppNotificationButton() = default;
         AppNotificationButton(winrt::hstring const& content);
 
+        static winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton MakeSnoozeButton(winrt::hstring const& inputId);
+        static winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton MakeDismissButton();
+
         // Properties
         void Content(winrt::hstring const& value) { m_content = value; };
         winrt::hstring Content() { return m_content; };
 
         void Arguments(winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& value) { m_arguments = value; };
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> Arguments() { return m_arguments; };
+
+        void ButtonType(AppNotificationButtonType const& value) { m_buttonType = value; };
+        AppNotificationButtonType ButtonType() { return m_buttonType; };
 
         void Icon(winrt::Windows::Foundation::Uri const& value) { m_iconUri = value; };
         winrt::Windows::Foundation::Uri Icon() { return m_iconUri; };
@@ -65,6 +71,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::wstring GetButtonStyle();
 
         winrt::hstring m_content{};
+        AppNotificationButtonType m_buttonType{ AppNotificationButtonType::Custom };
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_arguments { winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
         winrt::Windows::Foundation::Uri m_iconUri{ nullptr };
         winrt::Windows::Foundation::Uri m_protocolUri{ nullptr };

@@ -5,8 +5,22 @@ import "..\AppNotifications\AppNotifications.idl";
 
 namespace Microsoft.Windows.AppNotifications.Builder
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract AppNotificationBuilderContract {}
+
+    [contract(AppNotificationBuilderContract, 2)]
+    runtimeclass AppNotificationHeader
+    {
+        // A custom header that groups multiple notifications together within Action Center.
+        AppNotificationHeader();
+        AppNotificationHeader(String id, String title);
+
+        String Id;
+        String Title;
+        Windows.Foundation.Collections.IMap<String, String> Arguments;
+
+        AppNotificationHeader AddArgument(String key, String value);
+    };
 
     [contract(AppNotificationBuilderContract, 1)]
     runtimeclass AppNotificationTextProperties
@@ -23,6 +37,66 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationTextProperties SetMaxLines(Int32 value);
     };
 
+    [contract(AppNotificationBuilderContract, 2)]
+    enum AppNotificationTextStyle
+    {
+        Default,          // Default value. Style is determined by the renderer.
+        Caption,          // Smaller than paragraph font size.
+        CaptionSubtle,    // Same as Caption but with subtle opacity.
+        Body,             // Paragraph font size.
+        BodySubtle,       // Same as Body but with subtle opacity.
+        Base,             // Paragraph font size, bold weight. Essentially the bold version of Body.
+        BaseSubtle,       // Same as Base but with subtle opacity.
+        Subtitle,         // H4 font size.
+        SubtitleSubtle,   // Same as Subtitle but with subtle opacity.
+        Title,            // H3 font size.
+        TitleSubtle,      // Same as Title but with subtle opacity.
+        TitleNumeral,     // Same as Title but with top/bottom padding removed.
+        Subheader,        // H2 font size.
+        SubheaderSubtle,  // Same as Subheader but with subtle opacity.
+        SubheaderNumeral, // Same as Subheader but with top/bottom padding removed.
+        Header,           // H1 font size.
+        HeaderSubtle,     // Same as Header but with subtle opacity.
+        HeaderNumeral,    // Same as Header but with top/bottom padding removed.
+    };
+
+    [contract(AppNotificationBuilderContract, 2)]
+    enum AppNotificationTextAlign
+    {
+        Default, // Default value. Alignment is automatically determined by the renderer.
+        Auto,    // Alignment determined by the current language and culture.
+        Left,    // Horizontally align the text to the left.
+        Center,  // Horizontally align the text in the center.
+        Right,   // Horizontally align the text to the right.
+    };
+
+    [contract(AppNotificationBuilderContract, 2)]
+    runtimeclass AppNotificationExtendedTextProperties
+    {
+        // Contains the set of extended <text> attributes
+        AppNotificationExtendedTextProperties();
+
+        // AppNotificationExtendedTextProperties
+        AppNotificationTextStyle Style;
+        Int32 MinLines;
+        AppNotificationTextAlign Align;
+
+        // AppNotificationTextProperties
+        String Language;
+        Boolean IncomingCallAlignment;
+        Int32 MaxLines;
+
+        // AppNotificationExtendedTextProperties
+        AppNotificationExtendedTextProperties SetStyle(AppNotificationTextStyle Style);
+        AppNotificationExtendedTextProperties SetMinLines(Int32 value);
+        AppNotificationExtendedTextProperties SetAlign(AppNotificationTextAlign Align);
+
+        // AppNotificationTextProperties
+        AppNotificationExtendedTextProperties SetLanguage(String value);
+        AppNotificationExtendedTextProperties SetIncomingCallAlignment();
+        AppNotificationExtendedTextProperties SetMaxLines(Int32 value);
+    };
+
     [contract(AppNotificationBuilderContract, 1)]
     enum AppNotificationButtonStyle
     {
@@ -31,13 +105,28 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Critical,
     };
 
+    [contract(AppNotificationBuilderContract, 2)]
+    enum AppNotificationButtonType
+    {
+        Custom,
+        Snooze,
+        Dismiss,
+    };
+
     [contract(AppNotificationBuilderContract, 1)]
     runtimeclass AppNotificationButton
     {
         AppNotificationButton();
         AppNotificationButton(String content);
 
+        [contract(AppNotificationBuilderContract, 2)]
+        static AppNotificationButton MakeSnoozeButton(String inputId);
+        [contract(AppNotificationBuilderContract, 2)]
+        static AppNotificationButton MakeDismissButton();
+
         String Content;
+        [contract(AppNotificationBuilderContract, 2)]
+        AppNotificationButtonType ButtonType;
         Windows.Foundation.Collections.IMap<String, String> Arguments;
         Windows.Foundation.Uri Icon;
         String ToolTip;
@@ -118,6 +207,97 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationComboBox SetSelectedItem(String id);
     };
 
+    [contract(AppNotificationBuilderContract, 2)]
+    enum AppNotificationImageAlign
+    {
+        Default, // Default value. Alignment behavior determined by renderer. 
+        Stretch, // Image stretches to fill available width (and potentially available height too, depending on where the image is placed).
+        Left,    // Align the image to the left, displaying the image at its native resolution.
+        Center,  // Align the image in the center horizontally, displayign the image at its native resolution.
+        Right,   // Align the image to the right, displaying the image at its native resolution.
+    };
+
+    [contract(AppNotificationBuilderContract, 2)]
+    runtimeclass AppNotificationImageProperties
+    {
+        // Contains the set of <image> attributes
+        AppNotificationImageProperties();
+
+        Boolean ImageQuery;
+        String AlternateText;
+        AppNotificationImageCrop Crop;
+
+        AppNotificationImageProperties SetImageQuery();
+        AppNotificationImageProperties SetAlternateText(String alternateText);
+        AppNotificationImageProperties SetCrop(AppNotificationImageCrop crop);
+    };
+
+    [contract(AppNotificationBuilderContract, 2)]
+    runtimeclass AppNotificationExtendedImageProperties
+    {
+        // Contains the set of extended <image> attributes
+        AppNotificationExtendedImageProperties();
+
+        // AppNotificationExtendedImageProperties
+        AppNotificationImageAlign Align;
+        Boolean RemoveMargin;
+
+        // AppNotificationImageProperties
+        Boolean ImageQuery;
+        String AlternateText;
+        AppNotificationImageCrop Crop;
+
+        // AppNotificationExtendedImageProperties
+        AppNotificationExtendedImageProperties SetAlign(AppNotificationImageAlign align);
+        AppNotificationExtendedImageProperties SetRemoveMargin();
+
+        // AppNotificationImageProperties
+        AppNotificationExtendedImageProperties SetImageQuery();
+        AppNotificationExtendedImageProperties SetAlternateText(String alternateText);
+        AppNotificationExtendedImageProperties SetCrop(AppNotificationImageCrop crop);
+    };
+
+    [contract(AppNotificationBuilderContract, 2)]
+    enum AppNotificationTextStacking
+    {
+        Default, // Default value. Renderer automatically selects the default vertical alignment. 
+        Top,     // Vertical align to the top.
+        Center,  // Vertical align to the center.
+        Bottom,  // Vertical align to the bottom.
+    };
+
+    [contract(AppNotificationBuilderContract, 2)]
+    runtimeclass AppNotificationSubgroup
+    {
+        // Holds text strings and images for a given subgroup in a group.
+        AppNotificationSubgroup();
+
+        AppNotificationTextStacking TextStacking;
+        Int32 Weight;
+
+        AppNotificationSubgroup SetTextStacking(AppNotificationTextStacking textStacking);
+        AppNotificationSubgroup SetWeight(Int32 weight);
+
+        // Adds text to the AppNotificationSubgroup.
+        AppNotificationSubgroup AddText(String text);
+        AppNotificationSubgroup AddText(String text, AppNotificationExtendedTextProperties properties);
+
+        // Sets the full-width inline-image that appears when you expand the AppNotification
+        AppNotificationSubgroup SetImage(Windows.Foundation.Uri imageUri);
+        AppNotificationSubgroup SetImage(Windows.Foundation.Uri imageUri, AppNotificationExtendedImageProperties properties);
+    };
+
+    [contract(AppNotificationBuilderContract, 2)]
+    runtimeclass AppNotificationGroup
+    {
+        // A grouping of subgroups.
+        AppNotificationGroup();
+
+        Windows.Foundation.Collections.IVector<AppNotificationSubgroup> Subgroups;
+
+        AppNotificationGroup AddSubgroup(AppNotificationSubgroup subgroup);
+    };
+
     [contract(AppNotificationBuilderContract, 1)]
     enum AppNotificationSoundEvent
     {
@@ -178,7 +358,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Default, // Uses the default renderer to display the image
         Circle, // Crops the image as a circle.
     };
-
+    
     [contract(AppNotificationBuilderContract, 1)]
     runtimeclass AppNotificationBuilder
     {
@@ -187,6 +367,9 @@ namespace Microsoft.Windows.AppNotifications.Builder
         // Adds arguments to the launch attribute to return when AppNotification is clicked.
         AppNotificationBuilder AddArgument(String key, String value);
 
+        [contract(AppNotificationBuilderContract, 2)]
+        AppNotificationBuilder SetHeader(AppNotificationHeader value);
+        
         // Sets the timeStamp of the AppNotification to when it was constructed instead of when it was sent.
         AppNotificationBuilder SetTimeStamp(Windows.Foundation.DateTime value);
 
@@ -205,12 +388,20 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Sets the full-width inline-image that appears when you expand the AppNotification
         AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri);
+        [contract(AppNotificationBuilderContract, 2)]
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageProperties properties);
+        [deprecated("Use the AppNotificationImageProperties version of this function instead of this one. For more info, see MSDN.", deprecate, AppNotificationBuilderContract, 2)]
         AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
+        [deprecated("Use the AppNotificationImageProperties version of this function instead of this one. For more info, see MSDN.", deprecate, AppNotificationBuilderContract, 2)]
         AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imagecrop, String alternateText);
 
         // Sets the image that replaces the app logo
         AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri);
+        [contract(AppNotificationBuilderContract, 2)]
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageProperties properties);
+        [deprecated("Use the AppNotificationImageProperties version of this function instead of this one. For more info, see MSDN.", deprecate, AppNotificationBuilderContract, 2)]
         AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
+        [deprecated("Use the AppNotificationImageProperties version of this function instead of this one. For more info, see MSDN.", deprecate, AppNotificationBuilderContract, 2)]
         AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop, String alternateText);
 
         // Sets the image that displays within the banner of the AppNotification.
@@ -235,6 +426,9 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationBuilder AddComboBox(AppNotificationComboBox value);
 
         AppNotificationBuilder AddProgressBar(AppNotificationProgressBar value);
+
+        [contract(AppNotificationBuilderContract, 2)]
+        AppNotificationBuilder AddGroup(AppNotificationGroup value);
 
         // Constructs a WindowsAppSDK AppNotification object with the XML payload
         Microsoft.Windows.AppNotifications.AppNotification BuildNotification();

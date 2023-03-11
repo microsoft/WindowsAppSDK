@@ -21,7 +21,17 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         THROW_HR_IF_MSG(E_INVALIDARG, m_items.Size() >= c_maxSelectionElements, "Maximum number of items added");
         THROW_HR_IF_MSG(E_INVALIDARG, id.empty(), "You must provide an id for the item");
 
-        m_items.Insert(EncodeXml(id).c_str(), EncodeXml(content).c_str());
+        winrt::hstring key{ EncodeXml(id).c_str() };
+
+        if (m_items.HasKey(key))
+        {
+            uint32_t index{};
+            m_insertionOrder.IndexOf(key, index);
+            m_insertionOrder.RemoveAt(index);
+        }
+
+        m_items.Insert(key, EncodeXml(content).c_str());
+        m_insertionOrder.Append(key);
 
         return *this;
     }
@@ -46,9 +56,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         std::wstring items{};
 
-        for (auto pair : m_items)
+        for (auto key : m_insertionOrder)
         {
-            items.append(wil::str_printf<std::wstring>(L"<selection id='%ls' content='%ls'/>", pair.Key().c_str(), pair.Value().c_str()));
+            auto value{m_items.Lookup(key)};
+            items.append(wil::str_printf<std::wstring>(L"<selection id='%ls' content='%ls'/>", key.c_str(), value.c_str()));
         }
 
         return items;

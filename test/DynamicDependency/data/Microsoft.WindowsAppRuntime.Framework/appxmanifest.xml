@@ -99,9 +99,16 @@
             <Path>Microsoft.WindowsAppRuntime.dll</Path>
             <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationTextProperties" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationExtendedTextProperties" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationButton" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationProgressBar" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationComboBox" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationFactory" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationGroup" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationImageProperties" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationExtendedImageProperties" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationSubgroup" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationHeader" ThreadingModel="both" />
         </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">

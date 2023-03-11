@@ -27,11 +27,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         // Inline image component APIs
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageProperties const& properties);
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop);
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop, winrt::hstring const& alternateText);
 
         // AppLogoOverride component APIs
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageProperties const& properties);
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop);
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop, winrt::hstring const& alternateText);
 
@@ -58,6 +60,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddComboBox(AppNotificationComboBox const& value);
 
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AddGroup(AppNotificationGroup const& value);
+
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetHeader(AppNotificationHeader const& value);
+
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetTag(winrt::hstring const& value);
         winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder SetGroup(winrt::hstring const& value);
 
@@ -75,11 +81,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::wstring GetImages();
         std::wstring GetActions();
         std::wstring GetProgressBars();
+        std::wstring GetGroups();
 
         std::wstring m_timeStamp{};
         AppNotificationDuration m_duration{ AppNotificationDuration::Default };
         AppNotificationScenario m_scenario{ AppNotificationScenario::Default };
         bool m_useButtonStyle{};
+        AppNotificationHeader m_header{ nullptr };
         std::vector<winrt::hstring> m_textLines{};
         winrt::hstring m_attributionText{};
         winrt::hstring m_inlineImage{};
@@ -91,6 +99,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         std::vector<AppNotificationProgressBar> m_progressBarList{};
         std::vector<std::wstring> m_textBoxList{};
         std::vector<AppNotificationComboBox> m_comboBoxList{};
+        std::vector<AppNotificationGroup> m_groupList{};
         winrt::hstring m_tag{};
         winrt::hstring m_group{};
     };

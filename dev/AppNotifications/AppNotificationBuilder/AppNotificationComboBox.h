@@ -11,6 +11,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         AppNotificationComboBox(winrt::hstring const& id);
 
         // Properties
+        void InsertionOrder(winrt::Windows::Foundation::Collections::IVector<winrt::hstring> const& value) { m_insertionOrder = value; };
+        winrt::Windows::Foundation::Collections::IVector<winrt::hstring> InsertionOrder() { return m_insertionOrder; };
+
         void Items(winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> const& value) { m_items = value; };
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> Items() { return m_items; };
 
@@ -32,6 +35,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     private:
         winrt::hstring m_id{};
+        winrt::Windows::Foundation::Collections::IVector<winrt::hstring> m_insertionOrder{ winrt::single_threaded_vector<winrt::hstring>() };
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_items{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
         winrt::hstring m_title{};
         winrt::hstring m_selectedItem{};

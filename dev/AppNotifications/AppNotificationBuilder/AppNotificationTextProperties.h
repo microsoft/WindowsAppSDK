@@ -31,6 +31,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::hstring ToString();
 
     private:
+        virtual winrt::hstring ToStringInternal();
+
         int m_maxLines{ 0 };
         winrt::hstring m_language{};
         bool m_useCallScenarioAlign{};

@@ -666,5 +666,88 @@ namespace Test::AppNotification::Builder
             VERIFY_ARE_EQUAL(Decode(LR"(&%3B"%3D'%25<>)"), LR"(&;"='%<>)");
             VERIFY_ARE_EQUAL(Decode(L"%3B%3D%25"), L";=%");
         }
+
+        TEST_METHOD(AppNotificationBuilderAddSnoozeButtonFactory2)
+        {
+            auto builder{ winrt::AppNotificationBuilder()
+                .SetScenario(winrt::AppNotificationScenario::Reminder)
+                .AddText(L"Adaptive Tiles Meeting", winrt::AppNotificationTextProperties()
+                    .SetMaxLines(1))
+                .AddText(L"Conf Room 2001 / Building 135")
+                .AddText(L"10:00 AM - 10:30 AM")
+                .AddComboBox(winrt::AppNotificationComboBox(L"snoozeTime")
+                    .AddItem(L"1", L"1 minute")
+                    .AddItem(L"15", L"15 minutes")
+                    .AddItem(L"60", L"1 hour")
+                    .AddItem(L"240", L"4 hours")
+                    .AddItem(L"1440", L"1 day")
+                    .SetSelectedItem(L"15"))
+                .AddButton(winrt::AppNotificationButton::MakeSnoozeButton(L"snoozeTime"))
+                .AddButton(winrt::AppNotificationButton::MakeDismissButton())
+            };
+            auto expected{ L"<toast scenario='reminder'><visual><binding template='ToastGeneric'><text hint-maxLines='1'>Adaptive Tiles Meeting</text><text>Conf Room 2001 / Building 135</text><text>10:00 AM - 10:30 AM</text></binding></visual><actions><input id='snoozeTime' type='selection' defaultInput='15'><selection id='1' content='1 minute'/><selection id='15' content='15 minutes'/><selection id='60' content='1 hour'/><selection id='240' content='4 hours'/><selection id='1440' content='1 day'/></input><action content='' arguments='snooze' activationType='system' hint-inputId='snoozeTime'/><action content='' arguments='dismiss' activationType='system'/></actions></toast>" };
+
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderGroupsAndSubgroups)
+        {
+            auto builder{ winrt::AppNotificationBuilder()
+                .AddText(L"Reminder: Windows Launch Party")
+                .AddText(L"4:00 PM, 10/21/2021")
+                .AddGroup(winrt::AppNotificationGroup()
+                    .AddSubgroup(winrt::AppNotificationSubgroup()
+                        .AddText(L"52 attendees", winrt::AppNotificationExtendedTextProperties()
+                            .SetStyle(winrt::AppNotificationTextStyle::Base))
+                        .AddText(L"23 minute drive", winrt::AppNotificationExtendedTextProperties()
+                            .SetStyle(winrt::AppNotificationTextStyle::CaptionSubtle)))
+                    .AddSubgroup(winrt::AppNotificationSubgroup()
+                        .AddText(L"1 Microsoft Way", winrt::AppNotificationExtendedTextProperties()
+                            .SetStyle(winrt::AppNotificationTextStyle::CaptionSubtle)
+                            .SetAlign(winrt::AppNotificationTextAlign::Right))
+                        .AddText(L"Bellevue, WA 98008", winrt::AppNotificationExtendedTextProperties()
+                            .SetStyle(winrt::AppNotificationTextStyle::CaptionSubtle)
+                            .SetAlign(winrt::AppNotificationTextAlign::Right))))
+            };
+            auto expected{ L"<toast><visual><binding template='ToastGeneric'><text>Reminder: Windows Launch Party</text><text>4:00 PM, 10/21/2021</text><group><subgroup><text hint-style='base'>52 attendees</text><text hint-style='captionSubtle'>23 minute drive</text></subgroup><subgroup><text hint-style='captionSubtle' hint-align='right'>1 Microsoft Way</text><text hint-style='captionSubtle' hint-align='right'>Bellevue, WA 98008</text></subgroup></group></binding></visual></toast>" };
+            auto actual{ builder.BuildNotification().Payload() };
+            VERIFY_ARE_EQUAL(actual, expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderHeaders)
+        {
+            auto builder{ winrt::AppNotificationBuilder()
+                .SetHeader(winrt::AppNotificationHeader(L"6289", L"Camping!!")
+                    .AddArgument(L"action", L"openConversation")
+                    .AddArgument(L"id", L"6289"))
+                .AddText(L"Anyone have a sleeping bag I can borrow?")
+            };
+            auto expected{ L"<toast><header id='6289' title='Camping!!' arguments='action=openConversation;id=6289'/><visual><binding template='ToastGeneric'><text>Anyone have a sleeping bag I can borrow?</text></binding></visual></toast>" };
+            auto actual{ builder.BuildNotification().Payload() };
+            VERIFY_ARE_EQUAL(actual, expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderHeadersWithMultipleNotifications)
+        {
+            auto header{ winrt::AppNotificationHeader(L"6289", L"Camping!!")
+                .AddArgument(L"action", L"openConversation")
+                .AddArgument(L"id", L"6289") };
+
+            auto builder1{ winrt::AppNotificationBuilder()
+                .SetHeader(header)
+                .AddText(L"Camping this weekend?")
+            };
+            auto expected1{ L"<toast><header id='6289' title='Camping!!' arguments='action=openConversation;id=6289'/><visual><binding template='ToastGeneric'><text>Camping this weekend?</text></binding></visual></toast>" };
+            auto actual1{ builder1.BuildNotification().Payload() };
+            VERIFY_ARE_EQUAL(actual1, expected1);
+
+            auto builder2{ winrt::AppNotificationBuilder()
+                .SetHeader(header)
+                .AddText(L"Anyone have a sleeping bag I can borrow?")
+            };
+            auto expected2{ L"<toast><header id='6289' title='Camping!!' arguments='action=openConversation;id=6289'/><visual><binding template='ToastGeneric'><text>Anyone have a sleeping bag I can borrow?</text></binding></visual></toast>" };
+            auto actual2{ builder2.BuildNotification().Payload() };
+            VERIFY_ARE_EQUAL(actual2, expected2);
+        }
     };
 }

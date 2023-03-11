@@ -13,6 +13,23 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
     AppNotificationButton::AppNotificationButton(winrt::hstring const& content) : m_content(content) { };
 
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::MakeSnoozeButton(winrt::hstring const& inputId)
+    {
+        auto snoozeButton{ winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton(L"") };
+        snoozeButton.ButtonType(AppNotificationButtonType::Snooze);
+        snoozeButton.InputId(inputId);
+
+        return snoozeButton;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::MakeDismissButton()
+    {
+        auto dismissButton{ winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton(L"") };
+        dismissButton.ButtonType(AppNotificationButtonType::Dismiss);
+
+        return dismissButton;
+    }
+
     bool AppNotificationButton::IsToolTipSupported()
     {
         return WindowsVersion::IsWindows10_20H1OrGreater();
@@ -85,6 +102,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         {
             std::wstring protocolTargetPfn{ !m_targetApplicationPfn.empty() ? wil::str_printf<std::wstring>(L" protocolActivationTargetApplicationPfn='%ls'", m_targetApplicationPfn.c_str()) : L"" };
             return wil::str_printf<std::wstring>(L" arguments='%ws' activationType='protocol'%ls", m_protocolUri.ToString().c_str(), protocolTargetPfn.c_str());
+        }
+        else if (m_buttonType == AppNotificationButtonType::Snooze)
+        {
+            return wil::str_printf<std::wstring>(L" arguments='snooze' activationType='system'");
+        }
+        else if (m_buttonType == AppNotificationButtonType::Dismiss)
+        {
+            return wil::str_printf<std::wstring>(L" arguments='dismiss' activationType='system'");
         }
         else
         {

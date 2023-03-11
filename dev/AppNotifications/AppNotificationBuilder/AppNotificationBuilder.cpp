@@ -107,6 +107,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& /*imageUri*/, AppNotificationImageProperties const& /*properties*/)
+    {
+        return *this;
+    }
+
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetInlineImage(winrt::Windows::Foundation::Uri const& imageUri, AppNotificationImageCrop const& imageCrop)
     {
         if (imageCrop == AppNotificationImageCrop::Circle)
@@ -134,6 +139,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& imageUri)
     {
         m_appLogoOverride = wil::str_printf<std::wstring>(L"<image placement='appLogoOverride' src='%ls'/>", imageUri.ToString().c_str());
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetAppLogoOverride(winrt::Windows::Foundation::Uri const& /*imageUri*/, AppNotificationImageProperties const& /*properties*/)
+    {
         return *this;
     }
 
@@ -244,6 +254,20 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         m_comboBoxList.push_back(value);
 
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddGroup(AppNotificationGroup const& value)
+    {
+        m_groupList.push_back(value);
+
+        return *this;
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::SetHeader(AppNotificationHeader const& value)
+    {
+        m_header = value;
+ 
         return *this;
     }
 
@@ -369,6 +393,17 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return result;
     }
 
+    std::wstring AppNotificationBuilder::GetGroups()
+    {
+        std::wstring result{};
+        for (auto group : m_groupList)
+        {
+            result.append(group.as<winrt::Windows::Foundation::IStringable>().ToString());
+        }
+
+        return result;
+    }
+
     winrt::Microsoft::Windows::AppNotifications::AppNotification AppNotificationBuilder::BuildNotification()
     {
         auto logTelemetry{ AppNotificationBuilderTelemetry::BuildNotification::Start(g_telemetryHelper) };
@@ -376,16 +411,18 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         // Build the actions string and fill m_useButtonStyle
         std::wstring actions{ GetActions() };
 
-        auto xmlResult{ wil::str_printf<std::wstring>(L"<toast%ls%ls%ls%ls%ls><visual><binding template='ToastGeneric'>%ls%ls%ls%ls</binding></visual>%ls%ls</toast>",
+        auto xmlResult{ wil::str_printf<std::wstring>(L"<toast%ls%ls%ls%ls%ls>%ls<visual><binding template='ToastGeneric'>%ls%ls%ls%ls%ls</binding></visual>%ls%ls</toast>",
             m_timeStamp.c_str(),
             GetDuration().c_str(),
             GetScenario().c_str(),
             GetArguments().c_str(),
             GetButtonStyle().c_str(),
+            m_header != nullptr ? m_header.as<winrt::Windows::Foundation::IStringable>().ToString().c_str() : L"",
             GetText().c_str(),
             m_attributionText.c_str(),
             GetImages().c_str(),
             GetProgressBars().c_str(),
+            GetGroups().c_str(),
             m_audio.c_str(),
             actions.c_str()) };
 
