@@ -1,11 +1,28 @@
-# Snooze and Dismiss Buttons
 
-Developers can use the AppNotification APIs to post notifications that use the system snooze and dismiss actions.
+App Notification Snooze and Dismiss Buttons
+===
 
-![AppNotification Snooze / Dismiss Example](toast-content-snooze-dismiss.png)
+# Background
+
+[App notifications](https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/notifications/app-notifications/app-notifications-quickstart?tabs=cs)
+in the Windows App SDK are messages that your app can construct and deliver to
+your user while they are not currently inside your app, for example:
+
+![App notification example](app-notification-example.jpg)
+
+App notifications are defined in XML, and the
+[AppNotificationBuilder](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder)
+API provides a programattic way to build that XML.
+
+The `AppNotificationBuilder` though does not support the 
+[`Snooze and Dismiss`](toast-content-snooze-dismiss.png)
+feature of the XML.
+
+Snooze and Dismiss let developers post notifications that use the system snooze and dismiss actions.
 
 With the current implementation developers must use xml as the AppNotificationBuilder doesn't support snooze and dismiss button. 
-Below is the xml required to display the above notification.
+
+The above notification is defined by:
 
 ```xml
 <toast scenario="reminder">
@@ -30,47 +47,13 @@ Below is the xml required to display the above notification.
 </toast>
 ```
 
-Everything in the xml snippet above but the last two lines is currently supported in the AppNotificationBuilder.
+The new API in this spec provides a way to build this with the `AppNotificationBuilder`.
 
-Support for the Snooze and Dismiss System Actions can be achieved by adding two new factory methods to the AppNotificationButton class. 
-The snooze and dismiss buttons are simple variations on the standard buttons but would be somewhat awkward to construct using the current API. 
-The two additional factory methods make constructing the new buttons easy and since they return an AppNotificationButton, developers can use the fluent API to further configure the buttons, just like for a standard button.
+# API Pages
 
-```idl
-runtimeclass AppNotificationButton
-{
-    AppNotificationButton();
-    AppNotificationButton(String content);
+## AppNotificationButton class
 
-    [contract(AppNotificationBuilderContract, 2)]
-    static AppNotificationButton MakeSnoozeButton(String inputId);
-    [contract(AppNotificationBuilderContract, 2)]
-    static AppNotificationButton MakeDismissButton();
-
-    String Content;
-    [contract(AppNotificationBuilderContract, 2)]
-    AppNotificationButtonType ButtonType;
-    Windows.Foundation.Collections.IMap<String, String> Arguments;
-  
-    ...
-};
-```
-
-Since there are now 3 types of buttons: Standard, Snooze or Dismiss, it should be exposed publicly similarly to how other such properties are exposed throughout the AppNotificationBuilder API.
-The ButtonType property from above does that, and below is the corresponding enum.
-
-```idl
-[contract(AppNotificationBuilderContract, 2)]
-enum AppNotificationButtonType
-{
-    Custom,
-    Snooze,
-    Dismiss,
-};
-```
-These are the only changes to the API required to implement the feature.
-
-Once support for snooze and dismiss buttons has been added to the AppNotificationBuilder, developers will be able to create AppNotifications, like the one shown at the beginning of this document, using the code as shown below.
+In the following example, `AppNotificationBuilder` uses the MakeSnoozeButton and MakeDismissButton factory functions to create a Snooze and Dismiss notification [AppNotification](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/Microsoft.Windows.AppNotifications.AppNotification).
 
 ```c++
 auto builder{ winrt::AppNotificationBuilder()
@@ -90,4 +73,47 @@ auto builder{ winrt::AppNotificationBuilder()
     .AddButton(winrt::AppNotificationButton::MakeDismissButton())
 };
 ```
-# Additional Notes
+
+The above usage produces the results bellow.
+
+![AppNotification Snooze and Dismiss Example](toast-content-snooze-dismiss.png)
+
+# API Details
+
+```idl
+[contract(AppNotificationBuilderContract, 2)]
+enum AppNotificationButtonType
+{
+    Custom,
+    Snooze,
+    Dismiss,
+};
+
+runtimeclass AppNotificationButton
+{
+    AppNotificationButton();
+    AppNotificationButton(String content);
+
+    [contract(AppNotificationBuilderContract, 2)]
+    static AppNotificationButton MakeSnoozeButton(String inputId);
+    [contract(AppNotificationBuilderContract, 2)]
+    static AppNotificationButton MakeDismissButton();
+
+    String Content;
+    [contract(AppNotificationBuilderContract, 2)]
+    AppNotificationButtonType ButtonType;
+    Windows.Foundation.Collections.IMap<String, String> Arguments;
+  
+    ...
+};
+```
+
+# Appendix
+
+* The snooze and dismiss buttons are simple variations on the standard buttons but would be somewhat awkward to construct using the current API.
+
+* We have considered adding the new MakeSoozeButton and MakeDismissButton factory method directly to the AppNotificationBuilder runtime class but found that it is too limiting as it prevents any form of customization on the part of the developer.
+
+* The two additional factory methods make constructing the new buttons easy and, since they return an AppNotificationButton, developers can use the fluent API to further configure the buttons, just like for a standard button.
+
+* Most developers will never have to explicitely set the AppNotificationButtonType as it is implicitely set at the time a button is created. It is provided for advanced situations where a greater level of customization is required.

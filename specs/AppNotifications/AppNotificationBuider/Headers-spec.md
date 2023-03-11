@@ -113,5 +113,5 @@ runtimeclass AppNotificationBuilder
 
 * The new AppNotificationHeader runtimeclass is needed because a Header can have a variable number of arguments.
 
-* I thought about factoring out a runtimeclass specifically for holding arguments, similar to how AppNotificationTextProperties hold properties for text items, but this would require changes to a published API and the gain would be marginal at best as the xml required to define the arguments in a Header differs from the xml defining the arguments in the notification itself.
+* I thought about factoring out a runtimeclass specifically for holding arguments, similar to how AppNotificationTextProperties holds properties for text items, but this would require changes to a published API and the gain would be marginal at best as the xml required to define the arguments in a Header differs from the xml defining the arguments in the notification itself.
 
