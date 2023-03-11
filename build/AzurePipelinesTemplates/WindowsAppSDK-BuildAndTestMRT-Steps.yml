@@ -18,6 +18,7 @@ steps:
     artifactName: binlogs
 
 # Run the test locally on the Azure VM.
+# Note arm is currently not exercised.
 - task: VSTest@2
   displayName: 'test MRT: ManagedTests'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
@@ -29,37 +30,5 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
-  displayName: 'test MRT: UnitTests'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MrmUnitTest.dll'
-    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest'
-    testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-# alam start
-# - task: VSTest@2
-#   displayName: 'test MRT: BaseUnitTests'
-#   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-#   inputs:
-#     testSelector: 'testAssemblies'
-#     testAssemblyVer2: '**\MrmBaseUnitTests.dll'
-#     searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests'
-#     testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
-#     platform: '$(buildPlatform)'
-#     configuration: '$(buildConfiguration)'
-
-# - task: VSTest@2
-#   displayName: 'test MRT: UnpackagedTests'
-#   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-#   inputs:
-#     testSelector: 'testAssemblies'
-#     testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
-#     searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests'
-#     testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
-#     platform: '$(buildPlatform)'
-#     configuration: '$(buildConfiguration)'
-# alam end
+# MRT's MrmUnitTest.dll, MrmBaseUnitTests.dll, and MRTCoreUnpackagedTests.dll were previously being run in Helix, 
+# but they are now being run via WindowsAppSDK-RunTestsInPipeline-Job.yml.
