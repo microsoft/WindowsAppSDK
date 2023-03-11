@@ -44,24 +44,20 @@ jobs:
   strategy:
     maxParallel: 10
     matrix:
-      # alam start
-      # Release_x86:
-      #   buildPlatform: 'x86'
-      #   buildConfiguration: 'Release'
-      #   normalizedConfiguration: 'fre'
-      #   PGOBuildMode: 'Optimize'
-      # alam end
+      Release_x86:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
+        PGOBuildMode: 'Optimize'
       Release_x64:
         buildPlatform: 'x64'
         buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
         PGOBuildMode: 'Optimize'
-      # alam start
-      # Release_Arm64:
-      #   buildPlatform: 'arm64'
-      #   buildConfiguration: 'Release'
-      #   normalizedConfiguration: 'fre'
-      # alam end
+      Release_Arm64:
+        buildPlatform: 'arm64'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
   steps:
   # Required by the Packaged ES SDL Templates.
   - checkout: self
@@ -217,24 +213,20 @@ jobs:
   strategy:
     maxParallel: 10
     matrix:
-      # alam start
-      # Release_x86:
-      #   buildPlatform: 'x86'
-      #   buildConfiguration: 'Release'
-      #   normalizedConfiguration: 'fre'
-      #   PGOBuildMode: 'Optimize'
-      # alam end
+      Release_x86:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
+        PGOBuildMode: 'Optimize'
       Release_x64:
         buildPlatform: 'x64'
         buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
         PGOBuildMode: 'Optimize'
-      # alam start
-      # Release_Arm64:
-      #   buildPlatform: 'arm64'
-      #   buildConfiguration: 'Release'
-      #   normalizedConfiguration: 'fre'
-      # alam end
+      Release_Arm64:
+        buildPlatform: 'arm64'
+        buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
   steps:
   - task: NuGetToolInstaller@1
 
@@ -271,17 +263,6 @@ jobs:
       PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
       artifactName: 'BuildOutput'
 
-# alam start
-# - template: WindowsAppSDK-RunHelixTests-Job.yml
-#   parameters:
-#     jobName: 'TestInHelix'
-#     dependsOn:
-#       - Build
-#       - BuildAnyCPU
-#       - BuildAndTestMRT
-#   condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
-# alam end
-
 # Arm64 uses a different VM type than x64, thus requiring them to be in different
 # pools, hence, we spilt the two scenarios into separate jobs.
 - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
@@ -291,23 +272,18 @@ jobs:
     dependsOn:
       - Build
       - BuildAndTestMRT
-# alam start
-# - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
-#   parameters:
-#     jobName: PipelineTestsArm64
-#     isArm64Platfrom: true
-#     dependsOn:
-#       - Build
-#       - BuildAndTestMRT
-# alam end
+- template: WindowsAppSDK-RunTestsInPipeline-Job.yml
+  parameters:
+    jobName: PipelineTestsArm64
+    isArm64Platfrom: true
+    dependsOn:
+      - Build
+      - BuildAndTestMRT
 
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
   timeoutInMinutes: 120      
   dependsOn:
-  - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
-    - TestInHelix
-  - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
     - Build
     - BuildAnyCPU
     - BuildAndTestMRT
