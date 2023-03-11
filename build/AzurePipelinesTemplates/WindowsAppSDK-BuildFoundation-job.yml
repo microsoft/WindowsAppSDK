@@ -26,23 +26,17 @@ parameters:
 
 jobs:
 # This relatively low-cost job is always run, in parallel w/ the Build job.
-# alam start
-# - template: WindowsAppSDK-SourceAnalysis-job.yml
-# alam end
+- template: WindowsAppSDK-SourceAnalysis-job.yml
 
 - job: VerifyCopyrightHeaders
   dependsOn: []
   pool: ProjectReunionESPool-2022
-  # alam start
-  condition: false
-  # alam end
   steps:
   - task: powershell@2
     displayName: 'Verify copyright headers'
     inputs:
       targetType: filePath
       filePath: tools\VerifyCopyrightHeaders.ps1
-    condition: false
 
 - job: Build
   pool: ProjectReunionESPool-2022
@@ -277,17 +271,16 @@ jobs:
       PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
       artifactName: 'BuildOutput'
 
-- template: WindowsAppSDK-RunHelixTests-Job.yml
-  parameters:
-    jobName: 'TestInHelix'
-    dependsOn:
-      - Build
-      - BuildAnyCPU
-      - BuildAndTestMRT
-    # alam start
-    # condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
-    condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
-    # alam end
+# alam start
+# - template: WindowsAppSDK-RunHelixTests-Job.yml
+#   parameters:
+#     jobName: 'TestInHelix'
+#     dependsOn:
+#       - Build
+#       - BuildAnyCPU
+#       - BuildAndTestMRT
+#   condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
+# alam end
 
 # Arm64 uses a different VM type than x64, thus requiring them to be in different
 # pools, hence, we spilt the two scenarios into separate jobs.
@@ -298,8 +291,7 @@ jobs:
     dependsOn:
       - Build
       - BuildAndTestMRT
-      # alam start
-      - TestInHelix
+# alam start
 # - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
 #   parameters:
 #     jobName: PipelineTestsArm64
@@ -319,10 +311,7 @@ jobs:
     - Build
     - BuildAnyCPU
     - BuildAndTestMRT
-  # alam start
-  # condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
-  condition: false
-  # alam end
+  condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
   steps:
   - task: DownloadBuildArtifacts@0
     inputs:
@@ -495,10 +484,7 @@ jobs:
 # Build WinAppSDK and Run Integration Test from TestAll.ps1
 - job: WinAppSDKIntegrationBuildAndTest
   dependsOn: ['StageAndPack']
-  # alam start
-  # condition: succeeded()
-  condition: false
-  # alam end
+  condition: succeeded()
   pool: ProjectReunionESPool-2022
   variables:
     WindowsAppSDKTransportPackageVersion: $[ dependencies.StageAndPack.outputs['SetVersion.packageVersion'] ]
@@ -537,10 +523,7 @@ jobs:
   dependsOn: 
   - StageAndPack
   - WinAppSDKIntegrationBuildAndTest
-  # alam start
-  # condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
-  condition: false
-  # alam end
+  condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
   pool: ProjectReunionESPool-2022
   variables:
     WindowsAppSDKPackageVersion: $[ dependencies.StageAndPack.outputs['SetVersion.packageVersion'] ]
