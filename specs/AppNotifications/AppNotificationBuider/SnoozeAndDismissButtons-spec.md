@@ -17,7 +17,9 @@ API provides a programattic way to build that XML.
 Although, the `AppNotificationBuilder` does support buttons, it does not support the creation of Snooze and Dismiss buttons linked to system action as described in the [`Button`](https://learn.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/adaptive-interactive-toasts?tabs=toolkit#buttons)
 feature of the XML.
 
-Snooze and Dismiss let developers post notifications that use the system snooze and dismiss actions.
+Snooze and Dismiss let developers post notifications that use the system snooze and dismiss actions as shown in this example:
+
+![AppNotification Snooze and Dismiss Example](SnoozeAndDismissButtonsExample.png)
 
 With the current implementation developers must use xml as the AppNotificationBuilder doesn't support snooze and dismiss button. 
 
