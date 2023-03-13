@@ -120,3 +120,7 @@ runtimeclass AppNotificationButton
 * The two additional factory methods make constructing the new buttons easy and, since they return an AppNotificationButton, developers can use the fluent API to further configure the buttons, just like for a standard button.
 
 * Most developers will never have to explicitely set the AppNotificationButtonType as it is implicitely set at the time a button is created. It is provided for advanced situations where a greater level of customization is required.
+
+* The AppNotificationBuilder runtime classes typically offer both properties and fluent setters, although there may be some exceptions. This is an established pattern since the first iteration of the builder was released (in version 1.2), and the APIs in this spec adhere to it.
+
+* The fluent setters work in any languages and let developers specify complex AppNotification using the dot notation. The property accessors are useful in langugages that support object initialization syntax (C# does but C++ does not, for example) and offer an alternate syntax to the dot notation afforded by the fluent setter by letting developers configure objects at construction time.

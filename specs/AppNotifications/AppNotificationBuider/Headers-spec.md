@@ -115,3 +115,6 @@ runtimeclass AppNotificationBuilder
 
 * I thought about factoring out a runtimeclass specifically for holding arguments, similar to how AppNotificationTextProperties holds properties for text items, but this would require changes to a published API and the gain would be marginal at best as the xml required to define the arguments in a Header differs from the xml defining the arguments in the notification itself.
 
+* The AppNotificationBuilder runtime classes typically offer both properties and fluent setters, although there may be some exceptions. This is an established pattern since the first iteration of the builder was released (in version 1.2), and the APIs in this spec adhere to it.
+
+* The fluent setters work in any languages and let developers specify complex AppNotification using the dot notation. The property accessors are useful in langugages that support object initialization syntax (C# does but C++ does not, for example) and offer an alternate syntax to the dot notation afforded by the fluent setter by letting developers configure objects at construction time.
