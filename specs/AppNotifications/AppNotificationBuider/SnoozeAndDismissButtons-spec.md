@@ -8,7 +8,7 @@ App Notification Snooze and Dismiss Buttons
 in the Windows App SDK are messages that your app can construct and deliver to
 your user while they are not currently inside your app, for example:
 
-![App notification example](app-notification-example.jpg)
+![App notification example](AppNotificationExample.png)
 
 App notifications are defined in XML, and the
 [AppNotificationBuilder](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder)
@@ -52,6 +52,8 @@ The new API in this spec provides a way to build this with the `AppNotificationB
 # API Pages
 
 ## AppNotificationButton class
+
+Represents a button that is displayed on an app notification.
 
 In the following example, `AppNotificationBuilder` uses the MakeSnoozeButton and MakeDismissButton factory functions to create a Snooze and Dismiss notification [AppNotification](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/Microsoft.Windows.AppNotifications.AppNotification).
 
@@ -110,9 +112,9 @@ runtimeclass AppNotificationButton
 
 # Appendix
 
-* The snooze and dismiss buttons are simple variations on the standard buttons but would be somewhat awkward to construct using the current API.
+* The snooze and dismiss buttons are simple variations on the standard buttons and can be contructed without using the new factory methods but be it would require many steps and could be somewhat error prone.
 
-* We have considered adding the new MakeSoozeButton and MakeDismissButton factory method directly to the AppNotificationBuilder runtime class but found that it is too limiting as it prevents any form of customization on the part of the developer.
+* We have considered adding the new MakeSoozeButton and MakeDismissButton factory methods directly to the AppNotificationBuilder runtime class but found that it is too limiting as it prevents any form of customization of the button on the part of the developer.
 
 * The two additional factory methods make constructing the new buttons easy and, since they return an AppNotificationButton, developers can use the fluent API to further configure the buttons, just like for a standard button.
 

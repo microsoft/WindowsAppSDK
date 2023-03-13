@@ -8,7 +8,7 @@ App Notification Headers
 in the Windows App SDK are messages that your app can construct and deliver to
 your user while they are not currently inside your app, for example:
 
-![App notification example](app-notification-example.jpg)
+![App notification example](AppNotificationExample.png)
 
 App notifications are defined in XML, and the
 [AppNotificationBuilder](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder)

@@ -1,11 +1,13 @@
 App Notification Groups and Subgroups
 ===
+
 # Background
+
 [App notifications](https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/notifications/app-notifications/app-notifications-quickstart?tabs=cs)
 in the Windows App SDK are messages that your app can construct and deliver to
 your user while they are not currently inside your app, for example:
 
-![App notification example](app-notification-example.jpg)
+![App notification example](AppNotificationExample.png)
 
 App notifications are defined in XML, and the
 [AppNotificationBuilder](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder)
@@ -15,13 +17,11 @@ The `AppNotificationBuilder` though does not support the
 [`Groups and Subgroups`](https://learn.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/toast-schema#adaptivegroup)
 feature of the XML.
 
-Groupd and Subgroups let developers use advance formating lated notifications so they can be grouped together in Notification Center, such as "Camping!!" in this example:
-
-Using Groups and Subgroups gives developers extra control on how they organize text and images in their AppNotifications as shown in this example:
+Groups and Subgroups gives developers extra control on how text and images can be organized in an AppNotifications as shown in this example:
 
 ![AppNotification Group and Subgroup Example](toast-content-columns.png)
 
- In the above example, the bottom part of the AppNotification, the text is split into two columns, one of which is right aligned with some of the text bolded.
+In the above example, the bottom part of the AppNotification, the text is split into two columns, one of which is right aligned with some of the text bolded.
 
 The above notification is defined by:
 
@@ -49,16 +49,27 @@ The above notification is defined by:
 The new API in this spec provides a way to build this with the `AppNotificationBuilder`.
 
 # API Pages
+
 ## AppNotificationGroup class
+
 Groups semantically identify that the content in the group must either be displayed as a whole, or not displayed if it cannot fit. Groups also allow creating multiple columns.
 
 ## AppNotificationExtendedTextProperties class
 
+Specifies display, localization and style properties for text displayed as part of a Subgroup on an app notification.
+
 ## AppNotificationExtendedImageProperties class
+
+Specifies display and alignment properties for images displayed as part of a Subgroup on an app notification.
+
 ## AppNotificationSubgroup class
+
 Subgroups are vertical columns that can contain text and images.
 
 ## AppNotificationImageProperties class
+
+Specifies display and alignment properties for images displayed as part of a Subgroup on an app notification.
+
 
 In the following example, `AppNotificationBuilder` sets a group with two subgroups onto an [AppNotification](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/Microsoft.Windows.AppNotifications.AppNotification).
 
@@ -283,10 +294,17 @@ runtimeclass AppNotificationBuilder
 ```
 
 # Appendix
+
 * The new AddGroup method is very similar in name to the SetGroup method that already exists in the AppNotificationBuilder runtimeclass. It's unfortunate as this may be a source of confusion for developers.
-* Contrary to most other runtime classes part of the Builder API, the Subgroup runtime class doesn't expose its properties. This is in-line with the AppNotificationBuilder class which also does not expose properties and in part because there currently isn't away to expose the Text strings along with their TextProperties that would make sense. If we created a struct to hold the text and their properties, we could easily expose them in the Subgroup class as well as in the AppNotificationBuilder class.
-* Contrary to images in an basic AppNotification, Images in subgroup support a wide range of options, which reuqires the introduction of a new ImageProperties call.
-* The Groups and Subgroups feature in AppNotifications offers users a wider range of text formatting options than those available in the main body of a notification. To enable support for these extended formatting options, we are proposing adding a new runtime class called AppNotificationExtendedTextProperties.
-  * We took care to give the new runtime class a name that is not specific to the Groups and Subgroups feature, ensuring that it can be easily adapted and re-used in the future as needed.
-  * While we initially considered having the new AppNotificationExtendedTextProperties class derive from the existing AppNotificationTextProperties class, doing so requires unsealing the later, which would break the contract. Unfortunately, there is a bug in the MIDL compiler that prevented us from proceeding with this approach. Nonetheless, where appropriate, the two classes will share code internally to ensure consistent behavior.
+
+* Contrary to most other runtime classes part of the Builder API, the Subgroup runtime class doesn't expose its properties. This is in-line with the AppNotificationBuilder class which also does not expose properties and in part because there currently isn't a way to expose the Text strings along with their TextProperties that would make sense. If we created a struct to hold the text and their properties, we could easily expose them in the Subgroup class as well as in the AppNotificationBuilder class.
+
+* The Groups and Subgroups feature in AppNotifications offers users a wider range of text formatting options than those available in the main body of a notification. To enable support for these extended formatting options, we are proposing adding a new runtime class called AppNotificationExtendedTextProperties along eith one named AppNotificationExtendedImageProperties.
+
+  * We took care to give the new AppNotificationExtendedImageProperties a=nd AppNotificationExtendedTextProperties runtime classes names that is not specific to the Groups and Subgroups feature, ensuring that they can be easily adapted and re-used in the future as needed.
+
+  * While we initially considered having the new AppNotificationExtendedTextProperties class derive from the existing AppNotificationTextProperties class, doing so requires unsealing the later, which would break the contract. Also, there is a bug in the MIDL compiler that prevented us from proceeding with this approach. Nonetheless, where appropriate, the two classes will share code internally to ensure consistent behavior.
+
   * Although we also considered adding the new text formatting options directly to the existing AppNotificationTextProperties API, we ultimately decided that doing so could potentially create confusion, as some of the formatting options may not be applicable in all scenarios. As a result, we determined that the creation of a new runtime class specifically designed to handle the extended formatting options was the most efficient and effective solution.
+
+* Since we have to modify the contract on the AppNotificationBuilder, we are proposing to use this opportunity to better align the way text and image properties work. Currently, text properties are spercified in a runtime class while image properties are simply set when the image is added to the AppNotification. We are effectively proposing to deprecate the many variations of the image setting APIs on the AppNotificationBUilder and replacing them with a single call that takes an AppNotificationImageProperties object. This means that both: text and images work in the same way and ensure better future proofing.
