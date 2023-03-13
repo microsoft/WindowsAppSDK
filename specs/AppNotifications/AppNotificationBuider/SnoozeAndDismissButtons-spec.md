@@ -14,7 +14,9 @@ App notifications are defined in XML, and the
 [AppNotificationBuilder](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder)
 API provides a programattic way to build that XML.
 
-Although, the `AppNotificationBuilder` does support buttons, it does not support the creation of Snooze and Dismiss buttons linked to system action as described in the [`Button`](https://learn.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/adaptive-interactive-toasts?tabs=toolkit#buttons)
+Although, the `AppNotificationBuilder` does support buttons, it does not support the creation of 
+Snooze and Dismiss buttons linked to system action as described in the 
+[`Button`](https://learn.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/adaptive-interactive-toasts?tabs=toolkit#buttons)
 feature of the XML.
 
 Snooze and Dismiss let developers post notifications that use the system snooze and dismiss actions as shown in this example:
@@ -56,7 +58,9 @@ The new API in this spec provides a way to build this with the `AppNotificationB
 
 Represents a button that is displayed on an app notification.
 
-In the following example, `AppNotificationBuilder` uses the MakeSnoozeButton and MakeDismissButton factory functions to create a Snooze and Dismiss notification [AppNotification](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/Microsoft.Windows.AppNotifications.AppNotification).
+In the following example, `AppNotificationBuilder` uses the MakeSnoozeButton and MakeDismissButton 
+factory functions to create a Snooze and Dismiss notification [AppNotification]
+(https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/Microsoft.Windows.AppNotifications.AppNotification).
 
 ```c++
 auto builder{ winrt::AppNotificationBuilder()
@@ -113,10 +117,27 @@ runtimeclass AppNotificationButton
 
 # Appendix
 
-* The snooze and dismiss buttons are simple variations on the standard buttons and can be contructed without using the new factory methods but be it would require many steps and could be somewhat error prone.
+* The snooze and dismiss buttons are simple variations on the standard buttons and can be contructed without 
+using the new factory methods but be it would require many steps and could be somewhat error prone.
 
-* We have considered adding the new MakeSoozeButton and MakeDismissButton factory methods directly to the AppNotificationBuilder runtime class but found that it is too limiting as it prevents any form of customization of the button on the part of the developer.
+* We have considered adding the new MakeSoozeButton and MakeDismissButton factory methods directly to the 
+AppNotificationBuilder runtime class but found that it is too limiting as it prevents any form of 
+customization of the button on the part of the developer.
 
-* The two additional factory methods make constructing the new buttons easy and, since they return an AppNotificationButton, developers can use the fluent API to further configure the buttons, just like for a standard button.
+* The two additional factory methods make constructing the new buttons easy and, since they return an 
+AppNotificationButton, developers can use the fluent API to further configure the buttons, just like 
+for a standard button.
 
-* Most developers will never have to explicitely set the AppNotificationButtonType as it is implicitely set at the time a button is created. It is provided for advanced situations where a greater level of customization is required.
+* Most developers will never have to explicitely set the AppNotificationButtonType as it is 
+implicitely set at the time a button is created. It is provided for advanced situations where 
+a greater level of customization is required.
+
+* The AppNotificationBuilder runtime classes typically offer both properties and fluent setters, 
+although there may be some exceptions. This is an established pattern since the first iteration of 
+the builder was released (in version 1.2), and the APIs in this spec adhere to it.
+
+* The fluent setters work in any languages and let developers specify complex AppNotification 
+using the dot notation. The property accessors are useful in langugages that support object 
+initialization syntax (C# does but C++ does not, for example) and offer an alternate syntax 
+to the dot notation afforded by the fluent setter by letting developers configure objects at 
+construction time.
