@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -514,7 +514,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     {
         if (!IsSupported())
         {
-            return;
+            co_return;
         }
 
         auto logTelemetry{ AppNotificationTelemetry::RemoveByIdAsync::Start(g_telemetryHelper, m_appId, notificationId) };
@@ -536,7 +536,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     {
         if (!IsSupported())
         {
-            return;
+            co_return;
         }
 
         auto logTelemetry{ AppNotificationTelemetry::RemoveByTagAsync::Start(g_telemetryHelper, m_appId, tag) };
@@ -558,7 +558,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     {
         if (!IsSupported())
         {
-            return;
+            co_return;
         }
 
         auto logTelemetry{ AppNotificationTelemetry::RemoveByTagAndGroupAsync::Start(g_telemetryHelper, m_appId, tag, group) };
@@ -581,7 +581,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     {
         if (!IsSupported())
         {
-            return;
+            co_return;
         }
 
         auto logTelemetry{ AppNotificationTelemetry::RemoveByGroupAsync::Start(g_telemetryHelper, m_appId, group) };
@@ -603,7 +603,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     {
         if (!IsSupported())
         {
-            return;
+            co_return;
         }
 
         auto strong = get_strong();
