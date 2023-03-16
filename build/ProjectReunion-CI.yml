@@ -143,13 +143,8 @@ jobs:
       artifactName: BuildOutput
       PathtoPublish: '$(buildOutputDir)'
 
-- template: AzurePipelinesTemplates\WindowsAppSDK-RunHelixTests-Job.yml
-  parameters:
-    name: 'RunTestsInHelix'
-    dependsOn:
-      - Build
-      - BuildMRT
-    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
+# We no longer run MRT tests in Helix here, due to dwindling Helix support. But one MRT test suite 
+# is still being run in WindowsAppSDK-BuildAndTestMRT-Steps.yml.
 
 - job: StageAndPack
   pool:
@@ -188,7 +183,6 @@ jobs:
         [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
         $publicNuspec.package.metadata.version = $packageVersion
         Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
-
   - task: PowerShell@2
     name: PackNuget
     inputs:

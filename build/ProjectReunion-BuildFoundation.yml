@@ -266,15 +266,6 @@ jobs:
       PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
       artifactName: 'BuildOutput'
 
-- template: AzurePipelinesTemplates\WindowsAppSDK-RunHelixTests-Job.yml
-  parameters:
-    jobName: 'TestInHelix'
-    dependsOn:
-      - Build
-      - BuildAnyCPU
-      - BuildAndTestMRT
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
-
 # Arm64 uses a different VM type than x64, thus requiring them to be in different
 # pools, hence, we spilt the two scenarios into separate jobs.
 - template: AzurePipelinesTemplates\WindowsAppSDK-RunTestsInPipeline-Job.yml
@@ -296,9 +287,6 @@ jobs:
   pool: ProjectReunionESPool-2022
   timeoutInMinutes: 120      
   dependsOn:
-  - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
-    - TestInHelix
-  - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
     - Build
     - BuildAnyCPU
     - BuildAndTestMRT
