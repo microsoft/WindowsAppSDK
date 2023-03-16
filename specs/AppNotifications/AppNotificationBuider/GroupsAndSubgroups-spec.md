@@ -50,6 +50,12 @@ The above notification is defined by:
 
 The new API in this spec provides a way to build this with the `AppNotificationBuilder`.
 
+This spec also introduces some new image methods to this Builder class,
+which align the image methods to be like the text methods.
+For example, adding an overload to the
+[AppNotificationBuilder.SetInlineImage](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder.SetInlineImage)
+method with a new `AppNotificationImageProperties` parameter.
+
 # API Pages
 
 ## AppNotificationGroup class
@@ -62,10 +68,23 @@ or not displayed if it cannot fit. Groups also allow creating multiple columns.
 Specifies display, localization and style properties for text displayed as part of a 
 Subgroup on an app notification.
 
+_Spec note: this is similar to the existing
+[AppNotificationTextProperties](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/Microsoft.Windows.AppNotifications.Builder.AppNotificationTextProperties)
+class. TextProperties is used with
+[AppNotificationBuilder.AddText](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder.AddText)
+and the new ExtendedTextProperties is used with the new
+`AppNotificationSubgroup.AddText` method.
+Two classes is necessary because the the two forms of text support different properties.
+More info in the [Appendix](#appendix)._
+
 ## AppNotificationExtendedImageProperties class
 
 Specifies display and alignment properties for images displayed as part of a 
 Subgroup on an app notification.
+
+_Spec note: the `AppNotificationImageProperties` and `AppNotificationExtendedImageProperties`
+classes follow the pattern of the `AppNotificationTextProperties` and `AppNotificationExtendedTextProperties`
+classes._
 
 ## AppNotificationSubgroup class
 
@@ -272,19 +291,25 @@ runtimeclass AppNotificationBuilder
 
     // Sets the full-width inline-image that appears when you expand the AppNotification
     AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri);
+
     [contract(AppNotificationBuilderContract, 2)]
     AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageProperties properties);
+
     [deprecated("Use the AppNotificationImageProperties version of this function instead of this one. For more info, see MSDN.", deprecate, AppNotificationBuilderContract, 2)]
     AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
+
     [deprecated("Use the AppNotificationImageProperties version of this function instead of this one. For more info, see MSDN.", deprecate, AppNotificationBuilderContract, 2)]
     AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imagecrop, String alternateText);
 
     // Sets the image that replaces the app logo
     AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri);
+
     [contract(AppNotificationBuilderContract, 2)]
     AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageProperties properties);
+
     [deprecated("Use the AppNotificationImageProperties version of this function instead of this one. For more info, see MSDN.", deprecate, AppNotificationBuilderContract, 2)]
     AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
+
     [deprecated("Use the AppNotificationImageProperties version of this function instead of this one. For more info, see MSDN.", deprecate, AppNotificationBuilderContract, 2)]
     AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop, String alternateText);
 
@@ -338,7 +363,7 @@ AppNotificationExtendedTextProperties along eith one named AppNotificationExtend
 
 * Since we have to modify the contract on the AppNotificationBuilder, we are proposing to use this 
 opportunity to better align the way text and image properties work. Currently, text properties are 
-spercified in a runtime class while image properties are simply set when the image is added to the 
+specified in a runtime class while image properties are simply set when the image is added to the 
 AppNotification. We are effectively proposing to deprecate the many variations of the image setting 
 APIs on the AppNotificationBUilder and replacing them with a single call that takes an 
 AppNotificationImageProperties object. This means that both: text and images work in the same way 
