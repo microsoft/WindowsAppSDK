@@ -111,7 +111,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\WindowsAppRuntime_Insights;..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MRTCoreRoot)\mrt\mrm\include</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -127,41 +127,41 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\mrm\Atoms.h" />
-    <ClInclude Include="..\include\mrm\BaseInternal.h" />
-    <ClInclude Include="..\include\mrm\Checksums.h" />
-    <ClInclude Include="..\include\mrm\Collections.h" />
-    <ClInclude Include="..\include\mrm\common\Base.h" />
-    <ClInclude Include="..\include\mrm\common\BaseInternal.h" />
-    <ClInclude Include="..\include\mrm\common\file\FileAtomPool.h" />
-    <ClInclude Include="..\include\mrm\common\file\FileBase.h" />
-    <ClInclude Include="..\include\mrm\common\file\FileBaseSections.h" />
-    <ClInclude Include="..\include\mrm\common\file\FileListBase.h" />
-    <ClInclude Include="..\include\mrm\common\file\HNamesSection.h" />
-    <ClInclude Include="..\include\mrm\common\file\MrmFiles.h" />
-    <ClInclude Include="..\include\mrm\common\MrmProfileData.h" />
-    <ClInclude Include="..\include\mrm\common\MrmTraceLogging.h" />
-    <ClInclude Include="..\include\mrm\common\Platform.h" />
-    <ClInclude Include="..\include\mrm\common\PlatformRtl.h" />
-    <ClInclude Include="..\include\mrm\common\PlatformWin32.h" />
-    <ClInclude Include="..\include\mrm\DefObject.h" />
-    <ClInclude Include="..\include\mrm\MrmEnvironment.h" />
-    <ClInclude Include="..\include\mrm\MrmQualifiers.h" />
-    <ClInclude Include="..\include\mrm\platform\base.h" />
-    <ClInclude Include="..\include\mrm\platform\CoreQualifierTypes.h" />
-    <ClInclude Include="..\include\mrm\platform\MrmConstants.h" />
-    <ClInclude Include="..\include\mrm\platform\WindowsCore.h" />
-    <ClInclude Include="..\include\mrm\readers\Atoms.h" />
-    <ClInclude Include="..\include\mrm\readers\BaseFile.h" />
-    <ClInclude Include="..\include\mrm\readers\FileLists.h" />
-    <ClInclude Include="..\include\mrm\readers\HNames.h" />
-    <ClInclude Include="..\include\mrm\readers\MrmManagers.h" />
-    <ClInclude Include="..\include\mrm\readers\MrmReaders.h" />
-    <ClInclude Include="..\include\mrm\readers\References.h" />
-    <ClInclude Include="..\include\mrm\readers\RemapInfo.h" />
-    <ClInclude Include="..\include\mrm\readers\SectionParser.h" />
-    <ClInclude Include="..\include\mrm\readers\SectionReaders.h" />
-    <ClInclude Include="..\include\mrm\Results.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\Atoms.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\BaseInternal.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\Checksums.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\Collections.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\common\Base.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\common\BaseInternal.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\common\file\FileAtomPool.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\common\file\FileBase.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\common\file\FileBaseSections.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\common\file\FileListBase.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\common\file\HNamesSection.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\common\file\MrmFiles.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\common\MrmProfileData.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\common\MrmTraceLogging.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\common\Platform.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\common\PlatformRtl.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\common\PlatformWin32.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\DefObject.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\MrmEnvironment.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\MrmQualifiers.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\platform\base.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\platform\CoreQualifierTypes.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\platform\MrmConstants.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\platform\WindowsCore.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\readers\Atoms.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\readers\BaseFile.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\readers\FileLists.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\readers\HNames.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\readers\MrmManagers.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\readers\MrmReaders.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\readers\References.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\readers\RemapInfo.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\readers\SectionParser.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\readers\SectionReaders.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\Results.h" />
     <ClInclude Include="BlobResult.h" />
     <ClInclude Include="DecisionInfo.h" />
     <ClInclude Include="Internal.h" />

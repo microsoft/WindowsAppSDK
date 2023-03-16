@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -10,6 +10,65 @@ namespace TP = ::Test::Packages;
 
 namespace Test::DynamicDependency
 {
+    PCWSTR ProcessorArchitectureToString(const uint32_t processorArchitecture)
+    {
+        switch (processorArchitecture)
+        {
+            case PROCESSOR_ARCHITECTURE_AMD64: return L"x64";
+            case PROCESSOR_ARCHITECTURE_ARM64: return L"arm64";
+            case PROCESSOR_ARCHITECTURE_INTEL: return L"x86";
+            case PROCESSOR_ARCHITECTURE_UNKNOWN: return L"Unknown";
+            default: return L"???";
+        }
+    }
+
+    // Nigh impossible to troubleshoot problems when run in the ADO pipeline
+    // so we're forced to proactively DumpEverything to make sense in an insensible world....
+    void DumpEnvironment()
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"BuildArchitecture:%s (%u)", AppModel::Identity::GetCurrentArchitectureAsString(), AppModel::Identity::GetCurrentArchitecture()));
+
+        SYSTEM_INFO systemInfo{};
+        GetNativeSystemInfo(&systemInfo);
+        const uint32_t processorArchitecture{ systemInfo.wProcessorArchitecture };
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"NativeProcessorArchitecture:%s (%u)", ProcessorArchitectureToString(processorArchitecture), processorArchitecture));
+
+        OSVERSIONINFOEXW osvi{ sizeof(osvi) };
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"OSVersion:%u.%u.%u ServicePack:%s", osvi.dwMajorVersion, osvi.dwMinorVersion, osvi.dwBuildNumber, osvi.szCSDVersion));
+
+        const auto currentDirectory{ wil::GetCurrentDirectoryW() };
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"CurrentDirectory:%s", currentDirectory.get()));
+
+        const auto exeFileName{ TF::GetModuleFileName(nullptr) };
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Executable:%s", exeFileName.c_str()));
+
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"CommandLine:%s", GetCommandLineW()));
+
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ProcessId:%u ThreadId:%u", GetCurrentProcessId(), GetCurrentThreadId()));
+
+        const auto integrityLevel{ ::Security::IntegrityLevel::GetIntegrityLevel() };
+        const auto integrityLevelAsString{ ::Security::IntegrityLevel::ToString(integrityLevel) };
+        const auto isElevated{ ::Security::IntegrityLevel::IsIntegrityLevelElevated(integrityLevel) };
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"IntegrityLevel:%s (%u) IsElevated:%s",
+            integrityLevelAsString, integrityLevel, (isElevated ? L"Yes" : L"No")));
+
+        const auto isAppContainer{ wil::get_token_is_app_container() };
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"AppContainer:%s", (isAppContainer ? L"Yes" : L"No")));
+
+        std::wstring packageFullName{ L"--unpackaged--" };
+        {
+            WCHAR fullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1]{};
+            UINT32 fullNameLength{ ARRAYSIZE(fullName) };
+            const auto rc{ ::GetCurrentPackageFullName(&fullNameLength, fullName) };
+            if (rc != APPMODEL_ERROR_NO_PACKAGE)
+            {
+                VERIFY_ARE_EQUAL(ERROR_SUCCESS, rc);
+                packageFullName = fullName;
+            }
+        }
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageFullName:%s", packageFullName.c_str()));
+    }
+
     HMODULE LoadBootstrapDll()
     {
         // We need to find Microsoft.WindowsAppRuntime.Bootstrap.dll.
@@ -34,6 +93,8 @@ namespace Test::DynamicDependency
 
         static bool Setup()
         {
+            DumpEnvironment();
+
             wil::unique_hmodule bootstrapDll{ LoadBootstrapDll() };
 
             TP::RemovePackage_DynamicDependencyLifetimeManagerGC1010();

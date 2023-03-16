@@ -32,7 +32,7 @@
       <Sha>21e744a00a8be67e713d3ca24f1e91467b89cbe3</Sha>
     </Dependency>
     <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.2.0-main.20221103.4">
-      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionClosed</Uri>
+      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
       <Sha>cc4045b6190f44ed55e10700cc9f0d25a7a60341</Sha>
     </Dependency>
   </ProductDependencies>

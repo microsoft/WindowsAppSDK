@@ -1,5 +1,7 @@
 # Git Checkin-to-main Policy
 
+**NOTE: All policies apply to the [main and develop](develop-branch.md) branch unless otherwise stated.**
+
 The main branch needs to be kept 'healthy' and ready to ship near daily (daily, or within a day or
 two). An unhealthy main branch negatively impacts day-to-day development and jeopardizes release
 schedules. We have policies to ensure a high quality bar in main. The details differ depending if a

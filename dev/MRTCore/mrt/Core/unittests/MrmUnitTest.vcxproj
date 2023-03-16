@@ -168,7 +168,7 @@
     <CopyFileToFolders Include="$(BaseOutputPath)MRM\mrm.pdb" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\MRM.vcxproj">
+    <ProjectReference Include="$(MRTCoreRoot)\mrt\Core\src\MRM.vcxproj">
       <Project>{cf03cc8d-fff1-4cdc-b773-d219ad4e6f76}</Project>
     </ProjectReference>
   </ItemGroup>
@@ -211,5 +211,8 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets'))" />
+  </Target>
+  <Target Name="CopyFiles" AfterTargets="AfterBuild">
+    <Copy SourceFiles="MrmUnitTest.testdef" DestinationFolder="$(OutDir)" />
   </Target>
 </Project>

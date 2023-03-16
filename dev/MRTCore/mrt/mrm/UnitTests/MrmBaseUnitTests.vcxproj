@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -91,13 +91,13 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\WindowsAppRuntime_Insights;..\include;..\mrmmin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MRTCoreRoot)\mrt\mrm\include;$(MRTCoreRoot)\mrt\mrm\mrmmin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4309;4838;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\WindowsAppRuntime_Insights;..\include;..\mrmmin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MRTCoreRoot)\mrt\mrm\include;$(MRTCoreRoot)\mrt\mrm\mrmmin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4309;4838;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -222,10 +222,10 @@
     <ClInclude Include="testUtils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\mrmex\mrmex.vcxproj">
+    <ProjectReference Include="$(MRTCoreRoot)\mrt\mrm\mrmex\mrmex.vcxproj">
       <Project>{c3dbe42d-246e-45f1-8b66-8a8556c0784b}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\mrmmin\mrmmin.vcxproj">
+    <ProjectReference Include="$(MRTCoreRoot)\mrt\mrm\mrmmin\mrmmin.vcxproj">
       <Project>{ab199369-87e7-44b4-ae83-7cf5c068efeb}</Project>
     </ProjectReference>
   </ItemGroup>
@@ -241,5 +241,8 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets'))" />
+  </Target>
+  <Target Name="CopyFiles" AfterTargets="AfterBuild">
+    <Copy SourceFiles="MrmBaseUnitTests.testdef" DestinationFolder="$(OutDir)" />
   </Target>
 </Project>

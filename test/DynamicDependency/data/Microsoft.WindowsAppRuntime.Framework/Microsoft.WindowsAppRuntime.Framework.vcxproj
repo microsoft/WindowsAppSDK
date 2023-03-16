@@ -91,6 +91,8 @@
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" />
+    <MakeMsixInputs Include="$(OutDir)..\KozaniManagerRuntime\KozaniManagerRuntime.dll" />
+    <MakeMsixInputs Include="$(OutDir)..\KozaniManagerRuntime\KozaniManagerRuntime.pdb" />
   </ItemGroup>
   <PropertyGroup>
     <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
