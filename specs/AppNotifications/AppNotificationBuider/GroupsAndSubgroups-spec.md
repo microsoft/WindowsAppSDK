@@ -54,7 +54,7 @@ This spec also introduces some new image methods to this Builder class,
 which align the image methods to be like the text methods.
 For example, adding an overload to the
 [AppNotificationBuilder.SetInlineImage](https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder.SetInlineImage)
-method with a new `AppNotificationImageProperties` parameter.
+method with a new `AppNotificationImageProperties` parameter. (More info in the [Appendex](#appendix).)
 
 # API Pages
 
