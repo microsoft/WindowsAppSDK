@@ -19,10 +19,16 @@ parameters:
     type: boolean
     default: true
   - name: "enableLicenseInstall"
+    type: boolean
     default: true
   - name: "isWeeklyRun"
     type: boolean
     default: False
+# alam start
+  - name: "solutionPath"
+    type: string
+    default: "WindowsAppRuntime.sln"
+# alam end
 
 jobs:
 # This relatively low-cost job is always run, in parallel w/ the Build job.
@@ -97,7 +103,7 @@ jobs:
       inputs:
         restoreSolution: build/packages.config
         feedsToUse: config
-        nugetConfigPath: Nuget.config
+        nugetConfigPath: NuGet.config
         restoreDirectory: packages
 
     - task: CopyFiles@2
@@ -110,11 +116,154 @@ jobs:
         flattenFolders: false
         overWrite: true
 
-  - task: PowerShell@2
-    name: BuildBinaries
-    inputs:
-      filePath: 'BuildAll.ps1'
-      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
+  # alam start
+  # - task: PowerShell@2
+  #   name: BuildBinaries
+  #   inputs:
+  #     filePath: 'BuildAll.ps1'
+  #     arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
+
+  # Enter this block if we can't rule out running PreFast, yet.
+  - ${{ if and(eq(parameters.RunSDLBinaryAnalysis, 'true'), eq(parameters.EnablePREFast, 'true')) }}:
+
+    # We currently scope down PreFast to run for x64fre only. We can just run BuildAll.ps1 and skip several steps below. 
+    - task: PowerShell@2
+      condition: or(ne(variables['buildPlatform'], 'x64'), ne(variables['buildConfiguration'], 'Release'))
+      name: BuildBinaries
+      inputs:
+        filePath: 'BuildAll.ps1'
+        arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
+
+    # We prepare running PreFast for x64fre by telling BuildAll.ps1 to set things up, but short of building the binaries.
+    - task: PowerShell@2
+      condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+      name: PreFastBuildBinaries
+      inputs:
+        filePath: 'BuildAll.ps1'
+        arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "PreFastSetup"
+
+    - powershell: |
+        # Some builds have "-branchname" appended, but when this happens the environment variable 
+        # TFS_BUILDNUMBER has the un-modified version.
+        if ($env:TFS_BUILDNUMBER)
+        {
+          $env:BUILD_BUILDNUMBER = $env:TFS_BUILDNUMBER
+        }
+        $yymm = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 10, 4)
+        $dd = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 5, 2)
+        $revision = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 3, 3)
+        Write-Host "##vso[task.setvariable variable=builddate]$yymm$dd"
+        Write-Host "##vso[task.setvariable variable=builddate_yymm]$yymm"
+        Write-Host "##vso[task.setvariable variable=builddate_dd]$dd"
+        Write-Host "##vso[task.setvariable variable=buildrevision]$revision"
+        Write-Host builddate=$yymm$dd
+        Write-Host builddate_yymm=$yymm
+        Write-Host builddate_dd=$dd
+        Write-Host buildrevision=$revision
+      condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+      displayName: 'Get build revision number'
+
+    - script: |
+        "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath > %TEMP%\vsinstalldir.txt
+        set /p _VSINSTALLDIR15=<%TEMP%\vsinstalldir.txt
+        del %TEMP%\vsinstalldir.txt
+        call "%_VSINSTALLDIR15%\Common7\Tools\VsDevCmd.bat"
+        echo VCToolsInstallDir = %VCToolsInstallDir%
+        echo ##vso[task.setvariable variable=VCToolsInstallDir]%VCToolsInstallDir%
+      condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+      displayName: 'Retrieve VC tools directory'
+
+    # Invoke the VSBuild task to build the binaries so that Guardian PreFast can analyze.
+    - task: VSBuild@1
+      condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+      displayName: 'Build solution ${{ parameters.solutionPath }}'
+      inputs:
+        solution: ${{ parameters.solutionPath }}
+        # vsVersion: 16.0
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+        msbuildArgs: '/restore /p:AppxSymbolPackageEnabled=false /binaryLogger:BuildOutput/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:WindowsAppSDKVersionBuild=$(builddate_yymm) /p:WindowsAppSDKVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode="Optimize" /p:WindowsAppSDKBuildPipeline=1 /p:WindowsAppSDKCleanIntermediateFiles=true'
+
+    # Invoke Guardian PreFast v3 directly to analyze.
+    - task: SDLNativeRules@3
+      condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+      displayName: 'Guardian: PreFast@3'
+      env:
+        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      continueOnError: true
+      inputs:
+        userProvideBuildInfo: 'auto'
+
+  - ${{ if or(ne(parameters.RunSDLBinaryAnalysis, 'true'), ne(parameters.EnablePREFast, 'true')) }}:
+    - task: PowerShell@2
+      name: BuildBinaries
+      inputs:
+        filePath: 'BuildAll.ps1'
+        arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
+
+    #- ${{ if and(eq(parameters.RunSDLBinaryAnalysis, 'true'), eq(parameters.enablePREFast, 'true')) }}:
+    #  - task: PowerShell@2
+    #    condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+    #    name: GenerateDynamicDependencyOverrides
+    #    inputs:
+    #      filePath: 'tools\GenerateDynamicDependencyOverrides.ps1'
+    #      arguments: -Path "build\override"
+
+    #  - task: PowerShell@2
+    #    condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+    #    name: GeneratePushNotificationsOverrides
+    #    inputs:
+    #      filePath: 'tools\GeneratePushNotificationsOverrides.ps1'
+    #      arguments: -Path "build\override"
+
+    #  - powershell: |
+    #      # Some builds have "-branchname" appended, but when this happens the environment variable 
+    #      # TFS_BUILDNUMBER has the un-modified version.
+    #      if ($env:TFS_BUILDNUMBER)
+    #      {
+    #        $env:BUILD_BUILDNUMBER = $env:TFS_BUILDNUMBER
+    #      }
+    #      $yymm = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 10, 4)
+    #      $dd = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 5, 2)
+    #      $revision = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 3, 3)
+    #      Write-Host "##vso[task.setvariable variable=builddate]$yymm$dd"
+    #      Write-Host "##vso[task.setvariable variable=builddate_yymm]$yymm"
+    #      Write-Host "##vso[task.setvariable variable=builddate_dd]$dd"
+    #      Write-Host "##vso[task.setvariable variable=buildrevision]$revision"
+    #      Write-Host builddate=$yymm$dd
+    #      Write-Host builddate_yymm=$yymm
+    #      Write-Host builddate_dd=$dd
+    #      Write-Host buildrevision=$revision
+    #    displayName: 'Get build revision number'
+
+    #  - script: |
+    #      "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath > %TEMP%\vsinstalldir.txt
+    #      set /p _VSINSTALLDIR15=<%TEMP%\vsinstalldir.txt
+    #      del %TEMP%\vsinstalldir.txt
+    #      call "%_VSINSTALLDIR15%\Common7\Tools\VsDevCmd.bat"
+    #      echo VCToolsInstallDir = %VCToolsInstallDir%
+    #      echo ##vso[task.setvariable variable=VCToolsInstallDir]%VCToolsInstallDir%
+    #    displayName: 'Retrieve VC tools directory'
+
+    #  - task: VSBuild@1
+    #    condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+    #    displayName: 'Build solution ${{ parameters.solutionPath }}'
+    #    inputs:
+    #      solution: ${{ parameters.solutionPath }}
+    #      # vsVersion: 16.0
+    #      platform: '$(buildPlatform)'
+    #      configuration: '$(buildConfiguration)'
+    #      msbuildArgs: '/restore /p:AppxSymbolPackageEnabled=false /binaryLogger:BuildOutput/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:WindowsAppSDKVersionBuild=$(builddate_yymm) /p:WindowsAppSDKVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode="Optimize" /p:WindowsAppSDKBuildPipeline=1 /p:WindowsAppSDKCleanIntermediateFiles=true'
+
+    #  - task: SDLNativeRules@3
+    #    condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+    #    displayName: 'Guardian: PreFast@3'
+    #    env:
+    #      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    #    continueOnError: true
+    #    inputs:
+    #      userProvideBuildInfo: 'auto'
+    # alam end
 
   # component detection must happen *within* the build task
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
@@ -125,8 +274,11 @@ jobs:
         outputDirectory: BuildOutput
         # ToDo: PREFast currently throws a warning for "found nothing to scan" because it does not support the direct call to msbuild.exe in
         # BuildAll.ps1 above. Therefore, skipping PreFast ATM, until Bug 43206167 is fixed.
+        # alam start
+        # We called Guardian PreFast v3 directly above, hence we won't be enabling PreFast here.
         # enablePREFast: ${{ parameters.enablePREFast }}
         enablePREFast: False
+        # alam end
 
   - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
     - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
@@ -241,6 +393,11 @@ jobs:
       arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile NuGet.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
 
   - template: WindowsAppSDK-BuildAndTestMRT-Steps.yml
+    # alam start
+    parameters:
+      EnablePREFast: ${{ parameters.enablePREFast }}
+      RunSDLBinaryAnalysis: ${{ parameters.RunSDLBinaryAnalysis }}
+    # alam end
 
   - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
     - template: WindowsAppSDK-BinaryAnalysis-steps.yml
@@ -248,8 +405,10 @@ jobs:
         outputDirectory: 'BuildOutput'
         # ToDo: PREFast currently throws a warning for "found nothing to scan" because it does not support the direct call to msbuild.exe in
         # BuildAll.ps1 above. Therefore, skipping PreFast ATM, until Bug 43206167 is fixed.
-        # enablePREFast: ${{ parameters.enablePREFast }}
-        enablePREFast: false
+        # alam start
+        enablePREFast: ${{ parameters.enablePREFast }}
+        # enablePREFast: false
+        # alam end
 
   - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
     - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
