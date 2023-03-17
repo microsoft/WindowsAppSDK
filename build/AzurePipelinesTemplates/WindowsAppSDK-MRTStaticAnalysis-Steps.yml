@@ -1,0 +1,97 @@
+#name: $(BuildDefinitionName)-$(date:yyMM).$(date:dd)$(rev:rrr)
+parameters:
+  MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
+  MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
+  RunSDLBinaryAnalysis: true
+  EnablePREFast: true
+
+steps:
+#- task: BatchScript@1
+#  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+#  displayName: Set up environment
+#  inputs:
+#    filename: '${{ parameters.MRTSourcesDirectory }}\build\init.cmd'
+#    arguments: /envonly $(buildPlatform)fre
+#    modifyEnvironment: true
+
+# Start restoring packages for C++ projects. The C# ones will be restored by the build task
+# Note: 'NuGetCommand@2' is ambiguous so the specific task GUID must be used instead.
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  displayName: 'NuGet restore of core'
+  inputs:
+    command: 'custom'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\core\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+
+# NuGetCommand@2
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  displayName: 'NuGet restore of applicationmodel'
+  inputs:
+    command: 'custom'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  displayName: 'NuGet restore of mrmex'
+  inputs:
+    command: 'custom'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\mrmex\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  displayName: 'NuGet restore of mrmmin'
+  inputs:
+    command: 'custom'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\mrmmin\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  displayName: 'NuGet restore of mrm unittests'
+  inputs:
+    command: 'custom'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\unittests\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+
+- powershell: |
+    # Some builds have "-branchname" appended, but when this happens the environment variable 
+    # TFS_BUILDNUMBER has the un-modified version.
+    if ($env:TFS_BUILDNUMBER)
+    {
+      $env:BUILD_BUILDNUMBER = $env:TFS_BUILDNUMBER
+    }
+    $yymm = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 10, 4)
+    $dd = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 5, 2)
+    $revision = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 3, 3)
+    Write-Host "##vso[task.setvariable variable=builddate]$yymm$dd"
+    Write-Host "##vso[task.setvariable variable=builddate_yymm]$yymm"
+    Write-Host "##vso[task.setvariable variable=builddate_dd]$dd"
+    Write-Host "##vso[task.setvariable variable=buildrevision]$revision"
+    Write-Host builddate=$yymm$dd
+    Write-Host builddate_yymm=$yymm
+    Write-Host builddate_dd=$dd
+    Write-Host buildrevision=$revision
+  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  displayName: 'Get build revision number'
+
+- task: MSBuild@1
+  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  displayName: 'build MrtCore for Static Analysis'
+  inputs:
+    platform: '$(buildPlatform)'
+    solution: '${{ parameters.MRTSourcesDirectory }}\mrt\MrtCore.sln'
+    configuration: '$(buildConfiguration)'
+    msbuildArguments: '/restore /binaryLogger:${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+
+- task: SDLNativeRules@3
+  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  displayName: 'Guardian: PreFast@3'
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  continueOnError: true
+  inputs:
+    userProvideBuildInfo: 'auto'
+
+  #- template: WindowsAppSDK-BinaryAnalysis-steps.yml
+  #  parameters:
+  #    outputDirectory: '${{ parameters.MRTBinariesDirectory }}'
+  #    EnablePREFast: ${{ parameters.EnablePREFast }}
