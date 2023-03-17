@@ -41,10 +41,22 @@ if /i "%1"=="" (
     set x86=1
     set fre=1
     set _archIsSet=1
+@REM alam start
+) else if /i "%1"=="x86\fre" (
+    set x86=1
+    set fre=1
+    set _archIsSet=1
+@REM alam end
 ) else if /i "%1"=="x64fre" (
     set amd64=1
     set fre=1
     set _archIsSet=1
+@REM alam start
+) else if /i "%1"=="x64\fre" (
+    set amd64=1
+    set fre=1
+    set _archIsSet=1
+@REM alam end
 ) else if /i "%1"=="x64chk" (
     set amd64=1
     set chk=1
@@ -53,6 +65,12 @@ if /i "%1"=="" (
     set amd64=1
     set fre=1
     set _archIsSet=1
+@REM alam start
+) else if /i "%1"=="amd64\fre" (
+    set amd64=1
+    set fre=1
+    set _archIsSet=1
+@REM alam end
 ) else if /i "%1"=="amd64chk" (
     set amd64=1
     set chk=1
@@ -61,6 +79,12 @@ if /i "%1"=="" (
     set arm=1
     set fre=1
     set _archIsSet=1
+@REM alam start
+) else if /i "%1"=="arm\fre" (
+    set arm=1
+    set fre=1
+    set _archIsSet=1
+@REM alam end
 ) else if /i "%1"=="armchk" (
     set arm=1
     set chk=1
@@ -69,6 +93,12 @@ if /i "%1"=="" (
     set arm64=1
     set fre=1
     set _archIsSet=1
+@REM alam start
+) else if /i "%1"=="arm64\fre" (
+    set arm64=1
+    set fre=1
+    set _archIsSet=1
+@REM alam end
 ) else if /i "%1"=="arm64chk" (
     set arm64=1
     set chk=1
@@ -78,6 +108,10 @@ if /i "%1"=="" (
     echo.
     echo            ^<arch^> :          x86 ^| ^(x64^|amd64^) ^| arm ^| arm64
     echo            ^<flavor^> :        chk ^| fre
+    @REM alam start
+    echo.
+    echo Invalid: %1.
+    @REM alam end
     exit /b 1
 )
 shift
@@ -110,10 +144,16 @@ if "%DevEnvDir%" == "" (
     call %RepoRoot%\DevCmd.cmd /PreserveContext /prerelease -arch=%_BuildArch% -host_arch=amd64
     if errorlevel 1 (echo Could not set up a developer command prompt && exit /b %ERRORLEVEL%)
 )
+    @REM alam start
+    echo DevCmd.cmd succeeded.
+    @REM alam end
 
 set _subfolder=\
 
 call:AddPathIfExists "%VSINSTALLDIR%\MSBuild\Current\Bin%_subfolder%"
+    @REM alam start
+    echo AddPathIfExists returned %ERRORLEVEL%
+    @REM alam end
 
 set PATH=%RepoRoot%\.buildtools\MSBuild\Current\Bin;%RepoRoot%\.tools;%RepoRoot%\.tools\VSS.NuGet.AuthHelper;%RepoRoot%\tools;%RepoRoot%\dxaml\scripts;%PATH%
 
@@ -129,13 +169,23 @@ if not exist %TEMP% mkdir %TEMP%
 rem call %RepoRoot%\scripts\init\SetDotnetVars.cmd %RepoRoot%
 
 if "%EnvOnly%"=="" (
+    @REM alam start
+    echo EnvOnly environment variable NOT set
+    @REM alam end
     powershell -ExecutionPolicy Bypass -NoProfile -Command %RepoRoot%\init.ps1
+@REM alam start
+) else (
+    echo EnvOnly environment variable IS set, skipped init.ps1.
+    @REM alam end
 )
 
 set EnvironmentInitialized=1
 
 title DCPP %_BuildArch%%_BuildType% 2019
 rem doskey /macrofile=%RepoRoot%\scripts\aliases
+    @REM alam start
+    echo ERROR: title DCPP returned %ERRORLEVEL%
+    @REM alam end
 goto:eof
 
 
@@ -155,4 +205,3 @@ set _A=%1
 echo Could not find path: %_A:~1,-1%
 set _A=
 exit /b 4
-
