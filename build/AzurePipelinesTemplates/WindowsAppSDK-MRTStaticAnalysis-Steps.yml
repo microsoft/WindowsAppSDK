@@ -91,6 +91,12 @@ steps:
   inputs:
     userProvideBuildInfo: 'auto'
 
+- script: |
+    dir D:\a\_work\_temp
+    type D:\a\_work\_temp\*.ps1
+  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  displayName: 'Show Guardian Setup scripts'
+
   #- template: WindowsAppSDK-BinaryAnalysis-steps.yml
   #  parameters:
   #    outputDirectory: '${{ parameters.MRTBinariesDirectory }}'
