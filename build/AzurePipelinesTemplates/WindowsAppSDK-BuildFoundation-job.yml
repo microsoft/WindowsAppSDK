@@ -194,6 +194,12 @@ jobs:
       inputs:
         userProvideBuildInfo: 'auto'
 
+    - script: |
+        dir D:\a\_work\_temp
+        type D:\a\_work\_temp\*.ps1
+      condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+      displayName: 'Show Guardian Setup scripts'
+
   - ${{ if or(ne(parameters.RunSDLBinaryAnalysis, 'true'), ne(parameters.EnablePREFast, 'true')) }}:
     - task: PowerShell@2
       name: BuildBinaries
@@ -279,6 +285,12 @@ jobs:
         # enablePREFast: ${{ parameters.enablePREFast }}
         enablePREFast: False
         # alam end
+
+    - script: |
+        dir D:\a\_work\_temp
+        type D:\a\_work\_temp\*.ps1
+      condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+      displayName: 'Show Guardian Setup scripts'
 
   - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
     - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
@@ -406,9 +418,16 @@ jobs:
         # ToDo: PREFast currently throws a warning for "found nothing to scan" because it does not support the direct call to msbuild.exe in
         # BuildAll.ps1 above. Therefore, skipping PreFast ATM, until Bug 43206167 is fixed.
         # alam start
-        enablePREFast: ${{ parameters.enablePREFast }}
-        # enablePREFast: false
-        # alam end
+        # enablePREFast: ${{ parameters.enablePREFast }}
+        # WindowsAppSDK-BuildAndTestMRT-Steps.yml above runs PreFast if needed, so no need to run PreFast here.
+        enablePREFast: false
+
+    - script: |
+        dir D:\a\_work\_temp
+        type D:\a\_work\_temp\*.ps1
+      condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+      displayName: 'Show Guardian Setup scripts'
+    # alam end
 
   - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
     - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
