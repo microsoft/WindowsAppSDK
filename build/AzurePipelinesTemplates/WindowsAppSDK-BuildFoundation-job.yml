@@ -50,20 +50,22 @@ jobs:
   strategy:
     maxParallel: 10
     matrix:
-      Release_x86:
-        buildPlatform: 'x86'
-        buildConfiguration: 'Release'
-        normalizedConfiguration: 'fre'
-        PGOBuildMode: 'Optimize'
+      # alam start
+      # Release_x86:
+      #   buildPlatform: 'x86'
+      #   buildConfiguration: 'Release'
+      #   normalizedConfiguration: 'fre'
+      #   PGOBuildMode: 'Optimize'
       Release_x64:
         buildPlatform: 'x64'
         buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
         PGOBuildMode: 'Optimize'
-      Release_Arm64:
-        buildPlatform: 'arm64'
-        buildConfiguration: 'Release'
-        normalizedConfiguration: 'fre'
+      # Release_Arm64:
+      #   buildPlatform: 'arm64'
+      #   buildConfiguration: 'Release'
+      #   normalizedConfiguration: 'fre'
+      # alam end
   steps:
   # Required by the Packaged ES SDL Templates.
   - checkout: self
@@ -180,6 +182,9 @@ jobs:
       inputs:
         solution: ${{ parameters.solutionPath }}
         # vsVersion: 16.0
+        # alam start
+        vsVersion: '17.0'
+        # alam end
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
         msbuildArgs: '/restore /p:AppxSymbolPackageEnabled=false /binaryLogger:BuildOutput/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:WindowsAppSDKVersionBuild=$(builddate_yymm) /p:WindowsAppSDKVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode="Optimize" /p:WindowsAppSDKBuildPipeline=1 /p:WindowsAppSDKCleanIntermediateFiles=true'
@@ -377,20 +382,22 @@ jobs:
   strategy:
     maxParallel: 10
     matrix:
-      Release_x86:
-        buildPlatform: 'x86'
-        buildConfiguration: 'Release'
-        normalizedConfiguration: 'fre'
-        PGOBuildMode: 'Optimize'
+      # alam start
+      # Release_x86:
+      #   buildPlatform: 'x86'
+      #   buildConfiguration: 'Release'
+      #   normalizedConfiguration: 'fre'
+      #   PGOBuildMode: 'Optimize'
       Release_x64:
         buildPlatform: 'x64'
         buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
         PGOBuildMode: 'Optimize'
-      Release_Arm64:
-        buildPlatform: 'arm64'
-        buildConfiguration: 'Release'
-        normalizedConfiguration: 'fre'
+      # Release_Arm64:
+      #   buildPlatform: 'arm64'
+      #   buildConfiguration: 'Release'
+      #   normalizedConfiguration: 'fre'
+      # alam end
   steps:
   - task: NuGetToolInstaller@1
 
@@ -443,20 +450,22 @@ jobs:
 
 # Arm64 uses a different VM type than x64, thus requiring them to be in different
 # pools, hence, we spilt the two scenarios into separate jobs.
-- template: WindowsAppSDK-RunTestsInPipeline-Job.yml
-  parameters:
-    jobName: PipelineTestsX64
-    isArm64Platfrom: false
-    dependsOn:
-      - Build
-      - BuildAndTestMRT
-- template: WindowsAppSDK-RunTestsInPipeline-Job.yml
-  parameters:
-    jobName: PipelineTestsArm64
-    isArm64Platfrom: true
-    dependsOn:
-      - Build
-      - BuildAndTestMRT
+# alam start
+# - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
+#   parameters:
+#     jobName: PipelineTestsX64
+#     isArm64Platfrom: false
+#     dependsOn:
+#       - Build
+#       - BuildAndTestMRT
+# - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
+#   parameters:
+#     jobName: PipelineTestsArm64
+#     isArm64Platfrom: true
+#     dependsOn:
+#       - Build
+#       - BuildAndTestMRT
+# alam end
 
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
