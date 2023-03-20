@@ -81,6 +81,9 @@ steps:
     solution: '${{ parameters.MRTSourcesDirectory }}\mrt\MrtCore.sln'
     configuration: '$(buildConfiguration)'
     msbuildArguments: '/restore /binaryLogger:${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+    # alam start
+    ToolsVersion: '6.0'
+    # alam end
 
 - task: SDLNativeRules@3
   condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
