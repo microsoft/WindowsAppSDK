@@ -17,7 +17,7 @@ steps:
 # Start restoring packages for C++ projects. The C# ones will be restored by the build task
 # Note: 'NuGetCommand@2' is ambiguous so the specific task GUID must be used instead.
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  # condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
   displayName: 'NuGet restore of core'
   inputs:
     command: 'custom'
@@ -25,28 +25,28 @@ steps:
 
 # NuGetCommand@2
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  # condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
   displayName: 'NuGet restore of applicationmodel'
   inputs:
     command: 'custom'
     arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  # condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
   displayName: 'NuGet restore of mrmex'
   inputs:
     command: 'custom'
     arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\mrmex\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  # condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
   displayName: 'NuGet restore of mrmmin'
   inputs:
     command: 'custom'
     arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\mrmmin\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  # condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
   displayName: 'NuGet restore of mrm unittests'
   inputs:
     command: 'custom'
@@ -70,11 +70,11 @@ steps:
     Write-Host builddate_yymm=$yymm
     Write-Host builddate_dd=$dd
     Write-Host buildrevision=$revision
-  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  # condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
   displayName: 'Get build revision number'
 
 - task: MSBuild@1
-  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  # condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
   displayName: 'build MrtCore for Static Analysis'
   inputs:
     platform: '$(buildPlatform)'
@@ -91,11 +91,11 @@ steps:
     move ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog ${{ parameters.MRTBinariesDirectory }}\mrtcore.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
     dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog
     dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
-  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  # condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
   displayName: 'Move mrtcore binlog BEFORE PREFast'
 
 - task: PublishBuildArtifacts@1
-  condition: and(succeededOrFailed(), and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release')))
+  # condition: and(succeededOrFailed(), and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release')))
   displayName: 'Publish MRTCore binlog BEFORE PreFast'
   inputs:
     PathtoPublish: $(Build.SourcesDirectory)/BuildOutput/mrtcore.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
@@ -103,7 +103,7 @@ steps:
 # alam end
 
 - task: SDLNativeRules@3
-  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  # condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
   displayName: 'Guardian: PreFast@3'
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -118,11 +118,11 @@ steps:
     copy ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog ${{ parameters.MRTBinariesDirectory }}\mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
     dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog
     dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
-  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  # condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
   displayName: 'Copy mrtcore binlog AFTER PreFast'
 
 - task: PublishBuildArtifacts@1
-  condition: and(succeededOrFailed(), and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release')))
+  # condition: and(succeededOrFailed(), and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release')))
   displayName: 'Publish MRTCore binlog AFTER PreFast'
   inputs:
     PathtoPublish: $(Build.SourcesDirectory)/BuildOutput/mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
@@ -132,7 +132,7 @@ steps:
 - script: |
     dir D:\a\_work\_temp
     type D:\a\_work\_temp\*.ps1
-  condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+  # condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
   displayName: 'Show Guardian Setup scripts'
 
   #- template: WindowsAppSDK-BinaryAnalysis-steps.yml
