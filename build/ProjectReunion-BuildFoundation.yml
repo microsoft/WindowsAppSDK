@@ -372,7 +372,7 @@ jobs:
       ArtifactServices_Symbol_AccountName: microsoftpublicsymbols
       ArtifactServices_Symbol_PAT: $(WinSDKLab_microsoftpublicsymbols_PAT)
 
-  - task: EsrpCodeSigning@1
+  - task: EsrpCodeSigning@2
     inputs:
       ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
       FolderPath: '$(Build.ArtifactStagingDirectory)\fullnuget'
@@ -416,7 +416,7 @@ jobs:
     condition:
       eq(${{ parameters.ReleaseSigning }}, true)
 
-  - task: EsrpCodeSigning@1
+  - task: EsrpCodeSigning@2
     inputs:
       ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
       FolderPath: '$(Build.ArtifactStagingDirectory)\fullnuget'

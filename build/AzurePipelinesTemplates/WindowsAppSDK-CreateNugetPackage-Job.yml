@@ -126,7 +126,7 @@ jobs:
       packDestination: ${{ parameters.fullnupkgdir }}
 
   - ${{if parameters.signConfigPattern }}:
-    - task: EsrpCodeSigning@1
+    - task: EsrpCodeSigning@2
       inputs:
         ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
         FolderPath: '${{ parameters.fullnupkgdir }}'
