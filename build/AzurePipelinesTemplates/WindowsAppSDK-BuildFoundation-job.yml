@@ -193,10 +193,10 @@ jobs:
 
     # alam start 
     - script: |
-        dir BuildOutput/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
-        move BuildOutput/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog BuildOutput/${{ parameters.solutionPath }}.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
-        dir BuildOutput/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
-        dir BuildOutput/${{ parameters.solutionPath }}.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
+        dir BuildOutput\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
+        move BuildOutput\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog BuildOutput\${{ parameters.solutionPath }}.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
+        dir BuildOutput\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
+        dir BuildOutput\${{ parameters.solutionPath }}.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
       condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
       displayName: 'Move sln binlog BEFORE PreFast'
 
@@ -220,10 +220,10 @@ jobs:
 
     # alam start 
     - script: |
-        dir BuildOutput/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
-        move BuildOutput/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog BuildOutput/${{ parameters.solutionPath }}.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
-        dir BuildOutput/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
-        dir BuildOutput/${{ parameters.solutionPath }}.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
+        dir BuildOutput\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
+        move BuildOutput\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog BuildOutput\${{ parameters.solutionPath }}.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
+        dir BuildOutput\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
+        dir BuildOutput\${{ parameters.solutionPath }}.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
       condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
       displayName: 'Move sln binlog AFTER PreFast'
 
