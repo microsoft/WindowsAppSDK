@@ -110,15 +110,16 @@ steps:
   continueOnError: true
   inputs:
     userProvideBuildInfo: 'auto'
+    toolVersion: Latest
 
 # alam start 
 - script: |
     dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog
-    move ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog ${{ parameters.MRTBinariesDirectory }}\mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
+    copy ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog ${{ parameters.MRTBinariesDirectory }}\mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
     dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog
     dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
   condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
-  displayName: 'Move mrtcore binlog AFTER PreFast'
+  displayName: 'Copy mrtcore binlog AFTER PreFast'
 
 - task: PublishBuildArtifacts@1
   condition: and(succeededOrFailed(), and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release')))
