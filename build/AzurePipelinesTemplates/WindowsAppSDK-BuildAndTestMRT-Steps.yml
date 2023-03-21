@@ -16,14 +16,14 @@ steps:
 
 - ${{ if and(eq(parameters.RunSDLBinaryAnalysis, 'true'), eq(parameters.EnablePREFast, 'true')) }}:
   - task: PowerShell@2
-    condition: or(ne(variables['buildPlatform'], 'x64'), ne(variables['buildConfiguration'], 'Release'))
+    # condition: or(ne(variables['buildPlatform'], 'x64'), ne(variables['buildConfiguration'], 'Release'))
     name: BuildBinaries
     inputs:
       filePath: 'BuildAll.ps1'
       arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
 
   - task: PowerShell@2
-    condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+    # condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
     name: MSBuildBinaries
     inputs:
       filePath: 'BuildAll.ps1'
