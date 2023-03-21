@@ -87,10 +87,10 @@ steps:
 
 # alam start 
 - script: |
-    dir ${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
-    move ${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog ${{ parameters.MRTBinariesDirectory }}/BuildOutput/mrtcore.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
-    dir ${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
-    dir ${{ parameters.MRTBinariesDirectory }}/BuildOutput/mrtcore.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
+    dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog
+    move ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog ${{ parameters.MRTBinariesDirectory }}\mrtcore.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
+    dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog
+    dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
   condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
   displayName: 'Move mrtcore binlog BEFORE PREFast'
 
@@ -98,7 +98,7 @@ steps:
   condition: and(succeededOrFailed(), and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release')))
   displayName: 'Publish MRTCore binlog BEFORE PreFast'
   inputs:
-    PathtoPublish: ${{ parameters.MRTBinariesDirectory }}/BuildOutput/mrtcore.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
+    PathtoPublish: $(Build.SourcesDirectory)/BuildOutput/mrtcore.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
     artifactName: binlogs
 # alam end
 
@@ -113,10 +113,10 @@ steps:
 
 # alam start 
 - script: |
-    dir ${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
-    move ${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog ${{ parameters.MRTBinariesDirectory }}/BuildOutput/mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
-    dir ${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
-    dir ${{ parameters.MRTBinariesDirectory }}/BuildOutput/mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
+    dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog
+    move ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog ${{ parameters.MRTBinariesDirectory }}\mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
+    dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog
+    dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
   condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
   displayName: 'Move mrtcore binlog AFTER PreFast'
 
@@ -124,7 +124,7 @@ steps:
   condition: and(succeededOrFailed(), and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release')))
   displayName: 'Publish MRTCore binlog AFTER PreFast'
   inputs:
-    PathtoPublish: ${{ parameters.MRTBinariesDirectory }}/BuildOutput/mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
+    PathtoPublish: $(Build.SourcesDirectory)/BuildOutput/mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
     artifactName: binlogs
 # alam end
 
