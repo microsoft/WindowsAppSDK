@@ -84,16 +84,16 @@ steps:
       msbuildArguments: '/restore /binaryLogger:${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
   # SDLNativeRules@3 is currently supported, while the @2 that comes with the SDL template is unsupported; hence, it's preferable to invoke @3 explicitly.
-  - task: SDLNativeRules@3
-    # ToDo: Due to b#43856157, we currently only enable PREFast scanning for arm64.
-    condition: eq(variables['buildPlatform'], 'arm64')
-    displayName: 'Guardian: PreFast@3'
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-    continueOnError: true
-    inputs:
-      userProvideBuildInfo: 'auto'
-      toolVersion: Latest
+  # - task: SDLNativeRules@3
+  #   # ToDo: Due to b#43856157, we currently only enable PREFast scanning for arm64.
+  #   condition: eq(variables['buildPlatform'], 'arm64')
+  #   displayName: 'Guardian: PreFast@3'
+  #   env:
+  #     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  #   continueOnError: true
+  #   inputs:
+  #     userProvideBuildInfo: 'auto'
+  #     toolVersion: Latest
 
 - ${{ if or(ne(parameters.RunSDLBinaryAnalysis, 'true'), ne(parameters.EnablePREFast, 'true')) }}:
   # PREFast scan is disabled in this pipeline run, just proceed to build the MRT via BuildAll.ps1, and
@@ -104,12 +104,12 @@ steps:
       filePath: 'BuildAll.ps1'
       arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
 
-# Common code for performing non-PREFast Binary Analysis.
+# Common code for performing Binary Analysis.
 - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
   - template: WindowsAppSDK-BinaryAnalysis-steps.yml
     parameters:
       outputDirectory: 'BuildOutput'
-      enablePREFast: false
+      enablePREFast: ${{ parameters.EnablePREFast }}
 
 # component detection must happen *within* the build task
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
