@@ -1,48 +1,115 @@
-# alam start
 parameters:
+  MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
+  MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
   RunSDLBinaryAnalysis: true
   EnablePREFast: true
-# alam end
 
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
-# alam start
-#- task: PowerShell@2
-#  name: BuildBinaries
-#  inputs:
-#    filePath: 'BuildAll.ps1'
-#    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
-
 - ${{ if and(eq(parameters.RunSDLBinaryAnalysis, 'true'), eq(parameters.EnablePREFast, 'true')) }}:
+  # PREFast scan is enabled in this pipeline run, so we pass PreFastSetup to BuildAll.ps1 to get it to do the commonn setup steps, but short of
+  # building the target via MSBuild.exe
   - task: PowerShell@2
-    # condition: or(ne(variables['buildPlatform'], 'x64'), ne(variables['buildConfiguration'], 'Release'))
-    name: BuildBinaries
-    inputs:
-      filePath: 'BuildAll.ps1'
-      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
-
-  - task: PowerShell@2
-    # condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
-    name: MSBuildBinaries
+    name: PreFastSetup
     inputs:
       filePath: 'BuildAll.ps1'
       arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "PreFastSetup"
 
-  - template: WindowsAppSDK-MRTStaticAnalysis-Steps.yml
-    parameters:
-      MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
-      MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
-      runSDLBinaryAnalysis: ${{parameters.RunSDLBinaryAnalysis}}
-      EnablePREFast: ${{parameters.EnablePREFast}}
+  # Start restoring packages for C++ projects. The C# ones will be restored by the build task
+  # Note: 'NuGetCommand@2' is ambiguous so the specific task GUID must be used instead.
+  # ToDo: Is this needed.
+  # - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  #   displayName: 'NuGet restore of core'
+  #   inputs:
+  #     command: 'custom'
+  #     arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\core\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+
+  # ToDo: Is this needed.
+  # - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  #   displayName: 'NuGet restore of applicationmodel'
+  #   inputs:
+  #     command: 'custom'
+  #     arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+
+  # ToDo: Is this needed.
+  # - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  #   displayName: 'NuGet restore of mrmex'
+  #   inputs:
+  #     command: 'custom'
+  #     arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\mrmex\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+
+  # ToDo: Is this needed.
+  # - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  #   displayName: 'NuGet restore of mrmmin'
+  #   inputs:
+  #     command: 'custom'
+  #     arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\mrmmin\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+
+  # ToDo: Is this needed.
+  # - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  #   displayName: 'NuGet restore of mrm unittests'
+  #   inputs:
+  #     command: 'custom'
+  #     arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\unittests\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+
+  # ToDo: Is this needed.
+  # - powershell: |
+  #     # Some builds have "-branchname" appended, but when this happens the environment variable 
+  #     # TFS_BUILDNUMBER has the un-modified version.
+  #     if ($env:TFS_BUILDNUMBER)
+  #     {
+  #       $env:BUILD_BUILDNUMBER = $env:TFS_BUILDNUMBER
+  #     }
+  #     $yymm = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 10, 4)
+  #     $dd = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 5, 2)
+  #     $revision = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 3, 3)
+  #     Write-Host "##vso[task.setvariable variable=builddate]$yymm$dd"
+  #     Write-Host "##vso[task.setvariable variable=builddate_yymm]$yymm"
+  #     Write-Host "##vso[task.setvariable variable=builddate_dd]$dd"
+  #     Write-Host "##vso[task.setvariable variable=buildrevision]$revision"
+  #     Write-Host builddate=$yymm$dd
+  #     Write-Host builddate_yymm=$yymm
+  #     Write-Host builddate_dd=$dd
+  #     Write-Host buildrevision=$revision
+  #   displayName: 'Get build revision number'
+
+  # SDLNativeRules below only supports the VSBuild/MSbuild task, _not_ a direct call to MSBuild.exe.
+  - task: MSBuild@1
+    displayName: 'build MrtCore with MSBuild'
+    inputs:
+      platform: '$(buildPlatform)'
+      solution: '${{ parameters.MRTSourcesDirectory }}\mrt\MrtCore.sln'
+      configuration: '$(buildConfiguration)'
+      msbuildArguments: '/restore /binaryLogger:${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+
+  # SDLNativeRules@3 is currently supported, while the @2 that comes with the SDL template is unsupported; hence, it's preferable to invoke @3 explicitly.
+  - task: SDLNativeRules@3
+    # ToDo: Due to b#43856157, we currently only enable PREFast scanning for arm64.
+    condition: eq(variables['buildPlatform'], 'arm64')
+    displayName: 'Guardian: PreFast@3'
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    continueOnError: true
+    inputs:
+      userProvideBuildInfo: 'auto'
+      toolVersion: Latest
 
 - ${{ if or(ne(parameters.RunSDLBinaryAnalysis, 'true'), ne(parameters.EnablePREFast, 'true')) }}:
+  # PREFast scan is disabled in this pipeline run, just proceed to build the MRT via BuildAll.ps1, and
+  # fall through to run BinaryAnalysis with PREFast turned off.
   - task: PowerShell@2
     name: BuildBinaries
     inputs:
       filePath: 'BuildAll.ps1'
       arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
-# alam end
+
+# Common code for performing non-PREFast Binary Analysis.
+- ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
+  - template: WindowsAppSDK-BinaryAnalysis-steps.yml
+    parameters:
+      outputDirectory: 'BuildOutput'
+      enablePREFast: false
 
 # component detection must happen *within* the build task
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
