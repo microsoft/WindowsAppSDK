@@ -9,7 +9,7 @@ OutputDirectory: Pack Location of the Nuget Package
 UpdateVersionDetailsPath: Path to a ps1 or cmd that updates version.details.xml.
 Clean: Performs a clean on BuildOutput, Obj, and build\override
 Note about building in different environments.
-The feed the nuget.config points to changes depending on the branch.
+The feed the NuGet.config points to changes depending on the branch.
 Develop branch points to the internal feed.
 Main branch points to the external feed.
 #>
@@ -103,23 +103,25 @@ Try {
         # If $AzureBuildStep is not "all", that means we are in the pipeline
         $WindowsAppSDKBuildPipeline = 1
     }
+    # PreFastSetup is specifically for use when preparing for PREFast scans. It triggers the same actions below as BuildBinaries or BuildMRT, except 
+    # PreFastSetup stops short of calling msBuild.exe to build the target, which the Guardian:PREFast task does _not_ support, so the caller of this 
+    # script needs to resort to calling the MSBuild/VSBuild task later to build the target, which the Guardian:PREFast task does support. Structuring 
+    # the code this way allows minimally diveraging the flow while supporting building the target both via this script and the VSBuild/MSBuild task.
     if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildBinaries") -Or ($AzureBuildStep -eq "BuildMRT") -Or ($AzureBuildStep -eq "PreFastSetup"))) 
     {
-        & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile nuget.config
-        # alam start
+        & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile NuGet.config
+
         if ($lastexitcode -ne 0)
         {
             write-host "ERROR: restore WindowsAppRuntime.sln FAILED."
             exit 1
         }
-        # alam end
-        & .\.nuget\nuget.exe restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" -configfile nuget.config
+
+        & .\.nuget\nuget.exe restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" -configfile NuGet.config
 
         if ($lastexitcode -ne 0)
         {
-            # alam start
             write-host "ERROR: restore Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
-            # alam end
             exit 1
         }
 
@@ -139,12 +141,11 @@ Try {
 
         if ($lastexitcode -ne 0)
         {
-            # alam start
             write-host "ERROR: Copy-Item -Force $srcPath.FullName $destPath.FullName FAILED."
-            # alam end
             exit 1
         }
     }
+    # PreFastSetup intentionally skips the call to MSBuild.exe below.
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildBinaries")) 
     {
         foreach($configurationToRun in $configuration.Split(","))
@@ -163,9 +164,7 @@ Try {
                                 /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline
                 if ($lastexitcode -ne 0)
                 {
-                    # alam start
                     write-host "ERROR: msbuild.exe /restore WindowsAppRuntime.sln FAILED."
-                    # alam end
                     exit 1
                 }
             }
@@ -178,61 +177,58 @@ Try {
         #------------------
 
         #Restore packages from mrt.
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\MrtCore.sln" -ConfigFile nuget.config
-        # alam start
+        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\MrtCore.sln" -ConfigFile NuGet.config
+
         if ($lastexitcode -ne 0)
         {
             write-host "ERROR: restore MrtCore.sln FAILED."
             exit 1
         }
-        # alam end
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config" -ConfigFile nuget.config
-        # alam start
+
+        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config" -ConfigFile NuGet.config
+
         if ($lastexitcode -ne 0)
         {
             write-host "ERROR: restore Microsoft.Windows.ApplicationModel.Resources\src\packages.config FAILED."
             exit 1
         }
-        # alam end
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config" -ConfigFile nuget.config
-        # alam start
+
+        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config" -ConfigFile NuGet.config
+
         if ($lastexitcode -ne 0)
         {
             write-host "ERROR: restore mrm\mrmex\packages.config FAILED."
             exit 1
         }
-        # alam end
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmmin\packages.config" -ConfigFile nuget.config
-        # alam start
+
+        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmmin\packages.config" -ConfigFile NuGet.config
+
         if ($lastexitcode -ne 0)
         {
             write-host "ERROR: restore mrmmin\packages.config FAILED."
             exit 1
         }
-        # alam end
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\unittests\packages.config" -ConfigFile nuget.config
+
+        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\unittests\packages.config" -ConfigFile NuGet.config
 
         if ($lastexitcode -ne 0)
         {
-            # alam start
             write-host "ERROR: restore unittests\packages.config FAILED."
-            # alam end
             exit 1
         }
 
         # Init mrtcore
         foreach($platformToRun in $platform.Split(","))
         {
-            # alam start
-            #& $MRTSourcesDirectory\build\init.cmd /envonly $platformToRun\fre
             & $MRTSourcesDirectory\build\init.cmd /envonly $platformToRun\fre
+
             if ($lastexitcode -ne 0)
             {
                 write-host "ERROR: init.cmd /envonly $platformToRun\fre FAILED."
             }
-            # alam end
         }
 
+        # PreFastSetup intentionally skips the call to MSBuild.exe below.
         if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMRT")) 
         {
             # Build mrt core.
@@ -248,9 +244,7 @@ Try {
 
                     if ($lastexitcode -ne 0)
                     {
-                        # alam start
                         write-host "ERROR: msbuild restore '$MRTSourcesDirectory\mrt\MrtCore.sln' FAILED."
-                        # alam end
                         exit 1
                     }
                 }
@@ -266,9 +260,7 @@ Try {
         & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=AnyCPU
         if ($lastexitcode -ne 0)
         {
-            # alam start
             write-host "ERROR: msbuild restore Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
-            # alam end
             exit 1
         }
     }
@@ -295,9 +287,7 @@ Try {
                 .\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$BasePath" -Platform $PlatformToRun -Configuration $ConfigurationToRun
                 if ($lastexitcode -ne 0)
                 {
-                    # alam start
                     write-host "ERROR: msCopyFilesToStagingDir.ps1 FAILED."
-                    # alam end
                     exit 1
                 }
             }
@@ -365,20 +355,18 @@ Try {
         #------------------
 
         Copy-Item -Path "$nuSpecsPath\AppxManifest.xml" -Destination "$BasePath"
-        # alam start
+
         if ($lastexitcode -ne 0)
         {
             write-host "ERROR: Copy-Item -Path AppxManifest.xml FAILED."
             exit 1
         }
-        # alam end
+
         Copy-Item -Path "LICENSE" -Destination "$BasePath" -force
 
         if ($lastexitcode -ne 0)
         {
-            # alam start
             write-host "ERROR: Copy-Item -Path LICENSE FAILED."
-            # alam end
             exit 1
         }
 
@@ -395,9 +383,7 @@ Try {
 
         if ($lastexitcode -ne 0)
         {
-            # alam start
             write-host "ERROR: xslt.Transform FAILED."
-            # alam end
             exit 1
         }
     }
@@ -416,9 +402,7 @@ Try {
 
         if ($lastexitcode -ne 0)
         {
-            # alam start
             write-host "ERROR: nuget.exe pack $nuspecPath FAILED."
-            # alam end
             exit 1
         }
     }
