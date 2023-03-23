@@ -275,8 +275,7 @@ jobs:
         normalizedConfiguration: 'fre'
         PGOBuildMode: 'Optimize'
         # alam start
-
-        enablePREFastForPlatform: 'false'
+        enablePREFastForPlatform: false
         # alam end
       Release_x64:
         buildPlatform: 'x64'
@@ -284,15 +283,17 @@ jobs:
         normalizedConfiguration: 'fre'
         PGOBuildMode: 'Optimize'
         # alam start
-        enablePREFastForPlatform: 'false'
+        enablePREFastForPlatform: false
         # alam end
       Release_Arm64:
         buildPlatform: 'arm64'
         buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
         # alam start
-
-        enablePREFastForPlatform: '${{ parameters.enablePREFast }}'
+        - ${{ if eq(parameters.enablePREFast, 'true') }}:
+          enablePREFastForPlatform: true
+        - ${{ if ne(parameters.enablePREFast, 'true') }}:
+          enablePREFastForPlatform: false
         # alam end
   steps:
   - task: NuGetToolInstaller@1
