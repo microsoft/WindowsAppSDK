@@ -314,7 +314,7 @@ jobs:
       # ToDo: Enable PREFast fully once b#43856157 is fixed. Currently, the PREFast scan is blocked by an error in case of x86 and x64, 
       #       which in turn causes the build result to show a warning.
       # EnablePREFast: ${{ parameters.enablePREFast }}
-      EnablePREFast: '$(enablePREFastForPlatform)'
+      EnablePREFast: $(enablePREFastForPlatform)
       # alam end
       RunSDLBinaryAnalysis: ${{ parameters.RunSDLBinaryAnalysis }}
 
