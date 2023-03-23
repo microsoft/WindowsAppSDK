@@ -6,13 +6,16 @@
 #include "pch.h"
 #include <wrl\module.h>
 #include <KozaniManager_h.h>
+#include "ConnectionManager.h"
 
 #include "..\KozaniManager\KozaniManager-Constants.h"
 #include "KozaniManagerActivity.h"
 
 using namespace Microsoft::WRL;
+using namespace Microsoft::Kozani::DvcProtocol;
 
 extern volatile LONG g_newConnectionCount;
+extern Microsoft::Kozani::Manager::ConnectionManager g_connectionManager;
 
 class KozaniDvcCallback : public Microsoft::WRL::RuntimeClass<
     Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
@@ -22,35 +25,39 @@ public:
     KozaniDvcCallback(
         IWTSVirtualChannel* pChannel,
         IWTSVirtualChannelManager* pChannelMgr)
-        : m_spChannel(pChannel), m_spChannelMgr(pChannelMgr)
+        : m_channel(pChannel), m_channelManager(pChannelMgr)
     {
     }
-
 
     //
     // IWTSVirtualChannelCallback
     //
     HRESULT STDMETHODCALLTYPE OnDataReceived(
-        ULONG cbSize,
-        _In_reads_(cbSize) BYTE* pBuffer) override
+        ULONG size,
+        _In_reads_(size) BYTE* data) override try
     {
         LogDebugMessage("IWTSVirtualChannelCallback::OnDataReceived(), cbSize = %u, pChannelMgr=0x%I64x, pChannel=0x%I64x\n",
-            cbSize, (UINT64)m_spChannelMgr.Get(), (UINT64)m_spChannel.Get());
+            size, (UINT64)m_channelManager.get(), (UINT64)m_channel.get());
+
+        g_connectionManager.ProcessProtocolDataUnit(data, size, m_channelManager.get(), m_channel.get());
         return S_OK;
     }
+    CATCH_RETURN()
 
-    HRESULT STDMETHODCALLTYPE OnClose() override
+    HRESULT STDMETHODCALLTYPE OnClose() override try
     {
         LogDebugMessage("IWTSVirtualChannelCallback::OnClose() - pChannelMgr=0x%I64x, pChannel=0x%I64x\n",
-            (UINT64)m_spChannelMgr.Get(), (UINT64)m_spChannel.Get());
+            (UINT64)m_channelManager.get(), (UINT64)m_channel.get());
+        
+        g_connectionManager.OnDvcChannelClose(m_channel.get());
         return S_OK;
     }
+    CATCH_RETURN()
 
 private:
 
-    Microsoft::WRL::ComPtr<IWTSVirtualChannelManager> m_spChannelMgr;
-    Microsoft::WRL::ComPtr<IWTSVirtualChannel> m_spChannel;
-    Microsoft::WRL::ComPtr<IWTSBitmapRenderer> m_spRenderer;
+    wil::com_ptr<IWTSVirtualChannelManager> m_channelManager;
+    wil::com_ptr<IWTSVirtualChannel> m_channel;
 };
 
 struct __declspec(uuid(PR_KOZANIDVC_CLSID_STRING)) KozaniDvcImpl WrlFinal : RuntimeClass<RuntimeClassFlags<ClassicCom>, IWTSPlugin, IWTSListenerCallback>
@@ -59,44 +66,49 @@ struct __declspec(uuid(PR_KOZANIDVC_CLSID_STRING)) KozaniDvcImpl WrlFinal : Runt
     // IWTSPlugin
     //
     STDMETHODIMP Initialize(
-        IWTSVirtualChannelManager* pChannelMgr) override
+        IWTSVirtualChannelManager* pChannelMgr) override try
     {
         // Called early in MSRDC launch, before a connection to a new remote session.
-        InterlockedIncrement(&g_newConnectionCount);
-
         LogDebugMessage("IWTSPlugin::Initialize() - pChannelMgr=0x%I64x\n", (UINT64)pChannelMgr);
 
-        m_spChannelMgr = pChannelMgr;
+        m_channelManager = pChannelMgr;
 
-        ComPtr<IWTSListener> listener;
-        // Attach the callback to the "DVC_InstantApp" endpoint.
-        HRESULT hr = (m_spChannelMgr->CreateListener(
-            "KozaniDvc", //InstantAppDvcRpc::DVC_NAME,
-            0,
+        wil::com_ptr<IWTSListener> listener;
+        // Attach the callback to the "KozaniDvc" endpoint.
+        RETURN_IF_FAILED(m_channelManager->CreateListener(
+            DvcChannelName,
+            0,  // uFlags - reserved and must be set to zero
             this,
             &listener));
 
-        LogDebugMessage("_spChannelMgr->CreateListener result: 0x%x\n", hr);
+        g_connectionManager.OnRemoteDesktopInitializeConnection(pChannelMgr);
+        InterlockedIncrement(&g_newConnectionCount);
         return S_OK;
     }
+    CATCH_RETURN()
 
-    STDMETHODIMP Connected() override
+    STDMETHODIMP Connected() override try
     {
-        LogDebugMessage("IWTSPlugin::Connected() - pChannelMgr=0x%I64x\n", (UINT64)m_spChannelMgr.Get());
+        LogDebugMessage("IWTSPlugin::Connected() - pChannelMgr=0x%I64x\n", (UINT64)m_channelManager.get());
         return S_OK;
     }
+    CATCH_RETURN()
 
-    STDMETHODIMP Disconnected(DWORD dwDisconnectCode) override
+    STDMETHODIMP Disconnected(DWORD dwDisconnectCode) override try
     {
-        LogDebugMessage("IWTSPlugin::Disconnected() - pChannelMgr=0x%I64x, dwDisconnectCode = %u\n", (UINT64)m_spChannelMgr.Get(), dwDisconnectCode);
+        LogDebugMessage("IWTSPlugin::Disconnected() - pChannelMgr=0x%I64x, dwDisconnectCode = %u\n", (UINT64)m_channelManager.get(), dwDisconnectCode);
+        g_connectionManager.OnRemoteDesktopDisconnect(m_channelManager.get());
         return S_OK;
     }
+    CATCH_RETURN()
 
-    STDMETHODIMP Terminated() override
+    STDMETHODIMP Terminated() override try
     {
-        LogDebugMessage("IWTSPlugin::Terminated() - pChannelMgr=0x%I64x\n", (UINT64)m_spChannelMgr.Get());
+        LogDebugMessage("IWTSPlugin::Terminated() - pChannelMgr=0x%I64x\n", (UINT64)m_channelManager.get());
+        g_connectionManager.OnRemoteDesktopDisconnect(m_channelManager.get());
         return S_OK;
     }
+    CATCH_RETURN()
 
     //
     // IWTSListenerCallback
@@ -105,36 +117,23 @@ struct __declspec(uuid(PR_KOZANIDVC_CLSID_STRING)) KozaniDvcImpl WrlFinal : Runt
         IWTSVirtualChannel* pChannel,
         _In_opt_ BSTR data,
         _Out_ BOOL* pbAccept,
-        _Out_ IWTSVirtualChannelCallback** ppCallback) override
+        _Out_ IWTSVirtualChannelCallback** ppCallback) override try
     {
-        LogDebugMessage("IWTSListenerCallback::OnNewChannelConnection is called! pChannelMgr=0x%I64x, pChannel=0x%I64x\n",
-            (UINT64)m_spChannelMgr.Get(), (UINT64)pChannel);
+        // Per MSDN, the data parameter "is not implemented and is reserved for future use".
+        UNREFERENCED_PARAMETER(data);
 
-        auto pConnection = Make<KozaniDvcCallback>(pChannel, m_spChannelMgr.Get());
+        LogDebugMessage("IWTSListenerCallback::OnNewChannelConnection is called! pChannelMgr=0x%I64x, pChannel=0x%I64x\n",
+            (UINT64)m_channelManager.get(), (UINT64)pChannel);
+
+        auto pConnection = Make<KozaniDvcCallback>(pChannel, m_channelManager.get());
         *ppCallback = pConnection.Detach();
         *pbAccept = TRUE;
 
-        /*
-        if (m_n < 1000)
-        {
-            m_n++;
-            ComPtr<IWTSListener> listener;
-            std::string dvcName = "KozaniDvc" + std::to_string(m_n);
-            HRESULT hr = (m_spChannelMgr->CreateListener(
-                dvcName.c_str(), //InstantAppDvcRpc::DVC_NAME,
-                0,
-                this,
-                &listener));
-
-            LogDebugMessage("_spChannelMgr->CreateListener with channel name %s result: 0x%x", dvcName.c_str(), hr);
-        }
-        */
         return S_OK;
     }
+    CATCH_RETURN()
 
 private:
-    Microsoft::WRL::ComPtr<IWTSVirtualChannelManager> m_spChannelMgr;
-    int m_n{};
-
+    wil::com_ptr<IWTSVirtualChannelManager> m_channelManager;
 };
 CoCreatableClass(KozaniDvcImpl);

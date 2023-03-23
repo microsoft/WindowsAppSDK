@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Microsoft::Kozani::Dvc::Constants
+namespace Microsoft::Kozani::DVC::Constants
 {
     const char ConnectionIdSwitch[] = "-connectionId";
 

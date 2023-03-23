@@ -4,9 +4,11 @@
 #pragma once
 
 #include "pch.h"
+#include <shobjidl.h>
 #include <wtsapi32.h>
+#include <pchannel.h>
+#include <Kozani.DVC.pb.h>
 
-#include "KozaniDvcProtocol.h"
 #include "KozaniDvcServer.h"
 #include "ConnectionManager.h"
 #include "Logging.h"
@@ -93,7 +95,17 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
     // This function will be executed in a separate thread from the main thread and shouldn't throw any exceptions.
     // Any uncaught exceptions will cause the process to terminate.
-    void KozaniDvcServer::ProcessDvcIncomingData() noexcept try
+    void KozaniDvcServer::ProcessDvcIncomingDataThreadFunc() noexcept try
+    {
+        HRESULT hr{ LOG_IF_FAILED(ProcessDvcIncomingData()) };
+        if (FAILED(hr))
+        {
+            DvcListenerThreadExiting(hr, "Failed to process incoming DVC data");
+        }
+    }
+    CATCH_LOG_RETURN()
+
+    HRESULT KozaniDvcServer::ProcessDvcIncomingData() noexcept try
     {
         bool exitThread = false;
         wil::unique_event_nothrow readComplete;
@@ -101,16 +113,15 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         if (FAILED(hr))
         {
             DvcListenerThreadExiting(hr, "Failed to create readComplete event");
-            return;
+            RETURN_HR(hr);
         }
 
-        std::unique_ptr<BYTE> readBuffer{ new (std::nothrow) BYTE[MaxProtocolDataUnitSize]};
-        if (readBuffer == nullptr)
-        {
-            DvcListenerThreadExiting(E_OUTOFMEMORY, "Failed to allocate readBuffer");
-            return;
-        }
-
+        // CHANNEL_PDU_LENGTH is the max amount of data sent/received in one DVC operation. Data larger than that is segmented into chunks of 
+        // that size and sent/received as multiple operations.
+        BYTE readBuffer[CHANNEL_PDU_LENGTH];
+        std::vector<BYTE> pduBuffer;
+        UINT32 pduSize{};
+        bool isPartialData{};
         OVERLAPPED overlappedRead{};
         overlappedRead.hEvent = readComplete.get();
 
@@ -119,11 +130,12 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             DWORD error{};
 
             // Set up async read on the DVC.
-            if (!ReadFile(m_dvcHandle.get(), readBuffer.get(), MaxProtocolDataUnitSize, nullptr, &overlappedRead) 
+            if (!ReadFile(m_dvcHandle.get(), readBuffer, sizeof(readBuffer), nullptr, &overlappedRead)
                 && ((error = GetLastError()) != ERROR_IO_PENDING))
             {
-                DvcListenerThreadExiting(HRESULT_FROM_WIN32(error), "[DVC] read failure");
-                return;
+                hr = HRESULT_FROM_WIN32(error);
+                DvcListenerThreadExiting(hr, "[DVC] read failure");
+                RETURN_HR(hr);
             }
 
             HANDLE events[] = { m_dvcThreadExit.get(), readComplete.get() };
@@ -136,8 +148,9 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             LogDebugMessage("[DVC] Listener thread wait completed (result=0x%x)", result);
             if (result == WAIT_FAILED)
             {
-                DvcListenerThreadExiting(HRESULT_FROM_WIN32(GetLastError()), "[DVC] WaitForMultipleObjects failure");
-                return;
+                hr = HRESULT_FROM_WIN32(GetLastError());
+                DvcListenerThreadExiting(hr, "[DVC] WaitForMultipleObjects failure");
+                RETURN_HR(hr);
             }
 
             switch (result)
@@ -145,7 +158,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                 case WAIT_OBJECT_0:
                     // Thread exit handle signaled.
                     LogDebugMessage("[DVC] Thread exit event handled");
-                    return;
+                    return S_OK;
 
                 case WAIT_OBJECT_0 + 1:
                 {
@@ -153,30 +166,253 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                     DWORD bytesRead{};
                     if (GetOverlappedResult(m_dvcHandle.get(), &overlappedRead, &bytesRead, FALSE))
                     {
-                        
+                        const BYTE* pdu{};
+                        // Failing to process DVC data will not bubble up the failure, which will end the DVC listener thread. 
+                        // As a server, it should be robust to mal-formatted data.
+                        if (SUCCEEDED_LOG(ProcessDvcDataChunk(readBuffer, bytesRead, isPartialData, pduBuffer, pduSize, &pdu)))
+                        {
+                            LOG_IF_FAILED_MSG(ProcessProtocolDataUnit(pdu, pduSize), "Failed to process PDU. Ignore failure.");
+                        }
                     }
                     else
                     {
-                        DvcListenerThreadExiting(HRESULT_FROM_WIN32(GetLastError()), "[DVC] GetOverlappedResult() failed");
-                        return;
+                        hr = HRESULT_FROM_WIN32(GetLastError());
+                        DvcListenerThreadExiting(hr, "[DVC] GetOverlappedResult() failed");
+                        RETURN_HR(hr);
                     }
                     break;
                 }
 
                 default:
-                    LogDebugMessage("[DVC] Unexpected WaitForMultipleObjects() result: 0x%x. Ignored", result);
+                    LOG_HR_MSG(E_UNEXPECTED, "[DVC] Unexpected WaitForMultipleObjects() result: 0x%x. Ignored", result);
+            }
+        }
+
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    HRESULT KozaniDvcServer::ProcessDvcDataChunk(
+        _In_reads_(size) const BYTE* data,
+        UINT32 size,
+        _Inout_ bool& isPartialData,
+        _Inout_ std::vector<BYTE>& pduBuffer,
+        _Inout_ UINT32& pduSize,
+        _Outptr_result_maybenull_ const BYTE** pdu) noexcept try
+    {
+        *pdu = nullptr;
+
+        // Each DVC data chunk received consists of a header and payload data following it.
+        const CHANNEL_PDU_HEADER* header{ reinterpret_cast<const CHANNEL_PDU_HEADER*>(data) };
+        const BYTE* chunkPayload{ reinterpret_cast<const BYTE*>(header + 1) };
+
+        auto chunkFlags{ header->flags & CHANNEL_FLAG_ONLY };
+        bool isLastChunk{};
+        bool copyChunk{};
+        switch (chunkFlags)
+        {
+        case CHANNEL_FLAG_ONLY:
+            // Entire Kozani PDU was delivered in a single chunk.
+            // The chunk header length field is the total length in bytes of the uncompressed channel data, excluding the header.
+            // It cannot be greater than the chunk size excluding the header in this case.
+            RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_DATA), header->length > size - sizeof(CHANNEL_PDU_HEADER));
+
+            isPartialData = false;
+            pduSize = header->length;
+            *pdu = chunkPayload;
+            return S_OK;
+
+        case CHANNEL_FLAG_FIRST:
+            // First chunk of the Kozani PDU - the data can span multiple Virtual Channel data chunks and the individual chunks will need 
+            // to be reassembled in that case. The pduBuffer is used to reassemble the Kozani PDU. Reserve the total size needed.
+            pduSize = header->length;
+            pduBuffer.clear();
+            pduBuffer.reserve(pduSize);
+            isPartialData = true;
+            copyChunk = true;
+            break;
+
+        case CHANNEL_FLAG_MIDDLE:
+            // Middle chunk - just needs to be copied. isPartialData must be true to indicate that we saw and copied the first chunk already.
+            RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_DATA), !isPartialData);
+            copyChunk = true;
+            break;
+
+        case CHANNEL_FLAG_LAST:
+            // Last chunk - needs to be copied and complete the Kozani PDU.
+            // isPartialData must be true to indicate that we saw and copied the first chunk already.
+            RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_DATA), !isPartialData);
+            copyChunk = true;
+            isLastChunk = true;
+            isPartialData = false;
+            break;
+
+        default:
+            FAIL_FAST_MSG("Logic error - should have covered all cases for chunkFlags");
+        }
+
+        if (copyChunk)
+        {
+            auto startingSize = pduBuffer.size();
+            auto bytesToCopy = size - sizeof(CHANNEL_PDU_HEADER); // Skip the header.
+
+            // The partial PDU size should not be greater than the total PDU size recorded in the first data chunk.
+            RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_DATA), startingSize + bytesToCopy > pduSize);
+
+            pduBuffer.resize(startingSize + bytesToCopy);
+            RtlCopyMemory(pduBuffer.data() + startingSize, chunkPayload, bytesToCopy);
+
+            if (isLastChunk)
+            {
+                // The completed PDU should have a size consistent with the total size of segmented data in the first chunk header.
+                RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_DATA), pduBuffer.size() != pduSize);
+                *pdu = pduBuffer.data();
+            }
+        }
+
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    HRESULT KozaniDvcServer::ProcessProtocolDataUnit(_In_reads_(size) const BYTE* data, UINT32 size) noexcept try
+    {
+        Dvc::ProtocolDataUnit pdu;
+        if (!pdu.ParseFromArray(data, size))
+        {
+            RETURN_HR_MSG(E_FAIL, "Failed to parse PDU. size: %u.", size);
+        }
+
+        Dvc::ProtocolDataUnit::DataType type{ pdu.type() };
+        switch (type)
+        {
+            case Dvc::ProtocolDataUnit::ActivateAppRequest:
+                {
+                    // Process the ActivateAppRequest in a separate thread so a long activation will not block subsequent activation requests.
+                    auto activateAppThread{ std::thread(&KozaniDvcServer::ProcessActivateAppRequestThreadFunc, this, std::move(pdu)) };
+                    activateAppThread.detach();
+                }
+            
+                break;
+
+            default:
+                // ToDo: Unsupported PDU type. Return GenericResult message with failure code to client side.
+                break;
+        }
+
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    void KozaniDvcServer::ProcessActivateAppRequestThreadFunc(_In_ Dvc::ProtocolDataUnit pdu) noexcept try
+    {
+        std::string errorMessage;
+        HRESULT hr = LOG_IF_FAILED(ProcessActivateAppRequest(pdu, errorMessage));
+        if (FAILED(hr))
+        {
+            SendActivateAppResult(pdu.activity_id(), hr, 0, errorMessage);
+            if (hr != HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS))
+            {
+                RemoveActivity(pdu.activity_id());
             }
         }
     }
-    catch (std::exception& e)
+    CATCH_LOG_RETURN()
+
+    HRESULT KozaniDvcServer::ProcessActivateAppRequest(_In_ Dvc::ProtocolDataUnit& pdu, _Out_ std::string& errorMessage) noexcept try
     {
-        DvcListenerThreadExiting(E_UNEXPECTED, e.what());
-        return;
+        errorMessage.clear();
+
+        Dvc::ActivateAppRequest activateAppRequest;
+        if (!activateAppRequest.ParseFromString(pdu.data()))
+        {
+            errorMessage = "Failed to parse ActivateAppRequest message";
+            RETURN_WIN32(ERROR_INVALID_DATA);
+        }
+
+        if (!IsActivationKindSupported(activateAppRequest.activation_kind()))
+        {
+            errorMessage = "Unsupported activation kind: " + std::to_string(activateAppRequest.activation_kind());
+            RETURN_WIN32(ERROR_NOT_SUPPORTED);
+        }
+
+        ActivatedAppInfo* appInfo{};
+        {
+            auto lock{ m_activityMapLock.lock_exclusive() };
+            auto inserted{ m_activityMap.emplace(pdu.activity_id(), ActivatedAppInfo()) };
+            if (!inserted.second)
+            {
+                errorMessage = "Activity ID of the new activate app request is already used for a previous request. Each new request must use a new activity ID.";
+                RETURN_WIN32(ERROR_ALREADY_EXISTS);
+            }
+
+            appInfo = &(inserted.first->second);
+        }
+
+
+        wil::com_ptr<IApplicationActivationManager> aam;
+        HRESULT hrCoCreateInstance{ CoCreateInstance(CLSID_ApplicationActivationManager, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&aam)) };
+        if (FAILED(hrCoCreateInstance))
+        {
+            errorMessage = "Failed to CoCreateInstance CLSID_ApplicationActivationManager.";
+            RETURN_HR(hrCoCreateInstance);
+        }
+
+        std::wstring appUserModelId{ ::Microsoft::Utf8::ToUtf16(activateAppRequest.app_user_model_id()) };
+
+        switch (activateAppRequest.activation_kind())
+        {
+            case Dvc::ActivationKind::Launch:
+                {
+                    std::wstring launchArgs;
+                    if (!activateAppRequest.arguments().empty())
+                    {
+                        Dvc::LaunchActivationArgs args;
+                        if (!args.ParseFromString(activateAppRequest.arguments()))
+                        {
+                            errorMessage = "Failed to parse launch arguments";
+                            RETURN_WIN32(ERROR_INVALID_DATA);
+                        }
+
+                        launchArgs = ::Microsoft::Utf8::ToUtf16(args.arguments());
+                    }
+                    
+                    DWORD processId{};
+                    HRESULT hrActivateApp{ aam->ActivateApplication(appUserModelId.c_str(), launchArgs.c_str(), AO_NONE, &processId) };
+                    if (FAILED(hrActivateApp))
+                    {
+                        errorMessage = "Failed to Activate app.";
+                        RETURN_HR(hrActivateApp);
+                    }
+
+                    appInfo->pid = processId;
+                }
+                break;
+
+            default:
+                break;
+        }
+        
+        SendActivateAppResult(pdu.activity_id(), S_OK, appInfo->pid);
+        return S_OK;
     }
-    catch (...)
+    CATCH_RETURN()
+
+    bool KozaniDvcServer::IsActivationKindSupported(Dvc::ActivationKind kind)
     {
-        DvcListenerThreadExiting(E_UNEXPECTED, "Caught unknown exception");
-        return;
+        switch (kind)
+        {
+            case Dvc::ActivationKind::Launch:
+            case Dvc::ActivationKind::File:
+            case Dvc::ActivationKind::Protocol:
+                return true;
+        }
+        return false;
+    }
+
+    void KozaniDvcServer::RemoveActivity(UINT64 activityId)
+    {
+        auto lock{ m_activityMapLock.lock_exclusive() };
+        m_activityMap.erase(activityId);
     }
 
     void KozaniDvcServer::StartDvcListenerThread()
@@ -194,7 +430,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         m_dvcThreadExit.ResetEvent();
         m_dvcThreadStarted.ResetEvent();
 
-        m_dvcListenerThread = std::thread(&KozaniDvcServer::ProcessDvcIncomingData, this);
+        m_dvcListenerThread = std::thread(&KozaniDvcServer::ProcessDvcIncomingDataThreadFunc, this);
 
         HANDLE events[] = { m_dvcThreadStarted.get(), m_dvcThreadExit.get() };
         LogDebugMessage("[StartDvcListenerThread] Waiting for listener thread starting status");
@@ -226,9 +462,15 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         }
     }
 
-    void KozaniDvcServer::DvcListenerThreadExiting(HRESULT errorCode, PCSTR erroMessage) noexcept
+    void KozaniDvcServer::DvcListenerThreadExiting(HRESULT errorCode, PCSTR erroMessage) noexcept try
     {
         auto lock{ m_connectionManagerLock.lock_exclusive() };
+
+        if (FAILED(m_errorFromDvcListener))
+        {
+            // Error has been reported before already.
+            return;
+        }
 
         m_errorFromDvcListener = errorCode;
         LogDebugMessage("DVC listener thread exiting, error code: 0x%x, error message: %s", errorCode, erroMessage);
@@ -246,6 +488,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             m_connectionManager->ReportDvcServerError(errorCode);
         }
     }
+    CATCH_LOG_RETURN()
 
     HRESULT KozaniDvcServer::SetConnectionManger(ConnectionManager* connectionManager)
     {
@@ -267,13 +510,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         return S_OK;
     }
 
-    void KozaniDvcServer::SendConnectionAck(PCSTR connectionId)
-    {
-        std::vector<BYTE> ackPDURaw{ CreateConnectionAckPDU(connectionId) };
-        SendDvcProtocolData(ackPDURaw.data(), ackPDURaw.size());
-    }
-
-    void KozaniDvcServer::SendDvcProtocolData(BYTE* data, UINT32 size)
+    void KozaniDvcServer::SendDvcProtocolData(const char* data, UINT32 size)
     {
         auto lockDvc{ std::unique_lock<std::recursive_mutex>(m_dvcLock) };
 
@@ -299,7 +536,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         if (bytesWritten != size)
         {
             ReportDvcWriterError(E_UNEXPECTED);
-            THROW_WIN32_MSG(E_UNEXPECTED, "DVC WriteFile only writes %u bytes while %u bytes are expected.", bytesWritten, size);
+            THROW_HR_MSG(E_UNEXPECTED, "DVC WriteFile only writes %u bytes while %u bytes are expected.", bytesWritten, size);
         }
         
         return;
@@ -324,5 +561,28 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         {
             m_connectionManager->ReportDvcServerError(errorCode);
         }
+    }
+
+    void KozaniDvcServer::SendConnectionAck(PCSTR connectionId)
+    {
+        UINT64 activityId{};
+        {
+            auto lock{ m_newActivityIdLock.lock_exclusive() };
+            activityId = m_newActivityId;
+            m_newActivityId++;
+        }
+        
+        std::string pdu{ CreateConnectionAckPDU(connectionId, activityId) };
+        SendDvcProtocolData(pdu.c_str(), static_cast<UINT32>(pdu.size()));
+    }
+
+    void KozaniDvcServer::SendActivateAppResult(
+            UINT64 activityId,
+            HRESULT hr,
+            DWORD appProcessId,
+            _In_ const std::string& errorMessage)
+    {
+        std::string pdu{ CreateActivateAppResultPDU(activityId, hr, appProcessId, errorMessage) };
+        SendDvcProtocolData(pdu.c_str(), static_cast<UINT32>(pdu.size()));
     }
 }

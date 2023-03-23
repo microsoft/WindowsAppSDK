@@ -2447,7 +2447,6 @@ Global
 		dev\EnvironmentManager\API\Microsoft.Process.Environment.vcxitems*{2f3fad1b-d3df-4866-a3a3-c2c777d55638}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{412d023e-8635-4ad2-a0ea-e19e08d36915}*SharedItemsImports = 4
 		dev\Kozani\Common\Common.vcxitems*{431f959d-6323-4c1d-8bc3-78b1eb8b3554}*SharedItemsImports = 9
-		dev\Kozani\Common\Common.vcxitems*{45c50da4-f2c7-4a4b-8493-50e5df17b527}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{4b30c685-8490-440f-9879-a75d45daa361}*SharedItemsImports = 4
 		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{56371ca6-144b-4989-a4e9-391ad4fa7651}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{56a1d696-feda-4333-bf37-772ebececb10}*SharedItemsImports = 4
@@ -2466,7 +2465,6 @@ Global
 		dev\PowerNotifications\PowerNotifications.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\PowerNotifications\PowerNotifications.vcxitems*{b75c1b22-553c-40e4-b38e-6ab4d01fdb9d}*SharedItemsImports = 9
-		dev\Kozani\Common\Common.vcxitems*{bebb0fda-31fb-4230-aa05-d6caeb40d0eb}*SharedItemsImports = 4
 		dev\DynamicDependency\API\DynamicDependency.vcxitems*{bf055a59-0919-4e34-9b76-dd055495cc5a}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
 		dev\AccessControl\AccessControl.vcxitems*{c91bcb93-9ed1-4acd-85f3-26f9f6ac52e3}*SharedItemsImports = 9

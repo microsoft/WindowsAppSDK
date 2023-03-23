@@ -40,3 +40,4 @@
 
 #include "KozaniProtobufMessages.h"
 
+#include <KozaniDvcProtocol.h>

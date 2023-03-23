@@ -13,8 +13,8 @@ namespace Microsoft::Kozani::Manager
 
     // Max amount of time we will wait for DVC initial connection acknowlegement to come in from server side, if there is already an 
     // existing remote desktop connection.
-    // 10 seconds.
-    const UINT32 MaxConnectionWaitTime = 10 * 1000;
+    // 30 seconds - give enough time for user to respond to pop-up message dialog warning first time connection to remote app.
+    const UINT32 MaxConnectionWaitTime = 30 * 1000;
 
     enum RequestStatus
     {
@@ -70,6 +70,8 @@ namespace Microsoft::Kozani::Manager
         winrt::Windows::ApplicationModel::Activation::ActivationKind activationKind{};
         winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs args;
         wil::com_ptr<IKozaniStatusCallback> statusCallback;
+        wil::com_ptr<IWTSVirtualChannelManager> dvcChannelManager;
+        wil::com_ptr<IWTSVirtualChannel> dvcChannel;
         std::list<ActivationRequestInfo>::iterator listPosition;
         std::shared_ptr<ActivationRequestStatusReporter> statusReporter;
     };
@@ -85,13 +87,46 @@ namespace Microsoft::Kozani::Manager
             winrt::Windows::ApplicationModel::Activation::ActivationKind activationKind,
             PCWSTR appUserModelId,
             winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs activatedEventArgs,
-            IKozaniStatusCallback* statusCallback,
+            _In_ IKozaniStatusCallback* statusCallback,
             DWORD associatedLocalProcessId);
 
         void Close();
 
+        void ProcessProtocolDataUnit(
+            _In_reads_(size) BYTE* data, 
+            UINT32 size,
+            _In_ IWTSVirtualChannelManager* channelManager,
+            _In_ IWTSVirtualChannel* channel);
+
+        void OnDvcChannelClose(IWTSVirtualChannel* channel);
+
+        void OnRemoteDesktopInitializeConnection(_In_ IWTSVirtualChannelManager* channelManager);
+        void OnRemoteDesktopDisconnect(_In_ IWTSVirtualChannelManager* channelManager);
+
+    private:
+        void ProcessConnectionAck(
+            _In_ const Dvc::ProtocolDataUnit& pdu,
+            _In_ IWTSVirtualChannelManager* channelManager,
+            _In_ IWTSVirtualChannel* channel);
+
+        void ProcessActivateAppResult(_In_ const Dvc::ProtocolDataUnit& pdu);
+
+        void ProcessAppActivationFailure(
+            HRESULT hrActivation, 
+            UINT64 activityId, 
+            _In_ ActivationRequestInfo* requestInfo,
+            _In_ PCWSTR errorMessage);
+
+        HRESULT SendActivateAppRequest(
+            _In_ IWTSVirtualChannel* channel, 
+            UINT64 activityId,
+            _In_ ActivationRequestInfo* requestInfo) noexcept;
+
     private:
         std::list<ActivationRequestInfo> m_activationRequests;
+        std::list<ActivationRequestInfo*> m_requestsPendingConnection;
         wil::srwlock m_requestsLock;
+        UINT64 m_newActivityId{};
+        std::map<UINT64, ActivationRequestInfo*> m_activityMap;
     };
 }

@@ -24,7 +24,7 @@
 using namespace Microsoft::WRL;
 using namespace Microsoft::Kozani::Manager;
 
-namespace Dvc = Microsoft::Kozani::Dvc;
+namespace Dvc = Microsoft::Kozani::DVC;
 
 // Implement the LifetimeManager as a classic COM Out-of-Proc server, via WRL
 // See https://docs.microsoft.com/cpp/cppcx/wrl/how-to-create-a-classic-com-component-using-wrl?redirectedfrom=MSDN&view=vs-2019 for more details
@@ -165,13 +165,6 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
             // Wait timed out.
             return E_APPLICATION_ACTIVATION_TIMED_OUT;
         }
-
-        /*
-        if (statusCallback != nullptr)
-        {
-            RETURN_IF_FAILED(statusCallback->OnActivated(associatedLocalProcessId));
-        }
-        */
 
         return S_OK;
     } CATCH_RETURN()

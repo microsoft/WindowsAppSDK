@@ -127,7 +127,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Kozani.Activation.proto" />
+    <None Include="Kozani.DVC.proto" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
@@ -154,6 +154,6 @@
     <Copy SourceFiles="@(PublicHeaders)" DestinationFolder="$(OutDir)" />
   </Target>
   <ItemGroup>
-    <PublicHeaders Include="$(IntDir)proto\cpp\Kozani.Activation.pb.h" />
+    <PublicHeaders Include="$(IntDir)proto\cpp\Kozani.DVC.pb.h" />
   </ItemGroup>
 </Project>

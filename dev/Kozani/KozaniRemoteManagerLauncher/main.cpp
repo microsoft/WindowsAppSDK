@@ -11,7 +11,7 @@
 #include "KozaniDvc-Constants.h"
 
 using namespace winrt::Windows::Foundation;
-using namespace Microsoft::Kozani::Dvc;
+using namespace Microsoft::Kozani::DVC;
 
 int main(int argc, char* argv[]) try
 {

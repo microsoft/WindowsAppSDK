@@ -14,6 +14,7 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)KozaniDvcProtocol.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Logging.cpp" />
   </ItemGroup>
   <ItemGroup>

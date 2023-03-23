@@ -5,6 +5,7 @@
 
 #include "Microsoft.Kozani.Activation.h"
 
+/*
 std::string Microsoft::Kozani::Activation::ActivateApp(
     std::int64_t cookie,
     PCWSTR appUserModelId,
@@ -54,9 +55,9 @@ std::string Microsoft::Kozani::Activation::ActivateApp_Launch(
     const std::string& appUserModelId,
     const std::string& arguments)
 {
-    ::Microsoft::Kozani::Activation::ActivateAppRequest message;
+    ::Microsoft::Kozani::DVC::ActivateAppRequest message;
     message.set_cookie(cookie);
-    message.set_activation_kind(::Microsoft::Kozani::Activation::ActivationKind::Launch);
+    message.set_activation_kind(::Microsoft::Kozani::DVC::ActivationKind::Launch);
     message.set_app_user_model_id(appUserModelId);
     message.set_arguments(arguments);
 
@@ -64,3 +65,4 @@ std::string Microsoft::Kozani::Activation::ActivateApp_Launch(
     message.SerializeToString(&bytes);
     return bytes;
 }
+*/
