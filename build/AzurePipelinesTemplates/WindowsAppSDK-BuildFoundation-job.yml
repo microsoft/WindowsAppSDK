@@ -290,9 +290,9 @@ jobs:
         buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
         # alam start
-        - ${{ if eq(parameters.enablePREFast, 'true') }}:
+        ${{ if eq(parameters.enablePREFast, true) }}:
           enablePREFastForPlatform: true
-        - ${{ if ne(parameters.enablePREFast, 'true') }}:
+        ${{ if ne(parameters.enablePREFast, true) }}:
           enablePREFastForPlatform: false
         # alam end
   steps:
