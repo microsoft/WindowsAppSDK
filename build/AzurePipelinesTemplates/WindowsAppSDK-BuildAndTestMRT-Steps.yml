@@ -24,7 +24,7 @@ steps:
       filePath: 'BuildAll.ps1'
       arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "PreFastSetup"
 
-  # SDLNativeRules below only supports the VSBuild/MSbuild task, _not_ a direct call to MSBuild.exe.
+  # The PREFast task below only supports the VSBuild/MSbuild task, _not_ a direct call to MSBuild.exe.
   - task: MSBuild@1
     displayName: 'build MrtCore with MSBuild'
     inputs:
@@ -32,6 +32,18 @@ steps:
       solution: '${{ parameters.MRTSourcesDirectory }}\mrt\MrtCore.sln'
       configuration: '$(buildConfiguration)'
       msbuildArguments: '/restore /binaryLogger:${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+
+  # ToDo: This is a temporary step to accommodate b#43856157. This bug currently still allows arm64 to get a successful PREFast scan 
+  # and produce meaningful results; hence, introduced this ad hoc step in the spirit of "having some coverage is better than no coverage".
+  - task: SDLNativeRules@3
+    condition: eq(variables['buildPlatform'], 'arm64')
+    displayName: 'Guardian: PreFast@3'
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    continueOnError: true
+    inputs:
+      userProvideBuildInfo: 'auto'
+      toolVersion: Latest
 
 - ${{ if or(ne(parameters.RunSDLBinaryAnalysis, 'true'), ne(parameters.EnablePREFast, 'true')) }}:
   # PREFast scan is disabled in this pipeline run, just proceed to build the MRT via BuildAll.ps1, and
@@ -47,7 +59,9 @@ steps:
   - template: WindowsAppSDK-BinaryAnalysis-steps.yml
     parameters:
       outputDirectory: 'BuildOutput'
-      enablePREFast: ${{ parameters.EnablePREFast }}
+      # ToDo: re-enable PREFast once b#43856157 is fixed.
+      # enablePREFast: ${{ parameters.EnablePREFast }}
+      enablePREFast: false
 
 # component detection must happen *within* the build task
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
