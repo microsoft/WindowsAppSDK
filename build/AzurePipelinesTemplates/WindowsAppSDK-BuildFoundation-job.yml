@@ -114,6 +114,9 @@ jobs:
         flattenFolders: false
         overWrite: true
 
+  # Begin forking into 2 code paths: 1) Use BuildAll.ps1 to build the target when _not_ running PREFast, 2) Use the *SBuild task to build the  
+  # target when running PREFast.
+
   - ${{ if and(eq(parameters.RunSDLBinaryAnalysis, 'true'), eq(parameters.EnablePREFast, 'true')) }}:
     # PREFast scan is enabled in this pipeline run, so we pass PreFastSetup to BuildAll.ps1 to get it to do the commonn setup steps, but short of
     # building the target via MSBuild.exe.
@@ -170,6 +173,8 @@ jobs:
       inputs:
         filePath: 'BuildAll.ps1'
         arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
+
+  # End of forked code paths.
 
   # component detection must happen *within* the build task
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
