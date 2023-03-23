@@ -15,6 +15,9 @@ parameters:
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
+# Begin forking into 2 code paths: 1) Use BuildAll.ps1 to build the target when _not_ running PREFast, 2) Use the *SBuild task to build the  
+# target when running PREFast.
+
 - ${{ if and(eq(parameters.RunSDLBinaryAnalysis, 'true'), eq(parameters.EnablePREFast, 'true')) }}:
   # PREFast scan is enabled in this pipeline run, so we pass PreFastSetup to BuildAll.ps1 to get it to do the commonn setup steps, but short of
   # building the target via MSBuild.exe
@@ -53,6 +56,8 @@ steps:
     inputs:
       filePath: 'BuildAll.ps1'
       arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
+
+# End of forked code paths.
 
 # Common code for performing Binary Analysis.
 - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
