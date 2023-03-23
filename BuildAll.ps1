@@ -1,6 +1,7 @@
 <#
 This script is to build the Foundation transport package that will be used to generate the windows app sdk package.
 This script is called from BuildAll.ps1 from the aggregator repo and should not be called directly.
+
 PackageVersion: NuGet Package Version that will be used in the packing of Foundation Transport Package
 Platform: Comma delimited string of platforms to run.
 Configuration: Comma delimited string of configurations to run.
@@ -8,6 +9,7 @@ AzureBuildStep: Only used by the pipeline to perform tasks such as signing in be
 OutputDirectory: Pack Location of the Nuget Package
 UpdateVersionDetailsPath: Path to a ps1 or cmd that updates version.details.xml.
 Clean: Performs a clean on BuildOutput, Obj, and build\override
+
 Note about building in different environments.
 The feed the NuGet.config points to changes depending on the branch.
 Develop branch points to the internal feed.
