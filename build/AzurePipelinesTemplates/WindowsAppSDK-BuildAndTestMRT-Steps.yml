@@ -1,8 +1,16 @@
 parameters:
-  MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
-  MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
-  RunSDLBinaryAnalysis: true
-  EnablePREFast: true
+  - name: MRTSourcesDirectory
+    type: string
+    default: $(Build.SourcesDirectory)\dev\MRTCore
+  - name: MRTBinariesDirectory
+    type: string
+    default: $(Build.SourcesDirectory)\BuildOutput
+  - name: RunSDLBinaryAnalysis
+    type: boolean
+    default: true
+  - name: enablePREFast
+    type: string
+    default: true
 
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
