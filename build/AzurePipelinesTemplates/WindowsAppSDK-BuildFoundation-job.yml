@@ -152,7 +152,7 @@ jobs:
         echo ##vso[task.setvariable variable=VCToolsInstallDir]%VCToolsInstallDir%
       displayName: 'Retrieve VC tools directory'
 
-    # SDLNativeRules below only supports the VSBuild/MSbuild task, _not_ a direct call to MSBuild.exe.
+    # The PREFast task only supports the VSBuild/MSbuild task, _not_ a direct call to MSBuild.exe.
     - task: VSBuild@1
       displayName: 'Build solution ${{ parameters.solutionPath }}'
       inputs:
@@ -274,27 +274,15 @@ jobs:
         buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
         PGOBuildMode: 'Optimize'
-        # alam start
-        enablePREFastForPlatform: false
-        # alam end
       Release_x64:
         buildPlatform: 'x64'
         buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
         PGOBuildMode: 'Optimize'
-        # alam start
-        enablePREFastForPlatform: false
-        # alam end
       Release_Arm64:
         buildPlatform: 'arm64'
         buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
-        # alam start
-        ${{ if eq(parameters.enablePREFast, true) }}:
-          enablePREFastForPlatform: true
-        ${{ if ne(parameters.enablePREFast, true) }}:
-          enablePREFastForPlatform: false
-        # alam end
   steps:
   - task: NuGetToolInstaller@1
 
@@ -310,12 +298,7 @@ jobs:
 
   - template: WindowsAppSDK-BuildAndTestMRT-Steps.yml
     parameters:
-      # alam start
-      # ToDo: Enable PREFast fully once b#43856157 is fixed. Currently, the PREFast scan is blocked by an error in case of x86 and x64, 
-      #       which in turn causes the build result to show a warning.
-      # EnablePREFast: ${{ parameters.enablePREFast }}
-      EnablePREFast: $(enablePREFastForPlatform)
-      # alam end
+      EnablePREFast: ${{ parameters.enablePREFast }}
       RunSDLBinaryAnalysis: ${{ parameters.RunSDLBinaryAnalysis }}
 
   - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
