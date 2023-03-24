@@ -18,10 +18,7 @@ jobs:
     parameters:
       globalsdl:
         tsa:
-          # alam start
-          # enabled: true
-          enabled: false
-          # alam end
+          enabled: true
         codeql:
           tsandjs:
             enabled: true
