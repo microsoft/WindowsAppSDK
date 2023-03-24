@@ -60,8 +60,8 @@ steps:
     inputs:
       packageType: sdk
       version: ${{ parameters.dotNetCoreSdkVersion }}
-      useGlobalJson: true
-      performMultiLevelLookup: true
+      #useGlobalJson: true
+      #performMultiLevelLookup: true
   # alam end
 
   # ToDo: This is a temporary step to accommodate b#43856157. This bug currently still allows arm64 to get a successful PREFast scan 
