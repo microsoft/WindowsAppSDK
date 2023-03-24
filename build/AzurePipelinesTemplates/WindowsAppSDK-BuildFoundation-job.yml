@@ -546,7 +546,7 @@ jobs:
           FoundationPackage:
             Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
             Version: $(WindowsAppSDKTransportPackageVersion)
-            
+
     # TODO: Reenable, Add-AppxPackage currently does not work on 2022 images. See issue #2908
     # - template: ..\..\eng\common\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
     #   parameters:
