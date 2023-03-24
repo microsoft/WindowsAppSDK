@@ -36,10 +36,16 @@ steps:
       configuration: '$(buildConfiguration)'
       msbuildArguments: '/restore /binaryLogger:${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
-  # ToDo: This is a temporary step to accommodate b#43856157. This bug currently still allows arm64 to get a successful PREFast scan 
-  # and produce meaningful results; hence, introduced this ad hoc step in the spirit of "having some coverage is better than no coverage".
+  # ToDo: This step is a workaround for b#43856157. We can potentially remove this step once the bug is fixed. 
+  - task: UseDotNet@2
+    inputs:
+      packageType: sdk
+      version: '6.x'
+
+  # ToDo: WindowsAppSDK-BinaryAnalysis-steps.yml below ultimately invokes SDLNativeRules@2, which is out of support.
+  # So for the time being, we explicitly call SDLNativeRules@3, which is currently supported. Consider eliminating this 
+  # extra step when we run PREFast as part of WindowsAppSDK-BinaryAnalysis-steps.yml below.
   - task: SDLNativeRules@3
-    condition: eq(variables['buildPlatform'], 'arm64')
     displayName: 'Guardian: PreFast@3'
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -64,8 +70,8 @@ steps:
   - template: WindowsAppSDK-BinaryAnalysis-steps.yml
     parameters:
       outputDirectory: 'BuildOutput'
-      # ToDo: re-enable PREFast once b#43856157 is fixed.
-      # enablePREFast: ${{ parameters.EnablePREFast }}
+      # ToDo: Enable PREFast to run downstream from here, once the SDL template has been updated to invoke the 
+      # newer SDLNativeRules@3 task, and remove the explicit call to it above.
       enablePREFast: false
 
 # component detection must happen *within* the build task

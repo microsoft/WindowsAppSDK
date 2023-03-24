@@ -165,6 +165,12 @@ jobs:
         configuration: '$(buildConfiguration)'
         msbuildArgs: '/restore /p:AppxSymbolPackageEnabled=false /binaryLogger:BuildOutput/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:WindowsAppSDKVersionBuild=$(builddate_yymm) /p:WindowsAppSDKVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode="Optimize" /p:WindowsAppSDKBuildPipeline=1 /p:WindowsAppSDKCleanIntermediateFiles=true'
 
+    # ToDo: This is a workaround for b#43856157. We probably can remove this step once the bug is fixed. 
+    - task: UseDotNet@2
+      inputs:
+        packageType: sdk
+        version: '6.x'
+
   - ${{ if or(ne(parameters.RunSDLBinaryAnalysis, 'true'), ne(parameters.EnablePREFast, 'true')) }}:
     # PREFast scan is disabled in this pipeline run, just proceed to build the target via BuildAll.ps1, and
     # fall through to run BinaryAnalysis with PREFast turned off.
@@ -181,13 +187,15 @@ jobs:
 
   # Common code for performing Binary Analysis.
   - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
+    # Beware that the SDL template downstream from here currently invokes the PREFast task v2, which is out of support.
+    # Unlike the case with building MRT Core, the msbuildArgs parameter in the call to the VSBuild task above contains 
+    # an escape sequence in /p:VCToolsInstallDir="$(VCToolsInstallDir)\", which tripped PREFast task v3 (this is a known 
+    # issue tracked by User Story 2640894: Autofill - fix quoting issues), so a direct call to PREFast task v3 currently
+    # fails, hence, we are staying with PREFast task v2 for now.
     - template: WindowsAppSDK-BinaryAnalysis-steps.yml
       parameters:
         outputDirectory: BuildOutput
-        # ToDo: Enable PREFast once b#43856157 is fixed. Currently, the PREFast scan is blocked by an error, which in 
-        #       turn causes the build result to show a warning.
-        # enablePREFast: ${{ parameters.EnablePREFast }}
-        enablePREFast: false
+        enablePREFast: ${{ parameters.EnablePREFast }}
 
   - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
     - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
@@ -327,6 +335,7 @@ jobs:
     dependsOn:
       - Build
       - BuildAndTestMRT
+
 - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
   parameters:
     jobName: PipelineTestsArm64
@@ -464,6 +473,7 @@ jobs:
         [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
         $publicNuspec.package.metadata.version = $packageVersion
         Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
+
   - task: PowerShell@2
     name: PackNuget
     inputs:
@@ -565,6 +575,7 @@ jobs:
         downloadPath: '$(Build.artifactStagingDirectory)'
         itemPattern: |
           **/*.nupkg
+
     - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(parameters.PublishPackage, 'true')) }}:
       # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
       - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
