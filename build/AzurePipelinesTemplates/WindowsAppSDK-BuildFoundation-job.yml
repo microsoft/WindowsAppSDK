@@ -30,16 +30,11 @@ parameters:
 
 jobs:
 # This relatively low-cost job is always run, in parallel w/ the Build job.
-# alam start
-# - template: WindowsAppSDK-SourceAnalysis-job.yml
-# alam end
+- template: WindowsAppSDK-SourceAnalysis-job.yml
 
 - job: VerifyCopyrightHeaders
   dependsOn: []
   pool: ProjectReunionESPool-2022
-  # alam start
-  condition: false
-  # alam end
   steps:
   - task: powershell@2
     displayName: 'Verify copyright headers'
@@ -331,23 +326,21 @@ jobs:
 
 # Arm64 uses a different VM type than x64, thus requiring them to be in different
 # pools, hence, we spilt the two scenarios into separate jobs.
-# alam start
-# - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
-#   parameters:
-#     jobName: PipelineTestsX64
-#     isArm64Platfrom: false
-#     dependsOn:
-#       - Build
-#       - BuildAndTestMRT
+- template: WindowsAppSDK-RunTestsInPipeline-Job.yml
+  parameters:
+    jobName: PipelineTestsX64
+    isArm64Platfrom: false
+    dependsOn:
+      - Build
+      - BuildAndTestMRT
 
-# - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
-#   parameters:
-#     jobName: PipelineTestsArm64
-#     isArm64Platfrom: true
-#     dependsOn:
-#       - Build
-#       - BuildAndTestMRT
-# alam end
+- template: WindowsAppSDK-RunTestsInPipeline-Job.yml
+  parameters:
+    jobName: PipelineTestsArm64
+    isArm64Platfrom: true
+    dependsOn:
+      - Build
+      - BuildAndTestMRT
 
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
@@ -356,10 +349,7 @@ jobs:
     - Build
     - BuildAnyCPU
     - BuildAndTestMRT
-  # alam start
-  # condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
-  condition: false
-  # alam end
+  condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
   steps:
   - task: DownloadBuildArtifacts@0
     inputs:
@@ -533,10 +523,7 @@ jobs:
 # Build WinAppSDK and Run Integration Test from TestAll.ps1
 - job: WinAppSDKIntegrationBuildAndTest
   dependsOn: ['StageAndPack']
-  # alam start
-  # condition: succeeded()
-  condition: false
-  # alam end
+  condition: succeeded()
   pool: ProjectReunionESPool-2022
   variables:
     WindowsAppSDKTransportPackageVersion: $[ dependencies.StageAndPack.outputs['SetVersion.packageVersion'] ]
@@ -574,10 +561,7 @@ jobs:
   dependsOn: 
   - StageAndPack
   - WinAppSDKIntegrationBuildAndTest
-  # alam start
-  # condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
-  condition: false
-  # alam end
+  condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
   pool: ProjectReunionESPool-2022
   variables:
     WindowsAppSDKPackageVersion: $[ dependencies.StageAndPack.outputs['SetVersion.packageVersion'] ]
