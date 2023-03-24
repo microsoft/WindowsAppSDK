@@ -195,7 +195,7 @@ jobs:
     # Beware that the SDL template downstream from here currently invokes the PREFast task v2, which is out of support.
     # Unlike the case with building MRT Core, the msbuildArgs parameter in the call to the VSBuild task above contains 
     # an escape sequence in /p:VCToolsInstallDir="$(VCToolsInstallDir)\", which tripped PREFast task v3 (this is a known 
-    # issue tracked by User Story 2640894: Autofill - fix quoting issues), so a directly call PREFast task v3 currently
+    # issue tracked by User Story 2640894: Autofill - fix quoting issues), so a direct call to PREFast task v3 currently
     # fails, hence, we are staying with PREFast task v2 for now.
     - template: WindowsAppSDK-BinaryAnalysis-steps.yml
       parameters:
