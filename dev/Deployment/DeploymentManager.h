@@ -19,19 +19,20 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         static WindowsAppRuntime::DeploymentResult Initialize();
         static WindowsAppRuntime::DeploymentResult Initialize(WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions);
         static WindowsAppRuntime::DeploymentResult Repair();
+        static WindowsAppRuntime::DeploymentResult Repair(WindowsAppRuntime::DeploymentRepairOptions const& deploymentRepairOptions);
 
     private:
         static WindowsAppRuntime::DeploymentResult GetStatus(hstring const& packageFullName);
         static WindowsAppRuntime::DeploymentResult Initialize(hstring const& packageFullName);
-        static WindowsAppRuntime::DeploymentResult Initialize(hstring const& packageFullName,
-            WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions,
-            bool isRepair = false);
+        template <typename Options>
+        static WindowsAppRuntime::DeploymentResult Initialize(hstring const& packageFullName, Options const& tOoptions, bool isRepair = false);
 
     private:
+        template <typename Options>
         static WindowsAppRuntime::DeploymentResult _Initialize(
             ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
             hstring const& packageFullName,
-            WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions,
+            Options const& tOoptions,
             bool isRepair);
 
     private:

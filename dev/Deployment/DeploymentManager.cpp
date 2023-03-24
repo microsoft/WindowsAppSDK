@@ -6,6 +6,7 @@
 #include <DeploymentResult.h>
 #include <DeploymentActivityContext.h>
 #include <PackageInfo.h>
+#include <AppModel.Package.h>
 #include <TerminalVelocityFeatures-DeploymentAPI.h>
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
 #include <PushNotificationsLongRunningPlatform-Startup.h>
@@ -69,8 +70,14 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Repair()
     {
-        winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions options{};
+        winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentRepairOptions options{};
         return Initialize(GetCurrentFrameworkPackageFullName(), options, true);
+    }
+
+    winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Repair(
+        winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentRepairOptions const& deploymentRepairOptions)
+    {
+        return Initialize(GetCurrentFrameworkPackageFullName(), deploymentRepairOptions, true);
     }
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus(hstring const& packageFullName)
@@ -159,11 +166,14 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         return DeploymentManager::Initialize(packageFullName, deploymentInitializeOptions);
     }
 
+    template <typename Options>
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(
-        hstring const& packageFullName,
-        winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions,
-        bool isRepair)
+        hstring const& packageFullName, Options const& options, bool isRepair)
     {
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_DATATYPE),
+            (!isRepair && typeid(options).name() != typeid(DeploymentInitializeOptions).name()) ||
+                (isRepair && typeid(options).name() != typeid(DeploymentRepairOptions).name()));
+
         auto& initializeActivityContext{ ::WindowsAppRuntime::Deployment::Activity::Context::Get() };
         const bool isPackagedProcess{ AppModel::Identity::IsPackagedProcess() };
         const int integrityLevel = Security::IntegrityLevel::GetIntegrityLevel();
@@ -173,7 +183,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
 
             ::WindowsAppRuntime::Deployment::Activity::Context::Get().SetIsFullTrustPackage();
-        initializeActivityContext.GetActivity().Start(deploymentInitializeOptions.ForceDeployment(),
+        initializeActivityContext.GetActivity().Start(options.ForceDeployment(),
                                                       Security::IntegrityLevel::IsElevated(),
                                                       isPackagedProcess,
                                                       initializeActivityContext.GetIsFullTrustPackage(),
@@ -192,7 +202,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
         try
         {
-            deploymentResult = _Initialize(initializeActivityContext, packageFullName, deploymentInitializeOptions, isRepair);
+            deploymentResult = _Initialize(initializeActivityContext, packageFullName, options, isRepair);
         }
         catch (winrt::hresult_error const& e)
         {
@@ -221,7 +231,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                 DebugBreak();
             }
 
-            if (deploymentInitializeOptions.OnErrorShowUI() ||
+            if (options.OnErrorShowUI() ||
                 ::Microsoft::Configuration::IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_DEPLOYMENT_INITIALIZE_ONERRORSHOWUI"))
             {
                 LOG_IF_FAILED(Initialize_OnError_ShowUI(packageIdentity, release));
@@ -234,10 +244,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         return deploymentResult;
     }
 
+    template <typename Options>
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::_Initialize(
         ::WindowsAppRuntime::Deployment::Activity::Context& initializeActivityContext,
         hstring const& packageFullName,
-        winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentInitializeOptions const& deploymentInitializeOptions,
+        Options const& options,
         bool isRepair)
     {
         auto getStatusResult{ DeploymentManager::GetStatus(packageFullName) };
@@ -251,7 +262,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
 
         std::wstring frameworkPackageFullName{ packageFullName };
-        auto deployPackagesResult{ Deploy(frameworkPackageFullName, deploymentInitializeOptions.ForceDeployment()) };
+        auto deployPackagesResult{ Deploy(frameworkPackageFullName, options.ForceDeployment()) };
         DeploymentStatus status{};
         if (SUCCEEDED(deployPackagesResult))
         {
@@ -295,61 +306,40 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         return MddCore::PackageInfo::FromPackageInfoReference(packageInfoReference.get());
     }
 
-    // Borrowed and repurposed from Dynamic Dependencies
-    std::vector<std::wstring> DeploymentManager::FindPackagesByFamily(std::wstring const& packageFamilyName)
-    {
-        UINT32 count{};
-        UINT32 bufferLength{};
-        const auto rc{ FindPackagesByPackageFamily(packageFamilyName.c_str(), PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT, &count, nullptr, &bufferLength, nullptr, nullptr) };
-        if (rc == ERROR_SUCCESS)
-        {
-            // The package family has no packages registered to the user
-            return std::vector<std::wstring>();
-        }
-        else if (rc != ERROR_INSUFFICIENT_BUFFER)
-        {
-            THROW_WIN32(rc);
-        }
-
-        auto packageFullNames{ wil::make_unique_cotaskmem<PWSTR[]>(count) };
-        auto buffer{ wil::make_unique_cotaskmem<WCHAR[]>(bufferLength) };
-        THROW_IF_WIN32_ERROR(FindPackagesByPackageFamily(packageFamilyName.c_str(), PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT, &count, packageFullNames.get(), &bufferLength, buffer.get(), nullptr));
-
-        std::vector<std::wstring> packageFullNamesList;
-        for (UINT32 index=0; index < count; ++index)
-        {
-            const auto packageFullName{ packageFullNames[index] };
-            packageFullNamesList.push_back(std::wstring(packageFullName));
-        }
-        return packageFullNamesList;
-    }
-
     HRESULT DeploymentManager::VerifyPackage(const std::wstring& packageFamilyName, const PACKAGE_VERSION targetVersion,
         __out std::wstring& packageIdentifier) try
     {
-        auto packageFullNames{ FindPackagesByFamily(packageFamilyName) };
+        winrt::Windows::Management::Deployment::PackageManager packageManager;
+        auto packages{ packageManager.FindPackagesForUserWithPackageTypes(L"", packageFamilyName,
+            ::Windows::Management::Deployment::PackageTypes::Framework |
+            ::Windows::Management::Deployment::PackageTypes::Main) };
+
         bool match{};
-        for (const auto& packageFullName : packageFullNames)
+        bool matchedPackageStatusIsOK{};
+        for (const auto& package : packages)
         {
-            auto packagePath{ GetPackagePath(packageFullName) };
+            auto packagePath{ package.EffectivePath()};
             if (packagePath.empty())
             {
                 continue;
             }
 
-            auto packageId{ AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.c_str()) };
-            if (packageId.Version().Version >= targetVersion.Version)
+            const auto packageVersion{ AppModel::Package::ToPackageVersion(package.Id().Version()).Version };
+
+            if (packageVersion >= targetVersion.Version)
             {
                 match = true;
-                if (packageId.Version().Version > targetVersion.Version)
+                matchedPackageStatusIsOK = package.Status().VerifyIsOK();
+                if (packageVersion > targetVersion.Version)
                 {
-                    g_existingTargetPackagesIfHigherVersion.insert(std::make_pair(packageIdentifier, packageFullName));
+                    g_existingTargetPackagesIfHigherVersion.insert(std::make_pair(packageIdentifier, package.Id().FullName()));
                 }
                 break;
             }
         }
 
         RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !match);
+        RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_STATE), !matchedPackageStatusIsOK);
         return S_OK;
     }
     CATCH_RETURN()

@@ -3,7 +3,7 @@
 
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
-    [contractversion(3)]
+    [contractversion(4)]
     apicontract DeploymentContract{};
 
     /// Represents the current Deployment status of the WindowsAppRuntime
@@ -15,7 +15,8 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         PackageInstallRequired,
         PackageInstallFailed,
 
-        [contract(DeploymentContract, 3)]
+        [contract(DeploymentContract, 4)]
+        PackageRepairRequired,
         PackageRepairFailed,
     };
 
@@ -49,6 +50,22 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         Boolean OnErrorShowUI;
     };
 
+    /// This object is used to specify deployment options to apply when using DeploymentManager's
+    /// Repair method
+    [contract(DeploymentContract, 4)]
+    runtimeclass DeploymentRepairOptions
+    {
+        DeploymentRepairOptions();
+
+        /// Gets or sets a value that indicates whether the processes associated with the
+        /// WinAppSDK Main and Singleton packages will be shut down forcibly if they are
+        /// currently in use, when repairing the WindowsAppRuntime.
+        Boolean ForceDeployment;
+
+        /// If not successful show UI
+        Boolean OnErrorShowUI;
+    };
+
     /// Used to query deployment information for WindowsAppRuntime
     [contract(DeploymentContract, 1)]
     static runtimeclass DeploymentManager
@@ -70,7 +87,13 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 
         /// Checks the status of the WindowsAppRuntime of the current package and attempts to
         /// repair already installed WinAppSDK packages.
-        [contract(DeploymentContract, 3)]
+        [contract(DeploymentContract, 4)]
         static DeploymentResult Repair();
+
+        /// Checks the status of the WindowsAppRuntime of the current package and attempts to
+        /// repair already installed WinAppSDK packages, while applying the DeploymentRepairOptions
+        /// passed in.
+        [contract(DeploymentContract, 4)]
+        static DeploymentResult Repair(Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentRepairOptions deploymentRepairOptions);
     };
 }
