@@ -219,8 +219,8 @@ jobs:
         inputs:
           packageType: sdk
           version: ${{ parameters.dotNetCoreSdkVersion }}
-          useGlobalJson: true
-          performMultiLevelLookup: true
+          # useGlobalJson: true
+          # performMultiLevelLookup: true
     # alam end
 
     - template: WindowsAppSDK-BinaryAnalysis-steps.yml
@@ -280,6 +280,9 @@ jobs:
   # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
   # Can be expanded to add any other binary as needed
   pool: ProjectReunionESPool-2022
+  # alam start
+  condition: false
+  # alam end
   steps:
   - task: NuGetToolInstaller@1
   - task: NuGetAuthenticate@1
