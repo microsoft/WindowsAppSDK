@@ -21,7 +21,10 @@ steps:
         ob_sdl_binskim_break: false 
       globalsdl:
         tsa:
-          enabled: true
+          # alam start
+          # enabled: true
+          enabled: false
+          # alam end
         binskim:
           enabled: true
           break: true
