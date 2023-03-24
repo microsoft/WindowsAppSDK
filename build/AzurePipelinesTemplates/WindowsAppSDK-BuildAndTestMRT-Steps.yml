@@ -11,6 +11,11 @@ parameters:
   - name: enablePREFast
     type: string
     default: true
+  # alam start
+  - name: dotNetCoreSdkVersion
+    type: string
+    default: '6.x'
+  # alam end
 
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
@@ -36,10 +41,35 @@ steps:
       configuration: '$(buildConfiguration)'
       msbuildArguments: '/restore /binaryLogger:${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
+  # alam start 
+  - script: |
+      dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog
+      copy ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog ${{ parameters.MRTBinariesDirectory }}\mrtcore.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
+      dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog
+      dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
+    displayName: 'copy mrtcore binlog BEFORE PREFast'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish MRTCore binlog BEFORE PreFast'
+    inputs:
+      PathtoPublish: $(Build.SourcesDirectory)/BuildOutput/mrtcore.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
+      artifactName: binlogs
+
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core sdk ${{ parameters.dotNetCoreSdkVersion }}'
+    inputs:
+      packageType: sdk
+      version: ${{ parameters.dotNetCoreSdkVersion }}
+      useGlobalJson: true
+      performMultiLevelLookup: true
+  # alam end
+
   # ToDo: This is a temporary step to accommodate b#43856157. This bug currently still allows arm64 to get a successful PREFast scan 
   # and produce meaningful results; hence, introduced this ad hoc step in the spirit of "having some coverage is better than no coverage".
   - task: SDLNativeRules@3
-    condition: eq(variables['buildPlatform'], 'arm64')
+    # alam start
+    # condition: eq(variables['buildPlatform'], 'arm64')
+    # alam end
     displayName: 'Guardian: PreFast@3'
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -47,6 +77,21 @@ steps:
     inputs:
       userProvideBuildInfo: 'auto'
       toolVersion: Latest
+
+  # alam start 
+  - script: |
+      dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog
+      copy ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog ${{ parameters.MRTBinariesDirectory }}\mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
+      dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog
+      dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
+    displayName: 'Copy mrtcore binlog AFTER PreFast'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish MRTCore binlog AFTER PreFast'
+    inputs:
+      PathtoPublish: $(Build.SourcesDirectory)/BuildOutput/mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
+      artifactName: binlogs
+  # alam end
 
 - ${{ if or(ne(parameters.RunSDLBinaryAnalysis, 'true'), ne(parameters.EnablePREFast, 'true')) }}:
   # PREFast scan is disabled in this pipeline run, just proceed to build the MRT via BuildAll.ps1, and
