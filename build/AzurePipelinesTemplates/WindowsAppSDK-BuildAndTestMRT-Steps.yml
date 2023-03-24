@@ -11,11 +11,6 @@ parameters:
   - name: enablePREFast
     type: string
     default: true
-  # alam start
-  - name: dotNetCoreSdkVersion
-    type: string
-    default: '6.x'
-  # alam end
 
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
@@ -55,17 +50,14 @@ steps:
       PathtoPublish: $(Build.SourcesDirectory)/BuildOutput/mrtcore.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
       artifactName: binlogs
 
+  # ToDo: This is a workaround for b#43856157. We probably can remove this step once the bug is fixed. 
   - task: UseDotNet@2
-    displayName: 'Use .NET Core sdk ${{ parameters.dotNetCoreSdkVersion }}'
     inputs:
       packageType: sdk
-      version: ${{ parameters.dotNetCoreSdkVersion }}
-      #useGlobalJson: true
-      #performMultiLevelLookup: true
-  # alam end
+      version: '6.x'
 
-  # ToDo: This is a temporary step to accommodate b#43856157. This bug currently still allows arm64 to get a successful PREFast scan 
-  # and produce meaningful results; hence, introduced this ad hoc step in the spirit of "having some coverage is better than no coverage".
+  # WindowsAppSDK-BinaryAnalysis-steps.yml below ultimately uses SDLNativeRules@2, which is unsupported.
+  # So we explicitly call SDLNativeRules@3, which is currently supported.
   - task: SDLNativeRules@3
     displayName: 'Guardian: PreFast@3'
     env:
@@ -106,7 +98,7 @@ steps:
   - template: WindowsAppSDK-BinaryAnalysis-steps.yml
     parameters:
       outputDirectory: 'BuildOutput'
-      # ToDo: re-enable PREFast once b#43856157 is fixed.
+      # ToDo: Enable SDL's PREFast once it is updated to invoke the newer SDLNativeRules@3 task, and remove the explicit call to it above.
       # enablePREFast: ${{ parameters.EnablePREFast }}
       enablePREFast: false
 
