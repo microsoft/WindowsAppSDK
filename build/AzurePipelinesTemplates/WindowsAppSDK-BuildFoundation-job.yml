@@ -227,6 +227,7 @@ jobs:
   pool: ProjectReunionESPool-2022
   steps:
   - task: NuGetToolInstaller@1
+  
   - task: NuGetAuthenticate@1
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
@@ -297,6 +298,7 @@ jobs:
         normalizedConfiguration: 'fre'
   steps:
   - task: NuGetToolInstaller@1
+  
   - task: NuGetAuthenticate@1
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
@@ -544,6 +546,7 @@ jobs:
           FoundationPackage:
             Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
             Version: $(WindowsAppSDKTransportPackageVersion)
+            
     # TODO: Reenable, Add-AppxPackage currently does not work on 2022 images. See issue #2908
     # - template: ..\..\eng\common\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
     #   parameters:
