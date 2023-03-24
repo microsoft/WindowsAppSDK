@@ -36,15 +36,15 @@ steps:
       configuration: '$(buildConfiguration)'
       msbuildArguments: '/restore /binaryLogger:${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
-  # alam start 
   # ToDo: This step is a workaround for b#43856157. We can potentially remove this step once the bug is fixed. 
   - task: UseDotNet@2
     inputs:
       packageType: sdk
       version: '6.x'
 
-  # WindowsAppSDK-BinaryAnalysis-steps.yml below ultimately invokes SDLNativeRules@2, which is out of support.
-  # So we explicitly call SDLNativeRules@3, which is currently supported.
+  # ToDo: WindowsAppSDK-BinaryAnalysis-steps.yml below ultimately invokes SDLNativeRules@2, which is out of support.
+  # So for the time being we explicitly call SDLNativeRules@3, which is currently supported. Eliminate this step
+  # when we run PREFast as part of WindowsAppSDK-BinaryAnalysis-steps.yml below.
   - task: SDLNativeRules@3
     displayName: 'Guardian: PreFast@3'
     env:
@@ -53,7 +53,6 @@ steps:
     inputs:
       userProvideBuildInfo: 'auto'
       toolVersion: Latest
-  # alam end
 
 - ${{ if or(ne(parameters.RunSDLBinaryAnalysis, 'true'), ne(parameters.EnablePREFast, 'true')) }}:
   # PREFast scan is disabled in this pipeline run, just proceed to build the MRT via BuildAll.ps1, and
@@ -71,8 +70,8 @@ steps:
   - template: WindowsAppSDK-BinaryAnalysis-steps.yml
     parameters:
       outputDirectory: 'BuildOutput'
-        # ToDo: Enable PREFast to run downstream from here, once the SDL template has been updated to invoke the newer SDLNativeRules@3 task, 
-        # and remove the explicit call to it above.
+      # ToDo: Enable PREFast to run downstream from here, once the SDL template has been updated to invoke the 
+      # newer SDLNativeRules@3 task, and remove the explicit call to it above.
       enablePREFast: false
 
 # component detection must happen *within* the build task
