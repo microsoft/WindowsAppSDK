@@ -27,14 +27,24 @@ parameters:
   - name: "solutionPath"
     type: string
     default: "WindowsAppRuntime.sln"
+  # alam start
+  - name: "dotNetCoreSdkVersion"
+    type: string
+    default: "6.x"
+  # alam end
 
 jobs:
 # This relatively low-cost job is always run, in parallel w/ the Build job.
-- template: WindowsAppSDK-SourceAnalysis-job.yml
+# alam start
+# - template: WindowsAppSDK-SourceAnalysis-job.yml
+# alam end
 
 - job: VerifyCopyrightHeaders
   dependsOn: []
   pool: ProjectReunionESPool-2022
+  # alam start
+  condition: false
+  # alam end
   steps:
   - task: powershell@2
     displayName: 'Verify copyright headers'
@@ -48,11 +58,13 @@ jobs:
   strategy:
     maxParallel: 10
     matrix:
-      Release_x86:
-        buildPlatform: 'x86'
-        buildConfiguration: 'Release'
-        normalizedConfiguration: 'fre'
-        PGOBuildMode: 'Optimize'
+      # alam start
+      # Release_x86:
+      #   buildPlatform: 'x86'
+      #   buildConfiguration: 'Release'
+      #   normalizedConfiguration: 'fre'
+      #   PGOBuildMode: 'Optimize'
+      # alam end
       Release_x64:
         buildPlatform: 'x64'
         buildConfiguration: 'Release'
@@ -165,6 +177,24 @@ jobs:
         configuration: '$(buildConfiguration)'
         msbuildArgs: '/restore /p:AppxSymbolPackageEnabled=false /binaryLogger:BuildOutput/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:WindowsAppSDKVersionBuild=$(builddate_yymm) /p:WindowsAppSDKVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode="Optimize" /p:WindowsAppSDKBuildPipeline=1 /p:WindowsAppSDKCleanIntermediateFiles=true'
 
+    # alam start 
+    - script: |
+        dir $(Build.SourcesDirectory)\BuildOutput
+        dir $(Build.SourcesDirectory)\BuildOutput\Release
+        dir /s $(Build.SourcesDirectory)\BuildOutput\*.binlog
+        dir $(Build.SourcesDirectory)\BuildOutput\Release\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
+        copy $(Build.SourcesDirectory)\BuildOutput\Release\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog $(Build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
+        dir $(Build.SourcesDirectory)\BuildOutput\Release${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
+        dir $(Build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.BEFOREPreFast.$(buildPlatform).
+      displayName: 'Copy sln binlog BEFORE PreFast'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish sln binlog BEFORE PreFast'
+      inputs:
+        PathtoPublish: $(build.SourcesDirectory)\BuildOutput\B${{ parameters.solutionPath }}.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
+        artifactName: binlogs
+    # alam end
+
   - ${{ if or(ne(parameters.RunSDLBinaryAnalysis, 'true'), ne(parameters.EnablePREFast, 'true')) }}:
     # PREFast scan is disabled in this pipeline run, just proceed to build the target via BuildAll.ps1, and
     # fall through to run BinaryAnalysis with PREFast turned off.
@@ -181,13 +211,46 @@ jobs:
 
   # Common code for performing Binary Analysis.
   - ${{ if eq(parameters.RunSDLBinaryAnalysis, 'true') }}:
+
+    # alam start
+    - ${{ if eq(parameters.EnablePREFast, 'true') }}:
+      - task: UseDotNet@2
+        displayName: 'Use .NET Core sdk ${{ parameters.dotNetCoreSdkVersion }}'
+        inputs:
+          packageType: sdk
+          version: ${{ parameters.dotNetCoreSdkVersion }}
+          useGlobalJson: true
+          performMultiLevelLookup: true
+    # alam end
+
     - template: WindowsAppSDK-BinaryAnalysis-steps.yml
       parameters:
         outputDirectory: BuildOutput
         # ToDo: Enable PREFast once b#43856157 is fixed. Currently, the PREFast scan is blocked by an error, which in 
         #       turn causes the build result to show a warning.
-        # enablePREFast: ${{ parameters.EnablePREFast }}
-        enablePREFast: false
+        # alam start
+        enablePREFast: ${{ parameters.EnablePREFast }}
+        # enablePREFast: false
+        # alam end
+
+    # alam start 
+    - ${{ if eq(parameters.EnablePREFast, 'true') }}:
+      - script: |
+          dir $(Build.SourcesDirectory)\BuildOutput
+          dir $(Build.SourcesDirectory)\BuildOutput\Release
+          dir /s $(Build.SourcesDirectory)\BuildOutput\*.binlog
+          dir $(Build.SourcesDirectory)\BuildOutput\Release\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
+          copy $(Build.SourcesDirectory)\BuildOutput\Release\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog $(Build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
+          dir $(Build.SourcesDirectory)\BuildOutput\Release\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
+          dir B$(Build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
+        displayName: 'Copy sln binlog AFTER PreFast'
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish sln binlog AFTER PreFast'
+        inputs:
+          PathtoPublish: $(Build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
+          artifactName: binlogs
+    # alam end
 
   - ${{ if eq(parameters.GenerateSBOM, 'true') }}:
     - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
@@ -219,7 +282,6 @@ jobs:
   pool: ProjectReunionESPool-2022
   steps:
   - task: NuGetToolInstaller@1
-
   - task: NuGetAuthenticate@1
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
@@ -274,11 +336,13 @@ jobs:
   strategy:
     maxParallel: 10
     matrix:
-      Release_x86:
-        buildPlatform: 'x86'
-        buildConfiguration: 'Release'
-        normalizedConfiguration: 'fre'
-        PGOBuildMode: 'Optimize'
+      # alam start
+      # Release_x86:
+      #   buildPlatform: 'x86'
+      #   buildConfiguration: 'Release'
+      #   normalizedConfiguration: 'fre'
+      #   PGOBuildMode: 'Optimize'
+      # alam end
       Release_x64:
         buildPlatform: 'x64'
         buildConfiguration: 'Release'
@@ -290,7 +354,6 @@ jobs:
         normalizedConfiguration: 'fre'
   steps:
   - task: NuGetToolInstaller@1
-
   - task: NuGetAuthenticate@1
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
@@ -320,20 +383,23 @@ jobs:
 
 # Arm64 uses a different VM type than x64, thus requiring them to be in different
 # pools, hence, we spilt the two scenarios into separate jobs.
-- template: WindowsAppSDK-RunTestsInPipeline-Job.yml
-  parameters:
-    jobName: PipelineTestsX64
-    isArm64Platfrom: false
-    dependsOn:
-      - Build
-      - BuildAndTestMRT
-- template: WindowsAppSDK-RunTestsInPipeline-Job.yml
-  parameters:
-    jobName: PipelineTestsArm64
-    isArm64Platfrom: true
-    dependsOn:
-      - Build
-      - BuildAndTestMRT
+# alam start
+# - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
+#   parameters:
+#     jobName: PipelineTestsX64
+#     isArm64Platfrom: false
+#     dependsOn:
+#       - Build
+#       - BuildAndTestMRT
+
+# - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
+#   parameters:
+#     jobName: PipelineTestsArm64
+#     isArm64Platfrom: true
+#     dependsOn:
+#       - Build
+#       - BuildAndTestMRT
+# alam end
 
 - job: StageAndPack
   pool: ProjectReunionESPool-2022
@@ -342,7 +408,10 @@ jobs:
     - Build
     - BuildAnyCPU
     - BuildAndTestMRT
-  condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
+  # alam start
+  # condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
+  condition: false
+  # alam end
   steps:
   - task: DownloadBuildArtifacts@0
     inputs:
@@ -464,6 +533,7 @@ jobs:
         [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
         $publicNuspec.package.metadata.version = $packageVersion
         Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
+
   - task: PowerShell@2
     name: PackNuget
     inputs:
@@ -515,7 +585,10 @@ jobs:
 # Build WinAppSDK and Run Integration Test from TestAll.ps1
 - job: WinAppSDKIntegrationBuildAndTest
   dependsOn: ['StageAndPack']
-  condition: succeeded()
+  # alam start
+  # condition: succeeded()
+  condition: false
+  # alam end
   pool: ProjectReunionESPool-2022
   variables:
     WindowsAppSDKTransportPackageVersion: $[ dependencies.StageAndPack.outputs['SetVersion.packageVersion'] ]
@@ -536,7 +609,6 @@ jobs:
           FoundationPackage:
             Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
             Version: $(WindowsAppSDKTransportPackageVersion)
-
     # TODO: Reenable, Add-AppxPackage currently does not work on 2022 images. See issue #2908
     # - template: ..\..\eng\common\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
     #   parameters:
@@ -554,7 +626,10 @@ jobs:
   dependsOn: 
   - StageAndPack
   - WinAppSDKIntegrationBuildAndTest
-  condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
+  # alam start
+  # condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
+  condition: false
+  # alam end
   pool: ProjectReunionESPool-2022
   variables:
     WindowsAppSDKPackageVersion: $[ dependencies.StageAndPack.outputs['SetVersion.packageVersion'] ]
@@ -565,6 +640,7 @@ jobs:
         downloadPath: '$(Build.artifactStagingDirectory)'
         itemPattern: |
           **/*.nupkg
+
     - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(parameters.PublishPackage, 'true')) }}:
       # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
       - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
