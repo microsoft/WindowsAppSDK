@@ -175,14 +175,14 @@ jobs:
         vsVersion: 17.0
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
-        msbuildArgs: '/restore /p:AppxSymbolPackageEnabled=false /binaryLogger:BuildOutput\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:WindowsAppSDKVersionBuild=$(builddate_yymm) /p:WindowsAppSDKVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode="Optimize" /p:WindowsAppSDKBuildPipeline=1 /p:WindowsAppSDKCleanIntermediateFiles=true'
+        msbuildArgs: '/restore /p:AppxSymbolPackageEnabled=false /binaryLogger:$(Build.SourcesDirectory)/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:WindowsAppSDKVersionBuild=$(builddate_yymm) /p:WindowsAppSDKVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode="Optimize" /p:WindowsAppSDKBuildPipeline=1 /p:WindowsAppSDKCleanIntermediateFiles=true'
 
     # alam start 
     - script: |
-        dir /s $(Build.SourcesDirectory)\BuildOutput\*.binlog
-        dir $(Build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
-        copy $(Build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog $(Build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
-        dir $(Build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
+        dir /s $(Build.SourcesDirectory)\*.binlog
+        dir $(Build.SourcesDirectory)\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
+        copy $(Build.SourcesDirectory)\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog $(Build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
+        dir $(Build.SourcesDirectory)\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
         dir $(Build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.BEFOREPreFast.$(buildPlatform).
       displayName: 'Copy sln binlog BEFORE PreFast'
 
@@ -192,14 +192,16 @@ jobs:
         PathtoPublish: $(build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
         artifactName: binlogs
 
-    - ${{ if eq(parameters.EnablePREFast, 'true') }}:
-      - task: UseDotNet@2
-        displayName: 'Use .NET Core sdk ${{ parameters.dotNetCoreSdkVersion }}'
-        inputs:
-          packageType: sdk
-          version: ${{ parameters.dotNetCoreSdkVersion }}
-          # useGlobalJson: true
-          # performMultiLevelLookup: true
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core sdk ${{ parameters.dotNetCoreSdkVersion }}'
+      # alam start
+      condition: always()
+      # alam end
+      inputs:
+        packageType: sdk
+        version: ${{ parameters.dotNetCoreSdkVersion }}
+        # useGlobalJson: true
+        # performMultiLevelLookup: true
 
     # ToDo: This is a temporary step to accommodate b#43856157. This bug currently still allows arm64 to get a successful PREFast scan 
     # and produce meaningful results; hence, introduced this ad hoc step in the spirit of "having some coverage is better than no coverage".
@@ -213,11 +215,10 @@ jobs:
         toolVersion: Latest
 
     - script: |
-        dir $(Build.SourcesDirectory)\BuildOutput
-        dir /s $(Build.SourcesDirectory)\BuildOutput\*.binlog
-        dir $(Build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
-        copy $(Build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog $(Build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
-        dir $(Build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
+        dir /s $(Build.SourcesDirectory)\*.binlog
+        dir $(Build.SourcesDirectory)\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
+        copy $(Build.SourcesDirectory)\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog $(Build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
+        dir $(Build.SourcesDirectory)\${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
         dir B$(Build.SourcesDirectory)\BuildOutput\${{ parameters.solutionPath }}.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
       displayName: 'Copy sln binlog AFTER PreFast'
 
