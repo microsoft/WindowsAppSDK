@@ -37,26 +37,13 @@ steps:
       msbuildArguments: '/restore /binaryLogger:${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
   # alam start 
-  - script: |
-      dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog
-      copy ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog ${{ parameters.MRTBinariesDirectory }}\mrtcore.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
-      dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog
-      dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
-    displayName: 'copy mrtcore binlog BEFORE PREFast'
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish MRTCore binlog BEFORE PreFast'
-    inputs:
-      PathtoPublish: $(Build.SourcesDirectory)/BuildOutput/mrtcore.BEFOREPreFast.$(buildPlatform).$(buildConfiguration).binlog
-      artifactName: binlogs
-
-  # ToDo: This is a workaround for b#43856157. We probably can remove this step once the bug is fixed. 
+  # ToDo: This step is a workaround for b#43856157. We can potentially remove this step once the bug is fixed. 
   - task: UseDotNet@2
     inputs:
       packageType: sdk
       version: '6.x'
 
-  # WindowsAppSDK-BinaryAnalysis-steps.yml below ultimately uses SDLNativeRules@2, which is unsupported.
+  # WindowsAppSDK-BinaryAnalysis-steps.yml below ultimately invokes SDLNativeRules@2, which is out of support.
   # So we explicitly call SDLNativeRules@3, which is currently supported.
   - task: SDLNativeRules@3
     displayName: 'Guardian: PreFast@3'
@@ -66,20 +53,6 @@ steps:
     inputs:
       userProvideBuildInfo: 'auto'
       toolVersion: Latest
-
-  # alam start 
-  - script: |
-      dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog
-      copy ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog ${{ parameters.MRTBinariesDirectory }}\mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
-      dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.$(buildPlatform).$(buildConfiguration).binlog
-      dir ${{ parameters.MRTBinariesDirectory }}\mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
-    displayName: 'Copy mrtcore binlog AFTER PreFast'
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish MRTCore binlog AFTER PreFast'
-    inputs:
-      PathtoPublish: $(Build.SourcesDirectory)/BuildOutput/mrtcore.AFTERPreFast.$(buildPlatform).$(buildConfiguration).binlog
-      artifactName: binlogs
   # alam end
 
 - ${{ if or(ne(parameters.RunSDLBinaryAnalysis, 'true'), ne(parameters.EnablePREFast, 'true')) }}:
@@ -98,8 +71,8 @@ steps:
   - template: WindowsAppSDK-BinaryAnalysis-steps.yml
     parameters:
       outputDirectory: 'BuildOutput'
-      # ToDo: Enable SDL's PREFast once it is updated to invoke the newer SDLNativeRules@3 task, and remove the explicit call to it above.
-      # enablePREFast: ${{ parameters.EnablePREFast }}
+        # ToDo: Enable PREFast to run downstream from here, once the SDL template has been updated to invoke the newer SDLNativeRules@3 task, 
+        # and remove the explicit call to it above.
       enablePREFast: false
 
 # component detection must happen *within* the build task
