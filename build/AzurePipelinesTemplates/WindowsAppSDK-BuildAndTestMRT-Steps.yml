@@ -67,9 +67,6 @@ steps:
   # ToDo: This is a temporary step to accommodate b#43856157. This bug currently still allows arm64 to get a successful PREFast scan 
   # and produce meaningful results; hence, introduced this ad hoc step in the spirit of "having some coverage is better than no coverage".
   - task: SDLNativeRules@3
-    # alam start
-    # condition: eq(variables['buildPlatform'], 'arm64')
-    # alam end
     displayName: 'Guardian: PreFast@3'
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
