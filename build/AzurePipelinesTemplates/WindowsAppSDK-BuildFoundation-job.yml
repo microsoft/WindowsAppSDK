@@ -227,7 +227,7 @@ jobs:
   pool: ProjectReunionESPool-2022
   steps:
   - task: NuGetToolInstaller@1
-  
+
   - task: NuGetAuthenticate@1
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
@@ -298,7 +298,7 @@ jobs:
         normalizedConfiguration: 'fre'
   steps:
   - task: NuGetToolInstaller@1
-  
+
   - task: NuGetAuthenticate@1
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
