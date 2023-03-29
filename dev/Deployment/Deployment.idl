@@ -1,9 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+#include <TerminalVelocityFeatures-DeploymentAPI.h>
+
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
-    [contractversion(3)]
+    [feature(Feature_DeploymentRepair)]
+    [contractversion(4)]
     apicontract DeploymentContract{};
 
     /// Represents the current Deployment status of the WindowsAppRuntime
@@ -14,8 +17,8 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         Ok,
         PackageInstallRequired,
         PackageInstallFailed,
-
-        [contract(DeploymentContract, 3)]
+        [feature(Feature_DeploymentRepair)]
+        [contract(DeploymentContract, 4)]
         PackageRepairFailed,
     };
 
@@ -70,7 +73,8 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 
         /// Checks the status of the WindowsAppRuntime of the current package and attempts to
         /// repair already installed WinAppSDK packages.
-        [contract(DeploymentContract, 3)]
+        [feature(Feature_DeploymentRepair)]
+        [contract(DeploymentContract, 4)]
         static DeploymentResult Repair();
     };
 }
