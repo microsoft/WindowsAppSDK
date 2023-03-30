@@ -87,6 +87,14 @@ steps:
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2
+  displayName: 'Create VersionInfo TerminalVelocity features'
+  inputs:
+    targetType: filePath
+    filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-VersionInfo.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-VersionInfo.h
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: powershell@2
   displayName: 'Create PushNotifications TerminalVelocity features'
   inputs:
     targetType: filePath
