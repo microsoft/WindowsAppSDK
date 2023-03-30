@@ -31,6 +31,9 @@ parameters:
   - name: "enableLicenseInstall"
     type: boolean
     default: true
+  - name: "pipelineType"
+    type: string
+    default: 'azurePipeline'
 
 resources:
   repositories:
