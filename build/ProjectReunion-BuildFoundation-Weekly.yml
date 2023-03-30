@@ -5,6 +5,8 @@ variables:
 - template: WindowsAppSDK-CommonVariables.yml
 - name: buildPool
   value: 'ProjectReunionESPool-2022'
+- name: pipelineType
+  value: 'azurePipeline'
 
 parameters:
   - name: "ReleaseSigning"
