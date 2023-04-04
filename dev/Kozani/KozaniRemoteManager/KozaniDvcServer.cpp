@@ -15,8 +15,24 @@
 
 using namespace Microsoft::Kozani::DvcProtocol;
 
+extern Microsoft::Kozani::KozaniRemoteManager::ConnectionManager g_connectionManager;
+
 namespace Microsoft::Kozani::KozaniRemoteManager
 {
+    void CALLBACK KozaniDvcServer::ProcessTerminationCallback(_In_ PVOID parameter, _In_ BOOLEAN timerOrWaitFired) noexcept try
+    {
+        if (timerOrWaitFired)
+        {
+            // Timer timed out. This shouldn't happen as we wait infinite time. 
+            LOG_HR_MSG(E_UNEXPECTED, "Wait timed out tracking process lifetime.");
+            return;
+        }
+
+        AppActivationInfo* appInfo{ reinterpret_cast<AppActivationInfo*>(parameter) };
+        g_connectionManager.ProcessAppTermination(appInfo);
+    }
+    CATCH_LOG_RETURN()
+
     KozaniDvcServer* KozaniDvcServer::Create()
     {
         std::unique_ptr<KozaniDvcServer> dvcServer(new KozaniDvcServer);
@@ -49,6 +65,26 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             auto lock{ std::unique_lock<std::recursive_mutex>(m_dvcLock) };
             m_dvcHandle.reset();
         }
+    }
+
+    HRESULT KozaniDvcServer::EnableConnectionManagerReporting()
+    {
+        auto lock{ m_connectionManagerLock.lock_exclusive() };
+
+        if (FAILED(m_errorFromDvcListener))
+        {
+            // DVC listener thread has encountered error before m_connectionManager is set. Return the failure right away.
+            return m_errorFromDvcListener;
+        }
+
+        if (FAILED(m_errorFromDvcWriter))
+        {
+            // DVC writer has encountered error before m_connectionManager is set. Return the failure right away.
+            return m_errorFromDvcWriter;
+        }
+
+        m_errorReportingEnabled = true;
+        return S_OK;
     }
 
     void KozaniDvcServer::OpenDvc()
@@ -294,6 +330,10 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             
                 break;
 
+            case Dvc::ProtocolDataUnit::AppTerminationNotice:
+                RETURN_IF_FAILED(ProcessAppTerminationNotice(pdu));
+                break;
+
             default:
                 // ToDo: Unsupported PDU type. Return GenericResult message with failure code to client side.
                 break;
@@ -305,21 +345,38 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
     void KozaniDvcServer::ProcessActivateAppRequestThreadFunc(_In_ Dvc::ProtocolDataUnit pdu) noexcept try
     {
+        bool appActivatedAndTracked{};
         std::string errorMessage;
-        HRESULT hr = LOG_IF_FAILED(ProcessActivateAppRequest(pdu, errorMessage));
-        if (FAILED(hr))
+        HRESULT hr = LOG_IF_FAILED(ProcessActivateAppRequest(pdu, appActivatedAndTracked, errorMessage));
+
+        // If ProcessActivateAppRequest failed but appActivatedAndTracked is true, it means there was failure after the app was activated and 
+        // its process lifetime tracked. Such failure is benign and we should not send failure ActivateAppResult to client.
+        if (FAILED(hr) && !appActivatedAndTracked)
         {
-            SendActivateAppResult(pdu.activity_id(), hr, 0, errorMessage);
+            SendActivateAppResult(pdu.activity_id(), hr, 0, false, errorMessage);
+
+            // ERROR_ALREADY_EXISTS is due to the activity Id being the same as an existing activity already tracked in the m_activityMap. 
+            // Do not remove it from the map. 
             if (hr != HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS))
             {
-                RemoveActivity(pdu.activity_id());
+                auto lock{ g_connectionManager.m_activityMapLock.lock_exclusive() };
+                if (g_connectionManager.m_closing)
+                {
+                    return;
+                }
+
+                g_connectionManager.m_activityMap.erase(pdu.activity_id());
             }
         }
     }
     CATCH_LOG_RETURN()
 
-    HRESULT KozaniDvcServer::ProcessActivateAppRequest(_In_ Dvc::ProtocolDataUnit& pdu, _Out_ std::string& errorMessage) noexcept try
+    HRESULT KozaniDvcServer::ProcessActivateAppRequest(
+        _In_ Dvc::ProtocolDataUnit& pdu, 
+        _Out_ bool& appActivatedAndTracked, 
+        _Out_ std::string& errorMessage) noexcept try
     {
+        appActivatedAndTracked = false;
         errorMessage.clear();
 
         Dvc::ActivateAppRequest activateAppRequest;
@@ -335,19 +392,19 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             RETURN_WIN32(ERROR_NOT_SUPPORTED);
         }
 
-        ActivatedAppInfo* appInfo{};
         {
-            auto lock{ m_activityMapLock.lock_exclusive() };
-            auto inserted{ m_activityMap.emplace(pdu.activity_id(), ActivatedAppInfo()) };
+            // Acquire lock before adding the activity Id to the m_activityMap but do not hold the lock while activating the app as 
+            // that can take some time and we do not want one app activation to block others.
+            auto lock{ g_connectionManager.m_activityMapLock.lock_exclusive() };
+            RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_STATE), g_connectionManager.m_closing);
+
+            auto inserted{ g_connectionManager.m_activityMap.emplace(pdu.activity_id(), AppActivationInfo(pdu.activity_id())) };
             if (!inserted.second)
             {
                 errorMessage = "Activity ID of the new activate app request is already used for a previous request. Each new request must use a new activity ID.";
                 RETURN_WIN32(ERROR_ALREADY_EXISTS);
             }
-
-            appInfo = &(inserted.first->second);
         }
-
 
         wil::com_ptr<IApplicationActivationManager> aam;
         HRESULT hrCoCreateInstance{ CoCreateInstance(CLSID_ApplicationActivationManager, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&aam)) };
@@ -358,6 +415,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         }
 
         std::wstring appUserModelId{ ::Microsoft::Utf8::ToUtf16(activateAppRequest.app_user_model_id()) };
+        DWORD processId{};
 
         switch (activateAppRequest.activation_kind())
         {
@@ -376,24 +434,136 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                         launchArgs = ::Microsoft::Utf8::ToUtf16(args.arguments());
                     }
                     
-                    DWORD processId{};
                     HRESULT hrActivateApp{ aam->ActivateApplication(appUserModelId.c_str(), launchArgs.c_str(), AO_NONE, &processId) };
                     if (FAILED(hrActivateApp))
                     {
                         errorMessage = "Failed to Activate app.";
                         RETURN_HR(hrActivateApp);
                     }
-
-                    appInfo->pid = processId;
                 }
                 break;
 
+            case Dvc::ActivationKind::File:
+                // ToDo: support FTA launch.
+                break;
+
+            case Dvc::ActivationKind::Protocol:
+                // ToDo: support protocol launch.
+                break;
+
             default:
+                FAIL_FAST_MSG("Logic error - should have handled all supported launch contracts.");
                 break;
         }
         
-        SendActivateAppResult(pdu.activity_id(), S_OK, appInfo->pid);
+        // When we reach here, activation is successful.
+        bool isNewInstance{};
+        {
+            auto lock{ g_connectionManager.m_activityMapLock.lock_exclusive() };
+            RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_STATE), g_connectionManager.m_closing);
+
+            auto iter{ g_connectionManager.m_activityMap.find(pdu.activity_id()) };
+            if (iter == g_connectionManager.m_activityMap.end())
+            {
+                // Rare case - the app is terminated right after launch and the activity has been removed from the map from the other thread tracking 
+                // the lifetime of the process, before reaching here. There is nothing to do after that.
+                return S_OK;
+            }
+
+            AppActivationInfo& appInfo{ iter->second };
+            if (appInfo.activationStatus == AppActivationStatus::TerminationRequestedFromClient)
+            {
+                // The client has already requested termination of the app. Honor it now. 
+                wil::unique_handle process{ OpenProcess(PROCESS_TERMINATE, FALSE, processId) };
+                if (process)
+                {
+                    LOG_IF_WIN32_BOOL_FALSE_MSG(TerminateProcess(process.get(), 0), "Failed to terminate process %u", processId);
+                }
+                else
+                {
+                    LOG_LAST_ERROR_MSG("Failed to open process %u with PROCESS_TERMINATE access right.", processId);
+                }
+
+                // Remove the activity entry from the m_activityMap as we no longer track it.
+                g_connectionManager.m_activityMap.erase(iter);
+                return S_OK;
+            }
+
+            auto pidAdded{ g_connectionManager.m_processIdMap.emplace(processId, pdu.activity_id()) };
+            if (pidAdded.second)
+            {
+                // New process Id in the tracking map. The activation creates a new process.
+                isNewInstance = true;
+                appInfo.pid = processId;
+
+                // Track lifetime of the process.
+                appInfo.processHandle.reset(OpenProcess(SYNCHRONIZE | PROCESS_TERMINATE, FALSE, processId));
+                if (!appInfo.processHandle)
+                {
+                    g_connectionManager.m_activityMap.erase(iter);
+
+                    errorMessage = "Failed to OpenProcess after the app is activated. The app may have crashed. Process Id: " + std::to_string(processId);
+                    RETURN_LAST_ERROR();
+                }
+
+                appInfo.activationStatus = AppActivationStatus::ActivationSucceeded;
+
+                // Failure to register wait handle tracking the new process lifetime is not fatal and should ot send failed ActivateAppResult back to client.
+                HRESULT hrRegisterWait{ LOG_IF_WIN32_BOOL_FALSE_MSG(RegisterWaitForSingleObject(
+                    &appInfo.processLifetimeTrackerHandle, appInfo.processHandle.get(), ProcessTerminationCallback, &appInfo, INFINITE, WT_EXECUTEONLYONCE),
+                    "Failed to register process lifetime tracking thread after the app is activated. Process Id: %u", processId) };
+                if (SUCCEEDED(hrRegisterWait))
+                {
+                    appActivatedAndTracked = true;
+                }
+            }
+            else
+            {
+                // The process Id is already in the m_processIdMap, which means the app activation does not create a new process.
+                // Apps can be single instance, which will use the same process to respond to multiple activations. 
+                // Remove the activity entry from the m_activityMap as we will not track duplicated activities backed by the same process.
+                g_connectionManager.m_activityMap.erase(iter);
+            }
+        }
+
+        SendActivateAppResult(pdu.activity_id(), S_OK, processId, isNewInstance);
         return S_OK;
+    }
+    CATCH_RETURN()
+
+    HRESULT KozaniDvcServer::ProcessAppTerminationNotice(_In_ Dvc::ProtocolDataUnit& pdu) noexcept try
+    {
+        auto lock{ g_connectionManager.m_activityMapLock.lock_exclusive() };
+        RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_STATE), g_connectionManager.m_closing);
+
+        auto iter{ g_connectionManager.m_activityMap.find(pdu.activity_id()) };
+        if (iter == g_connectionManager.m_activityMap.end())
+        {
+            RETURN_HR_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), "The activity Id %I64u does not exist in the activity map", pdu.activity_id());
+        }
+
+        auto& appInfo{ iter->second };
+        appInfo.activationStatus = AppActivationStatus::TerminationRequestedFromClient;
+
+        if (appInfo.pid == 0)
+        {
+            // The app activation has not finished yet. It will be terminated immediately upon activation since it is 
+            // marked with AppActivationStatus::TerminationRequestedFromClient. 
+            return S_OK;
+        }
+
+        FAIL_FAST_IF_MSG(!appInfo.processHandle, "Process handle should be valid when pid is not zero");
+
+        HRESULT hrTerminateProcess{ LOG_IF_WIN32_BOOL_FALSE_MSG(TerminateProcess(appInfo.processHandle.get(), 0), "Failed to terminate process %u", appInfo.pid) };
+
+        if (!appInfo.processLifetimeTrackerHandle)
+        {
+            // No process lifetime tracker to handle at ProcessTerminationCallback - we should clean up the maps here.
+            g_connectionManager.m_processIdMap.erase(appInfo.pid);
+            g_connectionManager.m_activityMap.erase(iter);
+        }
+
+        RETURN_HR(hrTerminateProcess);
     }
     CATCH_RETURN()
 
@@ -407,12 +577,6 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                 return true;
         }
         return false;
-    }
-
-    void KozaniDvcServer::RemoveActivity(UINT64 activityId)
-    {
-        auto lock{ m_activityMapLock.lock_exclusive() };
-        m_activityMap.erase(activityId);
     }
 
     void KozaniDvcServer::StartDvcListenerThread()
@@ -483,32 +647,12 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             m_dvcHandle.reset();
         }
 
-        if (m_connectionManager != nullptr)
+        if (m_errorReportingEnabled)
         {
-            m_connectionManager->ReportDvcServerError(errorCode);
+            g_connectionManager.ReportDvcServerError(errorCode);
         }
     }
     CATCH_LOG_RETURN()
-
-    HRESULT KozaniDvcServer::SetConnectionManger(ConnectionManager* connectionManager)
-    {
-        auto lock{ m_connectionManagerLock.lock_exclusive() };
-
-        if (FAILED(m_errorFromDvcListener))
-        {
-            // DVC listener thread has encountered error before m_connectionManager is set. Return the failure right away.
-            return m_errorFromDvcListener;
-        }
-
-        if (FAILED(m_errorFromDvcWriter))
-        {
-            // DVC writer has encountered error before m_connectionManager is set. Return the failure right away.
-            return m_errorFromDvcWriter;
-        }
-
-        m_connectionManager = connectionManager;
-        return S_OK;
-    }
 
     void KozaniDvcServer::SendDvcProtocolData(const char* data, UINT32 size)
     {
@@ -557,20 +701,15 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             m_dvcHandle.reset();
         }
 
-        if (m_connectionManager != nullptr)
+        if (m_errorReportingEnabled)
         {
-            m_connectionManager->ReportDvcServerError(errorCode);
+            g_connectionManager.ReportDvcServerError(errorCode);
         }
     }
 
     void KozaniDvcServer::SendConnectionAck(PCSTR connectionId)
     {
-        UINT64 activityId{};
-        {
-            auto lock{ m_newActivityIdLock.lock_exclusive() };
-            activityId = m_newActivityId;
-            m_newActivityId++;
-        }
+        UINT64 activityId{ g_connectionManager.GetNewActivityId() };
         
         std::string pdu{ CreateConnectionAckPDU(connectionId, activityId) };
         SendDvcProtocolData(pdu.c_str(), static_cast<UINT32>(pdu.size()));
@@ -580,9 +719,16 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             UINT64 activityId,
             HRESULT hr,
             DWORD appProcessId,
+            bool isNewInstance,
             _In_ const std::string& errorMessage)
     {
-        std::string pdu{ CreateActivateAppResultPDU(activityId, hr, appProcessId, errorMessage) };
+        std::string pdu{ CreateActivateAppResultPDU(activityId, hr, appProcessId, isNewInstance, errorMessage) };
+        SendDvcProtocolData(pdu.c_str(), static_cast<UINT32>(pdu.size()));
+    }
+
+    void KozaniDvcServer::SendAppTerminationNotice(UINT64 activityId)
+    {
+        std::string pdu{ CreateAppTerminationNoticePDU(activityId) };
         SendDvcProtocolData(pdu.c_str(), static_cast<UINT32>(pdu.size()));
     }
 }

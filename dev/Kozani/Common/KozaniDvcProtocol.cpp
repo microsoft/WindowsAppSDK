@@ -6,16 +6,34 @@
 
 namespace Microsoft::Kozani::DvcProtocol
 {
-    std::string CreatePDU(UINT64 activityId, Dvc::ProtocolDataUnit::DataType type, const std::string& payload)
+    bool IsEmptyPayloadProtocolDataUnitType(Dvc::ProtocolDataUnit::DataType type)
     {
-        // Payload data of the PDU should not be empty. It catches a failure condition when empty string is returned 
-        // from a failed SerializeAsString call before calling into this method.
-        THROW_HR_IF(E_UNEXPECTED, payload.empty());
+        switch (type)
+        {
+            case Dvc::ProtocolDataUnit::AppTerminationNotice:
+                return true;
+        }
+
+        return false;
+    }
+
+    std::string CreatePDU(UINT64 activityId, Dvc::ProtocolDataUnit::DataType type, const std::string& payload = std::string())
+    {
+        if (!IsEmptyPayloadProtocolDataUnitType(type))
+        {
+            // Payload data of the PDU should not be empty. It catches a failure condition when empty string is returned 
+            // from a failed SerializeAsString call before calling into this method.
+            THROW_HR_IF(E_UNEXPECTED, payload.empty());
+        }
 
         Dvc::ProtocolDataUnit pdu;
         pdu.set_activity_id(activityId);
         pdu.set_type(type);
-        pdu.set_data(std::move(payload));
+
+        if (!payload.empty())
+        {
+            pdu.set_data(std::move(payload));
+        }
 
         std::string rawPDU{ pdu.SerializeAsString() };
         THROW_HR_IF(E_UNEXPECTED, rawPDU.empty());
@@ -73,6 +91,7 @@ namespace Microsoft::Kozani::DvcProtocol
         UINT64 activityId, 
         HRESULT hr, 
         DWORD appProcessId, 
+        bool isNewInstance,
         _In_ const std::string& errorMessage)
     {
         Dvc::ActivateAppResult activateAppResult;
@@ -80,6 +99,7 @@ namespace Microsoft::Kozani::DvcProtocol
         if (SUCCEEDED(hr))
         {
             activateAppResult.set_process_id(appProcessId);
+            activateAppResult.set_is_new_instance(isNewInstance);
         }
         else if (!errorMessage.empty())
         {
@@ -87,5 +107,10 @@ namespace Microsoft::Kozani::DvcProtocol
         }
 
         return CreatePDU(activityId, Dvc::ProtocolDataUnit::ActivateAppResult, activateAppResult.SerializeAsString());
+    }
+
+    std::string CreateAppTerminationNoticePDU(UINT64 activityId)
+    {
+        return CreatePDU(activityId, Dvc::ProtocolDataUnit::AppTerminationNotice);
     }
 }

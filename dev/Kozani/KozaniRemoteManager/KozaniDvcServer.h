@@ -10,9 +10,27 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 {
     class ConnectionManager;
 
-    struct ActivatedAppInfo
+    enum AppActivationStatus
     {
-        DWORD pid;
+        ActivationPending = 0,
+        ActivationSucceeded,
+        ActivationFailed,
+        TerminationRequestedFromClient
+    };
+
+    typedef wil::unique_any_handle_null<decltype(&::UnregisterWait), ::UnregisterWait> unique_wait_handle;
+
+    struct AppActivationInfo
+    {
+        AppActivationInfo(UINT64 activityId) : activityId(activityId)
+        {
+        }
+
+        UINT64 activityId{};
+        AppActivationStatus activationStatus{};
+        DWORD pid{};
+        wil::unique_handle processHandle;
+        unique_wait_handle processLifetimeTrackerHandle;
     };
 
     class KozaniDvcServer
@@ -22,12 +40,16 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
         ~KozaniDvcServer();
 
-        void SendConnectionAck(PCSTR connectionId);
+        // Enable error reporting to ConnectionManager. Called only after ConnectionManager has successfully created this object.
+        HRESULT EnableConnectionManagerReporting();
 
-        HRESULT SetConnectionManger(ConnectionManager* connectionManager);
+        void SendConnectionAck(PCSTR connectionId);
+        void SendAppTerminationNotice(UINT64 activityId);
 
     private:
         KozaniDvcServer() = default;
+
+        static void CALLBACK ProcessTerminationCallback(_In_ PVOID parameter, _In_ BOOLEAN timerOrWaitFired) noexcept;
 
         HRESULT ProcessDvcIncomingData() noexcept;
         void ProcessDvcIncomingDataThreadFunc() noexcept;
@@ -42,11 +64,15 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         HRESULT ProcessProtocolDataUnit(_In_reads_(size) const BYTE* data, UINT32 size) noexcept;
 
         void ProcessActivateAppRequestThreadFunc(_In_ Dvc::ProtocolDataUnit pdu) noexcept;
-        HRESULT ProcessActivateAppRequest(_In_ Dvc::ProtocolDataUnit& pdu, _Out_ std::string& errorMessage) noexcept;
+
+        HRESULT ProcessActivateAppRequest(
+            _In_ Dvc::ProtocolDataUnit& pdu, 
+            _Out_ bool& appActivatedAndTracked, 
+            _Out_ std::string& errorMessage) noexcept;
+
+        HRESULT ProcessAppTerminationNotice(_In_ Dvc::ProtocolDataUnit& pdu) noexcept;
 
         bool IsActivationKindSupported(Dvc::ActivationKind kind);
-
-        void RemoveActivity(UINT64 activityId);
 
         void OpenDvc();
         void StartDvcListenerThread();
@@ -58,21 +84,18 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             UINT64 activityId,
             HRESULT hr,
             DWORD appProcessId,
+            bool isNewInstance,
             _In_ const std::string& errorMessage = std::string());
 
     private:
-        UINT64 m_newActivityId{};
-        ConnectionManager* m_connectionManager{};
-        wil::srwlock m_newActivityIdLock;
         wil::srwlock m_connectionManagerLock;
         std::recursive_mutex m_dvcLock;
         wil::unique_handle m_dvcHandle;
         wil::unique_event m_dvcThreadExit;
         wil::unique_event m_dvcThreadStarted;
         std::thread m_dvcListenerThread;
+        bool m_errorReportingEnabled{};
         HRESULT m_errorFromDvcListener{};
         HRESULT m_errorFromDvcWriter{};
-        std::map<UINT64, ActivatedAppInfo> m_activityMap;   // ToDo: move to ConnectionManager so even if the DVC server shuts down, the state is still kept.
-        wil::srwlock m_activityMapLock;
     };
 }

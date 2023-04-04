@@ -24,7 +24,7 @@ using namespace Microsoft::Kozani::KozaniRemoteManager;
 static constexpr GUID KozaniRemoteManager_guid { PR_KOZANIREMOTEMANAGER_CLSID_GUID };
 
 Microsoft::WRL::Details::DefaultModule<OutOfProc>* g_module{};
-static ConnectionManager g_connectionManager;
+ConnectionManager g_connectionManager;
 
 struct __declspec(uuid(PR_KOZANIREMOTEMANAGER_CLSID_STRING)) KozaniRemoteManagerImpl WrlFinal : RuntimeClass<RuntimeClassFlags<ClassicCom>, IKozaniRemoteManager>
 {

@@ -20,6 +20,29 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             auto lock{ std::unique_lock<std::recursive_mutex>(m_dvcServerLock) };
             m_dvcServer.reset();
         }
+
+        {
+            auto lock{ m_activityMapLock.lock_exclusive() };
+
+            // Set m_closing to true so process lifetime tracker thread callback function will immediately return after acquiring the m_activityMapLock.
+            m_closing = true;
+        }
+
+        // Unregister process lifetime tracker wait handle and wait for the threads to finish before destructing the m_activityMap.
+        // Otherwise, the lifetime tracker thread may try to access deleted resource. Do not call blocking UnregisterWaitEx holding
+        // the m_activityMapLock as it will cause deadlock if lifetime tracker thread callback tries to get the lock. We are safe without
+        // locking as m_closing is set to true above, preventing any modification to the m_activityMap in  other threads.
+        for (auto iter = m_activityMap.begin(); iter != m_activityMap.end(); iter++)
+        {
+            auto& waitHandle{ iter->second.processLifetimeTrackerHandle };
+            if (waitHandle)
+            {
+                // Call UnregisterWaitEx with INVALID_HANDLE_VALUE so it will wait for any pending callback to finish before returning
+                // to avoid AV issues when a callback function is using the objects that are going to be released.
+                LOG_IF_WIN32_BOOL_FALSE(UnregisterWaitEx(waitHandle.get(), INVALID_HANDLE_VALUE));
+                waitHandle.release();
+            }
+        }
     }
     CATCH_LOG_RETURN()
 
@@ -33,14 +56,14 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             {
                 m_dvcServer.reset(KozaniDvcServer::Create());
 
-                // After successfully creating the KozaniDvcServer object, set this ConnectionManager object to it so it can communicate 
+                // After successfully creating the KozaniDvcServer object, enable error reporting from this object so it can communicate 
                 // errors from the DVC server's operation.
-                HRESULT hrSetConnectionManger{ LOG_IF_FAILED(m_dvcServer->SetConnectionManger(this)) };
-                if (FAILED(hrSetConnectionManger))
+                HRESULT hrEnableReporting{ LOG_IF_FAILED(m_dvcServer->EnableConnectionManagerReporting()) };
+                if (FAILED(hrEnableReporting))
                 {
                     // Failure has happened in the DVC server right after its creation. Treated as fatal.
                     m_dvcServer.reset();
-                    THROW_HR(hrSetConnectionManger);
+                    THROW_HR(hrEnableReporting);
                 }
 
                 // After successfully created the DVC server the first time, increment the module object count to account for this 
@@ -106,6 +129,43 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             {
                 // std::invalid_argument will be thrown if the thread has exited (no longer joinable). It may happen if the thread is exiting while join() is called.
                 // It is not an issue as we want the thread to exit.
+            }
+        }
+    }
+
+    UINT64 ConnectionManager::GetNewActivityId()
+    {
+        auto lock{ m_newActivityIdLock.lock_exclusive() };
+        return m_newActivityId++;
+    }
+
+    void ConnectionManager::ProcessAppTermination(AppActivationInfo* appActivationInfo)
+    {
+        auto lock{ m_activityMapLock.lock_exclusive() };
+        if (m_closing)
+        {
+            return;
+        }
+
+        UINT64 activityId{ appActivationInfo->activityId };
+        
+        // If the termiation is not requested from client, we will send AppTerminationNotice to client to notify the app is terminated.
+        bool sendAppTerminationNotice{ appActivationInfo->activationStatus != AppActivationStatus::TerminationRequestedFromClient };
+
+        appActivationInfo->processLifetimeTrackerHandle.reset();
+        m_processIdMap.erase(appActivationInfo->pid);
+        m_activityMap.erase(appActivationInfo->activityId);
+
+        // Unlock m_activityMapLock before sending AppTerminationNotice as it does not use any resources protected by the lock.
+        lock.reset();
+
+        if (sendAppTerminationNotice)
+        {
+            auto dvcServerLock{ std::unique_lock<std::recursive_mutex>(m_dvcServerLock) };
+
+            if (m_dvcServer)
+            {
+                m_dvcServer->SendAppTerminationNotice(activityId);
             }
         }
     }

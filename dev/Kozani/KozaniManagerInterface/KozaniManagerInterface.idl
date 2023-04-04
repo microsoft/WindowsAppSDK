@@ -10,7 +10,7 @@ import "inspectable.idl";
 [pointer_default(unique)]
 interface IKozaniStatusCallback : IInspectable
 {
-    HRESULT OnActivated(DWORD pid);
+    HRESULT OnActivated(DWORD pid, boolean isNewInstance);
 
     HRESULT OnActivationFailed(
         DWORD errorCode,

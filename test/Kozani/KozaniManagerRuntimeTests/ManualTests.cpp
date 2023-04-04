@@ -27,15 +27,18 @@ namespace Test::KozaniManagerRuntime::ManualTests
 
     struct MyKozaniStatusCallback : winrt::implements<MyKozaniStatusCallback, IKozaniStatusCallback, winrt::Windows::Foundation::IInspectable>
     {
-        MyKozaniStatusCallback()
+        MyKozaniStatusCallback(std::wstring& aumid)
         {
+            m_aumid = aumid;
             m_eventStatusUpdate.create();
         }
 
 #pragma region IKozaniStatusCallback_methods
-        STDMETHODIMP OnActivated(DWORD pid)
+        STDMETHODIMP OnActivated(DWORD pid, boolean isNewInstance)
         {
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"\nIKozaniStausCallback::OnActivated is called. Remote app pid = %u", pid));
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                L"\nIKozaniStausCallback::OnActivated is called. Remote app aumid = %s, pid = %u, isNewInstance = %s", 
+                m_aumid.c_str(), pid, isNewInstance ? L"true" : L"false"));
             m_status = KozaniStatus::Activated;
             m_eventStatusUpdate.SetEvent();
             return S_OK;
@@ -46,8 +49,8 @@ namespace Test::KozaniManagerRuntime::ManualTests
             PCWSTR errorMessage)
         {
             WEX::Logging::Log::Comment(
-                WEX::Common::String().Format(L"\nIKozaniStausCallback::OnActivationFailed is called. errorCode = 0x%x, errorMessage: %s",
-                    errorCode, errorMessage));
+                WEX::Common::String().Format(L"\nIKozaniStausCallback::OnActivationFailed is called. Remote app aumid = %s, errorCode = 0x%x, errorMessage: %s",
+                    m_aumid.c_str(), errorCode, errorMessage));
             m_status = KozaniStatus::Failed;
             m_eventStatusUpdate.SetEvent();
             return S_OK;
@@ -55,7 +58,7 @@ namespace Test::KozaniManagerRuntime::ManualTests
 
         STDMETHODIMP OnClosed()
         {
-            WEX::Logging::Log::Comment(L"\nIKozaniStausCallback::OnClosed is called.");
+            WEX::Logging::Log::Comment(L"\nIKozaniStausCallback::OnClosed is called. Remote app aumid = %s", m_aumid.c_str());
             m_status = KozaniStatus::Closed;
             m_eventStatusUpdate.SetEvent();
             return S_OK;
@@ -73,6 +76,7 @@ namespace Test::KozaniManagerRuntime::ManualTests
         }
 
     private:
+        std::wstring m_aumid;
         KozaniStatus m_status{};
         wil::unique_event m_eventStatusUpdate;
     };
@@ -155,7 +159,7 @@ namespace Test::KozaniManagerRuntime::ManualTests
                         rdpFullPath.pop_back();
                     }
 
-                    auto statusCallback{ winrt::make_self<MyKozaniStatusCallback>() };
+                    auto statusCallback{ winrt::make_self<MyKozaniStatusCallback>(aumid) };
 
                     try
                     {
@@ -168,7 +172,7 @@ namespace Test::KozaniManagerRuntime::ManualTests
                     catch (winrt::hresult_error& e)
                     {
                         WEX::Logging::Log::Error(WEX::Common::String().Format(
-                            L"\ActivateRemoteApplication failed. errorCode = 0x%x, errorMessage: %s",
+                            L"\nActivateRemoteApplication failed. errorCode = 0x%x, errorMessage: %s",
                             e.code(), e.message().c_str()));
 
                         continue;

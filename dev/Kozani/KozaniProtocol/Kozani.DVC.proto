@@ -12,9 +12,8 @@ message ProtocolDataUnit
         ConnectionAck = 0;
         ActivateAppRequest = 1;
         ActivateAppResult = 2;
-        TerminateAppRequest = 3;
-        TerminateAppResult = 4;
-        GenericResult = 5;
+        AppTerminationNotice = 3;
+        GenericResult = 4;
     }
 
     // Unique ID to link multiple request and response PDUs in a logical activity group.
@@ -54,7 +53,12 @@ message ActivateAppResult
     // Process Id of the activated app on the remote machine. Only valid if hresult is 0.
     uint32 process_id = 2;
 
-    string error_message = 3;
+    // Indicates whether the activation creates a new instance/process of the app. Single instance app will have 1 running process 
+    // no matter how many times the app is activated. Only valid if hresult is 0.
+    bool is_new_instance = 3;
+
+    // Error message if hresult is not 0.
+    string error_message = 4;
 }
 
 message LaunchActivationArgs

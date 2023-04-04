@@ -20,8 +20,8 @@ namespace Microsoft::Kozani::Manager
     {
         Connecting = 0,
         Connected,
-        RequestMade,
-        Succeeded,
+        AppActivationRequestMade,
+        AppActivationSucceeded,
         Failed,
         Closed
     };
@@ -61,12 +61,15 @@ namespace Microsoft::Kozani::Manager
         wil::unique_event m_eventStatusChanged;
     };
 
+    typedef wil::unique_any_handle_null<decltype(&::UnregisterWait), ::UnregisterWait> unique_wait_handle;
+    class ConnectionManager;
+
     struct ActivationRequestInfo
     {
+        UINT64 activityId{};
         RequestStatus status{};
         std::string connectionId;
         std::wstring appUserModelId;
-        UINT32 appInstanceId{};
         winrt::Windows::ApplicationModel::Activation::ActivationKind activationKind{};
         winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs args;
         wil::com_ptr<IKozaniStatusCallback> statusCallback;
@@ -74,6 +77,11 @@ namespace Microsoft::Kozani::Manager
         wil::com_ptr<IWTSVirtualChannel> dvcChannel;
         std::list<ActivationRequestInfo>::iterator listPosition;
         std::shared_ptr<ActivationRequestStatusReporter> statusReporter;
+        ConnectionManager* connectionManager{};
+        DWORD associatedLocalProcessId{};
+        wil::unique_handle associatedLocalProcessHandle;
+        unique_wait_handle processLifetimeTrackerHandle;
+        bool processLifetimeTrackerDisabled{};
     };
 
     class ConnectionManager
@@ -104,6 +112,15 @@ namespace Microsoft::Kozani::Manager
         void OnRemoteDesktopDisconnect(_In_ IWTSVirtualChannelManager* channelManager);
 
     private:
+        static void CALLBACK ProcessTerminationCallback(_In_ PVOID parameter, _In_ BOOLEAN timerOrWaitFired) noexcept;
+
+        HRESULT OnDvcServerConnected(
+            UINT64 activityId,
+            ActivationRequestInfo* requestInfo,
+            _In_ IWTSVirtualChannelManager* channelManager,
+            _In_ IWTSVirtualChannel* channel,
+            _Out_ std::wstring& errorMessage) noexcept;
+
         void ProcessConnectionAck(
             _In_ const Dvc::ProtocolDataUnit& pdu,
             _In_ IWTSVirtualChannelManager* channelManager,
@@ -117,16 +134,22 @@ namespace Microsoft::Kozani::Manager
             _In_ ActivationRequestInfo* requestInfo,
             _In_ PCWSTR errorMessage);
 
-        HRESULT SendActivateAppRequest(
-            _In_ IWTSVirtualChannel* channel, 
-            UINT64 activityId,
-            _In_ ActivationRequestInfo* requestInfo) noexcept;
+        void DisableProcessLifetimeTracker(_In_ UINT64 activityId);
+        void ProcessAppTerminationNotice(_In_ const Dvc::ProtocolDataUnit& pdu);
+
+        HRESULT SendActivateAppRequest(_In_ ActivationRequestInfo* requestInfo) noexcept;
+
+        HRESULT SendAppTerminationNotice(_In_ ActivationRequestInfo* requestInfo) noexcept;
 
     private:
         std::list<ActivationRequestInfo> m_activationRequests;
         std::list<ActivationRequestInfo*> m_requestsPendingConnection;
         wil::srwlock m_requestsLock;
-        UINT64 m_newActivityId{};
+
+        // New activity Id starts from 1. 0 means the activity Id is not set.
+        UINT64 m_newActivityId{ 1 };
         std::map<UINT64, ActivationRequestInfo*> m_activityMap;
+
+        bool m_closing{};
     };
 }

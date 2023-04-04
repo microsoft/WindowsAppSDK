@@ -52,9 +52,10 @@ namespace Test::KozaniManagerRuntimeTests
     struct MyKozaniStatusCallback : winrt::implements<MyKozaniStatusCallback, IKozaniStatusCallback, winrt::Windows::Foundation::IInspectable>
     {
 #pragma region IKozaniStatusCallback_methods
-        STDMETHODIMP OnActivated(DWORD pid)
+        STDMETHODIMP OnActivated(DWORD pid, boolean isNewInstance)
         {
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"IKozaniStausCallback::OnActivated is called. pid = %u", pid));
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                L"IKozaniStausCallback::OnActivated is called. pid = %u, isNewInstance = %s", pid, isNewInstance ? L"true" : L"false"));
             m_isActivated = true;
             return S_OK;
         }
