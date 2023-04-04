@@ -89,10 +89,6 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
         IKozaniStatusCallback* statusCallback,
         DWORD associatedLocalProcessId) noexcept try
     {
-        // Serialize the message
-        //const std::int64_t cookie{};
-        //std::string messageBytes{ ::Microsoft::Kozani::Activation::ActivateApp(cookie, appUserModelId, activatedEventArgs) };
-
         auto activationKindLocal{ static_cast<winrt::Windows::ApplicationModel::Activation::ActivationKind>(activationKind) };
         RETURN_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), 
             !IsActivationKindSupported(activationKindLocal),
