@@ -9,8 +9,6 @@
 
 #include <KozaniManager_h.h>
 
-#include "Microsoft.Kozani.Activation.h"
-
 // Including this file once per binary will automatically opt WIL error handling macros into calling RoOriginateError when they
 // begin logging a new error.  This greatly improves the debuggability of errors that propagate before a failfast.
 #include <wil/result_originate.h>
