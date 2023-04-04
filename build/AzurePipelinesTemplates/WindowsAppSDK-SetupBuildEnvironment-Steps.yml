@@ -16,7 +16,7 @@ steps:
   inputs:
     filename: 'set'
 
-- task: NuGetAuthenticate@0
+- task: NuGetAuthenticate@1
   inputs:
     nuGetServiceConnections: 'WindowsES'
 
