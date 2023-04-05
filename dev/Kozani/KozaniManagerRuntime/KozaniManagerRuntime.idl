@@ -1,0 +1,22 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace Microsoft.Kozani.ManagerRuntime
+{
+    [contractversion(1)]
+    apicontract ManagerRuntimeContract{};
+
+    [contract(ManagerRuntimeContract, 1)]
+    runtimeclass ManagerRuntimeManager
+    {
+        static ManagerRuntimeManager Create();
+
+        void ActivateRemoteApplication(
+            Windows.ApplicationModel.Activation.ActivationKind activationKind,
+            String appUserModelId,
+            String connectionRdpFilePath,
+            String additionalSettingsFilePath,
+            Windows.ApplicationModel.Activation.IActivatedEventArgs args,   // optional, can be nullptr
+            IInspectable statusCallback);
+    };
+}

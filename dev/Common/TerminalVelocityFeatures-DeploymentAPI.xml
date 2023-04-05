@@ -13,4 +13,14 @@
         <description>DeploymentAPI for the WindowsAppRuntime</description>
         <state>AlwaysEnabled</state>
     </feature>
+
+    <feature>
+        <name>Feature_DeploymentRepair</name>
+        <description>Deployment Repair for the WindowsAppRuntime</description>
+        <state>AlwaysEnabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Preview</channelToken>
+            <channelToken>Stable</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
 </features>

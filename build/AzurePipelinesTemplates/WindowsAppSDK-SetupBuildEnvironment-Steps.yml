@@ -16,18 +16,18 @@ steps:
   inputs:
     filename: 'set'
 
-- task: NuGetAuthenticate@0
+- task: NuGetAuthenticate@1
   inputs:
     nuGetServiceConnections: 'WindowsES'
 
 - template: WindowsAppSDK-InstallWindowsSDK-Steps.yml
 
 - task: powershell@2
-  displayName: 'DevCheck: Setup development environment'
+  displayName: 'DevCheck: Setup/Verify development environment'
   inputs:
     targetType: filePath
     filePath: DevCheck.ps1
-    arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
+    arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: PowerShell@2
@@ -37,6 +37,30 @@ steps:
     arguments: >
       -ProductMajor "$(major)"
       -ProductMinor "$(minor)"
+
+- task: PowerShell@2
+  displayName: 'Download dotnet installer'
+  condition: or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'), eq(variables['buildPlatform'], 'arm64'))
+  inputs:
+    targetType: filePath
+    filePath: '$(Build.SourcesDirectory)\build\scripts\DownloadDotNetRuntimeInstaller.ps1'
+    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
+
+- task: PowerShell@2
+  displayName: 'Download vcredist installer'
+  condition: or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'), eq(variables['buildPlatform'], 'arm64'))
+  inputs:
+    targetType: filePath
+    filePath: '$(Build.SourcesDirectory)\build\scripts\DownloadVCRedistInstaller.ps1'
+    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
+
+- task: PowerShell@2
+  displayName: 'Download desktop bridge CRT'
+  condition: or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'), eq(variables['buildPlatform'], 'arm64'))
+  inputs:
+    targetType: filePath
+    filePath: '$(Build.SourcesDirectory)\build\scripts\DownloadVCLibsDesktop.ps1'
+    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
 
 - task: powershell@2
   displayName: 'Create DynamicDependencies TerminalVelocity features'
@@ -60,6 +84,14 @@ steps:
     targetType: filePath
     filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
     arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.AppNotifications -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-AppNotifications.h
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: powershell@2
+  displayName: 'Create VersionInfo TerminalVelocity features'
+  inputs:
+    targetType: filePath
+    filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-VersionInfo.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-VersionInfo.h
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2

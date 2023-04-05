@@ -3,13 +3,33 @@
 
 import "oaidl.idl";
 import "ocidl.idl";
+import "inspectable.idl";
+
+[object]
+[uuid(5239c3b0-9e90-11ed-87cd-0800200c9a66)]
+[pointer_default(unique)]
+interface IKozaniStatusCallback : IInspectable
+{
+    HRESULT OnActivated(DWORD pid);
+
+    HRESULT OnActivationFailed(
+        DWORD errorCode,
+        [in, string] LPCWSTR errorMessage);
+
+    HRESULT OnClosed();
+};
 
 [object]
 [uuid(5882f14f-f954-4af9-bbeb-a7c1a2a6357e)]
 [pointer_default(unique)]
 interface IKozaniManager : IUnknown
 {
-    HRESULT Initialize();
-
-    HRESULT Shutdown();
+    HRESULT ActivateRemoteApplication(
+        INT32 activationKind,
+        [in, string] LPCWSTR appUserModelId,
+        [in, string] LPCWSTR connectionRdpFilePath,
+        [in, string] LPCWSTR additionalSettingsFilePath,
+        [in] IInspectable* activatedEventArgs,
+        [in] IKozaniStatusCallback* statusCallback,
+        DWORD associatedLocalProcessId);
 };
