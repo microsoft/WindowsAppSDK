@@ -141,7 +141,8 @@ namespace Test::KozaniManagerRuntimeTests
                 runtimeManager.ActivateRemoteApplication(winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch,
                     L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", L"Non-existing.rdp", L"additionalSettings.txt",
                     nullptr,    // IActivatedEventArgs
-                    statusCallback.as<winrt::Windows::Foundation::IInspectable>());
+                    statusCallback.as<winrt::Windows::Foundation::IInspectable>(),
+                    0);
             }
             catch (winrt::hresult_error& e)
             {
@@ -157,7 +158,8 @@ namespace Test::KozaniManagerRuntimeTests
                 runtimeManager.ActivateRemoteApplication(winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch,
                     L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", rdpFullPath.c_str(), L"additionalSettings.txt",
                     nullptr,    // IActivatedEventArgs
-                    statusCallback.as<winrt::Windows::Foundation::IInspectable>());
+                    statusCallback.as<winrt::Windows::Foundation::IInspectable>(),
+                    0);
             }
             catch (winrt::hresult_error& e)
             {
@@ -178,7 +180,8 @@ namespace Test::KozaniManagerRuntimeTests
             runtimeManager.ActivateRemoteApplication(winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch,
                 L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", rdpFullPath.c_str(), winrt::param::hstring(),
                 nullptr,    // IActivatedEventArgs
-                statusCallback.as<winrt::Windows::Foundation::IInspectable>());
+                statusCallback.as<winrt::Windows::Foundation::IInspectable>(),
+                0);
 
             //VERIFY_IS_TRUE(statusCallback->IsActivated(), L"IKozaniStausCallback::OnActivated() should have been called.");
         }
