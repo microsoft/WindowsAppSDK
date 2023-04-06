@@ -53,6 +53,6 @@ extends:
         enabled: false # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
 
     stages:
-    - template: AzurePipelineTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
+    - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
       parameters:
         publishToMaestro: ${{ parameters.publishToMaestro }}
