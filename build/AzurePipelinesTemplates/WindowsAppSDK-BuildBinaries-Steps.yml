@@ -49,3 +49,11 @@ steps:
   inputs:
     filePath: 'BuildAll.ps1'
     arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
+
+# Artifacts are uploaded via ob_outputDirectory where the each vPack Push jobs downloads from
+# so the CopyFiles below are to move all the vPack files to the right locations
+- task: CopyFiles@2
+  displayName: MoveToOutputDirectory
+  inputs:
+    SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
+    TargetFolder: '$(ob_outputDirectory)\BuildOutput'
