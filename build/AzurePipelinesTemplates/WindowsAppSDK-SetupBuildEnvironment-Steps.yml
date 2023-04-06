@@ -20,8 +20,6 @@ steps:
   inputs:
     nuGetServiceConnections: 'WindowsES'
 
-- template: WindowsAppSDK-InstallWindowsSDK-Steps.yml
-
 - task: powershell@2
   displayName: 'DevCheck: Setup/Verify development environment'
   inputs:
