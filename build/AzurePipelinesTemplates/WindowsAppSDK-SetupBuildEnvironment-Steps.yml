@@ -9,6 +9,8 @@ steps:
     call "%_VSINSTALLDIR15%\Common7\Tools\VsDevCmd.bat"
     echo VCToolsInstallDir = %VCToolsInstallDir%
     echo ##vso[task.setvariable variable=VCToolsInstallDir]%VCToolsInstallDir%
+
+    dir /s C:\Program Files (x86)\Windows Kits\10\Platforms\UAP\
   displayName: 'Retrieve VC tools directory'
 
 - task: NuGetAuthenticate@0
