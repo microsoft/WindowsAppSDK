@@ -1,26 +1,10 @@
 parameters:
-- name: "ReleaseSigning"
+- name: "publishToMaestro"
   type: boolean
   default: False
 - name: "IgnoreFailures"
   type: boolean
   default: False
-- name: "PublishPackage"
-  type: boolean
-  default: False
-- name: "GenerateSBOM"
-  type: boolean
-  default: False
-- name: "RunSDLBinaryAnalysis"
-  displayName: "Run SDL's Binary Analysis (PREFast, BinSkim)"
-  type: boolean
-  default: False
-- name: "enablePREFast"
-  type: boolean
-  default: true
-- name: "enableLicenseInstall"
-  type: boolean
-  default: true
 
 stages:
 - stage: TransportPackage
