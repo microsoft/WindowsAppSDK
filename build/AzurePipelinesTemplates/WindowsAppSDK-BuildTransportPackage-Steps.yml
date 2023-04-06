@@ -35,7 +35,7 @@ steps:
     command: 'custom'
     arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile dev\WindowsAppRuntime_Insights\nuget.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
 
-- template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+- template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
 - task: NuGetAuthenticate@1
   inputs:
