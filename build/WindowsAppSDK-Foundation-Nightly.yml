@@ -56,6 +56,3 @@ extends:
     - template: AzurePipelineTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
       parameters:
         publishToMaestro: ${{ parameters.publishToMaestro }}
-        signOutput: true
-        executeTests: ${{ parameters.executeTests }}
-        pushToFeed: true
