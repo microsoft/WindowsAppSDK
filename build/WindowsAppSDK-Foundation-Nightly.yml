@@ -18,30 +18,22 @@
 # name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 
 # https://aka.ms/obpipelines/triggers
-trigger: none 
+trigger: none
 
-parameters: # parameters are shown up in ADO UI in a build queue time
-- name: 'debug'
-  displayName: 'Enable debug output'
+parameters:
+- name: "publishToMaestro"
   type: boolean
-  default: false
+  default: False
+- name: "IgnoreFailures"
+  type: boolean
+  default: False
 
 variables:
-  CDP_DEFINITION_BUILD_COUNT: $[counter('', 0)] # needed for onebranch.pipeline.version task https://aka.ms/obpipelines/versioning
-  system.debug: ${{ parameters.debug }}
-  ENABLE_PRS_DELAYSIGN: 1
-  ROOT: $(Build.SourcesDirectory)
-  REPOROOT: $(Build.SourcesDirectory)
-  OUTPUTROOT: $(REPOROOT)\out
-  NUGET_XMLDOC_MODE: none
-
-  # Docker image which is used to build the project https://aka.ms/obpipelines/containers
-  WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2019/vse2022:latest' 
-
-  Codeql.Enabled: true #  CodeQL once every 3 days on the default branch for all languages its applicable to in that pipeline.
+- template: WindowsAppSDK-Versions.yml
+- template: WindowsAppSDK-CommonVariables.yml
 
 resources:
-  repositories: 
+  repositories:
     - repository: templates
       type: git
       name: OneBranch.Pipelines/GovernedTemplates
@@ -52,141 +44,19 @@ extends:
   parameters:
     platform:
       name: 'windows_undocked' # windows undocked
-            
+
     cloudvault: # Please refer the wiki for more information: https://aka.ms/obpipelines/cloudvault
       enabled: false
-    
+
     globalSdl: # Refer the wiki for more options in this parameter: https://aka.ms/obpipelines/sdl
       tsa:
-        enabled: true # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
-      # suppression:
-      #   suppressionFile: $(Build.SourcesDirectory)\.gdn\global.gdnsuppress
-
-    #   updateOSManifest: # Information for updating OS Manifest OS repository (Learn more: https://www.osgwiki.com/wiki/OneBranch_Windows_Undocked_Pipelines)
-    #     enabled: true
-    #     osbranch: << Branch of the repo to fetch from >>
-    #     source: << Path to the file to fetch >>
-    #     destination: << Path to folder where file should be fetched to >>
-    #     manifest: << Path(s) to location of a vPack manifest to update the downloaded manifest from. >>
-    # ##    << Please refer wiki for more Update OS Manifest options >>
+        enabled: false # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
 
     stages:
-    - stage: build
-      jobs:
-      - job: main
-        pool:
-          # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
-          type: windows  
-        
-        variables:
-          # binaries scanning tools are run on this directory ( https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4634/SDL-(Static-Analysis)-for-Containerized-Workflows ) and 
-          # this directory is uploaded to pipeline artifacts. More info at https://aka.ms/obpipelines/artifacts
-          ob_outputDirectory: '$(REPOROOT)\out' 
-
-          # createVPack: # information for Vpack (Learn more: https://www.osgwiki.com/wiki/OneBranch_Windows_Undocked_Pipelines)
-          ob_createvpack_enabled: true
-          ob_createvpack_packagename: VPACK_PACKAGE_NAME
-          ob_createvpack_description: VPACK_DESCRIPTION
-          ob_createvpack_owneralias: EMAIL_ALIASE
-          ob_createvpack_versionAs: string
-          ob_createvpack_version: X.Y.Z-T
-          ob_createvpack_propsFile: true
-          ob_createvpack_verbose: true
-          # ##    << Please refer wiki for more Vpack options >>
-
-        steps:
-          - task: UseDotNet@2
-            continueOnError: true
-            inputs:
-              packageType: 'sdk'
-              useGlobalJson: true
-              performMultiLevelLookup: true
-
-          - task: onebranch.pipeline.version@1 # generates automatic version. For other versioning options check https://aka.ms/obpipelines/versioning
-            displayName: 'Setup BuildNumber'
-            inputs:
-              system: 'RevisionCounter'
-              major: '1'
-              minor: '0'
-              exclude_commit: true
-
-          - task: MSBuild@1
-            inputs:
-              solution: '$(Build.SourcesDirectory)\dirs.proj'
-              msbuildLocationMethod: 'version'
-              msbuildVersion: 'latest'
-              platform: 'x64'
-              configuration: 'release'
-              msbuildArguments: '/t:Restore'
-              clean: true
-              maximumCpuCount: true
-              logProjectEvents: true
-              createLogFile: true
-
-          - task: MSBuild@1
-            inputs:
-              solution: '$(Build.SourcesDirectory)\dirs.proj'
-              msbuildLocationMethod: 'version'
-              msbuildVersion: 'latest'
-              platform: 'x64'
-              configuration: 'release'
-              msbuildArguments: '/v:n /nr:false /flp1:Verbosity=d;LogFile=$(OUTPUTROOT)\logs\msbuild_x64_release.log;Encoding=UTF-8 /flp2:logfile=$(OUTPUTROOT)\logs\msbuild_x64_release.err;errorsonly /bl:$(OUTPUTROOT)\logs\msbuild_x64_release.binlog'
-              clean: true
-              maximumCpuCount: true
-              logProjectEvents: true
-              createLogFile: true
-
-          - task: onebranch.pipeline.signing@1 # https://aka.ms/obpipelines/signing
-            displayName: 'Sign output'
-            inputs:
-              command: 'sign'
-              signing_environment: 'azure-ado'
-              files_to_sign: '**/*.exe;**/*.dll;**/*.ps1;**/*.psm1'
-              search_root: '$(Build.SourcesDirectory)\out'
-
-          - task: VSTest@2
-            inputs:
-              testSelector: 'testAssemblies'
-              testAssemblyVer2: |
-                **\*test*.dll
-                !**\*TestAdapter.dll
-                !**\obj\**
-              searchFolder: '$(Build.SourcesDirectory)\out'
-              resultsFolder: '$(Build.SourcesDirectory)\out\logs\TestResults'
-              runInParallel: true
-              codeCoverageEnabled: true
-              testRunTitle: 'release_x64'
-              platform: 'x64'
-              configuration: 'release'
-              publishRunAttachments: false
-              failOnMinTestsNotRun: true
-              rerunFailedTests: true
-
-          - task: PublishTestResults@2
-            displayName: 'Publish test results'
-            inputs:
-              testResultsFormat: VSTest
-              testResultsFiles: '$(Build.SourcesDirectory)\out\logs\TestResults\**\*.trx'
-              failTaskOnFailedTests: true
-
-# https://aka.ms/obpipelines/cloudtest
-# uncomment this section and edit parameters to enable CloudTest
-    # - stage: cloudtest
-    #   dependsOn: build_stage
-    #   jobs:
-    #   - job: cloudtestjob
-    #     pool:
-    #       type: cloudtestagentless
-    #     continueOnError: true
-    #     steps:
-    #     - task: CloudTestServerBuildTask@1
-    #       displayName: 'CloudTest'
-    #       inputs:
-    #         connectedServiceName: 'CloudTest-prod'
-    #         cloudTestTenant: 'onebranchtest'
-    #         testMapLocation: '[BuildRoot]\ClassLibrary.UnitTest\TestMapCdp.xml'
-    #         pipelineArtifactName: 'drop_build_main'
-    #         pipelineArtifactBuildUrl: '$(System.TaskDefinitionsUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)'
-    #         parserProperties: 'worker:VsTestVersion=V150;CodeCoverageType=Dynamic;worker:TestVar=$(RUN_PIPELINE_VARIABLE)'
-    #         cacheEnabled: false
-    #         scheduleBuildRequesterAlias: 'azbldrun'
+    - template: AzurePipelineTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
+      parameters:
+        publishToMaestro: ${{ parameters.publishToMaestro }}
+        buildAppLicensingInternalPackage: ${{ parameters.buildAppLicensingInternalPackage }}
+        signOutput: true
+        executeTests: ${{ parameters.executeTests }}
+        pushToFeed: true
