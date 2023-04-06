@@ -37,4 +37,4 @@ stages:
       ob_sdl_codeSignValidation_excludes: '-|**\TestingArtifact\**'
 
     steps:
-    - template: WindowsAppSDK-BuildTransportPackage-Steps.yml@self
+    - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
