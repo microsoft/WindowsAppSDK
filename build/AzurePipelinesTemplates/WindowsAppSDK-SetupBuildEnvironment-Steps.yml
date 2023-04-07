@@ -1,13 +1,12 @@
 steps:
-- template: WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
-
 - task: UseDotNet@2
   continueOnError: true
   inputs:
     packageType: 'sdk'
     useGlobalJson: true
     performMultiLevelLookup: true
-    version: 2.219.0
+
+- template: WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
 
 # The environment variable VCToolsInstallDir isn't defined on lab machines, so we need to retrieve it ourselves.
 - script: |
