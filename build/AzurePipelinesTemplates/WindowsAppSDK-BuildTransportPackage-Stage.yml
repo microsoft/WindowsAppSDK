@@ -5,6 +5,9 @@ parameters:
 - name: "IgnoreFailures"
   type: boolean
   default: False
+- name: "SignOutput"
+  type: boolean
+  default: False
 
 stages:
 - stage: TransportPackage
@@ -38,3 +41,5 @@ stages:
 
     steps:
     - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
