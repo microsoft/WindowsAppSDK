@@ -22,7 +22,7 @@ steps:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
   inputs:
     targetType: filePath
-    filePath: windows-sdk.ps1
+    filePath: $(Build.SourcesDirectory)\build\scripts\windows-sdk.ps1
     arguments: >
       -SdkVersion "10.1.17763"
 
