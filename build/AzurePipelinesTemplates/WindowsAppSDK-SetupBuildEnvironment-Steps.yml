@@ -1,10 +1,13 @@
 steps:
 - task: UseDotNet@2
-  continueOnError: true
+  displayName: Use .NET Core SDK 5
   inputs:
-    packageType: 'sdk'
-    useGlobalJson: true
-    performMultiLevelLookup: true
+    version: 5.0.407
+
+- task: UseDotNet@2
+  displayName: Use .NET Core SDK 6
+  inputs:
+    version: 6.0.401
 
 - template: WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
 
