@@ -37,7 +37,7 @@ stages:
       # binaries scanning tools are run on this directory ( https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4634/SDL-(Static-Analysis)-for-Containerized-Workflows ) and
       # this directory is uploaded to pipeline artifacts. More info at https://aka.ms/obpipelines/artifacts
       ob_outputDirectory: '$(REPOROOT)\out'
-      ob_sdl_codeSignValidation_excludes: '-|**\TestingArtifact\**'
+      ob_sdl_codeSignValidation_excludes: '-|**\TestingArtifact\**;-|**\BuildOutput\**'
 
     steps:
     - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
