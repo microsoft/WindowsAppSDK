@@ -45,6 +45,10 @@ extends:
     platform:
       name: 'windows_undocked' # windows undocked
 
+    featureFlags:
+      # Use "vnext" for the checks so "CheckCFlags" works. It currently fails due to .NET 6 not being installed.
+      Windows_SDL_Container_Version: 'vnext'
+
     cloudvault: # Please refer the wiki for more information: https://aka.ms/obpipelines/cloudvault
       enabled: false
 
