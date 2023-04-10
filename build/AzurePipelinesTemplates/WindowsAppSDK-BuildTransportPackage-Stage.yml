@@ -38,7 +38,7 @@ stages:
       # this directory is uploaded to pipeline artifacts. More info at https://aka.ms/obpipelines/artifacts
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\TestingArtifact\**;-|**\BuildOutput\**'
-      ob_artifactSuffix: '$(buildConfiguration)$(buildPlatform)'
+      ob_artifactSuffix: '_$(buildConfiguration)$(buildPlatform)'
     steps:
     - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
       parameters:
