@@ -48,13 +48,11 @@ extends:
     cloudvault: # Please refer the wiki for more information: https://aka.ms/obpipelines/cloudvault
       enabled: false
 
-    featureFlags:
-      # Use "vnext" for the checks so "CheckCFlags" works. It currently fails due to .NET 6 not being installed.
-      Windows_SDL_Container_Version: 'vnext'
 
     globalSdl: # Refer the wiki for more options in this parameter: https://aka.ms/obpipelines/sdl
       tsa:
         enabled: false # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
+      isNativeCode: false #TODO turn back on when fixed
 
     stages:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
