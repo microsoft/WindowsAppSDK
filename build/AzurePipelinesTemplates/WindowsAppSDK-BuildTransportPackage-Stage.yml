@@ -12,7 +12,7 @@ parameters:
 stages:
 - stage: TransportPackage
   jobs:
-  - job: BuildTransportPackage
+  - job: BuildBinaries
     pool:
       # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
       type: windows
