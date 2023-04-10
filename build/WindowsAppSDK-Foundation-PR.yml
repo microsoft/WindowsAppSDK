@@ -40,7 +40,7 @@ resources:
       ref: refs/heads/main
 
 extends:
-  template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
+  template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates
   parameters:
     platform:
       name: 'windows_undocked' # windows undocked
