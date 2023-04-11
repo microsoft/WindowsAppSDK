@@ -102,8 +102,8 @@ stages:
     - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
       - TestInHelix
     - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
-      - Build
-      - BuildAnyCPU
+      - BuildBinaries
+      - BuildBinaries_Release_anycpu
       - BuildAndTestMRT
     condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
     variables:
