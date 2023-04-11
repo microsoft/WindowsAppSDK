@@ -1,4 +1,14 @@
 steps:
+- task: UseDotNet@2
+  displayName: Use .NET Core SDK 5
+  inputs:
+    version: 5.0.407
+
+- task: UseDotNet@2
+  displayName: Use .NET Core SDK 6
+  inputs:
+    version: 6.0.401
+
 - template: WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
 
 # The environment variable VCToolsInstallDir isn't defined on lab machines, so we need to retrieve it ourselves.
@@ -9,18 +19,22 @@ steps:
     call "%_VSINSTALLDIR15%\Common7\Tools\VsDevCmd.bat"
     echo VCToolsInstallDir = %VCToolsInstallDir%
     echo ##vso[task.setvariable variable=VCToolsInstallDir]%VCToolsInstallDir%
-  displayName: 'Retrieve VC tools directory'
 
-- task: CmdLine@1
-  displayName: 'Display build machine environment variables'
-  inputs:
-    filename: 'set'
+  displayName: 'Retrieve VC tools directory'
 
 - task: NuGetAuthenticate@1
   inputs:
     nuGetServiceConnections: 'WindowsES'
 
-- template: WindowsAppSDK-InstallWindowsSDK-Steps.yml
+- task: PowerShell@2
+  displayName: 'Add Windows SDK 10.1.17763'
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  inputs:
+    targetType: filePath
+    filePath: $(Build.SourcesDirectory)\build\scripts\windows-sdk.ps1
+    arguments: >
+      -SdkVersion "10.1.17763"
 
 - task: powershell@2
   displayName: 'DevCheck: Setup/Verify development environment'

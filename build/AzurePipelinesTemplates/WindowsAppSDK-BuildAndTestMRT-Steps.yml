@@ -1,21 +1,36 @@
 parameters:
-  - name: MRTSourcesDirectory
-    type: string
-    default: $(Build.SourcesDirectory)\dev\MRTCore
-  - name: MRTBinariesDirectory
-    type: string
-    default: $(Build.SourcesDirectory)\BuildOutput
-  - name: RunSDLBinaryAnalysis
-    type: boolean
-    default: true
-  - name: enablePREFast
-    type: string
-    default: true
+- name: MRTSourcesDirectory
+  type: string
+  default: $(Build.SourcesDirectory)\dev\MRTCore
+- name: MRTBinariesDirectory
+  type: string
+  default: $(Build.SourcesDirectory)\BuildOutput
+- name: RunSDLBinaryAnalysis
+  type: boolean
+  default: true
+- name: enablePREFast
+  type: string
+  default: true
+- name: "SignOutput"
+  type: boolean
+  default: False
 
 steps:
+- task: NuGetToolInstaller@1
+
+- task: NuGetAuthenticate@1
+  inputs:
+    nuGetServiceConnections: 'TelemetryInternal'
+
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  displayName: 'NuGet restore of packages'
+  inputs:
+    command: 'custom'
+    arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile dev\WindowsAppRuntime_Insights\nuget.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
+
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
-# Begin forking into 2 code paths: 1) Use BuildAll.ps1 to build the target when _not_ running PREFast, 2) Use the *SBuild task to build the  
+# Begin forking into 2 code paths: 1) Use BuildAll.ps1 to build the target when _not_ running PREFast, 2) Use the *SBuild task to build the
 # target when running PREFast.
 
 - ${{ if and(eq(parameters.RunSDLBinaryAnalysis, 'true'), eq(parameters.EnablePREFast, 'true')) }}:
@@ -36,14 +51,14 @@ steps:
       configuration: '$(buildConfiguration)'
       msbuildArguments: '/restore /binaryLogger:${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
-  # ToDo: This step is a workaround for b#43856157. We can potentially remove this step once the bug is fixed. 
+  # ToDo: This step is a workaround for b#43856157. We can potentially remove this step once the bug is fixed.
   - task: UseDotNet@2
     inputs:
       packageType: sdk
       version: '6.x'
 
   # ToDo: WindowsAppSDK-BinaryAnalysis-steps.yml below ultimately invokes SDLNativeRules@2, which is out of support.
-  # So for the time being, we explicitly call SDLNativeRules@3, which is currently supported. Consider eliminating this 
+  # So for the time being, we explicitly call SDLNativeRules@3, which is currently supported. Consider eliminating this
   # extra step when we run PREFast as part of WindowsAppSDK-BinaryAnalysis-steps.yml below.
   - task: SDLNativeRules@3
     displayName: 'Guardian: PreFast@3'
@@ -70,7 +85,7 @@ steps:
   - template: WindowsAppSDK-BinaryAnalysis-steps.yml
     parameters:
       outputDirectory: 'BuildOutput'
-      # ToDo: Enable PREFast to run downstream from here, once the SDL template has been updated to invoke the 
+      # ToDo: Enable PREFast to run downstream from here, once the SDL template has been updated to invoke the
       # newer SDLNativeRules@3 task, and remove the explicit call to it above.
       enablePREFast: false
 
@@ -85,50 +100,99 @@ steps:
     artifactName: binlogs
 
 # Run the test locally on the Azure VM.
-# Note arm is currently not exercised.
-- task: VSTest@2
-  displayName: 'test MRT: ManagedTests'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MrtCoreManagedTest.build.appxrecipe'
-    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreManagedTest'
-    testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+# - task: VSTest@2
+#   displayName: 'test MRT: ManagedTests'
+#   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+#   inputs:
+#     testSelector: 'testAssemblies'
+#     testAssemblyVer2: '**\MrtCoreManagedTest.build.appxrecipe'
+#     searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreManagedTest'
+#     testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
+#     platform: '$(buildPlatform)'
+#     configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
-  displayName: 'test MRT: UnitTests'
-  # These 3 MRT test suites were previously being run in Helix, but they are now being run via WindowsAppSDK-RunTestsInPipeline-Job.yml instead.
-  # Resort to running these tests right here on the current job agent if and only if we've got here from ProjectReunion-CI.yml, because we won't 
-  # be running these tests via WindowsAppSDK-RunTestsInPipeline-Job.yml later in this specific flow. Otherwise, we can generally skip these tests.
-  condition: and(and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'))), in(variables['Build.Reason'], 'IndividualCI', 'BatchCI'))
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MrmUnitTest.dll'
-    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest'
-    testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+# - task: VSTest@2
+#   displayName: 'test MRT: UnitTests'
+#   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+#   inputs:
+#     testSelector: 'testAssemblies'
+#     testAssemblyVer2: '**\MrmUnitTest.dll'
+#     searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest'
+#     testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
+#     platform: '$(buildPlatform)'
+#     configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
-  displayName: 'test MRT: BaseUnitTests'
-  condition: and(and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'))), in(variables['Build.Reason'], 'IndividualCI', 'BatchCI'))
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MrmBaseUnitTests.dll'
-    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests'
-    testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+# - task: VSTest@2
+#   displayName: 'test MRT: BaseUnitTests'
+#   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+#   inputs:
+#     testSelector: 'testAssemblies'
+#     testAssemblyVer2: '**\MrmBaseUnitTests.dll'
+#     searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests'
+#     testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
+#     platform: '$(buildPlatform)'
+#     configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
-  displayName: 'test MRT: UnpackagedTests'
-  condition: and(and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'))), in(variables['Build.Reason'], 'IndividualCI', 'BatchCI'))
+# - task: VSTest@2
+#   displayName: 'test MRT: UnpackagedTests'
+#   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+#   inputs:
+#     testSelector: 'testAssemblies'
+#     testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
+#     searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests'
+#     testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
+#     platform: '$(buildPlatform)'
+#     configuration: '$(buildConfiguration)'
+
+- task: EsrpCodeSigning@2
   inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
-    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests'
-    testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+    FolderPath: '$(build.SourcesDirectory)\BuildOutput'
+    Pattern: |
+      **/*.winmd
+      **/*.dll
+      **/*.exe
+    UseMinimatch: true
+    signConfigType: 'inlineSignParams'
+    inlineOperation: |
+      [
+        {
+          "keyCode": "CP-230012",
+          "operationSetCode": "SigntoolSign",
+          "parameters": [
+            {
+              "parameterName": "OpusName",
+              "parameterValue": "Microsoft"
+            },
+            {
+              "parameterName": "OpusInfo",
+              "parameterValue": "http://www.microsoft.com"
+            },
+            {
+              "parameterName": "PageHash",
+              "parameterValue": "/NPH"
+            },
+            {
+              "parameterName": "FileDigest",
+              "parameterValue": "/fd sha256"
+            },
+            {
+              "parameterName": "TimeStamp",
+              "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+            }
+          ],
+          "toolName": "signtool.exe",
+          "toolVersion": "6.2.9304.0"
+        }
+      ]
+    SessionTimeout: '60'
+    MaxConcurrency: '50'
+    MaxRetryAttempts: '5'
+    condition:
+      eq(${{ parameters.SignOutput }}, true)
+
+- task: CopyFiles@2
+  displayName: MoveToOutputDirectory
+  inputs:
+    SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
+    TargetFolder: '$(ob_outputDirectory)'

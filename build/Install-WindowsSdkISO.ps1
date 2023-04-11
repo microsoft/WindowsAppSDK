@@ -278,11 +278,11 @@ if ($InstallWindowsSDK)
 
     $file = "winsdk_$buildNumber.iso"
 
-    Write-Verbose "Getting WinSDK from $uri"
+    Write-Host "Getting WinSDK from $uri"
     $downloadFile = Download-File $winsdkTempDir $uri $file
-    Write-Verbose "File is at $downloadFile"
+    Write-Host "File is at $downloadFile"
     $downloadFileItem = Get-Item $downloadFile
-    
+
     # Check to make sure the file is at least 10 MB.
     if ($downloadFileItem.Length -lt 10*1024*1024)
     {
