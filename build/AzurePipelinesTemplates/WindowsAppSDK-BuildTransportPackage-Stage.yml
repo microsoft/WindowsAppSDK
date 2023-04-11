@@ -89,7 +89,7 @@ stages:
       ob_sdl_codeSignValidation_excludes: '-|**\TestingArtifact\**;-|**\BuildOutput\**'
       ob_artifactSuffix: '_$(buildConfiguration)_$(buildPlatform)'
     steps:
-    - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestMRT-Steps.yml@self
+    - template: WindowsAppSDK-BuildAndTestMRT-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
 
@@ -105,6 +105,6 @@ stages:
       - BuildAndTestMRT
     condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
     steps:
-    - template: AzurePipelinesTemplates\WindowsAppSDK-PackNuget-Steps.yml@self
+    - template: WindowsAppSDK-PackNuget-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
