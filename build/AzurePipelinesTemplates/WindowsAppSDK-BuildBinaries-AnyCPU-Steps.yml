@@ -1,0 +1,90 @@
+parameters:
+- name: "SignOutput"
+  type: boolean
+  default: False
+
+steps:
+- task: NuGetToolInstaller@1
+
+- task: NuGetAuthenticate@1
+  inputs:
+    nuGetServiceConnections: 'TelemetryInternal'
+
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  displayName: 'NuGet restore of packages'
+  inputs:
+    command: 'custom'
+    arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile dev\WindowsAppRuntime_Insights\nuget.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
+
+- template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+
+- task: PowerShell@2
+  name: BuildBinaries
+  inputs:
+    filePath: 'BuildAll.ps1'
+    arguments: -AzureBuildStep "BuildAnyCPU"
+
+# component detection must happen *within* the build task
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+
+- task: ComponentGovernanceComponentDetection@0
+  inputs:
+    scanType: 'Register'
+    verbosity: 'Verbose'
+    alertWarningLevel: 'Medium'
+    failOnAlert: true
+
+- task: EsrpCodeSigning@2
+  inputs:
+    ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+    FolderPath: '$(build.SourcesDirectory)\BuildOutput'
+    Pattern: |
+      **/*.winmd
+      **/*.dll
+      **/*.exe
+    UseMinimatch: true
+    signConfigType: 'inlineSignParams'
+    inlineOperation: |
+      [
+        {
+          "keyCode": "CP-230012",
+          "operationSetCode": "SigntoolSign",
+          "parameters": [
+            {
+              "parameterName": "OpusName",
+              "parameterValue": "Microsoft"
+            },
+            {
+              "parameterName": "OpusInfo",
+              "parameterValue": "http://www.microsoft.com"
+            },
+            {
+              "parameterName": "PageHash",
+              "parameterValue": "/NPH"
+            },
+            {
+              "parameterName": "FileDigest",
+              "parameterValue": "/fd sha256"
+            },
+            {
+              "parameterName": "TimeStamp",
+              "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+            }
+          ],
+          "toolName": "signtool.exe",
+          "toolVersion": "6.2.9304.0"
+        }
+      ]
+    SessionTimeout: '60'
+    MaxConcurrency: '50'
+    MaxRetryAttempts: '5'
+    condition:
+      eq(${{ parameters.SignOutput }}, true)
+
+# Artifacts are uploaded via ob_outputDirectory where the each vPack Push jobs downloads from
+# so the CopyFiles below are to move all the vPack files to the right locations
+- task: CopyFiles@2
+  displayName: MoveToOutputDirectory
+  inputs:
+    SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
+    TargetFolder: '$(ob_outputDirectory)\BuildOutput'

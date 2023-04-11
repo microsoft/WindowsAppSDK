@@ -43,3 +43,20 @@ stages:
     - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
+
+  - job: BuildAnyCPU
+    # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
+    # Can be expanded to add any other binary as needed
+        pool:
+      # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
+      type: windows
+    variables:
+      # binaries scanning tools are run on this directory ( https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4634/SDL-(Static-Analysis)-for-Containerized-Workflows ) and
+      # this directory is uploaded to pipeline artifacts. More info at https://aka.ms/obpipelines/artifacts
+      ob_outputDirectory: '$(REPOROOT)\out'
+      ob_sdl_codeSignValidation_excludes: '-|**\TestingArtifact\**;-|**\BuildOutput\**'
+      ob_artifactSuffix: '_ReleaseAnyCPU'
+    steps:
+    - template: WindowsAppSDK-BuildBinaries-AnyCPU-Steps.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
