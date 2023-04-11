@@ -29,7 +29,7 @@ steps:
 - task: DownloadPipelineArtifact@2
   displayName: 'Download Foundation x64'
   inputs:
-    artifactName: "drop_TransportPackage_BuildAndTestMRTs_Release_x64"
+    artifactName: "drop_TransportPackage_BuildAndTestMRT_Release_x64"
     targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 - task: DownloadPipelineArtifact@2
   displayName: 'Download Foundation x86'
