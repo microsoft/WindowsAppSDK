@@ -47,7 +47,7 @@ stages:
   - job: BuildAnyCPU
     # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
     # Can be expanded to add any other binary as needed
-        pool:
+    pool:
       # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
       type: windows
     variables:
