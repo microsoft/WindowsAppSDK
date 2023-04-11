@@ -94,7 +94,9 @@ stages:
         SignOutput: ${{ parameters.SignOutput }}
 
   - job: NugetPackage
-    pool: ProjectReunionESPool-2022
+    pool:
+      # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
+      type: windows
     timeoutInMinutes: 120
     dependsOn:
     - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
@@ -104,6 +106,11 @@ stages:
       - BuildAnyCPU
       - BuildAndTestMRT
     condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
+    variables:
+      # binaries scanning tools are run on this directory ( https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4634/SDL-(Static-Analysis)-for-Containerized-Workflows ) and
+      # this directory is uploaded to pipeline artifacts. More info at https://aka.ms/obpipelines/artifacts
+      ob_outputDirectory: '$(REPOROOT)\out'
+      ob_sdl_codeSignValidation_excludes: '-|**\TestingArtifact\**;-|**\BuildOutput\**'
     steps:
     - template: WindowsAppSDK-PackNuget-Steps.yml@self
       parameters:
