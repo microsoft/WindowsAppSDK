@@ -108,4 +108,4 @@ steps:
   displayName: MoveToOutputDirectory
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
-    TargetFolder: '$(ob_outputDirectory)\BuildOutput'
+    TargetFolder: '$(ob_outputDirectory)'
