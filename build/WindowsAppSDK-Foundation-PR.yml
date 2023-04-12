@@ -58,3 +58,4 @@ extends:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
       parameters:
         publishToMaestro: ${{ parameters.publishToMaestro }}
+        SignOutput: False
