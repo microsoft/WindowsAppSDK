@@ -18,13 +18,6 @@ steps:
       SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\packages'
       TargetFolder: '$(Build.SourcesDirectory)\packages'
 
-  # We only bring down the relevant content for this build config (Debug/Release) & platform, to save some space and time.
-  - task: DownloadBuildArtifacts@0
-    displayName: 'Download: Test dependencies'
-    inputs:
-      artifactName: 'packages'
-      downloadPath: $(Build.SourcesDirectory)
-
   - task: powerShell@2
     displayName: 'Enable developer mode'
     inputs:
