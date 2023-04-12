@@ -124,6 +124,7 @@ void BaseTestSuite::ChannelRequestCheckExpirationTime()
 
         auto channel{ channelOperation.GetResults().Channel() };
         auto expirationTime{ channel.ExpirationTime() };
+
         auto expiryLowerBound{ winrt::clock::now() };
         auto expiryUpperBound{ expiryLowerBound + (hours(24) * 30) + minutes(1) };
 

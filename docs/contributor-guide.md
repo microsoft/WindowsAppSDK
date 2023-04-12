@@ -4,8 +4,7 @@ _We want to hear from you!_
 
 File a [new issue!](https://github.com/microsoft/WindowsAppSDK/issues/new/choose) Tell us what problem you're
 trying to solve, how you've tried to solve it so far, and what would be the ideal solution for your app.  Bonus
-points if there's a gist or existing repo we can look at with you. 
-
+points if there's a gist or existing repo we can look at with you.
 
 1. **[Ask a question](https://github.com/microsoft/WindowsAppSDK/issues/new?assignees=&labels=question&template=question.md&title=Question%3A+%5Byour+question+here%5D)**<br>
     Also, have a look at our [frequently asked questions](faq.md) page which we will update often.
@@ -17,13 +16,12 @@ points if there's a gist or existing repo we can look at with you.
 
 3. **[Vote on or suggest features](https://portal.productboard.com/winappsdk/1-windows-app-sdk)**<br>
    What components or features do you want to see in the Windows App SDK? Tell us on our [productboard portal](https://portal.productboard.com/winappsdk/1-windows-app-sdk)!
-   
+
 4. **[WinUI topics](https://github.com/microsoft/microsoft-ui-xaml)**<br>
    Please file WinUI issues and feedback in the [WinUI repository](https://github.com/microsoft/microsoft-ui-xaml). Check out their amazing guide to [general contributing](https://github.com/microsoft/microsoft-ui-xaml/blob/main/CONTRIBUTING.md) as well as [contributing feedback and requests](https://github.com/microsoft/microsoft-ui-xaml/blob/main/CONTRIBUTING_feedback_and_requests.md)!
 
-
-**Over time, we will add Windows App SDK code into this repo and provide code contribution/developer guidelines.**
-
+5. **[Code contributions](https://github.com/microsoft/WindowsAppSDK/blob/main/docs/Coding-Guidelines.md)**<br>
+   Learn how to contribute code and other artifacts following the [developer guidelines](https://github.com/microsoft/WindowsAppSDK/blob/main/docs/Coding-Guidelines.md).
 
 Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
