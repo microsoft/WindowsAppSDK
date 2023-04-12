@@ -95,23 +95,13 @@ The `Changed` event will only fire as long as the window represented by `WindowI
 ## Other ThemeSettings members
 
 The `HighContrast` and `HighContrastScheme` properties give the app information about the system setting the user
-has selected for high-contrast.
+has selected for high-contrast.  These behave the same as `AccessibilitySettings.HighContrast` and 
+`AccessibilitySettings.HighContrastScheme`.
 
 | Name | Description |
 |-|-|
 | Boolean HighContrast | True if High Contrast mode is enabled on the system. |
 | String HighContrastScheme | If HighContrast is true, a string from the system representing the High Contrast scheme, or style. |
-
-Here's a screenshot of the Settings app where the user can select which Contrast theme to use:
-
-![High contrast themes available in Win11 Settings app](highcontrastthemes.png)
-
-For the above High Contrast Theme options, the HighContrast properties will return these values:
-* None: `HighContrast` is `false`
-* Aquatic: `HighContrast` is `true`, `HighContrastScheme` is `"High Contrast Black"`
-* Desert: `HighContrast` is `true`, `HighContrastScheme` is `"High Contrast White"`
-* Dusk: `HighContrast` is `true`, `HighContrastScheme` is `"High Contrast #1"`
-* Night sky: `HighContrast` is `true`, `HighContrastScheme` is `"High Contrast #2"`
 
 # Open Issues
 
