@@ -109,3 +109,15 @@ steps:
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
+
+- task: CopyFiles@2
+  displayName: MoveToOutputDirectory
+  inputs:
+    SourceFolder: '$(build.SourcesDirectory)\packages'
+    TargetFolder: '$(ob_outputDirectory)\packages'
+
+- task: CopyFiles@2
+  displayName: MoveToOutputDirectory
+  inputs:
+    SourceFolder: '$(build.SourcesDirectory)\.user'
+    TargetFolder: '$(ob_outputDirectory)\TestCert'
