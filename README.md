@@ -14,11 +14,6 @@
 
 Plus, **create beautiful, modern apps for Windows 11 that are backwards compatible** to Windows 10 October 2018 Update (build 17763 / version 1809)!
 
-
-### Use it now!
-
-1.2 is [available today](https://docs.microsoft.com/windows/apps/windows-app-sdk/) and includes the ability to create widgets for Win11 devices, media playback controls, native Arm64 development with .NET 7 and VS2022 17.4 and much more!
-
 ### Version support
 
 The Windows App SDK aims to work on supported versions of Windows.
@@ -37,7 +32,6 @@ this is the exception and not the norm, and provide reasonable fallbacks when po
 * [More details about the Windows App SDK](https://github.com/microsoft/WindowsAppSDK/blob/master/docs/README.md) -
 More on what the project is and how we're approaching the work.
 * [Video on Windows App SDK](https://techcommunity.microsoft.com/t5/video-hub/enterprise-development-futures-project-reunion/m-p/2177278) - Learn about the Windows App SDK in a 22 minute video!
-* [Roadmap + vote on features](https://portal.productboard.com/winappsdk/1-windows-app-sdk) - See what we're planning and influence what we build!
 * [Contributor guide](docs/contributor-guide.md) - How to contribute to the Windows App SDK.
 * [FAQ](docs/faq.md) - Frequently asked questions about the Windows App SDK.
 * [Developer docs](https://aka.ms/windowsappsdkdocs) - Microsoft documentation covering a wide range of Windows App SDK topics.
