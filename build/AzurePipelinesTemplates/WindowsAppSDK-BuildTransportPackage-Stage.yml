@@ -93,15 +93,30 @@ stages:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
 
+  # Arm64 uses a different VM type than x64, thus requiring them to be in different
+  # pools, hence, we spilt the two scenarios into separate jobs.
+  - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
+    parameters:
+      jobName: PipelineTestsX64
+      isArm64Platfrom: false
+      dependsOn:
+        - BuildBinaries
+        - BuildAndTestMRT
+
+  - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
+    parameters:
+      jobName: PipelineTestsArm64
+      isArm64Platfrom: true
+      dependsOn:
+        - BuildBinaries
+        - BuildAndTestMRT
+
   - job: NugetPackage
     pool:
       # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
       type: windows
     timeoutInMinutes: 120
     dependsOn:
-    - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
-      - TestInHelix
-    - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
       - BuildBinaries
       - BuildBinaries_Release_anycpu
       - BuildAndTestMRT
