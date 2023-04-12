@@ -57,13 +57,10 @@ namespace Microsoft.UI.System
 ```
 
 The `ThemeSettings` API allows Win32 WinRT apps to detect that the system's High Contrast setting
-has changed.  The app constructs it by specifying a `WindowId`, which is a handle that represents
-a top-level window that's participating in WinAppSDK's Content model.  An app can get a `WindowId`
-from a `ContentWindow`/`ContentEnvironment` object, which is available from a `XamlRoot`, for 
-example.
+has changed.  
 
 In this sample code, an app uses a `ThemeSettings` object to listen for high contrast changes
-on the system.  
+on the system:
 
 ```c++
 void MyApp::ListenForHighContrastChange(XamlRoot& xamlRoot) 
@@ -85,7 +82,21 @@ void MyApp::ListenForHighContrastChange(XamlRoot& xamlRoot)
 }
 ```
 
-## ThemeSettings.Changed property
+## ThemeSettings.CreateForWindowId static method
+
+`static CreateForWindowId(WindowId windowId)`
+
+To create a ThemeSettings object, the app must call `ThemeSettings.CreateForWindowId` with a valid `WindowId`, which
+represents a top-level window.  The window represented by the windowId must be from the same process and thread as the
+calling application.  
+
+An app can get a `WindowId` from a `ContentWindow`/`ContentEnvironment` object, which is available from a `XamlRoot`,
+for example.
+
+
+## ThemeSettings.Changed event
+
+`event TypedEventHandler<ThemeSettings, Object> Changed`
 
 The `Changed` event will only fire while the `ThemeSettings` object is alive, so apps must ensure
 they hold a reference to the object as long as they want to receive the event.
