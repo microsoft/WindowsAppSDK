@@ -125,7 +125,7 @@ steps:
     inputs:
       filePath: 'TestAll.ps1'
       arguments: >
-        -OutputFolder "$(Build.SourcesDirectory)\BuildOutput\BuildOutput"
+        -OutputFolder "$(Build.SourcesDirectory)\BuildOutput"
         -Platform "${{ parameters.buildPlatform }}"
         -Configuration "${{ parameters.buildConfiguration }}"
         -Test
