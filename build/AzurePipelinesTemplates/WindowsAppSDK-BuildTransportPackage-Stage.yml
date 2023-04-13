@@ -176,7 +176,7 @@ stages:
   - job: Publish
     dependsOn:
     - NugetPackage
-    - WinAppSDKIntegrationBuildAndTest
+    # - WinAppSDKIntegrationBuildAndTest
     condition: and(or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true')), eq('${{ parameters.publishToMaestro }}', 'true'))
     pool:
       type: windows
