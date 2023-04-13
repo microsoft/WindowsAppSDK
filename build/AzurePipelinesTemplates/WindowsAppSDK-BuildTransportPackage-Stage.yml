@@ -55,6 +55,7 @@ stages:
       # this directory is uploaded to pipeline artifacts. More info at https://aka.ms/obpipelines/artifacts
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
+    steps:
     - template: WindowsAppSDK-BuildBinaries-AnyCPU-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
