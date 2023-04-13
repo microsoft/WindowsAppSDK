@@ -95,7 +95,7 @@ stages:
 
   # Arm64 uses a different VM type than x64, thus requiring them to be in different
   # pools, hence, we spilt the two scenarios into separate jobs.
-  - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
+  - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
     parameters:
       jobName: PipelineTestsX64
       isArm64Platfrom: false
@@ -103,7 +103,7 @@ stages:
         - BuildBinaries
         - BuildAndTestMRT
 
-  - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
+  - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
     parameters:
       jobName: PipelineTestsArm64
       isArm64Platfrom: true
@@ -178,11 +178,13 @@ stages:
     - NugetPackage
     - WinAppSDKIntegrationBuildAndTest
     condition: and(or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true')), eq('${{ parameters.publishToMaestro }}', 'true'))
-    pool: ProjectReunionESPool-2022
-    variables:
+    pool:
+      type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022' # This stage is purely for ES, hence this custom pool
       WindowsAppSDKPackageVersion: $[ dependencies.NugetPackage.outputs['SetVersion.packageVersion'] ]
     steps:
-    - template: ..\..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
+    - template: ..\..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml@self
       parameters:
         AssetNames: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
         AssetVersions: $(WindowsAppSDKPackageVersion)
