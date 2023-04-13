@@ -260,7 +260,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
         else
         {
-            if (isRepair)
+            if ((::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentRepair::IsEnabled()) && 
+                (isRepair))
             {
                 status = DeploymentStatus::PackageRepairFailed;
             }
