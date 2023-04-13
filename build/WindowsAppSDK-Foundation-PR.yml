@@ -20,14 +20,6 @@
 # https://aka.ms/obpipelines/triggers
 trigger: none
 
-parameters:
-- name: "publishToMaestro"
-  type: boolean
-  default: False
-- name: "IgnoreFailures"
-  type: boolean
-  default: False
-
 variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
@@ -57,5 +49,5 @@ extends:
     stages:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
       parameters:
-        publishToMaestro: ${{ parameters.publishToMaestro }}
+        publishToMaestro: False
         SignOutput: False
