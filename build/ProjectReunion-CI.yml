@@ -23,12 +23,12 @@ jobs:
       failOnStderr: true
 
   # Scans the root source folder for security vulnerability
-  - task: CredScan@2
+  - task: CredScan@3
     inputs:
-      toolMajorVersion: 'V2'
+      toolMajorVersion: 'Latest'
 
   # This PostAnalysis will fail the pipeline if CredScan identifies an issue
-  - task: PostAnalysis@1
+  - task: PostAnalysis@2
     inputs:
       AllTools: false
       APIScan: false
