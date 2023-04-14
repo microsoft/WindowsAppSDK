@@ -143,9 +143,6 @@ jobs:
       artifactName: BuildOutput
       PathtoPublish: '$(buildOutputDir)'
 
-# We no longer run MRT tests in Helix here, due to dwindling Helix support. But one MRT test suite
-# is still being run in WindowsAppSDK-BuildAndTestMRT-Steps.yml.
-
 - job: StageAndPack
   pool:
     vmImage: 'windows-2022'
