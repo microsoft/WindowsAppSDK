@@ -165,12 +165,6 @@ jobs:
         configuration: '$(buildConfiguration)'
         msbuildArgs: '/restore /p:AppxSymbolPackageEnabled=false /binaryLogger:BuildOutput/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:WindowsAppSDKVersionBuild=$(builddate_yymm) /p:WindowsAppSDKVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode="Optimize" /p:WindowsAppSDKBuildPipeline=1 /p:WindowsAppSDKCleanIntermediateFiles=true'
 
-    # ToDo: This is a workaround for b#43856157. We probably can remove this step once the bug is fixed. 
-    - task: UseDotNet@2
-      inputs:
-        packageType: sdk
-        version: '6.x'
-
   - ${{ if or(ne(parameters.RunSDLBinaryAnalysis, 'true'), ne(parameters.EnablePREFast, 'true')) }}:
     # PREFast scan is disabled in this pipeline run, just proceed to build the target via BuildAll.ps1, and
     # fall through to run BinaryAnalysis with PREFast turned off.
