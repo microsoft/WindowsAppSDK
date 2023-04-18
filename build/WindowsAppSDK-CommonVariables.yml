@@ -4,6 +4,6 @@ variables:
   versionDate: $[format('{0:yyyyMMdd}', pipeline.startTime)]
   versionCounter: $[counter(variables['versionDate'], 0)]
   version: >
-   $[format('{0}.{1}.{2}-{3}.{4}', 
+   $[format('{0}.{1}.{2}-{3}.{4}',
       variables['major'], variables['minor'], variables['patch'],
       variables['versionDate'], variables['versionCounter'])]

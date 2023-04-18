@@ -49,7 +49,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="$(RepoRoot)LICENSE">
+    <Content Include="$(ExtensionDir)LICENSE">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Condition="'$(Deployment)'=='Standalone'" Include="ExtensionPack.vsext">

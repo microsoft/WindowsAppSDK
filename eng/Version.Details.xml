@@ -4,7 +4,7 @@
            e.g. if B depends on A v1 and A v2 is published, Maestro updates B's Version.Details.xml to A v2
         2. Dependencies in Version.Dependencies.xml are only changed by explicit (manual) developer action
            e.g. if B depends on A v1 and A v2 is published, B is unchanged
-        3. Dependencies' versions in Version.Details.xml and Version.Dependencies.xml are TheMasterSourceOfTruth(TM). 
+        3. Dependencies' versions in Version.Details.xml and Version.Dependencies.xml are TheMasterSourceOfTruth(TM).
             These are literal values. No macro expansion or magic substitution will occur
         4. <ProductDependencies><Dependency> are listed in sorted order (alphabetically, case-insensitive)
         5. <ToolsetDependencies><Dependency> are listed in sorted order (alphabetically, case-insensitive)
@@ -22,7 +22,7 @@
        17. Version.Dependencies.props is a generated file. DO NOT EDIT. Use DevCheck -SyncDependencies
        18. POLICY: Dependencies on Transport Packages are expressed as <ProductDependencies> in Version.Details.xml
        19. POLICY: Dependencies on non-Transport Packages are expressed as <ToolsetDependencies> in Version.Dependencies.xml
-       20. POLICY: Update Version.Dependencies.props via "DevCheck -CheckDependencies -SyncDependencies". 
+       20. POLICY: Update Version.Dependencies.props via "DevCheck -CheckDependencies -SyncDependencies".
             NOTE: This is required when adding or removing a dependency
     -->
 <Dependencies>
