@@ -7,6 +7,14 @@ steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
 - task: PowerShell@2
+  displayName: Installing Spectre VSE2022 component
+  inputs:
+    targetType: inline
+    workingDirectory: $(Build.SourcesDirectory)
+    script: |
+      Measure-Command {Invoke-Expression "cd C:\'Program Files (x86)\Microsoft Visual Studio'\Installer\; .\vs_installer.exe modify --installPath 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise' --add Microsoft.VisualStudio.ComponentGroup.UWP.BuildTools --downloadThenInstall --quiet | Out-Null"; Write-Host "Total time taken:"} | Select-Object Minutes, Seconds
+
+- task: PowerShell@2
   name: BuildBinaries
   inputs:
     filePath: 'BuildAll.ps1'
@@ -23,49 +31,49 @@ steps:
     artifactName: binlogs
 
 # Run the test locally on the Azure VM.
-# - task: VSTest@2
-#   displayName: 'test MRT: ManagedTests'
-#   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-#   inputs:
-#     testSelector: 'testAssemblies'
-#     testAssemblyVer2: '**\MrtCoreManagedTest.build.appxrecipe'
-#     searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreManagedTest'
-#     testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
-#     platform: '$(buildPlatform)'
-#     configuration: '$(buildConfiguration)'
+- task: VSTest@2
+  displayName: 'test MRT: ManagedTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\MrtCoreManagedTest.build.appxrecipe'
+    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreManagedTest'
+    testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
 
-# - task: VSTest@2
-#   displayName: 'test MRT: UnitTests'
-#   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-#   inputs:
-#     testSelector: 'testAssemblies'
-#     testAssemblyVer2: '**\MrmUnitTest.dll'
-#     searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest'
-#     testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
-#     platform: '$(buildPlatform)'
-#     configuration: '$(buildConfiguration)'
+- task: VSTest@2
+  displayName: 'test MRT: UnitTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\MrmUnitTest.dll'
+    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest'
+    testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
 
-# - task: VSTest@2
-#   displayName: 'test MRT: BaseUnitTests'
-#   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-#   inputs:
-#     testSelector: 'testAssemblies'
-#     testAssemblyVer2: '**\MrmBaseUnitTests.dll'
-#     searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests'
-#     testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
-#     platform: '$(buildPlatform)'
-#     configuration: '$(buildConfiguration)'
+- task: VSTest@2
+  displayName: 'test MRT: BaseUnitTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\MrmBaseUnitTests.dll'
+    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests'
+    testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
 
-# - task: VSTest@2
-#   displayName: 'test MRT: UnpackagedTests'
-#   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-#   inputs:
-#     testSelector: 'testAssemblies'
-#     testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
-#     searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests'
-#     testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
-#     platform: '$(buildPlatform)'
-#     configuration: '$(buildConfiguration)'
+- task: VSTest@2
+  displayName: 'test MRT: UnpackagedTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
+    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests'
+    testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
 
 - task: EsrpCodeSigning@2
   inputs:
