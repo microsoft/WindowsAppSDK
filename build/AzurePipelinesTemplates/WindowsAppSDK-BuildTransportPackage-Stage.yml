@@ -60,7 +60,7 @@ stages:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
 
-  - job: BuildAndTestMRT
+  - job: BuildMRT
     pool:
       # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
       type: windows
@@ -89,9 +89,39 @@ stages:
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
       ob_artifactSuffix: '_$(buildConfiguration)_$(buildPlatform)'
     steps:
-    - template: WindowsAppSDK-BuildAndTestMRT-Steps.yml@self
+    - template: WindowsAppSDK-BuildMRT-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
+
+  - job: TestMRT
+    pool:
+      type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022' # This stage is purely for ES, hence this custom pool
+    timeoutInMinutes: 120
+    strategy:
+      maxParallel: 10
+      matrix:
+        Release_x86:
+          buildPlatform: 'x86'
+          buildConfiguration: 'Release'
+          normalizedConfiguration: 'fre'
+          PGOBuildMode: 'Optimize'
+        Release_x64:
+          buildPlatform: 'x64'
+          buildConfiguration: 'Release'
+          normalizedConfiguration: 'fre'
+          PGOBuildMode: 'Optimize'
+        Release_Arm64:
+          buildPlatform: 'arm64'
+          buildConfiguration: 'Release'
+          normalizedConfiguration: 'fre'
+    variables:
+      # binaries scanning tools are run on this directory ( https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4634/SDL-(Static-Analysis)-for-Containerized-Workflows ) and
+      # this directory is uploaded to pipeline artifacts. More info at https://aka.ms/obpipelines/artifacts
+      ob_outputDirectory: '$(REPOROOT)\out'
+    steps:
+    - template: WindowsAppSDK-TestMRT-Steps.yml@self
 
   # Arm64 uses a different VM type than x64, thus requiring them to be in different
   # pools, hence, we spilt the two scenarios into separate jobs.
@@ -101,7 +131,7 @@ stages:
       isArm64Platfrom: false
       dependsOn:
         - BuildBinaries
-        - BuildAndTestMRT
+        - BuildMRT
 
   - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
     parameters:
@@ -109,7 +139,7 @@ stages:
       isArm64Platfrom: true
       dependsOn:
         - BuildBinaries
-        - BuildAndTestMRT
+        - BuildMRT
 
   - job: NugetPackage
     pool:
@@ -119,7 +149,7 @@ stages:
     dependsOn:
       - BuildBinaries
       - BuildBinaries_release_anycpu
-      - BuildAndTestMRT
+      - BuildMRT
     condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
     variables:
       # binaries scanning tools are run on this directory ( https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4634/SDL-(Static-Analysis)-for-Containerized-Workflows ) and
@@ -181,7 +211,7 @@ stages:
       type: windows
       isCustom: true
       name: 'ProjectReunionESPool-2022' # This stage is purely for ES, hence this custom pool
-      WindowsAppSDKPackageVersion: $[ dependencies.NugetPackage.outputs['SetVersion.packageVersion'] ]
+    WindowsAppSDKPackageVersion: $[ dependencies.NugetPackage.outputs['SetVersion.packageVersion'] ]
     steps:
     - template: ..\..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml@self
       parameters:
