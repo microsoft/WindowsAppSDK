@@ -36,12 +36,6 @@ steps:
       configuration: '$(buildConfiguration)'
       msbuildArguments: '/restore /binaryLogger:${{ parameters.MRTBinariesDirectory }}/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
-  # ToDo: This step is a workaround for b#43856157. We can potentially remove this step once the bug is fixed. 
-  - task: UseDotNet@2
-    inputs:
-      packageType: sdk
-      version: '6.x'
-
   # ToDo: WindowsAppSDK-BinaryAnalysis-steps.yml below ultimately invokes SDLNativeRules@2, which is out of support.
   # So for the time being, we explicitly call SDLNativeRules@3, which is currently supported. Consider eliminating this 
   # extra step when we run PREFast as part of WindowsAppSDK-BinaryAnalysis-steps.yml below.
