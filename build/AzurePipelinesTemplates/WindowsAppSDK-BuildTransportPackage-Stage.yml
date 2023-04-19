@@ -116,6 +116,8 @@ stages:
           buildPlatform: 'arm64'
           buildConfiguration: 'Release'
           normalizedConfiguration: 'fre'
+    dependsOn:
+    - BuildMRT
     variables:
       # binaries scanning tools are run on this directory ( https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4634/SDL-(Static-Analysis)-for-Containerized-Workflows ) and
       # this directory is uploaded to pipeline artifacts. More info at https://aka.ms/obpipelines/artifacts
@@ -147,9 +149,9 @@ stages:
       type: windows
     timeoutInMinutes: 120
     dependsOn:
-      - BuildBinaries
-      - BuildBinaries_release_anycpu
-      - BuildMRT
+    - BuildBinaries
+    - BuildBinaries_release_anycpu
+    - BuildMRT
     condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
     variables:
       # binaries scanning tools are run on this directory ( https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4634/SDL-(Static-Analysis)-for-Containerized-Workflows ) and
