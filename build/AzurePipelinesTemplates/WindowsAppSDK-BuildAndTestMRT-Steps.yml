@@ -23,13 +23,6 @@ steps:
 # component detection must happen *within* the build task
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish mrtcore binlog'
-  condition: succeededOrFailed()
-  inputs:
-    PathtoPublish: $(Build.SourcesDirectory)/BuildOutput/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
-    artifactName: binlogs
-
 # Run the test locally on the Azure VM.
 - task: VSTest@2
   displayName: 'test MRT: ManagedTests'
