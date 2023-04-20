@@ -6,8 +6,10 @@ parameters:
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
+# This is required to fix VSTest failing with
+# ##[error]This operation requires installation of Visual Studio with the Universal Windows Platform development workload selected
 - task: PowerShell@2
-  displayName: Installing Spectre VSE2022 component
+  displayName: "Installing Microsoft.VisualStudio.Workload.Universal component"
   inputs:
     targetType: inline
     workingDirectory: $(Build.SourcesDirectory)
