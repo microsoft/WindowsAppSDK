@@ -69,7 +69,7 @@ steps:
 
 - task: VSTest@2
   displayName: 'test MRT: UnpackagedTests'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  condition: and(and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'))), in(variables['Build.Reason'], 'IndividualCI', 'BatchCI'))
   inputs:
     testSelector: 'testAssemblies'
     testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
