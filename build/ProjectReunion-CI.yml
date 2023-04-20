@@ -77,10 +77,6 @@ jobs:
         buildPlatform: 'arm64'
         buildConfiguration: 'Release'
   steps:
-  # Required by the Packaged ES SDL Templates.
-  - checkout: self
-    persistCredentials: true
-
   - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
     parameters:
       SignOutput: False
