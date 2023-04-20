@@ -58,6 +58,21 @@ extends:
       prefast:
         enabled: true
         break: true
+      psscriptanalyzer:
+        enable: true
+        break: true
+      tsandjs:
+        enabled: true
+        break: true
+      python:
+        enabled: true
+        break: true
+      credscan:
+        enable: true
+        break: true
+      policheck:
+        enable: true
+        break: true
 
     stages:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
