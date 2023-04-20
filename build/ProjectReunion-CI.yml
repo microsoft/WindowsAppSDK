@@ -83,7 +83,7 @@ jobs:
 
   - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
     parameters:
-      SignOutput: ${{ parameters.SignOutput }}
+      SignOutput: False
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget'
@@ -97,7 +97,7 @@ jobs:
   steps:
   - template: WindowsAppSDK-BuildBinaries-AnyCPU-Steps.yml@self
     parameters:
-      SignOutput: ${{ parameters.SignOutput }}
+      SignOutput: False
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget'
@@ -150,7 +150,7 @@ jobs:
 
   - template: WindowsAppSDK-PackNuget-Steps.yml@self
     parameters:
-      SignOutput: ${{ parameters.SignOutput }}
+      SignOutput: False
 
 
   - task: PublishBuildArtifacts@1
