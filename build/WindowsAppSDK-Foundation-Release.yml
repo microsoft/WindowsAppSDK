@@ -51,6 +51,13 @@ extends:
     globalSdl: # Refer the wiki for more options in this parameter: https://aka.ms/obpipelines/sdl
       tsa:
         enabled: false # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
+      isNativeCode: false #TODO turn back on when fixed
+      binskim:
+        enabled: true
+        break: true
+      prefast:
+        enabled: true
+        break: true
 
     stages:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
