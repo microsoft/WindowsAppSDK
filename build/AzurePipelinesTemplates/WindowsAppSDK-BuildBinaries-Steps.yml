@@ -18,10 +18,6 @@ steps:
 
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
-- task: NuGetAuthenticate@1
-  inputs:
-    nuGetServiceConnections: 'ProjectReunionInternal'
-
   # Copy MSIX license installation header into the correct source location.
   # Restore transport package dependencies. This is only enbaled in release-signed builds.
 - task: PowerShell@2

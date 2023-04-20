@@ -50,6 +50,10 @@ stages:
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**;-|**\packages\**'
       ob_artifactSuffix: '_$(buildConfiguration)_$(buildPlatform)'
     steps:
+    - task: NuGetAuthenticate@1
+      inputs:
+        nuGetServiceConnections: 'ProjectReunionInternal'
+
     - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
