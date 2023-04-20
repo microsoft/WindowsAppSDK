@@ -27,7 +27,6 @@ stages:
 
   - job: BuildBinaries
     pool:
-      # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
       type: windows
     strategy:
       maxParallel: 10
@@ -47,8 +46,6 @@ stages:
           buildConfiguration: 'release'
           normalizedConfiguration: 'fre'
     variables:
-      # binaries scanning tools are run on this directory ( https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4634/SDL-(Static-Analysis)-for-Containerized-Workflows ) and
-      # this directory is uploaded to pipeline artifacts. More info at https://aka.ms/obpipelines/artifacts
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**;-|**\packages\**'
       ob_artifactSuffix: '_$(buildConfiguration)_$(buildPlatform)'
@@ -61,11 +58,8 @@ stages:
     # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
     # Can be expanded to add any other binary as needed
     pool:
-      # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
       type: windows
     variables:
-      # binaries scanning tools are run on this directory ( https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4634/SDL-(Static-Analysis)-for-Containerized-Workflows ) and
-      # this directory is uploaded to pipeline artifacts. More info at https://aka.ms/obpipelines/artifacts
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
     steps:
@@ -96,8 +90,6 @@ stages:
           buildConfiguration: 'Release'
           normalizedConfiguration: 'fre'
     variables:
-      # binaries scanning tools are run on this directory ( https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4634/SDL-(Static-Analysis)-for-Containerized-Workflows ) and
-      # this directory is uploaded to pipeline artifacts. More info at https://aka.ms/obpipelines/artifacts
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
       ob_artifactSuffix: '_$(buildConfiguration)_$(buildPlatform)'
@@ -132,8 +124,6 @@ stages:
     dependsOn:
     - BuildMRT
     variables:
-      # binaries scanning tools are run on this directory ( https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4634/SDL-(Static-Analysis)-for-Containerized-Workflows ) and
-      # this directory is uploaded to pipeline artifacts. More info at https://aka.ms/obpipelines/artifacts
       ob_outputDirectory: '$(REPOROOT)\out'
     steps:
     - template: WindowsAppSDK-TestMRT-Steps.yml@self
@@ -167,15 +157,12 @@ stages:
     - BuildMRT
     condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
     variables:
-      # binaries scanning tools are run on this directory ( https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4634/SDL-(Static-Analysis)-for-Containerized-Workflows ) and
-      # this directory is uploaded to pipeline artifacts. More info at https://aka.ms/obpipelines/artifacts
       ob_outputDirectory: '$(REPOROOT)\out'
     steps:
     - template: WindowsAppSDK-PackNuget-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
 
-  # TODO: Bring back the IntegrationStage in the next PR
   # Build WinAppSDK and Run Integration Test from TestAll.ps1
   - job: WinAppSDKIntegrationBuildAndTest
     dependsOn: ['NugetPackage']
