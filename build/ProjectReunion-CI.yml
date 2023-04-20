@@ -23,12 +23,12 @@ jobs:
       failOnStderr: true
 
   # Scans the root source folder for security vulnerability
-  - task: CredScan@2
+  - task: CredScan@3
     inputs:
-      toolMajorVersion: 'V2'
+      toolMajorVersion: 'Latest'
 
   # This PostAnalysis will fail the pipeline if CredScan identifies an issue
-  - task: PostAnalysis@1
+  - task: PostAnalysis@2
     inputs:
       AllTools: false
       APIScan: false
@@ -81,9 +81,15 @@ jobs:
   - checkout: self
     persistCredentials: true
 
-  - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
-    parameters:
-      SignOutput: ${{ parameters.SignOutput }}
+  - task: NuGetToolInstaller@1
+
+  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+
+  - task: PowerShell@2
+    name: BuildBinaries
+    inputs:
+      filePath: 'BuildAll.ps1'
+      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget'
@@ -95,9 +101,15 @@ jobs:
   pool:
     vmImage: 'windows-2022'
   steps:
-  - template: WindowsAppSDK-BuildBinaries-AnyCPU-Steps.yml@self
-    parameters:
-      SignOutput: ${{ parameters.SignOutput }}
+  - task: NuGetToolInstaller@1
+
+  - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+
+  - task: PowerShell@2
+    name: BuildBinaries
+    inputs:
+      filePath: 'BuildAll.ps1'
+      arguments: -AzureBuildStep "BuildAnyCPU"
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget'
@@ -123,8 +135,7 @@ jobs:
   steps:
   - task: NuGetToolInstaller@1
 
-  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildMRT-Steps.yml
-  - template: AzurePipelinesTemplates\WindowsAppSDK-TestMRT-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestMRT-Steps.yml
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish BuildOutput'
@@ -148,10 +159,60 @@ jobs:
       artifactName: BuildOutput
       downloadPath: '$(Build.SourcesDirectory)'
 
-  - template: WindowsAppSDK-PackNuget-Steps.yml@self
-    parameters:
-      SignOutput: ${{ parameters.SignOutput }}
+  - task: PowerShell@2
+    name: StageFiles
+    inputs:
+      filePath: 'BuildAll.ps1'
+      arguments: -Platform "x86,x64,arm64" -Configuration "release" -AzureBuildStep "StageFiles"
 
+  - task: PowerShell@2
+    name: SetVersion
+    displayName: Update metapackage version
+    inputs:
+      targetType: 'inline'
+      script: |
+        $packageVersion = '$(version)'
+        $pipelineType = '$(PipelineType)'
+        $sourceBranchName = '$(Build.SourceBranchName)'
+        if ($sourceBranchName -eq 'main' -or $sourceBranchName -eq 'develop')
+        {
+          $packageVersion = $packageVersion + '.' + $sourceBranchName + '.' + $pipelineType
+        }
+        Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
+        Write-Host $packageVersion
+        [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
+        $publicNuspec.package.metadata.version = $packageVersion
+        Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
+  - task: PowerShell@2
+    name: PackNuget
+    inputs:
+      filePath: 'BuildAll.ps1'
+      arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
+
+  - task: BinSkim@3
+    inputs:
+      InputType: 'Basic'
+      Function: 'analyze'
+      AnalyzeTarget: '$(build.SourcesDirectory)\BuildOutput\FullNuget\*.dll;$(build.SourcesDirectory)\BuildOutput\FullNuget\*.exe'
+      AnalyzeVerbose: true
+
+  - task: PostAnalysis@1
+    inputs:
+      AllTools: false
+      APIScan: false
+      BinSkim: true
+      BinSkimBreakOn: 'Error'
+      CodesignValidation: false
+      CredScan: false
+      FortifySCA: false
+      FxCop: false
+      ModernCop: false
+      PoliCheck: false
+      RoslynAnalyzers: false
+      SDLNativeRules: false
+      Semmle: false
+      TSLint: false
+      ToolLogsNotFoundAction: 'Standard'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: NugetContent'
