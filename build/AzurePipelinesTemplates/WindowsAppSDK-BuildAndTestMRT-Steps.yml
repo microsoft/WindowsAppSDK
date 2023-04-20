@@ -1,0 +1,129 @@
+parameters:
+- name: "SignOutput"
+  type: boolean
+  default: False
+
+steps:
+- template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+
+- task: PowerShell@2
+  displayName: Installing Spectre VSE2022 component
+  inputs:
+    targetType: inline
+    workingDirectory: $(Build.SourcesDirectory)
+    script: |
+      Measure-Command {Invoke-Expression "cd C:\'Program Files (x86)\Microsoft Visual Studio'\Installer\; .\vs_installer.exe modify --installPath 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise' --add Microsoft.VisualStudio.Workload.Universal --downloadThenInstall --quiet | Out-Null"; Write-Host "Total time taken:"} | Select-Object Minutes, Seconds
+
+- task: PowerShell@2
+  name: BuildBinaries
+  inputs:
+    filePath: 'BuildAll.ps1'
+    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
+
+# component detection must happen *within* the build task
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish mrtcore binlog'
+  condition: succeededOrFailed()
+  inputs:
+    PathtoPublish: $(Build.SourcesDirectory)/BuildOutput/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
+    artifactName: binlogs
+
+# Run the test locally on the Azure VM.
+- task: VSTest@2
+  displayName: 'test MRT: ManagedTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\MrtCoreManagedTest.build.appxrecipe'
+    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreManagedTest'
+    testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  displayName: 'test MRT: UnitTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\MrmUnitTest.dll'
+    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest'
+    testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  displayName: 'test MRT: BaseUnitTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\MrmBaseUnitTests.dll'
+    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests'
+    testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  displayName: 'test MRT: UnpackagedTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
+    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests'
+    testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: EsrpCodeSigning@2
+  inputs:
+    ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+    FolderPath: '$(build.SourcesDirectory)\BuildOutput'
+    Pattern: |
+      **/*.winmd
+      **/*.dll
+      **/*.exe
+    UseMinimatch: true
+    signConfigType: 'inlineSignParams'
+    inlineOperation: |
+      [
+        {
+          "keyCode": "CP-230012",
+          "operationSetCode": "SigntoolSign",
+          "parameters": [
+            {
+              "parameterName": "OpusName",
+              "parameterValue": "Microsoft"
+            },
+            {
+              "parameterName": "OpusInfo",
+              "parameterValue": "http://www.microsoft.com"
+            },
+            {
+              "parameterName": "PageHash",
+              "parameterValue": "/NPH"
+            },
+            {
+              "parameterName": "FileDigest",
+              "parameterValue": "/fd sha256"
+            },
+            {
+              "parameterName": "TimeStamp",
+              "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+            }
+          ],
+          "toolName": "signtool.exe",
+          "toolVersion": "6.2.9304.0"
+        }
+      ]
+    SessionTimeout: '60'
+    MaxConcurrency: '50'
+    MaxRetryAttempts: '5'
+    condition:
+      eq(${{ parameters.SignOutput }}, true)
+
+- task: CopyFiles@2
+  displayName: MoveToOutputDirectory
+  inputs:
+    SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
+    TargetFolder: '$(ob_outputDirectory)'
