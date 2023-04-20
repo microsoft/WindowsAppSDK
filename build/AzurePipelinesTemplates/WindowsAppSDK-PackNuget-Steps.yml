@@ -29,17 +29,17 @@ steps:
 - task: DownloadPipelineArtifact@2
   displayName: 'Download Foundation x64'
   inputs:
-    artifactName: "drop_TransportPackage_BuildAndTestMRT_release_x64"
+    artifactName: "drop_TransportPackage_BuildMRT_release_x64"
     targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 - task: DownloadPipelineArtifact@2
   displayName: 'Download Foundation x86'
   inputs:
-    artifactName: "drop_TransportPackage_BuildAndTestMRT_release_x86"
+    artifactName: "drop_TransportPackage_BuildMRT_release_x86"
     targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 - task: DownloadPipelineArtifact@2
   displayName: 'Download Foundation arm64'
   inputs:
-    artifactName: "drop_TransportPackage_BuildAndTestMRT_release_arm64"
+    artifactName: "drop_TransportPackage_BuildMRT_release_arm64"
     targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
 - task: PowerShell@2
