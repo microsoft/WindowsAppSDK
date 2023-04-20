@@ -77,7 +77,7 @@ jobs:
         buildPlatform: 'arm64'
         buildConfiguration: 'Release'
   steps:
-  - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildBinaries-Steps.yml@self
     parameters:
       SignOutput: False
 
@@ -91,7 +91,7 @@ jobs:
   pool:
     vmImage: 'windows-2022'
   steps:
-  - template: WindowsAppSDK-BuildBinaries-AnyCPU-Steps.yml@self
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildBinaries-AnyCPU-Steps.yml@self
     parameters:
       SignOutput: False
 
@@ -144,7 +144,7 @@ jobs:
       artifactName: BuildOutput
       downloadPath: '$(Build.SourcesDirectory)'
 
-  - template: WindowsAppSDK-PackNuget-Steps.yml@self
+  - template: AzurePipelinesTemplates\WindowsAppSDK-PackNuget-Steps.yml@self
     parameters:
       SignOutput: False
 
