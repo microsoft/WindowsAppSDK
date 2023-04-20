@@ -54,6 +54,10 @@ stages:
       inputs:
         nuGetServiceConnections: 'ProjectReunionInternal'
 
+    - task: NuGetAuthenticate@1
+      inputs:
+        nuGetServiceConnections: 'TelemetryInternal'
+
     - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
@@ -67,6 +71,14 @@ stages:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
     steps:
+    - task: NuGetAuthenticate@1
+      inputs:
+        nuGetServiceConnections: 'ProjectReunionInternal'
+
+    - task: NuGetAuthenticate@1
+      inputs:
+        nuGetServiceConnections: 'TelemetryInternal'
+
     - template: WindowsAppSDK-BuildBinaries-AnyCPU-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
@@ -98,6 +110,14 @@ stages:
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
       ob_artifactSuffix: '_$(buildConfiguration)_$(buildPlatform)'
     steps:
+    - task: NuGetAuthenticate@1
+      inputs:
+        nuGetServiceConnections: 'ProjectReunionInternal'
+
+    - task: NuGetAuthenticate@1
+      inputs:
+        nuGetServiceConnections: 'TelemetryInternal'
+
     - template: WindowsAppSDK-BuildMRT-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
