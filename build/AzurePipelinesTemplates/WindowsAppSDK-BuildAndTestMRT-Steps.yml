@@ -90,7 +90,7 @@ steps:
     testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-    codeCoverageEnabled: ture
+    codeCoverageEnabled: true
 
 - task: VSTest@2
   displayName: 'test MRT: UnitTests'
@@ -105,7 +105,7 @@ steps:
     testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-    codeCoverageEnabled: ture
+    codeCoverageEnabled: true
 
 - task: VSTest@2
   displayName: 'test MRT: BaseUnitTests'
@@ -117,7 +117,7 @@ steps:
     testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-    codeCoverageEnabled: ture
+    codeCoverageEnabled: true
 
 - task: VSTest@2
   displayName: 'test MRT: UnpackagedTests'
@@ -129,4 +129,4 @@ steps:
     testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-    codeCoverageEnabled: ture
+    codeCoverageEnabled: true
