@@ -11,7 +11,7 @@ variables:
   # Docker image which is used to build the project https://aka.ms/obpipelines/containers
   WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2019/vse2022:latest'
 
-  Codeql.Enabled: true #  CodeQL once every 3 days on the default branch for all languages its applicable to in that pipeline.
+  Codeql.Enabled: true #  CodeQL runs every 3 days on the default branch for all languages its applicable to in that pipeline.
 
   channel: 'experimental'
   rerunPassesRequiredToAvoidFailure: 5

@@ -21,23 +21,23 @@ steps:
     targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
 - task: DownloadPipelineArtifact@2
-  displayName: 'Download Foundation arm64'
+  displayName: 'Download Foundation anycpu'
   inputs:
     artifactName: "drop_TransportPackage_BuildBinaries_release_anycpu"
     targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
 - task: DownloadPipelineArtifact@2
-  displayName: 'Download Foundation x64'
+  displayName: 'Download MRT x64'
   inputs:
     artifactName: "drop_TransportPackage_BuildAndTestMRT_release_x64"
     targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 - task: DownloadPipelineArtifact@2
-  displayName: 'Download Foundation x86'
+  displayName: 'Download MRT x86'
   inputs:
     artifactName: "drop_TransportPackage_BuildAndTestMRT_release_x86"
     targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 - task: DownloadPipelineArtifact@2
-  displayName: 'Download Foundation arm64'
+  displayName: 'Download MRT arm64'
   inputs:
     artifactName: "drop_TransportPackage_BuildAndTestMRT_release_arm64"
     targetPath: '$(Build.SourcesDirectory)\BuildOutput'

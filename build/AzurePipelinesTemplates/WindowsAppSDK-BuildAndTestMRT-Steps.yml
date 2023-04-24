@@ -6,6 +6,18 @@ parameters:
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
+# ToDo: WindowsAppSDK-BinaryAnalysis-steps.yml below ultimately invokes SDLNativeRules@2, which is out of support.
+# So for the time being, we explicitly call SDLNativeRules@3, which is currently supported. Consider eliminating this
+# extra step when we run PREFast as part of WindowsAppSDK-BinaryAnalysis-steps.yml below.
+- task: SDLNativeRules@3
+  displayName: 'Guardian: PreFast@3'
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  continueOnError: true
+  inputs:
+    userProvideBuildInfo: 'auto'
+    toolVersion: Latest
+
 # This is required to fix VSTest failing with
 # ##[error]This operation requires installation of Visual Studio with the Universal Windows Platform development workload selected
 - task: PowerShell@2

@@ -13,7 +13,6 @@ steps:
       targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
   - task: CopyFiles@2
-    displayName: MoveToOutputDirectory
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\packages'
       TargetFolder: '$(Build.SourcesDirectory)\packages'
