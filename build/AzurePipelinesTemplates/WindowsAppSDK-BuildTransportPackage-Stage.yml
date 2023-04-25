@@ -92,6 +92,8 @@ stages:
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
+      ob_sdl_suppression_suppressionFile: $(Build.SourcesDirectory)\dev\MRTCore\.gdn\gdnsuppress # This value is set on the job cdpx_engine, it will override the global gdnsuppress for this job
+      ob_sdl_suppression_suppressionSet: default
       ob_artifactSuffix: '_$(buildConfiguration)_$(buildPlatform)'
     steps:
     - template: WindowsAppSDK-BuildAndTestMRT-Steps.yml@self
