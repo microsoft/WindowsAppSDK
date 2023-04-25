@@ -19,9 +19,9 @@ steps:
   displayName: 'build MrtCore with MSBuild'
   inputs:
     platform: '$(buildPlatform)'
-    solution: '$(Build.SourcesDirectory)\mrt\MrtCore.sln'
+    solution: '$(Build.SourcesDirectory)\dev\MRTCore\mrt\MrtCore.sln'
     configuration: '$(buildConfiguration)'
-    msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+    msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)\dev\MRTCore\mrt\mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
 # ToDo: WindowsAppSDK-BinaryAnalysis-steps.yml below ultimately invokes SDLNativeRules@2, which is out of support.
 # So for the time being, we explicitly call SDLNativeRules@3, which is currently supported. Consider eliminating this
