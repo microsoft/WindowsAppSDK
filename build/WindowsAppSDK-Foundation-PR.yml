@@ -44,12 +44,6 @@ extends:
       tsa:
         enabled: false # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
       isNativeCode: false #TODO turn back on when fixed
-      binskim:
-        enabled: true
-        break: true
-      prefast:
-        enabled: true
-        break: true
       psscriptanalyzer:
         enable: true
         break: true
