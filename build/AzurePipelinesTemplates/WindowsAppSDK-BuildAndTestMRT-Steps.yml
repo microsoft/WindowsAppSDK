@@ -154,9 +154,3 @@ steps:
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
-
-- task: PowerShell@2
-  name: BuildBinaries
-  inputs:
-    filePath: 'BuildAll.ps1'
-    arguments: -clean

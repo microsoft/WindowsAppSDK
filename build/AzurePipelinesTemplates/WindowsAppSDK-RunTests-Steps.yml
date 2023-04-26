@@ -6,6 +6,14 @@ parameters:
   BinaryCompatSwitch: ''
   testLocale: ''
 steps:
+  - task: powershell@2
+    displayName: 'DevCheck: Setup/Verify development environment'
+    inputs:
+      targetType: filePath
+      filePath: DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies
+      workingDirectory: '$(Build.SourcesDirectory)'
+
   - task: DownloadPipelineArtifact@2
     displayName: 'Download Foundation x64'
     inputs:
