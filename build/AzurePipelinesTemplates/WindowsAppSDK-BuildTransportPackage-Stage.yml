@@ -67,7 +67,7 @@ stages:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
 
-  - job: BuildAndTestMRT
+  - job: BuildMRT
     pool:
       # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
       type: windows
@@ -96,9 +96,39 @@ stages:
       ob_sdl_suppression_suppressionSet: default
       ob_artifactSuffix: '_$(buildConfiguration)_$(buildPlatform)'
     steps:
-    - template: WindowsAppSDK-BuildAndTestMRT-Steps.yml@self
+    - template: WindowsAppSDK-BuildMRT-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
+
+  - job: TestMRT
+    pool:
+      type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022' # This stage is purely for ES, hence this custom pool
+    timeoutInMinutes: 120
+    strategy:
+      maxParallel: 10
+      matrix:
+        Release_x86:
+          buildPlatform: 'x86'
+          buildConfiguration: 'Release'
+          normalizedConfiguration: 'fre'
+          PGOBuildMode: 'Optimize'
+        Release_x64:
+          buildPlatform: 'x64'
+          buildConfiguration: 'Release'
+          normalizedConfiguration: 'fre'
+          PGOBuildMode: 'Optimize'
+        Release_Arm64:
+          buildPlatform: 'arm64'
+          buildConfiguration: 'Release'
+          normalizedConfiguration: 'fre'
+    dependsOn:
+    - BuildMRT
+    variables:
+      ob_outputDirectory: '$(REPOROOT)\out'
+    steps:
+    - template: WindowsAppSDK-TestMRT-Steps.yml@self
 
   # Arm64 uses a different VM type than x64, thus requiring them to be in different
   # pools, hence, we spilt the two scenarios into separate jobs.
@@ -108,7 +138,7 @@ stages:
       isArm64Platfrom: false
       dependsOn:
         - BuildBinaries
-        - BuildAndTestMRT
+        - BuildMRT
 
   - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
     parameters:
@@ -116,7 +146,7 @@ stages:
       isArm64Platfrom: true
       dependsOn:
         - BuildBinaries
-        - BuildAndTestMRT
+        - BuildMRT
 
   - job: NugetPackage
     pool:
@@ -126,7 +156,7 @@ stages:
     dependsOn:
     - BuildBinaries
     - BuildBinaries_release_anycpu
-    - BuildAndTestMRT
+    - BuildMRT
     condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'

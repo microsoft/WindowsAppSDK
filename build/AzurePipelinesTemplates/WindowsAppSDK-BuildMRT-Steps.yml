@@ -1,0 +1,76 @@
+parameters:
+- name: "SignOutput"
+  type: boolean
+  default: False
+
+steps:
+- template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+
+- task: PowerShell@2
+  name: BuildBinaries
+  inputs:
+    filePath: 'BuildAll.ps1'
+    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
+
+# component detection must happen *within* the build task
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish mrtcore binlog'
+  condition: succeededOrFailed()
+  inputs:
+    PathtoPublish: $(Build.SourcesDirectory)/BuildOutput/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
+    artifactName: binlogs
+
+- task: EsrpCodeSigning@2
+  inputs:
+    ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+    FolderPath: '$(build.SourcesDirectory)\BuildOutput'
+    Pattern: |
+      **/*.winmd
+      **/*.dll
+      **/*.exe
+    UseMinimatch: true
+    signConfigType: 'inlineSignParams'
+    inlineOperation: |
+      [
+        {
+          "keyCode": "CP-230012",
+          "operationSetCode": "SigntoolSign",
+          "parameters": [
+            {
+              "parameterName": "OpusName",
+              "parameterValue": "Microsoft"
+            },
+            {
+              "parameterName": "OpusInfo",
+              "parameterValue": "http://www.microsoft.com"
+            },
+            {
+              "parameterName": "PageHash",
+              "parameterValue": "/NPH"
+            },
+            {
+              "parameterName": "FileDigest",
+              "parameterValue": "/fd sha256"
+            },
+            {
+              "parameterName": "TimeStamp",
+              "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+            }
+          ],
+          "toolName": "signtool.exe",
+          "toolVersion": "6.2.9304.0"
+        }
+      ]
+    SessionTimeout: '60'
+    MaxConcurrency: '50'
+    MaxRetryAttempts: '5'
+    condition:
+      eq(${{ parameters.SignOutput }}, true)
+
+- task: CopyFiles@2
+  displayName: MoveToOutputDirectory
+  inputs:
+    SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
+    TargetFolder: '$(ob_outputDirectory)'
