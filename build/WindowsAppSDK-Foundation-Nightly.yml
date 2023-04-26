@@ -51,7 +51,7 @@ extends:
     globalSdl: # Refer the wiki for more options in this parameter: https://aka.ms/obpipelines/sdl
       tsa:
         enabled: $(TsaEnabled) # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
-      isNativeCode: false #TODO turn back on when fixed
+      isNativeCode: false #TODO turn back on when bug in CheckCFlags2.exe is fixed
       psscriptanalyzer:
         enable: true
         break: true
