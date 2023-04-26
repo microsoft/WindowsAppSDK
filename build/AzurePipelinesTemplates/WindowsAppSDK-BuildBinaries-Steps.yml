@@ -121,3 +121,9 @@ steps:
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\.user'
     TargetFolder: '$(ob_outputDirectory)\TestCert'
+
+- task: PowerShell@2
+  name: BuildBinaries
+  inputs:
+    filePath: 'BuildAll.ps1'
+    arguments: -clean
