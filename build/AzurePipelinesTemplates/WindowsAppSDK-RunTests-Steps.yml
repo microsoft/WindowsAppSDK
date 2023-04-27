@@ -15,9 +15,15 @@ steps:
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: DownloadPipelineArtifact@2
-    displayName: 'Download Foundation x64'
+    displayName: 'Download Foundation'
     inputs:
       artifactName: "drop_TransportPackage_BuildBinaries_$(buildConfiguration)_$(buildPlatform)"
+      targetPath: '$(Build.SourcesDirectory)\BuildOutput'
+
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download Foundation'
+    inputs:
+      artifactName: "drop_TransportPackage_BuildAndTestMRT_$(buildConfiguration)_$(buildPlatform)"
       targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
   - task: CopyFiles@2

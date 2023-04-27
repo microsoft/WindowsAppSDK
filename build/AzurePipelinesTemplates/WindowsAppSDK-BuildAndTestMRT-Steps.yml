@@ -54,53 +54,18 @@ steps:
 # component detection must happen *within* the build task
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 
-# Run the test locally on the Azure VM.
-- task: VSTest@2
-  displayName: 'test MRT: ManagedTests'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MrtCoreManagedTest.build.appxrecipe'
-    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreManagedTest'
-    testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+# # Run the test locally on the Azure VM.
+# - task: VSTest@2
+#   displayName: 'test MRT: ManagedTests'
+#   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+#   inputs:
+#     testSelector: 'testAssemblies'
+#     testAssemblyVer2: '**\MrtCoreManagedTest.build.appxrecipe'
+#     searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreManagedTest'
+#     testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
+#     platform: '$(buildPlatform)'
+#     configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
-  displayName: 'test MRT: UnitTests'
-  # These 3 MRT test suites were previously being run in Helix, but they are now being run via WindowsAppSDK-RunTestsInPipeline-Job.yml instead.
-  # Resort to running these tests right here on the current job agent if and only if we've got here from ProjectReunion-CI.yml, because we won't
-  # be running these tests via WindowsAppSDK-RunTestsInPipeline-Job.yml later in this specific flow. Otherwise, we can generally skip these tests.
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MrmUnitTest.dll'
-    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest'
-    testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@2
-  displayName: 'test MRT: BaseUnitTests'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MrmBaseUnitTests.dll'
-    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests'
-    testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@2
-  displayName: 'test MRT: UnpackagedTests'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
-    searchFolder: 'BuildOutput\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests'
-    testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
 
 - task: EsrpCodeSigning@2
   inputs:
