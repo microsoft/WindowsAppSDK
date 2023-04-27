@@ -6,34 +6,34 @@ parameters:
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
 
-# PREFast scan is enabled in this pipeline run, so we pass PreFastSetup to BuildAll.ps1 to get it to do the commonn setup steps, but short of
-# building the target via MSBuild.exe
-- task: PowerShell@2
-  name: PreFastSetup
-  inputs:
-    filePath: 'BuildAll.ps1'
-    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "PreFastSetup"
+# # PREFast scan is enabled in this pipeline run, so we pass PreFastSetup to BuildAll.ps1 to get it to do the commonn setup steps, but short of
+# # building the target via MSBuild.exe
+# - task: PowerShell@2
+#   name: PreFastSetup
+#   inputs:
+#     filePath: 'BuildAll.ps1'
+#     arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "PreFastSetup"
 
-# The PREFast task below only supports the VSBuild/MSbuild task, _not_ a direct call to MSBuild.exe.
-- task: MSBuild@1
-  displayName: 'build MrtCore with MSBuild'
-  inputs:
-    platform: '$(buildPlatform)'
-    solution: '$(Build.SourcesDirectory)\dev\MRTCore\mrt\MrtCore.sln'
-    configuration: '$(buildConfiguration)'
-    msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)\dev\MRTCore\mrt\mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+# # The PREFast task below only supports the VSBuild/MSbuild task, _not_ a direct call to MSBuild.exe.
+# - task: MSBuild@1
+#   displayName: 'build MrtCore with MSBuild'
+#   inputs:
+#     platform: '$(buildPlatform)'
+#     solution: '$(Build.SourcesDirectory)\dev\MRTCore\mrt\MrtCore.sln'
+#     configuration: '$(buildConfiguration)'
+#     msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)\dev\MRTCore\mrt\mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
-# ToDo: WindowsAppSDK-BinaryAnalysis-steps.yml below ultimately invokes SDLNativeRules@2, which is out of support.
-# So for the time being, we explicitly call SDLNativeRules@3, which is currently supported. Consider eliminating this
-# extra step when we run PREFast as part of WindowsAppSDK-BinaryAnalysis-steps.yml below.
-- task: SDLNativeRules@3
-  displayName: 'Guardian: PreFast@3'
-  env:
-    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-  continueOnError: true
-  inputs:
-    userProvideBuildInfo: 'auto'
-    toolVersion: Latest
+# # ToDo: WindowsAppSDK-BinaryAnalysis-steps.yml below ultimately invokes SDLNativeRules@2, which is out of support.
+# # So for the time being, we explicitly call SDLNativeRules@3, which is currently supported. Consider eliminating this
+# # extra step when we run PREFast as part of WindowsAppSDK-BinaryAnalysis-steps.yml below.
+# - task: SDLNativeRules@3
+#   displayName: 'Guardian: PreFast@3'
+#   env:
+#     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+#   continueOnError: true
+#   inputs:
+#     userProvideBuildInfo: 'auto'
+#     toolVersion: Latest
 
 # This is required to fix VSTest failing with
 # ##[error]This operation requires installation of Visual Studio with the Universal Windows Platform development workload selected
