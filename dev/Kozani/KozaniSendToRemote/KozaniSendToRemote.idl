@@ -1,0 +1,17 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace Microsoft.Kozani.SendToRemote
+{
+    [contractversion(1)]
+    apicontract SendToRemoteContract{};
+
+    [contract(SendToRemoteContract, 1)]
+    runtimeclass SendToRemoteManager
+    {
+        /// Get a SendToRemote manager for the caller's context.
+        static SendToRemoteManager Open();
+
+        void TODO_ReplaceMeWithRealContent();
+    };
+}

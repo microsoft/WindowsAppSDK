@@ -1,0 +1,20 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+#include "..\PurojekutoTenpuretNoProxyStubSuffix\PurojekutoTenpuretNoProxyStubSuffix-Constants.h"
+
+#include "PurojekutoTenpuretNoProxyStubSuffixInterface.idl"
+
+[uuid(PR_PUROJEKUTOTENPURETNOPROXYSTUBSUFFIX_LIBID_UUID)]
+[version(1.0)]
+library PurojekutoTenpuretNoProxyStubSuffix
+{
+    [uuid(PR_PUROJEKUTOTENPURETNOPROXYSTUBSUFFIX_CLSID_UUID)]
+    coclass PurojekutoTenpuretNoProxyStubSuffix
+    {
+        [default] interface IPurojekutoTenpuretNoProxyStubSuffix;
+    };
+};
