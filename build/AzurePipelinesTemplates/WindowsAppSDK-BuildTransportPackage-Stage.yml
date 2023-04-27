@@ -69,8 +69,9 @@ stages:
 
   - job: BuildAndTestMRT
     pool:
-      # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
       type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022' # This stage is purely for ES, hence this custom pool
     timeoutInMinutes: 120
     strategy:
       maxParallel: 10
