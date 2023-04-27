@@ -51,6 +51,9 @@ steps:
     filePath: 'BuildAll.ps1'
     arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
 
+# component detection must happen *within* the build task
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+
 # Run the test locally on the Azure VM.
 - task: VSTest@2
   displayName: 'test MRT: ManagedTests'
