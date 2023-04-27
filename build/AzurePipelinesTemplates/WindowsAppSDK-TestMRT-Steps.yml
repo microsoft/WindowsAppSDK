@@ -5,10 +5,6 @@ steps:
     artifactName: "drop_TransportPackage_BuildMRT_$(buildConfiguration)_$(buildPlatform)"
     targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
-- script: |
-    dir /s $(Build.SourcesDirectory)\BuildOutput
-  displayName: 'DIAG: dir testPayloadDir'
-
 # Run the test locally on the Azure VM.
 - task: VSTest@2
   displayName: 'test MRT: ManagedTests'
