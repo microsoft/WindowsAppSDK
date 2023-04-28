@@ -11,20 +11,12 @@ struct ResourceContext : ResourceContextT<ResourceContext>
 {
     ResourceContext() = delete;
     ResourceContext(MrmContextHandle resourceContext) : m_resourceContext(resourceContext) {}
-    ~ResourceContext()
-    {
-        winrt::slim_lock_guard guard {m_lock};
-        MrmDestroyResourceContext(m_resourceContext);
-    }
+    ~ResourceContext();
 
     winrt::Windows::Foundation::Collections::IMap<hstring, hstring> QualifierValues();
 
     void Apply();
-    MrmContextHandle GetContextHandle()
-    {
-        winrt::slim_shared_lock_guard guard {m_lock};
-        return m_resourceContext;
-    }
+    MrmContextHandle GetContextHandle();
 
 private:
     bool IsInitialized();
