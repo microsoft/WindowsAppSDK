@@ -54,6 +54,7 @@ steps:
 # component detection must happen *within* the build task
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 
+# TODO: Reenable Managed tests after https://microsoft.visualstudio.com/OS/_workitems/edit/44407037
 # # Run the test locally on the Azure VM.
 # - task: VSTest@2
 #   displayName: 'test MRT: ManagedTests'
@@ -65,7 +66,6 @@ steps:
 #     testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
 #     platform: '$(buildPlatform)'
 #     configuration: '$(buildConfiguration)'
-
 
 - task: EsrpCodeSigning@2
   inputs:
