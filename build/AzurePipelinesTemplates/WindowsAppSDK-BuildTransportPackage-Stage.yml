@@ -130,6 +130,7 @@ stages:
     condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
+      ob_artifactBaseName: "TransportPackage"
     steps:
     - template: WindowsAppSDK-PackNuget-Steps.yml@self
       parameters:
@@ -155,7 +156,7 @@ stages:
 
       - template: ..\..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
         parameters:
-          TransportPackageArtifactName: 'drop_TransportPackage_NugetPackage'
+          TransportPackageArtifactName: 'TransportPackage'
           WindowsAppSDKPackageVersion: $(VersionWithDevTag)
           BuildType:  'stable'
           TransportPackages:
@@ -184,7 +185,7 @@ stages:
     pool:
       type: windows
       isCustom: true
-      name: 'ProjectReunionESPool-2022' # This stage is purely for ES, hence this custom pool
+      name: 'ProjectReunionESPool-2022' # This job is purely for ES, hence this custom pool
     variables:
       WindowsAppSDKPackageVersion: $[ dependencies.NugetPackage.outputs['SetVersion.packageVersion'] ]
     steps:
