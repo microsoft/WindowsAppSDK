@@ -1,17 +1,31 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
 #include "ResourceContext.h"
 #include "ResourceContext.g.cpp"
 #include "winrt/Windows.Globalization.h"
+#include <wil\resource.h>
 
 const wchar_t c_languageQualifierName[] = L"Language";
 
 namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 {
-void ResourceContext::InitializeQualifierNames()
-{
+
+    bool ResourceContext::IsInitialized()
+    {
+        if (m_qualifierNames.empty() || m_qualifierValueMap == nullptr)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    void ResourceContext::InitializeQualifierNames()
+    {
     // m_resourceContext can be null when resource is not in a PRI file.
     if (m_resourceContext != nullptr)
     {
@@ -79,13 +93,28 @@ void ResourceContext::InitializeQualifierValueMap()
 
 winrt::Windows::Foundation::Collections::IMap<hstring, hstring> ResourceContext::QualifierValues()
 {
-    InitializeQualifierValueMap();
+    m_lock.lock_shared();
+
+    auto cleanupOnFailure = wil::scope_exit([&] { m_lock.unlock_shared(); });
+
+    if (!IsInitialized())
+    {
+        m_lock.unlock_shared();
+        m_lock.lock();
+
+        InitializeQualifierValueMap();
+
+        m_lock.unlock();
+        m_lock.lock_shared();
+    }
 
     return m_qualifierValueMap;
 }
 
 void ResourceContext::Apply()
 {
+    winrt::slim_lock_guard guard {m_lock};
+
     if (m_resourceContext == nullptr)
     {
         // Resource not handled by MRT. Nothing to apply.

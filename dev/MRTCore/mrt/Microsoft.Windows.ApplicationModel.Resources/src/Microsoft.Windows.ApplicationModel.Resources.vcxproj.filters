@@ -75,4 +75,10 @@
       <UniqueIdentifier>{54696afe-f42a-494a-bc24-3fd0d4192122}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Microsoft.Windows.ApplicationModel.Resources.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
+  </ItemGroup>
 </Project>
