@@ -147,6 +147,8 @@ stages:
     variables:
       WindowsAppSDKTransportPackageVersion: $[ dependencies.NugetPackage.outputs['SetVersion.packageVersion'] ]
       VersionWithDevTag: $[format('{0}.{1}.{2}-{3}.{4}.{5}', variables['major'], variables['minor'], variables['patch'], 'dev', variables['versionDate'], variables['versionCounter'])]
+      ob_outputDirectory: '$(REPOROOT)\out'
+      ob_artifactBaseName: "WindowsAppSDKNugetPackage"
     steps:
       #TODO: Remove the two template calls once Add-AppxPackage has been resolved
       - template: ..\..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
