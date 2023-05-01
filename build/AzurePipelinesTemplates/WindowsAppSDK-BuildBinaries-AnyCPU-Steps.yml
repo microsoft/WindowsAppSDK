@@ -20,6 +20,8 @@ steps:
     arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile NuGet.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
 
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+  parameters:
+    isOneBranch: ${{ parameters.isOneBranch }}
 
 - task: PowerShell@2
   name: BuildBinaries

@@ -8,6 +8,8 @@ parameters:
 
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+  parameters:
+    isOneBranch: ${{ parameters.isOneBranch }}
 
 # # PREFast scan is enabled in this pipeline run, so we pass PreFastSetup to BuildAll.ps1 to get it to do the commonn setup steps, but short of
 # # building the target via MSBuild.exe
