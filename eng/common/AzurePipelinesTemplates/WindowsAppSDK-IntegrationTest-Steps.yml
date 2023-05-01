@@ -88,9 +88,8 @@ steps:
         -Name "${{ parameters.TestSelection }}"
         -AzurePipelineBuild
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish test results'
-    condition: succeededOrFailed()
+  - task: CopyFiles@2
+    displayName: MoveToOutputDirectory
     inputs:
-      PathtoPublish: $(Build.SourcesDirectory)\PipelineTestOutput
-      artifactName: TestResults-WindowsAppSDKIntegration
+      SourceFolder: '$(build.SourcesDirectory)\PackLocation'
+      TargetFolder: '$(ob_outputDirectory)'
