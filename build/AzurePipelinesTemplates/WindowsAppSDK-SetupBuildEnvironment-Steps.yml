@@ -36,6 +36,16 @@ steps:
     arguments: >
       -SdkVersion "10.1.17763"
 
+- task: PowerShell@2
+  displayName: 'Add Windows SDK 10.1.17763'
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  inputs:
+    targetType: filePath
+    filePath: $(Build.SourcesDirectory)\build\scripts\windows-sdk.ps1
+    arguments: >
+      -SdkVersion "10.0.18362"
+
 - task: powershell@2
   displayName: 'DevCheck: Setup/Verify development environment'
   inputs:
