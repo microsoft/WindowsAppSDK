@@ -8,6 +8,9 @@ parameters:
 - name: "SignOutput"
   type: boolean
   default: False
+- name: "isOneBranch"
+  type: boolean
+  default: True
 
 stages:
 - stage: TransportPackage
