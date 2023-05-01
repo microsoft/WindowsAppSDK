@@ -2,6 +2,9 @@ parameters:
 - name: "SignOutput"
   type: boolean
   default: False
+- name: "isOneBranch"
+  type: boolean
+  default: True
 
 steps:
 - task: NuGetToolInstaller@1
@@ -115,3 +118,9 @@ steps:
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\packages'
     TargetFolder: '$(ob_outputDirectory)\packages'
+
+- ${{ if not( parameters.isOneBranch ) }}:
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(ob_outputDirectory)'
+      artifactName: '$(ob_artifactBaseName)'

@@ -30,7 +30,12 @@ stages:
 
   - job: BuildBinaries
     pool:
-      type: windows
+      ${{ if parameters.isOneBranch }}:
+        type: windows
+      ${{ if not( parameters.isOneBranch ) }}:
+        type: windows
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
     strategy:
       maxParallel: 10
       matrix:
@@ -51,29 +56,42 @@ stages:
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**;-|**\packages\**'
-      ob_artifactSuffix: '_$(buildConfiguration)_$(buildPlatform)'
+      ob_artifactBaseName: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
     steps:
     - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
+        isOneBranch: ${{ parameters.isOneBranch }}
 
   - job: BuildBinaries_release_anycpu
     # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
     # Can be expanded to add any other binary as needed
     pool:
-      type: windows
+      ${{ if parameters.isOneBranch }}:
+        type: windows
+      ${{ if not( parameters.isOneBranch ) }}:
+        type: windows
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
+      ob_artifactBaseName: "FoundationBinaries_release_anycpu"
     steps:
     - template: WindowsAppSDK-BuildBinaries-AnyCPU-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
+        isOneBranch: ${{ parameters.isOneBranch }}
 
   - job: BuildAndTestMRT
     pool:
       # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
-      type: windows
+      ${{ if parameters.isOneBranch }}:
+        type: windows
+      ${{ if not( parameters.isOneBranch ) }}:
+        type: windows
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
     timeoutInMinutes: 120
     strategy:
       maxParallel: 10
@@ -97,11 +115,12 @@ stages:
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
       ob_sdl_suppression_suppressionFile: $(Build.SourcesDirectory)\dev\MRTCore\.gdn\mrt.gdnsuppress # This value is set on the job cdpx_engine, it will override the global gdnsuppress for this job
       ob_sdl_suppression_suppressionSet: default
-      ob_artifactSuffix: '_$(buildConfiguration)_$(buildPlatform)'
+      ob_artifactBaseName: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
     steps:
     - template: WindowsAppSDK-BuildAndTestMRT-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
+        isOneBranch: ${{ parameters.isOneBranch }}
 
   # Arm64 uses a different VM type than x64, thus requiring them to be in different
   # pools, hence, we spilt the two scenarios into separate jobs.
@@ -138,6 +157,7 @@ stages:
     - template: WindowsAppSDK-PackNuget-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
+        isOneBranch: ${{ parameters.isOneBranch }}
 
   # Build WinAppSDK and Run Integration Test from TestAll.ps1
   - job: WinAppSDKIntegrationBuildAndTest

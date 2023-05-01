@@ -17,13 +17,13 @@ steps:
   - task: DownloadPipelineArtifact@2
     displayName: 'Download Foundation'
     inputs:
-      artifactName: "drop_TransportPackage_BuildBinaries_$(buildConfiguration)_$(buildPlatform)"
+      artifactName: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
       targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
   - task: DownloadPipelineArtifact@2
     displayName: 'Download Foundation'
     inputs:
-      artifactName: "drop_TransportPackage_BuildAndTestMRT_$(buildConfiguration)_$(buildPlatform)"
+      artifactName: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
       targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
   - task: CopyFiles@2
