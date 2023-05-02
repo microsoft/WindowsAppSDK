@@ -1,5 +1,5 @@
 parameters:
-- name: "SignOutput"
+- name: "signOutput"
   type: boolean
   default: False
 - name: "isOneBranch"
@@ -105,7 +105,7 @@ steps:
     MaxConcurrency: '50'
     MaxRetryAttempts: '5'
     condition:
-      eq(${{ parameters.SignOutput }}, true)
+      eq(${{ parameters.signOutput }}, true)
 
 # Artifacts are uploaded via ob_outputDirectory where the each vPack Push jobs downloads from
 # so the CopyFiles below are to move all the vPack files to the right locations

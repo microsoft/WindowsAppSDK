@@ -24,7 +24,7 @@ parameters:
 - name: "publishToMaestro"
   type: boolean
   default: False
-- name: "IgnoreFailures"
+- name: "ignoreFailures"
   type: boolean
   default: False
 
@@ -72,5 +72,5 @@ extends:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
       parameters:
         publishToMaestro: ${{ parameters.publishToMaestro }}
-        IgnoreFailures: ${{ parameters.IgnoreFailures }}
-        SignOutput: true
+        ignoreFailures: ${{ parameters.ignoreFailures }}
+        signOutput: true

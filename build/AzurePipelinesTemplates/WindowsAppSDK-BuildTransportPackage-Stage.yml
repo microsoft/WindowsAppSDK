@@ -2,10 +2,10 @@ parameters:
 - name: "publishToMaestro"
   type: boolean
   default: False
-- name: "IgnoreFailures"
+- name: "ignoreFailures"
   type: boolean
   default: False
-- name: "SignOutput"
+- name: "signOutput"
   type: boolean
   default: False
 - name: "isOneBranch"
@@ -60,7 +60,7 @@ stages:
     steps:
     - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
       parameters:
-        SignOutput: ${{ parameters.SignOutput }}
+        signOutput: ${{ parameters.signOutput }}
         isOneBranch: ${{ parameters.isOneBranch }}
 
   - job: BuildBinaries_release_anycpu
@@ -80,7 +80,7 @@ stages:
     steps:
     - template: WindowsAppSDK-BuildBinaries-AnyCPU-Steps.yml@self
       parameters:
-        SignOutput: ${{ parameters.SignOutput }}
+        signOutput: ${{ parameters.signOutput }}
         isOneBranch: ${{ parameters.isOneBranch }}
 
   - job: BuildAndTestMRT
@@ -119,7 +119,7 @@ stages:
     steps:
     - template: WindowsAppSDK-BuildAndTestMRT-Steps.yml@self
       parameters:
-        SignOutput: ${{ parameters.SignOutput }}
+        signOutput: ${{ parameters.signOutput }}
         isOneBranch: ${{ parameters.isOneBranch }}
 
   # Arm64 uses a different VM type than x64, thus requiring them to be in different
@@ -149,14 +149,14 @@ stages:
     - BuildBinaries
     - BuildBinaries_release_anycpu
     - BuildAndTestMRT
-    condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
+    condition: or(succeeded(), eq(${{ parameters.ignoreFailures }}, 'true'))
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_artifactBaseName: "TransportPackage"
     steps:
     - template: WindowsAppSDK-PackNuget-Steps.yml@self
       parameters:
-        SignOutput: ${{ parameters.SignOutput }}
+        signOutput: ${{ parameters.signOutput }}
         isOneBranch: ${{ parameters.isOneBranch }}
 
   # Build WinAppSDK and Run Integration Test from TestAll.ps1
@@ -206,7 +206,7 @@ stages:
     dependsOn:
     - NugetPackage
     # - WinAppSDKIntegrationBuildAndTest
-    condition: and(or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true')), eq('${{ parameters.publishToMaestro }}', 'true'))
+    condition: and(or(succeeded(), eq(${{ parameters.ignoreFailures }}, 'true')), eq('${{ parameters.publishToMaestro }}', 'true'))
     pool:
       type: windows
       isCustom: true

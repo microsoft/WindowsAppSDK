@@ -1,5 +1,5 @@
 parameters:
-- name: "SignOutput"
+- name: "signOutput"
   type: boolean
   default: False
 - name: "isOneBranch"
@@ -143,7 +143,7 @@ steps:
     MaxConcurrency: '50'
     MaxRetryAttempts: '5'
   condition:
-    eq(${{ parameters.SignOutput }}, true)
+    eq(${{ parameters.signOutput }}, true)
 
 - task: CopyFiles@2
   displayName: MoveToOutputDirectory
