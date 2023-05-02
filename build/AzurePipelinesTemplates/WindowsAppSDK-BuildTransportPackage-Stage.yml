@@ -143,7 +143,12 @@ stages:
   - job: NugetPackage
     pool:
       # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
-      type: windows
+      ${{ if parameters.IsOneBranch }}:
+        type: windows
+      ${{ if not( parameters.IsOneBranch ) }}:
+        type: windows
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
     timeoutInMinutes: 120
     dependsOn:
     - BuildBinaries
@@ -164,9 +169,12 @@ stages:
     dependsOn: ['NugetPackage']
     condition: succeeded()
     pool:
-      type: windows
-      isCustom: true
-      name: 'ProjectReunionESPool-2022' # This stage is purely a test stage so we will use our own pools here
+      ${{ if parameters.IsOneBranch }}:
+        type: windows
+      ${{ if not( parameters.IsOneBranch ) }}:
+        type: windows
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
     variables:
       WindowsAppSDKTransportPackageVersion: $[ dependencies.NugetPackage.outputs['SetVersion.packageVersion'] ]
       VersionWithDevTag: $[format('{0}.{1}.{2}-{3}.{4}.{5}', variables['major'], variables['minor'], variables['patch'], 'dev', variables['versionDate'], variables['versionCounter'])]
