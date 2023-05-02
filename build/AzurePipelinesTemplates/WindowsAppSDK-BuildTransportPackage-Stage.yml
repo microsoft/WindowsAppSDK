@@ -178,7 +178,6 @@ stages:
         parameters:
           AzureSubscriptionServiceConnection: 'ProjectReunion Resource Manager'
           NuGetServiceConnectionName: 'ProjectReunionInternal'
-          IsOneBranch: ${{ parameters.IsOneBranch }}
 
       - template: ..\..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
         parameters:
