@@ -7,6 +7,6 @@ variables:
 stages:
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
   parameters:
-    publishToMaestro: False
-    signOutput: False
-    isOneBranch: False
+    PublishToMaestro: False
+    SignOutput: False
+    IsOneBranch: False

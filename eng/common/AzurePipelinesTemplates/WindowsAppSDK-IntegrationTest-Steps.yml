@@ -24,6 +24,9 @@ parameters:
   - name: TestSelection
     type: string
     default: "*"
+  - name: "IsOneBranch"
+    type: boolean
+    default: False
 
 steps:
   - task: DownloadBuildArtifacts@0
@@ -88,8 +91,17 @@ steps:
         -Name "${{ parameters.TestSelection }}"
         -AzurePipelineBuild
 
-  - task: CopyFiles@2
-    displayName: MoveToOutputDirectory
-    inputs:
-      SourceFolder: '$(build.SourcesDirectory)\PackLocation'
-      TargetFolder: '$(ob_outputDirectory)'
+  - ${{ if not( parameters.IsOneBranch ) }}:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish test results'
+      condition: succeededOrFailed()
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)\PipelineTestOutput'
+        artifactName: 'TestResults-WindowsAppSDKIntegration'
+
+  - ${{ if parameters.IsOneBranch }}:
+    - task: CopyFiles@2
+      displayName: MoveToOutputDirectory
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)\PipelineTestOutput'
+        TargetFolder: '$(ob_outputDirectory)'

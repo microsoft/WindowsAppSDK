@@ -40,6 +40,9 @@ parameters:
       Foundation:
         name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
         version: 1.0.0-stable
+  - name: "IsOneBranch"
+    type: boolean
+    default: False
 
 steps:
   - ${{ if ne(parameters.TransportPackageArtifactName, '') }}:
@@ -73,8 +76,16 @@ steps:
         -TransportPackages "none"
         -AzurePipelineBuild
 
-  - task: CopyFiles@2
-    displayName: MoveToOutputDirectory
-    inputs:
-      SourceFolder: '$(build.SourcesDirectory)\PackLocation'
-      TargetFolder: '$(ob_outputDirectory)'
+  - ${{ if not( parameters.IsOneBranch ) }}:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Windows App SDK Packages'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)\PackLocation'
+        artifactName: 'WindowsAppSDKNugetPackage'
+
+  - ${{ if parameters.IsOneBranch }}:
+    - task: CopyFiles@2
+      displayName: MoveToOutputDirectory
+      inputs:
+        SourceFolder: '$(build.SourcesDirectory)\PackLocation'
+        TargetFolder: '$(ob_outputDirectory)'

@@ -51,5 +51,5 @@ extends:
     stages:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
       parameters:
-        publishToMaestro: False
-        signOutput: False
+        PublishToMaestro: False
+        SignOutput: False

@@ -1,8 +1,8 @@
 parameters:
-- name: "signOutput"
+- name: "SignOutput"
   type: boolean
   default: False
-- name: "isOneBranch"
+- name: "IsOneBranch"
   type: boolean
   default: True
 
@@ -21,7 +21,7 @@ steps:
 
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
   parameters:
-    isOneBranch: ${{ parameters.isOneBranch }}
+    IsOneBranch: ${{ parameters.IsOneBranch }}
 
 - task: PowerShell@2
   name: BuildBinaries
@@ -84,7 +84,7 @@ steps:
     MaxConcurrency: '50'
     MaxRetryAttempts: '5'
     condition:
-      eq(${{ parameters.signOutput }}, true)
+      eq(${{ parameters.SignOutput }}, true)
 
 # Artifacts are uploaded via ob_outputDirectory where the each vPack Push jobs downloads from
 # so the CopyFiles below are to move all the vPack files to the right locations
@@ -94,7 +94,7 @@ steps:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
 
-- ${{ if not( parameters.isOneBranch ) }}:
+- ${{ if not( parameters.IsOneBranch ) }}:
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(ob_outputDirectory)'

@@ -1,8 +1,8 @@
 parameters:
-- name: "signOutput"
+- name: "SignOutput"
   type: boolean
   default: False
-- name: "isOneBranch"
+- name: "IsOneBranch"
   type: boolean
   default: True
 
@@ -143,7 +143,7 @@ steps:
     MaxConcurrency: '50'
     MaxRetryAttempts: '5'
   condition:
-    eq(${{ parameters.signOutput }}, true)
+    eq(${{ parameters.SignOutput }}, true)
 
 - task: CopyFiles@2
   displayName: MoveToOutputDirectory
@@ -157,7 +157,7 @@ steps:
     SourceFolder: '$(build.artifactStagingDirectory)\FullNuget'
     TargetFolder: '$(ob_outputDirectory)\TransportPackage'
 
-- ${{ if not( parameters.isOneBranch ) }}:
+- ${{ if not( parameters.IsOneBranch ) }}:
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(ob_outputDirectory)'

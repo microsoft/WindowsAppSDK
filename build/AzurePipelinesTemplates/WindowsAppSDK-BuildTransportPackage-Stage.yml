@@ -1,14 +1,14 @@
 parameters:
-- name: "publishToMaestro"
+- name: "PublishToMaestro"
   type: boolean
   default: False
-- name: "ignoreFailures"
+- name: "IgnoreFailures"
   type: boolean
   default: False
-- name: "signOutput"
+- name: "SignOutput"
   type: boolean
   default: False
-- name: "isOneBranch"
+- name: "IsOneBranch"
   type: boolean
   default: True
 
@@ -30,9 +30,9 @@ stages:
 
   - job: BuildBinaries
     pool:
-      ${{ if parameters.isOneBranch }}:
+      ${{ if parameters.IsOneBranch }}:
         type: windows
-      ${{ if not( parameters.isOneBranch ) }}:
+      ${{ if not( parameters.IsOneBranch ) }}:
         type: windows
         isCustom: true
         name: 'ProjectReunionESPool-2022'
@@ -60,16 +60,16 @@ stages:
     steps:
     - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
       parameters:
-        signOutput: ${{ parameters.signOutput }}
-        isOneBranch: ${{ parameters.isOneBranch }}
+        SignOutput: ${{ parameters.SignOutput }}
+        IsOneBranch: ${{ parameters.IsOneBranch }}
 
   - job: BuildBinaries_release_anycpu
     # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
     # Can be expanded to add any other binary as needed
     pool:
-      ${{ if parameters.isOneBranch }}:
+      ${{ if parameters.IsOneBranch }}:
         type: windows
-      ${{ if not( parameters.isOneBranch ) }}:
+      ${{ if not( parameters.IsOneBranch ) }}:
         type: windows
         isCustom: true
         name: 'ProjectReunionESPool-2022'
@@ -80,15 +80,15 @@ stages:
     steps:
     - template: WindowsAppSDK-BuildBinaries-AnyCPU-Steps.yml@self
       parameters:
-        signOutput: ${{ parameters.signOutput }}
-        isOneBranch: ${{ parameters.isOneBranch }}
+        SignOutput: ${{ parameters.SignOutput }}
+        IsOneBranch: ${{ parameters.IsOneBranch }}
 
   - job: BuildAndTestMRT
     pool:
       # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
-      ${{ if parameters.isOneBranch }}:
+      ${{ if parameters.IsOneBranch }}:
         type: windows
-      ${{ if not( parameters.isOneBranch ) }}:
+      ${{ if not( parameters.IsOneBranch ) }}:
         type: windows
         isCustom: true
         name: 'ProjectReunionESPool-2022'
@@ -119,8 +119,8 @@ stages:
     steps:
     - template: WindowsAppSDK-BuildAndTestMRT-Steps.yml@self
       parameters:
-        signOutput: ${{ parameters.signOutput }}
-        isOneBranch: ${{ parameters.isOneBranch }}
+        SignOutput: ${{ parameters.SignOutput }}
+        IsOneBranch: ${{ parameters.IsOneBranch }}
 
   # Arm64 uses a different VM type than x64, thus requiring them to be in different
   # pools, hence, we spilt the two scenarios into separate jobs.
@@ -149,15 +149,15 @@ stages:
     - BuildBinaries
     - BuildBinaries_release_anycpu
     - BuildAndTestMRT
-    condition: or(succeeded(), eq(${{ parameters.ignoreFailures }}, 'true'))
+    condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_artifactBaseName: "TransportPackage"
     steps:
     - template: WindowsAppSDK-PackNuget-Steps.yml@self
       parameters:
-        signOutput: ${{ parameters.signOutput }}
-        isOneBranch: ${{ parameters.isOneBranch }}
+        SignOutput: ${{ parameters.SignOutput }}
+        IsOneBranch: ${{ parameters.IsOneBranch }}
 
   # Build WinAppSDK and Run Integration Test from TestAll.ps1
   - job: WinAppSDKIntegrationBuildAndTest
@@ -178,12 +178,14 @@ stages:
         parameters:
           AzureSubscriptionServiceConnection: 'ProjectReunion Resource Manager'
           NuGetServiceConnectionName: 'ProjectReunionInternal'
+          IsOneBranch: ${{ parameters.IsOneBranch }}
 
       - template: ..\..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
         parameters:
           TransportPackageArtifactName: 'TransportPackage'
           WindowsAppSDKPackageVersion: $(VersionWithDevTag)
           BuildType:  'stable'
+          IsOneBranch: ${{ parameters.IsOneBranch }}
           TransportPackages:
             FoundationPackage:
               Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
@@ -206,7 +208,7 @@ stages:
     dependsOn:
     - NugetPackage
     # - WinAppSDKIntegrationBuildAndTest
-    condition: and(or(succeeded(), eq(${{ parameters.ignoreFailures }}, 'true')), eq('${{ parameters.publishToMaestro }}', 'true'))
+    condition: and(or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true')), eq('${{ parameters.PublishToMaestro }}', 'true'))
     pool:
       type: windows
       isCustom: true

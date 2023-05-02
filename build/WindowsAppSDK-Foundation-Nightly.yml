@@ -21,10 +21,10 @@
 trigger: none
 
 parameters:
-- name: "publishToMaestro"
+- name: "PublishToMaestro"
   type: boolean
   default: False
-- name: "ignoreFailures"
+- name: "IgnoreFailures"
   type: boolean
   default: False
 
@@ -71,6 +71,6 @@ extends:
     stages:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
       parameters:
-        publishToMaestro: ${{ parameters.publishToMaestro }}
-        ignoreFailures: ${{ parameters.ignoreFailures }}
-        signOutput: true
+        PublishToMaestro: ${{ parameters.PublishToMaestro }}
+        IgnoreFailures: ${{ parameters.IgnoreFailures }}
+        SignOutput: true

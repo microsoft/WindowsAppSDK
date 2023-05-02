@@ -1,15 +1,15 @@
 parameters:
-- name: "signOutput"
+- name: "SignOutput"
   type: boolean
   default: False
-- name: "isOneBranch"
+- name: "IsOneBranch"
   type: boolean
   default: True
 
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
   parameters:
-    isOneBranch: ${{ parameters.isOneBranch }}
+    IsOneBranch: ${{ parameters.IsOneBranch }}
 
 # # PREFast scan is enabled in this pipeline run, so we pass PreFastSetup to BuildAll.ps1 to get it to do the commonn setup steps, but short of
 # # building the target via MSBuild.exe
@@ -117,7 +117,7 @@ steps:
     MaxConcurrency: '50'
     MaxRetryAttempts: '5'
     condition:
-      eq(${{ parameters.signOutput }}, true)
+      eq(${{ parameters.SignOutput }}, true)
 
 - task: CopyFiles@2
   displayName: MoveToOutputDirectory
@@ -125,7 +125,7 @@ steps:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
 
-- ${{ if not( parameters.isOneBranch ) }}:
+- ${{ if not( parameters.IsOneBranch ) }}:
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(ob_outputDirectory)'
