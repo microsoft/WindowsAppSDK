@@ -11,10 +11,9 @@ UpdateVersionDetailsPath: Path to a ps1 or cmd that updates version.details.xml.
 Clean: Performs a clean on BuildOutput, Obj, and build\override
 
 Note about building in different environments.
-The feed the nuget.config points to changes depending on the branch.
+The feed the NuGet.config points to changes depending on the branch.
 Develop branch points to the internal feed.
 Main branch points to the external feed.
-
 #>
 
 Param(
@@ -106,13 +105,25 @@ Try {
         # If $AzureBuildStep is not "all", that means we are in the pipeline
         $WindowsAppSDKBuildPipeline = 1
     }
-    if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildBinaries") -Or ($AzureBuildStep -eq "BuildMRT"))) 
+    # PreFastSetup is specifically for use when preparing for PREFast scans. It triggers the same actions below as BuildBinaries or BuildMRT, except 
+    # PreFastSetup stops short of calling msBuild.exe to build the target, which the Guardian:PREFast task does _not_ support, so the caller of this 
+    # script needs to resort to calling the MSBuild/VSBuild task later to build the target, which the Guardian:PREFast task does support. Structuring 
+    # the code this way allows minimally diveraging the flow while supporting building the target both via this script and the VSBuild/MSBuild task.
+    if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildBinaries") -Or ($AzureBuildStep -eq "BuildMRT") -Or ($AzureBuildStep -eq "PreFastSetup"))) 
     {
-        & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile nuget.config
-        & .\.nuget\nuget.exe restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" -configfile nuget.config
+        & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile NuGet.config
 
         if ($lastexitcode -ne 0)
         {
+            write-host "ERROR: restore WindowsAppRuntime.sln FAILED."
+            exit 1
+        }
+
+        & .\.nuget\nuget.exe restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" -configfile NuGet.config
+
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: restore Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
             exit 1
         }
 
@@ -132,9 +143,11 @@ Try {
 
         if ($lastexitcode -ne 0)
         {
+            write-host "ERROR: Copy-Item -Force $srcPath.FullName $destPath.FullName FAILED."
             exit 1
         }
     }
+    # PreFastSetup intentionally skips the call to MSBuild.exe below.
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildBinaries")) 
     {
         foreach($configurationToRun in $configuration.Split(","))
@@ -153,26 +166,56 @@ Try {
                                 /p:WindowsAppSDKBuildPipeline=$WindowsAppSDKBuildPipeline
                 if ($lastexitcode -ne 0)
                 {
+                    write-host "ERROR: msbuild.exe /restore WindowsAppRuntime.sln FAILED."
                     exit 1
                 }
             }
         }
     }
-    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMRT")) 
+    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMRT") -Or ($AzureBuildStep -eq "PreFastSetup")) 
     {
         #------------------
         #    Build mrtcore.sln and move output to staging.
         #------------------
 
         #Restore packages from mrt.
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\MrtCore.sln" -ConfigFile nuget.config
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config" -ConfigFile nuget.config
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config" -ConfigFile nuget.config
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmmin\packages.config" -ConfigFile nuget.config
-        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\unittests\packages.config" -ConfigFile nuget.config
+        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\MrtCore.sln" -ConfigFile NuGet.config
 
         if ($lastexitcode -ne 0)
         {
+            write-host "ERROR: restore MrtCore.sln FAILED."
+            exit 1
+        }
+
+        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\Microsoft.Windows.ApplicationModel.Resources\src\packages.config" -ConfigFile NuGet.config
+
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: restore Microsoft.Windows.ApplicationModel.Resources\src\packages.config FAILED."
+            exit 1
+        }
+
+        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmex\packages.config" -ConfigFile NuGet.config
+
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: restore mrm\mrmex\packages.config FAILED."
+            exit 1
+        }
+
+        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\mrmmin\packages.config" -ConfigFile NuGet.config
+
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: restore mrmmin\packages.config FAILED."
+            exit 1
+        }
+
+        & .\.nuget\nuget.exe restore "$MRTSourcesDirectory\mrt\mrm\unittests\packages.config" -ConfigFile NuGet.config
+
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: restore unittests\packages.config FAILED."
             exit 1
         }
 
@@ -180,22 +223,32 @@ Try {
         foreach($platformToRun in $platform.Split(","))
         {
             & $MRTSourcesDirectory\build\init.cmd /envonly $platformToRun\fre
+
+            if ($lastexitcode -ne 0)
+            {
+                write-host "ERROR: init.cmd /envonly $platformToRun\fre FAILED."
+            }
         }
 
-        # Build mrt core.
-        foreach($configurationToRun in $configuration.Split(","))
+        # PreFastSetup intentionally skips the call to MSBuild.exe below.
+        if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMRT")) 
         {
-            foreach($platformToRun in $platform.Split(","))
+            # Build mrt core.
+            foreach($configurationToRun in $configuration.Split(","))
             {
-                write-host "Building MrtCore.sln for configuration $configurationToRun and platform:$platformToRun"
-                & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" `
-                                /p:Configuration=$configurationToRun,Platform=$platformToRun `
-                                /p:PGOBuildMode=$PGOBuildMode `
-                                /binaryLogger:"BuildOutput/mrtcore.$platformToRun.$configurationToRun.binlog"
-
-                if ($lastexitcode -ne 0)
+                foreach($platformToRun in $platform.Split(","))
                 {
-                    exit 1
+                    write-host "Building MrtCore.sln for configuration $configurationToRun and platform:$platformToRun"
+                    & $msBuildPath /restore "$MRTSourcesDirectory\mrt\MrtCore.sln" `
+                                    /p:Configuration=$configurationToRun,Platform=$platformToRun `
+                                    /p:PGOBuildMode=$PGOBuildMode `
+                                    /binaryLogger:"BuildOutput/mrtcore.$platformToRun.$configurationToRun.binlog"
+
+                    if ($lastexitcode -ne 0)
+                    {
+                        write-host "ERROR: msbuild restore '$MRTSourcesDirectory\mrt\MrtCore.sln' FAILED."
+                        exit 1
+                    }
                 }
             }
         }
@@ -209,6 +262,7 @@ Try {
         & $msBuildPath /restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" /p:Configuration=$configurationForMrtAndAnyCPU,Platform=AnyCPU
         if ($lastexitcode -ne 0)
         {
+            write-host "ERROR: msbuild restore Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
             exit 1
         }
     }
@@ -235,6 +289,7 @@ Try {
                 .\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$BasePath" -Platform $PlatformToRun -Configuration $ConfigurationToRun
                 if ($lastexitcode -ne 0)
                 {
+                    write-host "ERROR: msCopyFilesToStagingDir.ps1 FAILED."
                     exit 1
                 }
             }
@@ -302,10 +357,18 @@ Try {
         #------------------
 
         Copy-Item -Path "$nuSpecsPath\AppxManifest.xml" -Destination "$BasePath"
+
+        if ($lastexitcode -ne 0)
+        {
+            write-host "ERROR: Copy-Item -Path AppxManifest.xml FAILED."
+            exit 1
+        }
+
         Copy-Item -Path "LICENSE" -Destination "$BasePath" -force
 
         if ($lastexitcode -ne 0)
         {
+            write-host "ERROR: Copy-Item -Path LICENSE FAILED."
             exit 1
         }
 
@@ -322,6 +385,7 @@ Try {
 
         if ($lastexitcode -ne 0)
         {
+            write-host "ERROR: xslt.Transform FAILED."
             exit 1
         }
     }
@@ -340,6 +404,7 @@ Try {
 
         if ($lastexitcode -ne 0)
         {
+            write-host "ERROR: nuget.exe pack $nuspecPath FAILED."
             exit 1
         }
     }

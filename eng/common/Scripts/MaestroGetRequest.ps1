@@ -16,7 +16,7 @@ $fullUri = $url + $api
 
 Write-Host $fullUri
 
-$response = Invoke-WebRequest -Method 'GET' -Uri $fullUri -Headers $headers -ContentType $contentType
+$response = Invoke-WebRequest -Method 'GET' -Uri $fullUri -Headers $headers -ContentType $contentType -UseBasicParsing
 Write-Host $response
 
 if ($Response.statuscode -lt '200')

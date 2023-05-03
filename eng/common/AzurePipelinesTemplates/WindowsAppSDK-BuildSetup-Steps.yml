@@ -1,6 +1,6 @@
-# This yml template checkouts the ProjectReunionInternal repository and runs the setup 
-# necessary for eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps to succeed. 
-# 
+# This yml template checkouts the ProjectReunionInternal repository and runs the setup
+# necessary for eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps to succeed.
+#
 # Parameters:
 #   ArtifactName
 #     Name of the Artifact where the Transport package for the build lives
@@ -22,7 +22,7 @@ parameters:
     default: 'ProjectReunionInternal'
 
 steps:
-  - checkout: git://ProjectReunion/WindowsAppSDKAggregator@release/1.3-experimental1
+  - checkout: git://ProjectReunion/WindowsAppSDKAggregator
 
   - task: AzureKeyVault@1
     inputs:

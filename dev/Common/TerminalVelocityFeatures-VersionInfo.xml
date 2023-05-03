@@ -9,14 +9,8 @@
 
     <!-- Enabled variants -->
     <feature>
-        <name>Feature_DeploymentAPI</name>
-        <description>DeploymentAPI for the WindowsAppRuntime</description>
-        <state>AlwaysEnabled</state>
-    </feature>
-
-    <feature>
-        <name>Feature_DeploymentRepair</name>
-        <description>Deployment Repair for the WindowsAppRuntime</description>
+        <name>Feature_VersionInfoAPI</name>
+        <description>VersionInfo APIs to access Windows App SDK version information at runtime</description>
         <state>AlwaysEnabled</state>
         <alwaysDisabledChannelTokens>
             <channelToken>Preview</channelToken>
