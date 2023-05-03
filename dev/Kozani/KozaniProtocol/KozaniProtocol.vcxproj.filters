@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Kozani.Activation.proto" />
+    <None Include="Kozani.DVC.proto" />
     <None Include="packages.config" />
   </ItemGroup>
 </Project>

@@ -21,21 +21,18 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Microsoft.Kozani.Activation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="KozaniManagerActivity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KozaniManagerTraceLogging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ConnectionManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Microsoft.Kozani.Activation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="KozaniManager-Constants.h">
@@ -53,23 +50,19 @@
     <ClInclude Include="KozaniProtobufMessages.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="KozaniManager-Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectionManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-<<<<<<< HEAD
-    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
-  </ItemGroup>
-  <ItemGroup>
-=======
->>>>>>> develop
     <ResourceCompile Include="KozaniManager.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
-<<<<<<< HEAD
 </Project>
-=======
-</Project>
->>>>>>> develop
