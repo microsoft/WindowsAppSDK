@@ -10,17 +10,17 @@ namespace TP = ::Test::Packages;
 
 namespace KozaniManagerTestPackage
 {
-    constexpr PCWSTR c_PackageDirName = L"KozaniManager";
-    constexpr PCWSTR c_PackageFullName = L"KozaniManager_1.0.0.0_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageDirName{ L"KozaniManager" };
+    constexpr PCWSTR c_PackageFullName{ L"KozaniManager_1.0.0.0_neutral__8wekyb3d8bbwe" };
 }
 
 HRESULT RegisterDVCPluginIfNeeded()
 {
-    PCWSTR subkey = L"Software\\Microsoft\\Terminal Server Client\\Default\\AddIns\\KozaniDVC";
-    PCWSTR keyname = L"Name";
+    PCWSTR subkey{ L"Software\\Microsoft\\Terminal Server Client\\Default\\AddIns\\KozaniDVC" };
+    PCWSTR keyname{ L"Name" };
 
     wil::unique_hkey key;
-    LSTATUS result = ::RegOpenKey(HKEY_CURRENT_USER, subkey, &key);
+    const LSTATUS result{ ::RegOpenKey(HKEY_CURRENT_USER, subkey, &key) };
     if (result == ERROR_SUCCESS)
     {
         WEX::Logging::Log::Comment(L"DVC plugin key already exists!");
@@ -30,7 +30,7 @@ HRESULT RegisterDVCPluginIfNeeded()
     PCWSTR kozaniDvcClientClsid{ L"ed202fc8-ee21-4bf2-9681-23a8e97be9f3" };
     WCHAR regCommand[MAX_PATH];
     swprintf_s(regCommand, L"add \"HKCU\\%s\" /v %s /t REG_SZ /d {%s}", subkey, keyname, kozaniDvcClientClsid);
-    HINSTANCE hInst = ShellExecute(nullptr, nullptr, L"reg.exe", regCommand, nullptr, SW_SHOW);
+    const HINSTANCE hInst{ ShellExecute(nullptr, nullptr, L"reg.exe", regCommand, nullptr, SW_SHOW) };
     WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ShellExecute reg add finished with code: %d", hInst));
 
     if ((int)hInst > 32)
@@ -39,7 +39,7 @@ HRESULT RegisterDVCPluginIfNeeded()
     }
     else
     {
-        HRESULT hr = HRESULT_FROM_WIN32((DWORD)hInst);
+        const HRESULT hr{ HRESULT_FROM_WIN32(reinterpret_cast<DWORD>(hInst)) };
         WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ShellExecute failed with: 0x%x", hr));
         return hr;
     }

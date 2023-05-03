@@ -15,11 +15,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)KozaniDvcProtocol.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Logging.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)KozaniDvc-Constants.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)KozaniDvcProtocol.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Logging.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)wil_kozani.h" />
   </ItemGroup>
 </Project>

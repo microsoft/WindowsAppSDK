@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ConnectionManager.h" />
+    <ClInclude Include="Module.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="KozaniDvcServer.h" />
     <ClInclude Include="KozaniRemoteManager-Constants.h" />

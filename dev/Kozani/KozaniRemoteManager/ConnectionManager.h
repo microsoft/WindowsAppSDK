@@ -13,7 +13,6 @@ namespace Microsoft::Kozani::KozaniRemoteManager
     public:
         friend class KozaniDvcServer;
 
-        ConnectionManager() = default;
         ~ConnectionManager() noexcept;
 
         void Connect(PCSTR connectionId);
@@ -21,7 +20,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
     private:
         void WaitForFailedDvcServerDeletionThread();
-        UINT64 GetNewActivityId();
+        uint64_t GetNewActivityId();
         void ProcessAppTermination(AppActivationInfo* appActivationInfo);
 
     private:
@@ -35,13 +34,17 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
         std::thread m_failedDvcServerDeletionThread;
 
-        wil::srwlock m_newActivityIdLock;
+        wil::srwlock m_nextActivityIdLock;
         
         // New activity Id starts from 1. 0 means the activity Id is not set.
-        UINT64 m_newActivityId{ 1 };
+        static const uint64_t c_activityId_Unknown{};
+        uint64_t m_nextActivityId{ 1 };
 
-        std::map<UINT64, AppActivationInfo> m_activityMap;
-        std::map<DWORD, UINT64> m_processIdMap;
+        std::map<uint64_t, AppActivationInfo> m_activityMap;
+
+        typedef uint64_t ActivityId;
+        std::map<DWORD, ActivityId> m_processIdMap;
+
         wil::srwlock m_activityMapLock;
     };
 }

@@ -5,17 +5,13 @@
 
 #include "pch.h"
 #include <shobjidl.h>
-#include <wtsapi32.h>
 #include <pchannel.h>
 #include <Kozani.DVC.pb.h>
 
 #include "KozaniDvcServer.h"
-#include "ConnectionManager.h"
-#include "Logging.h"
+#include "Module.h"
 
 using namespace Microsoft::Kozani::DvcProtocol;
-
-extern Microsoft::Kozani::KozaniRemoteManager::ConnectionManager g_connectionManager;
 
 namespace Microsoft::Kozani::KozaniRemoteManager
 {
@@ -29,7 +25,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         }
 
         AppActivationInfo* appInfo{ reinterpret_cast<AppActivationInfo*>(parameter) };
-        g_connectionManager.ProcessAppTermination(appInfo);
+        KozaniRemoteManagerModule::GetConnectionManagerInstance().ProcessAppTermination(appInfo);
     }
     CATCH_LOG_RETURN()
 
@@ -69,17 +65,17 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
     HRESULT KozaniDvcServer::EnableConnectionManagerReporting()
     {
-        auto lock{ m_connectionManagerLock.lock_exclusive() };
+        auto lock{ m_errorReportingLock.lock_exclusive() };
 
         if (FAILED(m_errorFromDvcListener))
         {
-            // DVC listener thread has encountered error before m_connectionManager is set. Return the failure right away.
+            // DVC listener thread has encountered error before ConnectionManager reporting is enabled. Return the failure right away.
             return m_errorFromDvcListener;
         }
 
         if (FAILED(m_errorFromDvcWriter))
         {
-            // DVC writer has encountered error before m_connectionManager is set. Return the failure right away.
+            // DVC writer has encountered error before ConnectionManager reporting is enabled. Return the failure right away.
             return m_errorFromDvcWriter;
         }
 
@@ -91,49 +87,29 @@ namespace Microsoft::Kozani::KozaniRemoteManager
     {
         auto lock{ std::unique_lock<std::recursive_mutex>(m_dvcLock) };
 
-        using unique_channel_handle = wil::unique_any_handle_null<decltype(&::WTSVirtualChannelClose), ::WTSVirtualChannelClose>;
-        using unique_channel_memory = wil::unique_any<void*, decltype(&::WTSFreeMemory), ::WTSFreeMemory>;
+        wil::unique_channel_handle wtsHandle{ 
+            ::WTSVirtualChannelOpenEx(WTS_CURRENT_SESSION, const_cast<LPSTR>(DvcChannelName), WTS_CHANNEL_OPTION_DYNAMIC) };
 
-        unique_channel_handle wtsHandle(::WTSVirtualChannelOpenEx(
-            WTS_CURRENT_SESSION,
-            const_cast<LPSTR>(DvcChannelName),
-            WTS_CHANNEL_OPTION_DYNAMIC));
+        // If wtsHandle is nullptr, the DVC channel doesn't exist. It could mean the current session is not a remote session or 
+        // the client of this remote session has not created a listener of this DVC channel. It is required that the client has 
+        // created a DVC channel listener to listen to this specific channel name before the server can open the named DVC channel. 
+        // Otherwise, ERROR_GEN_FAILURE (31) may be returned.
+        THROW_LAST_ERROR_IF_NULL(wtsHandle);
 
-        if (wtsHandle == nullptr)
-        {
-            // DVC channel didn't exist - the current session is not a remote session or the client of this remote session has not
-            // created a listener of this DVC channel. It is required that the client has created a DVC channel listener to listen
-            // to this specific channel name before the server can open the named DVC channle. Otherwise, ERROR_GEN_FAILURE (31) 
-            // may be returned.
-            LogDebugMessage("WTSVirtualChannelOpenEx failed with error: %u", GetLastError());
-            winrt::throw_last_error();
-        }
-
-        unique_channel_memory fileHandle;
+        wil::unique_wtsmem_ptr<void> fileHandleBuffer;
         DWORD len{};
-
-        THROW_LAST_ERROR_IF(!::WTSVirtualChannelQuery(
-            wtsHandle.get(),
-            WTSVirtualFileHandle,
-            fileHandle.put(),
-            &len));
+        THROW_IF_WIN32_BOOL_FALSE(::WTSVirtualChannelQuery(wtsHandle.get(), WTSVirtualFileHandle, wil::out_param(fileHandleBuffer), &len));
         THROW_HR_IF(E_UNEXPECTED, (len != sizeof(HANDLE)));
 
-        THROW_IF_WIN32_BOOL_FALSE(::DuplicateHandle(
-            ::GetCurrentProcess(),
-            *reinterpret_cast<HANDLE*>(fileHandle.get()),
-            ::GetCurrentProcess(),
-            m_dvcHandle.put(),
-            0,
-            FALSE,
-            DUPLICATE_SAME_ACCESS));
+        THROW_IF_WIN32_BOOL_FALSE(::DuplicateHandle(::GetCurrentProcess(), *reinterpret_cast<HANDLE*>(fileHandleBuffer.get()),
+            ::GetCurrentProcess(), m_dvcHandle.put(), 0, FALSE, DUPLICATE_SAME_ACCESS));
     }
 
     // This function will be executed in a separate thread from the main thread and shouldn't throw any exceptions.
     // Any uncaught exceptions will cause the process to terminate.
     void KozaniDvcServer::ProcessDvcIncomingDataThreadFunc() noexcept try
     {
-        HRESULT hr{ LOG_IF_FAILED(ProcessDvcIncomingData()) };
+        const HRESULT hr{ LOG_IF_FAILED(ProcessDvcIncomingData()) };
         if (FAILED(hr))
         {
             DvcListenerThreadExiting(hr, "Failed to process incoming DVC data");
@@ -143,9 +119,9 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
     HRESULT KozaniDvcServer::ProcessDvcIncomingData() noexcept try
     {
-        bool exitThread = false;
+        bool exitThread{};
         wil::unique_event_nothrow readComplete;
-        HRESULT hr = readComplete.create();
+        HRESULT hr{ LOG_IF_FAILED(readComplete.create()) };
         if (FAILED(hr))
         {
             DvcListenerThreadExiting(hr, "Failed to create readComplete event");
@@ -155,6 +131,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         // CHANNEL_PDU_LENGTH is the max amount of data sent/received in one DVC operation. Data larger than that is segmented into chunks of 
         // that size and sent/received as multiple operations.
         BYTE readBuffer[CHANNEL_PDU_LENGTH];
+        
         std::vector<BYTE> pduBuffer;
         UINT32 pduSize{};
         bool isPartialData{};
@@ -163,9 +140,8 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
         while (!exitThread)
         {
-            DWORD error{};
-
             // Set up async read on the DVC.
+            DWORD error{};
             if (!ReadFile(m_dvcHandle.get(), readBuffer, sizeof(readBuffer), nullptr, &overlappedRead)
                 && ((error = GetLastError()) != ERROR_IO_PENDING))
             {
@@ -174,14 +150,14 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                 RETURN_HR(hr);
             }
 
-            HANDLE events[] = { m_dvcThreadExit.get(), readComplete.get() };
-            LogDebugMessage("[DVC] Listener thread starting to wait");
+            HANDLE events[]{ m_dvcThreadExit.get(), readComplete.get() };
+            LOG_HR_MSG(KOZANI_S_INFO, "[DVC] Listener thread starting to wait");
 
             // When we reach this point, the DVC listener thread has passed setup phase and is running.
             m_dvcThreadStarted.SetEvent();
 
-            DWORD result = WaitForMultipleObjects(ARRAYSIZE(events), events, FALSE, INFINITE);
-            LogDebugMessage("[DVC] Listener thread wait completed (result=0x%x)", result);
+            const DWORD result{ WaitForMultipleObjects(ARRAYSIZE(events), events, FALSE, INFINITE) };
+            LOG_HR_MSG(KOZANI_S_INFO, "[DVC] Listener thread wait completed (result=0x%x)", result);
             if (result == WAIT_FAILED)
             {
                 hr = HRESULT_FROM_WIN32(GetLastError());
@@ -192,9 +168,11 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             switch (result)
             {
                 case WAIT_OBJECT_0:
+                {
                     // Thread exit handle signaled.
-                    LogDebugMessage("[DVC] Thread exit event handled");
+                    LOG_HR_MSG(KOZANI_S_INFO, "[DVC] Thread exit event handled");
                     return S_OK;
+                }
 
                 case WAIT_OBJECT_0 + 1:
                 {
@@ -231,9 +209,9 @@ namespace Microsoft::Kozani::KozaniRemoteManager
     HRESULT KozaniDvcServer::ProcessDvcDataChunk(
         _In_reads_(size) const BYTE* data,
         UINT32 size,
-        _Inout_ bool& isPartialData,
-        _Inout_ std::vector<BYTE>& pduBuffer,
-        _Inout_ UINT32& pduSize,
+        bool& isPartialData,
+        std::vector<BYTE>& pduBuffer,
+        UINT32& pduSize,
         _Outptr_result_maybenull_ const BYTE** pdu) noexcept try
     {
         *pdu = nullptr;
@@ -296,7 +274,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_DATA), startingSize + bytesToCopy > pduSize);
 
             pduBuffer.resize(startingSize + bytesToCopy);
-            RtlCopyMemory(pduBuffer.data() + startingSize, chunkPayload, bytesToCopy);
+            memcpy(pduBuffer.data() + startingSize, chunkPayload, bytesToCopy);
 
             if (isLastChunk)
             {
@@ -315,7 +293,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         Dvc::ProtocolDataUnit pdu;
         if (!pdu.ParseFromArray(data, size))
         {
-            RETURN_HR_MSG(E_FAIL, "Failed to parse PDU. size: %u.", size);
+            RETURN_HR_MSG(KOZANI_E_BAD_PDU, "Failed to parse PDU. size: %u.", size);
         }
 
         Dvc::ProtocolDataUnit::DataType type{ pdu.type() };
@@ -335,7 +313,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                 break;
 
             default:
-                // ToDo: Unsupported PDU type. Return GenericResult message with failure code to client side.
+                // ToDo: https://task.ms/43963854 Unsupported PDU type. Return GenericResult message with failure code to client side.
                 break;
         }
 
@@ -347,7 +325,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
     {
         bool appActivatedAndTracked{};
         std::string errorMessage;
-        HRESULT hr = LOG_IF_FAILED(ProcessActivateAppRequest(pdu, appActivatedAndTracked, errorMessage));
+        const HRESULT hr{ LOG_IF_FAILED(ProcessActivateAppRequest(pdu, appActivatedAndTracked, errorMessage)) };
 
         // If ProcessActivateAppRequest failed but appActivatedAndTracked is true, it means there was failure after the app was activated and 
         // its process lifetime tracked. Such failure is benign and we should not send failure ActivateAppResult to client.
@@ -359,13 +337,14 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             // Do not remove it from the map. 
             if (hr != HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS))
             {
-                auto lock{ g_connectionManager.m_activityMapLock.lock_exclusive() };
-                if (g_connectionManager.m_closing)
+                ConnectionManager& connectionManager{ KozaniRemoteManagerModule::GetConnectionManagerInstance() };
+                auto lock{ connectionManager.m_activityMapLock.lock_exclusive() };
+                if (connectionManager.m_closing)
                 {
                     return;
                 }
 
-                g_connectionManager.m_activityMap.erase(pdu.activity_id());
+                connectionManager.m_activityMap.erase(pdu.activity_id());
             }
         }
     }
@@ -383,22 +362,23 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         if (!activateAppRequest.ParseFromString(pdu.data()))
         {
             errorMessage = "Failed to parse ActivateAppRequest message";
-            RETURN_WIN32(ERROR_INVALID_DATA);
+            RETURN_HR(KOZANI_E_BAD_PDU);
         }
 
         if (!IsActivationKindSupported(activateAppRequest.activation_kind()))
         {
             errorMessage = "Unsupported activation kind: " + std::to_string(activateAppRequest.activation_kind());
-            RETURN_WIN32(ERROR_NOT_SUPPORTED);
+            RETURN_HR(KOZANI_E_UNSUPPORTED_ACTIVATION_KIND);
         }
 
         {
             // Acquire lock before adding the activity Id to the m_activityMap but do not hold the lock while activating the app as 
             // that can take some time and we do not want one app activation to block others.
-            auto lock{ g_connectionManager.m_activityMapLock.lock_exclusive() };
-            RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_STATE), g_connectionManager.m_closing);
+            ConnectionManager& connectionManager{ KozaniRemoteManagerModule::GetConnectionManagerInstance() };
+            auto lock{ connectionManager.m_activityMapLock.lock_exclusive() };
+            RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_STATE), connectionManager.m_closing);
 
-            auto inserted{ g_connectionManager.m_activityMap.emplace(pdu.activity_id(), AppActivationInfo(pdu.activity_id())) };
+            auto inserted{ connectionManager.m_activityMap.emplace(pdu.activity_id(), AppActivationInfo(pdu.activity_id())) };
             if (!inserted.second)
             {
                 errorMessage = "Activity ID of the new activate app request is already used for a previous request. Each new request must use a new activity ID.";
@@ -416,7 +396,6 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
         std::wstring appUserModelId{ ::Microsoft::Utf8::ToUtf16(activateAppRequest.app_user_model_id()) };
         DWORD processId{};
-
         switch (activateAppRequest.activation_kind())
         {
             case Dvc::ActivationKind::Launch:
@@ -444,11 +423,11 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                 break;
 
             case Dvc::ActivationKind::File:
-                // ToDo: support FTA launch.
+                // ToDo: https://task.ms/43963854 support FTA launch.
                 break;
 
             case Dvc::ActivationKind::Protocol:
-                // ToDo: support protocol launch.
+                // ToDo: https://task.ms/43963854 support protocol launch.
                 break;
 
             default:
@@ -459,11 +438,12 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         // When we reach here, activation is successful.
         bool isNewInstance{};
         {
-            auto lock{ g_connectionManager.m_activityMapLock.lock_exclusive() };
-            RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_STATE), g_connectionManager.m_closing);
+            ConnectionManager& connectionManager{ KozaniRemoteManagerModule::GetConnectionManagerInstance() };
+            auto lock{ connectionManager.m_activityMapLock.lock_exclusive() };
+            RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_STATE), connectionManager.m_closing);
 
-            auto iter{ g_connectionManager.m_activityMap.find(pdu.activity_id()) };
-            if (iter == g_connectionManager.m_activityMap.end())
+            auto iter{ connectionManager.m_activityMap.find(pdu.activity_id()) };
+            if (iter == connectionManager.m_activityMap.end())
             {
                 // Rare case - the app is terminated right after launch and the activity has been removed from the map from the other thread tracking 
                 // the lifetime of the process, before reaching here. There is nothing to do after that.
@@ -485,11 +465,11 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                 }
 
                 // Remove the activity entry from the m_activityMap as we no longer track it.
-                g_connectionManager.m_activityMap.erase(iter);
+                connectionManager.m_activityMap.erase(iter);
                 return S_OK;
             }
 
-            auto pidAdded{ g_connectionManager.m_processIdMap.emplace(processId, pdu.activity_id()) };
+            auto pidAdded{ connectionManager.m_processIdMap.emplace(processId, pdu.activity_id()) };
             if (pidAdded.second)
             {
                 // New process Id in the tracking map. The activation creates a new process.
@@ -500,10 +480,11 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                 appInfo.processHandle.reset(OpenProcess(SYNCHRONIZE | PROCESS_TERMINATE, FALSE, processId));
                 if (!appInfo.processHandle)
                 {
-                    g_connectionManager.m_activityMap.erase(iter);
+                    const DWORD errorOpenProcess{ LOG_LAST_ERROR_MSG("ProcessId: %u", processId) };
 
+                    connectionManager.m_activityMap.erase(iter);
                     errorMessage = "Failed to OpenProcess after the app is activated. The app may have crashed. Process Id: " + std::to_string(processId);
-                    RETURN_LAST_ERROR();
+                    RETURN_WIN32(errorOpenProcess);
                 }
 
                 appInfo.activationStatus = AppActivationStatus::ActivationSucceeded;
@@ -522,7 +503,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                 // The process Id is already in the m_processIdMap, which means the app activation does not create a new process.
                 // Apps can be single instance, which will use the same process to respond to multiple activations. 
                 // Remove the activity entry from the m_activityMap as we will not track duplicated activities backed by the same process.
-                g_connectionManager.m_activityMap.erase(iter);
+                connectionManager.m_activityMap.erase(iter);
             }
         }
 
@@ -533,11 +514,12 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
     HRESULT KozaniDvcServer::ProcessAppTerminationNotice(_In_ Dvc::ProtocolDataUnit& pdu) noexcept try
     {
-        auto lock{ g_connectionManager.m_activityMapLock.lock_exclusive() };
-        RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_STATE), g_connectionManager.m_closing);
+        ConnectionManager& connectionManager{ KozaniRemoteManagerModule::GetConnectionManagerInstance() };
+        auto lock{ connectionManager.m_activityMapLock.lock_exclusive() };
+        RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_STATE), connectionManager.m_closing);
 
-        auto iter{ g_connectionManager.m_activityMap.find(pdu.activity_id()) };
-        if (iter == g_connectionManager.m_activityMap.end())
+        auto iter{ connectionManager.m_activityMap.find(pdu.activity_id()) };
+        if (iter == connectionManager.m_activityMap.end())
         {
             RETURN_HR_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), "The activity Id %I64u does not exist in the activity map", pdu.activity_id());
         }
@@ -554,13 +536,13 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
         FAIL_FAST_IF_MSG(!appInfo.processHandle, "Process handle should be valid when pid is not zero");
 
-        HRESULT hrTerminateProcess{ LOG_IF_WIN32_BOOL_FALSE_MSG(TerminateProcess(appInfo.processHandle.get(), 0), "Failed to terminate process %u", appInfo.pid) };
+        const HRESULT hrTerminateProcess{ LOG_IF_WIN32_BOOL_FALSE_MSG(TerminateProcess(appInfo.processHandle.get(), 0), "Failed to terminate process %u", appInfo.pid) };
 
         if (!appInfo.processLifetimeTrackerHandle)
         {
             // No process lifetime tracker to handle at ProcessTerminationCallback - we should clean up the maps here.
-            g_connectionManager.m_processIdMap.erase(appInfo.pid);
-            g_connectionManager.m_activityMap.erase(iter);
+            connectionManager.m_processIdMap.erase(appInfo.pid);
+            connectionManager.m_activityMap.erase(iter);
         }
 
         RETURN_HR(hrTerminateProcess);
@@ -572,7 +554,9 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         switch (kind)
         {
             case Dvc::ActivationKind::Launch:
+                [[fallthrough]];
             case Dvc::ActivationKind::File:
+                [[fallthrough]];
             case Dvc::ActivationKind::Protocol:
                 return true;
         }
@@ -597,7 +581,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         m_dvcListenerThread = std::thread(&KozaniDvcServer::ProcessDvcIncomingDataThreadFunc, this);
 
         HANDLE events[] = { m_dvcThreadStarted.get(), m_dvcThreadExit.get() };
-        LogDebugMessage("[StartDvcListenerThread] Waiting for listener thread starting status");
+        LOG_HR_MSG(KOZANI_S_INFO, "[StartDvcListenerThread] Waiting for listener thread starting status");
 
         // Wait for listerner thread to start successfully. Wait no longer than 5s. 
         DWORD result = WaitForMultipleObjects(ARRAYSIZE(events), events, FALSE, 5000);
@@ -607,7 +591,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         {
             case WAIT_OBJECT_0:
                 // Thread successfully started and is running.
-                LogDebugMessage("[StartDvcListenerThread] Listener thread successfully started");
+                LOG_HR_MSG(KOZANI_S_INFO, "[StartDvcListenerThread] Listener thread successfully started");
                 return;
 
             case WAIT_OBJECT_0 + 1:
@@ -628,7 +612,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
     void KozaniDvcServer::DvcListenerThreadExiting(HRESULT errorCode, PCSTR erroMessage) noexcept try
     {
-        auto lock{ m_connectionManagerLock.lock_exclusive() };
+        auto lock{ m_errorReportingLock.lock_exclusive() };
 
         if (FAILED(m_errorFromDvcListener))
         {
@@ -637,7 +621,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         }
 
         m_errorFromDvcListener = errorCode;
-        LogDebugMessage("DVC listener thread exiting, error code: 0x%x, error message: %s", errorCode, erroMessage);
+        LOG_HR_MSG(errorCode, "DVC listener thread exiting. Error message: %s", erroMessage);
 
         m_dvcThreadExit.SetEvent();
 
@@ -649,7 +633,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
         if (m_errorReportingEnabled)
         {
-            g_connectionManager.ReportDvcServerError(errorCode);
+            KozaniRemoteManagerModule::GetConnectionManagerInstance().ReportDvcServerError(errorCode);
         }
     }
     CATCH_LOG_RETURN()
@@ -688,7 +672,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
     void KozaniDvcServer::ReportDvcWriterError(HRESULT errorCode)
     {
-        auto lock{ m_connectionManagerLock.lock_exclusive() };
+        auto lock{ m_errorReportingLock.lock_exclusive() };
 
         m_errorFromDvcWriter = errorCode;
 
@@ -703,32 +687,32 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
         if (m_errorReportingEnabled)
         {
-            g_connectionManager.ReportDvcServerError(errorCode);
+            KozaniRemoteManagerModule::GetConnectionManagerInstance().ReportDvcServerError(errorCode);
         }
     }
 
     void KozaniDvcServer::SendConnectionAck(PCSTR connectionId)
     {
-        UINT64 activityId{ g_connectionManager.GetNewActivityId() };
+        uint64_t activityId{ KozaniRemoteManagerModule::GetConnectionManagerInstance().GetNewActivityId() };
         
-        std::string pdu{ CreateConnectionAckPDU(connectionId, activityId) };
+        std::string pdu{ CreateConnectionAckPdu(connectionId, activityId) };
         SendDvcProtocolData(pdu.c_str(), static_cast<UINT32>(pdu.size()));
     }
 
     void KozaniDvcServer::SendActivateAppResult(
-            UINT64 activityId,
+            uint64_t activityId,
             HRESULT hr,
             DWORD appProcessId,
             bool isNewInstance,
             _In_ const std::string& errorMessage)
     {
-        std::string pdu{ CreateActivateAppResultPDU(activityId, hr, appProcessId, isNewInstance, errorMessage) };
+        std::string pdu{ CreateActivateAppResultPdu(activityId, hr, appProcessId, isNewInstance, errorMessage) };
         SendDvcProtocolData(pdu.c_str(), static_cast<UINT32>(pdu.size()));
     }
 
-    void KozaniDvcServer::SendAppTerminationNotice(UINT64 activityId)
+    void KozaniDvcServer::SendAppTerminationNotice(uint64_t activityId)
     {
-        std::string pdu{ CreateAppTerminationNoticePDU(activityId) };
+        std::string pdu{ CreateAppTerminationNoticePdu(activityId) };
         SendDvcProtocolData(pdu.c_str(), static_cast<UINT32>(pdu.size()));
     }
 }

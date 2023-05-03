@@ -22,11 +22,11 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
     struct AppActivationInfo
     {
-        AppActivationInfo(UINT64 activityId) : activityId(activityId)
+        AppActivationInfo(uint64_t activityId) : activityId(activityId)
         {
         }
 
-        UINT64 activityId{};
+        uint64_t activityId{};
         AppActivationStatus activationStatus{};
         DWORD pid{};
         wil::unique_handle processHandle;
@@ -44,7 +44,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         HRESULT EnableConnectionManagerReporting();
 
         void SendConnectionAck(PCSTR connectionId);
-        void SendAppTerminationNotice(UINT64 activityId);
+        void SendAppTerminationNotice(uint64_t activityId);
 
     private:
         KozaniDvcServer() = default;
@@ -56,9 +56,9 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         HRESULT ProcessDvcDataChunk(
             _In_reads_(size) const BYTE* data, 
             UINT32 size,
-            _Inout_ bool& isPartialData,
-            _Inout_ std::vector<BYTE>& pduBuffer,
-            _Inout_ UINT32& pduSize,
+            bool& isPartialData,
+            std::vector<BYTE>& pduBuffer,
+            UINT32& pduSize,
             _Outptr_result_maybenull_  const BYTE** pdu) noexcept;
 
         HRESULT ProcessProtocolDataUnit(_In_reads_(size) const BYTE* data, UINT32 size) noexcept;
@@ -81,14 +81,14 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         
         void SendDvcProtocolData(const char* data, UINT32 size);
         void SendActivateAppResult(
-            UINT64 activityId,
+            uint64_t activityId,
             HRESULT hr,
             DWORD appProcessId,
             bool isNewInstance,
             _In_ const std::string& errorMessage = std::string());
 
     private:
-        wil::srwlock m_connectionManagerLock;
+        wil::srwlock m_errorReportingLock;
         std::recursive_mutex m_dvcLock;
         wil::unique_handle m_dvcHandle;
         wil::unique_event m_dvcThreadExit;

@@ -66,7 +66,9 @@ namespace Microsoft::Kozani::Manager
 
     struct ActivationRequestInfo
     {
-        UINT64 activityId{};
+        static const uint64_t ActivityId_Unknown{};
+
+        uint64_t activityId{};
         RequestStatus status{};
         std::string connectionId;
         std::wstring appUserModelId;
@@ -87,9 +89,6 @@ namespace Microsoft::Kozani::Manager
     class ConnectionManager
     {
     public:
-        ConnectionManager() = default;
-        ~ConnectionManager() = default;
-
         std::shared_ptr<ActivationRequestStatusReporter> AddNewActivationRequest(
             std::string& connectionId,
             winrt::Windows::ApplicationModel::Activation::ActivationKind activationKind,
@@ -115,7 +114,7 @@ namespace Microsoft::Kozani::Manager
         static void CALLBACK ProcessTerminationCallback(_In_ PVOID parameter, _In_ BOOLEAN timerOrWaitFired) noexcept;
 
         HRESULT OnDvcServerConnected(
-            UINT64 activityId,
+            uint64_t activityId,
             ActivationRequestInfo* requestInfo,
             _In_ IWTSVirtualChannelManager* channelManager,
             _In_ IWTSVirtualChannel* channel,
@@ -130,11 +129,11 @@ namespace Microsoft::Kozani::Manager
 
         void ProcessAppActivationFailure(
             HRESULT hrActivation, 
-            UINT64 activityId, 
+            uint64_t activityId, 
             _In_ ActivationRequestInfo* requestInfo,
             _In_ PCWSTR errorMessage);
 
-        void DisableProcessLifetimeTracker(_In_ UINT64 activityId);
+        void DisableProcessLifetimeTracker(uint64_t activityId);
         void ProcessAppTerminationNotice(_In_ const Dvc::ProtocolDataUnit& pdu);
 
         HRESULT SendActivateAppRequest(_In_ ActivationRequestInfo* requestInfo) noexcept;
@@ -147,8 +146,9 @@ namespace Microsoft::Kozani::Manager
         wil::srwlock m_requestsLock;
 
         // New activity Id starts from 1. 0 means the activity Id is not set.
-        UINT64 m_newActivityId{ 1 };
-        std::map<UINT64, ActivationRequestInfo*> m_activityMap;
+        static const uint64_t c_activityId_Unknown{};
+        uint64_t m_nextActivityId{ 1 };
+        std::map<uint64_t, ActivationRequestInfo*> m_activityMap;
 
         bool m_closing{};
     };

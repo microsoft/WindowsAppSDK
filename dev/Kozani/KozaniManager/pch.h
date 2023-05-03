@@ -34,10 +34,8 @@
 
 #include <WindowsAppRuntimeInsights.h>
 
-#include "Logging.h"
-
 #include <Microsoft.Utf8.h>
 
 #include "KozaniProtobufMessages.h"
-
-#include <KozaniDvcProtocol.h>
+#include "KozaniDvcProtocol.h"
+#include "Logging.h"

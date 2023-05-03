@@ -2,13 +2,9 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-#include "ConnectionManager.h"
-
-#include "Logging.h"
+#include "Module.h"
 
 using namespace Microsoft::WRL;
-
-extern Microsoft::WRL::Details::DefaultModule<OutOfProc>* g_module;
 
 namespace Microsoft::Kozani::KozaniRemoteManager
 {
@@ -50,7 +46,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
     {   
         auto lock{ std::unique_lock<std::recursive_mutex>(m_dvcServerLock) };
 
-        if (m_dvcServer == nullptr)
+        if (!m_dvcServer)
         {
             try
             {
@@ -58,7 +54,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
                 // After successfully creating the KozaniDvcServer object, enable error reporting from this object so it can communicate 
                 // errors from the DVC server's operation.
-                HRESULT hrEnableReporting{ LOG_IF_FAILED(m_dvcServer->EnableConnectionManagerReporting()) };
+                const HRESULT hrEnableReporting{ LOG_IF_FAILED(m_dvcServer->EnableConnectionManagerReporting()) };
                 if (FAILED(hrEnableReporting))
                 {
                     // Failure has happened in the DVC server right after its creation. Treated as fatal.
@@ -72,7 +68,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                 // DVC traffic.
                 if (!m_isModuleObjectCountAdded)
                 {
-                    g_module->IncrementObjectCount();
+                    KozaniRemoteManagerModule::IncrementObjectCount();
                     m_isModuleObjectCountAdded = true;
                 }
             }
@@ -85,7 +81,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                     // By decementing the object count of this module to remove the count for this object, the object count will
                     // be reduced to 0 after the current active COM call is finished and the COM server can be shut down. Any new
                     // COM calls will be routed to a new instance of the COM server.
-                    g_module->DecrementObjectCount();
+                    KozaniRemoteManagerModule::DecrementObjectCount();
                     m_isModuleObjectCountAdded = false;
                 }
                 throw;
@@ -100,9 +96,9 @@ namespace Microsoft::Kozani::KozaniRemoteManager
     {
         auto lock{ std::unique_lock<std::recursive_mutex>(m_dvcServerLock) };
 
-        LogDebugMessage("DVC server reported error: 0x%x. Will shut down the server and create a new one for the next connection.", hr);
+        LOG_HR_MSG(hr, "DVC server reported error. Will shut down the server and create a new one for the next connection.");
 
-        if (m_dvcServer == nullptr)
+        if (!m_dvcServer)
         {
             // Already deleted previously. Nothing to do.
             return;
@@ -133,10 +129,10 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         }
     }
 
-    UINT64 ConnectionManager::GetNewActivityId()
+    uint64_t ConnectionManager::GetNewActivityId()
     {
-        auto lock{ m_newActivityIdLock.lock_exclusive() };
-        return m_newActivityId++;
+        auto lock{ m_nextActivityIdLock.lock_exclusive() };
+        return m_nextActivityId++;
     }
 
     void ConnectionManager::ProcessAppTermination(AppActivationInfo* appActivationInfo)
@@ -147,10 +143,10 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             return;
         }
 
-        UINT64 activityId{ appActivationInfo->activityId };
+        const uint64_t activityId{ appActivationInfo->activityId };
         
         // If the termiation is not requested from client, we will send AppTerminationNotice to client to notify the app is terminated.
-        bool sendAppTerminationNotice{ appActivationInfo->activationStatus != AppActivationStatus::TerminationRequestedFromClient };
+        const bool sendAppTerminationNotice{ appActivationInfo->activationStatus != AppActivationStatus::TerminationRequestedFromClient };
 
         appActivationInfo->processLifetimeTrackerHandle.reset();
         m_processIdMap.erase(appActivationInfo->pid);

@@ -53,18 +53,25 @@ namespace Microsoft::Kozani::Manager
                 break;
 
             case RequestStatus::Connected:
+                __fallthrough;
             case RequestStatus::AppActivationRequestMade:
+                __fallthrough;
             case RequestStatus::AppActivationSucceeded:
                 connectionManager->SendAppTerminationNotice(requestInfo);
                 break;
 
-            default:
-                // For other status, nothing to do.
+            case RequestStatus::Failed:
+                __fallthrough;
+            case RequestStatus::Closed:
+                // Nothing to do.
                 break;
+
+            default:
+                FAIL_FAST_MSG("Unhandled RequestStatus: %u", requestInfo->status);
         }
 
-        // Activity Id 0 is reserved for uninitialized state (ConnectionAck has not been received from DVC server yet) and will not be in m_activityMap.
-        if (requestInfo->activityId != 0)
+        // ActivityId_Unknown (0) is reserved for uninitialized state (ConnectionAck has not been received from DVC server yet) and will not be in m_activityMap.
+        if (requestInfo->activityId != ActivationRequestInfo::ActivityId_Unknown)
         {
             connectionManager->m_activityMap.erase(requestInfo->activityId);
         }
@@ -75,10 +82,9 @@ namespace Microsoft::Kozani::Manager
 
     void ConnectionManager::Close()
     {
+        // Setting m_closing to true will cancel all other operations, which means no changes to member variables protected by the lock in other threads.
         {
             auto lock{ m_requestsLock.lock_exclusive() };
-
-            // Setting m_closing to true will cancel all other operations, which means no changes to member variables protected by the lock in other threads.
             m_closing = true;
         }
 
@@ -98,7 +104,7 @@ namespace Microsoft::Kozani::Manager
                 request.processLifetimeTrackerHandle.release();
             }
 
-            if (request.statusCallback != nullptr)
+            if (request.statusCallback)
             {
                 (void)request.statusCallback->OnClosed();
                 request.statusCallback.reset();
@@ -121,10 +127,8 @@ namespace Microsoft::Kozani::Manager
         if (associatedLocalProcessId != 0)
         {
             associatedLocalProcessHandle.reset(OpenProcess(SYNCHRONIZE, FALSE, associatedLocalProcessId));
-            if (!associatedLocalProcessHandle)
-            {
-                THROW_LAST_ERROR_MSG("Failed to open associated local process to track its lifetime. pid=%u", associatedLocalProcessId);
-            }
+            THROW_LAST_ERROR_IF_NULL_MSG(associatedLocalProcessHandle, 
+                "Failed to open associated local process to track its lifetime. pid=%u", associatedLocalProcessId);
         }
 
         auto lock{ m_requestsLock.lock_exclusive() };
@@ -186,11 +190,11 @@ namespace Microsoft::Kozani::Manager
         Dvc::ProtocolDataUnit pdu;
         if (!pdu.ParseFromArray(data, size))
         {
-            LOG_HR_MSG(E_FAIL, "Failed to parse PDU. size: %u. Ignore failure.", size);
+            LOG_HR_MSG(KOZANI_E_BAD_PDU, "Failed to parse PDU. size: %u. Ignore failure.", size);
             return;
         }
 
-        Dvc::ProtocolDataUnit::DataType type{ pdu.type() };
+        const Dvc::ProtocolDataUnit::DataType type{ pdu.type() };
         switch (type)
         {
             case Dvc::ProtocolDataUnit::ConnectionAck:
@@ -206,14 +210,14 @@ namespace Microsoft::Kozani::Manager
                 break;
 
             default:
-                // ToDo: Unknown PDU type. Return GenericResult message with failure code to server side.
+                // ToDo: https://task.ms/43963854 Unknown PDU type. Return GenericResult message with failure code to server side.
                 break;
         }
     }
 
     // Must be called with m_requestsLock.lock_exclusive() done from the caller.
     HRESULT ConnectionManager::OnDvcServerConnected(
-        UINT64 activityId,
+        uint64_t activityId,
         ActivationRequestInfo* requestInfo,
         _In_ IWTSVirtualChannelManager* channelManager,
         _In_ IWTSVirtualChannel* channel,
@@ -228,11 +232,11 @@ namespace Microsoft::Kozani::Manager
         auto result{ m_activityMap.insert({ activityId , requestInfo }) };
         // activityId only increments. It will take hundreds of billion years for it to wrap around if it increments once every 1 second.
         // So if there is a duplicate, there must be logical error in this code and we want to find out.
-        FAIL_FAST_IF_MSG(!result.second, "Activity ID should be unique for each request. Already existing ID: %I64u", activityId);
+        FAIL_FAST_IF_MSG(!result.second, "Non-unique Activity ID: %llu", activityId);
 
         // Now that we have connected to the DVC channel, send ActivateAppRequest PDU to the server to activate remote app.
         // Failure to send the request should be reported to IKozaniStatusCallback interface of the caller tracking the activation request.
-        HRESULT hrSendRequest{ LOG_IF_FAILED(SendActivateAppRequest(requestInfo)) };
+        const HRESULT hrSendRequest{ LOG_IF_FAILED(SendActivateAppRequest(requestInfo)) };
         if (FAILED(hrSendRequest))
         {
             errorMessage = L"Failed to send activate app request through DVC";
@@ -255,7 +259,7 @@ namespace Microsoft::Kozani::Manager
         Dvc::ConnectionAck ackMessage;
         if (!ackMessage.ParseFromString(pdu.data()))
         {
-            LOG_HR_MSG(E_FAIL, "Failed to parse connection ACK message. Ignore failure.");
+            LOG_HR_MSG(KOZANI_E_BAD_PDU, "Failed to parse connection ACK message. Ignore failure.");
             return;
         }
 
@@ -274,15 +278,15 @@ namespace Microsoft::Kozani::Manager
             {
                 m_requestsPendingConnection.erase(it);
 
-                if (pdu.activity_id() > m_newActivityId)
+                if (pdu.activity_id() > m_nextActivityId)
                 {
-                    // Reconciliation between server and client side activity ID. Either one can crash and restart with new activity ID
+                    // Reconciliation between server and client side activity ID. Either one can crash or reboot and restart with new activity ID
                     // smaller than the other one. Always set to the larger of the two to reconcile.
-                    m_newActivityId = pdu.activity_id();
+                    m_nextActivityId = pdu.activity_id();
                 }
 
-                UINT64 activityId{ m_newActivityId };
-                m_newActivityId++;
+                const uint64_t activityId{ m_nextActivityId };
+                m_nextActivityId++;
 
                 std::wstring errorMessage;
                 HRESULT hrOnDvcServerConnected{ LOG_IF_FAILED(OnDvcServerConnected(activityId, requestInfo, channelManager, channel, errorMessage)) };
@@ -347,7 +351,7 @@ namespace Microsoft::Kozani::Manager
     // Must be called with m_requestsLock.lock_exclusive() done in caller.
     void ConnectionManager::ProcessAppActivationFailure(
         HRESULT hrActivation,
-        UINT64 activityId,
+        uint64_t activityId,
         _In_ ActivationRequestInfo* requestInfo,
         _In_ PCWSTR errorMessage)
     {
@@ -362,7 +366,7 @@ namespace Microsoft::Kozani::Manager
         m_activationRequests.erase(requestInfo->listPosition);
     }
 
-    void ConnectionManager::DisableProcessLifetimeTracker(_In_ UINT64 activityId)
+    void ConnectionManager::DisableProcessLifetimeTracker(uint64_t activityId)
     {
         auto lock{ m_requestsLock.lock_exclusive() };
         if (m_closing)
@@ -434,7 +438,7 @@ namespace Microsoft::Kozani::Manager
 
     HRESULT ConnectionManager::SendActivateAppRequest(_In_ ActivationRequestInfo* requestInfo) noexcept try
     {
-        std::string pdu{ DvcProtocol::CreateActivateAppRequestPDU(
+        std::string pdu{ DvcProtocol::CreateActivateAppRequestPdu(
             requestInfo->activityId, requestInfo->appUserModelId.c_str(), requestInfo->activationKind, requestInfo->args) };
         RETURN_IF_FAILED(requestInfo->dvcChannel->Write(
             static_cast<ULONG>(pdu.size()), reinterpret_cast<BYTE*>(pdu.data()), nullptr /* pReserved - must be nullptr */));
@@ -444,7 +448,7 @@ namespace Microsoft::Kozani::Manager
 
     HRESULT ConnectionManager::SendAppTerminationNotice(_In_ ActivationRequestInfo* requestInfo) noexcept try
     {
-        std::string pdu{ DvcProtocol::CreateAppTerminationNoticePDU(requestInfo->activityId) };
+        std::string pdu{ DvcProtocol::CreateAppTerminationNoticePdu(requestInfo->activityId) };
         RETURN_IF_FAILED(requestInfo->dvcChannel->Write(
             static_cast<ULONG>(pdu.size()), reinterpret_cast<BYTE*>(pdu.data()), nullptr /* pReserved - must be nullptr */));
         return S_OK;

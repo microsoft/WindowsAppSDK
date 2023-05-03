@@ -13,26 +13,24 @@ namespace Microsoft::Kozani::DvcProtocol
 {
     const char DvcChannelName[] = "KozaniDvc";
 
-    const size_t MaxProtocolDataUnitSize = 64 * 1024;
-
-    std::string CreatePDU(UINT64 activityId, Dvc::ProtocolDataUnit::DataType type, const std::string& payload);
+    std::string CreatePdu(UINT64 activityId, Dvc::ProtocolDataUnit::DataType type, const std::string& payload);
     
-    std::string CreateConnectionAckPDU(PCSTR connectionId, UINT64 activityId);
+    std::string CreateConnectionAckPdu(PCSTR connectionId, UINT64 activityId);
     
     std::string SerializeActivatedEventArgs(winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs& args);
     
-    std::string CreateActivateAppRequestPDU(
+    std::string CreateActivateAppRequestPdu(
         UINT64 activityId,
         PCWSTR appUserModelId,
         winrt::Windows::ApplicationModel::Activation::ActivationKind activationKind,
         winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs& args);
 
-    std::string CreateActivateAppResultPDU(
+    std::string CreateActivateAppResultPdu(
         UINT64 activityId, 
         HRESULT hr, 
         DWORD appProcessId, 
         bool isNewInstance,
-        _In_ const std::string& errorMessage);
+        const std::string& errorMessage);
 
-    std::string CreateAppTerminationNoticePDU(UINT64 activityId);
+    std::string CreateAppTerminationNoticePdu(UINT64 activityId);
 }

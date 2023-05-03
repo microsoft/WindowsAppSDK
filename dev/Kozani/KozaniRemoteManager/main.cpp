@@ -13,7 +13,7 @@
 
 #include <wrl\module.h>
 
-#include "ConnectionManager.h"
+#include "Module.h"
 
 using namespace Microsoft::WRL;
 using namespace Microsoft::Kozani::KozaniRemoteManager;
@@ -25,6 +25,26 @@ static constexpr GUID KozaniRemoteManager_guid { PR_KOZANIREMOTEMANAGER_CLSID_GU
 
 Microsoft::WRL::Details::DefaultModule<OutOfProc>* g_module{};
 ConnectionManager g_connectionManager;
+
+namespace KozaniRemoteManagerModule
+{
+    void IncrementObjectCount()
+    {
+        g_module->IncrementObjectCount();
+    }
+
+    void DecrementObjectCount()
+    {
+        g_module->DecrementObjectCount();
+    }
+
+    Microsoft::Kozani::KozaniRemoteManager::ConnectionManager& GetConnectionManagerInstance()
+    {
+        return g_connectionManager;
+    }
+};
+
+
 
 struct __declspec(uuid(PR_KOZANIREMOTEMANAGER_CLSID_STRING)) KozaniRemoteManagerImpl WrlFinal : RuntimeClass<RuntimeClassFlags<ClassicCom>, IKozaniRemoteManager>
 {

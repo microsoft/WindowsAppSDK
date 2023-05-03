@@ -37,19 +37,22 @@ volatile LONG g_newConnectionCount{};
 
 static std::string GetConnectionId(PCWSTR connectionRdpFilePath)
 {
-    auto fileStatus{ std::filesystem::status(connectionRdpFilePath) };
-
-    // Specifically checks file existence and file type so we can throw specific error code instead of letting the std::fstream fail later and throw 
-    // generic error code ERROR_UNHANDLED_EXCEPTION for better error messaging.
-    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND), !std::filesystem::exists(fileStatus), "File %ls does not exist", connectionRdpFilePath);
-    THROW_HR_IF_MSG(E_INVALIDARG, !std::filesystem::is_regular_file(fileStatus), "File %ls is not a regular file. Maybe it is a folder?", connectionRdpFilePath);
-
     std::fstream rdpFile;
 
-    // Set exception behavior - will throw exception if the file stream operation hits error.
+    // Set exception behavior - will throw exception if the file stream operation hits error. Will NOT throw if read has reached end-of-file
     rdpFile.exceptions(std::fstream::failbit | std::fstream::badbit);
 
-    rdpFile.open(connectionRdpFilePath, std::fstream::in);
+    try
+    {
+        rdpFile.open(connectionRdpFilePath, std::fstream::in);
+    }
+    catch (...)
+    {
+        // Failing to open the file may be caused by non-existing file or file path is a folder instead of a file. Check these 2 conditions and 
+        // throw with meaningful error code if it matches either condition.
+        THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND), !std::filesystem::exists(connectionRdpFilePath), "File %ls does not exist", connectionRdpFilePath);
+        THROW_HR_IF_MSG(E_INVALIDARG, !std::filesystem::is_regular_file(connectionRdpFilePath), "File %ls is not a regular file. Maybe it is a folder?", connectionRdpFilePath);
+    }
 
     std::string connectionId;
     bool readNextLine{ true };
@@ -63,7 +66,7 @@ static std::string GetConnectionId(PCWSTR connectionRdpFilePath)
             size_t idOffset{ line.find_first_not_of(" \t", switchOffset + ARRAYSIZE(Dvc::Constants::ConnectionIdSwitch) - 1) };
             if (idOffset != std::string::npos)
             {
-                while (idOffset < line.length() && line[idOffset] != ' ' && line[idOffset] != '\t' && line[idOffset] != '\r')
+                while (idOffset < line.length() && !isspace(line[idOffset]))
                 {
                     connectionId.push_back(line[idOffset]);
                     idOffset++;
@@ -89,13 +92,13 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
         IKozaniStatusCallback* statusCallback,
         DWORD associatedLocalProcessId) noexcept try
     {
-        auto activationKindLocal{ static_cast<winrt::Windows::ApplicationModel::Activation::ActivationKind>(activationKind) };
-        RETURN_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), 
+        const auto activationKindLocal{ static_cast<winrt::Windows::ApplicationModel::Activation::ActivationKind>(activationKind) };
+        RETURN_HR_IF_MSG(KOZANI_E_UNSUPPORTED_ACTIVATION_KIND, 
             !IsActivationKindSupported(activationKindLocal),
-            "Unsupported activation kind: %d", activationKind);
+            "Activation kind: %d", activationKind);
 
         winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs args;
-        if (activatedEventArgs != nullptr)
+        if (!activatedEventArgs)
         {
             winrt::com_ptr<::IInspectable> inspectable(activatedEventArgs, winrt::take_ownership_from_abi);
             args = inspectable.as<winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs>();
@@ -107,20 +110,16 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
         std::shared_ptr<ActivationRequestStatusReporter> requestStatusReporter{ 
             g_connectionManager.AddNewActivationRequest(connectionId, activationKindLocal, appUserModelId, args, statusCallback, associatedLocalProcessId) };
 
-        LONG connectionCountBeforeRDCLaunch{ InterlockedAdd(&g_newConnectionCount, 0) };
+        const LONG connectionCountBeforeRDCLaunch{ InterlockedAdd(&g_newConnectionCount, 0) };
 
         SHELLEXECUTEINFO shellExecuteInfo{};
-        shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+        shellExecuteInfo.cbSize = sizeof(shellExecuteInfo);
         shellExecuteInfo.fMask = SEE_MASK_NOASYNC;  // Will wait for ShellExecuteEx to finish launching the remote desktop client.
         shellExecuteInfo.lpFile = Dvc::Constants::RemoteDesktopClientExe;
         shellExecuteInfo.lpParameters = connectionRdpFilePath;
-
         shellExecuteInfo.nShow = SW_NORMAL;
 
-        if (!ShellExecuteEx(&shellExecuteInfo))
-        {
-            RETURN_IF_WIN32_ERROR_MSG(GetLastError(), "ShellExecuteEx failed to launch %ls", Dvc::Constants::RemoteDesktopClientExe);
-        }
+        RETURN_IF_WIN32_BOOL_FALSE_MSG(ShellExecuteEx(&shellExecuteInfo), "ShellExecuteEx failed to launch %ls", Dvc::Constants::RemoteDesktopClientExe);
 
         // Wait for request status change or time out to ensure this module is alive for RDC to load the DVC plugin hosted by the module.
         // If the module is exiting while RDC is loading the DVC plugin, the DVC loading will fail and RDC will ignore the failure and
@@ -129,7 +128,7 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
         if (!waitSucceeded)
         {
             // Wait timed out before request stauts changes. 
-            LONG connectionCountAfterRDCLaunch{ InterlockedAdd(&g_newConnectionCount, 0) };
+            const LONG connectionCountAfterRDCLaunch{ InterlockedAdd(&g_newConnectionCount, 0) };
             if (connectionCountAfterRDCLaunch == connectionCountBeforeRDCLaunch)
             {
                 // There are no new connections detected during the wait time (MaxDvcPluginLoadingTime). 
@@ -151,13 +150,13 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
             auto status{ requestStatusReporter->GetStatus() };
             if (status == RequestStatus::Failed)
             {
-                return E_FAIL;
+                RETURN_HR(E_APPLICATION_ACTIVATION_EXEC_FAILURE);
             }
         }
         else
         {
             // Wait timed out.
-            return E_APPLICATION_ACTIVATION_TIMED_OUT;
+            RETURN_HR(E_APPLICATION_ACTIVATION_TIMED_OUT);
         }
 
         return S_OK;
