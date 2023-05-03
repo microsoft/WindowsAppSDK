@@ -10,6 +10,7 @@ parameters:
   AssetNames: ''
   AssetVersions: ''
   TriggerSubscription: false
+  Branch: ''
   BranchTag: ''
 
 steps:
@@ -36,7 +37,7 @@ steps:
         {
           $branchTag = "-${{ parameters.BranchTag }}"
         }
-        
+
         $assetNames = '${{ parameters.AssetNames }}'.Split(";")
         $assetVersions = '${{ parameters.AssetVersions }}'.Split(";")
         
@@ -91,6 +92,15 @@ steps:
         $gitHubRepo = "$(Build.Repository.Uri)"
         $azureDevOpsRepo = "$(Build.Repository.Uri)"
 
+        if ('${{ parameters.Branch }}' -ne '')
+        {
+          $sourceBranch = "${{ parameters.Branch }}"
+        }
+        else
+        {
+          $sourceBranch = "$(Build.SourceBranch)"
+        }
+
         $jsonBase = 
           @{
             "commit"="$(Build.SourceVersion)";
@@ -102,9 +112,9 @@ steps:
             "azureDevOpsProject"="$(System.TeamProject)";
             "azureDevOpsBuildNumber"="$(Build.BuildNumber)";
             "azureDevOpsRepository"=$azureDevOpsRepo;
-            "azureDevOpsBranch"="$(Build.SourceBranch)$branchTag";
+            "azureDevOpsBranch"="$sourceBranch$branchTag";
             "gitHubRepository"=$gitHubRepo;
-            "gitHubBranch"="$(Build.SourceBranch)$branchTag";
+            "gitHubBranch"="$sourceBranch$branchTag";
             "released"=$true;
             "stable"=$true
             "incoherencies"=$null;
@@ -144,9 +154,18 @@ steps:
             $repository = ConvertToMaestroFriendlyAzureDevOpUri $repository
           }
 
+          if ('${{ parameters.Branch }}' -ne '')
+          {
+            $sourceBranch = "${{ parameters.Branch }}"
+          }
+          else
+          {
+            $sourceBranch = "$(Build.SourceBranch)"
+          }
+
           # Get the id of the default channel of this branch
           $api = "/api/default-channels"
-          $queryParam = "&repository=" + $repository + "&branch=$(Build.SourceBranch)$branchTag"
+          $queryParam = "&repository=" + $repository + "&branch=$sourceBranch$branchTag"
           $response = &".\eng\common\Scripts\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters $queryParam
           $jsonObj = ConvertFrom-Json $response.Content
           $channelId = $jsonObj.channel.id
@@ -198,4 +217,3 @@ steps:
               }
             }
           }
-

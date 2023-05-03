@@ -33,7 +33,5 @@ jobs:
             enable: true
             break: true
           policheck:       
-            # ToDo: Once pre-existing issues have been resolved, set break to true.
             enable: true
-            break: false
-
+            break: true
