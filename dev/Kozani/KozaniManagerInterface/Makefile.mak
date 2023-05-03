@@ -37,6 +37,7 @@ build: $(OutHeader)
 
 clean:
     @if exist $(IntDir)dlldata.c del $(IntDir)dlldata.c /q
+    @if exist $(IntDir)KozaniManagerInterface_i.c del $(IntDir)KozaniManagerInterface_i.c /q
     @if exist $(IntDir)KozaniManagerInterface_p.c del $(IntDir)KozaniManagerInterface_p.c /q
     @if exist $(IntDir)KozaniManagerInterface.h del $(IntDir)KozaniManagerInterface.h /q
     @if exist $(OutDir)$(TargetName)\KozaniManagerInterface.h del $(OutDir)$(TargetName)\KozaniManagerInterface.h /q

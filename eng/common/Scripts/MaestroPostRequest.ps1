@@ -23,7 +23,7 @@ $fullUri = $url + $api
 
 Write-Host $fullUri
 
-$Response = Invoke-WebRequest -Method 'POST' -Uri $fullUri -Headers $headers -Body $body -ContentType $contentType
+$Response = Invoke-WebRequest -Method 'POST' -Uri $fullUri -Headers $headers -Body $body -ContentType $contentType -UseBasicParsing
 Write-Host $Response
 
 if ($Response.statuscode -lt '200')
