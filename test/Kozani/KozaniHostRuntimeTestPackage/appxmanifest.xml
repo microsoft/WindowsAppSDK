@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
+  xmlns:uap10="http://schemas.microsoft.com/appx/manifest/uap/windows10/10"
+  xmlns:desktop4="http://schemas.microsoft.com/appx/manifest/desktop/windows10/4" 
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  xmlns:build="http://schemas.microsoft.com/developer/appx/2015/build"
+  IgnorableNamespaces="uap rescap uap5 uap10 desktop4 build">
+
+    <Identity
+      Name="Test.KozaniHostRuntimeTestPackage"
+      Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+      Version="1.2.3.4" />
+
+    <Properties>
+        <DisplayName>Test.KozaniHostRuntimeTestPackage</DisplayName>
+        <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
+        <Logo>logo.png</Logo>
+    </Properties>
+
+    <Dependencies>
+        <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.19041.0" MaxVersionTested="10.0.19041.0" />
+    </Dependencies>
+
+    <Resources>
+        <Resource Language="en"/>
+    </Resources>
+
+    <Applications>
+        <Application Id="App" Executable="KozaniHostRuntime.exe" EntryPoint="Windows.FullTrustApplication" desktop4:SupportsMultipleInstances="true">
+            <uap:VisualElements DisplayName="Kozani Host Runtime" Description="Kozani Host Runtime" BackgroundColor="transparent" Square150x150Logo="logo.png" Square44x44Logo="logo.png">
+                <uap:DefaultTile Square71x71Logo="logo.png" />
+            </uap:VisualElements>
+            <Extensions>
+                <uap5:Extension Category="windows.appExecutionAlias">
+                    <uap5:AppExecutionAlias desktop4:Subsystem="console">
+                        <uap5:ExecutionAlias Alias="KozaniHostRuntime.exe" />
+                    </uap5:AppExecutionAlias>
+                </uap5:Extension>
+            </Extensions>
+        </Application>
+    </Applications>
+    <Capabilities>
+        <rescap:Capability Name="runFullTrust" />
+    </Capabilities>
+    <Extensions>
+        <uap10:Extension Category="windows.hostRuntime" Executable="KozaniHostRuntime.exe" uap10:RuntimeBehavior="packagedClassicApp" uap10:TrustLevel="mediumIL">
+            <uap10:HostRuntime Id="KozaniHostRuntime" />
+        </uap10:Extension>
+    </Extensions>
+</Package>
