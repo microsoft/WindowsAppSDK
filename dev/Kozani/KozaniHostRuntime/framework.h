@@ -21,8 +21,10 @@
 #include <winrt/Windows.Foundation.Collections.h>
 
 #include <winrt/Windows.ApplicationModel.h>
+#include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.ApplicationModel.AppExtensions.h>
 #include <winrt/Windows.Management.Deployment.h>
+#include <winrt/Windows.Storage.h>
 
 #include <appmodel.identity.h>
 #include <security.integritylevel.h>
