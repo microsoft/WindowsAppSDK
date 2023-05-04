@@ -20,7 +20,8 @@ namespace winrt::Microsoft::Kozani::ManagerRuntime::implementation
             winrt::hstring connectionRdpFilePath,
             winrt::hstring additionalSettingsFilePath,
             Windows::ApplicationModel::Activation::IActivatedEventArgs args,
-            IInspectable statusCallback);
+            IInspectable statusCallback,
+            UINT32 associatedLocalProcessId);
 
     private:
         wil::com_ptr<IKozaniManager> m_kozaniManager;
