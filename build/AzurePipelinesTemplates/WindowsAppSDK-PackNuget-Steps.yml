@@ -115,35 +115,34 @@ steps:
     filePath: 'BuildAll.ps1'
     arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
 
-- task: EsrpCodeSigning@2
-  inputs:
-    ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
-    FolderPath: $(build.artifactStagingDirectory)\FullNuget
-    Pattern: 'Microsoft.WindowsAppSDK.Foundation*.nupkg'
-    UseMinimatch: true
-    signConfigType: 'inlineSignParams'
-    inlineOperation: |
-      [
-        {
-          "KeyCode" : "CP-401405",
-          "OperationCode" : "NuGetSign",
-          "Parameters" : {},
-          "ToolName" : "sign",
-          "ToolVersion" : "1.0"
-        },
-        {
+- ${{ if eq(parameters.SignOutput, 'true') }}:
+  - task: EsrpCodeSigning@2
+    inputs:
+      ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+      FolderPath: $(build.artifactStagingDirectory)\FullNuget
+      Pattern: 'Microsoft.WindowsAppSDK.Foundation*.nupkg'
+      UseMinimatch: true
+      signConfigType: 'inlineSignParams'
+      inlineOperation: |
+        [
+          {
             "KeyCode" : "CP-401405",
-            "OperationCode" : "NuGetVerify",
+            "OperationCode" : "NuGetSign",
             "Parameters" : {},
             "ToolName" : "sign",
             "ToolVersion" : "1.0"
-        }
-      ]
-    SessionTimeout: '60'
-    MaxConcurrency: '50'
-    MaxRetryAttempts: '5'
-  condition:
-    eq(${{ parameters.SignOutput }}, true)
+          },
+          {
+              "KeyCode" : "CP-401405",
+              "OperationCode" : "NuGetVerify",
+              "Parameters" : {},
+              "ToolName" : "sign",
+              "ToolVersion" : "1.0"
+          }
+        ]
+      SessionTimeout: '60'
+      MaxConcurrency: '50'
+      MaxRetryAttempts: '5'
 
 - task: CopyFiles@2
   displayName: MoveToOutputDirectory
