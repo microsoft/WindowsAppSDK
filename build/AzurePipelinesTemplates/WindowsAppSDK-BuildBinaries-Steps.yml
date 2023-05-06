@@ -1,0 +1,127 @@
+parameters:
+- name: "SignOutput"
+  type: boolean
+  default: False
+- name: "IsOneBranch"
+  type: boolean
+  default: True
+
+steps:
+- task: NuGetToolInstaller@1
+
+- task: NuGetAuthenticate@1
+  inputs:
+    nuGetServiceConnections: 'TelemetryInternal'
+
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  displayName: 'NuGet restore of packages'
+  inputs:
+    command: 'custom'
+    arguments: 'restore dev\WindowsAppRuntime_Insights\packages.config -ConfigFile NuGet.config -PackagesDirectory dev\WindowsAppRuntime_Insights\packages'
+
+- template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+  parameters:
+    IsOneBranch: ${{ parameters.IsOneBranch }}
+
+- task: NuGetAuthenticate@1
+  inputs:
+    nuGetServiceConnections: 'ProjectReunionInternal'
+
+  # Copy MSIX license installation header into the correct source location.
+  # Restore transport package dependencies. This is only enbaled in release-signed builds.
+- task: PowerShell@2
+  name: ConvertVersionDetailsToPackageConfig
+  displayName: "Convert VersionDetails To PackageConfig"
+  inputs:
+    filePath: '$(REPOROOT)\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
+    arguments: -versionDetailsPath '$(REPOROOT)\eng\Version.Details.xml' -packageConfigPath '$(REPOROOT)\build\packages.config'
+
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  displayName: RestoreNuGetPackages
+  inputs:
+    restoreSolution: build/packages.config
+    feedsToUse: config
+    nugetConfigPath: NuGet.config
+    restoreDirectory: packages
+
+- task: CopyFiles@2
+  displayName: 'Extract license header to source location'
+  inputs:
+    SourceFolder: '$(REPOROOT)\build\packages\$(AppLicensingInternalPackageName).$(AppLicensingInternalPackageVersion)\src'
+    Contents: |
+      *.h
+    TargetFolder: '$(REPOROOT)\dev\Licensing'
+    flattenFolders: false
+    overWrite: true
+
+- task: PowerShell@2
+  name: BuildBinaries
+  inputs:
+    filePath: 'BuildAll.ps1'
+    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
+
+- ${{ if eq(parameters.SignOutput, 'true') }}:
+  - task: EsrpCodeSigning@2
+    inputs:
+      ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+      FolderPath: '$(build.SourcesDirectory)\BuildOutput'
+      Pattern: |
+        **/*.winmd
+        **/*.dll
+        **/*.exe
+      UseMinimatch: true
+      signConfigType: 'inlineSignParams'
+      inlineOperation: |
+        [
+          {
+            "keyCode": "CP-230012",
+            "operationSetCode": "SigntoolSign",
+            "parameters": [
+              {
+                "parameterName": "OpusName",
+                "parameterValue": "Microsoft"
+              },
+              {
+                "parameterName": "OpusInfo",
+                "parameterValue": "http://www.microsoft.com"
+              },
+              {
+                "parameterName": "PageHash",
+                "parameterValue": "/NPH"
+              },
+              {
+                "parameterName": "FileDigest",
+                "parameterValue": "/fd sha256"
+              },
+              {
+                "parameterName": "TimeStamp",
+                "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+              }
+            ],
+            "toolName": "signtool.exe",
+            "toolVersion": "6.2.9304.0"
+          }
+        ]
+      SessionTimeout: '60'
+      MaxConcurrency: '50'
+      MaxRetryAttempts: '5'
+
+# Artifacts are uploaded via ob_outputDirectory where the each vPack Push jobs downloads from
+# so the CopyFiles below are to move all the vPack files to the right locations
+- task: CopyFiles@2
+  displayName: MoveToOutputDirectory
+  inputs:
+    SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
+    TargetFolder: '$(ob_outputDirectory)'
+
+- task: CopyFiles@2
+  displayName: MoveToOutputDirectory
+  inputs:
+    SourceFolder: '$(build.SourcesDirectory)\packages'
+    TargetFolder: '$(ob_outputDirectory)\packages'
+
+- ${{ if not( parameters.IsOneBranch ) }}:
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(ob_outputDirectory)'
+      artifactName: '$(ob_artifactBaseName)'

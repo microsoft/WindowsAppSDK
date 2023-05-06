@@ -1,5 +1,43 @@
+parameters:
+- name: "IsOneBranch"
+  type: boolean
+  default: True
+
 steps:
-- template: WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
+- task: UseDotNet@2
+  displayName: Use .NET Core SDK 5
+  inputs:
+    version: 5.0.407
+
+- task: UseDotNet@2
+  displayName: Use .NET Core SDK 6
+  inputs:
+    version: 6.0.401
+
+  # Extract the build revision number from Build.BuildNumber. This is needed to pass to build-nupkg.
+  # This relies on the format of the pipeline name being of the format: $(date:yyMM).$(date:dd)$(rev:rrr)
+  # We can't use those variables here (they only work in the *name* of the top level Yaml), so
+  # pull them out here and set the variables for use in the nuget package version.
+- powershell: |
+    # Some builds have "-branchname" appended, but when this happens the environment variable
+    # TFS_BUILDNUMBER has the un-modified version.
+    if ($env:TFS_BUILDNUMBER)
+    {
+      $env:BUILD_BUILDNUMBER = $env:TFS_BUILDNUMBER
+    }
+    $yymm = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 10, 4)
+    $dd = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 5, 2)
+    $revision = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 3, 3)
+    Write-Host "##vso[task.setvariable variable=builddate]$yymm$dd"
+    Write-Host "##vso[task.setvariable variable=builddate_yymm]$yymm"
+    Write-Host "##vso[task.setvariable variable=builddate_dd]$dd"
+    Write-Host "##vso[task.setvariable variable=buildrevision]$revision"
+
+    Write-Host builddate=$yymm$dd
+    Write-Host builddate_yymm=$yymm
+    Write-Host builddate_dd=$dd
+    Write-Host buildrevision=$revision
+  displayName: 'Get build revision number'
 
 # The environment variable VCToolsInstallDir isn't defined on lab machines, so we need to retrieve it ourselves.
 - script: |
@@ -9,18 +47,30 @@ steps:
     call "%_VSINSTALLDIR15%\Common7\Tools\VsDevCmd.bat"
     echo VCToolsInstallDir = %VCToolsInstallDir%
     echo ##vso[task.setvariable variable=VCToolsInstallDir]%VCToolsInstallDir%
-  displayName: 'Retrieve VC tools directory'
 
-- task: CmdLine@1
-  displayName: 'Display build machine environment variables'
-  inputs:
-    filename: 'set'
+  displayName: 'Retrieve VC tools directory'
 
 - task: NuGetAuthenticate@1
   inputs:
     nuGetServiceConnections: 'WindowsES'
 
-- template: WindowsAppSDK-InstallWindowsSDK-Steps.yml
+- task: PowerShell@2
+  displayName: 'Add Windows SDK 10.1.17763'
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  inputs:
+    targetType: filePath
+    filePath: $(Build.SourcesDirectory)\build\scripts\windows-sdk.ps1
+    arguments: >
+      -SdkVersion "10.1.17763"
+
+- ${{ if not( parameters.IsOneBranch ) }}:
+  - task: powershell@2
+    inputs:
+      targetType: filePath
+      filePath: build\scripts\Install-WindowsSdkISO.ps1
+      arguments: 18362
+    displayName: 'Install Insider SDK (18362)'
 
 - task: powershell@2
   displayName: 'DevCheck: Setup/Verify development environment'

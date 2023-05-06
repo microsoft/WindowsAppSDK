@@ -1,0 +1,64 @@
+#####################################################################################################################################
+#                                               OneBranch Pipelines - Official                                                      #
+#####################################################################################################################################
+#                                                                                                                                   #
+# This pipeline was created by EasyStart from a sample located at:                                                                  #
+#                               https://aka.ms/obpipelines/easystart/samples                                                        #
+#                                                                                                                                   #
+# Windows Undocked Wiki:        https://www.osgwiki.com/wiki/Windows_Undocked_Template                                              #
+# General OB Documentation:     https://aka.ms/obpipelines                                                                          #
+# Build MSBuild project:        https://dev.azure.com/onebranch/OneBranch/_wiki/wikis/OneBranch.wiki/6045/Build-MSBuild-project     #
+# Yaml Schema:                  https://aka.ms/obpipelines/yaml/schema                                                              #
+# Retail Tasks:                 https://aka.ms/obpipelines/tasks                                                                    #
+# Support:                      https://aka.ms/onebranchsup                                                                         #
+#                                                                                                                                   #
+#####################################################################################################################################
+
+# Add this for VPack versioning when using Package ES Setup task
+# name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+
+# https://aka.ms/obpipelines/triggers
+trigger: none
+
+parameters:
+- name: "PublishToMaestro"
+  type: boolean
+  default: False
+- name: "IgnoreFailures"
+  type: boolean
+  default: False
+
+variables:
+- template: WindowsAppSDK-Versions.yml
+- template: WindowsAppSDK-CommonVariables.yml
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
+
+extends:
+  template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
+  parameters:
+    platform:
+      name: 'windows_undocked' # windows undocked
+
+    cloudvault: # Please refer the wiki for more information: https://aka.ms/obpipelines/cloudvault
+      enabled: false
+
+    globalSdl: # Refer the wiki for more options in this parameter: https://aka.ms/obpipelines/sdl
+      tsa:
+        enabled: $(TsaEnabled) # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
+      isNativeCode: false #TODO turn back on when bug in CheckCFlags2.exe is fixed
+      binskim:
+        enabled: true
+        break: true
+
+    stages:
+    - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
+      parameters:
+        PublishToMaestro: ${{ parameters.PublishToMaestro }}
+        IgnoreFailures: ${{ parameters.IgnoreFailures }}
+        SignOutput: true
