@@ -9,6 +9,6 @@
 #pragma warning(disable : 4127) // conditional expression is constant
 #pragma warning(disable : 5054) // operator '*': deprecated between enumerations of different types
 
-#include <Kozani.Activation.pb.h>
+#include <Kozani.DVC.pb.h>
 
 #pragma warning(pop)

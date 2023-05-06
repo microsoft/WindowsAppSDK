@@ -21,10 +21,13 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KozaniRemoteManagerActivity.cpp">
+    <ClCompile Include="KozaniDvcServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KozaniRemoteManagerTraceLogging.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConnectionManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,11 +35,8 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PurojekutoTenpuret-Constants.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PurojekutoTenpuret-Override.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="KozaniDvcServer.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="KozaniRemoteManagerActivity.h">
       <Filter>Header Files</Filter>
@@ -44,8 +44,28 @@
     <ClInclude Include="KozaniRemoteManagerTraceLogging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ConnectionManager.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KozaniRemoteManager-Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KozaniRemoteManager-Override.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="KozaniRemoteManager.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

@@ -18,6 +18,10 @@
 
 #include <wil/cppwinrt.h>
 #include <wil/token_helpers.h>
+
+// Needed to get std::wstring specialization for wil::str_printf<std::wstring>
+#include <wil/stl.h>
+
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 
@@ -33,3 +37,5 @@
 #include <Microsoft.Utf8.h>
 
 #include "KozaniProtobufMessages.h"
+#include "KozaniDvcProtocol.h"
+#include "Logging.h"

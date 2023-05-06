@@ -13,24 +13,47 @@
 
 #include <wrl\module.h>
 
+#include "Module.h"
+
 using namespace Microsoft::WRL;
+using namespace Microsoft::Kozani::KozaniRemoteManager;
 
 // Implement the LifetimeManager as a classic COM Out-of-Proc server, via WRL
 // See https://docs.microsoft.com/cpp/cppcx/wrl/how-to-create-a-classic-com-component-using-wrl?redirectedfrom=MSDN&view=vs-2019 for more details
 
 static constexpr GUID KozaniRemoteManager_guid { PR_KOZANIREMOTEMANAGER_CLSID_GUID };
 
-struct __declspec(uuid(PR_KOZANIREMOTEMANAGER_CLSID_STRING)) KozaniRemoteManagerImpl WrlFinal : RuntimeClass<RuntimeClassFlags<ClassicCom>, IKozaniRemoteManager>
+Microsoft::WRL::Details::DefaultModule<OutOfProc>* g_module{};
+ConnectionManager g_connectionManager;
+
+namespace KozaniRemoteManagerModule
 {
-    STDMETHODIMP Initialize()
+    void IncrementObjectCount()
     {
-        return S_OK;
+        g_module->IncrementObjectCount();
     }
 
-    STDMETHODIMP Shutdown()
+    void DecrementObjectCount()
     {
+        g_module->DecrementObjectCount();
+    }
+
+    Microsoft::Kozani::KozaniRemoteManager::ConnectionManager& GetConnectionManagerInstance()
+    {
+        return g_connectionManager;
+    }
+};
+
+
+
+struct __declspec(uuid(PR_KOZANIREMOTEMANAGER_CLSID_STRING)) KozaniRemoteManagerImpl WrlFinal : RuntimeClass<RuntimeClassFlags<ClassicCom>, IKozaniRemoteManager>
+{
+    STDMETHODIMP Connect(_In_ PCSTR connectionId) noexcept try
+    {
+        g_connectionManager.Connect(connectionId);    
         return S_OK;
     }
+    CATCH_RETURN()
 };
 CoCreatableClass(KozaniRemoteManagerImpl);
 
@@ -50,6 +73,7 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
     g_endOfTheLine = std::move(endOfTheLine);
 
     auto& module = Module<OutOfProc>::Create(EndOfTheLine);
+    g_module = &module;
     RETURN_IF_FAILED(module.RegisterObjects());
 
     g_endOfTheLine.wait();
