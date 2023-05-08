@@ -23,10 +23,13 @@ trigger: none
 parameters:
 - name: "PublishToMaestro"
   type: boolean
-  default: False
+  default: True
 - name: "IgnoreFailures"
   type: boolean
   default: False
+- name: "SignOutput"
+  type: boolean
+  default: True
 
 variables:
 - template: WindowsAppSDK-Versions.yml
@@ -73,4 +76,4 @@ extends:
       parameters:
         PublishToMaestro: ${{ parameters.PublishToMaestro }}
         IgnoreFailures: ${{ parameters.IgnoreFailures }}
-        SignOutput: true
+        SignOutput: ${{ parameters.SignOutput }}
