@@ -7,22 +7,28 @@ _This section is only for internal use, it should not be part of the public docu
 In UWP, apps can use the
 [AccessibilitySettings](https://learn.microsoft.com/en-us/uwp/api/windows.ui.viewmanagement.accessibilitysettings?view=winrt-22621)
 API to query the system's high-contrast setting, and detect when it changes.  But in a Win32/non-UWP context, the
-**AccessibilitySettings.HighContrastChanged** event never fires.
+**AccessibilitySettings.HighContrastChanged** event never fires.  This is because the event relies on the **CoreWindow**
+object to handle the `WM_THEMECHANGED` message and fire an internal event to the **AccessibilitySettings** object -- but
+in a non-UWP, Win32/WinAppSDK context, no **CoreWindow** exists.
 
-The API described in this doc, **ThemeSettings**, is a WinAppSDK WinRT API that provides functionality of **AccessibilitySettings**, but for a Win32
-environment.  We expect to add other APIs to this type over time.
+The API described in this doc, **ThemeSettings**, is a WinAppSDK WinRT API that provides the functionality of
+**AccessibilitySettings**, but for a Win32 environment.  We expect to add other APIs to this type over time.
 
-**AccessibilitySettings** uses the **CoreWindow** on the thread to notify it that the system theme has changed, by
-subscribing to an internal **ThemeChanged** event on the **CoreWindow**. The **CoreWindow** fires this event in resposne to a
-**WM_THEMECHANGED** window message.
+The **ThemeSettings.HighContrast** and **ThemeSettings.HighContrastScheme** properties shown below are basically identical to the
+existing UWP [AccessibilitySettings.HighContrast](https://learn.microsoft.com/en-us/uwp/api/windows.ui.viewmanagement.accessibilitysettings.highcontrast?view=winrt-22621) 
+and [AccessibilitySettings.HighContrastScheme](https://learn.microsoft.com/en-us/uwp/api/windows.ui.viewmanagement.accessibilitysettings.highcontrastscheme?view=winrt-22621)
+properties.  They're all implemented by calling the Win32 [SystemParametersInfo](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-systemparametersinfow)
+function with the `SPI_GETHIGHCONTRAST` flag.
 
 This GIF shows how a user can change the HighContrast theme in the Settings app today, and a System Xaml app that displays the current **HighContrastScheme**:
 
 ![Choosing high contast themes in the settings app](HighContrastThemes.gif)
 
-This API requires a **WindowId** object because the implementation listens for a `WM_THEMECHANGED` event.  An alternative option is for the API
-to create and manage its own top-level window, but we decided to use an existing window so we could have better control over the order in which
-these kinds of WinAppSDK events are fired.
+### Why does this API require a WindowId?
+This API requires a **WindowId** object because the implementation listens for a `WM_THEMECHANGED` message.  (This is
+the same message the **CoreWindow** listens for that drives the UWP **AccessibilitySettings.HighContrastChanged**  event).
+An alternative option is for the API to create and manage its own top-level window, but we decided to use an existing
+window so we could have better control over the order in which these kinds of WinAppSDK events are fired.
 
 # API Pages
 
