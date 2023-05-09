@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
-
 #pragma once
 
 #include "$safeitemname$.g.h"
@@ -9,12 +6,11 @@ namespace winrt::$rootnamespace$::implementation
 {
     struct $safeitemname$ : $safeitemname$T<$safeitemname$>
     {
-        $safeitemname$();
-
-        int32_t MyProperty();
-        void MyProperty(int32_t value);
-
-        void myButton_Click(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
+        $safeitemname$()
+        {
+            // Xaml objects should not call InitializeComponent during construction.
+            // See https://github.com/microsoft/cppwinrt/tree/master/nuget#initializecomponent
+        }
     };
 }
 

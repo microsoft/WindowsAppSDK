@@ -9,7 +9,7 @@
     <RootNamespace>$safeprojectname$</RootNamespace>
     <DefaultLanguage>$currentuiculturename$</DefaultLanguage>
     <MinimumVisualStudioVersion>16.0</MinimumVisualStudioVersion>
-    <AppContainerApplication>true</AppContainerApplication>
+    <AppContainerApplication>false</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
     <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">$targetplatformversion$</WindowsTargetPlatformVersion>

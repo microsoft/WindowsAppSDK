@@ -1,8 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
-
 #pragma once
-
 #include "App.xaml.g.h"
 
 namespace winrt::$safeprojectname$::implementation
@@ -14,6 +10,6 @@ namespace winrt::$safeprojectname$::implementation
         void OnLaunched(Microsoft::UI::Xaml::LaunchActivatedEventArgs const&);
 
     private:
-        winrt::Microsoft::UI::Xaml::Window window{ nullptr };
+        winrt::Microsoft::UI::Xaml::Window m_window{ nullptr };
     };
 }

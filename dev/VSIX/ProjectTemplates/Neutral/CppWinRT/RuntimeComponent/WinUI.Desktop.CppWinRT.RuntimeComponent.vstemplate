@@ -1,10 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
     <Name ID="1033" Package="FIXME-PACKAGEGUID" />
     <Description ID="1035" Package="FIXME-PACKAGEGUID" />
-    <Icon>WinUI.Neutral.CppWinRT.RuntimeComponent.ico</Icon>
-    <TemplateID>Microsoft.WinUI.Neutral.CppWinRT.RuntimeComponent</TemplateID>
+    <Icon>WinUI.Desktop.CppWinRT.RuntimeComponent.ico</Icon>
+    <TemplateID>Microsoft.WinUI.Desktopy.CppWinRT.RuntimeComponent</TemplateID>
     <ProjectType>VC</ProjectType>
     <CreateNewFolder>true</CreateNewFolder>
     <DefaultName>RuntimeComponent</DefaultName>
@@ -14,7 +14,7 @@
     <NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
     <TargetPlatformName>Windows</TargetPlatformName>
     <CreateInPlace>true</CreateInPlace>
-    <PreviewImage>WinUI.Neutral.CppWinRT.RuntimeComponent.png</PreviewImage>
+    <PreviewImage>WinUI.Desktop.CppWinRT.RuntimeComponent.png</PreviewImage>
     <AppIdFilter>blend</AppIdFilter>
     <PromptForSaveOnCreation>true</PromptForSaveOnCreation>
     <LanguageTag>cpp</LanguageTag>
