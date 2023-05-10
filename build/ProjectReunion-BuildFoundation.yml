@@ -1,49 +1,14 @@
-name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+# This file has been adapted to use as a non-OneBranch PR validation yml in the WindowsAppSDK Foundation repository
+# Prior to 1.4, this file was used to build official release builds. This role has been moved to WindowsAppSDK-Foundation-Release.yml
+trigger: none
+
 variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
-- name: buildPool
-  value: 'ProjectReunionESPool-2022'
 
-parameters:
-  - name: "ReleaseSigning"
-    type: boolean
-    default: False
-  - name: "IgnoreFailures"
-    type: boolean
-    default: False
-  - name: "PublishPackage"
-    type: boolean
-    default: False
-  - name: "GenerateSBOM"
-    type: boolean
-    default: False
-  - name: "RunSDLBinaryAnalysis"
-    displayName: "Run SDL's Binary Analysis (PREFast, BinSkim)"
-    type: boolean
-    default: False
-  - name: "enablePREFast"
-    type: boolean
-    default: true
-  - name: "enableLicenseInstall"
-    type: boolean
-    default: true
-
-resources:
-  repositories:
-  - repository: templates_onebranch
-    type: git
-    name: OneBranch.Pipelines/GovernedTemplates
-    ref: refs/heads/main
-
-jobs:
-- template: AzurePipelinesTemplates\WindowsAppSDK-BuildFoundation-job.yml
+stages:
+- template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
   parameters:
-    ReleaseSigning: ${{parameters.ReleaseSigning}}
-    IgnoreFailures: ${{parameters.IgnoreFailures}}
-    PublishPackage: ${{parameters.PublishPackage}}
-    GenerateSBOM: ${{parameters.GenerateSBOM}}
-    RunSDLBinaryAnalysis: ${{parameters.RunSDLBinaryAnalysis}}
-    enablePREFast: ${{parameters.enablePREFast}}
-    enableLicenseInstall: ${{parameters.enableLicenseInstall}}
-    isWeeklyRun: False
+    PublishToMaestro: False
+    SignOutput: False
+    IsOneBranch: False
