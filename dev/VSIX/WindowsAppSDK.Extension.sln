@@ -66,7 +66,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.PackagedAp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.CppWinRT.PackagedApp", "ProjectTemplates\Desktop\CppWinRT\PackagedApp\WinUI.Desktop.CppWinRT.PackagedApp.csproj", "{80195619-D4CF-4287-BA59-08077486BE1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.CppWinRT.RuntimeComponent", "ProjectTemplates\Neutral\CppWinRT\RuntimeComponent\WinUI.Desktop.CppWinRT.RuntimeComponent.csproj", "{FD33E535-127D-48AC-8788-0F61FA2A251C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.CppWinRT.RuntimeComponent", "ProjectTemplates\Desktop\CppWinRT\RuntimeComponent\WinUI.Desktop.CppWinRT.RuntimeComponent.csproj", "{FD33E535-127D-48AC-8788-0F61FA2A251C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.SingleProjectPackagedApp", "ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.csproj", "{D9C038B7-6A62-4945-A030-4AC7597F53CA}"
 EndProject
