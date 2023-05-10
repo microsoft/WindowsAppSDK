@@ -1384,9 +1384,11 @@ if (($RemoveAll -ne $false) -Or ($RemoveTestPfx -ne $false))
 if ($global:issues -eq 0)
 {
     Write-Output "Coding time!"
+    exit 0
 }
 else
 {
     $n = $global:issues
     Write-Output "$n issue(s) detected"
+    exit 2
 }
