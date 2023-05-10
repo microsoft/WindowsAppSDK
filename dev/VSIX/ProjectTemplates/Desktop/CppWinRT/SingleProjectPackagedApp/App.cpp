@@ -20,7 +20,7 @@ namespace $safeprojectname$::implementation
         // See https://github.com/microsoft/cppwinrt/tree/master/nuget#initializecomponent
 
 #if defined _DEBUG && !defined DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION
-        UnhandledException([this](IInspectable const&, UnhandledExceptionEventArgs const& e)
+        UnhandledException([](IInspectable const&, UnhandledExceptionEventArgs const& e)
         {
             if (IsDebuggerPresent())
             {
