@@ -229,4 +229,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="CopyFiles" AfterTargets="AfterBuild">
+    <Copy SourceFiles="MrtCoreManagedTest.testdef" DestinationFolder="$(OutDir)" />
+  </Target>
 </Project>
