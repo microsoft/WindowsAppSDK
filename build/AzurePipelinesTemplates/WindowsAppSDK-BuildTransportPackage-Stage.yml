@@ -83,7 +83,7 @@ stages:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
 
-  - job: BuildAndTestMRT
+  - job: BuildMRT
     pool:
       # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
       ${{ if parameters.IsOneBranch }}:
@@ -130,7 +130,7 @@ stages:
       isArm64Platfrom: false
       dependsOn:
         - BuildBinaries
-        - BuildAndTestMRT
+        - BuildMRT
 
   - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
     parameters:
@@ -138,7 +138,7 @@ stages:
       isArm64Platfrom: true
       dependsOn:
         - BuildBinaries
-        - BuildAndTestMRT
+        - BuildMRT
 
   - job: NugetPackage
     pool:
@@ -153,7 +153,7 @@ stages:
     dependsOn:
     - BuildBinaries
     - BuildBinaries_release_anycpu
-    - BuildAndTestMRT
+    - BuildMRT
     condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
