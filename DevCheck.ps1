@@ -1316,6 +1316,10 @@ if (($CheckAll -ne $false) -Or ($CheckTestCert -ne $false))
     if ($test -ne $true)
     {
         $null = Repair-DevTestCert
+        if ($CheckTestCert)
+        {
+            Exit 0
+        }
     }
 }
 
