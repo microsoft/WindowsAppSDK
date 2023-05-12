@@ -135,7 +135,7 @@ jobs:
   steps:
   - task: NuGetToolInstaller@1
 
-  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildMRT-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndTestMRT-Steps.yml
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish BuildOutput'
@@ -144,7 +144,7 @@ jobs:
       PathtoPublish: '$(buildOutputDir)'
 
 # We no longer run MRT tests in Helix here, due to dwindling Helix support. But one MRT test suite
-# is still being run in WindowsAppSDK-BuildMRT-Steps.yml.
+# is still being run in WindowsAppSDK-BuildAndTestMRT-Steps.yml.
 
 - job: StageAndPack
   pool:
