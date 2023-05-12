@@ -1,0 +1,11 @@
+{
+    "Tests": [
+        {
+            "Description": "MRTCore Managed Tests (TAEF)",
+            "Filename": "MrtCoreManagedTest.dll",
+            "Parameters": "",
+            "Architectures": ["x64", "x86", "arm64"],
+            "Status": "Enabled"
+        }
+    ]
+}
