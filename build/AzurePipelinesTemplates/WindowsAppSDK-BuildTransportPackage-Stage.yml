@@ -117,7 +117,7 @@ stages:
       ob_sdl_suppression_suppressionSet: default
       ob_artifactBaseName: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
     steps:
-    - template: WindowsAppSDK-BuildAndTestMRT-Steps.yml@self
+    - template: WindowsAppSDK-BuildMRT-Steps.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
