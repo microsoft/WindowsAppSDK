@@ -159,6 +159,17 @@
       <Version>13.0.2</Version>
     </PackageReference>
   </ItemGroup>
+    <!-- For some reason, TAEF binplaces the wrong version of Wex.Logger.Interop.dll - we need to fix that.
+       Removing the version from the binaries directory to allow us to use the version from the lib directory is sufficient here.-->
+  <Target Name="RemoveIncorrectWexLoggerInteropDll" BeforeTargets="_HandlePackageFileConflicts;GetPackagingOutputs">
+    <PropertyGroup>
+      <TaefBinariesDirectory>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Binaries\$(PlatformTarget)\</TaefBinariesDirectory>
+    </PropertyGroup>
+    <ItemGroup>
+      <TaefFilesToRemove Include="$(TaefBinariesDirectory)Wex.Logger.Interop.dll" />
+      <ReferenceCopyLocalPaths Remove="@(TaefFilesToRemove)" />
+    </ItemGroup>
+  </Target>
   <ItemGroup>
     <Reference Include="TE.Managed, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net452\TE.Managed.dll</HintPath>
@@ -170,6 +181,7 @@
       <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net452\Wex.Common.Managed.dll</HintPath>
     </Reference>
     <Reference Include="Wex.Logger.Interop, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net452\Wex.Logger.Interop.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
