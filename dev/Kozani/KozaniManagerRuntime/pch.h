@@ -16,5 +16,6 @@
 #include "framework.h"
 #include "KozaniManagerRuntimeActivity.h"
 #include "KozaniManagerRuntimeTraceLogging.h"
+#include "Logging.h"
 
 #endif //PCH_H

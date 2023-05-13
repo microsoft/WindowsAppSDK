@@ -27,6 +27,9 @@
     <ClInclude Include="KozaniHostRuntimeTraceLogging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="KozaniHostRuntimeActivity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -58,5 +61,8 @@
     <ResourceCompile Include="KozaniHostRuntime.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
   </ItemGroup>
 </Project>

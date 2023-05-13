@@ -85,13 +85,18 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
 {
     STDMETHODIMP ActivateRemoteApplication(
         INT32 activationKind,
-        PCWSTR appUserModelId,
-        PCWSTR connectionRdpFilePath,
-        PCWSTR additionalSettingsFilePath,
-        ::IInspectable* activatedEventArgs,
-        IKozaniStatusCallback* statusCallback,
-        DWORD associatedLocalProcessId) noexcept try
+        _In_ PCWSTR appUserModelId,
+        _In_ PCWSTR connectionRdpFilePath,
+        _In_ IKozaniRemoteDesktopClientLauncher* rdcLauncher,
+        DWORD associatedLocalProcessId,
+        _In_opt_::IInspectable* activatedEventArgs,
+        _In_opt_ IKozaniStatusCallback* statusCallback,
+        _In_opt_ PCWSTR additionalSettingsFilePath) noexcept try
     {
+        RETURN_HR_IF_NULL(E_INVALIDARG, appUserModelId);
+        RETURN_HR_IF_NULL(E_INVALIDARG, connectionRdpFilePath);
+        RETURN_HR_IF_NULL(E_INVALIDARG, rdcLauncher);
+
         const auto activationKindLocal{ static_cast<winrt::Windows::ApplicationModel::Activation::ActivationKind>(activationKind) };
         RETURN_HR_IF_MSG(KOZANI_E_UNSUPPORTED_ACTIVATION_KIND, 
             !IsActivationKindSupported(activationKindLocal),
@@ -112,6 +117,9 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
 
         const LONG connectionCountBeforeRDCLaunch{ InterlockedAdd(&g_newConnectionCount, 0) };
 
+        RETURN_IF_FAILED(rdcLauncher->Launch(connectionRdpFilePath, nullptr));
+
+        /*
         SHELLEXECUTEINFO shellExecuteInfo{};
         shellExecuteInfo.cbSize = sizeof(shellExecuteInfo);
         shellExecuteInfo.fMask = SEE_MASK_NOASYNC;  // Will wait for ShellExecuteEx to finish launching the remote desktop client.
@@ -120,6 +128,7 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
         shellExecuteInfo.nShow = SW_NORMAL;
 
         RETURN_IF_WIN32_BOOL_FALSE_MSG(ShellExecuteEx(&shellExecuteInfo), "ShellExecuteEx failed to launch %ls", Dvc::Constants::RemoteDesktopClientExe);
+        */
 
         // Wait for request status change or time out to ensure this module is alive for RDC to load the DVC plugin hosted by the module.
         // If the module is exiting while RDC is loading the DVC plugin, the DVC loading will fail and RDC will ignore the failure and
@@ -185,6 +194,9 @@ void EndOfTheLine()
 
 int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
+    // Hook up wil logging MACROs to trace provider.
+    wil::SetResultLoggingCallback(&TraceFailureFromProvider<Microsoft_Kozani_Manager_TraceLogger>);
+
     // Verify that the version of the library that we linked against is
     // compatible with the version of the headers we compiled against.
     GOOGLE_PROTOBUF_VERIFY_VERSION;

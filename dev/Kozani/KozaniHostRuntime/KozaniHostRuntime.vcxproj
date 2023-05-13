@@ -92,7 +92,7 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>(MSBuildThisFileDirectory);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)\dev\common;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>(MSBuildThisFileDirectory);$(OutDir)\..\WindowsAppRuntime_DLL;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)\dev\common;$(IntDir);$(OutDir)..\KozaniManagerProxyStub;$(RepoRoot)\dev\Kozani\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PreprocessorDefinitions>KOZANIHOSTRUNTIMEDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -185,6 +185,11 @@
     <ResourceCompile Include="KozaniHostRuntime.rc">
       <AdditionalIncludeDirectories>$(RepoRoot)\dev\Common;$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\KozaniManagerRuntime\KozaniManagerRuntime.vcxproj">
+      <Project>{400ed5ec-4530-4adb-8dce-9d1e6708a1f5}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

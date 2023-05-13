@@ -151,13 +151,13 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             }
 
             HANDLE events[]{ m_dvcThreadExit.get(), readComplete.get() };
-            LOG_HR_MSG(KOZANI_S_INFO, "[DVC] Listener thread starting to wait");
+            LOG_HR_MSG(KOZANI_E_INFO, "[DVC] Listener thread starting to wait");
 
             // When we reach this point, the DVC listener thread has passed setup phase and is running.
             m_dvcThreadStarted.SetEvent();
 
             const DWORD result{ WaitForMultipleObjects(ARRAYSIZE(events), events, FALSE, INFINITE) };
-            LOG_HR_MSG(KOZANI_S_INFO, "[DVC] Listener thread wait completed (result=0x%x)", result);
+            LOG_HR_MSG(KOZANI_E_INFO, "[DVC] Listener thread wait completed (result=0x%x)", result);
             if (result == WAIT_FAILED)
             {
                 hr = HRESULT_FROM_WIN32(GetLastError());
@@ -170,7 +170,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                 case WAIT_OBJECT_0:
                 {
                     // Thread exit handle signaled.
-                    LOG_HR_MSG(KOZANI_S_INFO, "[DVC] Thread exit event handled");
+                    LOG_HR_MSG(KOZANI_E_INFO, "[DVC] Thread exit event handled");
                     return S_OK;
                 }
 
@@ -581,7 +581,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         m_dvcListenerThread = std::thread(&KozaniDvcServer::ProcessDvcIncomingDataThreadFunc, this);
 
         HANDLE events[] = { m_dvcThreadStarted.get(), m_dvcThreadExit.get() };
-        LOG_HR_MSG(KOZANI_S_INFO, "[StartDvcListenerThread] Waiting for listener thread starting status");
+        LOG_HR_MSG(KOZANI_E_INFO, "[StartDvcListenerThread] Waiting for listener thread starting status");
 
         // Wait for listerner thread to start successfully. Wait no longer than 5s. 
         DWORD result = WaitForMultipleObjects(ARRAYSIZE(events), events, FALSE, 5000);
@@ -591,7 +591,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         {
             case WAIT_OBJECT_0:
                 // Thread successfully started and is running.
-                LOG_HR_MSG(KOZANI_S_INFO, "[StartDvcListenerThread] Listener thread successfully started");
+                LOG_HR_MSG(KOZANI_E_INFO, "[StartDvcListenerThread] Listener thread successfully started");
                 return;
 
             case WAIT_OBJECT_0 + 1:

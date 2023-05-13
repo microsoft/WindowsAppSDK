@@ -32,7 +32,7 @@ public:
     //
     HRESULT STDMETHODCALLTYPE OnDataReceived(ULONG size, _In_reads_(size) BYTE* data) override try
     {
-        LOG_HR_MSG(KOZANI_S_INFO, "IWTSVirtualChannelCallback::OnDataReceived(), cbSize = %u, pChannelMgr=0x%p, pChannel=0x%p",
+        LOG_HR_MSG(KOZANI_E_INFO, "IWTSVirtualChannelCallback::OnDataReceived(), cbSize = %u, pChannelMgr=0x%p, pChannel=0x%p",
             size, m_channelManager.get(), m_channel.get());
 
         g_connectionManager.ProcessProtocolDataUnit(data, size, m_channelManager.get(), m_channel.get());
@@ -42,7 +42,7 @@ public:
 
     HRESULT STDMETHODCALLTYPE OnClose() override try
     {
-        LOG_HR_MSG(KOZANI_S_INFO, "IWTSVirtualChannelCallback::OnClose() - pChannelMgr=0x%p, pChannel=0x%p",
+        LOG_HR_MSG(KOZANI_E_INFO, "IWTSVirtualChannelCallback::OnClose() - pChannelMgr=0x%p, pChannel=0x%p",
             m_channelManager.get(), m_channel.get());
         
         g_connectionManager.OnDvcChannelClose(m_channel.get());
@@ -64,7 +64,7 @@ struct __declspec(uuid(PR_KOZANIDVC_CLSID_STRING)) KozaniDvcImpl WrlFinal : Runt
     STDMETHODIMP Initialize(IWTSVirtualChannelManager* pChannelMgr) override try
     {
         // Called early in MSRDC launch, before a connection to a new remote session.
-        LOG_HR_MSG(KOZANI_S_INFO, "IWTSPlugin::Initialize() - pChannelMgr=0x%p", pChannelMgr);
+        LOG_HR_MSG(KOZANI_E_INFO, "IWTSPlugin::Initialize() - pChannelMgr=0x%p", pChannelMgr);
 
         m_channelManager = pChannelMgr;
 
@@ -84,14 +84,14 @@ struct __declspec(uuid(PR_KOZANIDVC_CLSID_STRING)) KozaniDvcImpl WrlFinal : Runt
 
     STDMETHODIMP Connected() override try
     {
-        LOG_HR_MSG(KOZANI_S_INFO, "IWTSPlugin::Connected() - pChannelMgr=0x%p", m_channelManager.get());
+        LOG_HR_MSG(KOZANI_E_INFO, "IWTSPlugin::Connected() - pChannelMgr=0x%p", m_channelManager.get());
         return S_OK;
     }
     CATCH_RETURN()
 
     STDMETHODIMP Disconnected(DWORD dwDisconnectCode) override try
     {
-        LOG_HR_MSG(KOZANI_S_INFO, "IWTSPlugin::Disconnected() - pChannelMgr=0x%p, dwDisconnectCode = %u", m_channelManager.get(), dwDisconnectCode);
+        LOG_HR_MSG(KOZANI_E_INFO, "IWTSPlugin::Disconnected() - pChannelMgr=0x%p, dwDisconnectCode = %u", m_channelManager.get(), dwDisconnectCode);
         g_connectionManager.OnRemoteDesktopDisconnect(m_channelManager.get());
         return S_OK;
     }
@@ -99,7 +99,7 @@ struct __declspec(uuid(PR_KOZANIDVC_CLSID_STRING)) KozaniDvcImpl WrlFinal : Runt
 
     STDMETHODIMP Terminated() override try
     {
-        LOG_HR_MSG(KOZANI_S_INFO, "IWTSPlugin::Terminated() - pChannelMgr=0x%p", m_channelManager.get());
+        LOG_HR_MSG(KOZANI_E_INFO, "IWTSPlugin::Terminated() - pChannelMgr=0x%p", m_channelManager.get());
         g_connectionManager.OnRemoteDesktopDisconnect(m_channelManager.get());
         return S_OK;
     }
@@ -114,7 +114,7 @@ struct __declspec(uuid(PR_KOZANIDVC_CLSID_STRING)) KozaniDvcImpl WrlFinal : Runt
         _Out_ BOOL* pbAccept,
         _Out_ IWTSVirtualChannelCallback** ppCallback) override try
     {
-        LOG_HR_MSG(KOZANI_S_INFO, "IWTSListenerCallback::OnNewChannelConnection is called! pChannelMgr=0x%p, pChannel=0x%p",
+        LOG_HR_MSG(KOZANI_E_INFO, "IWTSListenerCallback::OnNewChannelConnection is called! pChannelMgr=0x%p, pChannel=0x%p",
             m_channelManager.get(), pChannel);
 
         auto pConnection = Make<KozaniDvcCallback>(pChannel, m_channelManager.get());

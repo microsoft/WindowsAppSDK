@@ -83,6 +83,10 @@
     <MakeMsixInputs Include="$(TargetExeFile)" />
     <MakeMsixInputs Include="$(TargetExeProxyStubFile)" />
     <MakeMsixInputs Include="$(OutDir)..\KozaniManager\KozaniManager.pdb" />
+    <MakeMsixInputs Include="$(OutDir)..\KozaniManagerRuntime\KozaniManagerRuntime.dll" />
+    <MakeMsixInputs Include="$(OutDir)..\KozaniManagerRuntime\KozaniManagerRuntime.pdb" />
+    <MakeMsixInputs Include="$(OutDir)..\KozaniHostRuntime\KozaniHostRuntime.exe" />
+    <MakeMsixInputs Include="$(OutDir)..\KozaniHostRuntime\KozaniHostRuntime.pdb" />
   </ItemGroup>
   <PropertyGroup>
     <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
@@ -93,8 +97,14 @@
     <Xml Include="appxmanifest.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\dev\Kozani\KozaniHostRuntime\KozaniHostRuntime.vcxproj">
+      <Project>{84cc5d23-93d1-4319-bb94-fb7801e4f113}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\dev\Kozani\KozaniManagerProxyStub\KozaniManagerProxyStub.vcxproj">
       <Project>{cfc67ac3-3dc3-4981-a9bb-bc5ed06542d4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\dev\Kozani\KozaniManagerRuntime\KozaniManagerRuntime.vcxproj">
+      <Project>{400ed5ec-4530-4adb-8dce-9d1e6708a1f5}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\dev\Kozani\KozaniManager\KozaniManager.vcxproj">
       <Project>{829cdb09-eefe-4188-a045-3fc6be7bd96b}</Project>
