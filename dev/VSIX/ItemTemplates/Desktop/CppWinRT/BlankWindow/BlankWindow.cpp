@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "$safeitemname$.xaml.h"
+#if __has_include("$safeitemname$.g.cpp")
 #include "$safeitemname$.g.cpp"
+#endif
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
