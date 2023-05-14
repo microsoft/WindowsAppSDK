@@ -1,4 +1,5 @@
 #pragma once
+
 #include "App.xaml.g.h"
 
 namespace winrt::$safeprojectname$::implementation
