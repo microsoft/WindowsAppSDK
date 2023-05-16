@@ -11,32 +11,6 @@ const wchar_t c_languageQualifierName[] = L"Language";
 namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 {
 
-winrt::Windows::Foundation::Collections::IMap<hstring, hstring> ResourceContext::QualifierValues()
-{
-    InitializeQualifierValueMap();
-
-    return m_qualifierValueMap;
-}
-
-void ResourceContext::Apply()
-{
-    if (m_resourceContext == nullptr)
-    {
-        // Resource not handled by MRT. Nothing to apply.
-        return;
-    }
-
-    InitializeQualifierValueMap();
-
-    for (auto const& eachValue : m_qualifierValueMap)
-    {
-        if (!eachValue.Value().empty())
-        {
-            winrt::check_hresult(MrmSetQualifier(m_resourceContext, eachValue.Key().c_str(), eachValue.Value().c_str()));
-        }
-    }
-}
-
 void ResourceContext::InitializeQualifierNames()
 {
     // m_resourceContext can be null when resource is not in a PRI file.
@@ -98,6 +72,32 @@ void ResourceContext::InitializeQualifierValueMap()
             m_qualifierValueMap.Insert(c_languageQualifierName, GetLangugageContext());
         }
     });
+}
+
+winrt::Windows::Foundation::Collections::IMap<hstring, hstring> ResourceContext::QualifierValues()
+{
+    InitializeQualifierValueMap();
+
+    return m_qualifierValueMap;
+}
+
+void ResourceContext::Apply()
+{
+    if (m_resourceContext == nullptr)
+    {
+        // Resource not handled by MRT. Nothing to apply.
+        return;
+    }
+
+    InitializeQualifierValueMap();
+
+    for (auto const& eachValue : m_qualifierValueMap)
+    {
+        if (!eachValue.Value().empty())
+        {
+            winrt::check_hresult(MrmSetQualifier(m_resourceContext, eachValue.Key().c_str(), eachValue.Value().c_str()));
+        }
+    }
 }
 
 hstring ResourceContext::GetLangugageContext()
