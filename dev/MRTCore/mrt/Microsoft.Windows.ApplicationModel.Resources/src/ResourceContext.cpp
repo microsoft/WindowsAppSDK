@@ -10,7 +10,6 @@ const wchar_t c_languageQualifierName[] = L"Language";
 
 namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 {
-
 void ResourceContext::InitializeQualifierNames()
 {
     // m_resourceContext can be null when resource is not in a PRI file.
