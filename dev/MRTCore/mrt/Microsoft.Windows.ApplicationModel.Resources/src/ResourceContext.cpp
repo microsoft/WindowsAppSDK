@@ -5,44 +5,21 @@
 #include "ResourceContext.h"
 #include "ResourceContext.g.cpp"
 #include "winrt/Windows.Globalization.h"
-#include <wil\resource.h>
 
 const wchar_t c_languageQualifierName[] = L"Language";
 
 namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 {
 
-ResourceContext::~ResourceContext()
-{
-    winrt::slim_lock_guard guard {m_lock};
-    MrmDestroyResourceContext(m_resourceContext);
-}
-
-
 winrt::Windows::Foundation::Collections::IMap<hstring, hstring> ResourceContext::QualifierValues()
 {
-    m_lock.lock_shared();
-
-    auto cleanupOnFailure = wil::scope_exit([&] { m_lock.unlock_shared(); });
-
-    if (!IsInitialized())
-    {
-        m_lock.unlock_shared();
-        m_lock.lock();
-
-        InitializeQualifierValueMap();
-
-        m_lock.unlock();
-        m_lock.lock_shared();
-    }
+    InitializeQualifierValueMap();
 
     return m_qualifierValueMap;
 }
 
 void ResourceContext::Apply()
 {
-    winrt::slim_lock_guard guard {m_lock};
-
     if (m_resourceContext == nullptr)
     {
         // Resource not handled by MRT. Nothing to apply.
@@ -58,17 +35,6 @@ void ResourceContext::Apply()
             winrt::check_hresult(MrmSetQualifier(m_resourceContext, eachValue.Key().c_str(), eachValue.Value().c_str()));
         }
     }
-}
-
-MrmContextHandle ResourceContext::GetContextHandle()
-{
-    winrt::slim_shared_lock_guard guard {m_lock};
-    return m_resourceContext;
-}
-
-bool ResourceContext::IsInitialized()
-{
-    return !m_qualifierNames.empty() && m_qualifierValueMap != nullptr;
 }
 
 void ResourceContext::InitializeQualifierNames()
@@ -101,13 +67,9 @@ void ResourceContext::InitializeQualifierNames()
 
 void ResourceContext::InitializeQualifierValueMap()
 {
-    if (m_qualifierNames.empty())
-    {
+    std::call_once(m_areQualifierNamesAndValueMapInitialized, [this] {
         InitializeQualifierNames();
-    }
 
-    if (m_qualifierValueMap == nullptr)
-    {
         m_qualifierValueMap = single_threaded_map<hstring, hstring>();
 
         if (m_resourceContext != nullptr)
@@ -135,7 +97,7 @@ void ResourceContext::InitializeQualifierValueMap()
         {
             m_qualifierValueMap.Insert(c_languageQualifierName, GetLangugageContext());
         }
-    }
+    });
 }
 
 hstring ResourceContext::GetLangugageContext()

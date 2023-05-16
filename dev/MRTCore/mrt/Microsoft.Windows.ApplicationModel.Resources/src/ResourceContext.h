@@ -11,20 +11,19 @@ struct ResourceContext : ResourceContextT<ResourceContext>
 {
     ResourceContext() = delete;
     ResourceContext(MrmContextHandle resourceContext) : m_resourceContext(resourceContext) {}
-    ~ResourceContext();
+    ~ResourceContext() { MrmDestroyResourceContext(m_resourceContext); }
 
     winrt::Windows::Foundation::Collections::IMap<hstring, hstring> QualifierValues();
 
     void Apply();
-    MrmContextHandle GetContextHandle();
+    MrmContextHandle GetContextHandle() { return m_resourceContext; }
 
 private:
-    bool IsInitialized();
     void InitializeQualifierNames();
     void InitializeQualifierValueMap();
     hstring GetLangugageContext();
 
-    slim_mutex m_lock;
+    std::once_flag m_areQualifierNamesAndValueMapInitialized;
     MrmContextHandle m_resourceContext = nullptr;
     com_array<hstring> m_qualifierNames;
     winrt::Windows::Foundation::Collections::IMap<hstring, hstring> m_qualifierValueMap = nullptr;
