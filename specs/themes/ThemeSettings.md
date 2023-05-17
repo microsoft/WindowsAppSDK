@@ -108,6 +108,14 @@ The **Changed** event will only fire as long as the window represented by **Wind
 
 # API Details
 
+_Spec note: this is a new namespace, **Microsoft.UI.System**.
+The predecessor for this type is `AccessibilitySettings`,
+which is in the `Windows.UI.ViewManagement` namespace,
+which is all UWP types we don't plan to carry into Desktop.
+This is a UI type that doesn't fit into any of the children of the `UI` namespace.
+We anticipate more types here, but don't have any current plans._
+
+
 ``` c# (really midl3)
 namespace Microsoft.UI.System
 {
