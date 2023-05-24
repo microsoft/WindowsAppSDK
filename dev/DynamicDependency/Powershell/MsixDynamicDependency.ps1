@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 Add-Type -TypeDefinition @"
 using System;
