@@ -137,20 +137,21 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
             return hr;
         }
 
-/*
         /// Undefine a package dependency. Removing a pin on a PackageDependency is typically done at uninstall-time.
         /// This implicitly occurs if the package dependency's 'lifetime artifact' (specified via TryCreatePackageDependency)
         /// is deleted. Packages that are not referenced by other packages and have no pins are elegible to be removed.
         ///
         /// @warn DeletePackageDependency() requires the caller have administrative privileges
         ///       if the package dependency was pinned with CreatePackageDependencyOptions_ScopeIsSystem.
-        @[win10_co, DLoadRet(ERROR_CALL_NOT_IMPLEMENTED)]
-        WINBASEAPI
-        HRESULT
-        WINAPI
-        DeletePackageDependency(
-            _In_ PCWSTR packageDependencyId
-            );
+        [DllImport("kernelbase.dll", ExactSpelling=true, CharSet=CharSet.Unicode)]
+        private static extern int DeletePackageDependency(
+            string packageDependencyId);
+
+        public static int Delete(
+            string packageDependencyId)
+        {
+            return DeletePackageDependency(packageDependencyId);
+        }
 
         /// Resolve a previously-pinned PackageDependency to a specific package and
         /// add it to the invoking process' package graph. Once the dependency has
@@ -173,7 +174,7 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         /// rank in ascending order (-infinity...0...+infinity). If package(s) are present in the
         /// package graph with the same rank as the call to AddPackageDependency the resolved
         /// package is (by default) added after others of the same rank. To add a package
-        /// before others o the same rank, specify AddPackageDependencyOptions_PrependIfRankCollision.
+        /// before others of the same rank, specify AddPackageDependencyOptions_PrependIfRankCollision.
         ///
         /// Every AddPackageDependency can be balanced by a RemovePackageDependency
         /// to remove the entry from the package graph. If the process terminates all package
@@ -191,17 +192,38 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         ///
         /// @param packageDependencyContext valid until passed to RemovePackageDependency()
         /// @param packageFullName allocated via HeapAlloc; use HeapFree to deallocate
-        @[win10_co, DLoadRet(ERROR_CALL_NOT_IMPLEMENTED)]
-        WINBASEAPI
-        HRESULT
-        WINAPI
-        AddPackageDependency(
-            _In_ PCWSTR packageDependencyId,
-            INT32 rank,
-            AddPackageDependencyOptions options,
-            _Out_ PACKAGEDEPENDENCY_CONTEXT* packageDependencyContext,
-            _Outptr_opt_result_maybenull_ PWSTR* packageFullName
-            );
+        [DllImport("kernelbase.dll", ExactSpelling=true, CharSet=CharSet.Unicode)]
+        private static extern int AddPackageDependency(
+            string packageDependencyId,
+            int rank,
+            /*AddPackageDependencyOptions*/ int options,
+            /*_Out_ PACKAGEDEPENDENCY_CONTEXT* */ out IntPtr packageDependencyContext,
+            /*_Outptr_opt_result_maybenull_ PWSTR* */ out IntPtr packageFullName);
+
+        public static int Add(
+            string packageDependencyId,
+            int rank,
+            /*AddPackageDependencyOptions*/ int options,
+            /*_Out_ PACKAGEDEPENDENCY_CONTEXT* */ out IntPtr packageDependencyContext,
+            out string packageFullName)
+        {
+            packageDependencyContext = IntPtr.Zero;
+            packageFullName = null;
+
+            IntPtr pdc = IntPtr.Zero;
+            IntPtr pfn = IntPtr.Zero;
+            int hr = AddPackageDependency(packageDependencyId, rank, options, out pdc, out pfn);
+            if (hr >= 0)
+            {
+                packageDependencyContext = pdc;
+                packageFullName = Marshal.PtrToStringUni(pfn);
+            }
+            if (pfn != IntPtr.Zero)
+            {
+                HeapFree(pfn);
+            }
+            return hr;
+        }
 
         /// Remove a resolved PackageDependency from the current process' package graph
         /// (i.e. undo AddPackageDependency). Used at runtime (i.e. the moral equivalent
@@ -211,13 +233,15 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         ///        a package dependency any files loaded from the package can continue
         ///        to be used; future file resolution will fail to see the removed
         ///        package dependency.
-        @[win10_co, DLoadRet(ERROR_CALL_NOT_IMPLEMENTED)]
-        WINBASEAPI
-        HRESULT
-        WINAPI
-        RemovePackageDependency(
-            _In_ PACKAGEDEPENDENCY_CONTEXT packageDependencyContext
-            );
+        [DllImport("kernelbase.dll", ExactSpelling=true, CharSet=CharSet.Unicode)]
+        private static extern int RemovePackageDependency(
+            /*PACKAGEDEPENDENCY_CONTEXT*/ IntPtr packageDependencyContext);
+
+        public static int Remove(
+            IntPtr packageDependencyContext)
+        {
+            return RemovePackageDependency(packageDependencyContext);
+        }
 
         /// Return the package full name that would be used if the
         /// PackageDependency were to be resolved. Does not add the
@@ -226,15 +250,29 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         /// @param packageFullName allocated via HeapAlloc; use HeapFree to deallocate.
         ///                        If the package dependency cannot be resolved the function
         ///                        succeeds but packageFullName is nullptr.
-        @[win10_co, DLoadRet(ERROR_CALL_NOT_IMPLEMENTED)]
-        WINBASEAPI
-        HRESULT
-        WINAPI
-        GetResolvedPackageFullNameForPackageDependency(
-            _In_ PCWSTR packageDependencyId,
-            _Outptr_result_maybenull_ PWSTR* packageFullName
-            );
-*/
+        [DllImport("kernelbase.dll", ExactSpelling=true, CharSet=CharSet.Unicode)]
+        private static extern int GetResolvedPackageFullNameForPackageDependency(
+            string packageDependencyId,
+            /*_Outptr_result_maybenull_ PWSTR* */ out IntPtr packageFullName);
+
+        public static int GetResolvedPackageFullName(
+            string packageDependencyId,
+            out string packageFullName)
+        {
+            packageFullName = null;
+
+            IntPtr pfn = IntPtr.Zero;
+            int hr = GetResolvedPackageFullNameForPackageDependency(packageDependencyId, out pfn);
+            if (hr >= 0)
+            {
+                packageFullName = Marshal.PtrToStringUni(pfn);
+            }
+            if (pfn != IntPtr.Zero)
+            {
+                HeapFree(pfn);
+            }
+            return hr;
+        }
 
         /// Return the package dependency for the context.
         ///
@@ -283,19 +321,90 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
 }
 "@
 
-$id = "before"
-$pd = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::TryCreate(
-        "Microsoft.VCLibs.140.00_8wekyb3d8bbwe",
+$packageFamilyName = "Microsoft.WindowsAppRuntime.1.3_8wekyb3d8bbwe"
+
+"API: RevisionId"
+$rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
+"RevisionId: $rid"
+""
+
+"API: TryCreate"
+$pdid = "before"
+$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::TryCreate(
+        $packageFamilyName,
         0,
         [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyProcessorArchitectures]::None,
         [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyLifetimeKind]::Process,
         "",
         [Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions]::None,
-        [ref] $id)
-$pd
-$id
+        [ref] $pdid)
+"HRESULT: 0x" + $hr.ToString("X")
+"PackageDependencyId: $pdid"
+""
 
+"API: GetResolvedPackageFullName"
+$pfn = "before"
+$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::GetResolvedPackageFullName($pdid, [ref] $pfn)
+"HRESULT: 0x" + $hr.ToString("X")
+"PackageFullName: $pfn"
+""
+
+"API: Add"
+$pdc = 0
+$pfn = "before"
+$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Add(
+        $pdid,
+        [Microsoft.Windows.ApplicationModel.DynamicDependency.Rank]::Default,
+        [Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions]::None,
+        [ref] $pdc,
+        [ref] $pfn)
+"HRESULT: 0x" + $hr.ToString("X")
+"PackageDependencyContext: $pdc"
+"PackageFullName: $pfn"
+""
+
+"API: RevisionId"
+$rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
+"RevisionId: $rid"
+""
+
+"API: GetIdForContext"
 $id = "before"
-$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::GetIdForContext(0, [ref] $id)
-"0x" + $hr.ToString("X")
-$id
+$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::GetIdForContext($pdc, [ref] $id)
+"HRESULT: 0x" + $hr.ToString("X")
+"PackageDependencyId: $id"
+""
+
+"API: GetResolvedPackageFullName"
+$pfn = "before"
+$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::GetResolvedPackageFullName($pdid, [ref] $pfn)
+"HRESULT: 0x" + $hr.ToString("X")
+"PackageFullName: $pfn"
+""
+
+"----------------------------------------"
+"API: New a WinRT type from the package dynamically added to our package graph"
+$dm = [Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions,Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions,ContentType=WindowsRuntime]::New()
+$dm | Format-Custom
+"----------------------------------------"
+""
+
+"API: Remove"
+$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Remove($pdc)
+"HRESULT: 0x" + $hr.ToString("X")
+
+"API: RevisionId"
+$rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
+"RevisionId: $rid"
+""
+
+"API: GetResolvedPackageFullName"
+$pfn = "before"
+$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::GetResolvedPackageFullName($pdid, [ref] $pfn)
+"HRESULT: 0x" + $hr.ToString("X")
+"PackageFullName: $pfn"
+""
+
+"API: Delete"
+$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Delete($pdid)
+"HRESULT: 0x" + $hr.ToString("X")
