@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <windows.applicationmodel.activation.h>
+
 namespace Microsoft::Kozani::Manager
 {
     // Max amount of time we will wait for the DVC plugin to be loaded by the remote desktop client (RDC) since we launches it.
@@ -68,12 +70,19 @@ namespace Microsoft::Kozani::Manager
     {
         static const uint64_t ActivityId_Unknown{};
 
+        // Minimum cleanup delay after the status becomes Closed or Failed: 60 seconds.
+        // When the request status becomes Closed or Failed, we want to unregister the wait handle for tracking the associated local process.
+        // However, the unregistration can fail with ERROR_IO_PENDING if there is an outstanding callback to be made. In such a case, we cannot
+        // clean up the ActivationRequestInfo object as it will be accessed from the callback function. We will clean up the object later with
+        // this minimum delay to allow the callbak to finish.
+        static const int MinCleanupDelay{ 60 * 1000 };
+
         uint64_t activityId{};
         RequestStatus status{};
         std::string connectionId;
         std::wstring appUserModelId;
         winrt::Windows::ApplicationModel::Activation::ActivationKind activationKind{};
-        winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs args;
+        std::string serializedActivationArgs;
         wil::com_ptr<IKozaniStatusCallback> statusCallback;
         wil::com_ptr<IWTSVirtualChannelManager> dvcChannelManager;
         wil::com_ptr<IWTSVirtualChannel> dvcChannel;
@@ -84,6 +93,7 @@ namespace Microsoft::Kozani::Manager
         wil::unique_handle associatedLocalProcessHandle;
         unique_wait_handle processLifetimeTrackerHandle;
         bool processLifetimeTrackerDisabled{};
+        uint64_t cleanupTimeStamp{};
     };
 
     class ConnectionManager
@@ -134,6 +144,8 @@ namespace Microsoft::Kozani::Manager
             _In_ PCWSTR errorMessage);
 
         void DisableProcessLifetimeTracker(uint64_t activityId);
+        void DisableProcessLifetimeTracker(ActivationRequestInfo* requestInfo);
+
         void ProcessAppTerminationNotice(_In_ const Dvc::ProtocolDataUnit& pdu);
 
         HRESULT SendActivateAppRequest(_In_ ActivationRequestInfo* requestInfo) noexcept;

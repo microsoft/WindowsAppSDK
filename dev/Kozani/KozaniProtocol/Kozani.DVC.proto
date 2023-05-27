@@ -65,3 +65,9 @@ message LaunchActivationArgs
 {
     string arguments = 1;
 }
+
+message FileActivationArgs
+{
+    string verb = 1;
+    repeated string file_paths = 2;
+}

@@ -103,7 +103,7 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
             "Activation kind: %d", activationKind);
 
         winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs args;
-        if (!activatedEventArgs)
+        if (activatedEventArgs)
         {
             winrt::com_ptr<::IInspectable> inspectable(activatedEventArgs, winrt::take_ownership_from_abi);
             args = inspectable.as<winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs>();
@@ -118,17 +118,6 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
         const LONG connectionCountBeforeRDCLaunch{ InterlockedAdd(&g_newConnectionCount, 0) };
 
         RETURN_IF_FAILED(rdcLauncher->Launch(connectionRdpFilePath, nullptr));
-
-        /*
-        SHELLEXECUTEINFO shellExecuteInfo{};
-        shellExecuteInfo.cbSize = sizeof(shellExecuteInfo);
-        shellExecuteInfo.fMask = SEE_MASK_NOASYNC;  // Will wait for ShellExecuteEx to finish launching the remote desktop client.
-        shellExecuteInfo.lpFile = Dvc::Constants::RemoteDesktopClientExe;
-        shellExecuteInfo.lpParameters = connectionRdpFilePath;
-        shellExecuteInfo.nShow = SW_NORMAL;
-
-        RETURN_IF_WIN32_BOOL_FALSE_MSG(ShellExecuteEx(&shellExecuteInfo), "ShellExecuteEx failed to launch %ls", Dvc::Constants::RemoteDesktopClientExe);
-        */
 
         // Wait for request status change or time out to ensure this module is alive for RDC to load the DVC plugin hosted by the module.
         // If the module is exiting while RDC is loading the DVC plugin, the DVC loading will fail and RDC will ignore the failure and
@@ -177,6 +166,10 @@ private:
         switch (kind)
         {
             case winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch:
+                [[fallthrough]];
+            case winrt::Windows::ApplicationModel::Activation::ActivationKind::File:
+                [[fallthrough]];
+            case winrt::Windows::ApplicationModel::Activation::ActivationKind::Protocol:
                 return true;
         }
 

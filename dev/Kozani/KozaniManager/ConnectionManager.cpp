@@ -156,11 +156,14 @@ namespace Microsoft::Kozani::Manager
         requestInfo->connectionId = std::move(connectionId);
         requestInfo->activationKind = activationKind;
         requestInfo->appUserModelId.assign(appUserModelId);
-        requestInfo->args = activatedEventArgs;
+
+        // Experiments showed that the IActivatedEventArgs COM object can only be safely used in the calling thread from the client. 
+        // Saving it and used it later in a different thread can trigger CO_E_OBJNOTCONNECTED failure, or worse, AV. So serialize it to 
+        // a string now and attach to ActivateAppRequest PDU later.
+        requestInfo->serializedActivationArgs = DvcProtocol::SerializeActivatedEventArgs(activatedEventArgs);
+
         requestInfo->statusCallback = statusCallback;
-
         requestInfo->statusReporter = std::make_shared<ActivationRequestStatusReporter>();
-
         requestInfo->connectionManager = this;
 
         if (associatedLocalProcessHandle)
@@ -338,7 +341,7 @@ namespace Microsoft::Kozani::Manager
 
             if (requestInfo->statusCallback != nullptr)
             {
-                (void)requestInfo->statusCallback->OnActivated(activateAppResult.process_id(), activateAppResult.is_new_instance());
+                LOG_IF_FAILED(requestInfo->statusCallback->OnActivated(activateAppResult.process_id(), activateAppResult.is_new_instance()));
             }
         }
         else
@@ -358,7 +361,8 @@ namespace Microsoft::Kozani::Manager
         requestInfo->statusReporter->SetStatus(RequestStatus::Failed);
         if (requestInfo->statusCallback != nullptr)
         {
-            (void)requestInfo->statusCallback->OnActivationFailed(hrActivation, errorMessage);
+            LOG_IF_FAILED(requestInfo->statusCallback->OnActivationFailed(hrActivation, errorMessage));
+            requestInfo->statusCallback.reset();
         }
 
         // Remove the request from all tracking mechanism.
@@ -383,6 +387,22 @@ namespace Microsoft::Kozani::Manager
 
         ActivationRequestInfo* requestInfo{ iter->second };
 
+        if (requestInfo->processLifetimeTrackerHandle)
+        {
+            requestInfo->processLifetimeTrackerDisabled = true;
+
+            // Call UnregisterWaitEx with INVALID_HANDLE_VALUE so it will wait for any pending callback to finish before returning.
+            // Release the m_requestsLock before calling blocking UnregisterWaitEx, which will deadlock if the other thread calling the
+            // ProcessTerminationCallback function is trying to get the lock. We are safe here as requestInfo->processLifetimeTrackerDisabled
+            // is set to true above, which will prevent the process lifetime tracker thread from modifying the requestInfo object.
+            lock.reset();
+            THROW_IF_WIN32_BOOL_FALSE(UnregisterWaitEx(requestInfo->processLifetimeTrackerHandle.get(), INVALID_HANDLE_VALUE));
+            requestInfo->processLifetimeTrackerHandle.release();
+        }
+    }
+
+    void ConnectionManager::DisableProcessLifetimeTracker(ActivationRequestInfo* requestInfo)
+    {
         if (requestInfo->processLifetimeTrackerHandle)
         {
             requestInfo->processLifetimeTrackerDisabled = true;
@@ -439,7 +459,7 @@ namespace Microsoft::Kozani::Manager
     HRESULT ConnectionManager::SendActivateAppRequest(_In_ ActivationRequestInfo* requestInfo) noexcept try
     {
         std::string pdu{ DvcProtocol::CreateActivateAppRequestPdu(
-            requestInfo->activityId, requestInfo->appUserModelId.c_str(), requestInfo->activationKind, requestInfo->args) };
+            requestInfo->activityId, requestInfo->appUserModelId.c_str(), requestInfo->activationKind, requestInfo->serializedActivationArgs) };
         RETURN_IF_FAILED(requestInfo->dvcChannel->Write(
             static_cast<ULONG>(pdu.size()), reinterpret_cast<BYTE*>(pdu.data()), nullptr /* pReserved - must be nullptr */));
         return S_OK;

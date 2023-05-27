@@ -4,7 +4,6 @@
 #pragma once
 
 #include "pch.h"
-#include <shobjidl.h>
 #include <pchannel.h>
 #include <Kozani.DVC.pb.h>
 
@@ -423,7 +422,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                 break;
 
             case Dvc::ActivationKind::File:
-                // ToDo: https://task.ms/43963854 support FTA launch.
+                RETURN_IF_FAILED(ProcessFileActivationRequest(aam.get(), appUserModelId, activateAppRequest, processId, errorMessage));
                 break;
 
             case Dvc::ActivationKind::Protocol:
@@ -512,6 +511,70 @@ namespace Microsoft::Kozani::KozaniRemoteManager
     }
     CATCH_RETURN()
 
+    HRESULT KozaniDvcServer::ProcessFileActivationRequest(
+        _In_ IApplicationActivationManager* aam,
+        const std::wstring& appUserModelId,
+        const Dvc::ActivateAppRequest& activateAppRequest,
+        _Out_ DWORD& processId,
+        _Out_ std::string& errorMessage) noexcept try
+    {
+        if (activateAppRequest.arguments().empty())
+        {
+            errorMessage = "Arguments for File activation cannot be empty";
+            RETURN_WIN32(ERROR_INVALID_DATA);
+        }
+
+        Dvc::FileActivationArgs args;
+        if (!args.ParseFromString(activateAppRequest.arguments()))
+        {
+            errorMessage = "Failed to parse File activation arguments";
+            RETURN_WIN32(ERROR_INVALID_DATA);
+        }
+
+        int filePathsCount{ args.file_paths_size() };
+
+        // There should be at least 1 file path in the FileActivationArgs for file activation to work.
+        RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_DATA), filePathsCount <= 0);
+
+        wistd::unique_ptr<PIDLIST_ABSOLUTE> filePaths(new PIDLIST_ABSOLUTE[filePathsCount]);
+        RETURN_IF_NULL_ALLOC(filePaths);
+
+        PIDLIST_ABSOLUTE* pidlistFilePaths{ filePaths.get() };
+        ZeroMemory(pidlistFilePaths, sizeof(PIDLIST_ABSOLUTE) * filePathsCount);
+
+        auto freeFilePaths{ wil::scope_exit([&]()
+        {
+            for (int i = 0; i < filePathsCount; i++)
+            {
+                if (pidlistFilePaths[i])
+                {
+                    CoTaskMemFree(pidlistFilePaths[i]);
+                }
+            }
+        }) };
+
+        for (int i = 0; i < filePathsCount; i++)
+        {
+            std::wstring clientLocalPath{ ::Microsoft::Utf8::ToUtf16(args.file_paths(i)) };
+            std::wstring redirectedClientPath{ GetRedirectedClientPath(clientLocalPath) };
+            RETURN_IF_FAILED(SHParseDisplayName(redirectedClientPath.c_str(), nullptr, &pidlistFilePaths[i], 0, nullptr));
+        }
+
+        wil::com_ptr<IShellItemArray> filePathArray;
+        RETURN_IF_FAILED(SHCreateShellItemArrayFromIDLists(filePathsCount, const_cast<LPCITEMIDLIST*>(pidlistFilePaths), &filePathArray));
+        
+        std::wstring verb{ ::Microsoft::Utf8::ToUtf16(args.verb()) };
+        HRESULT hrActivateApp{ aam->ActivateForFile(appUserModelId.c_str(), filePathArray.get(), verb.c_str(), &processId)};
+        if (FAILED(hrActivateApp))
+        {
+            errorMessage = "Failed to Activate app for file.";
+            RETURN_HR(hrActivateApp);
+        }
+
+        return S_OK;
+    }
+    CATCH_RETURN()
+
     HRESULT KozaniDvcServer::ProcessAppTerminationNotice(_In_ Dvc::ProtocolDataUnit& pdu) noexcept try
     {
         ConnectionManager& connectionManager{ KozaniRemoteManagerModule::GetConnectionManagerInstance() };
@@ -548,6 +611,23 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         RETURN_HR(hrTerminateProcess);
     }
     CATCH_RETURN()
+
+    // Convert local path from the remote client to a path that can be addressed by the remote desktop server. Local drives of the client have been 
+    // rediected to the server so the server can directly access them. For example, local path "C:\data\MyFile.txt" will be redirected to the server
+    // side with addressable path "\\tsclient\C\data\MyFile.txt"
+    std::wstring KozaniDvcServer::GetRedirectedClientPath(const std::wstring& localPath)
+    {
+        // UNC paths are not redirected so we return it as it is.
+        if (localPath.starts_with(L"\\\\"))
+        {
+            return localPath;
+        }
+
+        std::wstring redirectedPath{ L"\\\\tsclient\\" };
+        redirectedPath += localPath[0];
+        redirectedPath += localPath.substr(2);
+        return redirectedPath;
+    }
 
     bool KozaniDvcServer::IsActivationKindSupported(Dvc::ActivationKind kind)
     {

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 #include <pch.h>
+#include <winrt\Windows.Storage.h>
 #include "KozaniDvcProtocol.h"
 
 namespace Microsoft::Kozani::DvcProtocol
@@ -53,15 +54,34 @@ namespace Microsoft::Kozani::DvcProtocol
         switch (args.Kind())
         {
         case winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch:
-            auto specificArgs{ args.as<winrt::Windows::ApplicationModel::Activation::LaunchActivatedEventArgs>() };
-            if (!specificArgs.Arguments().empty())
             {
-                const std::string argsUtf8{ ::Microsoft::Utf8::ToUtf8(specificArgs.Arguments().c_str()) };
-                Dvc::LaunchActivationArgs launchArgs;
-                launchArgs.set_arguments(std::move(argsUtf8));
-                return launchArgs.SerializeAsString();
+                auto specificArgs{ args.as<winrt::Windows::ApplicationModel::Activation::LaunchActivatedEventArgs>() };
+                if (!specificArgs.Arguments().empty())
+                {
+                    const std::string argsUtf8{ ::Microsoft::Utf8::ToUtf8(specificArgs.Arguments().c_str()) };
+                    Dvc::LaunchActivationArgs launchArgs;
+                    launchArgs.set_arguments(std::move(argsUtf8));
+                    return launchArgs.SerializeAsString();
+                }
+                break;
             }
-            break;
+
+        case winrt::Windows::ApplicationModel::Activation::ActivationKind::File:
+            {
+                auto specificArgs{ args.as<winrt::Windows::ApplicationModel::Activation::FileActivatedEventArgs>() };
+                const std::string verbUtf8{ ::Microsoft::Utf8::ToUtf8(specificArgs.Verb().c_str()) };
+                Dvc::FileActivationArgs fileArgs;
+                fileArgs.set_verb(std::move(verbUtf8));
+
+                auto files{ specificArgs.Files() };
+                for (auto const& file : specificArgs.Files())
+                {
+                    const std::string filePathUtf8{ ::Microsoft::Utf8::ToUtf8(file.Path().c_str()) };
+                    fileArgs.add_file_paths(std::move(filePathUtf8));
+                }
+
+                return fileArgs.SerializeAsString();
+            }
         }
         return std::string();
     }
@@ -70,16 +90,16 @@ namespace Microsoft::Kozani::DvcProtocol
         UINT64 activityId,
         PCWSTR appUserModelId,
         winrt::Windows::ApplicationModel::Activation::ActivationKind activationKind,
-        winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs& args)
+        const std::string& serializedArgs)
     {
         Dvc::ActivateAppRequest activateAppRequest;
         activateAppRequest.set_activation_kind(static_cast<Dvc::ActivationKind>(activationKind));
 
         const std::string appUserModelIdUtf8{ ::Microsoft::Utf8::ToUtf8(appUserModelId) };
         activateAppRequest.set_app_user_model_id(std::move(appUserModelIdUtf8));
-        if (args)
+        if (!serializedArgs.empty())
         {
-            activateAppRequest.set_arguments(SerializeActivatedEventArgs(args));
+            activateAppRequest.set_arguments(serializedArgs);
         }
 
         return CreatePdu(activityId, Dvc::ProtocolDataUnit::ActivateAppRequest, activateAppRequest.SerializeAsString());

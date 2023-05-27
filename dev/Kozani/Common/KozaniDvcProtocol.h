@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
 #include <Microsoft.Utf8.h>
 #include <Kozani.DVC.pb.h>
@@ -23,7 +24,7 @@ namespace Microsoft::Kozani::DvcProtocol
         UINT64 activityId,
         PCWSTR appUserModelId,
         winrt::Windows::ApplicationModel::Activation::ActivationKind activationKind,
-        winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs& args);
+        const std::string& serializedArgs);
 
     std::string CreateActivateAppResultPdu(
         UINT64 activityId, 

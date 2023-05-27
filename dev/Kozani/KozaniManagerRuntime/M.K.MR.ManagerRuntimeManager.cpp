@@ -41,25 +41,11 @@ namespace winrt::Microsoft::Kozani::ManagerRuntime::implementation
         Windows::ApplicationModel::Activation::ActivationKind activationKind,
         winrt::hstring appUserModelId,
         winrt::hstring connectionRdpFilePath,
-        winrt::hstring additionalSettingsFilePath,
+        UINT32 associatedLocalProcessId,
         Windows::ApplicationModel::Activation::IActivatedEventArgs args,
         IInspectable statusCallback,
-        UINT32 associatedLocalProcessId)
+        winrt::hstring additionalSettingsFilePath)
     {
-        /*
-        SHELLEXECUTEINFO shellExecuteInfo{};
-        shellExecuteInfo.cbSize = sizeof(shellExecuteInfo);
-        shellExecuteInfo.fMask = SEE_MASK_NOASYNC;  // Will wait for ShellExecuteEx to finish launching the remote desktop client.
-        shellExecuteInfo.lpFile = L"mstsc.exe";
-        shellExecuteInfo.lpParameters = L"D:\\temp\\3\\connection.rdp";
-        shellExecuteInfo.nShow = SW_NORMAL;
-
-        ShellExecuteEx(&shellExecuteInfo);
-        */
-
-        TraceLoggingWrite(Microsoft_Kozani_ManagerRuntime_TraceLogger::Provider(), "In ActivateRemoteApplication");
-        LOG_HR_MSG(KOZANI_E_INFO, "Reached here!");
-
         // The purpose of IKozaniRemoteDesktopClientLauncher is to allow the caller of the IKozaniManager::ActivateRemoteApplication API
         // to launch remote desktop client (RDC) in its process. The COM server hosting the IKozaniManager APIs is a background process, 
         // which may not be able to launch the RDC to desktop foreground. From experiments we've found that if the caller process is a 

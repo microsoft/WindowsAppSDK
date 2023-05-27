@@ -139,10 +139,10 @@ namespace Test::KozaniManagerRuntimeTests
             try
             {
                 runtimeManager.ActivateRemoteApplication(winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch,
-                    L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", L"Non-existing.rdp", L"additionalSettings.txt",
+                    L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", L"Non-existing.rdp", 0, 
                     nullptr,    // IActivatedEventArgs
                     statusCallback.as<winrt::Windows::Foundation::IInspectable>(),
-                    0);
+                    L"additionalSettings.txt");
             }
             catch (winrt::hresult_error& e)
             {
@@ -156,10 +156,10 @@ namespace Test::KozaniManagerRuntimeTests
                 rdpFullPath.append(L"MissingConnectionId.rdp");
 
                 runtimeManager.ActivateRemoteApplication(winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch,
-                    L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", rdpFullPath.c_str(), L"additionalSettings.txt",
+                    L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", rdpFullPath.c_str(), 0, 
                     nullptr,    // IActivatedEventArgs
                     statusCallback.as<winrt::Windows::Foundation::IInspectable>(),
-                    0);
+                    L"additionalSettings.txt");
             }
             catch (winrt::hresult_error& e)
             {
@@ -178,12 +178,10 @@ namespace Test::KozaniManagerRuntimeTests
             rdpFullPath.append(L"connection.rdp");
 
             runtimeManager.ActivateRemoteApplication(winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch,
-                L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", rdpFullPath.c_str(), winrt::param::hstring(),
+                L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", rdpFullPath.c_str(), 0, 
                 nullptr,    // IActivatedEventArgs
                 statusCallback.as<winrt::Windows::Foundation::IInspectable>(),
-                0);
-
-            //VERIFY_IS_TRUE(statusCallback->IsActivated(), L"IKozaniStausCallback::OnActivated() should have been called.");
+                winrt::param::hstring());
         }
     };
 }

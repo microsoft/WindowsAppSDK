@@ -18,10 +18,10 @@ namespace winrt::Microsoft::Kozani::ManagerRuntime::implementation
             Windows::ApplicationModel::Activation::ActivationKind activationKind,
             winrt::hstring appUserModelId,
             winrt::hstring connectionRdpFilePath,
-            winrt::hstring additionalSettingsFilePath,
+            UINT32 associatedLocalProcessId,
             Windows::ApplicationModel::Activation::IActivatedEventArgs args,
             IInspectable statusCallback,
-            UINT32 associatedLocalProcessId);
+            winrt::hstring additionalSettingsFilePath);
 
     private:
         wil::com_ptr<IKozaniManager> m_kozaniManager;

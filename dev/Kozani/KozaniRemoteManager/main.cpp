@@ -44,8 +44,6 @@ namespace KozaniRemoteManagerModule
     }
 };
 
-
-
 struct __declspec(uuid(PR_KOZANIREMOTEMANAGER_CLSID_STRING)) KozaniRemoteManagerImpl WrlFinal : RuntimeClass<RuntimeClassFlags<ClassicCom>, IKozaniRemoteManager>
 {
     STDMETHODIMP Connect(_In_ PCSTR connectionId) noexcept try

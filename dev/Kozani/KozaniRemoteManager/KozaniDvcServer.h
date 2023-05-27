@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <Shlobj.h>
 #include "KozaniDvcProtocol.h"
 #include "KozaniRemoteManagerTraceLogging.h"
 
@@ -70,7 +71,16 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             _Out_ bool& appActivatedAndTracked, 
             _Out_ std::string& errorMessage) noexcept;
 
+        HRESULT ProcessFileActivationRequest(
+            _In_ IApplicationActivationManager* aam,
+            const std::wstring& appUserModelId,
+            const Dvc::ActivateAppRequest& activateAppRequest,
+            _Out_ DWORD& processId,
+            _Out_ std::string& errorMessage) noexcept;
+
         HRESULT ProcessAppTerminationNotice(_In_ Dvc::ProtocolDataUnit& pdu) noexcept;
+
+        std::wstring GetRedirectedClientPath(const std::wstring& localPath);
 
         bool IsActivationKindSupported(Dvc::ActivationKind kind);
 
