@@ -26,18 +26,18 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(Configuration)\dlldata.c">
+    <ClCompile Include="$(IntDir)\dlldata.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(Configuration)\KozaniRemoteManagerProxyStub_i.c">
+    <ClCompile Include="$(IntDir)\KozaniRemoteManager_i.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(Configuration)\KozaniRemoteManagerProxyStub_p.c">
+    <ClCompile Include="$(IntDir)\KozaniRemoteManager_p.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="KozaniRemoteManagerProxyStub.idl">
+    <Midl Include="KozaniRemoteManager.idl">
       <Filter>Source Files</Filter>
     </Midl>
   </ItemGroup>
