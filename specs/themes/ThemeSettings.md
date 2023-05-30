@@ -12,13 +12,20 @@ object to handle the `WM_THEMECHANGED` message and fire an internal event to the
 in a non-UWP, Win32/WinAppSDK context, no **CoreWindow** exists.
 
 The API described in this doc, **ThemeSettings**, is a WinAppSDK WinRT API that provides the functionality of
-**AccessibilitySettings**, but for a Win32 environment.  We expect to add other APIs to this type over time.
+**AccessibilitySettings**, but for a Win32 environment.  In the future we'd like to add other kinds of theme-related 
+information to this API, so we decided to use a name that's not specific to accessibility or high-contrast.
 
 The **ThemeSettings.HighContrast** and **ThemeSettings.HighContrastScheme** properties shown below are basically identical to the
 existing UWP [AccessibilitySettings.HighContrast](https://learn.microsoft.com/en-us/uwp/api/windows.ui.viewmanagement.accessibilitysettings.highcontrast?view=winrt-22621) 
 and [AccessibilitySettings.HighContrastScheme](https://learn.microsoft.com/en-us/uwp/api/windows.ui.viewmanagement.accessibilitysettings.highcontrastscheme?view=winrt-22621)
 properties.  They're all implemented by calling the Win32 [SystemParametersInfo](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-systemparametersinfow)
 function with the `SPI_GETHIGHCONTRAST` flag.
+
+Note that **HighContrastScheme** will, like **AccessibilitySettings.HighContrastScheme**, continue to return a valid
+string value even when **HighContrast** is false.  The Win10 Settings UI had two controls, a toggle for high-contrast
+enablement and a combo box to select the HC theme, the UWP **AccessibilitySettings** API was probably designed to match
+that.  Rather than change the model, we stick with what the UWP API already exposed, since we know it works for app
+developers and can be implemented very simply on Windows.
 
 This GIF shows how a user can change the HighContrast theme in the Settings app today, and a System Xaml app that displays the current **HighContrastScheme**:
 
@@ -29,6 +36,13 @@ This API requires a **WindowId** object because the implementation listens for a
 the same message the **CoreWindow** listens for that drives the UWP **AccessibilitySettings.HighContrastChanged**  event).
 An alternative option is for the API to create and manage its own top-level window, but we decided to use an existing
 window so we could have better control over the order in which these kinds of WinAppSDK events are fired.
+
+### Future directions
+The expectation is to add more theme APIs here that we should have full APIs for:
+
+* We need an API for light/dark mode, which currently you have to read from the registry.
+* System colors currently exposed by GetSysColor (Win32).
+* Accent colors currently exposed by UISettings.GetColorValue.
 
 # API Pages
 
@@ -132,22 +146,11 @@ namespace Microsoft.UI.System
 ```
 
 # Appendix
-
-## Open Issues and Implementation Issues
-In the experimental API today, HighContrastScheme returns a stale value if HighContrast is off.  We should change this to return
-the empty string.
-
-It seems easy to misuse this API by accidentally allowing the ThemeSettings object to go out of scope, which will mean the event
-never fires.
-
-In the original plan we weren't going to add HighContrast or HighContrastScheme.  Do we need them?  Should we remove?
-
-Note that today in the code the **Changed** object is called **HighContrastChanged** because it currently only applies to HighContrast.
+_This section is only for internal use, it should not be part of the public documentation._
 
 ## Future Directions
 In the future, when we support cross-process and/or cross-thread islands, a WindowId won't be sufficient anymore.  We'll need
 a static method that allows the app to create a ThemeSettings object for a given island.
-
 
 ## Similar APIs
 Note in .net there is a
