@@ -110,7 +110,7 @@ it can be done as a separate operation from creation of an image file.
         std::wstring developerCertPfxFile{ L"D:\\test\\ContosoApp1\\developerCert.pfx" };
 
         // Step 1. Create the full bundle.
-
+        PackageIdentity packageIdentity = nullptr;
         // Iterate through package layout folders and pack each one.
         for (const std::filesystem::directory_entry& directoryEntry : std::filesystem::directory_iterator(packageLayoutRootPath))
         {
@@ -118,18 +118,32 @@ it can be done as a separate operation from creation of an image file.
             {
                 continue;
             }
+
             CreatePackageOptions createPackageOptions = CreatePackageOptions();
             createPackageOptions.OverwriteOutputFileIfExists(true);
             std::wstring packageFolderName = directoryEntry.path().filename().wstring();
             std::wstring packageOutputFilePath{ packageOutputRootDirectoryPath + packageFolderName + L".appx" };
 
             MakeMSIXManager::CreatePackage(directoryEntry.path().c_str(), packageOutputFilePath.c_str(), createPackageOptions).get();
+
+            // All packages in the bundle have the same version in this example, grab one of them to set on the bundle.
+            if (packageIdentity == nullptr)
+            {
+                packageIdentity = MakeMSIXManager::GetPackageInformation(directoryEntry.path().c_str()).get().Identity();
+            }
         }
+
+        // Confirm the directory did contain package layouts.
+        if (packageIdentity == nullptr)
+        {
+            winrt::throw_hresult(E_INVALIDARG);
+        }
+
         // Bundle all the packages together.
         CreateBundleOptions createbundleOptions = CreateBundleOptions();
         createbundleOptions.OverwriteOutputFileIfExists(true);
         createbundleOptions.FlatBundle(true);
-        createbundleOptions.Version(winrt::Windows::ApplicationModel::PackageVersion(1, 1, 0, 0));
+        createbundleOptions.Version(packageIdentity.Version());
         MakeMSIXManager::CreateBundle(packageOutputRootDirectoryPath, bundleOutputFilePath.c_str(), createbundleOptions).get();
 
         // Sign the bundle
@@ -139,6 +153,10 @@ it can be done as a separate operation from creation of an image file.
         CreateKozaniPackageOptions createKozaniPackageOptions = CreateKozaniPackageOptions();
         createKozaniPackageOptions.OverwriteOutputFileIfExists(true);
         createKozaniPackageOptions.RemoveExtensions(true);
+        // Append "Kozani" to the package name, and trim non-english languages from the package.
+        std::wstring newPackageName{ packageIdentity.Name() + L"Kozani" };
+        createKozaniPackageOptions.Name(newPackageName);
+        createKozaniPackageOptions.Languages().Append(L"en-US");
         MakeMSIXManager::CreateKozaniPackage(bundleOutputFilePath, kozaniPackageOutputFilePath.c_str(), createKozaniPackageOptions).get();
 
         // Step 3. Create app attach vhd from the bundle created in Step 1.
@@ -403,15 +421,15 @@ namespace Microsoft.Kozani.MakeMSIX
         CreatePackageOptions();
 
         /// Optional replacement package name.
-        /// If field is empty, values from AppxManifest.xml are unchanged.
+        /// If field is empty, value from AppxManifest.xml is unchanged.
         String Name;
 
         /// Optional replacement package publisher.
-        /// If field is empty, values from AppxManifest.xml are unchanged.
+        /// If field is empty, value from AppxManifest.xml is unchanged.
         String Publisher;
 
         /// Optional replacement package version
-        /// If version is 0, version is created based on the current time.
+        /// If version is 0, value from AppxManifest.xml is unchanged.
         Windows.ApplicationModel.PackageVersion Version;
         
         /// Overwrite output file if it already exists.
@@ -435,16 +453,24 @@ namespace Microsoft.Kozani.MakeMSIX
         Boolean RemoveExtensions;
 
         /// Optional replacement package name.
-        /// If field is empty, values from AppxManifest.xml are unchanged.
+        /// If field is empty, value from AppxManifest.xml is unchanged.
         String Name;
 
         /// Optional replacement package publisher.
-        /// If field is empty, values from AppxManifest.xml are unchanged.
+        /// If field is empty, value from AppxManifest.xml is unchanged.
         String Publisher;
 
         /// Optional replacement package version
-        /// If version is 0, version is created based on the current time.
+        /// If version is 0, value from AppxManifest.xml is unchanged.
         Windows.ApplicationModel.PackageVersion Version;
+
+        /// Languages supported by the output package
+        /// If field is empty, all languages from the original package are maintained.
+        Windows.Foundation.Collections.IVector<String> Languages{ get; };
+
+        /// ScaleFactors supported by the output package
+        /// If field is empty, all scale factors from the original package are maintained.
+        Windows.Foundation.Collections.IVector<String> ScaleFactors{ get; };
 
         /// Overwrite output file if it already exists.
         /// Defaults to true.
@@ -468,7 +494,7 @@ namespace Microsoft.Kozani.MakeMSIX
         Boolean FlatBundle;
 
         /// Optional. Sets the version in the AppxBundleManifest.xml
-        /// If not set the version is created based on the current time.
+        /// If version is 0, the version is created based on the current time.
         Windows.ApplicationModel.PackageVersion Version;
 
         /// Overwrite output file if it already exists.
@@ -502,7 +528,7 @@ namespace Microsoft.Kozani.MakeMSIX
         Boolean OverwriteOutputFilesIfExists;
     };
 
-    /// 
+    /// Options for creating a mountable image
     [contract(MakeMSIXContract, 1)]
     runtimeclass CreateMountableImageOptions
     {
@@ -518,54 +544,61 @@ namespace Microsoft.Kozani.MakeMSIX
         Boolean OverwriteOutputFileIfExists;
     };
 
+	/// Identity of a package
     runtimeclass PackageIdentity
     {
         /// Name of the package
-        /// Defaults to empty.
-        String Name;
+        String Name{ get; };
         
         /// Publisher of the package
-        /// Defaults to empty.
-        String Publisher;
+        String Publisher{ get; };
         
         /// FamilyName of the package
-        /// Defaults to empty.
-        String FamilyName;
+        String FamilyName{ get; };
         
         /// Version of the package
-        /// Defaults to 0.0.0.0.
-        Windows.ApplicationModel.PackageVersion Version { get; set; };
+        Windows.ApplicationModel.PackageVersion Version { get; };
         
         /// Architecture of the package
-        /// Defaults to Unknown.
-        Windows.System.ProcessorArchitecture Architecture;
+        Windows.System.ProcessorArchitecture Architecture{ get; };
         
         /// ResourceId of the package
-        /// Defaults to empty.
-        String ResourceId;
+        String ResourceId{ get; };
  
         /// FullName of the package.
-        /// Defaults to empty.
-        String FullName;
+        String FullName{ get; };
     }
-    
+
+	/// Information about the contents of a package
+    runtimeclass PackageInformation
+    {
+		/// Identity of the package
+        PackageIdentity Identity{ get; };
+
+        /// Languages supported by the package
+        Windows.Foundation.Collections.IVectorView<String> Languages{ get; };
+
+        /// ScaleFactors supported by the package
+        Windows.Foundation.Collections.IVectorView<String> ScaleFactors{ get; };
+    }
+
     /// Static methods for creating and unpacking packages.
     [contract(MakeMSIXContract, 1)]
     runtimeclass MakeMSIXManager
     {
-        /// Creates packages from the inputPath as specified by the packOptions.
+        /// Creates packages from the inputPath as specified by the createPackageOptions.
         /// Output path for the full packaged file.
         static Windows.Foundation.IAsyncAction CreatePackage(
             String inputPath,
             String outputFileName,
-            CreatePackageOptions packOptions);
+            CreatePackageOptions createPackageOptions);
 
-        /// Creates bundles from the inputPath as specified by the bundleOptions.
+        /// Creates bundles from the inputPath as specified by the createBundleOptions.
         /// Output path for the full bundled file.
         static Windows.Foundation.IAsyncAction CreateBundle(
             String inputPath,
             String outputFileName,
-            CreateBundleOptions bundleOptions);
+            CreateBundleOptions createBundleOptions);
 
         /// Unpacks a package at inputFileName as specified by the extractPackageOptions.
         /// The output folder to unpack the package into.
@@ -586,10 +619,10 @@ namespace Microsoft.Kozani.MakeMSIX
         /// Output path for the kozani packaged file.
         /// Format must match input file. If inputFileName is an msix, then outputFileName must be an msix.
         /// If inputFileName is an msixbundle, then outputFileName must be an msixbundle.
-        static Windows.Foundation.IAsyncAction CreateKozani(
+        static Windows.Foundation.IAsyncAction CreateKozaniPackage(
             String inputFileName,
             String outputFileName,
-            CreateKozaniOptions createKozaniOptions);
+            CreateKozaniPackageOptions createKozaniPackageOptions);
 
         /// Creates a mountable image that contains the packages at inputFileNames.
         /// Valid file extensions for outputFileName are vhd, vhdx, and CIM.
@@ -599,8 +632,8 @@ namespace Microsoft.Kozani.MakeMSIX
             String outputFileName,
             CreateMountableImageOptions createMountableImageOptions);
 
-        /// Gets the identity information about a package 
-        static Windows.Foundation.IAsyncOperation<PackageIdentity> GetPackageIdentity(String packageFileName);
+        /// Gets information about the contents of a package 
+        static Windows.Foundation.IAsyncOperation<PackageInformation> GetPackageInformation(String packageFileName);
     };
 }
 
