@@ -6,7 +6,7 @@
 #include "DataStore.h"
 
 #include "DynamicDependencyDataStore_h.h"
-#include "winrt_msixdynamicdependency.h"
+#include "winrt_WindowsAppRuntime.h"
 
 #include <wil/winrt.h>
 

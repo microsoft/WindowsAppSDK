@@ -45,8 +45,8 @@ struct KozaniStatusCallbackHandler : winrt::implements<KozaniStatusCallbackHandl
 #pragma region IKozaniStatusCallback_methods
     STDMETHODIMP OnActivated(DWORD pid, boolean isNewInstance)
     {
-        LOG_HR_MSG(KOZANI_E_INFO, "[ActivationSuccess] IKozaniStausCallback::OnActivated is called. Remote app aumid = %s, pid = %u, isNewInstance = %s",
-            m_aumid.c_str(), pid, isNewInstance ? "true" : "false");
+        LOG_HR_MSG(KOZANI_E_INFO, "[ActivationSuccess] IKozaniStausCallback::OnActivated is called. Remote app aumid = %ls, pid = %u, isNewInstance = %u",
+            m_aumid.c_str(), pid, isNewInstance);
 
         m_remoteAppProcessId = pid;
         m_status = KozaniStatus::Activated;
@@ -64,7 +64,7 @@ struct KozaniStatusCallbackHandler : winrt::implements<KozaniStatusCallbackHandl
         DWORD errorCode,
         PCWSTR errorMessage)
     {
-        LOG_HR_MSG(KOZANI_E_INFO, "[ActivationFailed] IKozaniStausCallback::OnActivationFailed is called. Remote app aumid = %s, errorCode = 0x%x, errorMessage: %s",
+        LOG_HR_MSG(KOZANI_E_INFO, "[ActivationFailed] IKozaniStausCallback::OnActivationFailed is called. Remote app aumid = %ls, errorCode = 0x%x, errorMessage: %s",
                 m_aumid.c_str(), errorCode, errorMessage);
 
         m_status = KozaniStatus::Failed;
@@ -74,7 +74,7 @@ struct KozaniStatusCallbackHandler : winrt::implements<KozaniStatusCallbackHandl
 
     STDMETHODIMP OnClosed()
     {
-        LOG_HR_MSG(KOZANI_E_INFO, "[App Terminated] IKozaniStausCallback::OnClosed is called. Remote app aumid = %s, pid=%u",
+        LOG_HR_MSG(KOZANI_E_INFO, "[App Terminated] IKozaniStausCallback::OnClosed is called. Remote app aumid = %ls, pid=%u",
                 m_aumid.c_str(), m_remoteAppProcessId);
 
         m_status = KozaniStatus::Closed;
@@ -234,9 +234,15 @@ int APIENTRY wWinMain(
         statusCallback.as<winrt::Windows::Foundation::IInspectable>(),
         additionalSettingsFilePath.c_str());
 
+    // Release the IManagerRuntimeManager object so the host runtime does not hold on to it while waiting for process termination event.
+    // In case this process is killed by the user (i.e., from Task Manager), holding the IManagerRuntimeManager object will leak the ref count 
+    // and prevent KozaniManager.exe from exiting after all remote apps are closed.
+    runtimeManager = nullptr;
+
     statusCallback->WaitForExitProcessEvent(INFINITE);
 
     TraceLoggingWrite(Microsoft_Kozani_HostRuntime_TraceLogger::Provider(), "Exiting instance");
+    winrt::uninit_apartment();
     return S_OK;
 }
 CATCH_RETURN()

@@ -60,7 +60,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)WinRTInprocModule.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WinRTModuleManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WinRTPackage.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)winrt_msixdynamicdependency.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)winrt_namespaces.h" />
   </ItemGroup>
   <ItemGroup>

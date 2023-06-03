@@ -15,6 +15,8 @@
 
 #include <wrl\module.h>
 
+#include <winrt_WindowsAppRuntime.h>
+
 #include <windows.applicationmodel.activation.h>
 #include "KozaniDvc-Constants.h"
 #include "ConnectionManager.h"
@@ -105,8 +107,7 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
         winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs args;
         if (activatedEventArgs)
         {
-            winrt::com_ptr<::IInspectable> inspectable(activatedEventArgs, winrt::take_ownership_from_abi);
-            args = inspectable.as<winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs>();
+            args = winrt::convert_from_abi<winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs>(activatedEventArgs);
         }
 
         std::string connectionId{ GetConnectionId(connectionRdpFilePath) };
@@ -114,6 +115,12 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
 
         std::shared_ptr<ActivationRequestStatusReporter> requestStatusReporter{ 
             g_connectionManager.AddNewActivationRequest(connectionId, activationKindLocal, appUserModelId, args, statusCallback, associatedLocalProcessId) };
+
+        // If failure happens after this point, we will automatically cleanup the new request from tracking mechanism.
+        auto cleanupRequestOnFailure = wil::scope_exit([&]()
+        {
+            g_connectionManager.CleanupActivationRequest(requestStatusReporter.get());
+        });
 
         const LONG connectionCountBeforeRDCLaunch{ InterlockedAdd(&g_newConnectionCount, 0) };
 
@@ -139,6 +146,7 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
                 // finish cannot be determined. The user may take some time to enter the password to login and the login can take time
                 // to finish depending on the server's workload. The IKozaniStatusCallback object will be used by the DVC to communicate
                 // any issues in this longer process.
+                cleanupRequestOnFailure.release();
                 return S_OK;
             }
         }
@@ -157,6 +165,8 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
             RETURN_HR(E_APPLICATION_ACTIVATION_TIMED_OUT);
         }
 
+        // No failures before returning - disable the auto cleanup on failure logic.
+        cleanupRequestOnFailure.release();
         return S_OK;
     } CATCH_RETURN()
 

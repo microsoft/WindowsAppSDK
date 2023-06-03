@@ -60,8 +60,8 @@ namespace winrt::Microsoft::Kozani::ManagerRuntime::implementation
             connectionRdpFilePath.c_str(),
             reinterpret_cast<::IKozaniRemoteDesktopClientLauncher*>(winrt::get_abi(rdcLauncher)),
             associatedLocalProcessId,
-            reinterpret_cast<::IInspectable*>(winrt::get_abi(args)),
-            reinterpret_cast<::IKozaniStatusCallback*>(winrt::get_abi(statusCallback)),
+            args.as<::IInspectable>().get(),
+            statusCallback.as<::IKozaniStatusCallback>().get(),
             additionalSettingsFilePath.c_str()));
     }
 }

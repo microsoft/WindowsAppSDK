@@ -35,6 +35,8 @@ namespace Microsoft::Kozani::Manager
 
         if (requestInfo->statusCallback)
         {
+            // The following call can fail with RPC_E_SERVER_UNAVAILABLE (0x800706BA) if the statusCallback client is hosted in the
+            // process that has been terminated. Ignore the failure - best effort to deliver the status update.
             (void)requestInfo->statusCallback->OnClosed();
             requestInfo->statusCallback.reset();
         }
@@ -42,14 +44,7 @@ namespace Microsoft::Kozani::Manager
         switch (requestInfo->status)
         {
             case RequestStatus::Connecting:
-                for (auto it = connectionManager->m_requestsPendingConnection.begin(); it != connectionManager->m_requestsPendingConnection.end(); it++)
-                {
-                    if (requestInfo == *it)
-                    {
-                        connectionManager->m_requestsPendingConnection.erase(it);
-                        break;
-                    }
-                }
+                connectionManager->RemoveRequestFromPendingConnectionList(requestInfo);
                 break;
 
             case RequestStatus::Connected:
@@ -70,13 +65,10 @@ namespace Microsoft::Kozani::Manager
                 FAIL_FAST_MSG("Unhandled RequestStatus: %u", requestInfo->status);
         }
 
-        // ActivityId_Unknown (0) is reserved for uninitialized state (ConnectionAck has not been received from DVC server yet) and will not be in m_activityMap.
-        if (requestInfo->activityId != ActivationRequestInfo::ActivityId_Unknown)
-        {
-            connectionManager->m_activityMap.erase(requestInfo->activityId);
-        }
+        requestInfo->status = RequestStatus::Closed;
+        requestInfo->statusReporter->SetStatus(RequestStatus::Closed);
 
-        connectionManager->m_activationRequests.erase(requestInfo->listPosition);
+        connectionManager->RemoveRequest(requestInfo, true /* removeFromMainList */);
     }
     CATCH_LOG_RETURN()
 
@@ -157,10 +149,10 @@ namespace Microsoft::Kozani::Manager
         requestInfo->activationKind = activationKind;
         requestInfo->appUserModelId.assign(appUserModelId);
 
-        // Experiments showed that the IActivatedEventArgs COM object can only be safely used in the calling thread from the client. 
-        // Saving it and used it later in a different thread can trigger CO_E_OBJNOTCONNECTED failure, or worse, AV. So serialize it to 
-        // a string now and attach to ActivateAppRequest PDU later.
-        requestInfo->serializedActivationArgs = DvcProtocol::SerializeActivatedEventArgs(activatedEventArgs);
+        if (activatedEventArgs)
+        {
+            requestInfo->serializedActivationArgs = DvcProtocol::SerializeActivatedEventArgs(activatedEventArgs);
+        }
 
         requestInfo->statusCallback = statusCallback;
         requestInfo->statusReporter = std::make_shared<ActivationRequestStatusReporter>();
@@ -173,8 +165,6 @@ namespace Microsoft::Kozani::Manager
             {
                 THROW_LAST_ERROR_MSG("RegisterWaitForSingleObject failed. Cannot track lifetime of the associated local proess pid=%u", associatedLocalProcessId);
             }
-
-            requestInfo->associatedLocalProcessHandle = std::move(associatedLocalProcessHandle);
         }
 
         m_requestsPendingConnection.push_back(requestInfo);
@@ -182,6 +172,23 @@ namespace Microsoft::Kozani::Manager
         // Now that we are successful, disable removeRequestOnFailure to keep the newly added requestInfo in m_activationRequests list.
         removeRequestOnFailure.release();
         return requestInfo->statusReporter;
+    }
+
+    void ConnectionManager::CleanupActivationRequest(_In_ const ActivationRequestStatusReporter* statusReporter)
+    {
+        auto lock{ m_requestsLock.lock_exclusive() };
+
+        for (auto& request : m_activationRequests)
+        {
+            // Locate the request object based on its statusReporter pointer.
+            if (request.statusReporter.get() == statusReporter)
+            {
+                bool localProcessTerminationCallbackPending{};
+                const HRESULT hrDisableProcessLifetimeTracker{ LOG_IF_FAILED(DisableProcessLifetimeTracker(&request, localProcessTerminationCallbackPending)) };
+                RemoveRequest(&request, SUCCEEDED(hrDisableProcessLifetimeTracker) && !localProcessTerminationCallbackPending);
+                break;
+            }
+        }
     }
 
     void ConnectionManager::ProcessProtocolDataUnit(
@@ -302,7 +309,7 @@ namespace Microsoft::Kozani::Manager
                             errorMessage = L"Failed to process DVC server connection.";
                         }
 
-                        ProcessAppActivationFailure(hrOnDvcServerConnected, activityId, requestInfo, errorMessage.c_str());
+                        ProcessAppActivationFailure(hrOnDvcServerConnected, requestInfo, errorMessage.c_str());
                     }
 
                     THROW_HR(hrOnDvcServerConnected);
@@ -336,95 +343,110 @@ namespace Microsoft::Kozani::Manager
         ActivationRequestInfo* requestInfo{ iter->second };
         if (SUCCEEDED(activateAppResult.hresult()))
         {
-            requestInfo->status = RequestStatus::AppActivationSucceeded;
-            requestInfo->statusReporter->SetStatus(RequestStatus::AppActivationSucceeded);
-
-            if (requestInfo->statusCallback != nullptr)
+            if (activateAppResult.is_new_instance())
             {
-                LOG_IF_FAILED(requestInfo->statusCallback->OnActivated(activateAppResult.process_id(), activateAppResult.is_new_instance()));
+                requestInfo->status = RequestStatus::AppActivationSucceeded;
+                requestInfo->statusReporter->SetStatus(RequestStatus::AppActivationSucceeded);
+
+                if (requestInfo->statusCallback != nullptr)
+                {
+                    LOG_IF_FAILED(requestInfo->statusCallback->OnActivated(activateAppResult.process_id(), activateAppResult.is_new_instance()));
+                }
+            }
+            else
+            {
+                // We no longer need to track the associated local process as the remote app activation does not create a new remote process. 
+                bool localProcessTerminationCallbackPending{};
+                const HRESULT hrDisableProcessLifetimeTracker{ LOG_IF_FAILED(DisableProcessLifetimeTracker(requestInfo, localProcessTerminationCallbackPending)) };
+
+                requestInfo->status = RequestStatus::Closed;
+                requestInfo->statusReporter->SetStatus(RequestStatus::Closed);
+
+                if (requestInfo->statusCallback != nullptr)
+                {
+                    LOG_IF_FAILED(requestInfo->statusCallback->OnActivated(activateAppResult.process_id(), activateAppResult.is_new_instance()));
+                    requestInfo->statusCallback.reset();
+                }
+
+                // No longer need to track the request so remove it from the tracking mechanism. We only remove the requestInfo object from 
+                // main list (owning storage) if it is safe to do so: after the process lifetime tracker is successfully disabled and there
+                // are no pending process termination callbacks. Otherwise, the callbacks will need to access the object. We will delay the 
+                // cleanup later in the next remote app termination with MinCleanupDelay, or during the local process termination callback.
+                RemoveRequest(requestInfo, SUCCEEDED(hrDisableProcessLifetimeTracker) && !localProcessTerminationCallbackPending);
             }
         }
         else
         {
             std::wstring errorMessage{ ::Microsoft::Utf8::ToUtf16(activateAppResult.error_message()) };
-            ProcessAppActivationFailure(activateAppResult.hresult(), pdu.activity_id(), requestInfo, errorMessage.c_str());
+            ProcessAppActivationFailure(activateAppResult.hresult(), requestInfo, errorMessage.c_str());
         }
     }
 
     // Must be called with m_requestsLock.lock_exclusive() done in caller.
     void ConnectionManager::ProcessAppActivationFailure(
         HRESULT hrActivation,
-        uint64_t activityId,
         _In_ ActivationRequestInfo* requestInfo,
         _In_ PCWSTR errorMessage)
     {
+        // We no longer need to track the associated local process as remote app activation failed. 
+        // Disabling the associated local process tracker also prevents unnecessary handling if the associated local process
+        // is terminated due to us calling IKozaniStatusCallback::OnActivationFailed() to report the failure to our client,
+        // which may cause it to terminate the associated local process.
+        bool localProcessTerminationCallbackPending{};
+        const HRESULT hrDisableProcessLifetimeTracker{ LOG_IF_FAILED(DisableProcessLifetimeTracker(requestInfo, localProcessTerminationCallbackPending)) };
+
+        // Change status to Failed AFTER disabling local process lifetime tracker to avoid triggering the local process to exit
+        // before the tracker is disabled.
+        requestInfo->status = RequestStatus::Failed;
         requestInfo->statusReporter->SetStatus(RequestStatus::Failed);
+
         if (requestInfo->statusCallback != nullptr)
         {
             LOG_IF_FAILED(requestInfo->statusCallback->OnActivationFailed(hrActivation, errorMessage));
             requestInfo->statusCallback.reset();
         }
 
-        // Remove the request from all tracking mechanism.
-        m_activityMap.erase(activityId);
-        m_activationRequests.erase(requestInfo->listPosition);
+        // Remove the request from all tracking mechanism. We only remove the requestInfo object from 
+        // main list (owning storage) if it is safe to do so: after the process lifetime tracker is successfully disabled and there
+        // are no pending process termination callbacks. Otherwise, the callbacks will need to access the object. We will delay the 
+        // cleanup later in the next remote app termination with MinCleanupDelay, or during the local process termination callback.
+        RemoveRequest(requestInfo, SUCCEEDED(hrDisableProcessLifetimeTracker) && !localProcessTerminationCallbackPending);
     }
 
-    void ConnectionManager::DisableProcessLifetimeTracker(uint64_t activityId)
+    // Must be called with m_requestsLock.lock_exclusive() done in caller.
+    HRESULT ConnectionManager::DisableProcessLifetimeTracker(ActivationRequestInfo* requestInfo, _Out_ bool& callbackPending) noexcept try
     {
-        auto lock{ m_requestsLock.lock_exclusive() };
-        if (m_closing)
-        {
-            // We are closing, no more processing.
-            return;
-        }
-
-        auto iter{ m_activityMap.find(activityId) };
-        if (iter == m_activityMap.end())
-        {
-            return;
-        }
-
-        ActivationRequestInfo* requestInfo{ iter->second };
+        callbackPending = false;
 
         if (requestInfo->processLifetimeTrackerHandle)
         {
-            requestInfo->processLifetimeTrackerDisabled = true;
+            BOOL unregisterWaitSuccess{ UnregisterWait(requestInfo->processLifetimeTrackerHandle.get()) };
+            if (!unregisterWaitSuccess)
+            {
+                DWORD error{ GetLastError() };
+                if (error == ERROR_IO_PENDING)
+                {
+                    // If there are outstanding callbacks when UnregisterWait is called, UnregisterWait unregisters the wait on the callback functions 
+                    // and fails with the ERROR_IO_PENDING error code. The error code does not indicate that the function has failed, and the function 
+                    // does not need to be called again.
+                    callbackPending = true;
+                }
+                else
+                {
+                    RETURN_WIN32_MSG(error, "UnregisterWait failed");
+                }
+            }
 
-            // Call UnregisterWaitEx with INVALID_HANDLE_VALUE so it will wait for any pending callback to finish before returning.
-            // Release the m_requestsLock before calling blocking UnregisterWaitEx, which will deadlock if the other thread calling the
-            // ProcessTerminationCallback function is trying to get the lock. We are safe here as requestInfo->processLifetimeTrackerDisabled
-            // is set to true above, which will prevent the process lifetime tracker thread from modifying the requestInfo object.
-            lock.reset();
-            THROW_IF_WIN32_BOOL_FALSE(UnregisterWaitEx(requestInfo->processLifetimeTrackerHandle.get(), INVALID_HANDLE_VALUE));
+            requestInfo->processLifetimeTrackerDisabled = true;
+            requestInfo->processLifetimeTrackerDisabledTime = GetTickCount64();
             requestInfo->processLifetimeTrackerHandle.release();
         }
+        return S_OK;
     }
-
-    void ConnectionManager::DisableProcessLifetimeTracker(ActivationRequestInfo* requestInfo)
-    {
-        if (requestInfo->processLifetimeTrackerHandle)
-        {
-            requestInfo->processLifetimeTrackerDisabled = true;
-
-            // Call UnregisterWaitEx with INVALID_HANDLE_VALUE so it will wait for any pending callback to finish before returning.
-            // Release the m_requestsLock before calling blocking UnregisterWaitEx, which will deadlock if the other thread calling the
-            // ProcessTerminationCallback function is trying to get the lock. We are safe here as requestInfo->processLifetimeTrackerDisabled
-            // is set to true above, which will prevent the process lifetime tracker thread from modifying the requestInfo object.
-            lock.reset();
-            THROW_IF_WIN32_BOOL_FALSE(UnregisterWaitEx(requestInfo->processLifetimeTrackerHandle.get(), INVALID_HANDLE_VALUE));
-            requestInfo->processLifetimeTrackerHandle.release();
-        }
-    }
+    CATCH_RETURN()
 
     void ConnectionManager::ProcessAppTerminationNotice(_In_ const Dvc::ProtocolDataUnit& pdu)
     {
-        // We no longer need to track the associated local process as we know the remote process has been terminated. 
-        // Disabling the associated local process tracker also prevents unnecessary handling if the associated local process
-        // is terminated due to us calling IKozaniStatusCallback::OnClosed() to report the remote app termination to our client,
-        // which may cause it to terminate the associated local process.
-        DisableProcessLifetimeTracker(pdu.activity_id());
-
         auto lock{ m_requestsLock.lock_exclusive() };
         if (m_closing)
         {
@@ -443,6 +465,13 @@ namespace Microsoft::Kozani::Manager
 
         ActivationRequestInfo* requestInfo{ iter->second };
 
+        // We no longer need to track the associated local process as we know the remote process has been terminated. 
+        // Disabling the associated local process tracker also prevents unnecessary handling if the associated local process
+        // is terminated due to us calling IKozaniStatusCallback::OnClosed() to report the remote app termination to our client,
+        // which may cause it to terminate the associated local process.
+        bool localProcessTerminationCallbackPending{};
+        const HRESULT hrDisableProcessLifetimeTracker{ LOG_IF_FAILED(DisableProcessLifetimeTracker(requestInfo, localProcessTerminationCallbackPending)) };
+
         requestInfo->status = RequestStatus::Closed;
         requestInfo->statusReporter->SetStatus(RequestStatus::Closed);
 
@@ -452,8 +481,13 @@ namespace Microsoft::Kozani::Manager
             requestInfo->statusCallback.reset();
         }
 
-        m_activityMap.erase(iter);
-        m_activationRequests.erase(requestInfo->listPosition);
+        // Remove the request from the tracking mechanism. We only remove the requestInfo object from 
+        // main list (owning storage) if it is safe to do so: after the process lifetime tracker is successfully disabled and there
+        // are no pending process termination callbacks. Otherwise, the callbacks will need to access the object. We will delay the 
+        // cleanup later in the next remote app termination with MinCleanupDelay, or during the local process termination callback.
+        RemoveRequest(requestInfo, SUCCEEDED(hrDisableProcessLifetimeTracker) && !localProcessTerminationCallbackPending);
+
+        CleanupOutdatedRequests();
     }
 
     HRESULT ConnectionManager::SendActivateAppRequest(_In_ ActivationRequestInfo* requestInfo) noexcept try
@@ -489,18 +523,15 @@ namespace Microsoft::Kozani::Manager
         {
             if (it->dvcChannel == channel)
             {
-                if (it->statusCallback != nullptr)
-                {
-                    LOG_IF_FAILED(it->statusCallback->OnClosed());
-                    it->statusCallback.reset();
-                }
-                it = m_activationRequests.erase(it);
+                CloseRequest(it);
             }
             else
             {
                 it++;
             }
         }
+
+        CleanupOutdatedRequests();
     }
 
     void ConnectionManager::OnRemoteDesktopInitializeConnection(_In_ IWTSVirtualChannelManager* channelManager)
@@ -542,17 +573,107 @@ namespace Microsoft::Kozani::Manager
         {
             if (it->dvcChannelManager == channelManager)
             {
-                if (it->statusCallback != nullptr)
-                {
-                    LOG_IF_FAILED(it->statusCallback->OnClosed());
-                    it->statusCallback.reset();
-                }
-                it = m_activationRequests.erase(it);
+                CloseRequest(it);
             }
             else
             {
                 it++;
             }
+        }
+
+        CleanupOutdatedRequests();
+    }
+
+    // Caller must have m_requestsLock in lock_exclusive() state.
+    void ConnectionManager::CloseRequest(std::list<ActivationRequestInfo>::iterator& it)
+    {
+        // We no longer need to track the associated local process as the request is closed. 
+        // Disabling the associated local process tracker also prevents unnecessary handling if the associated local process
+        // is terminated due to us calling IKozaniStatusCallback::OnClosed() to report the activation request is closed,
+        // which may cause it to terminate the associated local process.
+        bool localProcessTerminationCallbackPending{};
+        const HRESULT hrDisableProcessLifetimeTracker{ LOG_IF_FAILED(DisableProcessLifetimeTracker(&(*it), localProcessTerminationCallbackPending)) };
+
+        if (it->status == RequestStatus::Connecting)
+        {
+            RemoveRequestFromPendingConnectionList(&(*it));
+        }
+
+        // Report status change AFTER disabling the local process tracker to avoid triggering the local process to exit before the 
+        // tracker is disabled.
+        it->status = RequestStatus::Closed;
+        it->statusReporter->SetStatus(RequestStatus::Closed);
+
+        if (it->statusCallback != nullptr)
+        {
+            LOG_IF_FAILED(it->statusCallback->OnClosed());
+            it->statusCallback.reset();
+        }
+
+        if (it->activityId != ActivationRequestInfo::ActivityId_Unknown)
+        {
+            m_activityMap.erase(it->activityId);
+        }
+
+        if (SUCCEEDED(hrDisableProcessLifetimeTracker) && !localProcessTerminationCallbackPending)
+        {
+            it = m_activationRequests.erase(it);
+        }
+        else
+        {
+            it++;
+        }
+    }
+
+    // Caller must have m_requestsLock in lock_exclusive() state.
+    void ConnectionManager::RemoveRequestFromPendingConnectionList(_In_ const ActivationRequestInfo* request)
+    {
+        for (auto it = m_requestsPendingConnection.begin(); it != m_requestsPendingConnection.end(); it++)
+        {
+            if (request == *it)
+            {
+                m_requestsPendingConnection.erase(it);
+                break;
+            }
+        }
+    }
+
+    // Caller must have m_requestsLock in lock_exclusive() state.
+    void ConnectionManager::RemoveRequest(_In_ const ActivationRequestInfo* request, bool removeFromMainList)
+    {
+        if (request->status == RequestStatus::Connecting)
+        {
+            RemoveRequestFromPendingConnectionList(request);
+        }
+
+        // ActivityId_Unknown (0) is reserved for uninitialized state (ConnectionAck has not been received from DVC server yet) and will not be in m_activityMap.
+        if (request->activityId != ActivationRequestInfo::ActivityId_Unknown)
+        {
+            m_activityMap.erase(request->activityId);
+        }
+
+        if (removeFromMainList)
+        {
+            m_activationRequests.erase(request->listPosition);
+        }
+    }
+
+    // Caller must have m_requestsLock in lock_exclusive() state.
+    void ConnectionManager::CleanupOutdatedRequests()
+    {
+        uint64_t currentTickCount{ GetTickCount64() };
+        for (auto it = m_activationRequests.begin(); it != m_activationRequests.end();)
+        {
+            if (it->processLifetimeTrackerDisabled && (it->status == RequestStatus::Closed || it->status == RequestStatus::Failed))
+            {
+                uint64_t timePassed{ currentTickCount - it->processLifetimeTrackerDisabledTime };
+                if (timePassed > ActivationRequestInfo::MinCleanupDelay)
+                {
+                    it = m_activationRequests.erase(it);
+                    continue;
+                }
+            }
+            it++;
         }
     }
 }

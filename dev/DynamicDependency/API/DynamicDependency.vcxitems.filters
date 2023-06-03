@@ -148,9 +148,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)appmodel_packageinfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)winrt_msixdynamicdependency.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)M.AM.DynamicDependency.idl" />
