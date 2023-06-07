@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<Extern href="stdidcmd.h"/>
+	<Extern href="vsshlids.h"/>
+	<Include href="KnownImageIds.vsct"/>
+	<Include href="VSGlobals.vsct"/>
+
+	<Commands package="guidAppAttachExtension">
+		<Groups>
+			<Group guid="guidAppAttachExtension" id="MyMenuGroup" priority="0x0400">
+				<Parent guid="guidAppAttachExtension"  id="MyMenuGroup"/>
+			</Group>
+		</Groups>
+
+		<!--This section defines the elements the user can interact with, like a menu command or a button
+        or combo box in a toolbar. -->
+		<Buttons>
+			<Button guid="guidAppAttachExtension" id="AppAttach" priority="0x0400" type="Button">
+				<Parent guid="guidAppAttachExtension" id="MyMenuGroup" />
+				<Icon guid="ImageCatalogGuid" id="StatusInformation" />
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
+				<Strings>
+					<ButtonText>Create App Attach Packages...</ButtonText>
+					<LocCanonicalName>.AppAttachExtension.AppAttach</LocCanonicalName>
+				</Strings>
+			</Button>
+		</Buttons>
+	</Commands>
+	<Symbols>
+		<GuidSymbol name="guidAppAttachExtension" value="{ac8bcc47-f5f3-4afa-8cc2-f0d697e04bb7}">
+			<IDSymbol name="MyMenuGroup" value="0x1009" />
+			<IDSymbol name="AppAttach" value="0x0100" />
+		</GuidSymbol>
+	</Symbols>
+</CommandTable>
