@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net472</TargetFramework>
+	</PropertyGroup>
+	<ItemGroup>
+	  <None Remove="Scripts\AzureFileShareScript.ps1" />
+	  <None Remove="Scripts\EnvironmentCheckScript.ps1" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Include="Scripts\AzureFileShareScript.ps1">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Scripts\EnvironmentCheckScript.ps1">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\AppAttachAPI\AppAttachAPI.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="ScriptResources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>ScriptResources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Update="ScriptResources.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>ScriptResources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+</Project>
