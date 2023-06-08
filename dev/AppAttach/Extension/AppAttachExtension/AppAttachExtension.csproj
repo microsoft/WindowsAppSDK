@@ -46,6 +46,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Commands\AppAttach.cs" />
+    <Compile Include="Contracts\AppAttachViewContract.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AppAttachExtensionPackage.cs" />
     <Compile Include="source.extension.cs">
@@ -53,7 +54,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>source.extension.vsixmanifest</DependentUpon>
     </Compile>
+    <Compile Include="Validator\CommonValidator.cs" />
+    <Compile Include="Validator\NextEnable.cs" />
+    <Compile Include="Validator\NotEmptyValidationRule.cs" />
+    <Compile Include="Validator\NotString.cs" />
+    <Compile Include="Validator\VerifyEnable.cs" />
     <Compile Include="Windows\AppAttachWindow.xaml.cs" />
+    <Compile Include="Windows\InstallationPage.xaml.cs">
+      <DependentUpon>InstallationPage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <VSCTCompile Include="VSCommandTable.vsct">
@@ -117,7 +126,15 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Resources\VSStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Windows\AppAttachWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\InstallationPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
