@@ -291,12 +291,6 @@ namespace AppAttachExtension
                     break;
                 }
             }
-            AppAttachViewContract obj = new AppAttachViewContract() { PackageLocation = OutputLocation.Text, Configuration = configuration, Platform = platform, PackageVersion = version, CertificatePath = CertificatePathTextBox.Text, CertificatePassword = password };
-            string json = JsonConvert.SerializeObject(obj);
-            PublishPage pg = new PublishPage();
-            NavigationService.LoadCompleted += pg.NavigationService_LoadCompleted;
-            NavigationService.Navigate(pg, obj);
-
         }
 
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)

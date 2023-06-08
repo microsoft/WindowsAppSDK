@@ -79,7 +79,6 @@ namespace AppAttachExtension
         private void Execute(object sender, EventArgs e)
         {
             AppAttachWindow appAttachWindow = new AppAttachWindow();
-            appAttachWindow.ShowModal();
         }
 
         public AsyncPackage Packageval()
