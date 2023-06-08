@@ -1,4 +1,7 @@
-﻿#include "pch.h"
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include "pch.h"
 #include "$safeitemname$.xaml.h"
 #if __has_include("$safeitemname$.g.cpp")
 #include "$safeitemname$.g.cpp"

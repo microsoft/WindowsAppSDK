@@ -1,4 +1,7 @@
-﻿using Microsoft.VisualStudio.Shell;
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using Microsoft.VisualStudio.Shell;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;

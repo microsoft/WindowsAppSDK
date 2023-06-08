@@ -10,6 +10,8 @@
     <BaseAssemblyName>WindowsAppSDK.Cpp.Extension.Dev17</BaseAssemblyName>
     <AssemblyName Condition="'$(EnableExperimentalVSIXFeatures)'!='true'">$(BaseAssemblyName)</AssemblyName>
     <AssemblyName Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">$(BaseAssemblyName).Experimental</AssemblyName>
+    <JsonName Condition="'$(EnableExperimentalVSIXFeatures)'!='true'">Microsoft.WindowsAppSDK.Cpp.Dev17.json</JsonName>
+    <JsonName Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">Microsoft.WindowsAppSDK.Cpp.Dev17.Experimental.json</JsonName>
     <TargetFramework>net472</TargetFramework>
     <!-- This project may not have any C# source files, so suppress that compiler warning. -->
     <NoWarn>2008</NoWarn>
@@ -23,6 +25,7 @@
     <StartArguments>/rootsuffix Exp</StartArguments>
     <VsixManifestSource>$(Deployment)\source.extension.vsixmanifest</VsixManifestSource>
     <TargetVsixContainerName>$(AssemblyName).$(Deployment).vsix</TargetVsixContainerName>
+    <IsProductComponent Condition="'$(Deployment)' == 'Component'">true</IsProductComponent>
     <!-- This MUST match VSPackage.PackageGuidString -->
     <PackageGuidString>{39ED574D-B112-4145-8E14-1695800E36C8}</PackageGuidString>
   </PropertyGroup>
@@ -46,7 +49,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="$(RepoRoot)LICENSE">
+    <Content Include="$(ExtensionDir)LICENSE">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Condition="'$(Deployment)'=='Standalone'" Include="ExtensionPack.vsext">
@@ -57,11 +60,12 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.0.0-previews-4-31709-430" ExcludeAssets="runtime">
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.3.32804.24" ExcludeAssets="runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.4207-preview4">
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.4.2118">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -138,15 +142,6 @@
     <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CppWinRT\SingleProjectPackagedApp\WinUI.Desktop.CppWinRT.SingleProjectPackagedApp.csproj">
       <Project>{E54D1AD4-E935-479D-8A69-FC073E4DB33D}</Project>
       <Name>WinUI.Desktop.CppWinRT.SingleProjectPackagedApp</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">
-    <ProjectReference Include="$(ProjectTemplatesDir)UWP\CppWinRT\BlankApp\WinUI.UWP.CppWinRT.BlankApp.csproj">
-      <Project>{627B2125-97B1-4620-97AA-AD46B37AC9D1}</Project>
-      <Name>WinUI.UWP.CppWinRT.BlankApp</Name>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>

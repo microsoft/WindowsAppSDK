@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #pragma once
 
@@ -208,8 +208,8 @@
 #define MSIX_MAIN_LICENSE_LISTENTRY { MSIX_MAIN_LICENSE_ID, MSIX_MAIN_LICENSE_TYPE },
 #define MSIX_MAIN_LICENSE_RCENTRY MSIX_MAIN_LICENSE_RCID MSIX_MAIN_LICENSE_RCTYPE MSIX_MAIN_LICENSE_PATH
 
-#undef MSIX_SINGLETON_LICENSE_LISTENTRY
-#undef MSIX_SINGLETON_LICENSE_RCENTRY
+#define MSIX_SINGLETON_LICENSE_LISTENTRY { MSIX_SINGLETON_LICENSE_ID, MSIX_SINGLETON_LICENSE_TYPE },
+#define MSIX_SINGLETON_LICENSE_RCENTRY MSIX_SINGLETON_LICENSE_RCID MSIX_SINGLETON_LICENSE_RCTYPE MSIX_SINGLETON_LICENSE_PATH
 
 
 // This is defined in the vcxproj based on existence of the header in the same directory.

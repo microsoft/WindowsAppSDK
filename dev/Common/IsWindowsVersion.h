@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #ifndef __ISWINDOWSVERSION_H
 #define __ISWINDOWSVERSION_H
@@ -13,15 +13,22 @@ inline bool IsExportPresent(
     PCSTR functionName)
 {
     wil::unique_hmodule dll{ LoadLibraryExW(filename, nullptr, 0) };
-    if (dll)
+    if (!dll)
     {
-        auto function{ GetProcAddress(dll.get(), functionName) };
-        if (function)
-        {
-            return true;
-        }
+        const DWORD rcLoadLibraryError = GetLastError();
+        THROW_HR_IF(HRESULT_FROM_WIN32(rcLoadLibraryError), rcLoadLibraryError != ERROR_MOD_NOT_FOUND);
+        return false;
     }
-    return false;
+
+    auto function{ GetProcAddress(dll.get(), functionName) };
+    if (!function)
+    {
+        const DWORD rcGetProcAddressError = GetLastError();
+        THROW_HR_IF(HRESULT_FROM_WIN32(rcGetProcAddressError), rcGetProcAddressError != ERROR_PROC_NOT_FOUND);
+        return false;
+    }
+
+    return true;
 }
 
 inline bool IsWindows10_19H1OrGreater()
@@ -34,6 +41,16 @@ inline bool IsWindows10_20H1OrGreater()
 {
     // GetPackageInfo3() added to kernelbase.dll in NTDDI_WIN10_VB (aka 20H1)
     return IsExportPresent(L"kernelbase.dll", "GetPackageInfo3");
+}
+inline bool IsWindows11_21H2OrGreater()
+{
+    // GetMachineTypeAttributes() added to kernelbase.dll in NTDDI_WIN10_CO (aka Windows 11 21H2)
+    return IsExportPresent(L"kernelbase.dll", "GetMachineTypeAttributes");
+}
+inline bool IsWindows11_22H2OrGreater()
+{
+    // GetPackageGraphRevisionId() added to kernelbase.dll in NTDDI_WIN10_NI (aka Windows 11 22H2)
+    return IsExportPresent(L"kernelbase.dll", "GetPackageGraphRevisionId");
 }
 }
 

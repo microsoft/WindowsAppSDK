@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <Platforms>x86;x64;arm64;AnyCPU</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.Common">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(RepoRoot)\dev\Projections\CS\Microsoft.Windows.ApplicationModel.WindowsAppRuntime\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection.csproj" />
+  </ItemGroup>
+
+  <Target Name="GenerateDeploymentManagerAutoInitializeCS" BeforeTargets="BeforeCompile">
+    <ItemGroup>
+      <Compile Include="$(OutDir)\..\WindowsAppRuntime_DLL\DeploymentManagerAutoInitializer.cs" />
+    </ItemGroup>
+  </Target>
+
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERROR_SHOWUI</DefineConstants>
+  </PropertyGroup>
+
+</Project>

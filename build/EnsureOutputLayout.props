@@ -9,6 +9,8 @@
 
     <!-- The root of the repo. -->
     <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..'))</RepoRoot>
+
+    <MRTCoreRoot>$(RepoRoot)\dev\MRTCore\</MRTCoreRoot>
     <BuildRoot>$(RepoRoot)\build\</BuildRoot>
 
     <!-- This is normally defined in Platform.Default.props for each platform, but we need it early in order to ensure

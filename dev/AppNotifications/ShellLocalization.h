@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #pragma once
 
@@ -22,4 +22,6 @@ namespace Microsoft::Windows::AppNotifications::ShellLocalization
     HRESULT RetrieveAssetsFromShortcut(_Out_ Microsoft::Windows::AppNotifications::ShellLocalization::AppNotificationAssets& assets) noexcept;
 
     HRESULT DeleteIconFromCache() noexcept;
+
+    bool IsIconFileExtensionSupported(std::filesystem::path const& iconFilePath);
 }

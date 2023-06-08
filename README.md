@@ -14,27 +14,6 @@
 
 Plus, **create beautiful, modern apps for Windows 11 that are backwards compatible** to Windows 10 October 2018 Update (build 17763 / version 1809)!
 
-
-### Use it now!
-
-1.1 is [available today](https://docs.microsoft.com/windows/apps/windows-app-sdk/) and includes push notifications, multi-window support, elevation support and much more!
-
-### Roadmap
-
-Here's a snippet of what's currently available and what we intend to deliver in 2022 *(times/features/releases are tentative and subject to change)*:
-
-App type |          1.0     |  1.1  |
---        |  ------------------------ |   -----  |
-Desktop apps<br>(WinUI 3, WPF, etc) |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)\*\*<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>✅ [Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://docs.microsoft.com/windows/apps/develop/app-lifecycle-and-system-services)<br>✅ [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview)<br>🔁 [Push Notifications](https://docs.microsoft.com/windows/apps/windows-app-sdk/notifications/push/)  |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)\*\*<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>✅ [Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://docs.microsoft.com/windows/apps/develop/app-lifecycle-and-system-services)<br>✅ [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview)<br>✅ [Push Notifications](https://docs.microsoft.com/windows/apps/windows-app-sdk/notifications/push/)  <br>✅ [Multiple windows](https://portal.productboard.com/winappsdk/1-windows-app-sdk/c/35-multiple-window-support)<br> ✅ [Elevation support](https://portal.productboard.com/winappsdk/1-windows-app-sdk/c/37-elevated-admin-support)<br>  ✅ [Local toast notifications](https://portal.productboard.com/winappsdk/1-windows-app-sdk/c/15-local-toast-notifications)<br> ✅ [Environmental variables API](https://portal.productboard.com/winappsdk/1-windows-app-sdk/c/47-environment-variables-api)<br> ✅ [Restart API](https://portal.productboard.com/winappsdk/1-windows-app-sdk/c/54-restart-for-all-desktop-apps)<br> ✅ [Self-contained deployment](https://portal.productboard.com/winappsdk/1-windows-app-sdk/c/42-self-contained-xcopy-deployment-support)<br> |
-
-✅ Supported | 🔁 Experimental
-
-*\*\* - WinUI 3 in 1.0 and 1.1 is only supported for use by full WinUI 3 apps. You'll be able to use WinUI 3 in WPF/WinForms/other apps in a future release via XAML Islands.*
-
-To see our full roadmap and features that are under consideration (or to submit feature requests), [visit our productboard portal](https://portal.productboard.com/winappsdk/1-windows-app-sdk).
-
-
-
 ### Version support
 
 The Windows App SDK aims to work on supported versions of Windows.
@@ -53,7 +32,6 @@ this is the exception and not the norm, and provide reasonable fallbacks when po
 * [More details about the Windows App SDK](https://github.com/microsoft/WindowsAppSDK/blob/master/docs/README.md) -
 More on what the project is and how we're approaching the work.
 * [Video on Windows App SDK](https://techcommunity.microsoft.com/t5/video-hub/enterprise-development-futures-project-reunion/m-p/2177278) - Learn about the Windows App SDK in a 22 minute video!
-* [Roadmap + vote on features](https://portal.productboard.com/winappsdk/1-windows-app-sdk) - See what we're planning and influence what we build!
 * [Contributor guide](docs/contributor-guide.md) - How to contribute to the Windows App SDK.
 * [FAQ](docs/faq.md) - Frequently asked questions about the Windows App SDK.
 * [Developer docs](https://aka.ms/windowsappsdkdocs) - Microsoft documentation covering a wide range of Windows App SDK topics.
@@ -81,9 +59,8 @@ points if there's a gist or existing repo we can look at with you.
 3. **[Vote on or suggest features](https://portal.productboard.com/winappsdk/1-windows-app-sdk)**<br>
    What components or features do you want to see in the Windows App SDK? Tell us on our [productboard portal](https://portal.productboard.com/winappsdk/1-windows-app-sdk)!
 
-**Over time, we will add Windows App SDK code into this repo and provide code contribution/developer guidelines.**
-
-Read more about the [contribution guide here](docs/contributor-guide.md).
+4. **[Code contributions](docs/contributor-guide.md)**<br>
+   More information regarding [contributing and developer guidelines here](docs/contributor-guide.md).
 
 ## Data collection
 

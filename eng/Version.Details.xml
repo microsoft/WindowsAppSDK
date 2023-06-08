@@ -1,31 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Rules for Dependency Management:
+        1. Dependencies in Version.Details.xml are automagically propogated via Maestro
+           e.g. if B depends on A v1 and A v2 is published, Maestro updates B's Version.Details.xml to A v2
+        2. Dependencies in Version.Dependencies.xml are only changed by explicit (manual) developer action
+           e.g. if B depends on A v1 and A v2 is published, B is unchanged
+        3. Dependencies' versions in Version.Details.xml and Version.Dependencies.xml are TheMasterSourceOfTruth(TM).
+            These are literal values. No macro expansion or magic substitution will occur
+        4. <ProductDependencies><Dependency> are listed in sorted order (alphabetically, case-insensitive)
+        5. <ToolsetDependencies><Dependency> are listed in sorted order (alphabetically, case-insensitive)
+        6. <ProductDependencies> appears before <ToolsetDependencies> (aka sorted order, alphabetically, case-insensitive)
+        7. Dependencies are made available to MSBuild + VisualStudio via Version.Dependencies.props
+        8. ProductDependencies are made available to MSBuild + VisualStudio as macros in the form name.Replace(".", "").Append("PackageVersion")
+        9. ToolsetDependencies are made available to MSBuild + VisualStudio as macros in the form name.Replace(".", "").Append("Version")
+       10. DevCheck.cmd/ps1 -SyncDependencies generates Version.Dependencies.props from Version.Details.xml (if necessary)
+       11. DevCheck.cmd/ps1 -SyncDependencies updates versions in packages.config to match Version.Details.xml (if necessary)
+       12. DevCheck.cmd/ps1 -SyncDependencies updates versions in *proj to match Version.Details.xml (if necessary)
+       13. DevCheck.cmd/ps1 -CheckDependencies verifies Version.Dependencies.props matches Version.Details.xml
+       14. DevCheck.cmd/ps1 -CheckDependencies verifies packages and versions in packages.config match Version.Details.xml
+       15. DevCheck.cmd/ps1 -CheckDependencies verifies packages and versions in packages.config match Version.Details.xml
+       16. DevCheck.cmd/ps1 -CheckDependencies verifies versions in *proj match Version.Details.xml
+       17. Version.Dependencies.props is a generated file. DO NOT EDIT. Use DevCheck -SyncDependencies
+       18. POLICY: Dependencies on Transport Packages are expressed as <ProductDependencies> in Version.Details.xml
+       19. POLICY: Dependencies on non-Transport Packages are expressed as <ToolsetDependencies> in Version.Dependencies.xml
+       20. POLICY: Update Version.Dependencies.props via "DevCheck -CheckDependencies -SyncDependencies".
+            NOTE: This is required when adding or removing a dependency
+    -->
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.0.0-preview1.20211111.12">
-      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionClosed</Uri>
-      <Sha>a3b6cd2d041c342d4a5ac2ed0c90c30e9ed08f15</Sha>
+    <Dependency Name="Microsoft.FrameworkUdk" Version="1.3.2-CI-22623.1046.230323-1113.1">
+      <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
+      <Sha>21e744a00a8be67e713d3ca24f1e91467b89cbe3</Sha>
+    </Dependency>
+    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.2.0-main.20221103.4">
+      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
+      <Sha>cc4045b6190f44ed55e10700cc9f0d25a7a60341</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.Windows.CsWinRT" Version="1.6.1">
-      <Uri>https://github.com/microsoft/CsWinRT</Uri>
-      <Sha>9b4a4df6144ac1f1642307046cc2468ce4664b0a</Sha>
+    <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.3.230216">
+      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKAggregator</Uri>
+      <Sha>4af33042dd35c5b7c41ce901320657a64be2e7ab</Sha>
     </Dependency>
-    <Dependency Name="CsWinRT.Dependency.DotNetCoreSdk" Version="5.0.404">
+    <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.0.0">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
-      <Sha>9b4a4df6144ac1f1642307046cc2468ce4664b0a</Sha>
+      <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
-    <Dependency Name="CsWinRT.Dependency.DotNetCoreRuntime" Version="5.0.13">
+    <Dependency Name="CsWinRT.Dependency.DotNetCoreSdk" Version="6.0.301">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
-      <Sha>9b4a4df6144ac1f1642307046cc2468ce4664b0a</Sha>
+      <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
-    <Dependency Name="CsWinRT.Dependency.WindowsSdkVersionSuffix" Version="24">
+    <Dependency Name="CsWinRT.Dependency.DotNetCoreRuntime" Version="6.0.6">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
-      <Sha>9b4a4df6144ac1f1642307046cc2468ce4664b0a</Sha>
+      <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.1.0-20220307.0-CI">
-      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionInternal</Uri>
-      <Sha>7dac813fd238fdbf0eef1b1e7b20616810854e2b</Sha>
+    <Dependency Name="CsWinRT.Dependency.WindowsSdkVersionSuffix" Version="27">
+      <Uri>https://github.com/microsoft/CsWinRT</Uri>
+      <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>

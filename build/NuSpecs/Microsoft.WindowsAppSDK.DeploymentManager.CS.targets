@@ -1,0 +1,16 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <PropertyGroup>
+        <DefineConstants Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_Default)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_DEFAULT</DefineConstants>
+        <DefineConstants Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_None)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_NONE</DefineConstants>
+        <DefineConstants Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_OnErrorShowUI)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERRORSHOWUI</DefineConstants>
+    </PropertyGroup>
+
+    <Target Name="GenerateDeploymentManagerCS" BeforeTargets="BeforeCompile">
+        <ItemGroup>
+            <Compile Include="$(MSBuildThisFileDirectory)..\include\DeploymentManagerAutoInitializer.cs" />
+            <Compile Include="$(MSBuildThisFileDirectory)..\include\WindowsAppSDK-VersionInfo.cs" />
+        </ItemGroup>
+    </Target>
+
+</Project>

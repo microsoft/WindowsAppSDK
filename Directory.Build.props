@@ -4,19 +4,21 @@
      Adding Sdk="Microsoft.NET.Sdk" to a project causes NuGet files to be generated very early on, so we need these defines to be here
      to ensure that all of our build output files end up in the same location. -->
 <Project InitialTargets="DirectoryBuildPropsInfo" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="eng\Versions.props" />
+  <Import Project="eng\Version.Dependencies.props" />
   <!-- Due to import ordering inconsistencies between different project types, we import this file from multiple places. -->
   <Import Project="$(MSBuildThisFileDirectory)build\EnsureOutputLayout.props" Condition="$(EnsureOutputLayoutPropsIncluded) == ''" />
 
   <PropertyGroup>
     <IsTDPConfiguration>false</IsTDPConfiguration>
-
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)Generated Files\</GeneratedFilesDir>
     <GenerateProjectSpecificOutputFolder>True</GenerateProjectSpecificOutputFolder>
     <ForceImportAfterCppTargets>$(BuildRoot)AfterCpp.targets</ForceImportAfterCppTargets>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <NugetPackageDirectory>$(RepoRoot)\packages</NugetPackageDirectory>
   </PropertyGroup>
 
   <!-- Compilation differs for the build pipeline vs local development -->
@@ -28,8 +30,8 @@
   <Target Name="DirectoryBuildPropsInfo">
     <Message Condition="'$(WindowsAppSDKBuildPipeline)' == '1'" Importance="High" Text="Directory.Build.props detects WindowsAppSDKBuildPipeline=$(WindowsAppSDKBuildPipeline)"/>
 
-    <Error Condition="!Exists('$(RepoTestCertificatePFX)')" Text="$(RepoTestCertificatePFX) not found. Run '$(RepoRoot)\tools\DevCheck.cmd' to generate the test certificate." />
-    <Error Condition="!Exists('$(RepoTestCertificatePWD)')" Text="$(RepoTestCertificatePWD) not found. Run '$(RepoRoot)\tools\DevCheck.cmd' to generate the test certificate." />
+    <Error Condition="!Exists('$(RepoTestCertificatePFX)')" Text="$(RepoTestCertificatePFX) not found. Run '$(RepoRoot)\DevCheck.cmd' to generate the test certificate." />
+    <Error Condition="!Exists('$(RepoTestCertificatePWD)')" Text="$(RepoTestCertificatePWD) not found. Run '$(RepoRoot)\DevCheck.cmd' to generate the test certificate." />
   </Target>
 
   <!-- Conditional behavior for build pipeline vs local development -->
@@ -47,6 +49,14 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\build\override;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </Midl>
   </ItemDefinitionGroup>
+
+  <!-- The standard props files do not set _DEBUG for the resource compiler, but we need that to build the correct file
+       flags in the version info resource -->
+    <ItemDefinitionGroup Condition="$(Configuration) == 'Debug'">
+        <ResourceCompile>
+            <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+        </ResourceCompile>
+    </ItemDefinitionGroup>
 
   <!-- Define our standardardized options for C/C++ builds -->
   <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK.Build.Cpp.props" />

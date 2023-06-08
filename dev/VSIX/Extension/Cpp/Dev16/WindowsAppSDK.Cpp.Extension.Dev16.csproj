@@ -46,7 +46,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="$(RepoRoot)LICENSE">
+    <Content Include="$(ExtensionDir)LICENSE">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="ExtensionPack.vsext">
@@ -57,12 +57,12 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="16.0.206" ExcludeAssets="runtime">
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="16.10.31321.278" ExcludeAssets="runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.3177-preview3">
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.4.2118">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -139,15 +139,6 @@
     <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CppWinRT\SingleProjectPackagedApp\WinUI.Desktop.CppWinRT.SingleProjectPackagedApp.csproj">
       <Project>{E54D1AD4-E935-479D-8A69-FC073E4DB33D}</Project>
       <Name>WinUI.Desktop.CppWinRT.SingleProjectPackagedApp</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">
-    <ProjectReference Include="$(ProjectTemplatesDir)UWP\CppWinRT\BlankApp\WinUI.UWP.CppWinRT.BlankApp.csproj">
-      <Project>{627B2125-97B1-4620-97AA-AD46B37AC9D1}</Project>
-      <Name>WinUI.UWP.CppWinRT.BlankApp</Name>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>

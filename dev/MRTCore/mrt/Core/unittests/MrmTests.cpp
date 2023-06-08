@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include <Windows.h>
 #include <WexTestClass.h>
@@ -35,7 +35,7 @@ public:
         // directory for the duration of test to the location of the test DLL, and restore it afterwards.
         DWORD sizeNeeded = GetCurrentDirectoryW(0, nullptr);
         VERIFY_IS_TRUE(sizeNeeded <= ARRAYSIZE(previousWorkingDirectory));
-        VERIFY_ARE_NOT_EQUAL(0, GetCurrentDirectoryW(ARRAYSIZE(previousWorkingDirectory), previousWorkingDirectory));
+        VERIFY_ARE_NOT_EQUAL(0u, GetCurrentDirectoryW(ARRAYSIZE(previousWorkingDirectory), previousWorkingDirectory));
 
         Log::Comment(String().Format(L"Test Setup: GetCurrentDirectory: %s", previousWorkingDirectory));
         
@@ -141,6 +141,84 @@ public:
                 L"345678901234567890123456",
                 &resourceString),
             E_INVALIDARG);
+
+        MrmDestroyResourceManager(resourceManager);
+    }
+
+    TEST_METHOD(ReadResourceStringFromFullUriWithNonUriVersion)
+    {
+        MrmManagerHandle resourceManager;
+        VERIFY_ARE_EQUAL(MrmCreateResourceManager(L".\\resources.pri", &resourceManager), S_OK);
+
+        MrmType resourceType;
+        wchar_t* resourceString;
+        MrmResourceData resourceData{};
+        VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResource(resourceManager, nullptr, nullptr, L"ms-resource://Microsoft.ZuneMusic/resources/IDS_MANIFEST_MUSIC_APP_NAME", &resourceType, &resourceString, &resourceData), S_OK);
+        VerifyStringEqual(resourceString, L"Groove Music");
+        MrmFreeResource(resourceString);
+        resourceString = nullptr;
+
+        VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResource(resourceManager, nullptr, nullptr, L"ms-resource:///resources/IDS_MANIFEST_MUSIC_APP_NAME", &resourceType, &resourceString, &resourceData), S_OK);
+        VerifyStringEqual(resourceString, L"Groove Music");
+        MrmFreeResource(resourceString);
+        resourceString = nullptr;
+
+        // Resource map is ignored
+        MrmMapHandle childResourceMap;
+        VERIFY_ARE_EQUAL(MrmGetChildResourceMap(resourceManager, nullptr, L"Files/Styles", &childResourceMap), S_OK);
+        VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResource(resourceManager, nullptr, childResourceMap, L"ms-resource://Microsoft.ZuneMusic/resources/IDS_MANIFEST_MUSIC_APP_NAME", &resourceType, &resourceString, &resourceData), S_OK);
+        VerifyStringEqual(resourceString, L"Groove Music");
+        MrmFreeResource(resourceString);
+        resourceString = nullptr;
+
+        MrmContextHandle resourceContext;
+        VERIFY_ARE_EQUAL(MrmCreateResourceContext(resourceManager, &resourceContext), S_OK);
+
+        UINT32 qualifierCount;
+        PWSTR* qualifierNames = nullptr;
+        PWSTR* qualifierValues = nullptr;
+        VERIFY_ARE_EQUAL(MrmSetQualifier(resourceContext, L"Language", L"en-GB"), S_OK);
+        VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceWithQualifierValues(resourceManager, resourceContext, nullptr, L"ms-resource://Microsoft.ZuneMusic/resources/IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE", &resourceType, &resourceString, &resourceData, &qualifierCount, &qualifierNames, &qualifierValues), S_OK);
+        VerifyStringEqual(resourceString, L"Equaliser");
+        VerifyQualifierValue(qualifierCount, qualifierNames, qualifierValues, L"Language", L"en-GB");
+        MrmFreeQualifierNamesOrValues(qualifierCount, qualifierNames);
+        MrmFreeQualifierNamesOrValues(qualifierCount, qualifierValues);
+
+        MrmFreeResource(resourceString);
+        MrmDestroyResourceManager(resourceManager);
+    }
+
+    TEST_METHOD(GetResourceMapWithUri)
+    {
+        MrmManagerHandle resourceManager;
+        VERIFY_ARE_EQUAL(MrmCreateResourceManager(L".\\resources.pri", &resourceManager), S_OK);
+
+        MrmMapHandle childResourceMap;
+        VERIFY_ARE_EQUAL(MrmGetChildResourceMap(resourceManager, nullptr, L"ms-resource://Microsoft.ZuneMusic/Microsoft.UI.Xaml", &childResourceMap), S_OK);
+
+        MrmMapHandle childChildResourceMap;
+        VERIFY_ARE_EQUAL(MrmGetChildResourceMap(resourceManager, childResourceMap, L"ms-resource://Microsoft.ZuneMusic/Microsoft.UI.Xaml/Resources", &childChildResourceMap), S_OK);
+
+        wchar_t* resourceString;
+        VERIFY_ARE_EQUAL(MrmLoadStringResource(resourceManager, nullptr, childChildResourceMap, L"HelpTextMoreButton", &resourceString), S_OK);
+
+        VerifyStringEqual(resourceString, L"Invoke to show or hide the text entry fields.");
+        MrmFreeResource(resourceString);
+
+        // With URI, the parent map is ignored
+        MrmMapHandle childResourceMap2;
+        VERIFY_ARE_EQUAL(MrmGetChildResourceMap(resourceManager, childResourceMap, L"ms-resource://Microsoft.ZuneMusic/Files/Microsoft.UI.Xaml/Assets", &childResourceMap2), S_OK);
+
+        // Use default root
+        MrmMapHandle childResourceMap3;
+        VERIFY_ARE_EQUAL(MrmGetChildResourceMap(resourceManager, childResourceMap, L"ms-resource:///Files/Microsoft.UI.Xaml/Assets", &childResourceMap3), S_OK);
+
+        MrmMapHandle childResourceMap4;
+        VERIFY_ARE_EQUAL(MrmGetChildResourceMap(resourceManager, childResourceMap, L"ms-resource:///", &childResourceMap4), S_OK);
+
+        // Root needs to match
+        MrmMapHandle childResourceMap5;
+        VERIFY_ARE_EQUAL(MrmGetChildResourceMap(resourceManager, childResourceMap, L"ms-resource://random/Files/Microsoft.UI.Xaml/Assets", &childResourceMap5), HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
 
         MrmDestroyResourceManager(resourceManager);
     }

@@ -1,5 +1,7 @@
 # Git Checkin-to-main Policy
 
+**NOTE: All policies apply to the [main and develop](develop-branch.md) branch unless otherwise stated.**
+
 The main branch needs to be kept 'healthy' and ready to ship near daily (daily, or within a day or
 two). An unhealthy main branch negatively impacts day-to-day development and jeopardizes release
 schedules. We have policies to ensure a high quality bar in main. The details differ depending if a
@@ -8,8 +10,8 @@ code change is Experimental vs Preview or Stable.
 See [Final Decision: Release channels and cadences #637](https://github.com/microsoft/WindowsAppSDK/discussions/637)
 for the expectations of the various release channels.
 
-Note: If a contribution only modifies repo documentation and does not touch product code or assets an 
-administrator is welcome to bypass build & test policies on the pull request to bypass build requirements. 
+Note: If a contribution only modifies repo documentation and does not touch product code or assets an
+administrator is welcome to bypass build & test policies on the pull request to bypass build requirements.
 Other contribution policies such as code review requirements still apply.
 
 ## Policy: Preview and Stable (aka non-Experimental)
@@ -19,6 +21,8 @@ The following requirements must be met to checkin non-Experimental changes to ma
 1. API Review approval
 2. Tests
 3. Prepared to accept bug reports from the world
+4. Functionality is Feature Complete by a release's fork for Preview1
+4a. Approved Design Change Requests (DCR) can be made after Preview1. See the DCR process to approve these exceptions.
 
 Changes of a non-Experimental nature must meet these policies to be committed to the main branch.
 

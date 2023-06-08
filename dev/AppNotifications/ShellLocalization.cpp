@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include "pch.h"
 
@@ -167,7 +167,8 @@ void WriteHIconToPngFile(wil::unique_hicon const& hIcon, _In_ PCWSTR pszFileName
     THROW_IF_FAILED(spStreamOut->Commit(STGC_DANGEROUSLYCOMMITMERELYTODISKCACHE));
 }
 
-bool IsIconFileExtensionSupported(std::filesystem::path const& iconFilePath)
+
+bool Microsoft::Windows::AppNotifications::ShellLocalization::IsIconFileExtensionSupported(std::filesystem::path const& iconFilePath)
 {
     static PCWSTR c_supportedExtensions[]{ L".bmp", L".ico", L".jpg", L".png" };
 
@@ -258,10 +259,7 @@ HRESULT Microsoft::Windows::AppNotifications::ShellLocalization::DeleteIconFromC
     std::path iconFilePath{ RetrieveLocalFolderPath() / (notificationAppId + c_pngExtension) };
 
     // If DeleteFile returned FALSE, then deletion failed and we should return the corresponding error code.
-    if (DeleteFile(iconFilePath.c_str()) == FALSE)
-    {
-        THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
-    }
+    RETURN_IF_WIN32_BOOL_FALSE(DeleteFileW(iconFilePath.c_str()));
 
     return S_OK;
 }

@@ -1,4 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
 <ProjectSchemaDefinitions xmlns="http://schemas.microsoft.com/build/2009/properties">
     <!--
     The “UpToDateCheckInput” attribute on the ItemType definition informs the Fast Up To Date (FUTD) system that it

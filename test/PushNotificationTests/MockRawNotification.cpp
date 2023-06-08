@@ -1,4 +1,7 @@
-﻿#include "pch.h"
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include "pch.h"
 #include "MockRawNotification.h"
 
 winrt::Windows::Foundation::Collections::IMapView<winrt::hstring, winrt::hstring> MockRawNotification::Headers()

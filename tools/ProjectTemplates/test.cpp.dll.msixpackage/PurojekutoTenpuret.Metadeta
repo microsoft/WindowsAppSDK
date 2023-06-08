@@ -1,0 +1,7 @@
+{
+    "Description" : "Test MSIX package containing Flat-C APIs in a DLL",
+    "Libraries": "",
+    "Name": {
+        "AllowedRegex": "^[A-Za-z][A-Za-z0-9_]*$"
+    }
+}

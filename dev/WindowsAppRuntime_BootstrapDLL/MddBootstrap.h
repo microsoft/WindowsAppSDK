@@ -1,10 +1,16 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #if !defined(MDDBOOTSTRAP_H)
 #define MDDBOOTSTRAP_H
 
 #include <appmodel.h>
+
+#if defined(__cplusplus)
+#define MDDBOOTSTRAP_NOEXCEPT   noexcept
+#else
+#define MDDBOOTSTRAP_NOEXCEPT
+#endif // defined(__cplusplus)
 
 /// Options for Bootstrap initialization
 typedef enum MddBootstrapInitializeOptions
@@ -48,7 +54,7 @@ DEFINE_ENUM_FLAG_OPERATORS(MddBootstrapInitializeOptions)
 STDAPI MddBootstrapInitialize(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
-    PACKAGE_VERSION minVersion) noexcept;
+    PACKAGE_VERSION minVersion) MDDBOOTSTRAP_NOEXCEPT;
 
 /// Initialize the calling process to use Windows App Runtime framework package.
 ///
@@ -68,13 +74,13 @@ STDAPI MddBootstrapInitialize2(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
     PACKAGE_VERSION minVersion,
-    MddBootstrapInitializeOptions options) noexcept;
+    MddBootstrapInitializeOptions options) MDDBOOTSTRAP_NOEXCEPT;
 
 /// Undo the changes made by MddBoostrapInitialize().
 ///
 /// @warning Packages made available via MddBootstrapInitialize2() and
 ///          the Dynamic Dependencies API should not be used after this call.
-STDAPI_(void) MddBootstrapShutdown() noexcept;
+STDAPI_(void) MddBootstrapShutdown() MDDBOOTSTRAP_NOEXCEPT;
 
 // C++ friendly APIs
 #if defined(__cplusplus)

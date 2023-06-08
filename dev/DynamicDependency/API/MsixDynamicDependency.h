@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #if !defined(MSIXDYNAMICDEPENDENCY_H)
 #define MSIXDYNAMICDEPENDENCY_H
@@ -28,6 +28,8 @@
 
 /// MSIX Dynamic Dependency: Bootstrap initialization request is incompatible with current Bootstrap initialization state.
 #define MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE         _HRESULT_TYPEDEF_(0x80040014L)
+
+#if defined(__cplusplus)
 
 enum class MddCreatePackageDependencyOptions : uint32_t
 {
@@ -210,7 +212,15 @@ STDAPI MddGetIdForPackageDependencyContext(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId) noexcept;
 
-/// Return the package graph's current generation id.
+/// Return the package graph's current revision id.
+STDAPI_(UINT32) MddGetPackageGraphRevisionId() noexcept;
+
+/// Return the package graph's current revision id.
+///
+/// @note This API is deprecated and will be removed in a future release.
+///       Use MddGetPackageGraphRevisionId().
 STDAPI_(UINT32) MddGetGenerationId() noexcept;
+
+#endif // defined(__cplusplus)
 
 #endif // MSIXDYNAMICDEPENDENCY_H

@@ -1,7 +1,10 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 namespace $rootnamespace$
 {
     [default_interface]
-    runtimeclass $safeitemname$ : Microsoft.UI.Xaml.Controls.Page
+    runtimeclass $safeitemname$ : Microsoft.UI.Xaml.Window
     {
         $safeitemname$();
         Int32 MyProperty;

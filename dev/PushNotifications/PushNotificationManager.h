@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationManager.g.h"
@@ -18,7 +18,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> PushNotificationEventHandler;
 
     struct PushNotificationManager : PushNotificationManagerT<PushNotificationManager, 
-                                                                    IWpnForegroundSink, 
+                                                                    IWpnForegroundSink,
+                                                                    IWpnForegroundSink2,
                                                                     ABI::Microsoft::Internal::PushNotifications::INotificationListener,
                                                                     ABI::Microsoft::Internal::PushNotifications::INotificationListener2,
                                                                     winrt::Windows::ApplicationModel::Background::IBackgroundTask, 
@@ -41,6 +42,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         // IWpnForegroundSink
         IFACEMETHODIMP InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept;
 
+        // IWpnForegroundSink2
+        IFACEMETHODIMP InvokeAllWithCorrelationVector(
+            ULONG length,
+            _In_ byte* payload,
+            _In_ PCWSTR correlationVector,
+            _Out_ BOOL* foregroundHandled) noexcept;
+
         // IBackgroundTask
         void Run(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const& taskInstance);
 
@@ -54,13 +62,18 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri);
         
         // INotificationListener
-        IFACEMETHODIMP OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept;
+        IFACEMETHODIMP OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept;
 
         // INotificationListener2
         IFACEMETHODIMP OnToastNotificationReceived(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* notificationProperties,
             ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties*) noexcept;
     private:
         bool IsBackgroundTaskRegistered(winrt::hstring const& backgroundTaskFullName);
+        void InvokeAllInternal(
+            ULONG length,
+            _In_ byte* payload,
+            _In_ PCWSTR correlationVector,
+            _Out_ BOOL* foregroundHandled);
 
         bool m_firstNotificationReceived{ false };
         winrt::event<PushNotificationEventHandler> m_foregroundHandlers;

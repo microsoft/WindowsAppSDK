@@ -1,4 +1,7 @@
-﻿#include <pch.h>
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include <pch.h>
 #include "Microsoft.Windows.Security.AccessControl.h"
 #include "Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers.g.cpp"
 #include "Security.AccessControl.h"

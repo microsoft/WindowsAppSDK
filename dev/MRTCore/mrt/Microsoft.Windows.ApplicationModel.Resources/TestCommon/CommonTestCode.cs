@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #if USE_VSTEST
 using System;
@@ -314,6 +314,32 @@ namespace CommonTestCode
             candidate = value.Value;
             Verify.AreEqual(candidate.ValueAsString, "%1!u!");
             Verify.AreEqual(candidate.Kind, ResourceCandidateKind.String);
+        }
+
+        public static void GetValueFullUriTest()
+        {
+            var resourceManager = new ResourceManager("resources.pri.standalone");
+            var stringResourceCandidate = resourceManager.MainResourceMap.GetValue("ms-resource://Microsoft.ZuneMusic/resources/IDS_MANIFEST_MUSIC_APP_NAME");
+            Verify.AreEqual(stringResourceCandidate.ValueAsString, "Groove Music");
+
+            stringResourceCandidate = resourceManager.MainResourceMap.TryGetValue("ms-resource://Microsoft.ZuneMusic/resources/IDS_MANIFEST_MUSIC_APP_NAME");
+            Verify.AreEqual(stringResourceCandidate.ValueAsString, "Groove Music");
+        }
+
+        public static void GetSubtreeFullUriTest()
+        {
+            var resourceManager = new ResourceManager("resources.pri.standalone");
+            var resourceMap = resourceManager.MainResourceMap.GetSubtree("ms-resource://Microsoft.ZuneMusic/resources");
+            var resourceCandidate = resourceMap.GetValue("IDS_MANIFEST_MUSIC_APP_NAME");
+            var resource = resourceCandidate.ValueAsString;
+            Verify.AreEqual(resource, "Groove Music");
+
+            var resourceMap2 = resourceMap.GetSubtree("ms-resource:///Microsoft.UI.Xaml/Resources");
+            var resource2 = resourceMap2.GetValue("AutomationNameAlphaSlider").ValueAsString;
+            Verify.AreEqual(resource2, "Opacity");
+
+            var resourceMap3 = resourceManager.MainResourceMap.TryGetSubtree("ms-resource://Microsoft.ZuneMusic/Microsoft.UI.Xaml/Resources");
+            Verify.IsNotNull(resourceMap3);
         }
     }
 

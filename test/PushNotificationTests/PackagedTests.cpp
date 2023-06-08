@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include "pch.h"
 #include "PackagedTests.h"
@@ -11,6 +11,11 @@ void PackagedTests::ChannelRequestUsingNullRemoteId()
 void PackagedTests::ChannelRequestUsingRemoteId()
 {
     BaseTestSuite::ChannelRequestUsingRemoteId();
+}
+
+void PackagedTests::ChannelRequestCheckExpirationTime()
+{
+    BaseTestSuite::ChannelRequestCheckExpirationTime();
 }
 
 // Currently failing - https://github.com/microsoft/WindowsAppSDK/issues/2392

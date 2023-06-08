@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include "pch.h"
 
@@ -252,6 +252,15 @@ namespace Test::DynamicDependency
 
             const auto actualGenerationId{ MddGetGenerationId() };
             VERIFY_ARE_EQUAL(expectedGenerationId, actualGenerationId);
+
+            if (!IsGetPackageGraphRevisionIdSupported())
+            {
+                return;
+            }
+
+            const auto actualPackageGraphRevisionId{ MddGetPackageGraphRevisionId() };
+            const auto expectedPackageGraphRevisionId{ actualGenerationId };
+            VERIFY_ARE_EQUAL(expectedPackageGraphRevisionId, actualPackageGraphRevisionId);
         }
 
         void PrintGetCurrentPackageInfoHeader()
@@ -343,14 +352,27 @@ namespace Test::DynamicDependency
             _Out_opt_ UINT32* count);
         GetCurrentPackageInfo3Function m_getCurrentPackageInfo3{};
 
-        void EnsureGetCurrentPackageInfo3IsIniitalizedIfExists()
+        typedef UINT32 (WINAPI* GetPackageGraphRevisionIdFunction)();
+        GetPackageGraphRevisionIdFunction m_getPackageGraphRevisionId{};
+
+        void EnsureKernelbaseDllIsLoaded()
         {
             if (!m_kernelbaseDll)
             {
                 wil::unique_hmodule dll{ LoadLibraryW(L"kernelbase.dll") };
                 FAIL_FAST_HR_IF_NULL(E_UNEXPECTED, dll);
 
-                auto function{ reinterpret_cast<GetCurrentPackageInfo3Function>(GetProcAddress(dll.get(), "GetCurrentPackageInfo3")) };
+                m_kernelbaseDll = std::move(dll);
+            }
+        }
+
+        void EnsureGetCurrentPackageInfo3IsInitializedIfExists()
+        {
+            EnsureKernelbaseDllIsLoaded();
+
+            if (!m_getCurrentPackageInfo3)
+            {
+                auto function{ reinterpret_cast<GetCurrentPackageInfo3Function>(GetProcAddress(m_kernelbaseDll.get(), "GetCurrentPackageInfo3")) };
                 if (!function)
                 {
                     const auto lastError{ GetLastError() };
@@ -360,15 +382,40 @@ namespace Test::DynamicDependency
                     }
                 }
 
-                m_kernelbaseDll = std::move(dll);
                 m_getCurrentPackageInfo3 = std::move(function);
             }
         }
 
         bool IsGetCurrentPackageInfo3Supported()
         {
-            EnsureGetCurrentPackageInfo3IsIniitalizedIfExists();
+            EnsureGetCurrentPackageInfo3IsInitializedIfExists();
             return m_getCurrentPackageInfo3 != nullptr;
+        }
+
+        void EnsureGetPackageGraphRevisionIdIsInitializedIfExists()
+        {
+            EnsureKernelbaseDllIsLoaded();
+
+            if (!m_getPackageGraphRevisionId)
+            {
+                auto function{ reinterpret_cast<GetPackageGraphRevisionIdFunction>(GetProcAddress(m_kernelbaseDll.get(), "GetPackageGraphRevisionId")) };
+                if (!function)
+                {
+                    const auto lastError{ GetLastError() };
+                    if (lastError != ERROR_PROC_NOT_FOUND)
+                    {
+                        FAIL_FAST_WIN32(lastError);
+                    }
+                }
+
+                m_getPackageGraphRevisionId = std::move(function);
+            }
+        }
+
+        bool IsGetPackageGraphRevisionIdSupported()
+        {
+            EnsureGetPackageGraphRevisionIdIsInitializedIfExists();
+            return m_getPackageGraphRevisionId != nullptr;
         }
 
     private:

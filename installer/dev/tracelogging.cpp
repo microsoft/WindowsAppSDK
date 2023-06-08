@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #pragma once
 
@@ -79,7 +79,8 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
                     installActivityContext.GetCurrentResourceId().c_str(),
                     installActivityContext.GetDeploymentErrorHresult(),
                     installActivityContext.GetDeploymentErrorText().c_str(),
-                    installActivityContext.GetDeploymentErrorActivityId());
+                    installActivityContext.GetDeploymentErrorActivityId(),
+                    installActivityContext.GetExistingPackageIfHigherVersion().c_str());
 
                 installActivityContext.LogInstallerFailureEvent(failure.hr);
                 break;

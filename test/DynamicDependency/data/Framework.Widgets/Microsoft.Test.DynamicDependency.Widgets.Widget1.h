@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #pragma once
 #include "Microsoft.Test.DynamicDependency.Widgets.Widget1.g.h"
 

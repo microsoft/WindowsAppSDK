@@ -1,27 +1,34 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0-windows10.0.17763.0</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <Platforms>x64;x86;arm64</Platforms>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <IsTrimmable>true</IsTrimmable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.Common" Version="1.1.0-beta-21055-01">
+    <PackageReference Include="Microsoft.SourceLink.Common">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.0-beta-20204-02">
+    <PackageReference Include="Microsoft.SourceLink.GitHub">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" />
   </ItemGroup>
 
   <PropertyGroup>
     <CSWinRTIncludes>Microsoft.Windows.ApplicationModel.WindowsAppRuntime</CSWinRTIncludes>
     <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
     <WindowsSdkPackageVersion>10.0.17763.$(CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion)</WindowsSdkPackageVersion>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
   </PropertyGroup>
 
   <!-- Configure the release build binary to be as required by internal API scanning tools. -->
@@ -32,6 +39,10 @@
 
   <ItemGroup>
     <CsWinRTInputs Include="$(OutDir)/**/*.winmd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="$(RepoRoot)\eng\common\VersionInfo\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
   </ItemGroup>
 
   <ItemGroup>

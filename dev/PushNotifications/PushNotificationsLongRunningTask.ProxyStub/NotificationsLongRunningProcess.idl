@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 import "oaidl.idl";
 import "ocidl.idl";
@@ -12,6 +12,18 @@ import "ocidl.idl";
 interface IWpnForegroundSink : IUnknown
 {
     HRESULT InvokeAll([in] ULONG length, [in, size_is(length)] byte* data, [out] BOOL* foregroundHandled);
+};
+
+[object]
+[uuid(PUSHNOTIFICATIONS_FOREGROUNDSINK2_CLSID_UUID)]
+[pointer_default(unique)]
+interface IWpnForegroundSink2 : IUnknown
+{
+    HRESULT InvokeAllWithCorrelationVector(
+        [in] ULONG length,
+        [in, size_is(length)] byte* data,
+        [in] LPCWSTR correlationVector,
+        [out] BOOL* foregroundHandled);
 };
 
 [object]
@@ -38,13 +50,4 @@ interface INotificationsLongRunningPlatform : IUnknown
     HRESULT RemoveToastRegistrationMapping([in] LPCWSTR processName);
 };
 
-[uuid(PUSHNOTIFICATIONS_LIBID_UUID)]
-[version(1.0)]
-library NotificationsLongRunningPlatformLibrary
-{
-    [uuid(PUSHNOTIFICATIONS_IMPL_CLSID_UUID)]
-    coclass NotificationsLongRunningPlatform
-    {
-        [default] interface INotificationsLongRunningPlatform;
-    };
-};
+declare_guid(CLSID_NotificationsLongRunningPlatform, PUSHNOTIFICATIONS_IMPL_CLSID_UUID);

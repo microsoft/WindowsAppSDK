@@ -1,4 +1,7 @@
-﻿#pragma once
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#pragma once
 #include "pch.h"
 
 inline constexpr PCWSTR c_UserEvRegLocation = L"Environment";

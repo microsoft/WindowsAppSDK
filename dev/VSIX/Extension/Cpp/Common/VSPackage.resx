@@ -212,13 +212,4 @@
   <data name="1035" xml:space="preserve">
     <value>A project for creating a C++/WinRT Windows Runtime Component (.winmd) for both Desktop and Universal Windows Platform (UWP) apps, based on the Windows UI Library (WinUI 3).</value>
   </data>
-  <data name="1037" xml:space="preserve">
-    <value>Blank App (WinUI 3 in UWP)</value>
-  </data>
-  <data name="1038" xml:space="preserve">
-    <value>[Experimental] Blank App (WinUI 3 in UWP)</value>
-  </data>
-  <data name="1039" xml:space="preserve">
-    <value>A project for creating a Universal Windows Platform (UWP) app based on the Windows UI Library (WinUI 3). Requires Windows App SDK experimental support.</value>
-  </data>
 </root>

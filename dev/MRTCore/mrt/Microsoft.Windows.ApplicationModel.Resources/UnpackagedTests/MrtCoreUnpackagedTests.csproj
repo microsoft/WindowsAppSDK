@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -39,23 +39,23 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="TE.Managed, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.Taef.10.58.210222006-develop\lib\net45\TE.Managed.dll</HintPath>
+      <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net452\TE.Managed.dll</HintPath>
     </Reference>
     <Reference Include="TE.Model.Managed, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.Taef.10.58.210222006-develop\lib\net45\TE.Model.Managed.dll</HintPath>
+      <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net452\TE.Model.Managed.dll</HintPath>
     </Reference>
     <Reference Include="Wex.Common.Managed, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.Taef.10.58.210222006-develop\lib\net45\Wex.Common.Managed.dll</HintPath>
+      <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net452\Wex.Common.Managed.dll</HintPath>
     </Reference>
     <Reference Include="Wex.Logger.Interop, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.Taef.10.58.210222006-develop\lib\net45\Wex.Logger.Interop.dll</HintPath>
+      <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net452\Wex.Logger.Interop.dll</HintPath>
     </Reference>
     <Reference Include="Windows.Foundation.FoundationContract">
       <HintPath>C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.FoundationContract\4.0.0.0\Windows.Foundation.FoundationContract.winmd</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\TestCommon\CommonTestCode.cs">
+    <Compile Include="$(MRTCoreRoot)\mrt\Microsoft.Windows.ApplicationModel.Resources\TestCommon\CommonTestCode.cs">
       <Link>CommonTestCode.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -74,18 +74,18 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\Microsoft.Windows.ApplicationModel.Resources.vcxproj">
+    <ProjectReference Include="$(MRTCoreRoot)\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.vcxproj">
       <Project>{9b3b03bc-1bc0-43ea-b3ff-d5214f3cf5cf}</Project>
       <Name>Microsoft.Windows.ApplicationModel.Resources</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\packages\Microsoft.Taef.10.58.210222006-develop\build\Microsoft.Taef.targets" Condition="Exists('..\..\packages\Microsoft.Taef.10.58.210222006-develop\build\Microsoft.Taef.targets')" />
+  <Import Project="$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Microsoft.Taef.10.58.210222006-develop\build\Microsoft.Taef.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Taef.10.58.210222006-develop\build\Microsoft.Taef.targets'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets'))" />
   </Target>
   <!-- The powershell command below updates the TestAdaptersPaths path in the runsettings file, in order to allow the test to run in VS Test Explorer. -->
   <PropertyGroup>
@@ -104,4 +104,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="CopyFiles" AfterTargets="AfterBuild">
+    <Copy SourceFiles="MrtCoreUnpackagedTests.testdef" DestinationFolder="$(OutDir)" />
+  </Target>
 </Project>

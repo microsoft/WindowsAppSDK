@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #pragma once
 
@@ -19,7 +19,7 @@
 #include <shlwapi.h>
 #include <WinBase.h>
 #include <AppxPackaging.h>
-
+#include <processthreadsapi.h>
 #include <string_view>
 
 #include <winrt/Windows.ApplicationModel.h>
@@ -32,6 +32,7 @@
 #include <Security.IntegrityLevel.h>
 #include <Security.User.h>
 #include <PushNotifications-Constants.h>
+#include <AppModel.Package.h>
 
 #include "tracelogging.h"
 #include "InstallActivityContext.h"

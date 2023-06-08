@@ -1,0 +1,16 @@
+<!--
+    This is the project file used by CentralPackageVersions, and used to control all PackageReference's
+    and make sure the version is only declared in a single place
+
+    In order to the CentralPackageVersions, add this to your SDK-Style .csproj file:
+    <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.1" />
+
+    For more info: https://github.com/microsoft/MSBuildSdks/tree/master/src/CentralPackageVersions
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" />
+    <PackageVersion Include="Microsoft.SourceLink.Common" Version="$(MicrosoftSourceLinkCommonVersion)" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="$(MicrosoftSourceLinkGitHubVersion)" />
+  </ItemGroup>
+</Project>

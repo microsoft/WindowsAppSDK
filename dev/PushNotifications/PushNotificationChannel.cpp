@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include "pch.h"
 #include <winrt/Windows.Foundation.Metadata.h>
@@ -41,13 +41,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         HRESULT hr{ S_OK };
 
-        auto logTelemetry{ wil::scope_exit([&]() {
-            PushNotificationTelemetry::LogCloseChannel(hr);
-        }) };
+        auto logTelemetry{ PushNotificationTelemetry::CloseChannel::Start(g_telemetryHelper) };
 
         try
         {
             THROW_IF_FAILED(PushNotifications_CloseChannel(m_channelInfo.appId.c_str(), m_channelInfo.channelId.c_str()));
+            logTelemetry.Stop();
         }
 
         catch (...)

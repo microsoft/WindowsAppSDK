@@ -1,4 +1,7 @@
-﻿#pragma once
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#pragma once
 #include <Windows.h>
 #include <shellapi.h>
 #include <MddBootstrap.h>

@@ -1,5 +1,5 @@
-﻿// Copyright(c) Microsoft Corporation.All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #pragma once
 
@@ -13,9 +13,12 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
         bool ForceDeployment();
         void ForceDeployment(bool value);
+        bool OnErrorShowUI();
+        void OnErrorShowUI(bool value);
 
     private:
         bool m_ForceDeployment{};
+        bool m_OnErrorShowUI{};
     };
 }
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::factory_implementation

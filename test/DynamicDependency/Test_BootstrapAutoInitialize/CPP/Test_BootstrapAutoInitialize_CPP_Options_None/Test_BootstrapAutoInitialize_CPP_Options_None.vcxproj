@@ -37,7 +37,7 @@
   <PropertyGroup>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -106,21 +106,21 @@
     <ClCompile Include="..\..\..\..\..\dev\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">
       <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
+    <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
   </Target>
 </Project>

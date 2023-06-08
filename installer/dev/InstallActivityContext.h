@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #pragma once
 
@@ -39,7 +39,9 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         GUID m_deploymentErrorActivityId{};
         WindowsAppRuntimeInstaller_TraceLogger::Install m_activity;
         WilFailure m_lastFailure{};
-        HANDLE m_hEventLog;
+        HANDLE m_hEventLog{};
+        bool m_isLocalSystemUser{ Security::User::IsLocalSystem() };
+        winrt::hstring m_existingPackageIfHigherVersion;
 
     public:
         static WindowsAppRuntimeInstaller::InstallActivity::Context& Get();
@@ -86,6 +88,16 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
             return m_lastFailure;
         }
 
+        const bool IsLocalSystemUser() const
+        {
+            return m_isLocalSystemUser;
+        }
+
+        const winrt::hstring GetExistingPackageIfHigherVersion() const
+        {
+            return m_existingPackageIfHigherVersion;
+        }
+
         void SetInstallStage(const InstallStage& installStage)
         {
             m_installStage = installStage;
@@ -113,6 +125,11 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
         }
 
         void SetLastFailure(const wil::FailureInfo& failureInfo);
+
+        void SetExistingPackageIfHigherVersion(const winrt::hstring& existingPackageIfHigherVersion)
+        {
+            m_existingPackageIfHigherVersion = existingPackageIfHigherVersion;
+        }
 
         const HANDLE& RegisterInstallerEventSourceW()
         {

@@ -23,11 +23,20 @@
     <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.0, 18.0)">
       <ProductArchitecture>amd64</ProductArchitecture>
     </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
+      <ProductArchitecture>arm64</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.0, 18.0)">
+      <ProductArchitecture>arm64</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.0, 18.0)">
+      <ProductArchitecture>arm64</ProductArchitecture>
+    </InstallationTarget>
   </Installation>
   <Prerequisites>
     <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[16.0,18.0)" DisplayName="Visual Studio core editor" />
     <Prerequisite Id="Microsoft.VisualStudio.ComponentGroup.UWP.Support" Version="[16.2.29003.222,18.0)" DisplayName="Universal Windows Platform tools" />
-    <Prerequisite Id="Microsoft.VisualStudio.ComponentGroup.UWP.VC" Version="[16.0,18.0)" DisplayName="C++ (v142) Universal Windows Platform tools" />
+    <Prerequisite Id="Microsoft.VisualStudio.ComponentGroup.UWP.VC" Version="[16.0,18.0)" DisplayName="C++ (v143) Universal Windows Platform tools" />
   </Prerequisites>
   <Reference Id="NuPackToolsVsix.Microsoft.67e54e40-0ae3-42c5-a949-fddf5739e7a5" MinVersion="1.7.30402.9028">
     <Name>NuGet Package Manager</Name>

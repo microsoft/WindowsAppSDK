@@ -1,9 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include <TerminalVelocityFeatures-DeploymentAPI.h>
 
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
-    [contractversion(2)]
+    [contractversion(4)]
     apicontract DeploymentContract{};
 
     /// Represents the current Deployment status of the WindowsAppRuntime
@@ -14,6 +16,9 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         Ok,
         PackageInstallRequired,
         PackageInstallFailed,
+        [feature(Feature_DeploymentRepair)]
+        [contract(DeploymentContract, 4)]
+        PackageRepairFailed,
     };
 
     /// Represents the result of a Deployment Manager method.
@@ -37,9 +42,13 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         DeploymentInitializeOptions();
 
         /// Gets or sets a value that indicates whether the processes associated with the
-        /// WindowsAppSDK main and singleton packages will be shut down forcibly if they are
+        /// WindowsAppSDK Main and Singleton packages will be shut down forcibly if they are
         /// currently in use, when registering the WinAppSDK packages.
         Boolean ForceDeployment;
+
+        /// If not successful show UI
+        [contract(DeploymentContract, 3)]
+        Boolean OnErrorShowUI;
     };
 
     /// Used to query deployment information for WindowsAppRuntime
@@ -60,5 +69,11 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         [contract(DeploymentContract, 2)]
         [overload("Initialize")]
         static DeploymentResult Initialize(Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions deploymentInitializeOptions);
+
+        /// Checks the status of the WindowsAppRuntime of the current package and attempts to
+        /// repair already installed WinAppSDK packages.
+        [feature(Feature_DeploymentRepair)]
+        [contract(DeploymentContract, 4)]
+        static DeploymentResult Repair();
     };
 }

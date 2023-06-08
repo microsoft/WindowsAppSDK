@@ -1,4 +1,7 @@
-﻿#pragma once
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#pragma once
 #include "Microsoft.Windows.AppNotifications.AppNotification.g.h"
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation

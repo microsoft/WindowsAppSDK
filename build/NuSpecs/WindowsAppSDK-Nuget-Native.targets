@@ -38,6 +38,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Security.AccessControl.winmd">
+      <Private>false</Private>
+      <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.Resources.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.Windows.ApplicationModel.Resources.dll</Implementation>
@@ -66,5 +73,8 @@
 
   <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.UndockedRegFreeWinRTCommon.targets" />
   <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK-Nuget-Native.UndockedRegFreeWinRT.targets" Condition="'$(WindowsAppSdkUndockedRegFreeWinRTInitialize)' == 'true'"/>
+
+  <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.DeploymentManagerCommon.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK-Nuget-Native.DeploymentManager.targets" Condition="'$(WindowsAppSdkDeploymentManagerInitialize)' == 'true'"/>
 
 </Project>

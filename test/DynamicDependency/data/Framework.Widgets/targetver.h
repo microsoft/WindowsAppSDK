@@ -1,4 +1,7 @@
-﻿#pragma once
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#pragma once
 
 // Including SDKDDKVer.h defines the highest available Windows platform.
 

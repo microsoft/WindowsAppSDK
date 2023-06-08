@@ -1,4 +1,7 @@
-﻿#pragma once
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#pragma once
 
 #if defined(_M_IX86)
     #define ARCH L"x86"

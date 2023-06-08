@@ -1,18 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  
   <PropertyGroup>
-    <TargetFramework>net5.0-windows10.0.17763.0</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <Platforms>x64;x86</Platforms>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <IsTrimmable>true</IsTrimmable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Microsoft.Windows.ApplicationModel.Resources.vcxproj" />
+    <ProjectReference Include="$(MRTCoreRoot)\mrt\Microsoft.Windows.ApplicationModel.Resources\src\Microsoft.Windows.ApplicationModel.Resources.vcxproj" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -30,6 +35,10 @@
 
   <ItemGroup>
     <CsWinRTInputs Include="$(OutDir)/**/*.winmd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="$(RepoRoot)\eng\common\VersionInfo\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
   </ItemGroup>
 
 </Project>

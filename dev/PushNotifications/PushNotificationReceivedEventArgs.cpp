@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include "pch.h"
 
@@ -28,25 +28,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::IBackgroundTaskInstance const& backgroundTask):
         m_backgroundTaskInstance(backgroundTask),
         m_rawNotificationPayload(BuildPayload(backgroundTask.TriggerDetails().as<RawNotification>().ContentBytes())),
-        m_unpackagedAppScenario(false)
+        m_isForegroundActivation(false)
     {
     }
 
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args):
-        m_rawNotificationPayload(BuildPayload(args.RawNotification().ContentBytes())),
-        m_unpackagedAppScenario(false)
-    {
-    }
-
+    // Only foreground activation uses byte array for payload delivery
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(byte* const& payload, ULONG const& length) :
         m_rawNotificationPayload(BuildPayload(payload, length)),
-        m_unpackagedAppScenario(true)
-    {
-    }
-
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::hstring const& payload) :
-        m_rawNotificationPayload(BuildPayload(payload)),
-        m_unpackagedAppScenario(true)
+        m_isForegroundActivation(true)
     {
     }
 
@@ -60,12 +49,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         return { payload, payload + (length * sizeof(uint8_t)) };
     }
 
-    std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(winrt::hstring const& payload)
-    {
-        std::string payloadToSimpleString{ ::winrt::Microsoft::Windows::PushNotifications::Helpers::WideStringToUtf8String(payload) };
-        return { payloadToSimpleString.c_str(), payloadToSimpleString.c_str() + (payloadToSimpleString.length() * sizeof(uint8_t)) };
-    }
-
     winrt::com_array<uint8_t> PushNotificationReceivedEventArgs::Payload()
     {
         return { m_rawNotificationPayload.data(), m_rawNotificationPayload.data() + (m_rawNotificationPayload.size() * sizeof(uint8_t)) };
@@ -73,38 +56,33 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::BackgroundTaskDeferral PushNotificationReceivedEventArgs::GetDeferral()
     {
-        if (!m_unpackagedAppScenario)
+        if (!PushNotificationHelpers::IsPackagedAppScenario())
         {
-            THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_backgroundTaskInstance, "Foreground activation cannot call this.");
+            return winrt::make<PushNotificationDummyDeferral>().as<BackgroundTaskDeferral>();
+        }
 
-            return m_backgroundTaskInstance.GetDeferral();
-        }
-        else
-        {
-            auto dummyDeferral = winrt::make<PushNotificationDummyDeferral>();
-            return dummyDeferral.as<winrt::BackgroundTaskDeferral>();
-        }
+        THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, m_isForegroundActivation, "Foreground activation cannot call this.");
+
+        return m_backgroundTaskInstance.GetDeferral();
     }
 
     winrt::event_token PushNotificationReceivedEventArgs::Canceled(winrt::BackgroundTaskCanceledEventHandler const& handler)
     {
-        if (!m_unpackagedAppScenario)
+        if (PushNotificationHelpers::IsPackagedAppScenario())
         {
-            THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_backgroundTaskInstance, "Foreground activation cannot call this.");
+            THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, m_isForegroundActivation, "Foreground activation cannot call this.");
 
             return m_backgroundTaskInstance.Canceled(handler);
         }
-        else
-        {
-            return { 0 };
-        }
+
+        return winrt::event_token{};
     }
 
     void PushNotificationReceivedEventArgs::Canceled(winrt::event_token const& token) noexcept
     {
-        if (!m_unpackagedAppScenario)
+        if (PushNotificationHelpers::IsPackagedAppScenario())
         {
-            THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_backgroundTaskInstance, "Foreground activation cannot call this.");
+            THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, m_isForegroundActivation, "Foreground activation cannot call this.");
 
             m_backgroundTaskInstance.Canceled(token);
         }

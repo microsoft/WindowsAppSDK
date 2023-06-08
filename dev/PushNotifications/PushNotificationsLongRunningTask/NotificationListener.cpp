@@ -1,7 +1,11 @@
-﻿#pragma once
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#pragma once
 
 #include "pch.h"
 #include "../PushNotificationUtility.h"
+#include "PushNotificationLongRunningTaskTelemetry.h"
 #include <winrt/Windows.ApplicationModel.background.h>
 
 using namespace winrt::Windows::ApplicationModel::Background;
@@ -32,13 +36,19 @@ HRESULT NotificationListener::RuntimeClassInitialize(
 }
 CATCH_RETURN();
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector*/) noexcept try
+STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived(
+    unsigned int payloadLength,
+    _In_ byte* payload,
+    _In_ HSTRING correlationVector) noexcept try
 {
+    auto logTelemetry = PushNotificationLongRunningTaskTelemetry::OnRawNotificationReceived::Start(correlationVector);
+    wil::scope_exit([&]() { logTelemetry.Stop(); });
+
     auto lock = m_lock.lock_exclusive();
 
     winrt::com_array<uint8_t> payloadArray{ payload, payload + (payloadLength * sizeof(uint8_t)) };
 
-    if (!m_foregroundSinkManager->InvokeForegroundHandlers(m_appId, payloadArray, payloadLength))
+    if (!m_foregroundSinkManager->InvokeForegroundHandlers(m_appId, payloadArray, correlationVector, payloadLength))
     {
         if (m_comServerClsid == winrt::guid())
         {
@@ -48,7 +58,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
         {
             THROW_IF_FAILED(PushNotificationHelpers::PackagedAppLauncherByClsid(m_comServerClsid, payloadLength, payload));
         }
-    };
+    }
 
     return S_OK;
 }

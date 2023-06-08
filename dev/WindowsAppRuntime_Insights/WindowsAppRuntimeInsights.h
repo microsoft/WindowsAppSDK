@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #pragma once
 
@@ -58,8 +58,8 @@
 
     #define _GENERIC_PARTB_FIELDS_ENABLED \
             TraceLoggingStruct(4, "COMMON_WINDOWSAPPSDK_PARAMS"), \
-            TraceLoggingString(Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::WindowsAppRuntimeVersion().c_str(), "Version"), \
-            TraceLoggingString(Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::WindowsAppRuntimeChannel().c_str(), "WindowsAppSDKChannel"), \
+            TraceLoggingString(::Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::WindowsAppRuntimeVersion().c_str(), "Version"), \
+            TraceLoggingString(::Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::WindowsAppRuntimeChannel().c_str(), "WindowsAppSDKChannel"), \
             TraceLoggingBool(wil::details::IsDebuggerPresent(), "IsDebugging"), \
             TraceLoggingBool(true, "UTCReplace_AppSessionGuid")
 

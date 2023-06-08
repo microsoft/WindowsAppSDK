@@ -1,4 +1,5 @@
-﻿<Page
+<?xml version="1.0" encoding="utf-8"?>
+<Page
     x:Class="$rootnamespace$.$safeitemname$"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

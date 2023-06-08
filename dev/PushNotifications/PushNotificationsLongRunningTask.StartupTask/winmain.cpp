@@ -1,4 +1,7 @@
-﻿#include <windows.h>
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include <windows.h>
 #include "pch.h"
 
 #include "PushNotificationsLongRunningPlatform-Startup.h"

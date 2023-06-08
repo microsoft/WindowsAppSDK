@@ -1,4 +1,7 @@
-﻿#include "pch.h"
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include "pch.h"
 #include "Class.h"
 #if __has_include("Class.g.cpp")
 #include "Class.g.cpp"

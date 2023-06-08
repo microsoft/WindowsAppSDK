@@ -1,10 +1,14 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include "pch.h"
 
 #include <MddDetourPackageGraph.h>
 #include <urfw.h>
+
+// Including this file once per binary will automatically opt WIL error handling macros into calling RoOriginateError when they
+// begin logging a new error.  This greatly improves the debuggability of errors that propagate before a failfast.
+#include <wil/result_originate.h>
 
 #include <../Detours/detours.h>
 

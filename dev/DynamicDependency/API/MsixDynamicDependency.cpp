@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include "pch.h"
 
@@ -108,7 +108,12 @@ STDAPI MddGetIdForPackageDependencyContext(
 }
 CATCH_RETURN();
 
+STDAPI_(UINT32) MddGetPackageGraphRevisionId() noexcept
+{
+    return MddCore::PackageGraphManager::GetPackageGraphRevisionId();
+}
+
 STDAPI_(UINT32) MddGetGenerationId() noexcept
 {
-    return MddCore::PackageGraphManager::GetGenerationId();
+    return MddGetPackageGraphRevisionId();
 }

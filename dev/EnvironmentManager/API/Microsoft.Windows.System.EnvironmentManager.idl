@@ -1,11 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include <TerminalVelocityFeatures-EnvironmentManager.h>
 
 namespace Microsoft.Windows.System
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract EnvironmentManagerContract{};
 
     [contract(EnvironmentManagerContract, 1)]
@@ -28,5 +28,8 @@ namespace Microsoft.Windows.System
         // PathExt Manipulation
         void AddExecutableFileExtension(String pathExt);
         void RemoveExecutableFileExtension(String pathExt);
+
+        [contract(EnvironmentManagerContract, 2)]
+        Boolean AreChangesTracked{ get; };
     }
 }

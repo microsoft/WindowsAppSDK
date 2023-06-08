@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #include "pch.h"
 #include "Microsoft.Test.DynamicDependency.Widgets.Widget2.h"
 #include "Microsoft.Test.DynamicDependency.Widgets.Widget2.g.cpp"

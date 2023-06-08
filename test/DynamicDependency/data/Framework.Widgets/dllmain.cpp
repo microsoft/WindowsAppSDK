@@ -1,4 +1,7 @@
-﻿#include "pch.h"
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include "pch.h"
 
 BOOL APIENTRY DllMain(HMODULE /* hModule */, DWORD ul_reason_for_call, LPVOID /* lpReserved */)
 {

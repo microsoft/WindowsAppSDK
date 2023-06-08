@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #pragma once
 #include "TestSetupAndTeardownHelper.h"
@@ -54,6 +54,8 @@ namespace WindowsAppSDKEnvironmentManagerTests
         TEST_METHOD(TestGetForProcess);
         TEST_METHOD(TestGetForUser);
         TEST_METHOD(TestGetForMachine);
+
+        TEST_METHOD(TestAreChangesTracked);
 
         TEST_METHOD(TestGetEnvironmentVariablesForProcess);
         TEST_METHOD(TestGetEnvironmentVariablesForUser);

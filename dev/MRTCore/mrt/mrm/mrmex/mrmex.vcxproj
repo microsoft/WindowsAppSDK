@@ -42,37 +42,37 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -107,7 +107,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\WindowsAppRuntime_Insights;..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(MRTCoreRoot)\mrt\mrm\include</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -150,28 +150,28 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\mrm\build\AIDict.h" />
-    <ClInclude Include="..\include\mrm\build\Atoms.h" />
-    <ClInclude Include="..\include\mrm\build\Base.h" />
-    <ClInclude Include="..\include\mrm\build\DefList.h" />
-    <ClInclude Include="..\include\mrm\build\FileBuilder.h" />
-    <ClInclude Include="..\include\mrm\build\FileListBuilder.h" />
-    <ClInclude Include="..\include\mrm\build\HNamesBuilder.h" />
-    <ClInclude Include="..\include\mrm\build\MrmBuilders.h" />
-    <ClInclude Include="..\include\mrm\build\ResourcePackMerge.h" />
-    <ClInclude Include="..\include\mrm\build\SectionBuilders.h" />
-    <ClInclude Include="..\include\mrm\build\SectionCopiers.h" />
-    <ClInclude Include="..\include\mrm\build\WriteableStringPool.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\AIDict.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\Atoms.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\Base.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\DefList.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\FileBuilder.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\FileListBuilder.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\HNamesBuilder.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\MrmBuilders.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\ResourcePackMerge.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\SectionBuilders.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\SectionCopiers.h" />
+    <ClInclude Include="$(MRTCoreRoot)\mrt\mrm\include\mrm\build\WriteableStringPool.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
+    <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.220201.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
   </Target>
 </Project>

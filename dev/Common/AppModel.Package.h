@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #ifndef __APPMODEL_PACKAGE_H
 #define __APPMODEL_PACKAGE_H
@@ -41,6 +41,16 @@ inline std::vector<std::wstring> FindByFamily(PCWSTR packageFamilyName)
 inline std::vector<std::wstring> FindByFamily(const std::wstring& packageFamilyName)
 {
     return FindByFamily(packageFamilyName.c_str());
+}
+
+inline PACKAGE_VERSION ToPackageVersion(winrt::Windows::ApplicationModel::PackageVersion const& from)
+{
+    PACKAGE_VERSION to{};
+    to.Major = from.Major;
+    to.Minor = from.Minor;
+    to.Build = from.Build;
+    to.Revision = from.Revision;
+    return to;
 }
 }
 

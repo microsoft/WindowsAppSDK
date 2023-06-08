@@ -1,15 +1,18 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #pragma once
 #include "pch.h"
 #include <winrt/Windows.ApplicationModel.Core.h>
 #include "PushNotificationUtility.h"
 #include <algorithm>
+#include "NotificationTelemetryHelper.h"
 
 inline const winrt::hstring STORED_PUSH_MANAGER_KEY = L"StoredPushManagerKey";
 inline const winrt::hstring STORED_APPNOTIFICATION_MANAGER_KEY = L"StoredAppNotificationManagerKey";
 inline const DWORD c_receiveArgsTimeoutInMSec{ 2000 };
+
+inline NotificationTelemetryHelper g_telemetryHelper{};
 
 namespace PushNotificationHelpers
 {

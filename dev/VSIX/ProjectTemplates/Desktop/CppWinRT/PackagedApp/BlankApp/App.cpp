@@ -1,4 +1,7 @@
-﻿#include "pch.h"
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include "pch.h"
 
 #include "App.xaml.h"
 #include "MainWindow.xaml.h"
@@ -35,8 +38,7 @@ App::App()
 }
 
 /// <summary>
-/// Invoked when the application is launched normally by the end user.  Other entry points
-/// will be used such as when the application is launched to open a specific file.
+/// Invoked when the application is launched.
 /// </summary>
 /// <param name="e">Details about the launch request and process.</param>
 void App::OnLaunched(LaunchActivatedEventArgs const&)

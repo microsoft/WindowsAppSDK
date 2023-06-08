@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include <pch.h>
 
@@ -17,6 +17,7 @@ void WindowsAppRuntime::Deployment::Activity::Context::Reset()
     m_deploymentErrorExtendedHresult = S_OK;
     m_deploymentErrorText.clear();
     m_deploymentErrorActivityId = GUID{};
+    m_useExistingPackageIfHigherVersion = false;
 }
 
 void WindowsAppRuntime::Deployment::Activity::Context::SetDeploymentErrorInfo(

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include "pch.h"
 
@@ -82,7 +82,7 @@ bool Test::DynamicDependency::Test_Win32::Cleanup()
 void Test::DynamicDependency::Test_Win32::Create_Delete()
 {
     // The process starts at GenerationId=0 but the bootstrap API was called which calls DynamicDependencies so it's now 1
-    VerifyGenerationId(1);
+    VerifyPackageGraphRevisionId(1);
 
     PCWSTR packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
     const PACKAGE_VERSION minVersion{};
@@ -95,7 +95,7 @@ void Test::DynamicDependency::Test_Win32::Create_Delete()
 
     MddDeletePackageDependency(packageDependencyId.get());
 
-    VerifyGenerationId(1);
+    VerifyPackageGraphRevisionId(1);
 }
 
 void Test::DynamicDependency::Test_Win32::Delete_Null()
@@ -113,7 +113,7 @@ void Test::DynamicDependency::Test_Win32::Delete_NotFound()
 void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framework_WindowsAppRuntime()
 {
     // The process starts at GenerationId=0 but the bootstrap API was called which calls DynamicDependencies so it's now 1
-    VerifyGenerationId(1);
+    VerifyPackageGraphRevisionId(1);
 
     // Setup our dynamic dependencies
 
@@ -125,7 +125,7 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framewor
     auto pathEnvironmentVariable{ GetPathEnvironmentVariableMinusWindowsAppRuntimeFramework() };
     auto packagePath_WindowsAppRuntimeFramework{ TP::GetPackagePath(expectedPackageFullName_WindowsAppRuntimeFramework) };
     VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
-    VerifyGenerationId(1);
+    VerifyPackageGraphRevisionId(1);
 
     // -- TryCreate
 
@@ -135,7 +135,7 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framewor
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
-    VerifyGenerationId(1);
+    VerifyPackageGraphRevisionId(1);
 
     // -- Add
 
@@ -150,7 +150,7 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framewor
     auto packagePath_FrameworkMathAdd{ TP::GetPackagePath(expectedPackageFullName_FrameworkMathAdd) };
     VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, packagePath_FrameworkMathAdd, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
-    VerifyGenerationId(2);
+    VerifyPackageGraphRevisionId(2);
 
     // -- Use it
 
@@ -172,7 +172,7 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framewor
     std::wstring actualResolvedPackageFullName{ resolvedPackageFullName.get() };
     const auto& expectedResolvedPackageFullName{ expectedPackageFullName_FrameworkMathAdd };
     VERIFY_ARE_EQUAL(expectedResolvedPackageFullName, actualResolvedPackageFullName);
-    VerifyGenerationId(2);
+    VerifyPackageGraphRevisionId(2);
 
     // Tear down our dynamic dependencies
 
@@ -184,7 +184,7 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framewor
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
-    VerifyGenerationId(3);
+    VerifyPackageGraphRevisionId(3);
 
     // -- Delete
 
@@ -194,7 +194,7 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framewor
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
-    VerifyGenerationId(3);
+    VerifyPackageGraphRevisionId(3);
 }
 
 void Test::DynamicDependency::Test_Win32::GetResolvedPackageFullName_Null()
@@ -647,6 +647,16 @@ MddPackageDependencyProcessorArchitectures Test::DynamicDependency::Test_Win32::
 #else
 #   error "Unknown processor architecture"
 #endif
+}
+
+void Test::DynamicDependency::Test_Win32::VerifyPackageGraphRevisionId(
+    const UINT32 expectedPackageGraphRevisionId)
+{
+    const auto actualPackageGraphRevisionId{ MddGetPackageGraphRevisionId() };
+    VERIFY_ARE_EQUAL(expectedPackageGraphRevisionId, actualPackageGraphRevisionId);
+
+    // GenerationId is deprecated but verify until removed
+    VerifyGenerationId(expectedPackageGraphRevisionId);
 }
 
 void Test::DynamicDependency::Test_Win32::VerifyGenerationId(

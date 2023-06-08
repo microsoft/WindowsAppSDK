@@ -39,6 +39,7 @@
     </PropertyGroup>
     <Message Importance="high" Text="Binplacing to: $(BinRoot)" />
     <Copy SourceFiles="$(TargetVsixContainer)" DestinationFolder="$(BinRoot)"/>
+	<Move Condition="'$(JsonName)' != '' AND Exists('$(BaseIntermediateOutputPath)\$(JsonName)')" SourceFiles="$(BaseIntermediateOutputPath)\$(JsonName)" DestinationFiles="$(BaseIntermediateOutputPath)\$(AssemblyName).$(Deployment).json"/>
   </Target>
 
 
@@ -130,7 +131,7 @@
       <VsixIdentity>$(_OriginalVsixId)</VsixIdentity>
       <ExperimentalVsixIdentity>$(_OriginalVsixId).Experimental</ExperimentalVsixIdentity>
       <ExperimentalVsixDisplayName>Experimental $(_OriginalVsixName)</ExperimentalVsixDisplayName>
-      <ExperimentalVsixTags>$(_OriginalVsixTags), UWP</ExperimentalVsixTags>
+      <ExperimentalVsixTags>$(_OriginalVsixTags)</ExperimentalVsixTags>
 
       <_OriginalVsixId></_OriginalVsixId>
       <_OriginalVsixName></_OriginalVsixName>

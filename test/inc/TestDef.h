@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 #pragma once
 
 constexpr static const int c_phaseTimeout = (30 * 1000); // 30 seconds
@@ -22,6 +22,7 @@ static const std::wstring c_testRequestRestartNowRestartedPhaseEventName = L"Win
 static const std::wstring c_testRequestRestartNowRestartedPhasePackagedEventName = L"WindowsAppRuntimeTestRequestRestartNowRestartedPhasePackagedEventName";
 
 static const std::wstring c_testPushPhaseEventName = L"WindowsAppRuntimeTestPushPhaseEventName";
+inline IID c_remoteId = winrt::guid("A7652901-313C-4EFA-A303-95C371A00DAB");
 
 #ifndef WIDEN2
 #define WIDEN2(x) L ## x

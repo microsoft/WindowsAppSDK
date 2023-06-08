@@ -28,22 +28,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -86,9 +86,13 @@
     <MakeMsixInputsWithLocations Include="$(OutDir)..\DeploymentAgent\DeploymentAgent.pdb">
       <TargetFile>DeploymentAgent.pdb</TargetFile>
     </MakeMsixInputsWithLocations>
+    <MakeMsixInputs Include="$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.dll" />
+    <MakeMsixInputs Include="$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.pdb" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" />
+    <MakeMsixInputs Include="$(OutDir)..\KozaniManagerRuntime\KozaniManagerRuntime.dll" />
+    <MakeMsixInputs Include="$(OutDir)..\KozaniManagerRuntime\KozaniManagerRuntime.pdb" />
   </ItemGroup>
   <PropertyGroup>
     <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>

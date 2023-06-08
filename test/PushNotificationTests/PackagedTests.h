@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include "pch.h"
 #include "BaseTestSuite.h"
@@ -46,6 +46,7 @@ class PackagedTests : BaseTestSuite
 
     TEST_METHOD(ChannelRequestUsingNullRemoteId);
     TEST_METHOD(ChannelRequestUsingRemoteId);
+    TEST_METHOD(ChannelRequestCheckExpirationTime);
     BEGIN_TEST_METHOD(MultipleChannelClose) // Currently failing 
         TEST_METHOD_PROPERTY(L"Ignore", L"true")
     END_TEST_METHOD()

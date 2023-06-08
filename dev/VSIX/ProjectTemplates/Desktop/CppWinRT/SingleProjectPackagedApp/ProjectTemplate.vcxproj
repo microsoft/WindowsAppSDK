@@ -33,9 +33,9 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|arm64">
+    <ProjectConfiguration Include="Debug|ARM64">
       <Configuration>Debug</Configuration>
-      <Platform>arm64</Platform>
+      <Platform>ARM64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
@@ -45,15 +45,14 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|arm64">
+    <ProjectConfiguration Include="Release|ARM64">
       <Configuration>Release</Configuration>
-      <Platform>arm64</Platform>
+      <Platform>ARM64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
-    <PlatformToolset Condition="'$(VisualStudioVersion)' == '16.0'">v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <DesktopCompatible>true</DesktopCompatible>
   </PropertyGroup>
@@ -153,8 +152,8 @@
     <Image Include="Assets\StoreLogo.png" />
     <Image Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
-  
-  <!-- 
+
+  <!--
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
     Tools extension to be activated for this project even if the Windows App SDK Nuget
     package has not yet been restored.
@@ -163,15 +162,15 @@
     <ProjectCapability Include="Msix"/>
   </ItemGroup>
 
-  <!-- 
-    Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution 
-    Explorer "Package and Publish" context menu entry to be enabled for this project even if 
+  <!--
+    Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
+    Explorer "Package and Publish" context menu entry to be enabled for this project even if
     the Windows App SDK Nuget package has not yet been restored.
   -->
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
-  
+
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

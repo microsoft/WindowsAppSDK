@@ -4,6 +4,8 @@
     <Xml Include="appxmanifest-x86.xml" />
     <Xml Include="appxmanifest-x64.xml" />
     <Xml Include="appxmanifest-arm64.xml" />
+    <Xml Include="main_license.xml" />
+    <Xml Include="singleton_license.xml" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="logo.png" />

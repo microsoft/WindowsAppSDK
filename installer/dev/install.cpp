@@ -1,9 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include "pch.h"
 #include "packages.h"
 #include "install.h"
+#include "MachineTypeAttributes.h"
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
@@ -17,25 +18,39 @@ using namespace WindowsAppRuntimeInstaller::Console;
 
 namespace WindowsAppRuntimeInstaller
 {
-    HRESULT RegisterPackage(const std::wstring& packageFullName)
-    {
-        PackageManager packageManager;
-        const auto deploymentOperation{ packageManager.RegisterPackageByFullNameAsync(packageFullName, nullptr, DeploymentOptions::None) };
 
+    HRESULT GetAndLogDeploymentOperationResult(
+        WindowsAppRuntimeInstaller::InstallActivity::Context& installActivityContext,
+        const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Windows::Management::Deployment::DeploymentResult, winrt::Windows::Management::Deployment::DeploymentProgress> deploymentOperation)
+    {
         deploymentOperation.get();
         if (deploymentOperation.Status() != AsyncStatus::Completed)
         {
             const auto deploymentResult{ deploymentOperation.GetResults() };
-            WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetDeploymentErrorInfo(
+            installActivityContext.SetDeploymentErrorInfo(
                 deploymentOperation.ErrorCode(),
                 deploymentResult.ExtendedErrorCode(),
                 deploymentResult.ErrorText().c_str(),
                 deploymentResult.ActivityId());
 
-            return static_cast<HRESULT>(deploymentResult.ExtendedErrorCode());
+            RETURN_HR(static_cast<HRESULT>(deploymentResult.ExtendedErrorCode() ? deploymentResult.ExtendedErrorCode() : deploymentOperation.ErrorCode()));
         }
+    }
 
-        return S_OK;
+    HRESULT RegisterPackage(
+        WindowsAppRuntimeInstaller::InstallActivity::Context& installActivityContext,
+        const std::wstring& packageFullName,
+        bool forceDeployment)
+    {
+        const auto deploymentOptions{ forceDeployment ?
+            winrt::Windows::Management::Deployment::DeploymentOptions::ForceTargetApplicationShutdown :
+            winrt::Windows::Management::Deployment::DeploymentOptions::None };
+
+        PackageManager packageManager;
+
+        return GetAndLogDeploymentOperationResult(
+            installActivityContext,
+            packageManager.RegisterPackageByFullNameAsync(packageFullName, nullptr, deploymentOptions));
     }
 
     HRESULT AddPackage(
@@ -49,54 +64,21 @@ namespace WindowsAppRuntimeInstaller
             winrt::Windows::Management::Deployment::DeploymentOptions::None };
 
         PackageManager packageManager;
-        const auto deploymentOperation{ packageManager.AddPackageAsync(packageUri, nullptr, DeploymentOptions::None) };
-        deploymentOperation.get();
-        if (deploymentOperation.Status() != AsyncStatus::Completed)
-        {
-            auto hrAddPackage{ static_cast<HRESULT>(deploymentOperation.ErrorCode()) };
-            if (hrAddPackage == ERROR_PACKAGE_ALREADY_EXISTS)
-            {
-                installActivityContext.SetInstallStage(InstallStage::RegisterPackage);
 
-                // Package already exists (such as via provisioning), re-register it instead.
-                RETURN_IF_FAILED(RegisterPackage(packageProperties->fullName.get()));
-                return S_OK;
-            }
-            else
-            {
-                const auto deploymentResult{ deploymentOperation.GetResults() };
-                installActivityContext.SetDeploymentErrorInfo(hrAddPackage, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str(), deploymentResult.ActivityId());
-                RETURN_HR(static_cast<HRESULT>(deploymentResult.ExtendedErrorCode()));
-            }
-        }
-        return S_OK;
+        return GetAndLogDeploymentOperationResult(
+            installActivityContext,
+            packageManager.AddPackageAsync(packageUri, nullptr, deploymentOptions));
     }
 
     HRESULT StagePackage(
         WindowsAppRuntimeInstaller::InstallActivity::Context& installActivityContext,
         const Uri& packageUri)
     {
-        const auto deploymentOptions{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
-
         PackageManager packageManager;
-        const auto deploymentOperation{ packageManager.StagePackageAsync(packageUri, nullptr, DeploymentOptions::None) };
-        deploymentOperation.get();
-        if (deploymentOperation.Status() != AsyncStatus::Completed)
-        {
-            auto hrStagePackage{ static_cast<HRESULT>(deploymentOperation.ErrorCode()) };
-            if (hrStagePackage == ERROR_PACKAGE_ALREADY_EXISTS)
-            {
-                // Package already exists, nothing more to do
-                return S_OK;
-            }
-            else
-            {
-                const auto deploymentResult{ deploymentOperation.GetResults() };
-                installActivityContext.SetDeploymentErrorInfo(hrStagePackage, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str(), deploymentResult.ActivityId());
-                RETURN_HR(static_cast<HRESULT>(deploymentResult.ExtendedErrorCode()));
-            }
-        }
-        return S_OK;
+
+        return GetAndLogDeploymentOperationResult(
+            installActivityContext,
+            packageManager.StagePackageAsync(packageUri, nullptr, DeploymentOptions::None));
     }
 
     HRESULT AddOrStagePackage(
@@ -108,7 +90,7 @@ namespace WindowsAppRuntimeInstaller
         // Windows doesn't support registering packages for LocalSystem
         // If you're doing that you're really intending to provision the package for all users on the machine
         // That means we need to Stage the package instead of Add it
-        if (Security::User::IsLocalSystem())
+        if (installActivityContext.IsLocalSystemUser())
         {
             installActivityContext.SetInstallStage(InstallStage::StagePackage);
             RETURN_IF_FAILED(StagePackage(installActivityContext, packageUri));
@@ -138,31 +120,12 @@ namespace WindowsAppRuntimeInstaller
         return S_OK;
     }
 
-    bool IsPackageApplicable(const std::unique_ptr<PackageProperties>& packageProperties, DeploymentBehavior deploymentBehavior)
+    bool IsPackageApplicable(const std::unique_ptr<PackageProperties>& packageProperties, const DeploymentBehavior& deploymentBehavior, const ProcessorArchitecture& systemArchitecture)
     {
         // Neutral package architecture is applicable on all systems.
         if (packageProperties->architecture == ProcessorArchitecture::Neutral)
         {
             return true;
-        }
-
-        USHORT processMachine{ IMAGE_FILE_MACHINE_UNKNOWN };
-        USHORT nativeMachine{ IMAGE_FILE_MACHINE_UNKNOWN };
-        THROW_IF_WIN32_BOOL_FALSE(::IsWow64Process2(::GetCurrentProcess(), &processMachine, &nativeMachine));
-        ProcessorArchitecture systemArchitecture{};
-        switch (nativeMachine)
-        {
-        case IMAGE_FILE_MACHINE_I386:
-            systemArchitecture = ProcessorArchitecture::X86;
-            break;
-        case IMAGE_FILE_MACHINE_AMD64:
-            systemArchitecture = ProcessorArchitecture::X64;
-            break;
-        case IMAGE_FILE_MACHINE_ARM64:
-            systemArchitecture = ProcessorArchitecture::Arm64;
-            break;
-        default:
-            THROW_HR_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), "nativeMachine=%hu", nativeMachine);
         }
 
         // Same-arch is always applicable for any package type.
@@ -186,9 +149,15 @@ namespace WindowsAppRuntimeInstaller
             return true;
         }
 
-        // On Arm64 systems, all current package architectures are applicable.
+        // On Windows 11 (i.e. builds 22000+) ARM64 systems, all framework package architectures are applicable.
+        // On Windows 10 (i.e. builds 17763-190**) ARM64 systems (which don't support X64 apps), all x64 framework package architectures, except x64, are applicable.
         if (systemArchitecture == ProcessorArchitecture::Arm64)
         {
+            if (packageProperties->architecture == ProcessorArchitecture::X64)
+            {
+                return MachineTypeAttributes::IsWindows11_IsArchitectureSupportedInUserMode(IMAGE_FILE_MACHINE_AMD64);
+            }
+
             return true;
         }
 
@@ -252,7 +221,43 @@ namespace WindowsAppRuntimeInstaller
         return outstream;
     }
 
-    void DeployPackageFromResource(const WindowsAppRuntimeInstaller::ResourcePackageInfo& resource, const WindowsAppRuntimeInstaller::Options options)
+    // RestartPushNotificationsLRP is best effort and non-blocking to Installer functionality.
+    // Any failures in this helper method will be logged in Telemetry but will not return error to the caller.
+    void RestartPushNotificationsLRP()
+    {
+        WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetInstallStage(WindowsAppRuntimeInstaller::InstallActivity::InstallStage::RestartPushNotificationsLRP);
+
+        IID pushNotificationsIMPL_CLSID;
+        LOG_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_IMPL_CLSID_WSTRING, &pushNotificationsIMPL_CLSID));
+
+        IID pushNotificationsLRP_IID;
+        LOG_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_LRP_CLSID_WSTRING, &pushNotificationsLRP_IID));
+
+        wil::com_ptr<::IUnknown> pNotificationsLRP{};
+
+        unsigned int retries{ 0 };
+        HRESULT hr{ S_OK };
+        while (retries < 3)
+        {
+            hr = CoCreateInstance(pushNotificationsIMPL_CLSID,
+                NULL,
+                CLSCTX_LOCAL_SERVER,
+                pushNotificationsLRP_IID,
+                reinterpret_cast<LPVOID*>(pNotificationsLRP.put()));
+
+            if (SUCCEEDED(hr))
+            {
+                break;
+            }
+            retries++;
+        }
+        // WIL call back is setup to log telemetry event for any failure in restarting Notifications LRP.
+        // Due to a bug in Windows OS, RestartPushNotificationsLRP will fail if Installer is run with Elevated privileges (IOW, with Admin privileges).
+        LOG_IF_FAILED_MSG(hr, "Restarting Push Notifications LRP failed after 3 attempts.");
+    }
+
+    void DeployPackageFromResource(const WindowsAppRuntimeInstaller::ResourcePackageInfo& resource, const WindowsAppRuntimeInstaller::Options& options,
+        const ProcessorArchitecture& systemArchitecture, const std::wstring& applicableSingletonResourceID)
     {
         const auto quiet{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet) };
         const auto forceDeployment{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment) };
@@ -267,9 +272,50 @@ namespace WindowsAppRuntimeInstaller
         installActivityContext.SetCurrentResourceId(packageProperties->fullName.get());
 
         // Skip non-applicable packages.
-        if (!IsPackageApplicable(packageProperties, resource.deploymentBehavior))
+        if (!IsPackageApplicable(packageProperties, resource.deploymentBehavior, systemArchitecture))
         {
             return;
+        }
+
+        // Correct WindowsAppSDK MSIX package is considered installed if it's version is same or higher than that from the installer.
+        // Check if a higher version of the package is already installed.
+        PackageManager packageManager;
+        winrt::hstring currentUserSID;
+        auto installedPackages{ packageManager.FindPackagesForUserWithPackageTypes(currentUserSID, packageProperties->familyName.get(),
+                                                                                                            ::Windows::Management::Deployment::PackageTypes::Framework |
+                                                                                                            ::Windows::Management::Deployment::PackageTypes::Main) };
+        bool isPackageInstalledAndIsPackageStatusOK{};
+
+        // installedPackages can contain only one version of the packagefamily across all servicing revisions of a WindowsAppSDK version.
+        // installedPackages can contain different architectures of same package version (for Framework package).
+        for (auto installedPackage : installedPackages)
+        {
+            // For the already installed package of same WindowsAppSDK Major.Minor version with matching architecture, compare version
+            if (installedPackage.Id().Architecture() == packageProperties->architecture)
+            {
+                const auto installedPackageVersion{ AppModel::Package::ToPackageVersion(installedPackage.Id().Version()).Version };
+                if (installedPackageVersion > packageProperties->version)
+                {
+                    installActivityContext.SetExistingPackageIfHigherVersion(installedPackage.Id().FullName());
+                    isPackageInstalledAndIsPackageStatusOK = installedPackage.Status().VerifyIsOK();
+                }
+                else if (installedPackageVersion == packageProperties->version)
+                {
+                    isPackageInstalledAndIsPackageStatusOK = installedPackage.Status().VerifyIsOK();
+                }
+            }
+        }
+
+        // Install option should install the applicable WindowsAppSDK MSIX package only if it is not already installed or if it's status is not OK.
+        // Repair option should install the applicable WindowsAppSDK MSIX package independent of it's state.
+        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallPackages) ||
+            WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Install))
+        {
+            if (isPackageInstalledAndIsPackageStatusOK)
+            {
+                // If currently installed Package (either same or higher version than the version from the installer) is in good state, do nothing and return.
+                return;
+            }
         }
 
         PCWSTR c_windowsAppRuntimeTempDirectoryPrefix{ L"MSIX" };
@@ -285,7 +331,7 @@ namespace WindowsAppRuntimeInstaller
 
         if (!quiet)
         {
-            std::wcout << "Deploying package: " << packageProperties->fullName.get() << std::endl;
+            std::wcout << L"Deploying package: " << packageProperties->fullName.get() << std::endl;
         }
 
         // DryRun = Don't do the work
@@ -294,25 +340,49 @@ namespace WindowsAppRuntimeInstaller
             return;
         }
 
-        installActivityContext.SetInstallStage(InstallStage::CreatePackageURI);
+        HRESULT hrDeploymentResult{};
 
-        // Write the package to a temp file. The PackageManager APIs require a Uri.
-        wil::com_ptr<IStream> outStream{ OpenFileStream(packageFilename) };
-        ULARGE_INTEGER streamSize{};
-        THROW_IF_FAILED(::IStream_Size(packageStream.get(), &streamSize));
-        THROW_IF_FAILED(packageStream->CopyTo(outStream.get(), streamSize, nullptr, nullptr));
-        THROW_IF_FAILED(outStream->Commit(STGC_OVERWRITE));
-        outStream.reset();
+        // Windows doesn't support registering packages for LocalSystem
+        // If you're doing that you're really intending to provision the package for all users on the machine
+        if (installActivityContext.GetExistingPackageIfHigherVersion().size() &&
+            !installActivityContext.IsLocalSystemUser())
+        {
+           installActivityContext.SetInstallStage(InstallStage::RegisterPackage);
 
-        // Add-or-Stage the package
-        Uri packageUri{ packageFilename };
-        auto hrAddResult{ AddOrStagePackage(installActivityContext, packageUri, packageProperties, forceDeployment) };
+            // Re-register higher version of the package that is already installed.
+           hrDeploymentResult = RegisterPackage(installActivityContext, installActivityContext.GetExistingPackageIfHigherVersion().c_str(), forceDeployment);
+        }
+        else
+        {
+            installActivityContext.SetInstallStage(InstallStage::CreatePackageURI);
+
+            // Write the package to a temp file. The PackageManager APIs require a Uri.
+            wil::com_ptr<IStream> outStream{ OpenFileStream(packageFilename) };
+            ULARGE_INTEGER streamSize{};
+            THROW_IF_FAILED(::IStream_Size(packageStream.get(), &streamSize));
+            THROW_IF_FAILED(packageStream->CopyTo(outStream.get(), streamSize, nullptr, nullptr));
+            THROW_IF_FAILED(outStream->Commit(STGC_OVERWRITE));
+            outStream.reset();
+
+            // Add-or-Stage the package
+            Uri packageUri{ packageFilename };
+            hrDeploymentResult = AddOrStagePackage(installActivityContext, packageUri, packageProperties, forceDeployment);
+        }
         if (!quiet)
         {
-            std::wcout << "Package deployment result : 0x" << std::hex << hrAddResult << " ";
-            DisplayError(hrAddResult);
+            std::wcout << "Package deployment result : 0x" << std::hex << hrDeploymentResult << " ";
+            DisplayError(hrDeploymentResult);
         }
-        THROW_IF_FAILED(hrAddResult);
+        THROW_IF_FAILED(hrDeploymentResult);
+
+        // If successful install is for Singleton package, restart Push Notifications Long Running Platform when ForceDeployment option is applied.
+        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment))
+        {
+            if (CompareStringOrdinal(resource.id.c_str(), static_cast<int>(resource.id.size()), applicableSingletonResourceID.c_str(), static_cast<int>(applicableSingletonResourceID.size()), TRUE) == CSTR_EQUAL)
+            {
+                RestartPushNotificationsLRP();
+            }
+        }
 
         // Framework provisioning is not supported by the PackageManager ProvisionPackageForAllUsersAsync API.
         // Hence, skip attempting to provision framework package.
@@ -347,46 +417,14 @@ namespace WindowsAppRuntimeInstaller
     }
     CATCH_RETURN()
 
-    // RestartPushNotificationsLRP is best effort and non-blocking to Installer functionality.
-    // Any failures in this helper method will be logged in Telemetry but will not return error to the caller.
-    void RestartPushNotificationsLRP()
-    {
-        WindowsAppRuntimeInstaller::InstallActivity::Context::Get().SetInstallStage(WindowsAppRuntimeInstaller::InstallActivity::InstallStage::RestartPushNotificationsLRP);
-
-        IID pushNotificationsIMPL_CLSID;
-        LOG_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_IMPL_CLSID_WSTRING, &pushNotificationsIMPL_CLSID));
-
-        IID pushNotificationsLRP_IID;
-        LOG_IF_FAILED(CLSIDFromString(PUSHNOTIFICATIONS_LRP_CLSID_WSTRING, &pushNotificationsLRP_IID));
-
-        wil::com_ptr<::IUnknown> pNotificationsLRP{};
-
-        unsigned int retries{ 0 };
-        HRESULT hr{ S_OK };
-        while (retries < 3)
-        {
-             hr = CoCreateInstance(pushNotificationsIMPL_CLSID,
-                NULL,
-                CLSCTX_LOCAL_SERVER,
-                pushNotificationsLRP_IID,
-                reinterpret_cast<LPVOID*>(pNotificationsLRP.put()));
-
-            if (SUCCEEDED(hr))
-            {
-                break;
-            }
-            retries++;
-        }
-        // wil call back is setup to log telemetry event for any failure in restarting Notifications LRP
-        LOG_IF_FAILED_MSG(hr, "Restarting Push Notifications LRP failed after 3 attempts.");
-    }
-
     HRESULT InstallLicenses(const WindowsAppRuntimeInstaller::Options options)
     {
 #if defined(MSIX_PROCESS_LICENSES)
         const auto quiet{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet) };
 
-        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallLicenses))
+        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallLicenses) ||
+            WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Install) ||
+            WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Repair))
         {
             auto& installActivityContext{ WindowsAppRuntimeInstaller::InstallActivity::Context::Get() };
             installActivityContext.SetInstallStage(InstallStage::InstallLicense);
@@ -412,7 +450,7 @@ namespace WindowsAppRuntimeInstaller
                 const auto hr{ licenseInstaller.InstallLicense(thisModule, license.id) };
                 if (!quiet)
                 {
-                    std::wcout << "Install result : 0x" << std::hex << hr << " ";
+                    std::wcout << "Install License result : 0x" << std::hex << hr << " ";
                     DisplayError(hr);
                 }
                 RETURN_IF_FAILED_MSG(hr, "License:%ls", license.id.c_str());
@@ -424,22 +462,39 @@ namespace WindowsAppRuntimeInstaller
 
     HRESULT DeployPackages(const WindowsAppRuntimeInstaller::Options options)
     {
-        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallPackages))
+        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallPackages) ||
+            WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Install) ||
+            WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Repair))
         {
+            USHORT processMachine{ IMAGE_FILE_MACHINE_UNKNOWN };
+            USHORT nativeMachine{ IMAGE_FILE_MACHINE_UNKNOWN };
+            THROW_IF_WIN32_BOOL_FALSE(::IsWow64Process2(::GetCurrentProcess(), &processMachine, &nativeMachine));
+            ProcessorArchitecture systemArchitecture{};
+            std::wstring applicableSingletonResourceID;
+            switch (nativeMachine)
+            {
+            case IMAGE_FILE_MACHINE_I386:
+                systemArchitecture = ProcessorArchitecture::X86;
+                applicableSingletonResourceID = MSIX_SINGLETON_X86_ID;
+                break;
+            case IMAGE_FILE_MACHINE_AMD64:
+                systemArchitecture = ProcessorArchitecture::X64;
+                applicableSingletonResourceID = MSIX_SINGLETON_X64_ID;
+                break;
+            case IMAGE_FILE_MACHINE_ARM64:
+                systemArchitecture = ProcessorArchitecture::Arm64;
+                applicableSingletonResourceID = MSIX_SINGLETON_ARM64_ID;
+                break;
+            default:
+                THROW_HR_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), "nativeMachine=%hu", nativeMachine);
+            }
+
             for (const auto& package : WindowsAppRuntimeInstaller::c_packages)
             {
                 WindowsAppRuntimeInstaller::InstallActivity::Context::Get().Reset();
-                DeployPackageFromResource(package, options);
-
-                // Restart Push Notifications Long Running Platform when ForceDeployment option is applied.
-                if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::ForceDeployment) &&
-                    CompareStringOrdinal(package.id.c_str(), static_cast<int>(package.id.size() - 3), MSIX_SINGLETON_X86_ID, static_cast<int>(package.id.size() - 3), TRUE) == CSTR_EQUAL)
-                {
-                    RestartPushNotificationsLRP();
-                }
+                DeployPackageFromResource(package, options, systemArchitecture, applicableSingletonResourceID);
             }
         }
-
         return S_OK;
     }
 }

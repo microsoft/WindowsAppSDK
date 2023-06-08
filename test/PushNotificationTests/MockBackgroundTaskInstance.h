@@ -1,4 +1,7 @@
-﻿#include <winrt/Windows.ApplicationModel.background.h>
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include <winrt/Windows.ApplicationModel.background.h>
 
 struct MockBackgroundTaskInstance : winrt::implements<MockBackgroundTaskInstance, winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance>
 {

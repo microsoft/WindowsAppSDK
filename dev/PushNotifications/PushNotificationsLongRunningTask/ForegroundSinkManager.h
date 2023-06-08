@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
 #include <unordered_map>
 #include <unordered_set>
@@ -15,7 +15,11 @@ public:
 
     void Remove(std::wstring const& appId);
 
-    bool InvokeForegroundHandlers(std::wstring const& appId, winrt::com_array<uint8_t> const& payload, ULONG const& payloadSize);
+    bool InvokeForegroundHandlers(
+        std::wstring const& appId,
+        winrt::com_array<uint8_t> const& payload,
+        HSTRING correlationVector,
+        ULONG const& payloadSize);
 
 private:
     // An app can only have one activate foreground sink with Long Running Process.
