@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net472</TargetFramework>
+		<PackageId>AppAttachKernel</PackageId>
+		<Title>AppAttachKernel</Title>
+		<Description>Description</Description>
+		<NuspecFile>AppAttachKernel.nuspec</NuspecFile>
+		<NuspecProperties>Configuration=$(Configuration);TargetFramework=$(TargetFramework);NewtonsoftJsonVersion=$(NewtonsoftJsonVersion);WindowsAzureStorageVersion=$(WindowsAzureStorageVersion)</NuspecProperties>
+		<IncludeBuildOutput>false</IncludeBuildOutput>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\AppAttachAPI\AppAttachAPI.csproj" />
+		<ProjectReference Include="..\BootStrapper\AVDBootStrapper.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="..\AppAttachAPI\bin\$(Configuration)\$(TargetFramework)\AppAttachAPI.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib\$(TargetFramework)</PackagePath>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="..\BootStrapper\bin\$(Configuration)\$(TargetFramework)\AVDBootStrapper.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib\$(TargetFramework)</PackagePath>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="..\AVDAppAttachValidate\bin\$(Configuration)\$(TargetFramework)\AVDAppAttachValidate.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib\$(TargetFramework)</PackagePath>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="..\AppAttachArtifactGenerate\bin\$(Configuration)\$(TargetFramework)\AppAttachArtifactGenerate.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib\$(TargetFramework)</PackagePath>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="..\AVDAppAttachPublish\bin\$(Configuration)\$(TargetFramework)\AVDAppAttachPublish.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib\$(TargetFramework)</PackagePath>
+		</Content>
+	</ItemGroup>
+
+</Project>
