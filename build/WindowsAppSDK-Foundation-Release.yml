@@ -58,6 +58,9 @@ extends:
       binskim:
         enabled: true
         break: true
+      prefast:
+        enabled: true
+        break: true
 
     stages:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
