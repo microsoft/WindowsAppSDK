@@ -271,6 +271,7 @@
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)appxmanifest.xml" />
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)logo.png" />
     <MakeMsixInputs Include="$(OutDir)$(TargetFileName)" />
+    <MakeMsixInputs Include="$(OutDir)Microsoft.Test.DynamicDependency.Widgets.winmd" />
   </ItemGroup>
   <PropertyGroup>
     <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
