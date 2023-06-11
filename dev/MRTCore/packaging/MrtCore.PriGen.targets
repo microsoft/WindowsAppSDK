@@ -1638,9 +1638,9 @@
 
       <_EmbedFile Include="@(PackagingOutputs)" Condition="'%(OutputGroup)' == 'EmbedOutputGroupForPackaging' and '%(ProjectName)' == '$(ProjectName)'"/>
 
-      <!-- If we have the .xbf, we don't need the .xaml file. -->
-      <_LayoutFileXbfXaml Include="$([System.IO.Path]::ChangeExtension('%(_LayoutFile.Identity)','.xaml'))" Condition="'%(Extension)' == '.xbf'" />
-      <_LayoutFile Remove="@(_LayoutFileXbfXaml)" />
+      <!-- .xbf files are output files and shouldn't be added to input -->
+      <_LayoutFileXbf Include="@(_LayoutFile)" Condition="'%(Extension)' == '.xbf'" />
+      <_LayoutFile Remove="@(_LayoutFileXbf)" />
 
       <!-- Filter out PRIResource files which are marked by C++ project system as ExcludedFromBuild. -->
       <_PRIResourceFiltered Include="@(PRIResource)" Condition="'%(PRIResource.ExcludedFromBuild)' != 'true'" />
