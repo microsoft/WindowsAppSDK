@@ -5,6 +5,8 @@ using AppAttachAPI.Response;
 using AppAttachAPI.Response.Implementations;
 using AppAttachAPI.Response.Interfaces;
 using AppAttachAPI.Utils;
+using AppAttachMessenger.Interface;
+using AppAttachMessenger;
 using BootStrapper;
 using System;
 using System.Collections.Generic;
@@ -37,9 +39,18 @@ namespace AppAttachKernel
         /// <summary>
         /// Executes the AppAttachAPI process with the given JSON value and host.
         /// </summary>
-        /// <param name="jsonValue">JSON value of the request.</param>
-        public IAppAttachFlowResponse execute(string jsonValue)
+        /// <param name="jsonValue">JSON Value of the Request</param>
+        /// <param name="messageHandler">The optional message handler implementation responsible for processing outgoing messages.</param>
+        /// <returns></returns>
+        public IAppAttachFlowResponse execute(string jsonValue, MessageHandler messageHandler = null)
         {
+
+            //Start Messenger Listening Service
+            if(null != messageHandler)
+            {
+                Messenger.Instance.Initialize(messageHandler);
+            }
+
             // Prepare arguments map.
             Dictionary<string, IAttribute> attributesMap = PrepareArguments.prepare(jsonValue);
 

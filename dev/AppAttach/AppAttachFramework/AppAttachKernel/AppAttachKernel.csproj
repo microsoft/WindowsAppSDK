@@ -17,6 +17,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\AppAttachAPI\AppAttachAPI.csproj" />
+		<ProjectReference Include="..\AppAttachMessenger\AppAttachMessenger.csproj" />
 		<ProjectReference Include="..\BootStrapper\AVDBootStrapper.csproj" />
 	</ItemGroup>
 
@@ -28,6 +29,12 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Content Include="..\BootStrapper\bin\$(Configuration)\$(TargetFramework)\AVDBootStrapper.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib\$(TargetFramework)</PackagePath>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="..\AppAttachMessenger\bin\$(Configuration)\$(TargetFramework)\AppAttachMessenger.dll">
 			<Pack>true</Pack>
 			<PackagePath>lib\$(TargetFramework)</PackagePath>
 		</Content>
