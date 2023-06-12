@@ -21,7 +21,7 @@
 
 #define BUILDOUTPUT_DIR L"BuildOutput"
 #define INSTALLER_DIR L"WindowsAppRuntimeInstall"
-#define INSTALLER_FILENAME L"WindowsAppRuntimeInstall.exe"
+#define INSTALLER_FILENAME L"WindowsAppRuntimeInstall" ARCH L"exe"
 #define INSTALLER_EXE_PATH BUILDOUTPUT_DIR L"\\" CONFIGURATION L"\\" ARCH L"\\" INSTALLER_DIR L"\\" INSTALLER_FILENAME
 
 namespace WindowsAppRuntimeInstallerTests
