@@ -41,6 +41,7 @@
       <Platform>ARM64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <PropertyGroup Label="Globals">
     <TargetName>WindowsAppRuntimeInstall-$(Platform)</TargetName>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
