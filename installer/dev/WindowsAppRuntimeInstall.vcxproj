@@ -41,8 +41,14 @@
       <Platform>ARM64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <PropertyGroup Label="Globals">
-    <TargetName>WindowsAppRuntimeInstall-$(Platform)</TargetName>
+  <PropertyGroup Label="Globals" Condition="'$(Platform)'=='Win32'">
+    <TargetName>WindowsAppRuntimeInstall-x86</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Label="Globals" Condition="'$(Platform)'=='x64'">
+    <TargetName>WindowsAppRuntimeInstall-x64</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Label="Globals" Condition="'$(Platform)'=='ARM64'">
+    <TargetName>WindowsAppRuntimeInstall-arm64</TargetName>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
