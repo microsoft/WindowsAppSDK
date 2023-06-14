@@ -755,7 +755,7 @@ function Test-TAEFService
     }
 
     # Double-check the TAEF service is known as a service as far as Windows is concerned
-    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    $service = Get-Service -ErrorAction SilentlyContinue | Where-Object {$_.Name -eq "TE.Service"}
     if ([string]::IsNullOrEmpty($service))
     {
         Write-Host "TAEF service...Not Installed"
@@ -812,7 +812,7 @@ function Install-TAEFService
 
     $args = '/install:TE.Service'
     $output = Run-Process $path $args
-    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    $service = Get-Service -ErrorAction SilentlyContinue | Where-Object {$_.Name -eq "TE.Service"}
     if ([string]::IsNullOrEmpty($service))
     {
         Write-Host "Install TAEF service...Failed"
@@ -845,7 +845,7 @@ function Uninstall-TAEFService
     $filename = Get-TAEFServiceImagePath
     $args = '/remove:TE.Service'
     $output = Run-Process $filename $args
-    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    $service = Get-Service -ErrorAction SilentlyContinue | Where-Object {$_.Name -eq "TE.Service"}
     if (-not([string]::IsNullOrEmpty($service)))
     {
         Write-Host "Uninstall TAEF service...Failed"
@@ -870,7 +870,7 @@ function Start-TAEFService
     }
 
     $ok = Start-Service 'TE.Service'
-    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    $service = Get-Service -ErrorAction SilentlyContinue | Where-Object {$_.Name -eq "TE.Service"}
     if ($service.Status -ne "Running")
     {
         Write-Host "Start TAEF service...Failed"
@@ -893,7 +893,7 @@ function Stop-TAEFService
         return $false
     }
 
-    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    $service = Get-Service -ErrorAction SilentlyContinue | Where-Object {$_.Name -eq "TE.Service"}
     if ($service -eq $null)
     {
         return 'NotFound'
@@ -902,7 +902,7 @@ function Stop-TAEFService
     {
         $ok = Stop-Service 'TE.Service'
     }
-    $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
+    $service = Get-Service -ErrorAction SilentlyContinue | Where-Object {$_.Name -eq "TE.Service"}
     if ($service -eq $null)
     {
         return 'NotFound'
@@ -1316,6 +1316,10 @@ if (($CheckAll -ne $false) -Or ($CheckTestCert -ne $false))
     if ($test -ne $true)
     {
         $null = Repair-DevTestCert
+        if ($CheckTestCert)
+        {
+            Exit 0
+        }
     }
 }
 
@@ -1384,9 +1388,11 @@ if (($RemoveAll -ne $false) -Or ($RemoveTestPfx -ne $false))
 if ($global:issues -eq 0)
 {
     Write-Output "Coding time!"
+    Exit 0
 }
 else
 {
     $n = $global:issues
     Write-Output "$n issue(s) detected"
+    Exit 2
 }
