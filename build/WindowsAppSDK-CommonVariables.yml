@@ -13,7 +13,7 @@ variables:
 
   Codeql.Enabled: true #  CodeQL runs every 3 days on the default branch for all languages its applicable to in that pipeline.
 
-  channel: 'preview'
+  channel: 'experimental'
   rerunPassesRequiredToAvoidFailure: 5
   versionDate: $[format('{0:yyyyMMdd}', pipeline.startTime)]
   versionCounter: $[counter(variables['versionDate'], 0)]
