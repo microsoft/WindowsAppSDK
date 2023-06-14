@@ -37,13 +37,7 @@ namespace AppAttachMessenger
         /// <summary>
         /// Public static method to access the singleton instance.
         /// </summary>
-        public static Messenger Instance
-        {
-            get
-            {
-                return instance;
-            }
-        }
+        public readonly static Messenger Instance = instance;
 
         /// <summary>
         /// Getter for Handle Message.

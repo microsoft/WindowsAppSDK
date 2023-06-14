@@ -15,23 +15,23 @@ namespace AppAttachMessenger
         /// <summary>
         /// Parameterized constructor
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="content"></param>
         /// <param name="category"></param>
-        public Message(string message, NotificationCategory category)
+        public Message(string content, NotificationCategory category)
         {
-            this.message = message;
-            this.category = category;
+            this.Content = content;
+            this.Category = category;
         }
 
         /// <summary>
         /// The content of the message.
         /// </summary>
-        public string message { get; }
+        public string Content { get; }
 
         /// <summary>
         /// The category for the message.
         /// </summary>
-        public NotificationCategory category { get; }
+        public NotificationCategory Category { get; }
 
     }
 }
