@@ -13,6 +13,17 @@ namespace AppAttachMessenger
     public class Message
     {
         /// <summary>
+        /// Parameterized constructor
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="category"></param>
+        public Message(string message, NotificationCategory category)
+        {
+            this.message = message;
+            this.category = category;
+        }
+
+        /// <summary>
         /// The content of the message.
         /// </summary>
         public string message { get; }
@@ -22,10 +33,5 @@ namespace AppAttachMessenger
         /// </summary>
         public NotificationCategory category { get; }
 
-        public Message(string message, NotificationCategory category)
-        {
-            this.message = message;
-            this.category = category;
-        }
     }
 }

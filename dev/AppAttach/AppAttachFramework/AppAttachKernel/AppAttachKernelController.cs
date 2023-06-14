@@ -76,6 +76,10 @@ namespace AppAttachKernel
                     return publisherResponse;
                 }
             }
+
+            // Deinitialize and stop messenger listening service
+            Messenger.Instance.Deinitialize();
+
             return new AppAttachFlowResponse();
         }
 

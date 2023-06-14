@@ -14,8 +14,8 @@ namespace AppAttachMessenger
         /// <summary>
         /// The singleton instance.
         /// </summary>
-        private static Messenger instance;
-
+        private static Messenger instance = new Messenger();
+    
         /// <summary>
         /// The blocking collection used to store incoming messages.
         /// </summary>
@@ -41,10 +41,6 @@ namespace AppAttachMessenger
         {
             get
             {
-                if (instance == null)
-                {
-                    instance = new Messenger();
-                }
                 return instance;
             }
         }
@@ -69,13 +65,34 @@ namespace AppAttachMessenger
         }
 
         /// <summary>
+        /// Deinitializes the Messenger class
+        /// </summary>
+        public void Deinitialize()
+        {
+            // Clearing the singleton instance
+            instance = null;
+
+            // Mark MessageQueue as not accepting any more additions
+            messageQueue.CompleteAdding();
+        }
+
+
+        /// <summary>
         /// Sends a message to the Messenger for processing.
         /// </summary>
         /// <param name="message"></param>
         /// <param name="location"></param>
         public void SendMessage(string message, NotificationCategory category)
         {
-            messageQueue.Add(new Message(message, category));
+            try
+            {
+                messageQueue.Add(new Message(message, category));
+            }
+            catch(InvalidOperationException e)
+            {
+                // MessageQueue marked as not accepting any more additions
+                throw new InvalidOperationException("Messenger already closed and cannot process further messages.\n"+e.Message, e);
+            }
         }
 
         /// <summary>
