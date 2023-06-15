@@ -1,0 +1,178 @@
+id: 
+name: GitOps.PullRequestIssueManagement
+description: GitOps.PullRequestIssueManagement primitive
+owner: 
+resource: repository
+disabled: false
+where: 
+configuration:
+  resourceManagementConfiguration:
+    scheduledSearches:
+    - description: 
+      frequencies:
+      - hourly:
+          hour: 6
+      filters:
+      - isIssue
+      - isOpen
+      - hasLabel:
+          label: needs-author feedback
+      - hasLabel:
+          label: status-no recent activity
+      - noActivitySince:
+          days: 10
+      actions:
+      - closeIssue
+    - description: 
+      frequencies:
+      - hourly:
+          hour: 6
+      filters:
+      - isIssue
+      - isOpen
+      - hasLabel:
+          label: needs-author feedback
+      - noActivitySince:
+          days: 10
+      - isNotLabeledWith:
+          label: status-no recent activity
+      actions:
+      - addLabel:
+          label: status-no recent activity
+      - addReply:
+          reply: This issue has been automatically marked as stale because it has been marked as requiring author feedback but has not had any activity for **10 days**. It will be closed if no further activity occurs **within 10 days of this comment**.
+    - description: 
+      frequencies:
+      - hourly:
+          hour: 6
+      filters:
+      - isIssue
+      - isOpen
+      - hasLabel:
+          label: duplicate
+      - noActivitySince:
+          days: 3
+      actions:
+      - addReply:
+          reply: This issue has been marked as duplicate and has not had any activity for **3 days**. It will be closed for housekeeping purposes.
+      - closeIssue
+    - description: 
+      frequencies: []
+      filters:
+      - isOpen
+      - isIssue
+      - noActivitySince:
+          days: 14
+      - isNotLabeledWith:
+          label: feature proposal
+      - isNotLabeledWith:
+          label: discussion
+      - isNotLabeledWith:
+          label: status-no recent activity
+      - isNotLabeledWith:
+          label: needs-author-feedback
+      - isNotLabeledWith:
+          label: 'needs-triage :mag:'
+      actions:
+      - addLabel:
+          label: 'needs-attention :wave:'
+    eventResponderTasks:
+    - if:
+      - payloadType: Issues
+      - or:
+        - isAction:
+            action: Reopened
+        - and:
+          - isAction:
+              action: Opened
+          - not: isLabeled
+          - activitySenderHasPermission:
+              permission: Write
+      then:
+      - addLabel:
+          label: 'needs-triage :mag:'
+      description: 
+    - if:
+      - payloadType: Issue_Comment
+      - isAction:
+          action: Created
+      - isActivitySender:
+          issueAuthor: True
+      - hasLabel:
+          label: needs-author feedback
+      - isOpen
+      then:
+      - addLabel:
+          label: 'needs-attention :wave:'
+      - removeLabel:
+          label: needs-author feedback
+      description: 
+    - if:
+      - payloadType: Issues
+      - not:
+          isAction:
+            action: Closed
+      - hasLabel:
+          label: status-no recent activity
+      then:
+      - removeLabel:
+          label: status-no recent activity
+      description: 
+    - if:
+      - payloadType: Issue_Comment
+      - hasLabel:
+          label: status-no recent activity
+      then:
+      - removeLabel:
+          label: status-no recent activity
+      description: 
+    - if:
+      - payloadType: Pull_Request
+      then:
+      - inPrLabel:
+          label: 'Status: In PR'
+      description: 
+    - if:
+      - payloadType: Issues
+      - isAction:
+          action: Closed
+      then:
+      - removeLabel:
+          label: 'needs-triage :mag:'
+      description: 
+    - if:
+      - payloadType: Issue_Comment
+      - not: isOpen
+      - hasLabel:
+          label: 'needs-triage :mag:'
+      - or:
+        - activitySenderHasPermission:
+            permission: Write
+        - activitySenderHasPermission:
+            permission: Admin
+      then:
+      - removeLabel:
+          label: 'needs-triage :mag:'
+      description: 
+    - if:
+      - payloadType: Pull_Request
+      - or:
+        - isAction:
+            action: Opened
+        - isAction:
+            action: Reopened
+      then:
+      - addLabel:
+          label: 'needs-triage :mag:'
+      description: 
+    - if:
+      - payloadType: Issues
+      - hasLabel:
+          label: feature proposal
+      - and:
+        - isAction:
+            action: Opened
+      then: []
+      description: 
+onFailure: 
+onSuccess: 
