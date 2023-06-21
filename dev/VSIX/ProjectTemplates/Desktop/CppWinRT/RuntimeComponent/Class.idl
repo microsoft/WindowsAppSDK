@@ -1,0 +1,8 @@
+namespace $safeprojectname$
+{
+    [default_interface]
+    runtimeclass Class
+    {
+        Class();
+    }
+}
