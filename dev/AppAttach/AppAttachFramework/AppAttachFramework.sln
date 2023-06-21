@@ -32,6 +32,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppAttachKernel", "AppAttac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TroubleshootAppAttachPublish", "TroubleshootAppAttachPublish\TroubleshootAppAttachPublish.csproj", "{18367B80-4E82-43FF-BB28-FFC3BABB52D4}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppAttachMessenger", "AppAttachMessenger\AppAttachMessenger.csproj", "{B1ECB916-45C2-41A3-A0D4-6C2292439DA1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,6 +68,10 @@ Global
 		{18367B80-4E82-43FF-BB28-FFC3BABB52D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18367B80-4E82-43FF-BB28-FFC3BABB52D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18367B80-4E82-43FF-BB28-FFC3BABB52D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1ECB916-45C2-41A3-A0D4-6C2292439DA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1ECB916-45C2-41A3-A0D4-6C2292439DA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1ECB916-45C2-41A3-A0D4-6C2292439DA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1ECB916-45C2-41A3-A0D4-6C2292439DA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
