@@ -1,4 +1,7 @@
-﻿namespace AppAttachMessenger.Enums
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace AppAttachMessenger.Enums
 {
     /// <summary>
     /// Represents the notification category for messages.

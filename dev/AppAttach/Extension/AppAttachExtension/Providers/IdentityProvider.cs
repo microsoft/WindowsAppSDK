@@ -1,4 +1,7 @@
-﻿using AppAttachExtension.Models;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachExtension.Models;
 using Azure.Core;
 using Azure.Identity;
 using Azure.ResourceManager.Storage;
@@ -16,7 +19,7 @@ namespace AppAttachExtension.Providers
         private readonly IdentityViewModel _viewModel;
         private List<Claim> _claims;
 
-        public IdentityProvider() 
+        public IdentityProvider()
         {
             _viewModel = new IdentityViewModel();
             _claims = new List<Claim>();
@@ -51,9 +54,9 @@ namespace AppAttachExtension.Providers
                 return true;
             }
             return false;
-        } 
+        }
 
-        public void  PopulateStorageConnectionString(StorageAccountResource storageAccount)
+        public void PopulateStorageConnectionString(StorageAccountResource storageAccount)
         {
             if (storageAccount != null)
             {
@@ -70,5 +73,5 @@ namespace AppAttachExtension.Providers
         {
             return _viewModel;
         }
-     }
+    }
 }

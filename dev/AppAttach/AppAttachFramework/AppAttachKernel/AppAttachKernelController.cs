@@ -1,14 +1,15 @@
-﻿using AppAttachAPI;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachAPI;
 using AppAttachAPI.Constants;
 using AppAttachAPI.Data;
-using AppAttachAPI.Response;
 using AppAttachAPI.Response.Implementations;
 using AppAttachAPI.Response.Interfaces;
 using AppAttachAPI.Utils;
-using AppAttachMessenger.Interface;
 using AppAttachMessenger;
+using AppAttachMessenger.Interface;
 using BootStrapper;
-using System;
 using System.Collections.Generic;
 
 namespace AppAttachKernel
@@ -80,7 +81,7 @@ namespace AppAttachKernel
 
                 return new AppAttachFlowResponse();
             }
-            finally 
+            finally
             {
                 // Trigger cleanup
                 cleanup();

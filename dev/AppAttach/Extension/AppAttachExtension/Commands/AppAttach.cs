@@ -1,18 +1,12 @@
-﻿using EnvDTE;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell.Interop;
-using static Microsoft.VisualStudio.VSConstants;
-using System.Windows;
-using System.Linq;
-using Microsoft.VisualStudio.PlatformUI;
-using System.IO;
-using Community.VisualStudio.Toolkit;
 using System.ComponentModel.Design;
-using System.Management.Instrumentation;
-using System.Windows.Input;
+using System.Linq;
 using System.Xml.Linq;
-using System.Data.Common;
-using System;
 
 namespace AppAttachExtension
 {

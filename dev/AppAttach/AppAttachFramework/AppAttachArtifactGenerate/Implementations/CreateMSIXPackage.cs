@@ -1,14 +1,15 @@
-﻿using AppAttachAPI.Response.Implementations;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachAPI.Constants;
+using AppAttachAPI.Response.Implementations;
 using AppAttachAPI.Response.Interfaces;
 using AppAttachAPI.Utils;
+using AppAttachArtifactGenerate.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
-using AppAttachArtifactGenerate.Interfaces;
-using AppAttachAPI.Response;
-using AppAttachAPI.AttributeImpls;
-using AppAttachAPI.Constants;
 
 namespace AppAttachArtifactGenerate.Implementations
 {

@@ -1,19 +1,15 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-
 using AppAttachAPI;
 using AppAttachAPI.AttributeImpls;
+using AppAttachAPI.Constants;
 using AppAttachAPI.Data;
 using AppAttachAPI.Response.Implementations;
 using AppAttachAPI.Response.Interfaces;
+using AppAttachArtifactGenerate.Implementations;
 using AppAttachArtifactGenerate.Interfaces;
 using System.Collections.Generic;
-using AppAttachArtifactGenerate.Implementations;
-using AppAttachAPI.Response;
-using AppAttachAPI.Constants;
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace AppAttachArtifactGenerate
 {

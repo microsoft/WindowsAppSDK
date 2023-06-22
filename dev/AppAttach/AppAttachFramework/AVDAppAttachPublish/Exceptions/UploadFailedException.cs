@@ -1,4 +1,7 @@
-﻿using AppAttachAPI.Exceptions;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachAPI.Exceptions;
 
 namespace AVDAppAttachPublish.Exceptions
 {

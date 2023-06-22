@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows;
 
 namespace AppAttachExtension.Validator
 {
@@ -14,7 +9,7 @@ namespace AppAttachExtension.Validator
     {
         public static string CertificateVerify(string certificatePath, string password)
         {
-            string subject="";
+            string subject = "";
             try
             {
                 X509Certificate2 certificate = new X509Certificate2(certificatePath, password);

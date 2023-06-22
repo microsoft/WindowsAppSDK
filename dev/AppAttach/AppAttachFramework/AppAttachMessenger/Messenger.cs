@@ -1,4 +1,7 @@
-﻿using AppAttachMessenger.Enums;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachMessenger.Enums;
 using AppAttachMessenger.Interface;
 using System;
 using System.Collections.Concurrent;
@@ -15,7 +18,7 @@ namespace AppAttachMessenger
         /// The singleton instance.
         /// </summary>
         private static Messenger instance = new Messenger();
-    
+
         /// <summary>
         /// The blocking collection used to store incoming messages.
         /// </summary>
@@ -82,10 +85,10 @@ namespace AppAttachMessenger
             {
                 messageQueue.Add(new Message(message, category));
             }
-            catch(InvalidOperationException e)
+            catch (InvalidOperationException e)
             {
                 // MessageQueue marked as not accepting any more additions
-                throw new InvalidOperationException("Messenger already closed and cannot process further messages.\n"+e.Message, e);
+                throw new InvalidOperationException("Messenger already closed and cannot process further messages.\n" + e.Message, e);
             }
         }
 

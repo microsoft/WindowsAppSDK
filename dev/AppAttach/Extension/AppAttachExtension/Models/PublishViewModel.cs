@@ -1,4 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace AppAttachExtension.Models
@@ -23,30 +26,36 @@ namespace AppAttachExtension.Models
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public ObservableCollection<string> SubscriptionsList { 
-            get { 
+        public ObservableCollection<string> SubscriptionsList
+        {
+            get
+            {
                 return _subscriptionsList;
-            } 
-            set {
+            }
+            set
+            {
                 if (_subscriptionsList != value)
                 {
                     _subscriptionsList = value;
                     OnPropertyChanged(nameof(SubscriptionsList));
                 }
-            } 
+            }
         }
 
-        public string SubscriptionName { 
-            get {
+        public string SubscriptionName
+        {
+            get
+            {
                 return _subscriptionName;
-            } 
-            set { 
+            }
+            set
+            {
                 if (_subscriptionName != value)
                 {
                     _subscriptionName = value;
                     OnPropertyChanged(nameof(SubscriptionName));
                 }
-            } 
+            }
         }
 
         public ObservableCollection<string> ResourceGroupLists
