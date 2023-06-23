@@ -38,8 +38,12 @@ namespace Test::VersionInfo
 
             try
             {
+#if defined(WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_WINDOWSAPPRUNTIME_FEATURE_VERSIONINFOAPI_ENABLED)
                 auto release{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::ReleaseInfo::AsString() };
                 VERIFY_FAIL(L"Success is not expected without Microsoft.WindowsAppRuntime.Insights.Resource.dll");
+#else
+                WEX::Logging::Log::Comment(WEX::Common::String(L"Feature_VersionInfoAPI is disabled. Skipping..."));
+#endif
             }
             catch (winrt::hresult_error& e)
             {
@@ -57,8 +61,12 @@ namespace Test::VersionInfo
 
             try
             {
+#if defined(WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_WINDOWSAPPRUNTIME_FEATURE_VERSIONINFOAPI_ENABLED)
                 auto runtime{ winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::RuntimeInfo::AsString() };
                 VERIFY_FAIL(L"Success is not expected without Microsoft.WindowsAppRuntime.Insights.Resource.dll");
+#else
+                WEX::Logging::Log::Comment(WEX::Common::String(L"Feature_VersionInfoAPI is disabled. Skipping..."));
+#endif
             }
             catch (winrt::hresult_error& e)
             {
