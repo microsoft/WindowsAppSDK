@@ -1,4 +1,7 @@
-﻿using AppAttachAPI.Data;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachAPI.Data;
 using System;
 
 namespace AppAttachAPI.Utils

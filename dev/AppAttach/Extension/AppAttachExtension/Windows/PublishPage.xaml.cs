@@ -1,32 +1,15 @@
-﻿using AppAttachKernel;
+﻿using AppAttachAPI.Response.Interfaces;
 using AppAttachExtension.Contracts;
+using AppAttachExtension.Enums;
 using AppAttachExtension.Models;
 using AppAttachExtension.Providers;
 using AppAttachExtension.Utils;
-using AppAttachExtension;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AppAttachKernel;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell.Interop;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
-using AppAttachAPI.Response.Interfaces;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio;
-using AppAttachExtension.Enums;
-using AppAttachExtension.Enums;
-using AppAttachExtension.Models;
-using AppAttachExtension.Providers;
-using AppAttachExtension.Utils;
-using AppAttachExtension;
 
 namespace AppAttachExtension
 {
@@ -99,7 +82,7 @@ namespace AppAttachExtension
                     //UIShellUtils.ShowMessageBox($"User is not authenticated", "AVD App Attach", Constants.MessageBoxTypeEnum.Error);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //UIShellUtils.ShowMessageBox($"Error while getting the requried parameters{e.Message}", "AVD App Attach", Constants.MessageBoxTypeEnum.Error);
             }
@@ -216,7 +199,7 @@ namespace AppAttachExtension
                 returnObj = _appAttachKernel.execute(jsonString);
                 UIShellUtils.CloseDialogWithPageEnable(this, dialog);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 UIShellUtils.CloseDialogWithPageEnable(this, dialog);
                 UIShellUtils.ShowMessageBox("Error while processing request for detail error see the logs", messageBoxTitle, MessageBoxTypeEnum.Error);
@@ -250,7 +233,7 @@ namespace AppAttachExtension
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             AsyncPackage pack = AppAttach.Instance.Packageval();
-            System.IServiceProvider serviceProvider = pack as System.IServiceProvider;
+            System.IServiceProvider serviceProvider = pack;
             Guid paneGuid = new Guid();
             string paneName = "App-Attach Build";
             IVsOutputWindowPane pane;

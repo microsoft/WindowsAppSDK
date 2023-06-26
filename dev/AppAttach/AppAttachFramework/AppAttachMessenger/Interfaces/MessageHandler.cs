@@ -1,4 +1,7 @@
-﻿namespace AppAttachMessenger.Interface
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace AppAttachMessenger.Interface
 {
     /// <summary>
     /// Represents a contract for handling incoming messages.

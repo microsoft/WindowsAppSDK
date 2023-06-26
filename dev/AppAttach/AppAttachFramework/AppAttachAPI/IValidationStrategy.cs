@@ -1,5 +1,7 @@
-﻿using AppAttachAPI.Data;
-using AppAttachAPI.Response;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachAPI.Data;
 using AppAttachAPI.Response.Implementations;
 using System.Collections.Generic;
 

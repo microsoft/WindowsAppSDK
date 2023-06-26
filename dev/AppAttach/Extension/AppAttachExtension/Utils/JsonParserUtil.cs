@@ -1,13 +1,11 @@
-﻿using AppAttachExtension.Contracts;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachExtension.Contracts;
 using AppAttachExtension.Models;
 using Microsoft.IO;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppAttachExtension.Utils
 {

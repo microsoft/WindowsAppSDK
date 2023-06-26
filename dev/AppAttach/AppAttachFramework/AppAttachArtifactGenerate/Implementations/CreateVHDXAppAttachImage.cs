@@ -1,10 +1,11 @@
-﻿using AppAttachAPI.AttributeImpls;
-using AppAttachAPI.Response;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachAPI.Constants;
 using AppAttachAPI.Response.Implementations;
 using AppAttachAPI.Response.Interfaces;
 using AppAttachAPI.Utils;
 using AppAttachArtifactGenerate.Interfaces;
-using AppAttachAPI.Constants;
 using System;
 using System.Collections.Generic;
 using System.IO;
