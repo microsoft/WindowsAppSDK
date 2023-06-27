@@ -1,4 +1,7 @@
-﻿using AppAttachExtension.Enums;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachExtension.Enums;
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Collections.Generic;
@@ -6,14 +9,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-
 namespace AppAttachExtension.Utils
 {
     public class UIShellUtils
     {
-        public static IVsThreadedWaitDialog2 OpenDialogBoxWithPageDisable(Page page, string header, string content)
+        public async static Task<IVsThreadedWaitDialog2> OpenDialogBoxWithPageDisable(Page page, string header, string content)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             IVsThreadedWaitDialog2 dialog = null;
             IVsThreadedWaitDialogFactory dlgFactory = Package.GetGlobalService(typeof(SVsThreadedWaitDialogFactory)) as IVsThreadedWaitDialogFactory;
             if (dlgFactory != null)
@@ -39,20 +41,21 @@ namespace AppAttachExtension.Utils
             string title = header;
             Guid clsid = Guid.Empty;
             int result = 0;
-            switch (messageBoxTypeEnum) {
+            switch (messageBoxTypeEnum)
+            {
                 case MessageBoxTypeEnum.Info:
-                     uiShell.ShowMessageBox(
-                    0,
-                    ref clsid,
-                    title,
-                    message,
-                    string.Empty,
-                    0,
-                    OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
-                    OLEMSGICON.OLEMSGICON_INFO,
-                    0,        // false
-                    out result);
+                    uiShell.ShowMessageBox(
+                   0,
+                   ref clsid,
+                   title,
+                   message,
+                   string.Empty,
+                   0,
+                   OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                   OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
+                   OLEMSGICON.OLEMSGICON_INFO,
+                   0,        // false
+                   out result);
                     break;
 
                 case MessageBoxTypeEnum.Error:
@@ -85,7 +88,7 @@ namespace AppAttachExtension.Utils
                     out result);
                     break;
             }
-            
+
             return result;
         }
     }
