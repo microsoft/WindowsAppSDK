@@ -1,4 +1,7 @@
-﻿using AppAttachMessenger;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachMessenger;
 using AppAttachMessenger.Interface;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio;

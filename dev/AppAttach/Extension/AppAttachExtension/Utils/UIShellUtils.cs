@@ -3,6 +3,7 @@
 
 using AppAttachExtension.Enums;
 using Microsoft.VisualStudio.Shell.Interop;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 namespace AppAttachExtension.Utils
 {

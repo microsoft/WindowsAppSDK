@@ -1,4 +1,7 @@
-﻿using AppAttachExtension.Notification;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachExtension.Notification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
