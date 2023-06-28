@@ -22,9 +22,9 @@ namespace AppAttachExtension.Implementation
         }
         public string HandleMessage(Message m)
         {
-            this.pane.OutputString(m.message);
+            this.pane.OutputString(m.Content);
 
-            return m.message;
+            return m.Content;
         }
     }
 }
