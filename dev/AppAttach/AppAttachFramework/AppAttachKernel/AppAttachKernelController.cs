@@ -43,7 +43,7 @@ namespace AppAttachKernel
         /// <param name="jsonValue">JSON Value of the Request</param>
         /// <param name="messageHandler">The optional message handler implementation responsible for processing outgoing messages.</param>
         /// <returns></returns>
-        public IAppAttachFlowResponse execute(string jsonValue, MessageHandler messageHandler = null)
+        public IAppAttachFlowResponse execute(string jsonValue, IMessageHandler messageHandler = null)
         {
             try
             {

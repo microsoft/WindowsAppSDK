@@ -1,4 +1,7 @@
-﻿using AppAttachAPI.Response.Interfaces;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachAPI.Response.Interfaces;
 using AppAttachExtension.Contracts;
 using AppAttachExtension.Enums;
 using AppAttachExtension.Models;
@@ -10,6 +13,19 @@ using Microsoft.VisualStudio.Shell.Interop;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+using System.Windows.Shapes;
+using AppAttachAPI.Response.Interfaces;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio;
+using AppAttachExtension.Enums;
+using AppAttachExtension.Enums;
+using AppAttachExtension.Models;
+using AppAttachExtension.Providers;
+using AppAttachExtension.Utils;
+using AppAttachExtension;
+using AppAttachExtension.Implementation;
+using AppAttachExtension.Notification;
+using AppAttachExtension.Helper;
 
 namespace AppAttachExtension
 {
@@ -61,8 +77,7 @@ namespace AppAttachExtension
         private async Task PopulateDataAsync()
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            var dialog = UIShellUtils.OpenDialogBoxWithPageDisable(this, "AVD App Attach", "Gathering Required Information..");
-            try
+            var dialog = await Task.Run(() => UIShellUtils.OpenDialogBoxWithPageDisable(this, "AVD App Attach", "Gathering Required Information..")); try
             {
                 await _ideResourceProvider.PopulateIDEModelAsync();
                 var isAuthenticated = await _identityProvider.PopulateUserIdentityAsync();
@@ -98,7 +113,7 @@ namespace AppAttachExtension
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SubscriptionList_DropDownClosed(object sender, EventArgs e)
+        private async void SubscriptionList_DropDownClosed(object sender, EventArgs e)
         {
             ComboBox comboBox = sender as ComboBox;
             if (comboBox != null)
@@ -106,7 +121,7 @@ namespace AppAttachExtension
                 var subscriptionSelected = comboBox.SelectedItem as string;
                 if (!string.IsNullOrEmpty(subscriptionSelected) && _publishViewModel.SubscriptionName != subscriptionSelected)
                 {
-                    var dialog = UIShellUtils.OpenDialogBoxWithPageDisable(this, "AVD App Attach", "Gathering Requried Information..");
+                    var dialog = await Task.Run(() => UIShellUtils.OpenDialogBoxWithPageDisable(this, "AVD App Attach", "Gathering Requried Information.."));
                     resourceProvider.PopulateResourceGroups(subscriptionSelected);
                     _publishViewModel.SubscriptionName = subscriptionSelected;
                     UIShellUtils.CloseDialogWithPageEnable(this, dialog);
@@ -119,7 +134,7 @@ namespace AppAttachExtension
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ResourceGroupList_DropDownClosed(object sender, EventArgs e)
+        private async void ResourceGroupList_DropDownClosed(object sender, EventArgs e)
         {
             ComboBox comboBox = sender as ComboBox;
             if (comboBox != null)
@@ -127,7 +142,7 @@ namespace AppAttachExtension
                 var resourceGroupSelected = comboBox.SelectedItem as string;
                 if (!string.IsNullOrEmpty(resourceGroupSelected) && _publishViewModel.ResourceGroupName != resourceGroupSelected)
                 {
-                    var dialog = UIShellUtils.OpenDialogBoxWithPageDisable(this, "AVD App Attach", "Gathering Required Information..");
+                    var dialog = await Task.Run(() => UIShellUtils.OpenDialogBoxWithPageDisable(this, "AVD App Attach", "Gathering Required Information.."));
                     resourceProvider.PopulateStorageAccounts(resourceGroupSelected);
                     resourceProvider.PopulateFileShares(null);
                     resourceProvider.PopulateWorkspaces(resourceGroupSelected);
@@ -144,7 +159,7 @@ namespace AppAttachExtension
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void StorageAccountList_DropDownClosed(object sender, EventArgs e)
+        private async void StorageAccountList_DropDownClosed(object sender, EventArgs e)
         {
             ComboBox comboBox = sender as ComboBox;
             if (comboBox != null)
@@ -152,7 +167,7 @@ namespace AppAttachExtension
                 var selectedStorageAccount = comboBox.SelectedItem as string;
                 if (!string.IsNullOrEmpty(selectedStorageAccount) && _publishViewModel.StorageAccountName != selectedStorageAccount)
                 {
-                    var dialog = UIShellUtils.OpenDialogBoxWithPageDisable(this, "AVD App Attach", "Gathering Required Information..");
+                    var dialog = await Task.Run(() => UIShellUtils.OpenDialogBoxWithPageDisable(this, "AVD App Attach", "Gathering Required Information.."));
                     resourceProvider.PopulateFileShares(selectedStorageAccount);
                     _publishViewModel.StorageAccountName = selectedStorageAccount;
                     UIShellUtils.CloseDialogWithPageEnable(this, dialog);
@@ -184,19 +199,20 @@ namespace AppAttachExtension
                 ExecutePublish("Attaching to AVD", "AVD Publish", "AVD Publish", "Successfully published to AVD", jsonString);
             }
 
-            OutputCommandHandler();
             var parentWindow = Window.GetWindow(this);
             parentWindow.Close();
 
         }
 
-        private void ExecutePublish(string dialogBoxTitle, string dialogBoxContent, string messageBoxTitle, string messageBoxContent, string jsonString)
+        private async void ExecutePublish(string dialogBoxTitle, string dialogBoxContent, string messageBoxTitle, string messageBoxContent, string jsonString)
         {
-            var dialog = UIShellUtils.OpenDialogBoxWithPageDisable(this, dialogBoxContent, dialogBoxTitle);
-            IAppAttachFlowResponse returnObj = null;
+            ProjectHelper projectHelper = ProjectHelper.Instance;
+            OutputPane outputPane = projectHelper.GetOutputPane();
+            VSMessageHandler messageHandler = new VSMessageHandler(outputPane.getPane());
+            var dialog = await Task.Run(() => UIShellUtils.OpenDialogBoxWithPageDisable(this, dialogBoxContent, dialogBoxTitle)); IAppAttachFlowResponse returnObj = null;
             try
             {
-                returnObj = _appAttachKernel.execute(jsonString);
+                returnObj = await Task.Run(() => _appAttachKernel.execute(jsonString, messageHandler));
                 UIShellUtils.CloseDialogWithPageEnable(this, dialog);
             }
             catch (Exception)
@@ -227,29 +243,6 @@ namespace AppAttachExtension
         {
             var parentWindow = Window.GetWindow(this);
             parentWindow.Close();
-        }
-
-        private void OutputCommandHandler()
-        {
-            ThreadHelper.ThrowIfNotOnUIThread();
-            AsyncPackage pack = AppAttach.Instance.Packageval();
-            System.IServiceProvider serviceProvider = pack;
-            Guid paneGuid = new Guid();
-            string paneName = "App-Attach Build";
-            IVsOutputWindowPane pane;
-            IVsOutputWindow output = (IVsOutputWindow)serviceProvider.GetService(typeof(SVsOutputWindow));
-            int hr = output.CreatePane(ref paneGuid, paneName, Convert.ToInt32(true), Convert.ToInt32(false));
-            ErrorHandler.ThrowOnFailure(hr);
-            hr = output
-                .GetPane(ref paneGuid, out pane);
-            ErrorHandler.ThrowOnFailure(hr);
-
-            string filePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Temp", "AppAttach");
-            string filepath = System.IO.Path.Combine(filePath, "AppAttachLog.log");
-            var fileContents = System.IO.File.ReadAllText(filepath);
-            pane.Activate();
-            pane.OutputStringThreadSafe(fileContents);
-            pane.FlushToTaskList();
         }
     }
 }

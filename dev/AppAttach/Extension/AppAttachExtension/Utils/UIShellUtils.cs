@@ -3,15 +3,15 @@
 
 using AppAttachExtension.Enums;
 using Microsoft.VisualStudio.Shell.Interop;
+using System.Threading.Tasks;
 using System.Windows.Controls;
-
 namespace AppAttachExtension.Utils
 {
     public class UIShellUtils
     {
-        public static IVsThreadedWaitDialog2 OpenDialogBoxWithPageDisable(Page page, string header, string content)
+        public async static Task<IVsThreadedWaitDialog2> OpenDialogBoxWithPageDisable(Page page, string header, string content)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             IVsThreadedWaitDialog2 dialog = null;
             IVsThreadedWaitDialogFactory dlgFactory = Package.GetGlobalService(typeof(SVsThreadedWaitDialogFactory)) as IVsThreadedWaitDialogFactory;
             if (dlgFactory != null)

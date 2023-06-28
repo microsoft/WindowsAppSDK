@@ -48,10 +48,13 @@
     <Compile Include="Commands\AppAttach.cs" />
     <Compile Include="Contracts\AppAttachViewContract.cs" />
     <Compile Include="Enums\MessageBoxTypeEnum.cs" />
+    <Compile Include="Helper\ProjectHelper.cs" />
+    <Compile Include="Implementation\VSMessageHandler.cs" />
     <Compile Include="Models\AzureResouceModel.cs" />
     <Compile Include="Models\IdentityViewModel.cs" />
     <Compile Include="Models\IDEResouceModel.cs" />
     <Compile Include="Models\PublishViewModel.cs" />
+    <Compile Include="Notification\OutputPane.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AppAttachExtensionPackage.cs" />
     <Compile Include="Providers\AzureResourceProvider.cs" />
@@ -75,7 +78,7 @@
     <Compile Include="Windows\InstallationPage.xaml.cs">
       <DependentUpon>InstallationPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\PublishPage.xaml.cs" >
+    <Compile Include="Windows\PublishPage.xaml.cs">
       <DependentUpon>PublishPage.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
