@@ -1,14 +1,13 @@
-﻿using AppAttachExtension.Models;
-using EnvDTE;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachExtension.Models;
 using EnvDTE80;
 using Microsoft.VisualStudio.Setup.Configuration;
 using Microsoft.VisualStudio.Shell.Interop;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppAttachExtension.Providers
 {
@@ -16,7 +15,7 @@ namespace AppAttachExtension.Providers
     {
         private readonly IDEResouceModel _model;
 
-        public IDEResourceProvider() 
+        public IDEResourceProvider()
         {
             _model = new IDEResouceModel();
         }
@@ -42,7 +41,7 @@ namespace AppAttachExtension.Providers
             {
                 e.Next(1, instances, out fetched);
                 if (fetched > 0)
-                   list.Add(instances[0].GetInstallationPath());
+                    list.Add(instances[0].GetInstallationPath());
             } while (fetched > 0);
             string version = vsVersion == "17" ? "2022" : "2019";
             filePath = list.Where(l => l.Contains(version) && (l.Contains(_dte2.Edition))).FirstOrDefault();
@@ -50,7 +49,7 @@ namespace AppAttachExtension.Providers
 
             if (File.Exists(filePath))
             {
-                _model.BuildPath = filePath ;
+                _model.BuildPath = filePath;
             }
 
         }

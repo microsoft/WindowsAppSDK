@@ -1,4 +1,7 @@
-﻿using AppAttachAPI.Response.Implementations;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachAPI.Response.Implementations;
 using AppAttachAPI.Response.Interfaces;
 using AppAttachAPI.Utils;
 using AVDAppAttachPublish.Interfaces;

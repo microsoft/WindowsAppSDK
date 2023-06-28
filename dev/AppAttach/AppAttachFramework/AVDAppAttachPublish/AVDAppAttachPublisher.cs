@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 using AppAttachAPI;
 using AppAttachAPI.Constants;
 using AppAttachAPI.Data;

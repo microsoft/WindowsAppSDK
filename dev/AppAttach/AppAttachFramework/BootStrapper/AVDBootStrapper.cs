@@ -1,5 +1,7 @@
-﻿using AppAttachAPI;
-using System.Reflection;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachAPI;
 using AppAttachArtifactGenerate;
 using AVDAppAttachPublish;
 using AVDAppAttachValidate;

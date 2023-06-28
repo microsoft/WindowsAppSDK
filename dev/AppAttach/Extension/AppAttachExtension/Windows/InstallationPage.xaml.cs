@@ -1,38 +1,17 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AppAttachExtension.Contracts;
+using AppAttachExtension.Validator;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell.Interop;
+using Newtonsoft.Json;
+using System.ComponentModel;
+using System.Net;
+using System.Security;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Forms;
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography;
-using System.Globalization;
-using System.ComponentModel;
-using System.Xml.Linq;
-using Newtonsoft.Json;
-using System.IO;
-using System.Net;
-using System.Security;
-using AppAttachExtension.Validator;
-using AppAttachExtension.Contracts;
-using Microsoft.VisualStudio.PlatformUI;
-using System.Reflection;
-using EnvDTE80;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.IO;
-using System.Runtime.InteropServices;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Windows.Input;
+using System.Windows.Navigation;
 
 namespace AppAttachExtension
 {

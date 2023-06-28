@@ -1,4 +1,7 @@
-﻿using AppAttachExtension.Models;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachExtension.Models;
 using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.DesktopVirtualization;
@@ -30,11 +33,11 @@ namespace AppAttachExtension.Providers
         public async Task PopulateSubscriptionsAsync()
         {
             var tenants = _client.GetTenants();
-            SubscriptionCollection subscriptionResources = await Task.Run(() =>_client.GetSubscriptions());
+            SubscriptionCollection subscriptionResources = await Task.Run(() => _client.GetSubscriptions());
             if (subscriptionResources != null)
             {
                 _resourceModel.Subscriptions = subscriptionResources;
-                 var subscription = await _client.GetDefaultSubscriptionAsync();
+                var subscription = await _client.GetDefaultSubscriptionAsync();
                 if (subscription != null)
                 {
                     _publishViewModel.SubscriptionName = subscription?.Data.SubscriptionId;
@@ -46,7 +49,7 @@ namespace AppAttachExtension.Providers
         /// Populate Resource Group
         /// </summary>
         /// <param name="subscriptionName"></param>
-        public void  PopulateResourceGroups(string subscriptionName)
+        public void PopulateResourceGroups(string subscriptionName)
         {
             var defaultSubscription = subscriptionName ?? _publishViewModel.SubscriptionName;
             if (!string.IsNullOrEmpty(defaultSubscription))
@@ -59,7 +62,7 @@ namespace AppAttachExtension.Providers
                     _publishViewModel.ResourceGroupName = resourceGroups.FirstOrDefault()?.Data?.Name;
 
                 }
-            } 
+            }
         }
 
         /// <summary>
@@ -98,8 +101,8 @@ namespace AppAttachExtension.Providers
                     _resourceModel.FileShares = storageAccount.GetFileService()?.GetFileShares();
                     _publishViewModel.FileShareName = _resourceModel.FileShares.FirstOrDefault()?.Data?.Name;
                 }
-            } 
-            else 
+            }
+            else
             {
                 _publishViewModel.FileShareName = null;
             }
@@ -118,7 +121,7 @@ namespace AppAttachExtension.Providers
                 {
                     var resourceGroup = _resourceModel.ResourceGroups.FirstOrDefault(x => x.Data.Name == resourceGroupSelected);
                     _resourceModel.VirtualApplications = resourceGroup.GetVirtualApplicationGroups();
-                    _publishViewModel.ApplicationGroupName = _resourceModel.VirtualApplications.FirstOrDefault()?.Data?.Name; 
+                    _publishViewModel.ApplicationGroupName = _resourceModel.VirtualApplications.FirstOrDefault()?.Data?.Name;
                 }
             }
         }

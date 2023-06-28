@@ -1,13 +1,13 @@
-﻿using AppAttachAPI;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachAPI;
+using AppAttachAPI.Constants;
 using AppAttachAPI.Data;
-using AppAttachAPI.Response;
 using AppAttachAPI.Response.Implementations;
 using AppAttachAPI.Utils;
-using AppAttachAPI.Constants;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using AVDAppAttachValidate.Constants;
+using System.Collections.Generic;
 
 namespace AVDAppAttachValidate.Implementations
 {

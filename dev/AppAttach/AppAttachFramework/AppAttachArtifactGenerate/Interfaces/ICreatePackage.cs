@@ -1,4 +1,6 @@
-﻿using AppAttachAPI.Response;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 using AppAttachAPI.Response.Interfaces;
 
 namespace AppAttachArtifactGenerate.Interfaces

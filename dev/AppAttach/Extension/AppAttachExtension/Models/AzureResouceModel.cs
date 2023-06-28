@@ -1,15 +1,14 @@
-﻿using Azure.ResourceManager.DesktopVirtualization;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using Azure.ResourceManager.DesktopVirtualization;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.Storage;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppAttachExtension.Models
-{ 
+{
     public class AzureResouceModel
     {
         private PublishViewModel _publishViewModel;
@@ -24,8 +23,8 @@ namespace AppAttachExtension.Models
         private HostPoolCollection _hostPools;
         private VirtualWorkspaceCollection _virtualWorkspaces;
 
-        public AzureResouceModel(PublishViewModel publishViewModel) 
-        { 
+        public AzureResouceModel(PublishViewModel publishViewModel)
+        {
             _publishViewModel = publishViewModel;
             _subscriptionResource = null;
             _subscriptions = null;
@@ -39,29 +38,31 @@ namespace AppAttachExtension.Models
             _virtualWorkspaces = null;
         }
 
-        public SubscriptionResource SubscriptionResource {
-            get 
-            { 
+        public SubscriptionResource SubscriptionResource
+        {
+            get
+            {
                 return _subscriptionResource;
             }
-            set 
-            { 
+            set
+            {
                 if (value != _subscriptionResource)
                 {
                     _subscriptionResource = value;
                     _publishViewModel.SubscriptionName = value.Data.SubscriptionId;
                 }
-               
+
             }
         }
 
-        public SubscriptionCollection Subscriptions { 
-            get 
+        public SubscriptionCollection Subscriptions
+        {
+            get
             {
                 return _subscriptions;
-            }  
-            set 
-            { 
+            }
+            set
+            {
                 if (_subscriptions != value)
                 {
                     _subscriptions = value;
@@ -70,11 +71,12 @@ namespace AppAttachExtension.Models
             }
         }
 
-        public ResourceGroupCollection ResourceGroups {
-            get 
+        public ResourceGroupCollection ResourceGroups
+        {
+            get
             {
                 return _resourceGroups;
-            } 
+            }
             set
             {
                 if (_resourceGroups != value)
@@ -101,13 +103,14 @@ namespace AppAttachExtension.Models
             }
         }
 
-        public StorageAccountCollection StorageAccounts { 
-            get 
-            { 
-                return _storageAccounts; 
-            } 
-            set 
-            { 
+        public StorageAccountCollection StorageAccounts
+        {
+            get
+            {
+                return _storageAccounts;
+            }
+            set
+            {
                 if (_storageAccounts != value)
                 {
                     _storageAccounts = value;
@@ -115,13 +118,14 @@ namespace AppAttachExtension.Models
                 }
             }
         }
-        public StorageAccountResource StorageAccount { 
-            get 
-            { 
-                return _storageAccount; 
-            } 
-            set 
-            { 
+        public StorageAccountResource StorageAccount
+        {
+            get
+            {
+                return _storageAccount;
+            }
+            set
+            {
                 if (_storageAccount != value)
                 {
                     _storageAccount = value;
@@ -130,26 +134,30 @@ namespace AppAttachExtension.Models
             }
         }
 
-        public FileShareCollection FileShares { 
-            get { 
-                return _fileShares; 
-            } 
-            set 
-            { 
+        public FileShareCollection FileShares
+        {
+            get
+            {
+                return _fileShares;
+            }
+            set
+            {
                 if (_fileShares != value)
                 {
-                    _fileShares = value; 
+                    _fileShares = value;
                     _publishViewModel.FileShareList = new ObservableCollection<string>(_fileShares?.Select(x => x.Data?.Name));
                 }
             }
         }
 
-        public VirtualApplicationGroupCollection VirtualApplications {
-            get 
-            { 
-                return _virtualApplications; 
-            } set 
-            { 
+        public VirtualApplicationGroupCollection VirtualApplications
+        {
+            get
+            {
+                return _virtualApplications;
+            }
+            set
+            {
                 if (_virtualApplications != value)
                 {
                     _virtualApplications = value;
@@ -157,19 +165,20 @@ namespace AppAttachExtension.Models
                 }
             }
         }
-        public HostPoolCollection HostPools { 
-            get 
-            { 
-                return _hostPools; 
-            } 
-            set 
+        public HostPoolCollection HostPools
+        {
+            get
+            {
+                return _hostPools;
+            }
+            set
             {
                 if (_hostPools != value)
                 {
-                    _hostPools = value; 
+                    _hostPools = value;
                     _publishViewModel.HostPoolList = new ObservableCollection<string>(_hostPools?.Select(x => x.Data?.Name));
                 }
-            } 
+            }
 
         }
         public VirtualWorkspaceCollection VirtualWorkspaces

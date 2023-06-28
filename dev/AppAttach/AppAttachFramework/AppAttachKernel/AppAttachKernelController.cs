@@ -1,12 +1,15 @@
-﻿using AppAttachAPI;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachAPI;
 using AppAttachAPI.Constants;
 using AppAttachAPI.Data;
-using AppAttachAPI.Response;
 using AppAttachAPI.Response.Implementations;
 using AppAttachAPI.Response.Interfaces;
 using AppAttachAPI.Utils;
+using AppAttachMessenger;
+using AppAttachMessenger.Interface;
 using BootStrapper;
-using System;
 using System.Collections.Generic;
 
 namespace AppAttachKernel
@@ -37,35 +40,61 @@ namespace AppAttachKernel
         /// <summary>
         /// Executes the AppAttachAPI process with the given JSON value and host.
         /// </summary>
-        /// <param name="jsonValue">JSON value of the request.</param>
-        public IAppAttachFlowResponse execute(string jsonValue)
+        /// <param name="jsonValue">JSON Value of the Request</param>
+        /// <param name="messageHandler">The optional message handler implementation responsible for processing outgoing messages.</param>
+        /// <returns></returns>
+        public IAppAttachFlowResponse execute(string jsonValue, MessageHandler messageHandler = null)
         {
-            // Prepare arguments map.
-            Dictionary<string, IAttribute> attributesMap = PrepareArguments.prepare(jsonValue);
-
-            if (attributesMap != null && attributesMap.Count > 0)
+            try
             {
-                _isPublishNotRequired = bool.FalseString.Equals(attributesMap[AttrConsts.IS_PUBLISH_REQUIRED].getAttributeValue());
-
-                IAppAttachFlowResponse validatorResponse = _validator.validate(attributesMap);
-                if (errorCodeValidator(validatorResponse))
+                // Start Messenger Listening Service
+                if (null != messageHandler)
                 {
-                    return validatorResponse;
+                    Messenger.Instance.Initialize(messageHandler);
                 }
 
-                IAppAttachFlowResponse generatorResponse = _generator.generateArtifact(attributesMap);
-                if (errorCodeValidator(generatorResponse) || _isPublishNotRequired)
+                // Prepare arguments map.
+                Dictionary<string, IAttribute> attributesMap = PrepareArguments.prepare(jsonValue);
+
+                if (attributesMap != null && attributesMap.Count > 0)
                 {
-                    return generatorResponse;
+                    _isPublishNotRequired = bool.FalseString.Equals(attributesMap[AttrConsts.IS_PUBLISH_REQUIRED].getAttributeValue());
+
+                    IAppAttachFlowResponse validatorResponse = _validator.validate(attributesMap);
+                    if (errorCodeValidator(validatorResponse))
+                    {
+                        return validatorResponse;
+                    }
+
+                    IAppAttachFlowResponse generatorResponse = _generator.generateArtifact(attributesMap);
+                    if (errorCodeValidator(generatorResponse) || _isPublishNotRequired)
+                    {
+                        return generatorResponse;
+                    }
+
+                    IAppAttachFlowResponse publisherResponse = _publisher.publish(attributesMap);
+                    if (errorCodeValidator(publisherResponse))
+                    {
+                        return publisherResponse;
+                    }
                 }
 
-                IAppAttachFlowResponse publisherResponse = _publisher.publish(attributesMap);
-                if (errorCodeValidator(publisherResponse))
-                {
-                    return publisherResponse;
-                }
+                return new AppAttachFlowResponse();
             }
-            return new AppAttachFlowResponse();
+            finally
+            {
+                // Trigger cleanup
+                cleanup();
+            }
+        }
+
+        /// <summary>
+        /// Cleans up the necessary components at the end to ensure proper shutdown before exiting.
+        /// </summary>
+        private void cleanup()
+        {
+            // Deinitialize and stop messenger listening service
+            Messenger.Instance.Deinitialize();
         }
 
         /// <summary>

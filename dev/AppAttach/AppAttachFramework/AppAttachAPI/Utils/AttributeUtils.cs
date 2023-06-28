@@ -1,4 +1,7 @@
-﻿using AppAttachAPI.AttributeImpls;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachAPI.AttributeImpls;
 using AppAttachAPI.Data;
 using System;
 using System.Collections.Generic;

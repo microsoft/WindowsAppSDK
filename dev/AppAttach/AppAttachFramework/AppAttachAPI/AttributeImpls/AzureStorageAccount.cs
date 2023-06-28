@@ -1,6 +1,8 @@
-﻿using AppAttachAPI.Constants;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+using AppAttachAPI.Constants;
 using AppAttachAPI.Data;
-using System;
 
 namespace AppAttachAPI.AttributeImpls
 {

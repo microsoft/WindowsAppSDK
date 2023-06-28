@@ -1,10 +1,7 @@
-﻿using Microsoft.IdentityModel.JsonWebTokens;
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppAttachExtension.Contracts
 {
