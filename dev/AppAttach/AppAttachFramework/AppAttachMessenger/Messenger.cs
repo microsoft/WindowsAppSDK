@@ -55,7 +55,7 @@ namespace AppAttachMessenger
         /// Initializes the Messenger with a message handler to process incoming messages.
         /// </summary>
         /// <param name="messageHandler"></param>
-        public void Initialize(MessageHandler messageHandler)
+        public void Initialize(IMessageHandler messageHandler)
         {
             handleMessage = messageHandler.HandleMessage;
             Task.Run(MessageProcessingTask);

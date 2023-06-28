@@ -6,7 +6,7 @@ namespace AppAttachMessenger.Interface
     /// <summary>
     /// Represents a contract for handling incoming messages.
     /// </summary>
-    public interface MessageHandler
+    public interface IMessageHandler
     {
         /// <summary>
         /// Implementing classes should provide their own implementation for processing the message.

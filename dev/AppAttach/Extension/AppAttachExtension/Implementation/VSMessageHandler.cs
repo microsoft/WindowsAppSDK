@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace AppAttachExtension.Implementation
 {
-    public class VSMessageHandler : MessageHandler
+    public class VSMessageHandler : IMessageHandler
     {
         IVsOutputWindowPane pane;
         public VSMessageHandler(IVsOutputWindowPane pane)
