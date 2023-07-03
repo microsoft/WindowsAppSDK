@@ -1,0 +1,25 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:shell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0">
+
+    <Style x:Key="labelstyle" TargetType="{x:Type Label}">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static shell:VsBrushes.ToolWindowTextKey}}" />
+    </Style>
+    <Style x:Key="gridstyle" TargetType="{x:Type Grid}">
+        <Setter Property="Background" Value="{DynamicResource {x:Static shell:VsBrushes.ToolWindowBackgroundKey}}" />
+    </Style>
+    <Style x:Key="textboxstyle" TargetType="{x:Type TextBox}">
+        <Setter Property="Background" Value="{DynamicResource {x:Static shell:VsBrushes.BrandedUIBackgroundKey}}" />
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static shell:VsBrushes.ToolWindowTextKey}}" />
+        <Setter Property="SelectionBrush" Value="#FF3399FF" />
+    </Style>
+    <Style x:Key="passwordboxstyle" TargetType="{x:Type PasswordBox}">
+        <Setter Property="Background" Value="{DynamicResource {x:Static shell:VsBrushes.BrandedUIBackgroundKey}}" />
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static shell:VsBrushes.ToolWindowTextKey}}" />
+        <Setter Property="SelectionBrush" Value="#FF3399FF" />
+    </Style>
+    <Style x:Key="redlabelstyle" TargetType="Label">
+        <Setter Property="Foreground" Value="Red"/>
+    </Style>
+
+</ResourceDictionary>

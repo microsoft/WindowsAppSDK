@@ -1,0 +1,9 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+<?xml version="1.0" encoding="utf-8"?>
+<errors>
+  <error code="AAA0004">
+    <message>Upload aborted. Artifact: {0} already exists.</message>
+  </error>
+</errors>

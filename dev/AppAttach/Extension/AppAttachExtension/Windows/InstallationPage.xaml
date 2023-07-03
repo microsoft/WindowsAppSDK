@@ -1,0 +1,244 @@
+﻿<Page x:Class="AppAttachExtension.InstallationPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:AppAttachExtension"
+      xmlns:validate="clr-namespace:AppAttachExtension.Validator"
+      mc:Ignorable="d" 
+      xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+      d:DesignHeight="600" d:DesignWidth="800"
+      Title="InstallationPage"
+      Loaded="Page_Loaded">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <Style x:Key="validationStyle" TargetType="{x:Type TextBox}">
+                <Setter Property="Margin" Value="5" />
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="True">
+                        <Setter Property="ToolTip"
+                            Value="{Binding RelativeSource={RelativeSource Self},
+                            Path=(Validation.Errors)[0].ErrorContent}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="MergedStyle" BasedOn="{StaticResource ResourceKey=textboxstyle}" TargetType="TextBox" >
+                <Setter Property="FontSize" Value="14" />
+                <Style.Resources>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource validationStyle}" />
+                </Style.Resources>
+            </Style>
+            <validate:NotEmptyValidationRule x:Key="notEmptyValidationRule"/>
+            <validate:NotString x:Key="notString"/>
+            <validate:NextEnable x:Key="nextEnable" />
+            <validate:VerifyEnable x:Key="verifyEnable" />
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="..\Resources\VSStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+
+    <Grid x:Name="nav" Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">
+        <Grid.RowDefinitions >
+            <RowDefinition Height="43*"/>
+            <RowDefinition Height="326*"/>
+            <RowDefinition Height="31*"/>
+        </Grid.RowDefinitions>
+        <Grid >
+            <Label Content="Select and Configure Packages" FontSize="22" VerticalAlignment="Center" HorizontalAlignment="Left" Height="38" Width="307" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ThemedDialogLabelStyleKey}}"/>
+        </Grid>
+        <Grid Grid.Row="1" Background="{DynamicResource {x:Static vsfx:VsBrushes.GridHeadingBackgroundKey }}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="57*"/>
+                <RowDefinition Height="83*"/>
+                <RowDefinition Height="70*"/>
+                <RowDefinition Height="70*"/>
+                <RowDefinition Height="105*"/>
+                <RowDefinition Height="67*"/>
+                <RowDefinition Height="38*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="29*"/>
+                <ColumnDefinition Width="771*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="0" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="12*"/>
+                    <RowDefinition Height="7*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="526*"/>
+                    <ColumnDefinition Width="35*"/>
+                    <ColumnDefinition Width="210*"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Output Location:"  HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ThemedDialogLabelStyleKey}}" Height="26" Width="99" />
+                <TextBox x:Name="OutputLocation" FontSize="12"  Grid.Row="1"  HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Style="{StaticResource MergedStyle}" Width="500" LostFocus="TextBox_LostFocus" GotFocus="TextBox_GotFocus">
+                    <TextBox.Text>
+                        <Binding Path="BindingOutputLocation" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                            <Binding.ValidationRules>
+                                <validate:NotEmptyValidationRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+                <Button Content="..." FontSize="10" Click="BrowseButtonClick" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1"  VerticalAlignment="Center" Width="30"  Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ButtonStyleKey}}" Height="20"/>
+            </Grid>
+            <Grid Grid.Column="1" Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Content="Version:" Grid.Row="0" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" VerticalAlignment="Bottom" FontSize="12" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ThemedDialogLabelStyleKey}}"/>
+                <Grid Margin="0,23,595,0" Grid.RowSpan="2" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="37*" />
+                        <ColumnDefinition Width="8*" />
+                        <ColumnDefinition Width="34*" />
+                        <ColumnDefinition Width="8*" />
+                        <ColumnDefinition Width="40*" />
+                        <ColumnDefinition Width="11*" />
+                        <ColumnDefinition Width="39*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="MajorVersionTextBox"  Width="30" FontSize="12" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Style="{StaticResource MergedStyle}" LostFocus="TextBox_LostFocus" GotFocus="TextBox_GotFocus">
+                        <TextBox.Text>
+                            <Binding Path="MajorVersion" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True">
+                                <Binding.ValidationRules>
+                                    <validate:NotString/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                    <Label Padding="0,0,0,0" Content="."  VerticalAlignment="Center" HorizontalAlignment="Center" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ThemedDialogLabelStyleKey}}" Grid.Column="1" />
+                    <TextBox x:Name="MinorVersionTextBox" FontSize="12" Width="30"  Height="18" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="2" Style="{StaticResource MergedStyle}" LostFocus="TextBox_LostFocus" GotFocus="TextBox_GotFocus">
+                        <TextBox.Text>
+                            <Binding Path="MinorVersion" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True">
+                                <Binding.ValidationRules>
+                                    <validate:NotString/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                    <Label Padding="0,0,0,0" Content="." VerticalAlignment="Center"  HorizontalAlignment="Center" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ThemedDialogLabelStyleKey}}" Grid.Column="3" Height="16" Width="2"/>
+                    <TextBox x:Name="BuildNumberTextBox"  Width="30" FontSize="12" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Grid.Column="4" Style="{StaticResource MergedStyle}" LostFocus="TextBox_LostFocus" GotFocus="TextBox_GotFocus">
+                        <TextBox.Text>
+                            <Binding Path="BuildNumber" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True">
+                                <Binding.ValidationRules>
+                                    <validate:NotString/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                    <Label Padding="0,0,0,0" Content="." VerticalAlignment="Center"  HorizontalAlignment="Center" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ThemedDialogLabelStyleKey}}" Grid.Column="5" Height="16" Width="3"/>
+                    <TextBox x:Name="RevisionNumberTextBox" FontSize="12" Width="30"  Height="18" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="6" Style="{StaticResource MergedStyle}" LostFocus="TextBox_LostFocus" GotFocus="TextBox_GotFocus">
+                        <TextBox.Text>
+                            <Binding Path="RevisionNumber" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True">
+                                <Binding.ValidationRules>
+                                    <validate:NotString/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="2" Grid.Column="1" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="429*"/>
+                    <ColumnDefinition Width="35*"/>
+                    <ColumnDefinition Width="307*"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="To sign the app package, browse for certificate:"  HorizontalContentAlignment="Left" VerticalContentAlignment="Top" VerticalAlignment="Center" FontSize="12" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ThemedDialogLabelStyleKey}}" Height="26" />
+                <TextBox x:Name="CertificatePathTextBox" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Style="{StaticResource MergedStyle}" Width="400"  Grid.Row="1" LostFocus="TextBox_LostFocus" GotFocus="TextBox_GotFocus">
+                    <TextBox.Text>
+                        <Binding Path="BindingCertificateLocation" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True">
+                            <Binding.ValidationRules>
+                                <validate:NotEmptyValidationRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+                <Button Content="..." Click="LoadCertificate" FontSize="10" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Grid.Row="1" Grid.Column="1" Height="20" Width="30" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ButtonStyleKey}}"/>
+            </Grid>
+            <Grid x:Name="cert" Grid.Row="3" Grid.Column="1" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="267*"/>
+                    <ColumnDefinition Width="47*"/>
+                    <ColumnDefinition Width="457*"/>
+                </Grid.ColumnDefinitions>
+                <Label x:Name="Password" Content="Enter password:" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" VerticalAlignment="Center" FontSize="12" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ThemedDialogLabelStyleKey}}" Height="26" Width="NaN"/>
+                <PasswordBox Grid.Column="0" FontSize="12" VerticalAlignment="Center"  HorizontalAlignment="Left" Grid.Row="1"  Height="20" Width="250" x:Name="PasswordBox" Style="{StaticResource passwordboxstyle}"/>
+                <Button x:Name="VerifyButton" Click="VerifyCertificatePasswordButton_Click" Content="Verify" FontSize="10" VerticalAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="1" Grid.Column="1" Height="20" Width="35"  HorizontalAlignment="Center" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ButtonStyleKey}}" >
+                    <Button.IsEnabled>
+                        <MultiBinding Converter="{StaticResource verifyEnable}">
+                            <Binding ElementName="CertificatePathTextBox" Path="Text" />
+                            <Binding Path="IsCertificateAvailable" UpdateSourceTrigger="PropertyChanged"/>
+                        </MultiBinding>
+                    </Button.IsEnabled>
+                </Button>
+                <Label Grid.Row="1" Grid.Column="2" x:Name="PasswordError"/>
+            </Grid>
+            <Grid Grid.Row="4" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="4*"/>
+                </Grid.RowDefinitions>
+                <Label Content="Configure Mapping:" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" VerticalAlignment="Center" FontSize="12" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ThemedDialogLabelStyleKey}}" Height="26" Width="NaN"/>
+                <Grid Grid.Row="1" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="17*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="32*"/>
+                        <ColumnDefinition Width="189*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel x:Name="ConfigurationRadioButton" Grid.ColumnSpan="2">
+                        <RadioButton GroupName="Configuration" IsChecked="True" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ThemedDialogRadioButtonStyleKey}}" Grid.ColumnSpan="2" VerticalAlignment="Center">Debug</RadioButton>
+                        <RadioButton GroupName="Configuration" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ThemedDialogRadioButtonStyleKey}}" Grid.ColumnSpan="2" Grid.Row="1" VerticalAlignment="Center">Release</RadioButton>
+                    </StackPanel>
+                    <StackPanel x:Name="PlatformRadioButton" Grid.Column="1">
+                        <RadioButton Grid.Column="1" GroupName="Platform" IsChecked="True" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ThemedDialogRadioButtonStyleKey}}">x86</RadioButton>
+                        <RadioButton Grid.Column="1" VerticalAlignment="Bottom" GroupName="Platform" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ThemedDialogRadioButtonStyleKey}}" Height="15" >x64</RadioButton>
+                        <RadioButton Grid.Row="1" VerticalAlignment="Center" Grid.Column="1" GroupName="Platform" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ThemedDialogRadioButtonStyleKey}}" Height="15">ARM64</RadioButton>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="5" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label  Content="Disk Image Type:" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" VerticalAlignment="Top" FontSize="12" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ThemedDialogLabelStyleKey}}"/>
+                <RadioButton Grid.Row="1" FontSize="12" VerticalAlignment="Center" IsChecked="True" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ThemedDialogRadioButtonStyleKey}}">VHDx</RadioButton>
+            </Grid>
+
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="608,1,0,0" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Content="Next" Click="NextPage" Width="55" Height="20" HorizontalAlignment="Center" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ThemedDialogButtonStyleKey}}" >
+                <Button.IsEnabled>
+                    <MultiBinding Converter="{StaticResource nextEnable}">
+                        <Binding ElementName="OutputLocation" Path="Text" />
+                        <Binding ElementName="CertificatePathTextBox" Path="Text" UpdateSourceTrigger="PropertyChanged"/>
+                        <Binding Path="IsCertificateVerified" UpdateSourceTrigger="PropertyChanged"/>
+                    </MultiBinding>
+                </Button.IsEnabled>
+            </Button>
+            <Button Content="Cancel" Click="Close_Cancel" Grid.Column="2" Width="55" Height="20" HorizontalAlignment="Left" Style="{DynamicResource {x:Static vsfx:VsResourceKeys.ButtonStyleKey}}"></Button>
+        </Grid>
+    </Grid>
+</Page>

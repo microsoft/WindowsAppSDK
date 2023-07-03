@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net472</TargetFramework>
+	</PropertyGroup>
+	
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+	
+
+  <ItemGroup>
+    <ProjectReference Include="..\AppAttachAPI\AppAttachAPI.csproj" />
+	<ProjectReference Include="..\AppAttachArtifactGenerate\AppAttachArtifactGenerate.csproj" />
+	<ProjectReference Include="..\AVDAppAttachPublish\AVDAppAttachPublish.csproj" />
+    <ProjectReference Include="..\AVDAppAttachValidate\AVDAppAttachValidate.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net472</TargetFramework>
+	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\AppAttachAPI\AppAttachAPI.csproj" />
+	</ItemGroup>
+</Project>

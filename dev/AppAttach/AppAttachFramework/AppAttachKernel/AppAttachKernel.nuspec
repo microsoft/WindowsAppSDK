@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+	<metadata>
+		<id>AppAttachKernel</id>
+		<version>1.0.0</version>
+		<title>AppAttachKernel</title>
+		<authors>AppAttachKernel</authors>
+		<description>Description</description>
+		<dependencies>
+			<group targetFramework=".NETFramework4.7.2">
+				<dependency id="Newtonsoft.Json" version="13.0.3" exclude="Build,Analyzers" />
+				<dependency id="WindowsAzure.Storage" version="9.3.3" exclude="Build,Analyzers" />
+			</group>
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="bin\$Configuration$\$TargetFramework$\AppAttachKernel.dll" target="lib\$TargetFramework$\" />
+		<file src="..\AppAttachAPI\bin\$Configuration$\$TargetFramework$\AppAttachAPI.dll" target="lib\$TargetFramework$\" />
+		<file src="..\BootStrapper\bin\$Configuration$\$TargetFramework$\AVDBootStrapper.dll" target="lib\$TargetFramework$\" />
+		<file src="..\AppAttachMessenger\bin\$Configuration$\$TargetFramework$\AppAttachMessenger.dll" target="lib\$TargetFramework$\" />
+		<file src="..\AVDAppAttachValidate\bin\$Configuration$\$TargetFramework$\AVDAppAttachValidate.dll" target="lib\$TargetFramework$\" />
+		<file src="..\AppAttachArtifactGenerate\bin\$Configuration$\$TargetFramework$\AppAttachArtifactGenerate.dll" target="lib\$TargetFramework$\" />
+		<file src="..\AVDAppAttachPublish\bin\$Configuration$\$TargetFramework$\AVDAppAttachPublish.dll" target="lib\$TargetFramework$\" />
+	</files>
+</package>
