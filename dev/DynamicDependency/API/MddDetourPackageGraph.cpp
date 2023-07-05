@@ -9,6 +9,8 @@
 
 #include "PackageGraphManager.h"
 
+#include "MddWin11.h"
+
 #include <../Detours/detours.h>
 
 // Windows provides HRESULT_FROM_WIN32() but not the reverse. We need that for compat reasons.
@@ -110,6 +112,13 @@ typedef UINT32 (WINAPI* GetPackageGraphRevisionIdFunction)();
 
 HRESULT WINAPI MddDetourPackageGraphInitialize() noexcept
 {
+    // Use the Win11 APIs if available (instead of Detour'ing to our own implementation)
+    if (MddCore::Win11::IsSupported())
+    {
+        RETURN_IF_FAILED(MddCore::Win11::Initialize());
+        return S_OK;
+    }
+
     // Detour package graph APIs to our implementation
     FAIL_FAST_IF_WIN32_ERROR(DetourUpdateThread(GetCurrentThread()));
     FAIL_FAST_IF_WIN32_ERROR(DetourAttach(&(PVOID&)TrueGetCurrentPackageInfo, DynamicGetCurrentPackageInfo));
@@ -160,6 +169,13 @@ HRESULT WINAPI MddDetourPackageGraphInitialize() noexcept
 
 HRESULT _MddDetourPackageGraphShutdown() noexcept
 {
+    // Use the Win11 APIs if available (instead of Detour'ing to our own implementation)
+    if (MddCore::Win11::IsSupported())
+    {
+        MddCore::Win11::Shutdown();
+        return S_OK;
+    }
+
     // Stop Detour'ing package graph APIs to our implementation (undo in reverse order we started Detour'ing APIs)
     if (TrueGetPackageGraphRevisionId)
     {
