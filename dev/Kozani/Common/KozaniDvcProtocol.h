@@ -14,7 +14,7 @@ namespace Microsoft::Kozani::DvcProtocol
 {
     const char DvcChannelName[] = "KozaniDvc";
 
-    std::string CreatePdu(UINT64 activityId, Dvc::ProtocolDataUnit::DataType type, const std::string& payload);
+    std::string CreatePdu(UINT64 activityId, Dvc::ProtocolDataUnit::DataType type, const std::string& payload = std::string());
     
     std::string CreateConnectionAckPdu(PCSTR connectionId, UINT64 activityId);
     

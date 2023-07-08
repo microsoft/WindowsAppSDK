@@ -42,7 +42,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
     }
     CATCH_LOG_RETURN()
 
-    void ConnectionManager::Connect(PCSTR connectionId)
+    void ConnectionManager::Connect(PCSTR connectionId, IKozaniApplicationLauncher* appLauncher)
     {   
         auto lock{ std::unique_lock<std::recursive_mutex>(m_dvcServerLock) };
 
@@ -88,7 +88,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             }
         }
         
-        m_dvcServer->SendConnectionAck(connectionId);
+        m_dvcServer->ProcessClientConnection(connectionId, appLauncher);
     }
 
     // Report error from DVC server object. Called from the DVC server object encounting error.

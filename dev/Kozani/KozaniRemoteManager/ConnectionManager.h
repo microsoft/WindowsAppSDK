@@ -15,7 +15,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
         ~ConnectionManager() noexcept;
 
-        void Connect(PCSTR connectionId);
+        void Connect(_In_ PCSTR connectionId, _In_ IKozaniApplicationLauncher* appLauncher);
         void ReportDvcServerError(HRESULT hr);
 
     private:

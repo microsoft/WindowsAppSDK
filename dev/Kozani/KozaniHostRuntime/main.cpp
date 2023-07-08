@@ -222,7 +222,6 @@ int APIENTRY wWinMain(
     LOG_HR_MSG(KOZANI_E_INFO, "rdpFilePath=%ls, additionalSettingsFilePath=%ls", rdpFilePath.c_str(), additionalSettingsFilePath.c_str());
 
     auto runtimeManager{ winrt::Microsoft::Kozani::ManagerRuntime::ManagerRuntimeManager::Create() };
-
     auto statusCallback{ winrt::make_self<KozaniStatusCallbackHandler>(remoteAumid.c_str()) };
 
     runtimeManager.ActivateRemoteApplication(

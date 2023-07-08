@@ -7,26 +7,10 @@
 
 namespace Microsoft::Kozani::DvcProtocol
 {
-    bool IsEmptyPayloadProtocolDataUnitType(Dvc::ProtocolDataUnit::DataType type)
+    std::string CreatePdu(UINT64 activityId, Dvc::ProtocolDataUnit::DataType type, const std::string& payload)
     {
-        switch (type)
-        {
-            case Dvc::ProtocolDataUnit::AppTerminationNotice:
-                return true;
-        }
-
-        return false;
-    }
-
-    std::string CreatePdu(UINT64 activityId, Dvc::ProtocolDataUnit::DataType type, const std::string& payload = std::string())
-    {
-        if (!IsEmptyPayloadProtocolDataUnitType(type))
-        {
-            // Payload data of the Pdu should not be empty. It catches a failure condition when empty string is returned 
-            // from a failed SerializeAsString call before calling into this method.
-            THROW_HR_IF(KOZANI_E_PDU_SERIALIZATION, payload.empty());
-        }
-
+        // Do not check payload.empty() because if the payload message only contains default values, it can be empty after SerializeAsString().
+        
         Dvc::ProtocolDataUnit pdu;
         pdu.set_activity_id(activityId);
         pdu.set_type(type);
@@ -37,8 +21,9 @@ namespace Microsoft::Kozani::DvcProtocol
         }
 
         std::string rawPdu{ pdu.SerializeAsString() };
-        THROW_HR_IF(KOZANI_E_PDU_SERIALIZATION, rawPdu.empty());
 
+        // rawPdu should never be empty as the activityId must not be default value (0).
+        THROW_HR_IF(KOZANI_E_PDU_SERIALIZATION, rawPdu.empty());
         return rawPdu;
     }
 
@@ -81,6 +66,15 @@ namespace Microsoft::Kozani::DvcProtocol
                 }
 
                 return fileArgs.SerializeAsString();
+            }
+        case winrt::Windows::ApplicationModel::Activation::ActivationKind::Protocol:
+            {
+                auto specificArgs{ args.as<winrt::Windows::ApplicationModel::Activation::ProtocolActivatedEventArgs>() };
+                const std::string uriUtf8{ ::Microsoft::Utf8::ToUtf8(specificArgs.Uri().AbsoluteUri().c_str())};
+                Dvc::ProtocolActivationArgs protocolArgs;
+                protocolArgs.set_uri(std::move(uriUtf8));
+
+                return protocolArgs.SerializeAsString();
             }
         }
         return std::string();

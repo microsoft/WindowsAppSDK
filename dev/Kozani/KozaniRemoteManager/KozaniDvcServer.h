@@ -44,7 +44,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         // Enable error reporting to ConnectionManager. Called only after ConnectionManager has successfully created this object.
         HRESULT EnableConnectionManagerReporting();
 
-        void SendConnectionAck(PCSTR connectionId);
+        void ProcessClientConnection(_In_ PCSTR connectionId, _In_ IKozaniApplicationLauncher* appLauncher);
         void SendAppTerminationNotice(uint64_t activityId);
 
     private:
@@ -72,7 +72,14 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             _Out_ std::string& errorMessage) noexcept;
 
         HRESULT ProcessFileActivationRequest(
-            _In_ IApplicationActivationManager* aam,
+            _In_ IKozaniApplicationLauncher* appLauncher,
+            const std::wstring& appUserModelId,
+            const Dvc::ActivateAppRequest& activateAppRequest,
+            _Out_ DWORD& processId,
+            _Out_ std::string& errorMessage) noexcept;
+
+        HRESULT ProcessProtocolActivationRequest(
+            _In_ IKozaniApplicationLauncher* appLauncher,
             const std::wstring& appUserModelId,
             const Dvc::ActivateAppRequest& activateAppRequest,
             _Out_ DWORD& processId,
@@ -90,12 +97,16 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         void ReportDvcWriterError(HRESULT errorCode);
         
         void SendDvcProtocolData(const char* data, UINT32 size);
+        void SendConnectionAck(PCSTR connectionId);
         void SendActivateAppResult(
             uint64_t activityId,
             HRESULT hr,
             DWORD appProcessId,
             bool isNewInstance,
             _In_ const std::string& errorMessage = std::string());
+
+        KozaniAppType GetAppType(const std::wstring& appUserModelId);
+        void UpdateAppTypeIfNeeded(const std::wstring& appUserModelId, KozaniAppType appType);
 
     private:
         wil::srwlock m_errorReportingLock;
@@ -107,5 +118,11 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         bool m_errorReportingEnabled{};
         HRESULT m_errorFromDvcListener{};
         HRESULT m_errorFromDvcWriter{};
+
+        wil::srwlock m_appLauncherLock;
+        wil::com_ptr<IKozaniApplicationLauncher> m_appLauncher;
+
+        wil::srwlock m_appTypeMapLock;
+        std::map<std::wstring, KozaniAppType> m_appTypeMap;
     };
 }

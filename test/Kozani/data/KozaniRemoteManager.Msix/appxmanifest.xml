@@ -76,8 +76,9 @@
         <com:Extension Category="windows.comInterface">
           <com:ComInterface>
             <!--Proxy stub's CLSID is the same as the IID of the FIRST interface in the IDL-->
-            <com:ProxyStub Id="30599ceb-631f-468f-bdd6-febc5bb12b81" DisplayName="KozaniRemoteManager ProxyStub" Path="KozaniRemoteManagerProxyStub.dll"/>
-            <com:Interface Id="30599ceb-631f-468f-bdd6-febc5bb12b81" ProxyStubClsid="30599ceb-631f-468f-bdd6-febc5bb12b81"/><!-- IID_IKozaniRemoteManager -->
+            <com:ProxyStub Id="0b86ddd1-faba-40dc-b92b-9f29654a97b2" DisplayName="KozaniRemoteManager ProxyStub" Path="KozaniRemoteManagerProxyStub.dll"/>
+            <com:Interface Id="0b86ddd1-faba-40dc-b92b-9f29654a97b2" ProxyStubClsid="0b86ddd1-faba-40dc-b92b-9f29654a97b2"/><!-- IID_IKozaniApplicationLauncher -->
+            <com:Interface Id="30599ceb-631f-468f-bdd6-febc5bb12b81" ProxyStubClsid="0b86ddd1-faba-40dc-b92b-9f29654a97b2"/><!-- IID_IKozaniRemoteManager -->
           </com:ComInterface>
         </com:Extension>
       </Extensions>

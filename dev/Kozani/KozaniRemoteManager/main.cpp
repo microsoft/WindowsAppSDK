@@ -5,8 +5,6 @@
 
 #include "..\KozaniRemoteManager\KozaniRemoteManager-Constants.h"
 
-#include <KozaniRemoteManager_h.h>
-
 // Including this file once per binary will automatically opt WIL error handling macros into calling RoOriginateError when they
 // begin logging a new error.  This greatly improves the debuggability of errors that propagate before a failfast.
 #include <wil/result_originate.h>
@@ -46,9 +44,9 @@ namespace KozaniRemoteManagerModule
 
 struct __declspec(uuid(PR_KOZANIREMOTEMANAGER_CLSID_STRING)) KozaniRemoteManagerImpl WrlFinal : RuntimeClass<RuntimeClassFlags<ClassicCom>, IKozaniRemoteManager>
 {
-    STDMETHODIMP Connect(_In_ PCSTR connectionId) noexcept try
+    STDMETHODIMP Connect(_In_ PCSTR connectionId, IKozaniApplicationLauncher* appLauncher) noexcept try
     {
-        g_connectionManager.Connect(connectionId);    
+        g_connectionManager.Connect(connectionId, appLauncher);    
         return S_OK;
     }
     CATCH_RETURN()
@@ -64,6 +62,9 @@ void EndOfTheLine()
 
 int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
+    // Hook up wil logging MACROs to trace provider.
+    wil::SetResultLoggingCallback(&TraceFailureFromProvider<Microsoft_Kozani_RemoteManager_TraceLogger>);
+
     RETURN_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
 
     wil::unique_event endOfTheLine(::CreateEventW(nullptr, TRUE, FALSE, nullptr));

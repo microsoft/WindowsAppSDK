@@ -166,6 +166,9 @@
     <ClCompile Include="KozaniRemoteManagerTraceLogging.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\KozaniProtocol\KozaniProtocol.vcxproj">
+      <Project>{3f28c3ed-2548-4530-8b6c-832fae0e993d}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\KozaniRemoteManagerProxyStub\KozaniRemoteManagerProxyStub.vcxproj">
       <Project>{B9933E40-5A7C-482E-9FF3-FC06C1A7B37E}</Project>
     </ProjectReference>

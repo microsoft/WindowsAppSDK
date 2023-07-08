@@ -71,3 +71,8 @@ message FileActivationArgs
     string verb = 1;
     repeated string file_paths = 2;
 }
+
+message ProtocolActivationArgs
+{
+    string uri = 1;
+}
