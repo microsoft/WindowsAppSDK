@@ -2,14 +2,14 @@
 # It downloads the WindowsAppSDK NuGetPackage from WindowsAppSDKNugetPackage (by default)
 #
 # Requirements:
-# - This yml template can only be called from a pipeline in the "microsoft" AzureDevOps 
+# - This yml template can only be called from a pipeline in the "microsoft" AzureDevOps
 # - Only the ProjectReunionInternal repository is checkout in the job
 #
 # The template eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
 # will facilitate setting up the requirements to sucessfully run this template.
-# eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml will build the 
+# eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml will build the
 # WindowsAppSDK Nuget Package for this template to use.
-# 
+#
 # In most cases, WindowsAppSDK-BuildSetup-Steps.yml should be called first,
 # then WindowsAppSDK-Build-Steps.yml, and finally WindowsAppSDK-IntegrationTest-Steps.yml
 #
@@ -24,6 +24,9 @@ parameters:
   - name: TestSelection
     type: string
     default: "*"
+  - name: "IsOneBranch"
+    type: boolean
+    default: False
 
 steps:
   - task: DownloadBuildArtifacts@0
@@ -57,7 +60,7 @@ steps:
             $dest = $file.FullName + "/contents"
             Expand-Archive $renamedFilePath -Destination $dest
           }
-          
+
           $nuspecPaths = Get-ChildItem $file.FullName -Recurse -Filter "*.nuspec"
           foreach ($nuspecPath in $nuspecPaths)
           {
@@ -79,18 +82,26 @@ steps:
     displayName: TestAll
     inputs:
       filePath: 'TestAll.ps1'
-      arguments: > 
+      arguments: >
         -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)"
-        -Checkpoint "none" -Platform "x64" 
-        -Configuration "release" 
+        -Checkpoint "none" -Platform "x64"
+        -Configuration "release"
         -AzureBuildStep "all"
         -RunTestMachineSetup
         -Name "${{ parameters.TestSelection }}"
         -AzurePipelineBuild
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish test results'
-    condition: succeededOrFailed()
-    inputs:
-      PathtoPublish: $(Build.SourcesDirectory)\PipelineTestOutput
-      artifactName: TestResults-WindowsAppSDKIntegration
+  - ${{ if not( parameters.IsOneBranch ) }}:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish test results'
+      condition: succeededOrFailed()
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)\PipelineTestOutput'
+        artifactName: 'TestResults-WindowsAppSDKIntegration'
+
+  - ${{ if parameters.IsOneBranch }}:
+    - task: CopyFiles@2
+      displayName: MoveToOutputDirectory
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)\PipelineTestOutput'
+        TargetFolder: '$(ob_outputDirectory)'

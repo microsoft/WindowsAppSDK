@@ -32,23 +32,24 @@ $buildOverridePath = "build\override"
 $BasePath = "BuildOutput/FullNuget"
 
 # FUTURE(YML2PS): Update build to no longer place generated files in sources directory
-if ($Clean) 
+if ($Clean)
 {
     $CleanTargets = @(
       "BuildOutput",
       "obj",
+      ".user",
       $buildOverridePath
     )
-  
+
     foreach ($CleanTarget in $CleanTargets)
     {
       $CleanTargetPath = (Join-Path $env:Build_SourcesDirectory $CleanTarget)
-  
+
       if (Test-Path ($CleanTargetPath)) {
         Remove-Item $CleanTargetPath -recurse
       }
     }
-    
+
     Exit
 }
 
@@ -67,7 +68,7 @@ if(-not (test-path ".nuget\nuget.exe"))
 $configurationForMrtAndAnyCPU = "Release"
 $MRTSourcesDirectory = "dev\MRTCore"
 
-$VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -requires Microsoft.Component.MSBuild -property InstallationPath
+$VCToolsInstallDir = . "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Latest -prerelease -requires Microsoft.Component.MSBuild -property InstallationPath
 write-host "VCToolsInstallDir: $VCToolsInstallDir"
 
 $msBuildPath = "$VCToolsInstallDir\MSBuild\Current\Bin\msbuild.exe"
@@ -89,7 +90,7 @@ Try {
 
     if ($AzureBuildStep -ne "all")
     {
-        # Some builds have "-branchname" appended, but when this happens the environment variable 
+        # Some builds have "-branchname" appended, but when this happens the environment variable
         # TFS_BUILDNUMBER has the un-modified version.
         if ($env:TFS_BUILDNUMBER)
         {
@@ -99,17 +100,17 @@ Try {
         $yymm = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 10, 4)
         $dd = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 5, 2)
         $revision = $env:BUILD_BUILDNUMBER.substring($env:BUILD_BUILDNUMBER.length - 3, 3)
-        
+
         $WindowsAppSDKVersionProperty = "/p:WindowsAppSDKVersionBuild=$yymm /p:WindowsAppSDKVersionRevision=$dd$revision"
-        
+
         # If $AzureBuildStep is not "all", that means we are in the pipeline
         $WindowsAppSDKBuildPipeline = 1
     }
-    # PreFastSetup is specifically for use when preparing for PREFast scans. It triggers the same actions below as BuildBinaries or BuildMRT, except 
-    # PreFastSetup stops short of calling msBuild.exe to build the target, which the Guardian:PREFast task does _not_ support, so the caller of this 
-    # script needs to resort to calling the MSBuild/VSBuild task later to build the target, which the Guardian:PREFast task does support. Structuring 
+    # PreFastSetup is specifically for use when preparing for PREFast scans. It triggers the same actions below as BuildBinaries or BuildMRT, except
+    # PreFastSetup stops short of calling msBuild.exe to build the target, which the Guardian:PREFast task does _not_ support, so the caller of this
+    # script needs to resort to calling the MSBuild/VSBuild task later to build the target, which the Guardian:PREFast task does support. Structuring
     # the code this way allows minimally diveraging the flow while supporting building the target both via this script and the VSBuild/MSBuild task.
-    if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildBinaries") -Or ($AzureBuildStep -eq "BuildMRT") -Or ($AzureBuildStep -eq "PreFastSetup"))) 
+    if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildBinaries") -Or ($AzureBuildStep -eq "BuildMRT") -Or ($AzureBuildStep -eq "PreFastSetup")))
     {
         & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile NuGet.config
 
@@ -148,7 +149,7 @@ Try {
         }
     }
     # PreFastSetup intentionally skips the call to MSBuild.exe below.
-    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildBinaries")) 
+    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildBinaries"))
     {
         foreach($configurationToRun in $configuration.Split(","))
         {
@@ -172,7 +173,7 @@ Try {
             }
         }
     }
-    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMRT") -Or ($AzureBuildStep -eq "PreFastSetup")) 
+    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMRT") -Or ($AzureBuildStep -eq "PreFastSetup"))
     {
         #------------------
         #    Build mrtcore.sln and move output to staging.
@@ -231,7 +232,7 @@ Try {
         }
 
         # PreFastSetup intentionally skips the call to MSBuild.exe below.
-        if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMRT")) 
+        if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMRT"))
         {
             # Build mrt core.
             foreach($configurationToRun in $configuration.Split(","))
@@ -253,7 +254,7 @@ Try {
             }
         }
     }
-    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildAnyCPU")) 
+    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildAnyCPU"))
     {
         #------------------
         #    Build windowsAppRuntime.sln (anyCPU) and move output to staging.
@@ -266,13 +267,13 @@ Try {
             exit 1
         }
     }
-    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "StageFiles")) 
+    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "StageFiles"))
     {
         #------------------
         #    Stage files for Packing
-        #------------------    
+        #------------------
         if(-not (test-path "$BasePath"))
-        {    
+        {
             new-item -path "$BasePath" -itemtype "directory"
         }
 
@@ -322,7 +323,7 @@ Try {
             Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\mrm\MRM.pdb" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
             Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
             Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.dll" -destination "$BasePath\runtimes\win10-$platformToRun\native" -force
-            
+
             Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\mrm\MRM.lib" -destination "$BasePath\lib\win10-$platformToRun" -force
 
             if($platformToRun -eq "x86")
@@ -389,9 +390,9 @@ Try {
             exit 1
         }
     }
-    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "PackNuget")) 
+    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "PackNuget"))
     {
-        $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.nuspec" 
+        $nuspecPath = "BuildOutput\Microsoft.WindowsAppSDK.Foundation.nuspec"
         Copy-Item -Path ".\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec" -Destination $nuspecPath
 
         # Add the version to the nuspec.
@@ -408,8 +409,8 @@ Try {
             exit 1
         }
     }
-} 
-Catch 
+}
+Catch
 {
     $formatstring = "`n{0}`n`n{1}`n`n"
     $fields = $_, $_.ScriptStackTrace
