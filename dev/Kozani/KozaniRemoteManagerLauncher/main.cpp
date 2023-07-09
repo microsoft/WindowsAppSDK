@@ -420,7 +420,7 @@ private:
         }
         while (Process32Next(snapshot.get(), &entry));
 
-        RETURN_HR(ERROR_NOT_FOUND);
+        RETURN_WIN32(ERROR_NOT_FOUND);
     }
     CATCH_RETURN()
 };
