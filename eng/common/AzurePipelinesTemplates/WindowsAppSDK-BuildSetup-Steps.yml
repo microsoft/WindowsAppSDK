@@ -1,6 +1,6 @@
-# This yml template checkouts the ProjectReunionInternal repository and runs the setup
-# necessary for eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps to succeed.
-#
+# This yml template checkouts the ProjectReunionInternal repository and runs the setup 
+# necessary for eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps to succeed. 
+# 
 # Parameters:
 #   ArtifactName
 #     Name of the Artifact where the Transport package for the build lives
