@@ -8,7 +8,7 @@
 
 // Release information
 #define WINDOWSAPPSDK_RELEASE_MAJOR                1
-#define WINDOWSAPPSDK_RELEASE_MINOR                1
+#define WINDOWSAPPSDK_RELEASE_MINOR                4
 #define WINDOWSAPPSDK_RELEASE_PATCH                0
 #define WINDOWSAPPSDK_RELEASE_MAJORMINOR           0x00010001
 

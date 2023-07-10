@@ -46,6 +46,7 @@
           <com:ComServer>
             <com:ExeServer Executable="KozaniManager.exe" DisplayName="KozaniManager API server">
               <com:Class Id="b7034343-8d78-4d21-81ca-7a6c1c961c17" DisplayName="KozaniManager API server"/>
+              <com:Class Id="ed202fc8-ee21-4bf2-9681-23a8e97be9f3" DisplayName="KozaniManager DVC plugin"/>
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
@@ -55,6 +56,7 @@
             <com:ProxyStub Id="5239c3b0-9e90-11ed-87cd-0800200c9a66" DisplayName="KozaniManager ProxyStub" Path="KozaniManagerProxyStub.dll"/>
             <com:Interface Id="5239c3b0-9e90-11ed-87cd-0800200c9a66" ProxyStubClsid="5239c3b0-9e90-11ed-87cd-0800200c9a66"/><!-- IID_IKozaniStausCallback -->
             <com:Interface Id="5882f14f-f954-4af9-bbeb-a7c1a2a6357e" ProxyStubClsid="5239c3b0-9e90-11ed-87cd-0800200c9a66"/><!-- IID_IKozaniManager -->
+            <com:Interface Id="A1230201-1439-4e62-a414-190d0ac3d40e" ProxyStubClsid="5239c3b0-9e90-11ed-87cd-0800200c9a66"/><!-- IID_IWTSPlugin -->
           </com:ComInterface>
         </com:Extension>
       </Extensions>

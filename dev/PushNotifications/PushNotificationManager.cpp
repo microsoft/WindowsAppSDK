@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -794,7 +794,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         _Out_ BOOL* foregroundHandled)
     {
         auto logTelemetry{ PushNotificationTelemetry::InvokeAll::Start(g_telemetryHelper, correlationVector) };
-        wil::scope_exit([&]() { logTelemetry.Stop(); });
 
         auto args{ winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length) };
 
@@ -808,6 +807,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             *foregroundHandled = false;
         }
+
+        logTelemetry.Stop();
     }
 
     IFACEMETHODIMP PushNotificationManager::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept try
