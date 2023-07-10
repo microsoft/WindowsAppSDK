@@ -10,7 +10,7 @@ steps:
     displayName: 'DevCheck: Setup/Verify development environment'
     inputs:
       targetType: filePath
-      filePath: DevCheck.ps1
+      filePath: eng\common\DevCheck.ps1
       arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies
       workingDirectory: '$(Build.SourcesDirectory)'
 
@@ -83,7 +83,7 @@ steps:
     displayName: 'Run TE.Service'
     inputs:
       targetType: filePath
-      filePath: DevCheck.ps1
+      filePath: eng\common\DevCheck.ps1
       arguments: -NoInteractive -Offline -Verbose -CheckTAEFService
       workingDirectory: '$(Build.SourcesDirectory)'
 
