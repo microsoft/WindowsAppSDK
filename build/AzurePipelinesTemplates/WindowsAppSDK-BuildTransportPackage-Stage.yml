@@ -1,0 +1,227 @@
+parameters:
+- name: "PublishToMaestro"
+  type: boolean
+  default: False
+- name: "IgnoreFailures"
+  type: boolean
+  default: False
+- name: "SignOutput"
+  type: boolean
+  default: False
+- name: "IsOneBranch"
+  type: boolean
+  default: True
+
+stages:
+- stage: TransportPackage
+  jobs:
+  - job: VerifyCopyrightHeaders
+    dependsOn: []
+    pool:
+      type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022' # This stage is purely a test stage so we will use our own pools here
+    steps:
+    - task: powershell@2
+      displayName: 'Verify copyright headers'
+      inputs:
+        targetType: filePath
+        filePath: tools\VerifyCopyrightHeaders.ps1
+
+  - job: BuildBinaries
+    pool:
+      ${{ if parameters.IsOneBranch }}:
+        type: windows
+      ${{ if not( parameters.IsOneBranch ) }}:
+        type: windows
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
+    strategy:
+      maxParallel: 10
+      matrix:
+        Release_x86:
+          buildPlatform: 'x86'
+          buildConfiguration: 'release'
+          normalizedConfiguration: 'fre'
+          PGOBuildMode: 'Optimize'
+        Release_x64:
+          buildPlatform: 'x64'
+          buildConfiguration: 'release'
+          normalizedConfiguration: 'fre'
+          PGOBuildMode: 'Optimize'
+        Release_Arm64:
+          buildPlatform: 'arm64'
+          buildConfiguration: 'release'
+          normalizedConfiguration: 'fre'
+    variables:
+      ob_outputDirectory: '$(REPOROOT)\out'
+      ob_sdl_codeSignValidation_excludes: '-|**\Release\**;-|**\packages\**'
+      ob_artifactBaseName: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
+    steps:
+    - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        IsOneBranch: ${{ parameters.IsOneBranch }}
+
+  - job: BuildBinaries_release_anycpu
+    # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
+    # Can be expanded to add any other binary as needed
+    pool:
+      ${{ if parameters.IsOneBranch }}:
+        type: windows
+      ${{ if not( parameters.IsOneBranch ) }}:
+        type: windows
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
+    variables:
+      ob_outputDirectory: '$(REPOROOT)\out'
+      ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
+      ob_artifactBaseName: "FoundationBinaries_release_anycpu"
+    steps:
+    - template: WindowsAppSDK-BuildBinaries-AnyCPU-Steps.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        IsOneBranch: ${{ parameters.IsOneBranch }}
+
+  - job: BuildMRT
+    pool:
+      # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
+      ${{ if parameters.IsOneBranch }}:
+        type: windows
+      ${{ if not( parameters.IsOneBranch ) }}:
+        type: windows
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
+    timeoutInMinutes: 120
+    strategy:
+      maxParallel: 10
+      matrix:
+        Release_x86:
+          buildPlatform: 'x86'
+          buildConfiguration: 'Release'
+          normalizedConfiguration: 'fre'
+          PGOBuildMode: 'Optimize'
+        Release_x64:
+          buildPlatform: 'x64'
+          buildConfiguration: 'Release'
+          normalizedConfiguration: 'fre'
+          PGOBuildMode: 'Optimize'
+        Release_Arm64:
+          buildPlatform: 'arm64'
+          buildConfiguration: 'Release'
+          normalizedConfiguration: 'fre'
+    variables:
+      ob_outputDirectory: '$(REPOROOT)\out'
+      ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
+      ob_sdl_suppression_suppressionFile: $(Build.SourcesDirectory)\dev\MRTCore\.gdn\mrt.gdnsuppress # This value is set on the job cdpx_engine, it will override the global gdnsuppress for this job
+      ob_sdl_suppression_suppressionSet: default
+      ob_artifactBaseName: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
+    steps:
+    - template: WindowsAppSDK-BuildMRT-Steps.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        IsOneBranch: ${{ parameters.IsOneBranch }}
+
+  # Arm64 uses a different VM type than x64, thus requiring them to be in different
+  # pools, hence, we spilt the two scenarios into separate jobs.
+  - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
+    parameters:
+      jobName: PipelineTestsX64
+      isArm64Platfrom: false
+      dependsOn:
+        - BuildBinaries
+        - BuildMRT
+
+  - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
+    parameters:
+      jobName: PipelineTestsArm64
+      isArm64Platfrom: true
+      dependsOn:
+        - BuildBinaries
+        - BuildMRT
+
+  - job: NugetPackage
+    pool:
+      # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
+      ${{ if parameters.IsOneBranch }}:
+        type: windows
+      ${{ if not( parameters.IsOneBranch ) }}:
+        type: windows
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
+    timeoutInMinutes: 120
+    dependsOn:
+    - BuildBinaries
+    - BuildBinaries_release_anycpu
+    - BuildMRT
+    condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
+    variables:
+      ob_outputDirectory: '$(REPOROOT)\out'
+      ob_artifactBaseName: "TransportPackage"
+    steps:
+    - template: WindowsAppSDK-PackNuget-Steps.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        IsOneBranch: ${{ parameters.IsOneBranch }}
+
+  # Build WinAppSDK and Run Integration Test from TestAll.ps1
+  - job: WinAppSDKIntegrationBuildAndTest
+    dependsOn: ['NugetPackage']
+    condition: succeeded()
+    pool:
+      type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022'
+    variables:
+      WindowsAppSDKTransportPackageVersion: $[ dependencies.NugetPackage.outputs['SetVersion.packageVersion'] ]
+      VersionWithDevTag: $[format('{0}.{1}.{2}-{3}.{4}.{5}', variables['major'], variables['minor'], variables['patch'], 'dev', variables['versionDate'], variables['versionCounter'])]
+      ob_outputDirectory: '$(REPOROOT)\out'
+      ob_artifactBaseName: "WindowsAppSDKNugetPackage"
+    steps:
+      #TODO: Remove the two template calls once Add-AppxPackage has been resolved
+      - template: ..\..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
+        parameters:
+          AzureSubscriptionServiceConnection: 'ProjectReunion Resource Manager'
+          NuGetServiceConnectionName: 'ProjectReunionInternal'
+
+      - template: ..\..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
+        parameters:
+          TransportPackageArtifactName: 'TransportPackage'
+          WindowsAppSDKPackageVersion: $(VersionWithDevTag)
+          BuildType:  'stable'
+          IsOneBranch: ${{ parameters.IsOneBranch }}
+          TransportPackages:
+            FoundationPackage:
+              Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
+              Version: $(WindowsAppSDKTransportPackageVersion)
+
+      # TODO: Reenable, Add-AppxPackage currently does not work on 2022 images. See issue #2908
+      # - template: ..\..\eng\common\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
+      #   parameters:
+      #     WindowsAppSDKPackageVersion: $(VersionWithDevTag)
+      #     TestSelection: '*Foundation_*'
+      #     TransportPackageArtifactName: 'FullNuget'
+      #     BuildType: 'stable'
+      #     TransportPackages:
+      #       FoundationPackage:
+      #         Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
+      #         Version: $(WindowsAppSDKTransportPackageVersion)
+
+  # Publish
+  - job: Publish
+    dependsOn:
+    - NugetPackage
+    # - WinAppSDKIntegrationBuildAndTest
+    condition: and(or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true')), eq('${{ parameters.PublishToMaestro }}', 'true'))
+    pool:
+      type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022' # This job is purely for ES, hence this custom pool
+    variables:
+      WindowsAppSDKPackageVersion: $[ dependencies.NugetPackage.outputs['SetVersion.packageVersion'] ]
+    steps:
+    - template: ..\..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml@self
+      parameters:
+        AssetNames: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
+        AssetVersions: $(WindowsAppSDKPackageVersion)
+        TriggerSubscription: true

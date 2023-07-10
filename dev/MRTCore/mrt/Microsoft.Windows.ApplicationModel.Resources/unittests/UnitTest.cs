@@ -1,9 +1,12 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Windows.ApplicationModel.Resources;
+using WEX.Common.Managed;
+using WEX.Logging.Interop;
+using WEX.TestExecution;
+using WEX.TestExecution.Markup;
 
 namespace ManagedTest
 {

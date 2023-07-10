@@ -1,0 +1,67 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+syntax = "proto3";
+
+package Microsoft.Kozani.DVC;
+
+message ProtocolDataUnit
+{
+    enum DataType
+    {
+        ConnectionAck = 0;
+        ActivateAppRequest = 1;
+        ActivateAppResult = 2;
+        AppTerminationNotice = 3;
+        GenericResult = 4;
+    }
+
+    // Unique ID to link multiple request and response PDUs in a logical activity group.
+    uint64 activity_id = 1;
+
+    DataType type = 2;
+
+    // PDU payload data. Will be further parsed into specific message based on the type of the PDU.
+    bytes data = 3;
+}
+
+message ConnectionAck
+{
+    string connection_id = 1;
+}
+
+enum ActivationKind
+{
+    // NOTE: Values must match Windows.ApplicationModel.Activation.ActivationKind
+    Launch = 0;
+    File = 3;
+    Protocol = 4;
+}
+
+message ActivateAppRequest
+{
+    ActivationKind activation_kind = 1;
+    string app_user_model_id = 2;
+    bytes arguments = 3;
+}
+
+message ActivateAppResult
+{
+    // Error code of the app activation. S_OK (0) means activation was successful.
+    int32 hresult = 1;
+
+    // Process Id of the activated app on the remote machine. Only valid if hresult is 0.
+    uint32 process_id = 2;
+
+    // Indicates whether the activation creates a new instance/process of the app. Single instance app will have 1 running process 
+    // no matter how many times the app is activated. Only valid if hresult is 0.
+    bool is_new_instance = 3;
+
+    // Error message if hresult is not 0.
+    string error_message = 4;
+}
+
+message LaunchActivationArgs
+{
+    string arguments = 1;
+}
