@@ -3,6 +3,6 @@
     "dotnet": "6.0.406"
   },
   "msbuild-sdks": {
-    "Microsoft.WinAppSDK.EngCommon": "1.4.230710"
+    "Microsoft.WinAppSDK.EngCommon": "1.5.230711"
   }
 }

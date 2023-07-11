@@ -1,24 +1,24 @@
-# This yml template checkouts the WindowsAppSDKAggregator repository and builds the 
+# This yml template checkouts the WindowsAppSDKAggregator repository and builds the
 # WindowsAppSDK based on the version.details.xml of the checkouted repository.
-# This versions provided in "TransportPackages" parameter of the yml will replace the 
+# This versions provided in "TransportPackages" parameter of the yml will replace the
 # versions in the checkouted version.details.xml based on the name.
-# 
+#
 # Requirements:
-# - This yml template can only be called in the "microsoft" AzureDevOps 
+# - This yml template can only be called in the "microsoft" AzureDevOps
 # - Access to ProjectReunionCerts keyvault
 # - Access to ProjectReunion Internal feed
 # - Only the WindowsAppSDKAggregator repository is checkout in the job
 #
 # The template eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
-# will facilitate setting up the requirements to sucessfully run this template. 
+# will facilitate setting up the requirements to sucessfully run this template.
 # In most cases, WindowsAppSDK-BuildSetup-Steps.yml should be called first,
 # then WindowsAppSDK-Build-Steps.yml.
-# 
+#
 # The intended use of this yml template is for the feeder repos' pipeline to build the WinAppSDK package
-# with the latest versions from WindowsAppSDKAggregator with the latest version of the transport package it 
+# with the latest versions from WindowsAppSDKAggregator with the latest version of the transport package it
 # has just built
 #
-# The WindowsAppSDK Nuget package produced will be published to WindowsAppSDKNugetPackage build artifacts 
+# The WindowsAppSDK Nuget package produced will be published to WindowsAppSDKNugetPackage build artifacts
 parameters:
   - name: TransportPackageArtifactName
     type: string
@@ -37,9 +37,12 @@ parameters:
     displayName: "TransportPackages to replace (name:version)"
     type: object
     default:
-      Foundation: 
+      Foundation:
         name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
         version: 1.0.0-stable
+  - name: "IsOneBranch"
+    type: boolean
+    default: False
 
 steps:
   - ${{ if ne(parameters.TransportPackageArtifactName, '') }}:
@@ -73,8 +76,16 @@ steps:
         -TransportPackages "none"
         -AzurePipelineBuild
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Windows App SDK Packages'
-    inputs:
-      PathtoPublish: '$(Build.SourcesDirectory)\PackLocation'
-      artifactName: 'WindowsAppSDKNugetPackage'
+  - ${{ if not( parameters.IsOneBranch ) }}:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Windows App SDK Packages'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)\PackLocation'
+        artifactName: 'WindowsAppSDKNugetPackage'
+
+  - ${{ if parameters.IsOneBranch }}:
+    - task: CopyFiles@2
+      displayName: MoveToOutputDirectory
+      inputs:
+        SourceFolder: '$(build.SourcesDirectory)\PackLocation'
+        TargetFolder: '$(ob_outputDirectory)'
