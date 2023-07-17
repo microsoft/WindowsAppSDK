@@ -39,7 +39,7 @@ HRESULT RegisterDVCPluginIfNeeded()
     }
     else
     {
-        const HRESULT hr{ HRESULT_FROM_WIN32(reinterpret_cast<INT_PTR>(hInst)) };
+        const HRESULT hr{ HRESULT_FROM_WIN32(static_cast<HRESULT>(reinterpret_cast<INT_PTR>(hInst))) };
         WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ShellExecute failed with: 0x%x", hr));
         return hr;
     }
