@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -33,13 +33,13 @@ HRESULT RegisterDVCPluginIfNeeded()
     const HINSTANCE hInst{ ShellExecute(nullptr, nullptr, L"reg.exe", regCommand, nullptr, SW_SHOW) };
     WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ShellExecute reg add finished with code: %d", hInst));
 
-    if ((int)hInst > 32)
+    if (reinterpret_cast<INT_PTR>(hInst) > 32)
     {
         WEX::Logging::Log::Comment(L"Successfully created DVC plugin key!");
     }
     else
     {
-        const HRESULT hr{ HRESULT_FROM_WIN32(reinterpret_cast<DWORD>(hInst)) };
+        const HRESULT hr{ HRESULT_FROM_WIN32(reinterpret_cast<INT_PTR>(hInst)) };
         WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ShellExecute failed with: 0x%x", hr));
         return hr;
     }
