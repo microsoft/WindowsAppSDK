@@ -14,8 +14,8 @@
     <TargetPlatformName>Windows</TargetPlatformName>
     <LanguageTag>cpp</LanguageTag>
     <PlatformTag>windows</PlatformTag>
-    <ProjectTypeTag>uwp</ProjectTypeTag>
     <ProjectTypeTag>desktop</ProjectTypeTag>
+    <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>
   <TemplateContent>
     <ProjectItem SubType="Code" TargetFileName="$fileinputname$.cpp" ReplaceParameters="true">TemplatedControl.cpp</ProjectItem>

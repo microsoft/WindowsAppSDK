@@ -30,7 +30,6 @@
       <ProjectItem ReplaceParameters="false" TargetFileName="pch.h">pch.h</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="app.manifest">app.manifest</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="App.xaml">App.xaml</ProjectItem>
-      <ProjectItem ReplaceParameters="true" TargetFileName="App.idl">App.idl</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="App.xaml.cpp">App.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="App.xaml.h">App.h</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.xaml">MainWindow.xaml</ProjectItem>

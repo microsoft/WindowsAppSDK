@@ -14,8 +14,8 @@
     <TargetPlatformName>Windows</TargetPlatformName>
     <LanguageTag>csharp</LanguageTag>
     <PlatformTag>windows</PlatformTag>
-    <ProjectTypeTag>uwp</ProjectTypeTag>
     <ProjectTypeTag>desktop</ProjectTypeTag>
+    <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>
   <TemplateContent>
     <ProjectItem OpenInEditor="true" ReplaceParameters="true" ItemType="Page" CustomTool="MSBuild:Compile" TargetFileName="$fileinputname$.xaml">BlankPage.xaml</ProjectItem>

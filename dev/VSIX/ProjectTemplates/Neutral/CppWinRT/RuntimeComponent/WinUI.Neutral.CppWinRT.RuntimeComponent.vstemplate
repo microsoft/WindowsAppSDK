@@ -20,7 +20,6 @@
     <LanguageTag>XAML</LanguageTag>
     <PlatformTag>windows</PlatformTag>
     <ProjectTypeTag>desktop</ProjectTypeTag>
-    <ProjectTypeTag>uwp</ProjectTypeTag>
     <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>
   <TemplateContent>
