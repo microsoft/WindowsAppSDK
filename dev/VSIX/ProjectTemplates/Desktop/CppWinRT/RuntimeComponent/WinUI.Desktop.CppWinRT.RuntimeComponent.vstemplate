@@ -4,7 +4,7 @@
     <Name ID="1033" Package="FIXME-PACKAGEGUID" />
     <Description ID="1035" Package="FIXME-PACKAGEGUID" />
     <Icon>WinUI.Desktop.CppWinRT.RuntimeComponent.ico</Icon>
-    <TemplateID>Microsoft.WinUI.Desktopy.CppWinRT.RuntimeComponent</TemplateID>
+    <TemplateID>Microsoft.WinUI.Desktop.CppWinRT.RuntimeComponent</TemplateID>
     <ProjectType>VC</ProjectType>
     <CreateNewFolder>true</CreateNewFolder>
     <DefaultName>RuntimeComponent</DefaultName>
