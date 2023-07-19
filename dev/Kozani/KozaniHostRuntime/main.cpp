@@ -14,14 +14,17 @@
 
 #include "Logging.h"
 
+// Uncomment to enable wait for debugger when the local variant app is launched. We can attach debugger to the KozaniHostRuntime.exe while it is waiting.
+//#define WAIT_FOR_DEBUGGER
+
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::ApplicationModel;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::Data::Xml::Dom;
 
-constexpr PCWSTR c_aumidSwitch{ L"-aumid" };
 constexpr PCWSTR c_kozaniSettingsFolderName{ L"KozaniSettings" };
 constexpr PCWSTR c_rdpFileName{ L"connection.rdp" };
 constexpr PCWSTR c_additionalSettingsFileName{ L"AdditionalSettings.txt" };
@@ -112,60 +115,68 @@ void LogArgs(int argc, PWSTR* argv)
     }
 }
 
-std::wstring GetRemoteAumidFromCommandLineArgs(PCWSTR commandLine)
+// Remote app AUMID is stored in an app extension of the local variant package (LVP). The app extension name is formatted as:
+//     com.microsoft.kozani.localvariant.remoteapp.<Converted LVP package family name>
+// and the app extension Id is the package-relative application identifier (PRAID) of the LVP app being activated.
+// <Converted LVP package family name>: we replace the '_' character in the package family name with '-' as '_' is not allowed in the app extension name.
+// 
+// For example:
+// <uap3:Extension Category="windows.appExtension">
+//   <uap3:AppExtension Name = "com.microsoft.kozani.localvariant.remoteapp.Calculator-fy70fzsv57rkp"
+//     Id = "App"
+//     DisplayName = "Remote app AUMID"
+//     Description = "The App User Mode ID of the remote app this local variant app represents">
+//     <uap3:Properties>
+//       <RemoteAppAumid>Microsoft.WindowsCalculator_8wekyb3d8bbwe!App</RemoteAppAumid>
+//     </uap3:Properties>
+//   </uap3:AppExtension>
+// </uap3:Extension>
+winrt::hstring GetRemoteAumid()
 {
-    int argc{};
-    const wil::unique_hlocal_ptr<PWSTR[]> argv{ CommandLineToArgvW(commandLine, &argc) };
-    LogArgs(argc, argv.get());
+    WCHAR lvpAumid[APPLICATION_USER_MODEL_ID_MAX_LENGTH + 1]{};
+    UINT32 lvpAumidLength{ ARRAYSIZE(lvpAumid) };
+    THROW_IF_WIN32_ERROR(GetCurrentApplicationUserModelId(&lvpAumidLength, lvpAumid));
 
-    for (int i = 0; i < argc; i++)
+    WCHAR lvpFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
+    WCHAR lvpRelativeId[PACKAGE_RELATIVE_APPLICATION_ID_MAX_LENGTH + 1]{};
+    UINT32 lvpFamilyNameLength{ ARRAYSIZE(lvpFamilyName) };
+    UINT32 lvpRelativeIdLength{ ARRAYSIZE(lvpRelativeId) };
+    THROW_IF_WIN32_ERROR(ParseApplicationUserModelId(lvpAumid, &lvpFamilyNameLength, lvpFamilyName, &lvpRelativeIdLength, lvpRelativeId));
+
+    // Replace '_' in the family name with '-' as '_' cannot be used in the app extension name.
+    for (UINT32 i = 0; i < lvpFamilyNameLength; i++)
     {
-        // Find "-aumid" switch
-        if (_wcsicmp(argv[i], c_aumidSwitch) == 0)
+        if (lvpFamilyName[i] == L'_')
         {
-            // The argv[i+1] is the aumid. Make sure it does not overflow, or the command line input args are incorrect.
-            THROW_HR_IF(E_INVALIDARG, i + 1 == argc);
-            return argv[i + 1];
+            lvpFamilyName[i] = L'-';
+            break;
         }
     }
 
-    THROW_HR_MSG(E_INVALIDARG, "-aumid switch not found in command line arguments");
-}
+    std::wstring appExtensionName{ L"com.microsoft.kozani.localvariant.remoteapp." };
+    appExtensionName += lvpFamilyName;
 
-// Get the remote app AUMID from Local Variant Package (LVP)'s manifest xml. 
-// Example:
-// <Application Id="App" uap10:HostId="KozaniHostRuntime" uap10:Parameters="-aumid AbcInc.AbcApp_oiuanmryvpj1y!App">
-std::wstring GetRemoteAumidFromManifest()
-{
-    AppInfo appInfo{ AppInfo::Current() };
-    auto appId{ appInfo.Id() };
+    auto catalog{ AppExtensions::AppExtensionCatalog::Open(appExtensionName.c_str()) };
+    IVectorView<AppExtensions::AppExtension> appExtensions{ catalog.FindAllAsync().get() };
+    for (const auto appExtension : appExtensions)
+    {
+        if (appExtension.Id() == lvpRelativeId)
+        {
+            const auto properties{ appExtension.GetExtensionPropertiesAsync().get() };
+            const auto property{ properties.Lookup(L"RemoteAppAumid").as<IMap<winrt::hstring, winrt::Windows::Foundation::IInspectable>>() };
+            const auto remoteAumid{ winrt::unbox_value<winrt::hstring>(property.Lookup(L"#text")) };
 
-    auto manifestFile{ appInfo.Package().InstalledLocation().GetFileAsync(c_manifestFileName).get()};
-    XmlDocument xmlDocument{ XmlDocument::LoadFromFileAsync(manifestFile).get() };
+            auto otherData{ properties.Lookup(L"OtherData").as<IMap<winrt::hstring, winrt::Windows::Foundation::IInspectable>>() };
+            const auto otherDataText{ winrt::unbox_value<winrt::hstring>(otherData.Lookup(L"#text")) };
 
-    std::wstring xpath{ L"/*[local-name()='Package']/*[local-name()='Applications']/*[local-name()='Application' and @Id='" };
-    xpath += appId.c_str();
-    xpath += L"'][1]";
+            auto moreotherData{ properties.Lookup(L"MoreOtherData").as<IMap<winrt::hstring, winrt::Windows::Foundation::IInspectable>>() };
+            const auto moreotherDataText{ winrt::unbox_value<winrt::hstring>(moreotherData.Lookup(L"#text")) };
 
-    LOG_HR_MSG(KOZANI_E_INFO, "appId=%ls, xpath=%ls", appId.c_str(), xpath.c_str());
+            return remoteAumid;
+        }
+    }
 
-    auto applicationNode{ xmlDocument.SelectSingleNode(xpath) };
-    THROW_HR_IF_NULL_MSG(HRESULT_FROM_WIN32(ERROR_INVALID_DATA), applicationNode,
-            "Invalid LVP manifest - cannot find Application node with Id=%ls. Manifest xml: %ls",
-            appId.c_str(), xmlDocument.GetXml().c_str());
-
-    auto attributeMap{ applicationNode.Attributes() };
-    auto uap10NS{ winrt::Windows::Foundation::PropertyValue::CreateString(L"http://schemas.microsoft.com/appx/manifest/uap/windows10/10") };
-    auto paramAttributeNode{ attributeMap.GetNamedItemNS(uap10NS, L"Parameters")};
-    THROW_HR_IF_NULL_MSG(HRESULT_FROM_WIN32(ERROR_INVALID_DATA), paramAttributeNode,
-            "Invalid LVP manifest - missing uap10:Parameters attribute in Application element with Id=%ls. Application element xml: %ls",
-            appId.c_str(), applicationNode.GetXml().c_str());
-
-    // The uap10:Parameters attribute value contains command line args with remote app aumid. Example: 
-    // uap10:Parameters="-aumid AbcInc.AbcApp_oiuanmryvpj1y!App"
-    auto commandLineArgs{ winrt::unbox_value<winrt::hstring>(paramAttributeNode.NodeValue()) };
-    LOG_HR_MSG(KOZANI_E_INFO, "commandLineArgs=%ls", commandLineArgs.c_str());
-    return GetRemoteAumidFromCommandLineArgs(commandLineArgs.c_str());
+    THROW_WIN32_MSG(ERROR_NOT_FOUND, "Cannot find remote app aumid from app extension with name: %ls, Id: %ls", appExtensionName.c_str(), lvpRelativeId);
 }
 
 void GetConfigurationFiles(std::wstring& rdpFilePath, std::wstring& additionalSettingsFilePath)
@@ -194,26 +205,30 @@ void GetConfigurationFiles(std::wstring& rdpFilePath, std::wstring& additionalSe
     }
 }
 
+#ifdef WAIT_FOR_DEBUGGER
+void WaitForDebugger()
+{
+    while (!IsDebuggerPresent())
+    {
+        Sleep(3000);
+    }
+}
+#endif
+
 int APIENTRY wWinMain(
     HINSTANCE /*hInstance*/,
     HINSTANCE /*hPrevInstance*/,
-    PWSTR pCmdLine,
+    PWSTR /*pCmdLine*/,
     int /*nCmdShow*/) try
 {
     wil::SetResultLoggingCallback(&TraceFailureFromProvider<Microsoft_Kozani_HostRuntime_TraceLogger>);
     winrt::init_apartment();
 
-    auto activatedEventArgs{ AppInstance::GetActivatedEventArgs() };
-    std::wstring remoteAumid;
-    if (activatedEventArgs.Kind()== winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch)
-    {
-        // For launch activation, we can simply get the AUMID from command line arguments.
-        remoteAumid = GetRemoteAumidFromCommandLineArgs(pCmdLine);
-    }
-    else
-    {
-        remoteAumid = GetRemoteAumidFromManifest();
-    }
+#ifdef WAIT_FOR_DEBUGGER
+    WaitForDebugger();
+#endif
+
+    winrt::hstring remoteAumid{ GetRemoteAumid() };
     LOG_HR_MSG(KOZANI_E_INFO, "remoteAumid=%ls", remoteAumid.c_str());
 
     std::wstring rdpFilePath;
@@ -221,6 +236,7 @@ int APIENTRY wWinMain(
     GetConfigurationFiles(rdpFilePath, additionalSettingsFilePath);
     LOG_HR_MSG(KOZANI_E_INFO, "rdpFilePath=%ls, additionalSettingsFilePath=%ls", rdpFilePath.c_str(), additionalSettingsFilePath.c_str());
 
+    auto activatedEventArgs{ AppInstance::GetActivatedEventArgs() };
     auto runtimeManager{ winrt::Microsoft::Kozani::ManagerRuntime::ManagerRuntimeManager::Create() };
     auto statusCallback{ winrt::make_self<KozaniStatusCallbackHandler>(remoteAumid.c_str()) };
 
