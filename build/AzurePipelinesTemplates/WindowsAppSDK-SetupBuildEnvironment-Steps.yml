@@ -76,7 +76,7 @@ steps:
   displayName: 'DevCheck: Setup/Verify development environment'
   inputs:
     targetType: filePath
-    filePath: DevCheck.ps1
+    filePath: eng\common\DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies
     workingDirectory: '$(Build.SourcesDirectory)'
 
