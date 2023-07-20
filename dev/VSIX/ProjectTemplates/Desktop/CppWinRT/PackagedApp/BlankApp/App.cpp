@@ -37,7 +37,7 @@ namespace winrt::$safeprojectname$::implementation
     /// <param name="e">Details about the launch request and process.</param>
     void App::OnLaunched([[maybe_unused]] LaunchActivatedEventArgs const& e)
     {
-        m_window = make<MainWindow>();
-        m_window.Activate();
+        window = make<MainWindow>();
+        window.Activate();
     }
 }

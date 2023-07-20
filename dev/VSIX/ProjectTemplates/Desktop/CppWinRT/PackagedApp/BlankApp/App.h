@@ -11,6 +11,6 @@ namespace winrt::$safeprojectname$::implementation
         void OnLaunched(Microsoft::UI::Xaml::LaunchActivatedEventArgs const&);
 
     private:
-        winrt::Microsoft::UI::Xaml::Window m_window{ nullptr };
+        winrt::Microsoft::UI::Xaml::Window window{ nullptr };
     };
 }
