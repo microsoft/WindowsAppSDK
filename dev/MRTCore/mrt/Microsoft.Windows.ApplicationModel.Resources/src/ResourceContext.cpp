@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -40,13 +40,9 @@ void ResourceContext::InitializeQualifierNames()
 
 void ResourceContext::InitializeQualifierValueMap()
 {
-    if (m_qualifierNames.empty())
-    {
+    std::call_once(m_areQualifierNamesAndValueMapInitialized, [this] {
         InitializeQualifierNames();
-    }
 
-    if (m_qualifierValueMap == nullptr)
-    {
         m_qualifierValueMap = single_threaded_map<hstring, hstring>();
 
         if (m_resourceContext != nullptr)
@@ -74,7 +70,7 @@ void ResourceContext::InitializeQualifierValueMap()
         {
             m_qualifierValueMap.Insert(c_languageQualifierName, GetLangugageContext());
         }
-    }
+    });
 }
 
 winrt::Windows::Foundation::Collections::IMap<hstring, hstring> ResourceContext::QualifierValues()

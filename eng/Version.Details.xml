@@ -31,9 +31,9 @@
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
       <Sha>0c11da0deddd3969859c5007e37c01c0375aae8b</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.4.0-exp1.20230512.1">
+    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.4.0-preview1.20230713.0">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
-      <Sha>8a7db2d96551905c423e2bd3db57f4684cca28ce</Sha>
+      <Sha>df6dd2f2e73c0a25c4cfe2fbfd88ff4c62032a1b</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
@@ -41,19 +41,19 @@
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKAggregator</Uri>
       <Sha>4af33042dd35c5b7c41ce901320657a64be2e7ab</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.0.0">
+    <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.0.3">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
-    <Dependency Name="CsWinRT.Dependency.DotNetCoreSdk" Version="6.0.301">
+    <Dependency Name="CsWinRT.Dependency.DotNetCoreSdk" Version="6.0.412">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
-    <Dependency Name="CsWinRT.Dependency.DotNetCoreRuntime" Version="6.0.6">
+    <Dependency Name="CsWinRT.Dependency.DotNetCoreRuntime" Version="6.0.20">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>
-    <Dependency Name="CsWinRT.Dependency.WindowsSdkVersionSuffix" Version="27">
+    <Dependency Name="CsWinRT.Dependency.WindowsSdkVersionSuffix" Version="29">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>

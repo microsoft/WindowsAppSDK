@@ -39,8 +39,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ContentNugetPackages Include="$(PkgMicrosoft_Windows_SDK_BuildTools)\*.nupkg" />
-    <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK)\*.nupkg" />
     <Content Include="@(ContentNugetPackages)">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Packages</VSIXSubPath>
