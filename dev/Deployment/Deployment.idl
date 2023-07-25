@@ -5,7 +5,6 @@
 
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
-    [feature(Feature_DeploymentRepair)]
     [contractversion(4)]
     apicontract DeploymentContract{};
 
