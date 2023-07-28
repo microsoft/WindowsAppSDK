@@ -15,15 +15,12 @@ Set-StrictMode -Version 3.0
 
 $ErrorActionPreference = "Stop"
 
-Write-Host $PSScriptRoot
-ForEach ($path in $env:PSModulePath -Split ';')
-{
-    Write-Host $path
-}
-
 # Import the MSIX Dynamic Dependency module
-$module = Join-Path $PSScriptRoot 'MsixDynamicDependency.psm1'
-Import-Module -Name $module -Verbose:$false -ErrorAction Stop
+if (-not (Get-Module | Where-Object {$_.Name -eq 'MsixDynamicDependency'}))
+{
+    $module = Join-Path $PSScriptRoot 'MsixDynamicDependency.psm1'
+    Import-Module -Name $module -ErrorAction Stop
+}
 
 $context = [IntPtr]$PackageDependencyContext
 $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Remove($context)

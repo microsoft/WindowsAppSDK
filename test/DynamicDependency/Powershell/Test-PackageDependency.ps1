@@ -10,6 +10,7 @@ $root = (Get-Item $PSScriptRoot).parent.parent.parent.FullName
 $dev = Join-Path $root 'dev'
 $test = Join-Path $root 'test'
 $buildOutput = Join-Path $root 'BuildOutput\Debug\x64'
+$cmdlet = Join-Path $dev 'DynamicDependency\Powershell'
 
 # Test package(s)
 $packageName = 'WindowsAppRuntime.Test.DynDep.Fwk.Widgets'
@@ -80,17 +81,13 @@ Function Cleanup
 # Setup test data
 $null = Setup
 
-# Import the MSIX Dynamic Dependency module
-$module = Join-Path $dev 'DynamicDependency\Powershell\MsixDynamicDependency.psm1'
-Import-Module -Name $module -Verbose:$true -ErrorAction Stop
-
-# Test the module
+# Test the cmdlets
 ""
-Write-Host "Testing API..."
+Write-Host "Testing cmdlets..."
 ""
 
 "API: RevisionId"
-$rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
+$rid = & "$cmdlet\Get-PackageGraphRevisionId.ps1"
 "RevisionId: $rid"
 if ($rid -ne 0)
 {
@@ -101,15 +98,7 @@ if ($rid -ne 0)
 
 "API: TryCreate"
 $pdid = "before"
-$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::TryCreate(
-        $packageFamilyName,
-        0,
-        [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyProcessorArchitectures]::None,
-        [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyLifetimeKind]::Process,
-        "",
-        [Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions]::None,
-        [ref] $pdid)
-"HRESULT: 0x" + $hr.ToString("X")
+$pdid = & "$cmdlet\TryCreate-PackageDependency.ps1" -PackageFamilyName $packageFamilyName -MinVersion 0 -LifetimeKind Process
 "PackageDependencyId: $pdid"
 if ([string]::IsNullOrEmpty($pdid))
 {
@@ -120,8 +109,7 @@ if ([string]::IsNullOrEmpty($pdid))
 
 "API: GetResolvedPackageFullName"
 $pfn = "before"
-$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::GetResolvedPackageFullName($pdid, [ref] $pfn)
-"HRESULT: 0x" + $hr.ToString("X")
+$pfn = & "$cmdlet\Get-PackageDependencyResolved.ps1" -PackageDependencyId $pdid
 "PackageFullName: $pfn"
 if (-not([string]::IsNullOrEmpty($pfn)))
 {
@@ -133,13 +121,9 @@ if (-not([string]::IsNullOrEmpty($pfn)))
 "API: Add"
 $pdc = 0
 $pfn = "before"
-$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Add(
-        $pdid,
-        [Microsoft.Windows.ApplicationModel.DynamicDependency.Rank]::Default,
-        [Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions]::None,
-        [ref] $pdc,
-        [ref] $pfn)
-"HRESULT: 0x" + $hr.ToString("X")
+$h = & "$cmdlet\Add-PackageDependency.ps1" -PackageDependencyId $pdid
+$pdc = $h.PackageDependencyContext
+$pfn = $h.PackageFullName
 "PackageDependencyContext: $pdc"
 "PackageFullName: $pfn"
 if ([string]::IsNullOrEmpty($pdc))
@@ -155,7 +139,7 @@ if ([string]::IsNullOrEmpty($pfn))
 ""
 
 "API: RevisionId"
-$rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
+$rid = & "$cmdlet\Get-PackageGraphRevisionId.ps1"
 "RevisionId: $rid"
 if ($rid -ne 1)
 {
@@ -166,8 +150,7 @@ if ($rid -ne 1)
 
 "API: GetIdForContext"
 $id = "before"
-$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::GetIdForContext($pdc, [ref] $id)
-"HRESULT: 0x" + $hr.ToString("X")
+$id = & "$cmdlet\Get-PackageDependencyIdForContext.ps1" -PackageDependencyContext $pdc
 "PackageDependencyId: $id"
 if ([string]::IsNullOrEmpty($id))
 {
@@ -178,8 +161,7 @@ if ([string]::IsNullOrEmpty($id))
 
 "API: GetResolvedPackageFullName"
 $pfn = "before"
-$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::GetResolvedPackageFullName($pdid, [ref] $pfn)
-"HRESULT: 0x" + $hr.ToString("X")
+$pfn = & "$cmdlet\Get-PackageDependencyResolved.ps1" -PackageDependencyId $pdid
 "PackageFullName: $pfn"
 if ([string]::IsNullOrEmpty($pfn))
 {
@@ -197,24 +179,21 @@ $widget | Format-Custom
 ""
 
 "API: Remove"
-$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Remove($pdc)
-"HRESULT: 0x" + $hr.ToString("X")
+& "$cmdlet\Remove-PackageDependency.ps1" -PackageDependencyContext $pdc
 
 "API: RevisionId"
-$rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
+$rid = & "$cmdlet\Get-PackageGraphRevisionId.ps1"
 "RevisionId: $rid"
 ""
 
 "API: GetResolvedPackageFullName"
 $pfn = "before"
-$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::GetResolvedPackageFullName($pdid, [ref] $pfn)
-"HRESULT: 0x" + $hr.ToString("X")
+$pfn = & "$cmdlet\Get-PackageDependencyResolved.ps1" -PackageDependencyId $pdid
 "PackageFullName: $pfn"
 ""
 
 "API: Delete"
-$hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Delete($pdid)
-"HRESULT: 0x" + $hr.ToString("X")
+& "$cmdlet\Delete-PackageDependency.ps1" -PackageDependencyId $pdid
 ""
 
 # Cleanup test data

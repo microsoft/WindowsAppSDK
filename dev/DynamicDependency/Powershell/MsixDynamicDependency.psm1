@@ -1,6 +1,23 @@
 # Copyright (c) Microsoft Corporation and Contributors.
 # Licensed under the MIT License.
 
+<#
+.SYNOPSIS
+Functions to use Windows' Dynamic Dependency API.
+
+.DESCRIPTION
+TBD
+
+.INPUTS
+None
+
+.OUTPUTS
+None
+
+.NOTES
+    Version : 0.1.0
+#>
+
 Add-Type -TypeDefinition @"
 using System;
 using System.Runtime.InteropServices;
