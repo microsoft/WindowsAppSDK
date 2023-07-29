@@ -1,0 +1,123 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace Microsoft.Windows.Management.Deployment
+{
+    [contractversion(1)]
+    apicontract PackageDeploymentContract{};
+
+    // How should we handle deployment operations?
+    [contract(PackageDeploymentContract, 1)]
+    enum DeploymentProcessingModel
+    {
+        Sequential,
+        Parallel
+    };
+
+    // Do deployment operations need non-default priority?
+    [contract(PackageDeploymentContract, 1)]
+    enum DeploymentPriority
+    {
+        Low,
+        Normal,
+        Immediate
+    };
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageSetItem
+    {
+        PackageSetItem();
+
+        // Unique id
+        string Id;
+
+        // Source where a package can be retrieved from if/when needed for install, remediation, etc
+        uri PackageUri;
+
+        // Package criteria to identify if a matching package is ready for use and to use at runtime
+        string PackageFamilyName;
+        Windows.ApplicationModel.PackageVersion MinVersion;
+        ProcessorArchitectures ProcessorArchitectureFilter;
+        Windows.Management.Deployment.PackageType PackageTypeFilter;
+
+        DeploymentProcessingModel DeploymentProcessingModel;
+
+        DeploymentPriority DeploymentPriority;
+
+        // ??? Additional info potentially needed for deployment operations
+        //TODO �see AddPackageOptions�
+    }
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageSet
+    {
+        // Unique id
+        string Id;
+
+        // Package(s) in the set
+        Vector<PackageSetItem> PackageSetItems;
+    }
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass FindPackageSetOptions
+    {
+        FindPackageSetOptions();
+    }
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageSetManager
+    {
+        static PackageSetManager GetDefault();
+
+        void Add(PackageSet packageSet);  		                // Create/Write/Save
+        void Update(PackageSet packageSet);  		            // Update/Write/Save
+        void Remove(string packageSetId);		                // Delete
+        PackageSet Get(string packageSetId);		            // Read/Load
+        Vector<PackageSet> Find(FindPackageSetOptions options); // Enumerate
+    }
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageDeploymentManager
+    {
+        // Get an instance of the manager
+        static PackageDeploymentManager GetDefault();
+
+        // Return true if the package set are present and available for use
+        bool IsReady(string packageSetId);
+
+        // Check if the necessary package(s) needed by the scenario are present
+        // and available for use and if not then Make It So.
+        // If the necessary packages(s) are not present on the system
+        // then make them available (download, install, etc).
+        // If the necessary AI Models are present and available this is equivalent to IsReady(id).
+        IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        EnsureIsReadyAsync(string packageSetId);
+
+        // Add packages in a set
+        IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        AddPackageSetAsync(PackageSet packageSet, AddPackageSetOptions options);
+
+        IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        AddPackageSetByIdAsync(string packageSetId, AddPackageSetOptions options);
+
+        // Ditto PackageSet operations of Remove, Repair, Reset
+    }
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageRuntimeManager
+    {
+        // Get an instance of the manager
+        static PackageRuntimeManager GetDefault();
+
+        // Make the package(s) in the package set available to the calling process
+        // i.e. dynamically add the package(s) in the package set to the caller's package graph.
+        // This is equivalent to
+        //   FOREACH p IN PackageSetManager.Get(id).PackageSetItems
+        //       pd = TryCreatePackageDependency(p)
+        //       AddPackageDependency(pd)
+
+        void AddPackageSetByIdToPackageGraph(string packageSetId);
+
+        void AddPackageSetToPackageGraph(PackageSet packageSet);
+    }
+}

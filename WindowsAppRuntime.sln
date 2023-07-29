@@ -633,6 +633,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "KozaniProtocol", "KozaniPro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KozaniProtocol", "dev\Kozani\KozaniProtocol\KozaniProtocol.vcxproj", "{3F28C3ED-2548-4530-8B6C-832FAE0E993D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PackageManager", "PackageManager", "{380C8BE1-1868-4860-BD32-ADCD8683285D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PackageManager", "dev\PackageManager\PackageManager.vcxitems", "{8A9A0C85-65A8-4BCA-A49E-45FC4FDBC7D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2436,6 +2440,8 @@ Global
 		{A18E00C4-3668-4289-ABFC-D1DF330DA6BF} = {9CE0ED94-078A-405F-8599-BFC2D8D6E537}
 		{82197F64-3A88-4C48-AEF9-7E62E71D75BB} = {84F66485-4391-41C7-89CB-D5006EDF1383}
 		{3F28C3ED-2548-4530-8B6C-832FAE0E993D} = {82197F64-3A88-4C48-AEF9-7E62E71D75BB}
+		{380C8BE1-1868-4860-BD32-ADCD8683285D} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{8A9A0C85-65A8-4BCA-A49E-45FC4FDBC7D2} = {380C8BE1-1868-4860-BD32-ADCD8683285D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
@@ -2454,6 +2460,7 @@ Global
 		dev\Kozani\Common\Common.vcxitems*{829cdb09-eefe-4188-a045-3fc6be7bd96b}*SharedItemsImports = 4
 		dev\Common\Common.vcxitems*{8828053c-d6ec-4744-8624-f8c676c2d4df}*SharedItemsImports = 9
 		dev\Licensing\Licensing.vcxitems*{885a43fa-052d-4b0d-a2dc-13ee15796435}*SharedItemsImports = 9
+		dev\PackageManager\PackageManager.vcxitems*{8a9a0c85-65a8-4bca-a49e-45fc4fdbc7d2}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{8e52d7ea-a200-4a6b-ba74-8efb49468caf}*SharedItemsImports = 4
 		dev\Kozani\Common\Common.vcxitems*{a11c6664-f26a-4e71-b440-2e4e1ba09a93}*SharedItemsImports = 4
 		dev\AppNotifications\AppNotifications.vcxitems*{b4824897-88e0-4927-8fb9-e60106f01ed9}*SharedItemsImports = 9
