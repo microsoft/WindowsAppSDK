@@ -626,6 +626,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "KozaniRemoteManagerLauncher", "KozaniRemoteManagerLauncher", "{C5408A09-CDB4-41C1-8766-7677757EB7F2}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KozaniRemoteManagerLauncher", "dev\Kozani\KozaniRemoteManagerLauncher\KozaniRemoteManagerLauncher.vcxproj", "{45C50DA4-F2C7-4A4B-8493-50E5DF17B527}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KozaniRemoteManager.Msix", "test\Kozani\data\KozaniRemoteManager.Msix\KozaniRemoteManager.Msix.vcxproj", "{A18E00C4-3668-4289-ABFC-D1DF330DA6BF}"
 EndProject
