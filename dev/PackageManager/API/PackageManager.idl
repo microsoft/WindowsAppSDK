@@ -1,6 +1,16 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+//import "windows.foundation.idl";
+//import "Windows.Management.Deployment.idl";
+//import "Microsoft.Windows.ApplicationModel.winmd;"
+
+//import "Windows.ApplicationModel.idl";
+import "M.AM.DynamicDependency.idl";
+//import "Microsoft.Windows.ApplicationModel.DynamicDependency.winmd";
+
+//import "Windows.Management.Deployment.idl";
+
 namespace Microsoft.Windows.Management.Deployment
 {
     [contractversion(1)]
@@ -29,16 +39,16 @@ namespace Microsoft.Windows.Management.Deployment
         PackageSetItem();
 
         // Unique id
-        string Id;
+        String Id;
 
         // Source where a package can be retrieved from if/when needed for install, remediation, etc
-        uri PackageUri;
+        Windows.Foundation.Uri PackageUri;
 
         // Package criteria to identify if a matching package is ready for use and to use at runtime
-        string PackageFamilyName;
+        String PackageFamilyName;
         Windows.ApplicationModel.PackageVersion MinVersion;
-        ProcessorArchitectures ProcessorArchitectureFilter;
-        Windows.Management.Deployment.PackageType PackageTypeFilter;
+//TODO        Microsoft.Windows.ApplicationModel.ProcessorArchitectures ProcessorArchitectureFilter;
+        Windows.Management.Deployment.PackageTypes PackageTypeFilter;
 
         DeploymentProcessingModel DeploymentProcessingModel;
 
@@ -52,16 +62,19 @@ namespace Microsoft.Windows.Management.Deployment
     runtimeclass PackageSet
     {
         // Unique id
-        string Id;
+        String Id;
 
         // Package(s) in the set
-        Vector<PackageSetItem> PackageSetItems;
+        IVector<PackageSetItem> PackageSetItems;
     }
 
     [contract(PackageDeploymentContract, 1)]
     runtimeclass FindPackageSetOptions
     {
         FindPackageSetOptions();
+
+        //TODO
+        Boolean TODO_MustHaveAtLeastOneInterfaceOrStaticFactoryPlaceholder;
     }
 
     [contract(PackageDeploymentContract, 1)]
@@ -69,11 +82,40 @@ namespace Microsoft.Windows.Management.Deployment
     {
         static PackageSetManager GetDefault();
 
-        void Add(PackageSet packageSet);  		                // Create/Write/Save
-        void Update(PackageSet packageSet);  		            // Update/Write/Save
-        void Remove(string packageSetId);		                // Delete
-        PackageSet Get(string packageSetId);		            // Read/Load
-        Vector<PackageSet> Find(FindPackageSetOptions options); // Enumerate
+        void Add(PackageSet packageSet);  		                    // Create/Write/Save
+        void Update(PackageSet packageSet);  		                // Update/Write/Save
+        void Remove(String packageSetId);		                    // Delete
+        PackageSet Get(String packageSetId);		                // Read/Load
+        IVector<PackageSet> Find(FindPackageSetOptions options);    // Enumerate
+    };
+
+    [contract(PackageDeploymentContract, 1)]
+    enum PackageDeploymentProgressState
+    {
+        Queued = 0,
+        Processing = 1
+    };
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageDeploymentProgress
+    {
+        PackageDeploymentProgressState State { get; };
+        UInt32 Percentage { get; };
+    }
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageDeploymentResult
+    {
+        Guid ActivityId { get; };
+    }
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass AddPackageSetOptions
+    {
+        AddPackageSetOptions();
+
+        //TODO
+        Boolean TODO_MustHaveAtLeastOneInterfaceOrStaticFactoryPlaceholder;
     }
 
     [contract(PackageDeploymentContract, 1)]
@@ -83,22 +125,22 @@ namespace Microsoft.Windows.Management.Deployment
         static PackageDeploymentManager GetDefault();
 
         // Return true if the package set are present and available for use
-        bool IsReady(string packageSetId);
+        Boolean IsReady(String packageSetId);
 
         // Check if the necessary package(s) needed by the scenario are present
         // and available for use and if not then Make It So.
         // If the necessary packages(s) are not present on the system
         // then make them available (download, install, etc).
         // If the necessary AI Models are present and available this is equivalent to IsReady(id).
-        IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        EnsureIsReadyAsync(string packageSetId);
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        EnsureIsReadyAsync(String packageSetId);
 
         // Add packages in a set
-        IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         AddPackageSetAsync(PackageSet packageSet, AddPackageSetOptions options);
 
-        IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        AddPackageSetByIdAsync(string packageSetId, AddPackageSetOptions options);
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        AddPackageSetByIdAsync(String packageSetId, AddPackageSetOptions options);
 
         // Ditto PackageSet operations of Remove, Repair, Reset
     }
@@ -116,7 +158,7 @@ namespace Microsoft.Windows.Management.Deployment
         //       pd = TryCreatePackageDependency(p)
         //       AddPackageDependency(pd)
 
-        void AddPackageSetByIdToPackageGraph(string packageSetId);
+        void AddPackageSetByIdToPackageGraph(String packageSetId);
 
         void AddPackageSetToPackageGraph(PackageSet packageSet);
     }

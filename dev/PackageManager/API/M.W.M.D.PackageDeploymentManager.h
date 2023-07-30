@@ -1,0 +1,26 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#pragma once
+
+#include "Microsoft.Windows.Management.Deployment.PackageDeploymentManager.g.h"
+
+namespace winrt::Microsoft::Windows::Management::Deployment::implementation
+{
+    struct PackageDeploymentManager : PackageDeploymentManagerT<PackageDeploymentManager>
+    {
+        PackageDeploymentManager() = default;
+
+        static winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager GetDefault();
+        bool IsReady(hstring const& packageSetId);
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> EnsureIsReadyAsync(hstring packageSetId);
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> AddPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::AddPackageSetOptions options);
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> AddPackageSetByIdAsync(hstring packageSetId, winrt::Microsoft::Windows::Management::Deployment::AddPackageSetOptions options);
+    };
+}
+namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation
+{
+    struct PackageDeploymentManager : PackageDeploymentManagerT<PackageDeploymentManager, implementation::PackageDeploymentManager>
+    {
+    };
+}

@@ -7,7 +7,6 @@
 
 #include <unknwn.h>
 #include <appmodel.h>
-#include <MsixDynamicDependency.h>
 
 #include <filesystem>
 #include <thread>
