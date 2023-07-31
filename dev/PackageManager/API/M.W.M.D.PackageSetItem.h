@@ -13,14 +13,16 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
         hstring Id();
         void Id(hstring const& value);
-        winrt::Windows::Foundation::Uri PackageUri();
-        void PackageUri(winrt::Windows::Foundation::Uri const& value);
+
         hstring PackageFamilyName();
         void PackageFamilyName(hstring const& value);
         winrt::Windows::ApplicationModel::PackageVersion MinVersion();
         void MinVersion(winrt::Windows::ApplicationModel::PackageVersion const& value);
         winrt::Windows::Management::Deployment::PackageTypes PackageTypeFilter();
         void PackageTypeFilter(winrt::Windows::Management::Deployment::PackageTypes const& value);
+
+        winrt::Windows::Foundation::Uri PackageUri();
+        void PackageUri(winrt::Windows::Foundation::Uri const& value);
         winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel DeploymentProcessingModel();
         void DeploymentProcessingModel(winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel const& value);
         winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority DeploymentPriority();
@@ -28,10 +30,10 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
     private:
         hstring m_id;
-        winrt::Windows::Foundation::Uri m_packageUri{ nullptr };
         hstring m_packageFamilyName;
         winrt::Windows::ApplicationModel::PackageVersion m_minVersion{};
         winrt::Windows::Management::Deployment::PackageTypes m_packageTypeFilter{};
+        winrt::Windows::Foundation::Uri m_packageUri{ nullptr };
         winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel m_deploymentProcessingModel{};
         winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority m_deploymentPriority{};
     };

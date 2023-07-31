@@ -56,19 +56,18 @@ namespace Microsoft.Windows.Management.Deployment
         PackageSetItem();
 
         // Unique id
-        String Id;
-
-        // Source where a package can be retrieved from if/when needed for install, remediation, etc
-        Windows.Foundation.Uri PackageUri;
+        String Id;  //required
 
         // Package criteria to identify if a matching package is ready for use and to use at runtime
-        String PackageFamilyName;
-        Windows.ApplicationModel.PackageVersion MinVersion;
+        String PackageFamilyName;                           //required
+        Windows.ApplicationModel.PackageVersion MinVersion; //required
 //TODO        Microsoft.Windows.ApplicationModel.ProcessorArchitectures ProcessorArchitectureFilter;
         Windows.Management.Deployment.PackageTypes PackageTypeFilter;
 
+        // Source where a package can be retrieved from if/when needed for install, remediation, etc
+        // and options influencing how we can/must process them when needed
+        Windows.Foundation.Uri PackageUri;
         DeploymentProcessingModel DeploymentProcessingModel;
-
         DeploymentPriority DeploymentPriority;
 
         // ??? Additional info potentially needed for deployment operations

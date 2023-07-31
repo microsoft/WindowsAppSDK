@@ -15,14 +15,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         m_id = value;
     }
-    winrt::Windows::Foundation::Uri PackageSetItem::PackageUri()
-    {
-        return m_packageUri;
-    }
-    void PackageSetItem::PackageUri(winrt::Windows::Foundation::Uri const& value)
-    {
-        m_packageUri = value;
-    }
     hstring PackageSetItem::PackageFamilyName()
     {
         return m_packageFamilyName;
@@ -46,6 +38,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     void PackageSetItem::PackageTypeFilter(winrt::Windows::Management::Deployment::PackageTypes const& value)
     {
         m_packageTypeFilter = value;
+    }
+    winrt::Windows::Foundation::Uri PackageSetItem::PackageUri()
+    {
+        return m_packageUri;
+    }
+    void PackageSetItem::PackageUri(winrt::Windows::Foundation::Uri const& value)
+    {
+        m_packageUri = value;
     }
     winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel PackageSetItem::DeploymentProcessingModel()
     {
