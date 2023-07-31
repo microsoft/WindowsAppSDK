@@ -25,6 +25,15 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         void DeploymentProcessingModel(winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel const& value);
         winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority DeploymentPriority();
         void DeploymentPriority(winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority const& value);
+
+    private:
+        hstring m_id;
+        winrt::Windows::Foundation::Uri m_packageUri{ nullptr };
+        hstring m_packageFamilyName;
+        winrt::Windows::ApplicationModel::PackageVersion m_minVersion{};
+        winrt::Windows::Management::Deployment::PackageTypes m_packageTypeFilter{};
+        winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel m_deploymentProcessingModel{};
+        winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority m_deploymentPriority{};
     };
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation

@@ -13,6 +13,8 @@ import "M.AM.DynamicDependency.idl";
 
 namespace Microsoft.Windows.Management.Deployment
 {
+    runtimeclass PackageVolume;
+
     [contractversion(1)]
     apicontract PackageDeploymentContract{};
 
@@ -31,6 +33,21 @@ namespace Microsoft.Windows.Management.Deployment
         Low,
         Normal,
         Immediate
+    };
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageVolume
+    {
+        PackageVolume();
+
+        Boolean IsOffline;
+        Boolean IsSystemVolume;
+        String MountPoint;
+        String Name;
+        String PackageStorePath;
+        Boolean SupportsHardLinks;
+        Boolean IsFullTrustPackageSupported;
+        Boolean IsAppxInstallSupported;
     };
 
     [contract(PackageDeploymentContract, 1)]
@@ -55,7 +72,7 @@ namespace Microsoft.Windows.Management.Deployment
         DeploymentPriority DeploymentPriority;
 
         // ??? Additional info potentially needed for deployment operations
-        //TODO �see AddPackageOptions�
+        //TODO see AddPackageOptions
     }
 
     [contract(PackageDeploymentContract, 1)]
@@ -65,7 +82,7 @@ namespace Microsoft.Windows.Management.Deployment
         String Id;
 
         // Package(s) in the set
-        IVector<PackageSetItem> PackageSetItems;
+        IVector<PackageSetItem> PackageSetItems { get; };
     }
 
     [contract(PackageDeploymentContract, 1)]
@@ -109,13 +126,35 @@ namespace Microsoft.Windows.Management.Deployment
         Guid ActivityId { get; };
     }
 
+    // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
     [contract(PackageDeploymentContract, 1)]
     runtimeclass AddPackageSetOptions
     {
         AddPackageSetOptions();
 
-        //TODO
-        Boolean TODO_MustHaveAtLeastOneInterfaceOrStaticFactoryPlaceholder;
+        PackageVolume TargetVolume;
+        IVector<Windows.Foundation.Uri> DependencyPackageUris { get; };
+        IVector<String> OptionalPackageFamilyNames { get; };
+        IVector<Windows.Foundation.Uri> OptionalPackageUris { get; };
+        IVector<Windows.Foundation.Uri> RelatedPackageUris { get; };
+        Windows.Foundation.Uri ExternalLocationUri;
+        Windows.Management.Deployment.StubPackageOption StubPackageOption;
+        Boolean AllowUnsigned;
+        Boolean DeveloperMode;
+        Boolean ForceAppShutdown;
+        Boolean ForceTargetAppShutdown;
+        Boolean ForceUpdateFromAnyVersion;
+        Boolean InstallAllResources;
+        Boolean RequiredContentGroupOnly;
+        Boolean RetainFilesOnFailure;
+        Boolean StageInPlace;
+        Boolean DeferRegistrationWhenPackagesAreInUse;
+
+        Boolean IsExpectedDigestsSupported { get; };            // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
+        IMap<Windows.Foundation.Uri, String> ExpectedDigests{ get; };
+
+        Boolean IsLimitToExistingPackagesSupported { get; };    // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
+        Boolean LimitToExistingPackages;
     }
 
     [contract(PackageDeploymentContract, 1)]

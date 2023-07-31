@@ -11,7 +11,15 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         PackageDeploymentProgress() = default;
 
+        PackageDeploymentProgress(
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgressState const& state,
+            uint32_t percentage);
+
         winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgressState State();
         uint32_t Percentage();
+
+    private:
+        winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgressState m_state{};
+        uint32_t m_percentage{};
     };
 }

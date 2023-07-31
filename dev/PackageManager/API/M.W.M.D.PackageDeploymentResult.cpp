@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -7,8 +7,13 @@
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
+    PackageDeploymentResult::PackageDeploymentResult(winrt::guid const& activityId) :
+        m_activityId(activityId)
+    {
+    }
+
     winrt::guid PackageDeploymentResult::ActivityId()
     {
-        throw hresult_not_implemented();
+        return m_activityId;
     }
 }

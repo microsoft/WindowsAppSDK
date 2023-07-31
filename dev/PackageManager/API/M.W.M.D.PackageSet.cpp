@@ -9,18 +9,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
     hstring PackageSet::Id()
     {
-        throw hresult_not_implemented();
+        return m_id;
     }
     void PackageSet::Id(hstring const& value)
     {
-        throw hresult_not_implemented();
+        m_id = value;
     }
     winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageSetItem> PackageSet::PackageSetItems()
     {
-        throw hresult_not_implemented();
-    }
-    void PackageSet::PackageSetItems(winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageSetItem> const& value)
-    {
-        throw hresult_not_implemented();
+        return m_packageSetItems;
     }
 }

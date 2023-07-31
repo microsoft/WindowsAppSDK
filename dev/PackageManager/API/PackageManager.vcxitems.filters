@@ -67,9 +67,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)PackageManager.idl" />

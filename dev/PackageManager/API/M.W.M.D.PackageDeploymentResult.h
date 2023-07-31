@@ -11,6 +11,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         PackageDeploymentResult() = default;
 
+        PackageDeploymentResult(winrt::guid const& activityId);
+
         winrt::guid ActivityId();
+
+    private:
+        winrt::guid m_activityId{};
     };
 }

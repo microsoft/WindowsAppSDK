@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -7,12 +7,21 @@
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
+    PackageDeploymentProgress::PackageDeploymentProgress(
+        winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgressState const& state,
+        uint32_t percentage) :
+        m_state(state),
+        m_percentage(percentage)
+    {
+    }
+
     winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgressState PackageDeploymentProgress::State()
     {
-        throw hresult_not_implemented();
+        return m_state;
     }
+
     uint32_t PackageDeploymentProgress::Percentage()
     {
-        throw hresult_not_implemented();
+        return m_percentage;
     }
 }

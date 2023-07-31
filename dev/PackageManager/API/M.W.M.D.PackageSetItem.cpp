@@ -9,58 +9,58 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
     hstring PackageSetItem::Id()
     {
-        throw hresult_not_implemented();
+        return m_id;
     }
     void PackageSetItem::Id(hstring const& value)
     {
-        throw hresult_not_implemented();
+        m_id = value;
     }
     winrt::Windows::Foundation::Uri PackageSetItem::PackageUri()
     {
-        throw hresult_not_implemented();
+        return m_packageUri;
     }
     void PackageSetItem::PackageUri(winrt::Windows::Foundation::Uri const& value)
     {
-        throw hresult_not_implemented();
+        m_packageUri = value;
     }
     hstring PackageSetItem::PackageFamilyName()
     {
-        throw hresult_not_implemented();
+        return m_packageFamilyName;
     }
     void PackageSetItem::PackageFamilyName(hstring const& value)
     {
-        throw hresult_not_implemented();
+        m_packageFamilyName = value;
     }
     winrt::Windows::ApplicationModel::PackageVersion PackageSetItem::MinVersion()
     {
-        throw hresult_not_implemented();
+        return m_minVersion;
     }
     void PackageSetItem::MinVersion(winrt::Windows::ApplicationModel::PackageVersion const& value)
     {
-        throw hresult_not_implemented();
+        m_minVersion = value;
     }
     winrt::Windows::Management::Deployment::PackageTypes PackageSetItem::PackageTypeFilter()
     {
-        throw hresult_not_implemented();
+        return m_packageTypeFilter;
     }
     void PackageSetItem::PackageTypeFilter(winrt::Windows::Management::Deployment::PackageTypes const& value)
     {
-        throw hresult_not_implemented();
+        m_packageTypeFilter = value;
     }
     winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel PackageSetItem::DeploymentProcessingModel()
     {
-        throw hresult_not_implemented();
+        return m_deploymentProcessingModel;
     }
     void PackageSetItem::DeploymentProcessingModel(winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel const& value)
     {
-        throw hresult_not_implemented();
+        m_deploymentProcessingModel = value;
     }
     winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority PackageSetItem::DeploymentPriority()
     {
-        throw hresult_not_implemented();
+        return m_deploymentPriority;
     }
     void PackageSetItem::DeploymentPriority(winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority const& value)
     {
-        throw hresult_not_implemented();
+        m_deploymentPriority = value;
     }
 }

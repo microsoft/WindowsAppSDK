@@ -23,6 +23,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSet.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetItem.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolume.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.AddPackageSetOptions.h" />
@@ -34,6 +35,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetItem.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolume.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)PackageManager.idl">

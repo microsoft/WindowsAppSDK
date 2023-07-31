@@ -14,6 +14,9 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         hstring Id();
         void Id(hstring const& value);
         winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageSetItem> PackageSetItems();
-        void PackageSetItems(winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageSetItem> const& value);
+
+    private:
+        hstring m_id;
+        winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageSetItem> m_packageSetItems;
     };
 }
