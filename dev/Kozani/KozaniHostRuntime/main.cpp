@@ -138,10 +138,10 @@ winrt::hstring GetRemoteAumid()
     THROW_IF_WIN32_ERROR(GetCurrentApplicationUserModelId(&lvpAumidLength, lvpAumid));
 
     WCHAR lvpFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
-    WCHAR lvpRelativeId[PACKAGE_RELATIVE_APPLICATION_ID_MAX_LENGTH + 1]{};
+    WCHAR lvpPraid[PACKAGE_RELATIVE_APPLICATION_ID_MAX_LENGTH + 1]{};
     UINT32 lvpFamilyNameLength{ ARRAYSIZE(lvpFamilyName) };
-    UINT32 lvpRelativeIdLength{ ARRAYSIZE(lvpRelativeId) };
-    THROW_IF_WIN32_ERROR(ParseApplicationUserModelId(lvpAumid, &lvpFamilyNameLength, lvpFamilyName, &lvpRelativeIdLength, lvpRelativeId));
+    UINT32 lvpPraidLength{ ARRAYSIZE(lvpPraid) };
+    THROW_IF_WIN32_ERROR(ParseApplicationUserModelId(lvpAumid, &lvpFamilyNameLength, lvpFamilyName, &lvpPraidLength, lvpPraid));
 
     // Replace '_' in the family name with '-' as '_' cannot be used in the app extension name.
     for (UINT32 i = 0; i < lvpFamilyNameLength; i++)
@@ -160,23 +160,16 @@ winrt::hstring GetRemoteAumid()
     IVectorView<AppExtensions::AppExtension> appExtensions{ catalog.FindAllAsync().get() };
     for (const auto appExtension : appExtensions)
     {
-        if (appExtension.Id() == lvpRelativeId)
+        if (appExtension.Id() == lvpPraid)
         {
             const auto properties{ appExtension.GetExtensionPropertiesAsync().get() };
             const auto property{ properties.Lookup(L"RemoteAppAumid").as<IMap<winrt::hstring, winrt::Windows::Foundation::IInspectable>>() };
             const auto remoteAumid{ winrt::unbox_value<winrt::hstring>(property.Lookup(L"#text")) };
-
-            auto otherData{ properties.Lookup(L"OtherData").as<IMap<winrt::hstring, winrt::Windows::Foundation::IInspectable>>() };
-            const auto otherDataText{ winrt::unbox_value<winrt::hstring>(otherData.Lookup(L"#text")) };
-
-            auto moreotherData{ properties.Lookup(L"MoreOtherData").as<IMap<winrt::hstring, winrt::Windows::Foundation::IInspectable>>() };
-            const auto moreotherDataText{ winrt::unbox_value<winrt::hstring>(moreotherData.Lookup(L"#text")) };
-
             return remoteAumid;
         }
     }
 
-    THROW_WIN32_MSG(ERROR_NOT_FOUND, "Cannot find remote app aumid from app extension with name: %ls, Id: %ls", appExtensionName.c_str(), lvpRelativeId);
+    THROW_WIN32_MSG(ERROR_NOT_FOUND, "Cannot find remote app aumid from app extension with name: %ls, Id: %ls", appExtensionName.c_str(), lvpPraid);
 }
 
 void GetConfigurationFiles(std::wstring& rdpFilePath, std::wstring& additionalSettingsFilePath)
