@@ -48,7 +48,8 @@ constexpr HRESULT KOZANI_E_PDU_SERIALIZATION{ MAKE_HRESULT(SEVERITY_ERROR, FACIL
 
 #endif
 
-template<typename TProvider> void TraceFailureFromProvider(const wil::FailureInfo& failure) WI_NOEXCEPT
+template<typename TProvider> 
+void __stdcall TraceFailureFromProvider(const wil::FailureInfo& failure) WI_NOEXCEPT
 {
     if (failure.hr == KOZANI_E_INFO)
     {

@@ -242,7 +242,7 @@ public:
     }
     CATCH_RETURN()
 
-    ULONG Release() noexcept override
+    ULONG __stdcall Release() noexcept override
     {
         ULONG refCount{ winrt::implements<KozaniApplicationLauncher, IKozaniApplicationLauncher>::Release() };
         if (refCount == 0)
