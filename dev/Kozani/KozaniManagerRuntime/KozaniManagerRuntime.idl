@@ -15,10 +15,10 @@ namespace Microsoft.Kozani.ManagerRuntime
             Windows.ApplicationModel.Activation.ActivationKind activationKind,
             String appUserModelId,
             String connectionRdpFilePath,
-            String additionalSettingsFilePath,
-            Windows.ApplicationModel.Activation.IActivatedEventArgs args,   // optional, can be nullptr
-            IInspectable statusCallback,
-            UInt32 associatedLocalProcessId // optional, use 0 if you don't want the remote app lifetime to be tied to the lifetime of an associated local process
+            UInt32 associatedLocalProcessId, // optional, use 0 if you don't want the remote app lifetime to be tied to the lifetime of an associated local process
+            Windows.ApplicationModel.Activation.IActivatedEventArgs args,   // optional - can be nullptr if there are no activatedEventArgs for Launch ActivationKind
+            IInspectable statusCallback,     // optional - can be nullptr if the caller does not need status update callbacks
+            String additionalSettingsFilePath   // optional - can be empty String if the additional settings file does not exist
             );
     };
 }
