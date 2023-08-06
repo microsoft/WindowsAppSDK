@@ -38,6 +38,20 @@ Function LogComment
     "       $message" | Write-Host
 }
 
+Function Trace
+{
+    param([string]$message)
+
+    Write-Host $message -ForegroundColor Magenta
+}
+
+Function TraceEnter
+{
+    param([string]$message)
+
+    Trace " Test: $message"
+}
+
 Function RemoveTestPackages
 {
     Write-Host "Removing $packageName..." -ForegroundColor Cyan
@@ -112,6 +126,8 @@ Function CleanupPackageDependencies
 Describe "DynamicDependency API" {
 
     BeforeAll {
+        Trace "BeforeAll"
+
         # Import the MSIX Dynamic Dependency module
         $module = Join-Path $dev 'DynamicDependency\Powershell\MsixDynamicDependency.psm1'
         Import-Module -Name $module -Verbose:$true -ErrorAction Stop
@@ -121,16 +137,22 @@ Describe "DynamicDependency API" {
     }
 
     AfterAll {
+        Trace "AfterAll"
+
         CleanupPackageDependencies
         RemoveTestPackages
     }
 
     It "Get RevisionId (expect 0)" {
+        TraceEnter "Get RevisionId (expect 0)"
+
         $rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
         $rid | Should Be 0
     }
 
     It "TryCreate + Delete" {
+        TraceEnter "TryCreate + Delete"
+
         $rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
         $rid | Should Be 0
 
@@ -166,6 +188,8 @@ Describe "DynamicDependency API" {
     }
 
     It "TryCreate + Add + Remove + Delete" {
+        TraceEnter "TryCreate + Add + Remove + Delete"
+
         $rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
         LogComment "RevisionId: $rid"
         $rid | Should Be 0
@@ -259,17 +283,23 @@ Describe "DynamicDependency API" {
     }
 
     It "Remove null" {
+        TraceEnter "Remove null"
+
         $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Remove([IntPtr]0)
         $hr | Should Be $E_INVALIDARG
     }
 
     It "Get RevisionId" {
+        TraceEnter "Get RevisionId"
+
         $rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
         LogComment "RevisionId: $rid"
         $rid | Should Not BeLessThan 0
     }
 
     It "GetResolvedPackageFullName null" {
+        TraceEnter "GetResolvedPackageFullName null"
+
         $pdid = $null
         $pfn = "before"
         $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::GetResolvedPackageFullName($pdid, [ref] $pfn)
@@ -280,6 +310,8 @@ Describe "DynamicDependency API" {
     }
 
     It "Delete null" {
+        TraceEnter "Delete null"
+
         $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Delete([IntPtr]0)
         LogComment "HRESULT: 0x$($hr.ToString("X"))"
         $hr | Should Be 0
