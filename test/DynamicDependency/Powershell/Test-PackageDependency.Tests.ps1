@@ -1,22 +1,16 @@
 # Copyright (c) Microsoft Corporation and Contributors.
 # Licensed under the MIT License.
 
-# Test Framework is Pester => https://pester.dev/docs/quick-start
-# NOTE: Powershell 5.1.22621.1778 includes module Pester version 3.4.0
-# NOTE: Powershell 7.3.6 includes module Pester version version 3.4.0
-
 Set-StrictMode -Version 3.0
 
 $ErrorActionPreference = "Stop"
-
-# Errors
-$E_INVALIDARG = 0x80070057
 
 # Repository paths
 $root = (Get-Item $PSScriptRoot).parent.parent.parent.FullName
 $dev = Join-Path $root 'dev'
 $test = Join-Path $root 'test'
 $buildOutput = Join-Path $root 'BuildOutput\Debug\x64'
+$cmdlet = Join-Path $dev 'DynamicDependency\Powershell'
 
 # Test package(s)
 $packageName = 'WindowsAppRuntime.Test.DynDep.Fwk.Widgets'
@@ -123,14 +117,10 @@ Function CleanupPackageDependencies
     }
 }
 
-Describe "DynamicDependency API" {
+Describe "DynamicDependency cmdlets" {
 
     BeforeAll {
         Trace "BeforeAll"
-
-        # Import the MSIX Dynamic Dependency module
-        $module = Join-Path $dev 'DynamicDependency\Powershell\MsixDynamicDependency.psm1'
-        Import-Module -Name $module -Verbose:$true -ErrorAction Stop
 
         RemoveTestPackages
         AddTestPackages
@@ -143,147 +133,122 @@ Describe "DynamicDependency API" {
         RemoveTestPackages
     }
 
-    It "Get RevisionId (expect 0)" {
-        TraceEnter "Get RevisionId (expect 0)"
+    It "Get-PackageGraphRevisionId (expect 0)" {
+        TraceEnter "Get-PackageGraphRevisionId (expect 0)"
 
-        $rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
+        $rid = & "$cmdlet\Get-PackageGraphRevisionId.ps1"
         $rid | Should Be 0
     }
 
     It "TryCreate + Delete" {
         TraceEnter "TryCreate + Delete"
 
-        $rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
+        $rid = & "$cmdlet\Get-PackageGraphRevisionId.ps1"
         LogComment "RevisionId: $rid"
         $rid | Should Be 0
 
+        LogComment "TryCreate-PackageDependency"
         $pdid = "before"
-        $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::TryCreate(
-                $packageFamilyName,
-                0,
-                [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyProcessorArchitectures]::None,
-                [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyLifetimeKind]::Process,
-                "",
-                [Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions]::None,
-                [ref] $pdid)
-        LogComment "TryCreate: 0x$($hr.ToString("X"))"
+        $pdid = & "$cmdlet\TryCreate-PackageDependency.ps1" -PackageFamilyName $packageFamilyName -MinVersion 0 -LifetimeKind Process
         LogComment "  PackageDependencyId: $pdid"
-        $hr | Should Be 0
         $pdid | Should Not BeNullOrEmpty
         $packageDependencyIds.Add($pdid, $null)
 
-        $rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
+        $rid = & "$cmdlet\Get-PackageGraphRevisionId.ps1"
         LogComment "RevisionId: $rid"
         $rid | Should Be 0
 
+        LogComment "Get-PackageDependencyResolved"
         $pfn = "before"
-        $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::GetResolvedPackageFullName($pdid, [ref] $pfn)
-        LogComment "GetResolvedPackageFullName: 0x$($hr.ToString("X"))"
+        $pfn = & "$cmdlet\Get-PackageDependencyResolved.ps1" -PackageDependencyId $pdid
         LogComment "  PackageFullName: $pfn"
-        $hr | Should Be 0
         $pfn | Should BeNullOrEmpty
 
-        $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Delete($pdid)
-        LogComment "Delete: 0x$($hr.ToString("X"))"
-        $hr | Should Be 0
+        LogComment "Delete"
+        & "$cmdlet\Delete-PackageDependency.ps1" -PackageDependencyId $pdid
         $packageDependencyIds.Remove($pdid)
 
-        $rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
+        $rid = & "$cmdlet\Get-PackageGraphRevisionId.ps1"
         LogComment "RevisionId: $rid"
         $rid | Should Be 0
     }
 
     It "TryCreate + Add + Remove + Delete" {
-        TraceEnter "TryCreate + Add + Remove + Delete"
+        TraceEnter "TryCreate + Delete"
 
-        $rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
+        $rid = & "$cmdlet\Get-PackageGraphRevisionId.ps1"
         LogComment "RevisionId: $rid"
         $rid | Should Be 0
 
+        LogComment "TryCreate-PackageDependency"
         $pdid = "before"
-        $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::TryCreate(
-                $packageFamilyName,
-                0,
-                [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyProcessorArchitectures]::None,
-                [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyLifetimeKind]::Process,
-                "",
-                [Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions]::None,
-                [ref] $pdid)
-        LogComment "TryCreate: 0x$($hr.ToString("X"))"
+        $pdid = & "$cmdlet\TryCreate-PackageDependency.ps1" -PackageFamilyName $packageFamilyName -MinVersion 0 -LifetimeKind Process
         LogComment "  PackageDependencyId: $pdid"
-        $hr | Should Be 0
         $pdid | Should Not BeNullOrEmpty
         $packageDependencyIds.Add($pdid, $null)
 
+        $rid = & "$cmdlet\Get-PackageGraphRevisionId.ps1"
+        LogComment "RevisionId: $rid"
+        $rid | Should Be 0
+
+        LogComment "Get-PackageDependencyResolved"
         $pfn = "before"
-        $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::GetResolvedPackageFullName($pdid, [ref] $pfn)
-        LogComment "GetResolvedPackageFullName: 0x$($hr.ToString("X"))"
+        $pfn = & "$cmdlet\Get-PackageDependencyResolved.ps1" -PackageDependencyId $pdid
         LogComment "  PackageFullName: $pfn"
-        $hr | Should Be 0
         $pfn | Should BeNullOrEmpty
 
+        LogComment "Add-PackageDependency"
         $pdc = 0
         $pfn = "before"
-        $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Add(
-                $pdid,
-                [Microsoft.Windows.ApplicationModel.DynamicDependency.Rank]::Default,
-                [Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions]::None,
-                [ref] $pdc,
-                [ref] $pfn)
-        LogComment "Add: 0x$($hr.ToString("X"))"
+        $h = & "$cmdlet\Add-PackageDependency.ps1" -PackageDependencyId $pdid
+        $pdc = $h.PackageDependencyContext
+        $pfn = $h.PackageFullName
         LogComment "  PackageDependencyContext: $pdc"
         LogComment "  PackageFullName: $pfn"
-        $hr | Should Be 0
         $pdc | Should Not BeNullOrEmpty
         $packageDependencyContexts.Add($pdc, $null)
         $pfn | Should Not BeNullOrEmpty
         $packageDependencyContexts[$pdc] = $pfn
 
-        $rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
-        LogComment "RevisionId: $rid"
+        $rid = & "$cmdlet\Get-PackageGraphRevisionId.ps1"
+        LogComment "  RevisionId: $rid"
         $rid | Should Be 1
 
+        LogComment "Get-PackageDependencyIdForContext"
         $id = "before"
-        $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::GetIdForContext($pdc, [ref] $id)
-        LogComment "GetIdForContext: 0x$($hr.ToString("X"))"
+        $id = & "$cmdlet\Get-PackageDependencyIdForContext.ps1" -PackageDependencyContext $pdc
         LogComment "  PackageDependencyId: $id"
-        $hr | Should Be 0
         $id | Should Not BeNullOrEmpty
 
+        LogComment "Get-PackageDependencyResolved"
         $pfn = "before"
-        $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::GetResolvedPackageFullName($pdid, [ref] $pfn)
-        LogComment "GetResolvedPackageFullName: 0x$($hr.ToString("X"))"
+        $pfn = & "$cmdlet\Get-PackageDependencyResolved.ps1" -PackageDependencyId $pdid
         LogComment "  PackageFullName: $pfn"
-        $hr | Should Be 0
-        $pfn | Should Not BeNullOrEmpty
 
         # New a WinRT type from the package dynamically added to our package graph"
         $widget = [Microsoft.Test.DynamicDependency.Widgets.Widget1,Microsoft.Test.DynamicDependency.Widgets.Widget1,ContentType=WindowsRuntime]::GetStatic()
         $widget | Format-Custom
         $widget | Should Not Be $null
 
-        $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Remove($pdc)
-        LogComment "Remove: 0x$($hr.ToString("X"))"
-        $hr | Should Be 0
+        LogComment "Remove"
+        & "$cmdlet\Remove-PackageDependency.ps1" -PackageDependencyContext $pdc
         $packageDependencyContexts.Remove($pdc)
 
-        $rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
+        $rid = & "$cmdlet\Get-PackageGraphRevisionId.ps1"
         LogComment "RevisionId: $rid"
         $rid | Should Be 2
 
+        LogComment "Get-PackageDependencyResolved"
         $pfn = "before"
-        $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::GetResolvedPackageFullName($pdid, [ref] $pfn)
-        LogComment "GetResolvedPackageFullName: 0x$($hr.ToString("X"))"
+        $pfn = & "$cmdlet\Get-PackageDependencyResolved.ps1" -PackageDependencyId $pdid
         LogComment "  PackageFullName: $pfn"
-        $hr | Should Be 0
         $pfn | Should BeNullOrEmpty
 
-        $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Delete($pdid)
-        LogComment "Delete: 0x$($hr.ToString("X"))"
-        $hr | Should Be 0
+        LogComment "Delete"
+        & "$cmdlet\Delete-PackageDependency.ps1" -PackageDependencyId $pdid
         $packageDependencyIds.Remove($pdid)
 
-        $rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
+        $rid = & "$cmdlet\Get-PackageGraphRevisionId.ps1"
         LogComment "RevisionId: $rid"
         $rid | Should Be 2
     }
@@ -291,14 +256,14 @@ Describe "DynamicDependency API" {
     It "Remove null" {
         TraceEnter "Remove null"
 
-        $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Remove([IntPtr]0)
-        $hr | Should Be $E_INVALIDARG
+        $scriptBlock = { & "$cmdlet\Delete-PackageDependency.ps1" -PackageDependencyId $null }
+        $scriptBlock | Should Throw "Cannot bind argument to parameter 'PackageDependencyId' because it is an empty string."
     }
 
     It "Get RevisionId" {
         TraceEnter "Get RevisionId"
 
-        $rid = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageGraph]::RevisionId
+        $rid = & "$cmdlet\Get-PackageGraphRevisionId.ps1"
         LogComment "RevisionId: $rid"
         $rid | Should Not BeLessThan 0
     }
@@ -306,20 +271,15 @@ Describe "DynamicDependency API" {
     It "GetResolvedPackageFullName null" {
         TraceEnter "GetResolvedPackageFullName null"
 
-        $pdid = $null
-        $pfn = "before"
-        $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::GetResolvedPackageFullName($pdid, [ref] $pfn)
-        LogComment "HRESULT: 0x$($hr.ToString("X"))"
-        LogComment "PackageFullName: $pfn"
-        $hr | Should Be 0
-        $pfn | Should Be $null
+        LogComment "Get-PackageDependencyResolved"
+        $scriptBlock = { & "$cmdlet\Get-PackageDependencyResolved.ps1" -PackageDependencyId $null }
+        $scriptBlock | Should Throw "Cannot bind argument to parameter 'PackageDependencyId' because it is an empty string."
     }
 
     It "Delete null" {
         TraceEnter "Delete null"
 
-        $hr = [Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency]::Delete([IntPtr]0)
-        LogComment "HRESULT: 0x$($hr.ToString("X"))"
-        $hr | Should Be 0
+        $scriptBlock = { & "$cmdlet\Delete-PackageDependency.ps1" -PackageDependencyId $null -ErrorAction Stop }
+        $scriptBlock | Should Throw "Cannot bind argument to parameter 'PackageDependencyId' because it is an empty string."
     }
 }
