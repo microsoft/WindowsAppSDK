@@ -38,6 +38,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolume.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.AddPackageSetOptions.h">
@@ -65,6 +68,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolume.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

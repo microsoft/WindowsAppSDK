@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -7,13 +7,15 @@
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
-    bool PackageVolume::IsOffline()
+    PackageVolume::PackageVolume(winrt::Windows::Management::Deployment::PackageVolume const& value)
     {
-        return m_isOffline;
-    }
-    void PackageVolume::IsOffline(bool value)
-    {
-        m_isOffline = value;
+        IsSystemVolume(value.IsSystemVolume());
+        MountPoint(value.MountPoint());
+        Name(value.Name());
+        PackageStorePath(value.PackageStorePath());
+        SupportsHardLinks(value.SupportsHardLinks());
+        IsFullTrustPackageSupported(value.IsFullTrustPackageSupported());
+        IsAppxInstallSupported(value.IsAppxInstallSupported());
     }
     bool PackageVolume::IsSystemVolume()
     {
@@ -70,5 +72,13 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     void PackageVolume::IsAppxInstallSupported(bool value)
     {
         m_isAppxInstallSupported = value;
+    }
+    winrt::Microsoft::Windows::Management::Deployment::PackageVolumeStatus PackageVolume::Status()
+    {
+        throw hresult_not_implemented();
+    }
+    void PackageVolume::FixMe()
+    {
+        throw hresult_not_implemented();
     }
 }

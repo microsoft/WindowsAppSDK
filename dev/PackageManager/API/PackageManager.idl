@@ -36,11 +36,20 @@ namespace Microsoft.Windows.Management.Deployment
     };
 
     [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageVolumeStatus
+    {
+        PackageVolumeStatus();
+
+        Boolean IsOK;
+        Boolean IsOffline;
+        Boolean IsBroken;
+    };
+
+    [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageVolume
     {
         PackageVolume();
 
-        Boolean IsOffline;
         Boolean IsSystemVolume;
         String MountPoint;
         String Name;
@@ -48,6 +57,22 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean SupportsHardLinks;
         Boolean IsFullTrustPackageSupported;
         Boolean IsAppxInstallSupported;
+
+        PackageVolumeStatus Status { get; };
+
+        void FixMe();
+    };
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageVolumeManager
+    {
+        static IVector<PackageVolume> FindPackageVolumes();
+
+        static PackageVolume FindPackageVolumeByPath(String path);
+
+        static PackageVolume FindPackageVolumeByMediaId(String mediaId);
+
+        static PackageVolume FindPackageVolumeByName(String name);
     };
 
     [contract(PackageDeploymentContract, 1)]

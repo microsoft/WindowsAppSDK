@@ -10,9 +10,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     struct PackageVolume : PackageVolumeT<PackageVolume>
     {
         PackageVolume() = default;
+        PackageVolume(winrt::Windows::Management::Deployment::PackageVolume const& value);
 
-        bool IsOffline();
-        void IsOffline(bool value);
         bool IsSystemVolume();
         void IsSystemVolume(bool value);
         hstring MountPoint();
@@ -27,9 +26,10 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         void IsFullTrustPackageSupported(bool value);
         bool IsAppxInstallSupported();
         void IsAppxInstallSupported(bool value);
+        winrt::Microsoft::Windows::Management::Deployment::PackageVolumeStatus Status();
+        void FixMe();
 
     private:
-        bool m_isOffline{};
         bool m_isSystemVolume{};
         hstring m_mountPoint;
         hstring m_name;
