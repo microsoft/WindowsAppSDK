@@ -12,7 +12,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         PackageDeploymentManager() = default;
 
         static winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager GetDefault();
-        bool IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet);
+        bool IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet);
         bool IsReadyByPackageSetId(hstring const& packageSetId);
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> EnsureIsReadyAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet);
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> EnsureIsReadyByPackageSetIdAsync(hstring packageSetId);
@@ -20,7 +20,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> AddPackageSetByIdAsync(hstring packageSetId, winrt::Microsoft::Windows::Management::Deployment::AddPackageSetOptions options);
 
     private:
-        bool IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem& packageSetItem);
+        bool IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSet);
 
     private:
         winrt::Windows::Management::Deployment::PackageManager m_packageManager;

@@ -11,11 +11,19 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         throw hresult_not_implemented();
     }
-    void PackageRuntimeManager::AddPackageSetByIdToPackageGraph(hstring const& packageSetId)
+    void PackageRuntimeManager::AddPackageSet(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet)
     {
         throw hresult_not_implemented();
     }
-    void PackageRuntimeManager::AddPackageSetToPackageGraph(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet)
+    void PackageRuntimeManager::AddPackageSet(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& createOptions, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& addOptions)
+    {
+        throw hresult_not_implemented();
+    }
+    void PackageRuntimeManager::AddPackageSetById(hstring const& packageSetId)
+    {
+        throw hresult_not_implemented();
+    }
+    void PackageRuntimeManager::AddPackageSetById(hstring const& packageSetId, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& createOptions, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& addOptions)
     {
         throw hresult_not_implemented();
     }

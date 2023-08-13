@@ -12,8 +12,10 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         PackageRuntimeManager() = default;
 
         static winrt::Microsoft::Windows::Management::Deployment::PackageRuntimeManager GetDefault();
-        void AddPackageSetByIdToPackageGraph(hstring const& packageSetId);
-        void AddPackageSetToPackageGraph(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet);
+        void AddPackageSet(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet);
+        void AddPackageSet(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& createOptions, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& addOptions);
+        void AddPackageSetById(hstring const& packageSetId);
+        void AddPackageSetById(hstring const& packageSetId, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& createOptions, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& addOptions);
     };
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation

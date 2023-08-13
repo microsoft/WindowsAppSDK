@@ -193,8 +193,7 @@ namespace Microsoft.Windows.Management.Deployment
         // Return true if the package set's content are present and available for use
         Boolean IsReady(PackageSet packageSet);
 
-        [method_name("IsReadyByPackageSetId")]
-        Boolean IsReady(String packageSetId);
+        Boolean IsReadyByPackageSetId(String packageSetId);
 
         // Check if the necessary package(s) needed by the scenario are present
         // and available for use and if not then Make It So.
@@ -204,17 +203,15 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         EnsureIsReadyAsync(PackageSet packageSet);
 
-        [method_name("EnsureIsReadyByPackageSetIdAsync")]
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        EnsureIsReadyAsync(String packageSetId);
+        EnsureIsReadyByPackageSetIdAsync(String packageSetId);
 
         // Add packages in a set
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         AddPackageSetAsync(PackageSet packageSet, AddPackageSetOptions options);
 
-        [method_name("AddPackageSetByIdAsync")]
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        AddPackageSetAsync(String packageSetId, AddPackageSetOptions options);
+        AddPackageSetByIdAsync(String packageSetId, AddPackageSetOptions options);
 
         // Ditto PackageSet operations of Remove, Repair, Reset
     }
@@ -239,13 +236,12 @@ namespace Microsoft.Windows.Management.Deployment
                            Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions createOptions,
                            Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions addOptions);
 
-        [method_name("AddPackageSetById")]
-        void AddPackageSet(String packageSetId);
+        void AddPackageSetById(String packageSetId);
 
         [method_name("AddPackageSetByIdWithOptions")]
-        void AddPackageSet(String packageSetId,
-                           Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions createOptions,
-                           Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions addOptions);
+        void AddPackageSetById(String packageSetId,
+                               Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions createOptions,
+                               Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions addOptions);
 
     }
 }

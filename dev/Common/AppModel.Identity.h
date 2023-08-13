@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #ifndef __APPMODEL_IDENTITY_H
@@ -7,7 +7,7 @@
 #include <appmodel.h>
 
 #include <memory>
-#include <stdint>
+#include <stdint.h>
 
 namespace AppModel::Identity
 {
@@ -120,6 +120,8 @@ public:
         Version = 0;
     }
 
+    PackageVersion(const PackageVersion&) = default;
+
     // Create an instance with the value `major.minor.build.revision`.
     PackageVersion(std::uint16_t major, std::uint16_t minor = 0, std::uint16_t build = 0, std::uint16_t revision = 0) :
         PACKAGE_VERSION()
@@ -154,12 +156,14 @@ public:
     PackageVersion(winrt::Windows::ApplicationModel::PackageVersion packageVersion) :
         PACKAGE_VERSION()
     {
-        Major = packageVersion.Major();
-        Minor = packageVersion.Minor();
-        Build = packageVersion.Build();
-        Revision = packageVersion.Revision();
+        Major = packageVersion.Major;
+        Minor = packageVersion.Minor;
+        Build = packageVersion.Build;
+        Revision = packageVersion.Revision;
     }
 #endif // defined(WINRT_Windows_ApplicationModel_2_H)
+
+    PackageVersion& operator=(const PackageVersion&) = default;
 
     // Return the version as a uint64.
     std::uint64_t ToVersion() const
@@ -199,27 +203,27 @@ public:
 
 inline bool operator==(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
 {
-    return packageVersion1.ToVersion() == packageVersion2.ToVesion();
+    return packageVersion1.Version == packageVersion2.Version;
 }
 inline bool operator!=(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
 {
-    return packageVersion1.ToVersion() != packageVersion2.ToVesion();
+    return packageVersion1.Version != packageVersion2.Version;
 }
 inline bool operator<(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
 {
-    return packageVersion1.ToVersion() < packageVersion2.ToVesion();
+    return packageVersion1.Version < packageVersion2.Version;
 }
 inline bool operator<=(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
 {
-    return packageVersion1.ToVersion() <= packageVersion2.ToVesion();
+    return packageVersion1.Version <= packageVersion2.Version;
 }
 inline bool operator>(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
 {
-    return packageVersion1.ToVersion() > packageVersion2.ToVesion();
+    return packageVersion1.Version > packageVersion2.Version;
 }
 inline bool operator>=(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
 {
-    return packageVersion1.ToVersion() >= packageVersion2.ToVesion();
+    return packageVersion1.Version >= packageVersion2.Version;
 }
 
 inline bool IsValidVersionShortTag(

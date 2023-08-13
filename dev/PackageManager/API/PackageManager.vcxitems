@@ -26,6 +26,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolume.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeStatus.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageResolver.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.AddPackageSetOptions.h" />
@@ -40,10 +41,15 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolume.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeStatus.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MsixPackageManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageResolver.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)PackageManager.idl">
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(RepoRoot)\dev\DynamicDependency\API;%(OutDir)</AdditionalIncludeDirectories>
     </Midl>
+  </ItemGroup>
+  <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)MsixPackageManager.h" />
   </ItemGroup>
 </Project>
