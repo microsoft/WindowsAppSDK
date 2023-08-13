@@ -31,14 +31,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         m_minVersion = value;
     }
-    winrt::Windows::Management::Deployment::PackageTypes PackageSetItem::PackageTypeFilter()
-    {
-        return m_packageTypeFilter;
-    }
-    void PackageSetItem::PackageTypeFilter(winrt::Windows::Management::Deployment::PackageTypes const& value)
-    {
-        m_packageTypeFilter = value;
-    }
     winrt::Windows::Foundation::Uri PackageSetItem::PackageUri()
     {
         return m_packageUri;

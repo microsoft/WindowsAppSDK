@@ -6,6 +6,9 @@
 
 #include <appmodel.h>
 
+#include <memory>
+#include <stdint>
+
 namespace AppModel::Identity
 {
 inline bool IsPackagedProcess()
@@ -107,6 +110,116 @@ inline winrt::Windows::System::ProcessorArchitecture ParseShortArchitecture(_In_
     {
         return winrt::Windows::System::ProcessorArchitecture::Unknown;
     }
+}
+
+class PackageVersion : public PACKAGE_VERSION
+{
+public:
+    PackageVersion()
+    {
+        Version = 0;
+    }
+
+    // Create an instance with the value `major.minor.build.revision`.
+    PackageVersion(std::uint16_t major, std::uint16_t minor = 0, std::uint16_t build = 0, std::uint16_t revision = 0) :
+        PACKAGE_VERSION()
+    {
+        Major = major;
+        Minor = minor;
+        Build = build;
+        Revision = revision;
+    }
+
+    // Create an instance from a version as a uint64.
+    PackageVersion(std::uint64_t version)
+    {
+        Version = version;
+    }
+
+// NOTE: There's no preprocessor symbol for Windows.ApplicationModel.PackageVersion
+//       or Windows.ApplicationModel.h so test for Windows.ApplicationModel.IPackageId
+//       as a close proxy for the ABI struct PackageVersion is defined.
+#if defined(____x_ABI_CWindows_CApplicationModel_CIPackageId_INTERFACE_DEFINED__)
+    PackageVersion(ABI::Windows::ApplicationModel::PackageVersion packageVersion) :
+        PACKAGE_VERSION()
+    {
+        Major = packageVersion.Major;
+        Minor = packageVersion.Minor;
+        Build = packageVersion.Build;
+        Revision = packageVersion.Revision;
+    }
+#endif // defined(____x_ABI_CWindows_CApplicationModel_CIPackageId_INTERFACE_DEFINED__)
+
+#if defined(WINRT_Windows_ApplicationModel_2_H)
+    PackageVersion(winrt::Windows::ApplicationModel::PackageVersion packageVersion) :
+        PACKAGE_VERSION()
+    {
+        Major = packageVersion.Major();
+        Minor = packageVersion.Minor();
+        Build = packageVersion.Build();
+        Revision = packageVersion.Revision();
+    }
+#endif // defined(WINRT_Windows_ApplicationModel_2_H)
+
+    // Return the version as a uint64.
+    std::uint64_t ToVersion() const
+    {
+        return Version;
+    }
+
+#if defined(____x_ABI_CWindows_CApplicationModel_CIPackageId_INTERFACE_DEFINED__)
+    ABI::Windows::ApplicationModel::PackageVersion ToPackageVersion() const
+    {
+        return ABI::Windows::ApplicationModel::PackageVersion{ Major, Minor, Build, Revision };
+    }
+#endif // defined(____x_ABI_CWindows_CApplicationModel_CIPackageId_INTERFACE_DEFINED__)
+
+#if defined(WINRT_Windows_ApplicationModel_2_H)
+    winrt::Windows::ApplicationModel::PackageVersion ToWinrtPackageVersion() const
+    {
+        return winrt::Windows::ApplicationModel::PackageVersion{ Major, Minor, Build, Revision };
+    }
+#endif // defined(WINRT_Windows_ApplicationModel_2_H)
+
+#if defined(_XSTRING_) && defined(_STRSAFE_H_INCLUDED_) && defined(WI_VERIFY)
+    // Return the string as a formatted value "major.minor.build.revision".
+    std::wstring ToString() const
+    {
+        return ToString(Major, Minor, Build, Revision);
+    }
+
+    static std::wstring ToString(std::uint16_t major, std::uint16_t minor, std::uint16_t build, std::uint16_t revision)
+    {
+        wchar_t formattedVersion[5 + 1 + 5 + 1 + 5 + 1 + 5 + 1]{};  // "12345.12345.12345.12345" + null-terminator
+        WI_VERIFY(SUCCEEDED(StringCchPrintfW(formattedVersion, ARRAYSIZE(formattedVersion), L"%hu.%hu.%hu.%hu", major, minor, build, revision)));
+        return std::wstring(formattedVersion);
+    }
+#endif defined(_XSTRING_) && defined(_STRSAFE_H_INCLUDED_) && defined(WI_VERIFY)
+};
+
+inline bool operator==(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
+{
+    return packageVersion1.ToVersion() == packageVersion2.ToVesion();
+}
+inline bool operator!=(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
+{
+    return packageVersion1.ToVersion() != packageVersion2.ToVesion();
+}
+inline bool operator<(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
+{
+    return packageVersion1.ToVersion() < packageVersion2.ToVesion();
+}
+inline bool operator<=(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
+{
+    return packageVersion1.ToVersion() <= packageVersion2.ToVesion();
+}
+inline bool operator>(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
+{
+    return packageVersion1.ToVersion() > packageVersion2.ToVesion();
+}
+inline bool operator>=(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
+{
+    return packageVersion1.ToVersion() >= packageVersion2.ToVesion();
 }
 
 inline bool IsValidVersionShortTag(

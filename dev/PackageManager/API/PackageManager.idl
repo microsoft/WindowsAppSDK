@@ -87,7 +87,6 @@ namespace Microsoft.Windows.Management.Deployment
         String PackageFamilyName;                           //required
         Windows.ApplicationModel.PackageVersion MinVersion; //required
 //TODO        Microsoft.Windows.ApplicationModel.ProcessorArchitectures ProcessorArchitectureFilter;
-        Windows.Management.Deployment.PackageTypes PackageTypeFilter;
 
         // Source where a package can be retrieved from if/when needed for install, remediation, etc
         // and options influencing how we can/must process them when needed
@@ -97,6 +96,10 @@ namespace Microsoft.Windows.Management.Deployment
 
         // ??? Additional info potentially needed for deployment operations
         //TODO see AddPackageOptions
+
+        // Additional info for runtime use
+        //TODO see CreatePackageDependencyOptions
+        //TODO see AddPackageDependencyOptions
     }
 
     [contract(PackageDeploymentContract, 1)]
@@ -187,7 +190,10 @@ namespace Microsoft.Windows.Management.Deployment
         // Get an instance of the manager
         static PackageDeploymentManager GetDefault();
 
-        // Return true if the package set are present and available for use
+        // Return true if the package set's content are present and available for use
+        Boolean IsReady(PackageSet packageSet);
+
+        [method_name("IsReadyByPackageSetId")]
         Boolean IsReady(String packageSetId);
 
         // Check if the necessary package(s) needed by the scenario are present
@@ -196,14 +202,19 @@ namespace Microsoft.Windows.Management.Deployment
         // then make them available (download, install, etc).
         // If the necessary AI Models are present and available this is equivalent to IsReady(id).
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        EnsureIsReadyAsync(PackageSet packageSet);
+
+        [method_name("EnsureIsReadyByPackageSetIdAsync")]
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         EnsureIsReadyAsync(String packageSetId);
 
         // Add packages in a set
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         AddPackageSetAsync(PackageSet packageSet, AddPackageSetOptions options);
 
+        [method_name("AddPackageSetByIdAsync")]
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        AddPackageSetByIdAsync(String packageSetId, AddPackageSetOptions options);
+        AddPackageSetAsync(String packageSetId, AddPackageSetOptions options);
 
         // Ditto PackageSet operations of Remove, Repair, Reset
     }
@@ -221,8 +232,20 @@ namespace Microsoft.Windows.Management.Deployment
         //       pd = TryCreatePackageDependency(p)
         //       AddPackageDependency(pd)
 
-        void AddPackageSetByIdToPackageGraph(String packageSetId);
+        void AddPackageSet(PackageSet packageSet);
 
-        void AddPackageSetToPackageGraph(PackageSet packageSet);
+        [method_name("AddPackageSetWithOptions")]
+        void AddPackageSet(PackageSet packageSet,
+                           Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions createOptions,
+                           Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions addOptions);
+
+        [method_name("AddPackageSetById")]
+        void AddPackageSet(String packageSetId);
+
+        [method_name("AddPackageSetByIdWithOptions")]
+        void AddPackageSet(String packageSetId,
+                           Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions createOptions,
+                           Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions addOptions);
+
     }
 }

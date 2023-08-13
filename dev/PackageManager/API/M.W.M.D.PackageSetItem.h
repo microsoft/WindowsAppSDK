@@ -18,8 +18,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         void PackageFamilyName(hstring const& value);
         winrt::Windows::ApplicationModel::PackageVersion MinVersion();
         void MinVersion(winrt::Windows::ApplicationModel::PackageVersion const& value);
-        winrt::Windows::Management::Deployment::PackageTypes PackageTypeFilter();
-        void PackageTypeFilter(winrt::Windows::Management::Deployment::PackageTypes const& value);
 
         winrt::Windows::Foundation::Uri PackageUri();
         void PackageUri(winrt::Windows::Foundation::Uri const& value);
