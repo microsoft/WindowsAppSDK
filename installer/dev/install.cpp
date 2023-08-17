@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -35,6 +35,8 @@ namespace WindowsAppRuntimeInstaller
 
             RETURN_HR(static_cast<HRESULT>(deploymentResult.ExtendedErrorCode() ? deploymentResult.ExtendedErrorCode() : deploymentOperation.ErrorCode()));
         }
+
+        return S_OK;
     }
 
     HRESULT RegisterPackage(
