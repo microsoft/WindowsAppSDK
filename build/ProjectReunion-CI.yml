@@ -136,6 +136,8 @@ jobs:
   - task: NuGetToolInstaller@1
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildMRT-Steps.yml
+    parameters:
+      IsOneBranch: false
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish BuildOutput'
