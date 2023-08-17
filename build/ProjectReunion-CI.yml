@@ -84,6 +84,8 @@ jobs:
   - task: NuGetToolInstaller@1
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+    parameters:
+      IsOneBranch: false
 
   - task: PowerShell@2
     name: BuildBinaries
@@ -104,6 +106,8 @@ jobs:
   - task: NuGetToolInstaller@1
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+    parameters:
+      IsOneBranch: false
 
   - task: PowerShell@2
     name: BuildBinaries
