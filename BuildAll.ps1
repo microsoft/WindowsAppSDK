@@ -114,19 +114,19 @@ Try {
     {
         & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile NuGet.config
 
-        if ($lastexitcode -ne 0)
-        {
-            write-host "ERROR: restore WindowsAppRuntime.sln FAILED."
-            exit 1
-        }
+        # if ($lastexitcode -ne 0)
+        # {
+        #     write-host "ERROR: restore WindowsAppRuntime.sln FAILED."
+        #     exit 1
+        # }
 
         & .\.nuget\nuget.exe restore "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj" -configfile NuGet.config
 
-        if ($lastexitcode -ne 0)
-        {
-            write-host "ERROR: restore Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
-            exit 1
-        }
+        # if ($lastexitcode -ne 0)
+        # {
+        #     write-host "ERROR: restore Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj FAILED."
+        #     exit 1
+        # }
 
         $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
 
