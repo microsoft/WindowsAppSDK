@@ -62,9 +62,10 @@ jobs:
   strategy:
     maxParallel: 10
     matrix:
-      Debug_x86:
-        buildPlatform: 'x86'
-        buildConfiguration: 'Debug'
+      # TODO: Reenable when LNK2019 error is fixed https://microsoft.visualstudio.com/OS/_workitems/edit/46043382
+      # Debug_x86:
+      #   buildPlatform: 'x86'
+      #   buildConfiguration: 'Debug'
       Release_x86:
         buildPlatform: 'x86'
         buildConfiguration: 'Release'
