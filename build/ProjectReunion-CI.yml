@@ -55,7 +55,7 @@ jobs:
       targetType: filePath
       filePath: tools\VerifyCopyrightHeaders.ps1
 
-- job: Build
+- job: BuildBinaries
   pool:
     vmImage: 'windows-2022'
   timeoutInMinutes: 120
@@ -100,7 +100,7 @@ jobs:
       PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
       artifactName: 'FoundationBinaries_$(buildConfiguration)_$(buildPlatform)'
 
-- job: BuildAnyCPU
+- job: BuildBinaries_release_anycpu
   pool:
     vmImage: 'windows-2022'
   steps:
@@ -168,6 +168,10 @@ jobs:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
         testLocale: en-US
+  dependsOn:
+  - BuildBinaries
+  - BuildBinaries_release_anycpu
+  - BuildMRT
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
   steps:
