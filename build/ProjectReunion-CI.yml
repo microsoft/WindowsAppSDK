@@ -171,8 +171,8 @@ jobs:
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
   steps:
-    - template: WindowsAppSDK-RunTests-Steps.yml
-      parameters:
-        buildPlatform: $(buildPlatform)
-        buildConfiguration: $(buildConfiguration)
-        testLocale: $(testLocale)
+  - template: AzurePipelinesTemplates\WindowsAppSDK-RunTests-Steps.yml
+    parameters:
+      buildPlatform: $(buildPlatform)
+      buildConfiguration: $(buildConfiguration)
+      testLocale: $(testLocale)
