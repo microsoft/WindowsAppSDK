@@ -144,12 +144,6 @@ jobs:
     parameters:
       IsOneBranch: false
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish BuildOutput'
-    inputs:
-      artifactName: BuildOutput
-      PathtoPublish: 'MrtBinaries_$(buildConfiguration)_$(buildPlatform)'
-
 - job: Test
   pool:
     vmImage: 'windows-2022'
