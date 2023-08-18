@@ -62,7 +62,7 @@ jobs:
   strategy:
     maxParallel: 10
     matrix:
-      # TODO: Reenable when LNK2019 error is fixed https://microsoft.visualstudio.com/OS/_workitems/edit/46043382
+      # TODO: Reenable when LNK2019 error is fixed Bug#46043382
       # Debug_x86:
       #   buildPlatform: 'x86'
       #   buildConfiguration: 'Debug'
