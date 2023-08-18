@@ -168,7 +168,6 @@ jobs:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
         testLocale: en-US
-  steps:
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
   steps:
