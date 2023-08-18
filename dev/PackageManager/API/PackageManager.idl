@@ -134,22 +134,34 @@ namespace Microsoft.Windows.Management.Deployment
     };
 
     [contract(PackageDeploymentContract, 1)]
-    enum PackageDeploymentProgressState
+    enum PackageDeploymentStatus
     {
-        Queued = 0,
-        Processing = 1
+        InProgress = 0,         // The request is in progress
+        CompletedSuccess = 1,   // The request completed successfully
+        CompletedFailure = 2,   // The request failed with some critical internal error. //TODO:Check ExtendedError for HRESULT
+    };
+
+    [contract(PackageDeploymentContract, 1)]
+    enum PackageDeploymentProgressStatus
+    {
+        Queued = 0,             // The request is queued
+        InProgress = 1,         // The request is in progress
+        CompletedSuccess = 2,   // The request completed successfully
+        CompletedFailure = 3,   // The request failed with some critical internal error. //TODO:Check ExtendedError for HRESULT
     };
 
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageDeploymentProgress
     {
-        PackageDeploymentProgressState State { get; };
-        UInt32 Percentage { get; };
+        PackageDeploymentProgressStatus status;
+        UInt32 percentage;
     }
 
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageDeploymentResult
     {
+        PackageDeploymentStatus Status { get; };
+        HRESULT ExtendedError { get; };
         Guid ActivityId { get; };
     }
 

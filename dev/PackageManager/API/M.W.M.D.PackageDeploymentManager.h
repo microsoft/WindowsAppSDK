@@ -21,6 +21,9 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
     private:
         bool IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSet);
+        void Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet);
+        void Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem);
+        void EnsureIsReadyAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem);
 
     private:
         winrt::Windows::Management::Deployment::PackageManager m_packageManager;

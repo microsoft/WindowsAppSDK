@@ -8,20 +8,27 @@
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
     PackageDeploymentProgress::PackageDeploymentProgress(
-        winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgressState const& state,
+        winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgressStatus const& status,
         uint32_t percentage) :
-        m_state(state),
+        m_status(status),
         m_percentage(percentage)
     {
     }
 
-    winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgressState PackageDeploymentProgress::State()
+    winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgressStatus PackageDeploymentProgress::status()
     {
-        return m_state;
+        return m_status;
     }
-
-    uint32_t PackageDeploymentProgress::Percentage()
+    void PackageDeploymentProgress::status(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgressStatus const& value)
+    {
+        m_status = value;
+    }
+    uint32_t PackageDeploymentProgress::percentage()
     {
         return m_percentage;
+    }
+    void PackageDeploymentProgress::percentage(uint32_t value)
+    {
+        m_percentage = value;
     }
 }
