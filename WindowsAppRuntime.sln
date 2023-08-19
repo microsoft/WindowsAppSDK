@@ -192,10 +192,19 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CS", "CS", "{716C26A0-E6B0-4981-8412-D14A4D410531}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.ApplicationModel.DynamicDependency.Projection", "dev\Projections\CS\Microsoft.Windows.ApplicationModel.DynamicDependency\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.csproj", "{47D8D21D-F022-4D58-8DB2-8B467756E08C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection", "dev\Projections\CS\Microsoft.Windows.ApplicationModel.WindowsAppRuntime\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection.csproj", "{4782BB2A-2968-44B4-867C-5FAEB7A51C6B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.AppLifecycle.Projection", "dev\Projections\CS\Microsoft.Windows.AppLifecycle\Microsoft.Windows.AppLifecycle.Projection.csproj", "{D417EDBE-D783-484F-83F3-710DEC7CB585}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppRuntime.Test.Singleton.Msix", "test\DynamicDependency\data\WindowsAppRuntime.Test.Singleton.Msix\WindowsAppRuntime.Test.Singleton.Msix.vcxproj", "{8F2C21F1-47AB-428C-A110-EE33FD7D9493}"
 EndProject
@@ -220,10 +229,19 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.WindowsAppRuntime.Bootstrap.Net", "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj", "{D6574FD6-8D13-4412-9FCB-308D44063CDA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.System.Power.Projection", "dev\Projections\CS\Microsoft.Windows.System.Power\Microsoft.Windows.System.Power.Projection.csproj", "{63ACBA4F-385A-4D04-98AD-263FED501A19}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.System.Projection", "dev\Projections\CS\Microsoft.Windows.System\Microsoft.Windows.System.Projection.csproj", "{85E9BB46-7841-4732-A039-9C902B71DEC3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.PushNotifications.Projection", "dev\Projections\CS\Microsoft.Windows.PushNotifications.Projection\Microsoft.Windows.PushNotifications.Projection.csproj", "{F1F2F3A6-A7DE-45D1-9E96-E28171FD3147}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{68E63911-6283-4212-BFFE-3F972AF8F835}"
 EndProject
@@ -301,6 +319,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppNotifications", "dev\AppNotifications\AppNotifications.vcxitems", "{B4824897-88E0-4927-8FB9-E60106F01ED9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.AppNotifications.Projection", "dev\Projections\CS\Microsoft.Windows.AppNotifications.Projection\Microsoft.Windows.AppNotifications.Projection.csproj", "{2385A443-A1C2-4562-8D28-D0AD239EE5E7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{82A73181-EA4A-431A-B82B-BE6734604CC9}"
 EndProject
@@ -344,6 +365,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppNotificationBuilderTests", "test\AppNotificationBuilderTests\AppNotificationBuilderTests.vcxproj", "{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.Security.AccessControl.Projection", "dev\Projections\CS\Microsoft.Windows.Security.AccessControl.Projection\Microsoft.Windows.Security.AccessControl.Projection.csproj", "{E6D59245-696F-4D13-ACF6-7ECE6E653367}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{0D6B1FF3-A075-4194-9FC0-AF7BB89D0519}"
 EndProject
@@ -401,6 +425,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_DeploymentManagerAutoI
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.AppNotifications.Builder.Projection", "dev\Projections\CS\Microsoft.Windows.AppNotifications.Builder.Projection\Microsoft.Windows.AppNotifications.Builder.Projection.csproj", "{50BF3E96-3050-4053-B012-BF6993483DA5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NotificationTests", "NotificationTests", "{1FDC307C-2DB7-4B40-8F18-F1057E9E0969}"
 EndProject
