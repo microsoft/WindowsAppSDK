@@ -137,6 +137,8 @@ jobs:
       Release_Arm64:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
+  variables:
+    ob_artifactBaseName: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)" # For BuildMRT to publish t
   steps:
   - task: NuGetToolInstaller@1
 
