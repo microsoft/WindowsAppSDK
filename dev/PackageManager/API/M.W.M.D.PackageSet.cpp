@@ -17,6 +17,10 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
     winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageSetItem> PackageSet::PackageSetItems()
     {
+        if (!m_packageSetItems)
+        {
+            m_packageSetItems = winrt::single_threaded_vector<Microsoft::Windows::Management::Deployment::PackageSetItem>()
+        }
         return m_packageSetItems;
     }
 }

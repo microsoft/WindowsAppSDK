@@ -20,18 +20,34 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
     winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri> AddPackageSetOptions::DependencyPackageUris()
     {
+        if (!m_dependencyPackageUris)
+        {
+            m_dependencyPackageUris = winrt::single_threaded_vector<Windows::Foundation::Uri>()
+        }
         return m_dependencyPackageUris;
     }
     winrt::Windows::Foundation::Collections::IVector<hstring> AddPackageSetOptions::OptionalPackageFamilyNames()
     {
+        if (!m_optionalPackageFamilyNames)
+        {
+            m_optionalPackageFamilyNames = winrt::single_threaded_vector<hstring>()
+        }
         return m_optionalPackageFamilyNames;
     }
     winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri> AddPackageSetOptions::OptionalPackageUris()
     {
+        if (!m_optionalPackageUris)
+        {
+            m_optionalPackageUris = winrt::single_threaded_vector<Windows::Foundation::Uri>()
+        }
         return m_optionalPackageUris;
     }
     winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri> AddPackageSetOptions::RelatedPackageUris()
     {
+        if (!m_relatedPackageUris)
+        {
+            m_relatedPackageUris = winrt::single_threaded_vector<Windows::Foundation::Uri>()
+        }
         return m_relatedPackageUris;
     }
     winrt::Windows::Foundation::Uri AddPackageSetOptions::ExternalLocationUri()
