@@ -105,6 +105,8 @@ namespace Microsoft.Windows.Management.Deployment
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageSet
     {
+        PackageSet();
+
         // Unique id
         String Id;
 

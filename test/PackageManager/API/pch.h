@@ -11,6 +11,11 @@
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 
+#include <winrt/Windows.ApplicationModel.h>
+#include <winrt/Windows.Management.Deployment.h>
+
+#include <winrt/Microsoft.Windows.Management.Deployment.h>
+
 #include <WexTestClass.h>
 
 #include <WindowsAppRuntime.Test.AppModel.h>

@@ -20,3 +20,9 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageSetItem> m_packageSetItems;
     };
 }
+namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation
+{
+    struct PackageSet : PackageSetT<PackageSet, implementation::PackageSet>
+    {
+    };
+}
