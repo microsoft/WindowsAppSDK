@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -19,7 +19,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         if (!m_packageSetItems)
         {
-            m_packageSetItems = winrt::single_threaded_vector<Microsoft::Windows::Management::Deployment::PackageSetItem>()
+            m_packageSetItems = winrt::single_threaded_vector<Microsoft::Windows::Management::Deployment::PackageSetItem>();
         }
         return m_packageSetItems;
     }

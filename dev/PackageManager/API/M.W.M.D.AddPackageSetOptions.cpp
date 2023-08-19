@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -22,7 +22,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         if (!m_dependencyPackageUris)
         {
-            m_dependencyPackageUris = winrt::single_threaded_vector<Windows::Foundation::Uri>()
+            m_dependencyPackageUris = winrt::single_threaded_vector<winrt::Windows::Foundation::Uri>();
         }
         return m_dependencyPackageUris;
     }
@@ -30,7 +30,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         if (!m_optionalPackageFamilyNames)
         {
-            m_optionalPackageFamilyNames = winrt::single_threaded_vector<hstring>()
+            m_optionalPackageFamilyNames = winrt::single_threaded_vector<hstring>();
         }
         return m_optionalPackageFamilyNames;
     }
@@ -38,7 +38,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         if (!m_optionalPackageUris)
         {
-            m_optionalPackageUris = winrt::single_threaded_vector<Windows::Foundation::Uri>()
+            m_optionalPackageUris = winrt::single_threaded_vector<winrt::Windows::Foundation::Uri>();
         }
         return m_optionalPackageUris;
     }
@@ -46,7 +46,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         if (!m_relatedPackageUris)
         {
-            m_relatedPackageUris = winrt::single_threaded_vector<Windows::Foundation::Uri>()
+            m_relatedPackageUris = winrt::single_threaded_vector<winrt::Windows::Foundation::Uri>();
         }
         return m_relatedPackageUris;
     }
