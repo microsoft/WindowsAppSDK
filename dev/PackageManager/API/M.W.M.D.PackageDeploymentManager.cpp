@@ -18,6 +18,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
     bool PackageDeploymentManager::IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet)
     {
+        Validate(packageSet);
+
         for (const winrt::Microsoft::Windows::Management::Deployment::PackageSetItem& packageSetItem : packageSet.PackageSetItems())
         {
             if (!IsReady(packageSetItem))
@@ -139,8 +141,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         const auto packageFamilyName{ packageSetItem.PackageFamilyName() };
         THROW_IF_WIN32_ERROR_MSG(VerifyPackageFamilyName(packageFamilyName.c_str()), "PackageFamilyName:%ls", packageFamilyName.c_str());
 
-        const auto packageUri{ packageSetItem.PackageUri().ToString()};
-        THROW_HR_IF_MSG(E_INVALIDARG, packageUri.empty(), "PackageUri:%ls", packageUri.c_str());
+        const auto packageUri{ packageSetItem.PackageUri() };
+        THROW_HR_IF_NULL_MSG(E_INVALIDARG, packageUri, "PackageUri:<null>");
     }
 
     void PackageDeploymentManager::EnsureIsReadyAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem)
