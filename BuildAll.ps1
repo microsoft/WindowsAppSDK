@@ -90,7 +90,6 @@ Try {
 
     if ($AzureBuildStep -ne "all")
     {
-        $env:BUILD_BUILDNUMBER = "microsoft.ProjectReunion_2308.17010"
         # Some builds have "-branchname" appended, but when this happens the environment variable
         # TFS_BUILDNUMBER has the un-modified version.
         if ($env:TFS_BUILDNUMBER)
