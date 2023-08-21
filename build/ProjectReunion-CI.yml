@@ -94,17 +94,17 @@ jobs:
       filePath: 'BuildAll.ps1'
       arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: Full Nuget'
+  - task: PublishPipelineArtifact@1
     inputs:
-      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
-      artifactName: 'FoundationBinaries_$(buildConfiguration)_$(buildPlatform)'
+      targetPath: '$(build.SourcesDirectory)\BuildOutput'
+      artifact: 'FoundationBinaries_$(buildConfiguration)_$(buildPlatform)'
+      Parallel: true
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: Full Nuget'
+  - task: PublishPipelineArtifact@1
     inputs:
-      PathtoPublish: '$(build.SourcesDirectory)\packages'
-      artifactName: 'FoundationBinaries_$(buildConfiguration)_$(buildPlatform)'
+      targetPath: '$(build.SourcesDirectory)\packages'
+      artifact: 'FoundationBinaries_$(buildConfiguration)_$(buildPlatform)'
+      Parallel: true
 
 - job: BuildBinaries_release_anycpu
   pool:
