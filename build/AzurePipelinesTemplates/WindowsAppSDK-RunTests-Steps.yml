@@ -26,11 +26,6 @@ steps:
       artifactName: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
       targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
-  - task: CopyFiles@2
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\packages'
-      TargetFolder: '$(Build.SourcesDirectory)\packages'
-
   - task: powerShell@2
     displayName: 'Enable developer mode'
     inputs:
