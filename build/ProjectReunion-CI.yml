@@ -94,15 +94,21 @@ jobs:
       filePath: 'BuildAll.ps1'
       arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
 
-  - task: PublishPipelineArtifact@1
+  - task: CopyFiles@2
+    displayName: MoveToOutputDirectory
     inputs:
-      targetPath: '$(build.SourcesDirectory)\BuildOutput'
-      artifact: 'FoundationBinaries_$(buildConfiguration)_$(buildPlatform)'
-      Parallel: true
+      SourceFolder: '$(build.SourcesDirectory)\packages'
+      TargetFolder: '$(System.ArtifactsDirectory)'
+
+  - task: CopyFiles@2
+    displayName: MoveToOutputDirectory
+    inputs:
+      SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
+      TargetFolder: '$(System.ArtifactsDirectory)'
 
   - task: PublishPipelineArtifact@1
     inputs:
-      targetPath: '$(build.SourcesDirectory)\packages'
+      targetPath: '$(build.ArtifactsDirectory)'
       artifact: 'FoundationBinaries_$(buildConfiguration)_$(buildPlatform)'
       Parallel: true
 
