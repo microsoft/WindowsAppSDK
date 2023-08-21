@@ -98,19 +98,13 @@ jobs:
     displayName: MoveToOutputDirectory
     inputs:
       SourceFolder: '$(build.SourcesDirectory)\packages'
-      TargetFolder: '$(System.ArtifactsDirectory)'
+      TargetFolder: '$(build.SourcesDirectory)\BuildOutput\packages'
 
-  - task: CopyFiles@2
-    displayName: MoveToOutputDirectory
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget'
     inputs:
-      SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
-      TargetFolder: '$(System.ArtifactsDirectory)'
-
-  - task: PublishPipelineArtifact@1
-    inputs:
-      targetPath: '$(build.ArtifactsDirectory)'
-      artifact: 'FoundationBinaries_$(buildConfiguration)_$(buildPlatform)'
-      Parallel: true
+      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
+      artifactName: 'FoundationBinaries_$(buildConfiguration)_$(buildPlatform)'
 
 - job: BuildBinaries_release_anycpu
   pool:
