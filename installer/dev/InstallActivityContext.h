@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -137,7 +137,7 @@ namespace WindowsAppRuntimeInstaller::InstallActivity
             return m_hEventLog;
         }
 
-        const BOOL& DeregisterInstallerEventSourceW()
+        const BOOL DeregisterInstallerEventSourceW()
         {
             return DeregisterEventSource(m_hEventLog);
         }
