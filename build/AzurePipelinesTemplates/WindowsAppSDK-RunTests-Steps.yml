@@ -1,10 +1,10 @@
 parameters:
   buildPlatform: ''
   buildConfiguration: ''
-  ImageName: ''
   TaefSelect: '*'
   BinaryCompatSwitch: ''
   testLocale: ''
+
 steps:
   - task: powershell@2
     displayName: 'DevCheck: Setup/Verify development environment'
