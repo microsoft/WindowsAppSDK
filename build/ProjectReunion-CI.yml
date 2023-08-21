@@ -100,6 +100,12 @@ jobs:
       PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
       artifactName: 'FoundationBinaries_$(buildConfiguration)_$(buildPlatform)'
 
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget'
+    inputs:
+      PathtoPublish: '$(build.SourcesDirectory)\packages'
+      artifactName: 'FoundationBinaries_$(buildConfiguration)_$(buildPlatform)'
+
 - job: BuildBinaries_release_anycpu
   pool:
     vmImage: 'windows-2022'
