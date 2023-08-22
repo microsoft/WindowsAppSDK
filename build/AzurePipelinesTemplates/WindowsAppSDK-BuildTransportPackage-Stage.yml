@@ -174,7 +174,7 @@ stages:
       name: 'ProjectReunionESPool-2022'
     variables:
       WindowsAppSDKTransportPackageVersion: $[ dependencies.NugetPackage.outputs['SetVersion.packageVersion'] ]
-      VersionWithDevTag: $[format('{0}.{1}.{2}-{3}.{4}.{5}', variables['major'], variables['minor'], variables['patch'], 'dev', variables['versionDate'], variables['versionCounter'])]
+      VersionWithDevTag: $[format('{0}.{1}.{2}-{3}', variables['major'], variables['minor'], variables['versionDate'], 'dev')]
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_artifactBaseName: "WindowsAppSDKNugetPackage"
     steps:
