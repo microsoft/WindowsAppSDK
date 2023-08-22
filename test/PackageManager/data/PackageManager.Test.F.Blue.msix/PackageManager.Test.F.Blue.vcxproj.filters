@@ -7,18 +7,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="pch.cpp" />
-    <ClCompile Include="JustDoIt.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="targetver.h" />
-    <ClInclude Include="JustDoIt.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="module.def" />
-    <None Include="appxmanifest.template" />
+    <None Include="appxmanifest-arm64.xml" />
+    <None Include="appxmanifest-x64.xml" />
+    <None Include="appxmanifest-x86.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -22,4 +22,6 @@
 #include <WindowsAppRuntime.Test.Package.h>
 #include <WindowsAppRuntime.Test.Bootstrap.h>
 
+#include "PackageManagerTests.Packages.h"
+
 #endif //PCH_H

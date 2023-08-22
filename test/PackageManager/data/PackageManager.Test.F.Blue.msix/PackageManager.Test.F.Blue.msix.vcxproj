@@ -31,9 +31,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{f2946790-daf7-4dff-a754-ba471a12e494}</ProjectGuid>
+    <ProjectGuid>{FBAE1876-C50A-4EFC-A686-3008B6438731}</ProjectGuid>
     <Keyword>VCProjectVersion</Keyword>
-    <RootNamespace>PackageManager.Test.F.Red</RootNamespace>
+    <RootNamespace>PackageManager.Test.F.Blue.Msix</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>16.0</MinimumVisualStudioVersion>
     <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
@@ -86,13 +86,23 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
-    <None Include="appxmanifest.xml" />
+    <Xml Include="appxmanifest-arm64.xml" />
+    <Xml Include="appxmanifest-x64.xml" />
+    <Xml Include="appxmanifest-x86.xml" />
   </ItemGroup>
   <PropertyGroup>
-    <MakeMsixOutputFilename>$(TargetName).msix</MakeMsixOutputFilename>
+    <MakeMsixOutputFilename>$(TargetName)</MakeMsixOutputFilename>
   </PropertyGroup>
   <ItemGroup>
-    <MakeMsixInputs Include="$(MSBuildThisFileDirectory)appxmanifest.xml" />
+    <MakeMsixInputsWithLocations Include="$(MSBuildThisFileDirectory)appxmanifest-x86.xml" Condition="'$(PlatformTarget)' == 'x86'">
+      <TargetFile>appxmanifest.xml</TargetFile>
+    </MakeMsixInputsWithLocations>
+    <MakeMsixInputsWithLocations Include="$(MSBuildThisFileDirectory)appxmanifest-x64.xml" Condition="'$(PlatformTarget)' == 'x64'">
+      <TargetFile>appxmanifest.xml</TargetFile>
+    </MakeMsixInputsWithLocations>
+    <MakeMsixInputsWithLocations Include="$(MSBuildThisFileDirectory)appxmanifest-arm64.xml" Condition="'$(PlatformTarget)' == 'arm64'">
+      <TargetFile>appxmanifest.xml</TargetFile>
+    </MakeMsixInputsWithLocations>
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)logo.png" />
   </ItemGroup>
   <PropertyGroup>

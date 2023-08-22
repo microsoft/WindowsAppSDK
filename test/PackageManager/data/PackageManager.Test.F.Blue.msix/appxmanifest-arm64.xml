@@ -6,13 +6,14 @@
   IgnorableNamespaces="uap">
 
   <Identity
-    Name="Test.PackageManager.F.Red"
+    Name="Test.PackageManager.F.Blue"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
-    Version="1.2.3.4" />
+    Version="1.2.3.4"
+    ProcessorArchitecture="arm64" />
 
   <Properties>
     <Framework>true</Framework>
-    <DisplayName>Test.PackageManager.F.Red</DisplayName>
+    <DisplayName>Test.PackageManager.F.Blue</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>logo.png</Logo>
   </Properties>

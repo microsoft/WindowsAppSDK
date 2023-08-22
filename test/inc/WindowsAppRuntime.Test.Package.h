@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #ifndef __WINDOWSAPPRUNTIME_TEST_PACKAGE_H
@@ -155,7 +155,7 @@ inline bool IsPackageRegistered(PCWSTR packageFullName)
     return !path.empty();
 }
 
-inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
+inline std::filesystem::path GetMsixPackagePath(PCWSTR packageDirName)
 {
     // Build the target package's .msix filename. It's under the Solution's $(OutDir)
     // NOTE: It could live in ...\Something.msix\... or ...\Something\...
@@ -185,7 +185,18 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
 
         //VERIFY_IS_TRUE(std::filesystem::is_regular_file(msix));
     }
-    auto msixUri = winrt::Windows::Foundation::Uri(msix.c_str());
+    return msix.c_str();
+}
+
+inline winrt::Windows::Foundation::Uri GetMsixPackageUri(PCWSTR packageDirName)
+{
+    auto path{ GetMsixPackagePath(packageDirName) };
+    return winrt::Windows::Foundation::Uri{ path.c_str() };
+}
+
+inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
+{
+    auto msixUri{ GetMsixPackageUri(packageDirName) };
 
     // Install the package
     winrt::Windows::Management::Deployment::PackageManager packageManager;
