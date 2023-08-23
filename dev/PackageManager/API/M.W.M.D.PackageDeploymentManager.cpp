@@ -24,14 +24,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             if (!IsReady(packageSetItem))
             {
-                (void) LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED,
-                                  "Id=%ls PackageFamilyName=%ls MinVersion=%hu.%hu.%hu.%hu",
-                                  packageSetItem.Id().c_str(),
-                                  packageSetItem.PackageFamilyName().c_str(),
-                                  packageSetItem.MinVersion().Major,
-                                  packageSetItem.MinVersion().Minor,
-                                  packageSetItem.MinVersion().Build,
-                                  packageSetItem.MinVersion().Revision);
+                (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED,
+                                 "Id=%ls PackageFamilyName=%ls MinVersion=%hu.%hu.%hu.%hu",
+                                 packageSetItem.Id().c_str(),
+                                 packageSetItem.PackageFamilyName().c_str(),
+                                 packageSetItem.MinVersion().Major,
+                                 packageSetItem.MinVersion().Minor,
+                                 packageSetItem.MinVersion().Build,
+                                 packageSetItem.MinVersion().Revision);
                 return false;
             }
         }
@@ -109,12 +109,32 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::AddPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::AddPackageSetOptions options)
+    PackageDeploymentManager::AddPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options)
     {
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::AddPackageSetByIdAsync(hstring packageSetId, winrt::Microsoft::Windows::Management::Deployment::AddPackageSetOptions options)
+    PackageDeploymentManager::AddPackageSetByIdAsync(hstring packageSetId, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options)
+    {
+        throw hresult_not_implemented();
+    }
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::RemovePackageByFullNameNameAsync(hstring packageFullName, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
+    {
+        throw hresult_not_implemented();
+    }
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::RemovePackageByFamilyNameNameAsync(hstring packageFamilyName, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
+    {
+        throw hresult_not_implemented();
+    }
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::RemovePackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
+    {
+        throw hresult_not_implemented();
+    }
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::RemovePackageSetByIdAsync(hstring packageSetId, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
     {
         throw hresult_not_implemented();
     }

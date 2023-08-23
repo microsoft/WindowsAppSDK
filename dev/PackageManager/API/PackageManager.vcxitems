@@ -14,8 +14,8 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.AddPackageSetOptions.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.FindPackageSetOptions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.AddPackageOptions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.FindPackageOptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentProgress.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentResult.cpp" />
@@ -26,11 +26,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolume.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeStatus.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.RemovePackageOptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageResolver.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.AddPackageSetOptions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.FindPackageSetOptions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.AddPackageOptions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.FindPackageOptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentProgress.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentResult.h" />
@@ -41,6 +42,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolume.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeStatus.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.RemovePackageOptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MsixPackageManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageResolver.h" />
   </ItemGroup>

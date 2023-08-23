@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -16,7 +16,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         void Update(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet);
         void Remove(hstring const& packageSetId);
         winrt::Microsoft::Windows::Management::Deployment::PackageSet Get(hstring const& packageSetId);
-        winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageSet> Find(winrt::Microsoft::Windows::Management::Deployment::FindPackageSetOptions const& options);
+        winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageSet> Find(winrt::Microsoft::Windows::Management::Deployment::FindPackageOptions const& options);
     };
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation

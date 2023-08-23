@@ -53,101 +53,104 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageResolver::Find(
                                                                  packageFamilyName.c_str(),
                                                                  minVersion.Major, minVersion.Minor,
                                                                  minVersion.Build, minVersion.Revision) };
-    (void) LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN,
-                      "PackageResolver: Scanning packages (%ls)",
-                      criteria.get());
-    for (const winrt::Windows::ApplicationModel::Package& candidate : packages)
+    (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN,
+                     "PackageResolver: Scanning packages (%ls)",
+                     criteria.get());
+    if (packages.begin().HasCurrent())
     {
-        // Do we already have a higher version under consideration?
-        auto packageId{ candidate.Id() };
-        const AppModel::Identity::PackageVersion candidateVersion{ packageId.Version() };
-        if (!bestFitPackageFullName.empty() && (bestFitVersion > candidateVersion))
+        for (const winrt::Windows::ApplicationModel::Package& candidate : packages)
         {
-            continue;
-        }
+            // Do we already have a higher version under consideration?
+            auto packageId{ candidate.Id() };
+            const AppModel::Identity::PackageVersion candidateVersion{ packageId.Version() };
+            if (!bestFitPackageFullName.empty() && (bestFitVersion > candidateVersion))
+            {
+                continue;
+            }
 
-        // Package version must meet the minVersion filter
-        auto candidateFullName{ packageId.FullName() };
-        if (candidateVersion < minVersion)
-        {
-            (void) LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_NOT_MATCH,
-                              "PackageResolver: %ls not applicable. Version doesn't match MinVersion criteria (%ls)",
-                              candidateFullName.c_str(), criteria.get());
-            continue;
-        }
+            // Package version must meet the minVersion filter
+            auto candidateFullName{ packageId.FullName() };
+            if (candidateVersion < minVersion)
+            {
+                (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_NOT_MATCH,
+                                 "PackageResolver: %ls not applicable. Version doesn't match MinVersion criteria (%ls)",
+                                 candidateFullName.c_str(), criteria.get());
+                continue;
+            }
 
-        // Do we already have a higher version under consideration?
-        if (!bestFitPackageFullName.empty() && (bestFitVersion > candidateVersion))
-        {
-            continue;
-        }
+            // Do we already have a higher version under consideration?
+            if (!bestFitPackageFullName.empty() && (bestFitVersion > candidateVersion))
+            {
+                continue;
+            }
 
 #if 0 //TODO
-        // Package architecture must meet the architecture filter
-        if (packageDependency.Architectures() == MddPackageDependencyProcessorArchitectures::None)
-        {
-            if (!IsPackageABetterFitPerArchitecture(bestFit, candidate))
+            // Package architecture must meet the architecture filter
+            if (packageDependency.Architectures() == MddPackageDependencyProcessorArchitectures::None)
             {
-                continue;
+                if (!IsPackageABetterFitPerArchitecture(bestFit, candidate))
+                {
+                    continue;
+                }
             }
-        }
-        else
-        {
-            if (!packageDependency.IsArchitectureInArchitectures(candidate.Architecture()))
+            else
             {
-                continue;
+                if (!packageDependency.IsArchitectureInArchitectures(candidate.Architecture()))
+                {
+                    continue;
+                }
             }
-        }
 
-        // Does the architecture match?
-        const auto architecture{ packageId.Architecture() };
-        const auto currentArchitecture{ AppModel::Identity::GetCurrentArchitecture() };
-        if (architecture != currentArchitecture)
-        {
-            (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_NOT_MATCH,
-                             "PackageResolver: %ls not applicable. Architecture doesn't match current architecture %ls (%ls)",
-                             packageFullName.c_str(), ::AppModel::Identity::GetCurrentArchitectureAsString(), criteria.get());
-            continue;
-        }
+            // Does the architecture match?
+            const auto architecture{ packageId.Architecture() };
+            const auto currentArchitecture{ AppModel::Identity::GetCurrentArchitecture() };
+            if (architecture != currentArchitecture)
+            {
+                (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_NOT_MATCH,
+                                 "PackageResolver: %ls not applicable. Architecture doesn't match current architecture %ls (%ls)",
+                                 packageFullName.c_str(), ::AppModel::Identity::GetCurrentArchitectureAsString(), criteria.get());
+                continue;
+            }
 #endif
 
-        // Package status must be OK to use a package
-        winrt::hstring currentUser;
-        auto status{ candidate.Status() };
-        if (!status.VerifyIsOK())
-        {
-            (void) LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_NOT_MATCH,
-                              "PackageResolver: %ls not applicable. Status not OK (%ls)",
-                              candidateFullName.c_str(), criteria.get());
-            continue;
-        }
+            // Package status must be OK to use a package
+            winrt::hstring currentUser;
+            auto status{ candidate.Status() };
+            if (!status.VerifyIsOK())
+            {
+                (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_NOT_MATCH,
+                                 "PackageResolver: %ls not applicable. Status not OK (%ls)",
+                                 candidateFullName.c_str(), criteria.get());
+                continue;
+            }
 
-        // Are we looking for any match?
-        if (stopOnFirstMatch)
-        {
-            (void) LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED,
-                              "PackageResolver: Stopping on 1st match %ls (%ls)",
-                              candidateFullName.c_str(), criteria.get());
-            return candidateFullName;
-        }
+            // Are we looking for any match?
+            if (stopOnFirstMatch)
+            {
+                (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED,
+                                 "PackageResolver: Stopping on 1st match %ls (%ls)",
+                                 candidateFullName.c_str(), criteria.get());
+                return candidateFullName;
+            }
 
-        // The new candidate is better than the current champion
-        bestFitPackageFullName = std::move(candidateFullName);
-        bestFitVersion = candidateVersion;
+            // The new candidate is better than the current champion
+            bestFitPackageFullName = std::move(candidateFullName);
+            bestFitVersion = candidateVersion;
+        }
     }
 
     // Did we find what we're looking for?
     if (bestFitPackageFullName.empty())
     {
-        (void) LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED,
-                          "PackageResolver: No match (%ls)",
-                          criteria.get());
+        (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED,
+                         "PackageResolver: No match (%ls)",
+                         criteria.get());
     }
     else
     {
-        (void) LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_MATCH,
-                          "PackageResolver: %ls is applicable (%ls)",
-                          bestFitPackageFullName.c_str(), criteria.get());
+        (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_MATCH,
+                         "PackageResolver: %ls is applicable (%ls)",
+                         bestFitPackageFullName.c_str(), criteria.get());
     }
     return bestFitPackageFullName;
 }

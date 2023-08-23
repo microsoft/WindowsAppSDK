@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "Microsoft.Windows.Management.Deployment.AddPackageSetOptions.g.h"
+#include "Microsoft.Windows.Management.Deployment.AddPackageOptions.g.h"
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
-    struct AddPackageSetOptions : AddPackageSetOptionsT<AddPackageSetOptions>
+    struct AddPackageOptions : AddPackageOptionsT<AddPackageOptions>
     {
-        AddPackageSetOptions() = default;
+        AddPackageOptions() = default;
 
         winrt::Microsoft::Windows::Management::Deployment::PackageVolume TargetVolume();
         void TargetVolume(winrt::Microsoft::Windows::Management::Deployment::PackageVolume const& value);
@@ -72,7 +72,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation
 {
-    struct AddPackageSetOptions : AddPackageSetOptionsT<AddPackageSetOptions, implementation::AddPackageSetOptions>
+    struct AddPackageOptions : AddPackageOptionsT<AddPackageOptions, implementation::AddPackageOptions>
     {
     };
 }

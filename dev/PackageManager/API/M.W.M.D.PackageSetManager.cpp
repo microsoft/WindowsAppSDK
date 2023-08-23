@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -27,7 +27,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         throw hresult_not_implemented();
     }
-    winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageSet> PackageSetManager::Find(winrt::Microsoft::Windows::Management::Deployment::FindPackageSetOptions const& options)
+    winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageSet> PackageSetManager::Find(winrt::Microsoft::Windows::Management::Deployment::FindPackageOptions const& options)
     {
         throw hresult_not_implemented();
     }
