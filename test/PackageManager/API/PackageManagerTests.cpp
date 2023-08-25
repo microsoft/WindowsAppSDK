@@ -396,7 +396,8 @@ namespace Test::PackageManager::Tests
             try
             {
                 winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
-                auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet).get() };
+                winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+                auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet, options).get() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -410,7 +411,8 @@ namespace Test::PackageManager::Tests
                 PCWSTR c_packageSetId{ L"Does.Not.Exist" };
                 packageSet.Id(c_packageSetId);
 
-                auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet).get() };
+                winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+                auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet, options).get() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -426,7 +428,8 @@ namespace Test::PackageManager::Tests
                 winrt::Microsoft::Windows::Management::Deployment::PackageSetItem packageSetItem;
                 packageSet.PackageSetItems().Append(packageSetItem);
 
-                auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet).get() };
+                winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+                auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet, options).get() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -444,7 +447,8 @@ namespace Test::PackageManager::Tests
                 packageSetItem.PackageFamilyName(c_packageFamilyName);
                 packageSet.PackageSetItems().Append(packageSetItem);
 
-                auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet).get() };
+                winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+                auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet, options).get() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -462,7 +466,8 @@ namespace Test::PackageManager::Tests
                 packageSetItem.PackageFamilyName(c_packageFamilyName);
                 packageSet.PackageSetItems().Append(packageSetItem);
 
-                auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet).get() };
+                winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+                auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet, options).get() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -481,7 +486,8 @@ namespace Test::PackageManager::Tests
                 packageSetItem.PackageUri(c_packageUri);
                 packageSet.PackageSetItems().Append(packageSetItem);
 
-                auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet).get() };
+                winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+                auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet, options).get() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -505,7 +511,8 @@ namespace Test::PackageManager::Tests
             packageSetItem.PackageUri(c_packageUri);
             packageSet.PackageSetItems().Append(packageSetItem);
 
-            auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet).get() };
+            winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+            auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet, options).get() };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
             VERIFY_ARE_EQUAL(E_FAIL, deploymentResult.ExtendedError());
         }
@@ -524,7 +531,8 @@ namespace Test::PackageManager::Tests
             red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
             packageSet.PackageSetItems().Append(red);
 
-            auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet).get() };
+            winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+            auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet, options).get() };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError());
         }
@@ -543,7 +551,8 @@ namespace Test::PackageManager::Tests
             red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
             packageSet.PackageSetItems().Append(red);
 
-            auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet).get() };
+            winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+            auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet, options).get() };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError());
         }
@@ -567,7 +576,8 @@ namespace Test::PackageManager::Tests
             red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
             packageSet.PackageSetItems().Append(red);
 
-            auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet).get() };
+            winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+            auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet, options).get() };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError());
 
@@ -598,7 +608,8 @@ namespace Test::PackageManager::Tests
             blue.PackageUri(::TP::GetMsixPackageUri(::TPF::Blue::c_packageDirName));
             packageSet.PackageSetItems().Append(blue);
 
-            auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet).get() };
+            winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+            auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet, options).get() };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError());
         }
@@ -627,7 +638,8 @@ namespace Test::PackageManager::Tests
             blue.PackageUri(::TP::GetMsixPackageUri(::TPF::Blue::c_packageDirName));
             packageSet.PackageSetItems().Append(blue);
 
-            auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet).get() };
+            winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+            auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet, options).get() };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError());
         }
@@ -651,7 +663,8 @@ namespace Test::PackageManager::Tests
             green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
             packageSet.PackageSetItems().Append(green);
 
-            auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet).get() };
+            winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+            auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet, options).get() };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError());
         }
@@ -680,7 +693,8 @@ namespace Test::PackageManager::Tests
             green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
             packageSet.PackageSetItems().Append(green);
 
-            auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet).get() };
+            winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+            auto deploymentResult{ packageDeploymentManager.EnsureIsReadyAsync(packageSet, options).get() };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError());
 

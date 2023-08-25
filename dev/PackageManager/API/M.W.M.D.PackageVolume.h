@@ -13,19 +13,12 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         PackageVolume(winrt::Windows::Management::Deployment::PackageVolume const& value);
 
         bool IsSystemVolume();
-        void IsSystemVolume(bool value);
         hstring MountPoint();
-        void MountPoint(hstring const& value);
         hstring Name();
-        void Name(hstring const& value);
         hstring PackageStorePath();
-        void PackageStorePath(hstring const& value);
         bool SupportsHardLinks();
-        void SupportsHardLinks(bool value);
         bool IsFullTrustPackageSupported();
-        void IsFullTrustPackageSupported(bool value);
         bool IsAppxInstallSupported();
-        void IsAppxInstallSupported(bool value);
         winrt::Microsoft::Windows::Management::Deployment::PackageVolumeStatus Status();
         void FixMe();
 
@@ -37,6 +30,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         bool m_supportsHardLinks{};
         bool m_isFullTrustPackageSupported{};
         bool m_isAppxInstallSupported{};
+        //TODO winrt::Microsoft::Windows::Management::Deployment::PackageVolumeStatus m_status{};
     };
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation
