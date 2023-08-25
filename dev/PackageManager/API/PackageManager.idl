@@ -310,9 +310,9 @@ namespace Microsoft.Windows.Management.Deployment
         static PackageDeploymentManager GetDefault();
 
         // Return true if the package set's content are present and available for use
-        Boolean IsReady(PackageSet packageSet);
+        Boolean IsPackageSetReady(PackageSet packageSet);
 
-        Boolean IsReadyByPackageSetId(String packageSetId);
+        Boolean IsPackageSetReadyById(String packageSetId);
 
         // Check if the necessary package(s) needed by the scenario are present
         // and available for use and if not then Make It So.
@@ -320,10 +320,10 @@ namespace Microsoft.Windows.Management.Deployment
         // then make them available (download, install, etc).
         // If the necessary AI Models are present and available this is equivalent to IsReady(id).
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        EnsureIsReadyAsync(PackageSet packageSet, EnsureIsReadyOptions options);
+        EnsurePackageSetIsReadyAsync(PackageSet packageSet, EnsureIsReadyOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        EnsureIsReadyByPackageSetIdAsync(String packageSetId, EnsureIsReadyOptions options);
+        EnsurePackageSetIsReadyByIdAsync(String packageSetId, EnsureIsReadyOptions options);
 
         // Add packages
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>

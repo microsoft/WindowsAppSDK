@@ -26,7 +26,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         return winrt::make<winrt::Microsoft::Windows::Management::Deployment::implementation::PackageDeploymentManager>();
     }
-    bool PackageDeploymentManager::IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet)
+    bool PackageDeploymentManager::IsPackageSetReady(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet)
     {
         Validate(packageSet);
 
@@ -47,12 +47,12 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         }
         return true;
     }
-    bool PackageDeploymentManager::IsReadyByPackageSetId(hstring const& packageSetId)
+    bool PackageDeploymentManager::IsPackageSetReadyById(hstring const& packageSetId)
     {
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::EnsureIsReadyAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options)
+    PackageDeploymentManager::EnsurePackageSetIsReadyAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options)
     {
         //TODO auto logTelemetry{ PackageDeploymentTelemetry::CreateChannelAsync::Start(g_telemetryHelper, remoteId) };
 
@@ -83,7 +83,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         const UINT32 c_progressPercentageStartOfIsReady{ 1 };
         packageDeploymentProgress.percentage(c_progressPercentageStartOfIsReady);
         progress(packageDeploymentProgress);
-        if (IsReady(packageSet))
+        if (IsPackageSetReady(packageSet))
         {
             co_return winrt::make<PackageDeploymentResult>(
                 PackageDeploymentStatus::CompletedSuccess, S_OK, /*TODO*/winrt::guid{});
@@ -114,7 +114,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         //TODO logTelemetry.Stop();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::EnsureIsReadyByPackageSetIdAsync(hstring packageSetId, winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options)
+    PackageDeploymentManager::EnsurePackageSetIsReadyByIdAsync(hstring packageSetId, winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options)
     {
         throw hresult_not_implemented();
     }
