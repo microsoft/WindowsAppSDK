@@ -56,7 +56,7 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageResolver::Find(
     (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN,
                      "PackageResolver: Scanning packages (%ls)",
                      criteria.get());
-    if (packages.begin().HasCurrent())
+    if (packages)
     {
         for (const winrt::Windows::ApplicationModel::Package& candidate : packages)
         {

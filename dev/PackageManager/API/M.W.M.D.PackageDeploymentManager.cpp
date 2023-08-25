@@ -196,14 +196,27 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Management::Deployment::AddPackageOptions addOptions/*TODO { ToOptions(options) }*/;
         auto deploymentOperation{ m_packageManager.AddPackageByUriAsync(packageUri, addOptions) };
         deploymentOperation.get();
-        const auto deploymentResult{ deploymentOperation.GetResults() };
-        winrt::hresult hr{};
-        winrt::hresult extendedHr{};
-        if (deploymentOperation.Status() != winrt::Windows::Foundation::AsyncStatus::Completed)
+        try
         {
-            return !hr ?
-                THROW_HR_MSG(hr, "%ls", packageUri.ToString().c_str()) :
-                THROW_HR_MSG(extendedHr, "%ls", packageUri.ToString().c_str());
+            const auto deploymentResult{ deploymentOperation.GetResults() };
+            if (deploymentOperation.Status() == winrt::Windows::Foundation::AsyncStatus::Error)
+            {
+                const winrt::hresult hr{ static_cast<HRESULT>(deploymentOperation.ErrorCode()) };
+                THROW_IF_FAILED_MSG(hr, "%ls", packageUri.ToString().c_str());
+                const winrt::hresult extendedHr{ deploymentResult.ExtendedErrorCode() };
+                THROW_IF_FAILED_MSG(extendedHr, "%ls", packageUri.ToString().c_str());
+                FAIL_FAST_HR_MSG(E_UNEXPECTED, "%ls", packageUri.ToString().c_str());
+            }
+            else if (deploymentOperation.Status() == winrt::Windows::Foundation::AsyncStatus::Canceled)
+            {
+                THROW_WIN32_MSG(ERROR_CANCELLED, "%ls", packageUri.ToString().c_str());
+            }
+            FAIL_FAST_HR_IF(E_UNEXPECTED, deploymentOperation.Status() != winrt::Windows::Foundation::AsyncStatus::Error, "%ls", packageUri.ToString().c_str());
+        }
+        catch (...)
+        {
+            auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
+            THROW_HR_MSG(exception.code(), "%ls", packageUri.ToString().c_str());
         }
     }
 
