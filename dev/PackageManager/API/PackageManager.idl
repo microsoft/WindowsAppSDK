@@ -161,6 +161,7 @@ namespace Microsoft.Windows.Management.Deployment
     {
         PackageDeploymentStatus Status { get; };
         HRESULT ExtendedError { get; };
+        Boolean IsRegistered{ get; };
         Guid ActivityId { get; };
     }
 

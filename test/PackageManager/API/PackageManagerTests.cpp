@@ -38,6 +38,10 @@ namespace Test::PackageManager::Tests
         {
             ::TP::AddPackageIfNecessary(Test::Packages::Framework::Red::c_packageDirName, ::TPF::Red::GetPackageFullName());
         }
+        static void StagePackage_Red()
+        {
+            ::TP::StagePackageIfNecessary(Test::Packages::Framework::Red::c_packageDirName, ::TPF::Red::GetPackageFullName());
+        }
         static void RemovePackage_Red()
         {
             // Best-effort removal. PackageManager.RemovePackage errors if the package
@@ -53,6 +57,10 @@ namespace Test::PackageManager::Tests
         {
             ::TP::AddPackageIfNecessary(Test::Packages::Framework::Green::c_packageDirName, ::TPF::Green::GetPackageFullName());
         }
+        static void StagePackage_Green()
+        {
+            ::TP::StagePackageIfNecessary(Test::Packages::Framework::Green::c_packageDirName, ::TPF::Green::GetPackageFullName());
+        }
         static void RemovePackage_Green()
         {
             // Best-effort removal. PackageManager.RemovePackage errors if the package
@@ -67,6 +75,10 @@ namespace Test::PackageManager::Tests
         static void AddPackage_Blue()
         {
             ::TP::AddPackageIfNecessary(Test::Packages::Framework::Blue::c_packageDirName, ::TPF::Blue::GetPackageFullName());
+        }
+        static void StagePackage_Blue()
+        {
+            ::TP::StagePackageIfNecessary(Test::Packages::Framework::Blue::c_packageDirName, ::TPF::Blue::GetPackageFullName());
         }
         static void RemovePackage_Blue()
         {
@@ -533,6 +545,32 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
+        TEST_METHOD(EnsurePackageSetIsReadyAsync_1_Staged_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            StagePackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
+            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
+            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            packageSet.PackageSetItems().Append(red);
+
+            winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetIsReadyAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError());
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
         TEST_METHOD(EnsurePackageSetIsReadyAsync_1_Registered_Success)
         {
             AddPackage_Red();
@@ -666,6 +704,42 @@ namespace Test::PackageManager::Tests
             green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
             green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
             packageSet.PackageSetItems().Append(green);
+
+            winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetIsReadyAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError());
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(EnsurePackageSetIsReadyAsync_N_RegisteredAndNotInstalledAndStaged_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            AddPackage_Red();
+            RemovePackage_Green();
+            StagePackage_Blue();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
+            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
+            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            packageSet.PackageSetItems().Append(red);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
+            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
+            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            packageSet.PackageSetItems().Append(green);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue;
+            blue.PackageFamilyName(::TPF::Green::c_packageFamilyName);
+            blue.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            packageSet.PackageSetItems().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
             auto deploymentResult{ packageDeploymentManager.EnsurePackageSetIsReadyAsync(packageSet, options).get() };

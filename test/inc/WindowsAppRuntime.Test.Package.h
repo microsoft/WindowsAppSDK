@@ -155,6 +155,29 @@ inline bool IsPackageRegistered(PCWSTR packageFullName)
     return !path.empty();
 }
 
+inline bool IsPackageAvailable(PCWSTR packageFullName)
+{
+    // Check if the package is available for use
+    // This means registered to the current user OR staged
+    // NOTE: To check if a package is staged and not registered to the current user:
+    //              bool isStaged = IsPackageAvailable(p) && !IsPackageRegistered(p)
+    if (IsPackageRegistered(packageFullName))
+    {
+        return true;
+    }
+    PackageOrigin packageOrigin{};
+    const auto rc{ GetStagedPackageOrigin(packageFullName, &packageOrigin) };
+    if (rc == ERROR_SUCCESS)
+    {
+        return true;
+    }
+    else if (rc == ERROR_APP_DATA_NOT_FOUND)
+    {
+        return false;
+    }
+    THROW_WIN32(rc);
+}
+
 inline std::filesystem::path GetMsixPackagePath(PCWSTR packageDirName)
 {
     // Build the target package's .msix filename. It's under the Solution's $(OutDir)
@@ -210,6 +233,25 @@ inline void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
     if (!IsPackageRegistered(packageFullName))
     {
         AddPackage(packageDirName, packageFullName);
+    }
+}
+
+inline void StagePackage(PCWSTR packageDirName, PCWSTR packageFullName)
+{
+    auto msixUri{ GetMsixPackageUri(packageDirName) };
+
+    // Install the package
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
+    auto deploymentResult{ packageManager.StagePackageAsync(msixUri, nullptr, options).get() };
+    VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"StagePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+}
+
+inline void StagePackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
+{
+    if (!IsPackageAvailable(packageFullName))
+    {
+        StagePackage(packageDirName, packageFullName);
     }
 }
 
