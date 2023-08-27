@@ -1,10 +1,12 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #ifndef __APPMODEL_PACKAGE_H
 #define __APPMODEL_PACKAGE_H
 
 #include <appmodel.h>
+
+#include <AppModel.Identity.h>
 
 namespace AppModel::Package
 {
@@ -51,6 +53,31 @@ inline PACKAGE_VERSION ToPackageVersion(winrt::Windows::ApplicationModel::Packag
     to.Build = from.Build;
     to.Revision = from.Revision;
     return to;
+}
+
+inline std::tuple<std::wstring, PACKAGE_VERSION, std::uint32_t, std::wstring, std::wstring, std::wstring> ParsePackageFullName(PCWSTR packageFullName)
+{
+    BYTE buffer[
+        sizeof(PACKAGE_ID) +
+        sizeof(WCHAR) * (PACKAGE_NAME_MAX_LENGTH + 1) +
+        sizeof(WCHAR) * (PACKAGE_VERSION_MAX_LENGTH + 1) +
+        sizeof(WCHAR) * (PACKAGE_ARCHITECTURE_MAX_LENGTH + 1) +
+        sizeof(WCHAR) * (PACKAGE_RESOURCEID_MAX_LENGTH + 1) +
+        sizeof(WCHAR) * (PACKAGE_PUBLISHERID_MAX_LENGTH + 1)]{};
+    UINT32 bufferLength{ ARRAYSIZE(buffer) };
+    THROW_IF_WIN32_ERROR_MSG(::PackageIdFromFullName(packageFullName, PACKAGE_INFORMATION_BASIC, &bufferLength, buffer), "%ls", packageFullName);
+    const auto& packageId{ *reinterpret_cast<PACKAGE_ID*>(buffer) };
+
+    WCHAR packageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
+    UINT32 packageFamilyNameLength{ ARRAYSIZE(packageFamilyName) };
+    THROW_IF_WIN32_ERROR_MSG(::PackageFamilyNameFromId(&packageId, &packageFamilyNameLength, packageFamilyName), "%ls", packageFullName);
+
+    return { std::wstring(packageId.name), packageId.version, packageId.processorArchitecture, std::wstring(packageId.resourceId ? packageId.resourceId : L""), std::wstring(packageId.publisherId), std::wstring(packageFamilyName) };
+}
+
+inline std::tuple<std::wstring, PACKAGE_VERSION, std::uint32_t, std::wstring, std::wstring, std::wstring> ParsePackageFullName(const std::wstring& packageFullName)
+{
+    return ParsePackageFullName(packageFullName.c_str());
 }
 }
 

@@ -36,6 +36,20 @@ namespace Test::PackageManager::Tests
             return true;
         }
 
+        static winrt::Microsoft::Windows::Management::Deployment::PackageSetItem Make_PackageSetItem(
+            PCWSTR packageFullName,
+            PCWSTR packageDirName)
+        {
+            const auto [packageName, packageVersion, packageArchitecture, packageResourceId, packagePublisherId, packageFamilyName]{ ::AppModel::Package::ParsePackageFullName(packageFullName) };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem psi;
+            psi.PackageFamilyName(packageFamilyName);
+            psi.PackageUri(::TP::GetMsixPackageUri(packageDirName));
+            const ::AppModel::Identity::PackageVersion version{ packageVersion };
+            psi.MinVersion(version.ToWinrtPackageVersion());
+            return psi;
+        }
+
         static void AddPackage_Red()
         {
             ::TP::AddPackageIfNecessary(Test::Packages::Framework::Red::c_packageDirName, ::TPF::Red::GetPackageFullName());
@@ -260,9 +274,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
@@ -277,9 +289,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
 
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
@@ -294,9 +304,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder;
-            redder.PackageFamilyName(::TPF::Redder::c_packageFamilyName);
-            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Redder::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder{ Make_PackageSetItem(::TPF::Redder::GetPackageFullName(), ::TPF::Redder::c_packageDirName) };
             packageSet.PackageSetItems().Append(redder);
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
@@ -311,9 +319,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
 
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
@@ -335,9 +341,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
@@ -356,17 +360,11 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
-            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
-            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.PackageSetItems().Append(green);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue;
-            blue.PackageFamilyName(::TPF::Blue::c_packageFamilyName);
-            blue.PackageUri(::TP::GetMsixPackageUri(::TPF::Blue::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
             packageSet.PackageSetItems().Append(blue);
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
@@ -383,17 +381,11 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
-            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
-            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.PackageSetItems().Append(green);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue;
-            blue.PackageFamilyName(::TPF::Blue::c_packageFamilyName);
-            blue.PackageUri(::TP::GetMsixPackageUri(::TPF::Blue::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
             packageSet.PackageSetItems().Append(blue);
 
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
@@ -410,17 +402,11 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder;
-            redder.PackageFamilyName(::TPF::Redder::c_packageFamilyName);
-            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Redder::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder{ Make_PackageSetItem(::TPF::Redder::GetPackageFullName(), ::TPF::Redder::c_packageDirName) };
             packageSet.PackageSetItems().Append(redder);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
-            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
-            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.PackageSetItems().Append(green);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue;
-            blue.PackageFamilyName(::TPF::Blue::c_packageFamilyName);
-            blue.PackageUri(::TP::GetMsixPackageUri(::TPF::Blue::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
             packageSet.PackageSetItems().Append(blue);
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
@@ -437,17 +423,11 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder;
-            redder.PackageFamilyName(::TPF::Redder::c_packageFamilyName);
-            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Redder::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder{ Make_PackageSetItem(::TPF::Redder::GetPackageFullName(), ::TPF::Redder::c_packageDirName) };
             packageSet.PackageSetItems().Append(redder);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
-            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
-            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.PackageSetItems().Append(green);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue;
-            blue.PackageFamilyName(::TPF::Blue::c_packageFamilyName);
-            blue.PackageUri(::TP::GetMsixPackageUri(::TPF::Blue::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
             packageSet.PackageSetItems().Append(blue);
 
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
@@ -465,13 +445,9 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
-            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
-            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.PackageSetItems().Append(green);
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
@@ -492,13 +468,9 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
-            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
-            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.PackageSetItems().Append(green);
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
@@ -645,9 +617,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
@@ -671,9 +641,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
@@ -693,9 +661,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
@@ -715,9 +681,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder;
-            redder.PackageFamilyName(::TPF::Redder::c_packageFamilyName);
-            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Redder::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder{ Make_PackageSetItem(::TPF::Redder::GetPackageFullName(), ::TPF::Redder::c_packageDirName) };
             packageSet.PackageSetItems().Append(redder);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
@@ -739,9 +703,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
@@ -768,9 +730,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
@@ -794,17 +754,11 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
-            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
-            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.PackageSetItems().Append(green);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue;
-            blue.PackageFamilyName(::TPF::Blue::c_packageFamilyName);
-            blue.PackageUri(::TP::GetMsixPackageUri(::TPF::Blue::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
             packageSet.PackageSetItems().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
@@ -826,17 +780,11 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
-            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
-            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.PackageSetItems().Append(green);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue;
-            blue.PackageFamilyName(::TPF::Blue::c_packageFamilyName);
-            blue.PackageUri(::TP::GetMsixPackageUri(::TPF::Blue::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
             packageSet.PackageSetItems().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
@@ -858,17 +806,11 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
-            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
-            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.PackageSetItems().Append(green);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue;
-            blue.PackageFamilyName(::TPF::Blue::c_packageFamilyName);
-            blue.PackageUri(::TP::GetMsixPackageUri(::TPF::Blue::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
             packageSet.PackageSetItems().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
@@ -892,17 +834,11 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder;
-            redder.PackageFamilyName(::TPF::Redder::c_packageFamilyName);
-            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Redder::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder{ Make_PackageSetItem(::TPF::Redder::GetPackageFullName(), ::TPF::Redder::c_packageDirName) };
             packageSet.PackageSetItems().Append(redder);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
-            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
-            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.PackageSetItems().Append(green);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue;
-            blue.PackageFamilyName(::TPF::Blue::c_packageFamilyName);
-            blue.PackageUri(::TP::GetMsixPackageUri(::TPF::Blue::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
             packageSet.PackageSetItems().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
@@ -925,13 +861,9 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
-            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
-            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.PackageSetItems().Append(green);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
@@ -957,17 +889,11 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
-            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
-            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.PackageSetItems().Append(green);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue;
-            blue.PackageFamilyName(::TPF::Green::c_packageFamilyName);
-            blue.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.PackageSetItems().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
@@ -993,13 +919,9 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
-            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.PackageSetItems().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
-            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
-            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.PackageSetItems().Append(green);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
