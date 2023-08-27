@@ -80,7 +80,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
         // Is there any work to do?
         packageDeploymentProgress.status(PackageDeploymentProgressStatus::InProgress);
-        const UINT32 c_progressPercentageStartOfIsReady{ 1 };
+        const double c_progressPercentageStartOfIsReady{ 0.01 };
         packageDeploymentProgress.percentage(c_progressPercentageStartOfIsReady);
         progress(packageDeploymentProgress);
         if (IsPackageSetReady(packageSet))
@@ -89,11 +89,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentStatus::CompletedSuccess, S_OK, true, /*TODO*/winrt::guid{});
         }
 
-        const UINT32 c_progressPercentageStartOfInstalls{ 10 };
+        const double c_progressPercentageStartOfInstalls{ 0.10 };
         packageDeploymentProgress.percentage(c_progressPercentageStartOfInstalls);
         progress(packageDeploymentProgress);
         auto packageSetItems{ packageSet.PackageSetItems() };
-        const UINT32 progressIncrementPerPackageSetItem{ (100 - c_progressPercentageStartOfInstalls) / packageSetItems.Size() };
+        const double progressIncrementPerPackageSetItem{ (1.0 - c_progressPercentageStartOfInstalls) / packageSetItems.Size() };
         for (const winrt::Microsoft::Windows::Management::Deployment::PackageSetItem& packageSetItem : packageSetItems)
         {
             try

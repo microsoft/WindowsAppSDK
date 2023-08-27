@@ -295,8 +295,8 @@ namespace Test::PackageManager::Tests
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder;
-            redder.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            redder.PackageFamilyName(::TPF::Redder::c_packageFamilyName);
+            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Redder::c_packageDirName));
             packageSet.PackageSetItems().Append(redder);
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
@@ -317,6 +317,8 @@ namespace Test::PackageManager::Tests
             packageSet.PackageSetItems().Append(red);
 
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            RemovePackage_Redder();
         }
 
         TEST_METHOD(IsPackageSetReady_1_RegisteredPackageStatusBad_No)
@@ -409,8 +411,8 @@ namespace Test::PackageManager::Tests
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder;
-            redder.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            redder.PackageFamilyName(::TPF::Redder::c_packageFamilyName);
+            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Redder::c_packageDirName));
             packageSet.PackageSetItems().Append(redder);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
             green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
@@ -436,8 +438,8 @@ namespace Test::PackageManager::Tests
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder;
-            redder.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            redder.PackageFamilyName(::TPF::Redder::c_packageFamilyName);
+            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Redder::c_packageDirName));
             packageSet.PackageSetItems().Append(redder);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
             green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
@@ -714,8 +716,8 @@ namespace Test::PackageManager::Tests
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder;
-            redder.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            redder.PackageFamilyName(::TPF::Redder::c_packageFamilyName);
+            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Redder::c_packageDirName));
             packageSet.PackageSetItems().Append(redder);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
@@ -891,8 +893,8 @@ namespace Test::PackageManager::Tests
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder;
-            redder.PackageFamilyName(::TPF::Red::c_packageFamilyName);
-            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            redder.PackageFamilyName(::TPF::Redder::c_packageFamilyName);
+            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Redder::c_packageDirName));
             packageSet.PackageSetItems().Append(redder);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
             green.PackageFamilyName(::TPF::Green::c_packageFamilyName);

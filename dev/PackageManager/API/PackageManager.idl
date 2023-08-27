@@ -168,7 +168,7 @@ namespace Microsoft.Windows.Management.Deployment
     runtimeclass PackageDeploymentProgress
     {
         PackageDeploymentProgressStatus status;
-        UInt32 percentage;
+        Double percentage;
     }
 
     [feature(Feature_PackageManager)]

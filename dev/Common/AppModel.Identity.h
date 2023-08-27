@@ -133,19 +133,11 @@ public:
         Version = version;
     }
 
-// NOTE: There's no preprocessor symbol for Windows.ApplicationModel.PackageVersion
-//       or Windows.ApplicationModel.h so test for Windows.ApplicationModel.IPackageId
-//       as a close proxy for the ABI struct PackageVersion is defined.
-#if defined(____x_ABI_CWindows_CApplicationModel_CIPackageId_INTERFACE_DEFINED__)
-    PackageVersion(ABI::Windows::ApplicationModel::PackageVersion packageVersion) :
-        PACKAGE_VERSION()
+    template<typename TVersion>
+    PackageVersion(TVersion const& t) :
+        PackageVersion(t.Major, t.Minor, t.Build, t.Revision)
     {
-        Major = packageVersion.Major;
-        Minor = packageVersion.Minor;
-        Build = packageVersion.Build;
-        Revision = packageVersion.Revision;
     }
-#endif // defined(____x_ABI_CWindows_CApplicationModel_CIPackageId_INTERFACE_DEFINED__)
 
 #if defined(WINRT_Windows_ApplicationModel_2_H)
     PackageVersion(winrt::Windows::ApplicationModel::PackageVersion packageVersion) :
@@ -180,7 +172,7 @@ public:
     }
 #endif // defined(WINRT_Windows_ApplicationModel_2_H)
 
-#if defined(_XSTRING_) && defined(_STRSAFE_H_INCLUDED_) && defined(WI_VERIFY)
+#if defined(_XSTRING_)
     // Return the string as a formatted value "major.minor.build.revision".
     std::wstring ToString() const
     {
@@ -189,11 +181,13 @@ public:
 
     static std::wstring ToString(std::uint16_t major, std::uint16_t minor, std::uint16_t build, std::uint16_t revision)
     {
-        wchar_t formattedVersion[5 + 1 + 5 + 1 + 5 + 1 + 5 + 1]{};  // "12345.12345.12345.12345" + null-terminator
-        WI_VERIFY(SUCCEEDED(StringCchPrintfW(formattedVersion, ARRAYSIZE(formattedVersion), L"%hu.%hu.%hu.%hu", major, minor, build, revision)));
-        return std::wstring(formattedVersion);
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && (_MSVC_LANG >= 202002L))
+        return std::format(L"{}.{}.{}.{}", major, minor, build, revision);
+#else
+        return std::to_wstring(major) + L"." + std::to_wstring(minor) + L"." + std::to_wstring(build) + L"." + std::to_wstring(revision);
+#endif
     }
-#endif defined(_XSTRING_) && defined(_STRSAFE_H_INCLUDED_) && defined(WI_VERIFY)
+#endif defined(_XSTRING_)
 };
 
 inline bool operator==(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)

@@ -9,7 +9,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
     PackageDeploymentProgress::PackageDeploymentProgress(
         winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgressStatus const& status,
-        uint32_t percentage) :
+        double percentage) :
         m_status(status),
         m_percentage(percentage)
     {
@@ -23,11 +23,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         m_status = value;
     }
-    uint32_t PackageDeploymentProgress::percentage()
+    double PackageDeploymentProgress::percentage()
     {
         return m_percentage;
     }
-    void PackageDeploymentProgress::percentage(uint32_t value)
+    void PackageDeploymentProgress::percentage(double value)
     {
         m_percentage = value;
     }
