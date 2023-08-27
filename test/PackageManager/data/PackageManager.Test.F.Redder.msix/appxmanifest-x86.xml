@@ -6,9 +6,9 @@
   IgnorableNamespaces="uap">
 
   <Identity
-    Name="Test.PackageManager.F.Redder"
+    Name="Test.PackageManager.F.Red"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
-    Version="1.2.3.4"
+    Version="2.4.6.8"
     ProcessorArchitecture="x86" />
 
   <Properties>
