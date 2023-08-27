@@ -20,6 +20,7 @@ namespace Test::PackageManager::Tests
         {
             RemovePackage_Blue();
             RemovePackage_Green();
+            RemovePackage_Redder();
             RemovePackage_Red();
             ::TB::Setup();
             return true;
@@ -29,6 +30,7 @@ namespace Test::PackageManager::Tests
         {
             RemovePackage_Blue();
             RemovePackage_Green();
+            RemovePackage_Redder();
             RemovePackage_Red();
             ::TB::Cleanup();
             return true;
@@ -51,6 +53,25 @@ namespace Test::PackageManager::Tests
             //
             // Thus, do a *IfNecessary removal
             ::TP::RemovePackageIfNecessary(::TPF::Red::GetPackageFullName());
+        }
+
+        static void AddPackage_Redder()
+        {
+            ::TP::AddPackageIfNecessary(Test::Packages::Framework::Redder::c_packageDirName, ::TPF::Redder::GetPackageFullName());
+        }
+        static void StagePackage_Redder()
+        {
+            ::TP::StagePackageIfNecessary(Test::Packages::Framework::Redder::c_packageDirName, ::TPF::Redder::GetPackageFullName());
+        }
+        static void RemovePackage_Redder()
+        {
+            // Best-effort removal. PackageManager.RemovePackage errors if the package
+            // is not registered, but if it's not registered we're good. "'Tis the destination
+            // that matters, not the journey" so regardless how much or little work
+            // we need do, we're happy as long as the package isn't registered when we're done
+            //
+            // Thus, do a *IfNecessary removal
+            ::TP::RemovePackageIfNecessary(::TPF::Redder::GetPackageFullName());
         }
 
         static void AddPackage_Green()
@@ -264,6 +285,40 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
+        TEST_METHOD(IsPackageSetReady_1_OlderRegistered_No)
+        {
+            AddPackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder;
+            redder.PackageFamilyName(::TPF::Red::c_packageFamilyName);
+            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            packageSet.PackageSetItems().Append(redder);
+
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(IsPackageSetReady_1_NewerRegistered_Yes)
+        {
+            AddPackage_Redder();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
+            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
+            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            packageSet.PackageSetItems().Append(red);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
         TEST_METHOD(IsPackageSetReady_1_RegisteredPackageStatusBad_No)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
@@ -340,6 +395,62 @@ namespace Test::PackageManager::Tests
             packageSet.PackageSetItems().Append(blue);
 
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(IsPackageSetReady_N_OlderRegistered_No)
+        {
+            AddPackage_Red();
+            AddPackage_Green();
+            AddPackage_Blue();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder;
+            redder.PackageFamilyName(::TPF::Red::c_packageFamilyName);
+            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            packageSet.PackageSetItems().Append(redder);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
+            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
+            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            packageSet.PackageSetItems().Append(green);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue;
+            blue.PackageFamilyName(::TPF::Blue::c_packageFamilyName);
+            blue.PackageUri(::TP::GetMsixPackageUri(::TPF::Blue::c_packageDirName));
+            packageSet.PackageSetItems().Append(blue);
+
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(IsPackageSetReady_N_NewerRegistered_Yes)
+        {
+            AddPackage_Redder();
+            AddPackage_Green();
+            AddPackage_Blue();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder;
+            redder.PackageFamilyName(::TPF::Red::c_packageFamilyName);
+            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            packageSet.PackageSetItems().Append(redder);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
+            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
+            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            packageSet.PackageSetItems().Append(green);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue;
+            blue.PackageFamilyName(::TPF::Blue::c_packageFamilyName);
+            blue.PackageUri(::TP::GetMsixPackageUri(::TPF::Blue::c_packageDirName));
+            packageSet.PackageSetItems().Append(blue);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            RemovePackage_Redder();
         }
 
         TEST_METHOD(IsPackageSetReady_N_RegisteredAndNotInstalled_No)
@@ -593,6 +704,54 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
+        TEST_METHOD(EnsurePackageSetIsReadyAsync_1_OlderRegistered_Success)
+        {
+            AddPackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder;
+            redder.PackageFamilyName(::TPF::Red::c_packageFamilyName);
+            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            packageSet.PackageSetItems().Append(redder);
+
+            winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetIsReadyAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError());
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            RemovePackage_Redder();
+        }
+
+        TEST_METHOD(EnsurePackageSetIsReadyAsync_1_NewerRegistered_Success)
+        {
+            AddPackage_Redder();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
+            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
+            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            packageSet.PackageSetItems().Append(red);
+
+            winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetIsReadyAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError());
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            RemovePackage_Redder();
+        }
+
         TEST_METHOD(EnsurePackageSetIsReadyAsync_1_RegisteredPackageStatusBad_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
@@ -684,6 +843,74 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError());
 
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(EnsurePackageSetIsReadyAsync_N_NewerRegistered_Success)
+        {
+            AddPackage_Redder();
+            AddPackage_Green();
+            AddPackage_Blue();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red;
+            red.PackageFamilyName(::TPF::Red::c_packageFamilyName);
+            red.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            packageSet.PackageSetItems().Append(red);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
+            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
+            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            packageSet.PackageSetItems().Append(green);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue;
+            blue.PackageFamilyName(::TPF::Blue::c_packageFamilyName);
+            blue.PackageUri(::TP::GetMsixPackageUri(::TPF::Blue::c_packageDirName));
+            packageSet.PackageSetItems().Append(blue);
+
+            winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetIsReadyAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError());
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            RemovePackage_Redder();
+        }
+
+        TEST_METHOD(EnsurePackageSetIsReadyAsync_N_OlderRegistered_Success)
+        {
+            AddPackage_Red();
+            AddPackage_Green();
+            AddPackage_Blue();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder;
+            redder.PackageFamilyName(::TPF::Red::c_packageFamilyName);
+            redder.PackageUri(::TP::GetMsixPackageUri(::TPF::Red::c_packageDirName));
+            packageSet.PackageSetItems().Append(redder);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green;
+            green.PackageFamilyName(::TPF::Green::c_packageFamilyName);
+            green.PackageUri(::TP::GetMsixPackageUri(::TPF::Green::c_packageDirName));
+            packageSet.PackageSetItems().Append(green);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue;
+            blue.PackageFamilyName(::TPF::Blue::c_packageFamilyName);
+            blue.PackageUri(::TP::GetMsixPackageUri(::TPF::Blue::c_packageDirName));
+            packageSet.PackageSetItems().Append(blue);
+
+            winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options;
+            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetIsReadyAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError());
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            RemovePackage_Redder();
         }
 
         TEST_METHOD(EnsurePackageSetIsReadyAsync_N_RegisteredAndNotInstalled_Success)

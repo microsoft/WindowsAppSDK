@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+#include <TerminalVelocityFeatures-PackageManager.h>
+
 //import "windows.foundation.idl";
 //import "Windows.Management.Deployment.idl";
 //import "Microsoft.Windows.ApplicationModel.winmd;"
@@ -15,10 +17,12 @@ namespace Microsoft.Windows.Management.Deployment
 {
     runtimeclass PackageVolume;
 
+    [feature(Feature_PackageManager)]
     [contractversion(1)]
     apicontract PackageDeploymentContract{};
 
     // How should we handle deployment operations?
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     enum DeploymentProcessingModel
     {
@@ -27,6 +31,7 @@ namespace Microsoft.Windows.Management.Deployment
     };
 
     // Do deployment operations need non-default priority?
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     enum DeploymentPriority
     {
@@ -35,6 +40,7 @@ namespace Microsoft.Windows.Management.Deployment
         Immediate
     };
 
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageVolumeStatus
     {
@@ -45,6 +51,7 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean IsBroken;
     };
 
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageVolume
     {
@@ -63,6 +70,7 @@ namespace Microsoft.Windows.Management.Deployment
         void FixMe();
     };
 
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageVolumeManager
     {
@@ -75,6 +83,7 @@ namespace Microsoft.Windows.Management.Deployment
         static PackageVolume FindPackageVolumeByName(String name);
     };
 
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageSetItem
     {
@@ -99,6 +108,7 @@ namespace Microsoft.Windows.Management.Deployment
         //TODO see AddPackageDependencyOptions
     }
 
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageSet
     {
@@ -111,6 +121,7 @@ namespace Microsoft.Windows.Management.Deployment
         IVector<PackageSetItem> PackageSetItems { get; };
     }
 
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass FindPackageOptions
     {
@@ -120,6 +131,7 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean TODO_MustHaveAtLeastOneInterfaceOrStaticFactoryPlaceholder;
     }
 
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageSetManager
     {
@@ -132,6 +144,7 @@ namespace Microsoft.Windows.Management.Deployment
         IVector<PackageSet> Find(FindPackageOptions options);   // Enumerate
     };
 
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     enum PackageDeploymentStatus
     {
@@ -140,6 +153,7 @@ namespace Microsoft.Windows.Management.Deployment
         CompletedFailure = 2,   // The request failed with some critical internal error. //TODO:Check ExtendedError for HRESULT
     };
 
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     enum PackageDeploymentProgressStatus
     {
@@ -149,6 +163,7 @@ namespace Microsoft.Windows.Management.Deployment
         CompletedFailure = 3,   // The request failed with some critical internal error. //TODO:Check ExtendedError for HRESULT
     };
 
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageDeploymentProgress
     {
@@ -156,6 +171,7 @@ namespace Microsoft.Windows.Management.Deployment
         UInt32 percentage;
     }
 
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageDeploymentResult
     {
@@ -165,6 +181,7 @@ namespace Microsoft.Windows.Management.Deployment
         Guid ActivityId { get; };
     }
 
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass EnsureIsReadyOptions
     {
@@ -184,6 +201,7 @@ namespace Microsoft.Windows.Management.Deployment
         //TODO see AddPackageDependencyOptions
     }
 
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     enum StubPackageOption
     {
@@ -194,6 +212,7 @@ namespace Microsoft.Windows.Management.Deployment
     };
 
     // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass AddPackageOptions
     {
@@ -225,6 +244,7 @@ namespace Microsoft.Windows.Management.Deployment
     }
 
     // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass StagePackageOptions
     {
@@ -249,6 +269,7 @@ namespace Microsoft.Windows.Management.Deployment
     }
 
     // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass RegisterPackageOptions
     {
@@ -272,6 +293,7 @@ namespace Microsoft.Windows.Management.Deployment
     }
 
     // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass RemovePackageOptions
     {
@@ -304,22 +326,23 @@ namespace Microsoft.Windows.Management.Deployment
     // TODO: Properties (Status, StubPreference)
     // TODO: RequestAdd
     //
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageDeploymentManager
     {
         // Get an instance of the manager
         static PackageDeploymentManager GetDefault();
 
-        // Return true if the package set's content are present and available for use
+        // Return true if the necessary package(s) are present and available for use
         Boolean IsPackageSetReady(PackageSet packageSet);
 
         Boolean IsPackageSetReadyById(String packageSetId);
 
-        // Check if the necessary package(s) needed by the scenario are present
+        // Check if the necessary package(s) are present
         // and available for use and if not then Make It So.
         // If the necessary packages(s) are not present on the system
         // then make them available (download, install, etc).
-        // If the necessary AI Models are present and available this is equivalent to IsReady(id).
+        // If the necessary packages are present and available this is equivalent to IsReady(id).
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         EnsurePackageSetIsReadyAsync(PackageSet packageSet, EnsureIsReadyOptions options);
 
@@ -352,6 +375,7 @@ namespace Microsoft.Windows.Management.Deployment
         // Ditto PackageSet operations of Stage, Register, Repair, Reset
     }
 
+    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageRuntimeManager
     {

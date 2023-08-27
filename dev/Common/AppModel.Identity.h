@@ -115,11 +115,6 @@ inline winrt::Windows::System::ProcessorArchitecture ParseShortArchitecture(_In_
 class PackageVersion : public PACKAGE_VERSION
 {
 public:
-    PackageVersion()
-    {
-        Version = 0;
-    }
-
     PackageVersion(const PackageVersion&) = default;
 
     // Create an instance with the value `major.minor.build.revision`.
@@ -133,7 +128,7 @@ public:
     }
 
     // Create an instance from a version as a uint64.
-    PackageVersion(std::uint64_t version)
+    PackageVersion(std::uint64_t version = 0)
     {
         Version = version;
     }
