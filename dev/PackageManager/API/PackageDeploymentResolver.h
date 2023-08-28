@@ -4,19 +4,21 @@
 #if !defined(PACKAGERESOLVER_H)
 #define PACKAGERESOLVER_H
 
-namespace Microsoft::Windows::ApplicationModel::PackageResolver
+namespace Microsoft::Windows::ApplicationModel::PackageDeploymentResolver
 {
     // Return the best fit package's full name (or .empty if no match found)
     winrt::hstring FindBestFit(
         const winrt::Windows::Management::Deployment::PackageManager& packageManager,
         const winrt::hstring& packageFamilyName,
-        const AppModel::Identity::PackageVersion& minVersion);
+        const AppModel::Identity::PackageVersion& minVersion,
+        const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures processorArchitectureFilter);
 
     // Return true if any package meets the criteria
     bool FindAny(
         const winrt::Windows::Management::Deployment::PackageManager& packageManager,
         const winrt::hstring& packageFamilyName,
-        const AppModel::Identity::PackageVersion& minVersion);
+        const AppModel::Identity::PackageVersion& minVersion,
+        const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures processorArchitectureFilter);
 }
 
 #endif // PACKAGERESOLVER_H

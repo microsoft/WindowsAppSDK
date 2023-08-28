@@ -9,7 +9,7 @@
 #include "M.W.M.D.PackageDeploymentProgress.h"
 #include "M.W.M.D.PackageVolumeManager.h"
 #include "MsixPackageManager.h"
-#include "PackageResolver.h"
+#include "PackageDeploymentResolver.h"
 
 static_assert(static_cast<int>(winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::Default) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::Default),
               "winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::Default != winrt::Windows::Management::Deployment::StubPackageOption::Default");
@@ -35,13 +35,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             if (!IsReady(packageSetItem))
             {
                 (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED,
-                                 "Id=%ls PackageFamilyName=%ls MinVersion=%hu.%hu.%hu.%hu",
+                                 "Id=%ls PackageFamilyName=%ls MinVersion=%hu.%hu.%hu.%hu ArchitectureFilter:0x%X",
                                  packageSetItem.Id().c_str(),
                                  packageSetItem.PackageFamilyName().c_str(),
                                  packageSetItem.MinVersion().Major,
                                  packageSetItem.MinVersion().Minor,
                                  packageSetItem.MinVersion().Build,
-                                 packageSetItem.MinVersion().Revision);
+                                 packageSetItem.MinVersion().Revision,
+                                 packageSetItem.ProcessorArchitectureFilter());
                 return false;
             }
         }
@@ -222,7 +223,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     bool PackageDeploymentManager::IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem)
     {
         const AppModel::Identity::PackageVersion minVersion{ packageSetItem.MinVersion() };
-        return ::Microsoft::Windows::ApplicationModel::PackageResolver::FindAny(m_packageManager, packageSetItem.PackageFamilyName(), minVersion);
+        const auto processorArchitectureFilter{ packageSetItem.ProcessorArchitectureFilter() };
+        return ::Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::FindAny(m_packageManager, packageSetItem.PackageFamilyName(), minVersion, processorArchitectureFilter);
     }
 
     void PackageDeploymentManager::Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet)

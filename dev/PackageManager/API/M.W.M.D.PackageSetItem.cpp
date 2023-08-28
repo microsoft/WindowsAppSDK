@@ -31,6 +31,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         m_minVersion = value;
     }
+    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures PackageSetItem::ProcessorArchitectureFilter()
+    {
+        return m_processorArchitectureFilter;
+    }
+    void PackageSetItem::ProcessorArchitectureFilter(winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures const& value)
+    {
+        m_processorArchitectureFilter = value;
+    }
     winrt::Windows::Foundation::Uri PackageSetItem::PackageUri()
     {
         return m_packageUri;
@@ -38,21 +46,5 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     void PackageSetItem::PackageUri(winrt::Windows::Foundation::Uri const& value)
     {
         m_packageUri = value;
-    }
-    winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel PackageSetItem::DeploymentProcessingModel()
-    {
-        return m_deploymentProcessingModel;
-    }
-    void PackageSetItem::DeploymentProcessingModel(winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel const& value)
-    {
-        m_deploymentProcessingModel = value;
-    }
-    winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority PackageSetItem::DeploymentPriority()
-    {
-        return m_deploymentPriority;
-    }
-    void PackageSetItem::DeploymentPriority(winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority const& value)
-    {
-        m_deploymentPriority = value;
     }
 }

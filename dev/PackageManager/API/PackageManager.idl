@@ -95,7 +95,7 @@ namespace Microsoft.Windows.Management.Deployment
         // Package criteria to identify if a matching package is ready for use and to use at runtime
         String PackageFamilyName;                           //required
         Windows.ApplicationModel.PackageVersion MinVersion; //required
-//TODO        Microsoft.Windows.ApplicationModel.ProcessorArchitectures ProcessorArchitectureFilter;
+        Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyProcessorArchitectures ProcessorArchitectureFilter;
 
         // Source where a package can be retrieved from if/when needed for install, remediation, etc
         Windows.Foundation.Uri PackageUri;

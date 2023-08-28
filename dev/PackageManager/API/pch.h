@@ -20,11 +20,11 @@
 #include <winrt/Windows.Foundation.Collections.h>
 
 #include <winrt/Windows.ApplicationModel.h>
-//TODO REMOVE #include <winrt/Windows.Data.Json.h>
 #include <winrt/Windows.Management.Core.h>
 #include <winrt/Windows.Management.Deployment.h>
-//TODO REMOVE #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
+
+#include <winrt/Microsoft.Windows.ApplicationModel.DynamicDependency.h>
 
 #include <appmodel.identity.h>
 #include <appmodel.package.h>

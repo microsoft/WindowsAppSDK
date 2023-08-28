@@ -9,7 +9,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
     winrt::Microsoft::Windows::Management::Deployment::PackageRuntimeManager PackageRuntimeManager::GetDefault()
     {
-        throw hresult_not_implemented();
+        return winrt::make<winrt::Microsoft::Windows::Management::Deployment::implementation::PackageRuntimeManager>();
     }
     void PackageRuntimeManager::AddPackageSet(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet)
     {

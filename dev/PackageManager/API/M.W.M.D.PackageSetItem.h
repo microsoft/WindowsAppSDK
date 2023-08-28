@@ -19,21 +19,17 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::ApplicationModel::PackageVersion MinVersion();
         void MinVersion(winrt::Windows::ApplicationModel::PackageVersion const& value);
 
+        winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures ProcessorArchitectureFilter();
+        void ProcessorArchitectureFilter(winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures const& value);
         winrt::Windows::Foundation::Uri PackageUri();
         void PackageUri(winrt::Windows::Foundation::Uri const& value);
-        winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel DeploymentProcessingModel();
-        void DeploymentProcessingModel(winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel const& value);
-        winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority DeploymentPriority();
-        void DeploymentPriority(winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority const& value);
 
     private:
         hstring m_id;
         hstring m_packageFamilyName;
         winrt::Windows::ApplicationModel::PackageVersion m_minVersion{};
-        winrt::Windows::Management::Deployment::PackageTypes m_packageTypeFilter{};
+        winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures m_processorArchitectureFilter{};
         winrt::Windows::Foundation::Uri m_packageUri{ nullptr };
-        winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel m_deploymentProcessingModel{};
-        winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority m_deploymentPriority{};
     };
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation

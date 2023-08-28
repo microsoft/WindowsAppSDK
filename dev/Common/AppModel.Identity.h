@@ -49,6 +49,34 @@ constexpr PCWSTR GetCurrentArchitectureAsString()
 #endif
 }
 
+constexpr PCWSTR GetArchitectureAsString(const std::uint32_t architecture)
+{
+    switch (architecture)
+    {
+        case PROCESSOR_ARCHITECTURE_AMD64:         return L"x64";
+        case PROCESSOR_ARCHITECTURE_ARM:           return L"arm";
+        case PROCESSOR_ARCHITECTURE_ARM64:         return L"arm64";
+        case PROCESSOR_ARCHITECTURE_IA32_ON_ARM64: return L"x86onArm64";
+        case PROCESSOR_ARCHITECTURE_INTEL:         return L"x86";
+        case PROCESSOR_ARCHITECTURE_NEUTRAL:       return L"neutral";
+        case PROCESSOR_ARCHITECTURE_UNKNOWN:       return L"unknown";
+        default:                                   THROW_HR_MSG(E_UNEXPECTED, "Unknown architecture 0x%X", architecture);
+    }
+}
+
+constexpr PCWSTR GetArchitectureAsString(const winrt::Windows::System::ProcessorArchitecture architecture)
+{
+    static_assert(static_cast<int>(winrt::Windows::System::ProcessorArchitecture::Arm) == static_cast<int>(PROCESSOR_ARCHITECTURE_ARM), "winrt::Windows::System::ProcessorArchitecture::Arm != PROCESSOR_ARCHITECTURE_ARM");
+    static_assert(static_cast<int>(winrt::Windows::System::ProcessorArchitecture::Arm64) == static_cast<int>(PROCESSOR_ARCHITECTURE_ARM64), "winrt::Windows::System::ProcessorArchitecture::Arm64 != PROCESSOR_ARCHITECTURE_ARM64");
+    static_assert(static_cast<int>(winrt::Windows::System::ProcessorArchitecture::Neutral) == static_cast<int>(PROCESSOR_ARCHITECTURE_NEUTRAL), "winrt::Windows::System::ProcessorArchitecture::Neutral != PROCESSOR_ARCHITECTURE_NEUTRAL");
+    static_assert(static_cast<int>(winrt::Windows::System::ProcessorArchitecture::Unknown) == static_cast<int>(PROCESSOR_ARCHITECTURE_UNKNOWN), "winrt::Windows::System::ProcessorArchitecture::Unknown != PROCESSOR_ARCHITECTURE_UNKNOWN");
+    static_assert(static_cast<int>(winrt::Windows::System::ProcessorArchitecture::X64) == static_cast<int>(PROCESSOR_ARCHITECTURE_AMD64), "winrt::Windows::System::ProcessorArchitecture::X64 != PROCESSOR_ARCHITECTURE_AMD64");
+    static_assert(static_cast<int>(winrt::Windows::System::ProcessorArchitecture::X86) == static_cast<int>(PROCESSOR_ARCHITECTURE_INTEL), "winrt::Windows::System::ProcessorArchitecture::X86 != PROCESSOR_ARCHITECTURE_INTEL");
+    static_assert(static_cast<int>(winrt::Windows::System::ProcessorArchitecture::X86OnArm64) == static_cast<int>(PROCESSOR_ARCHITECTURE_IA32_ON_ARM64), "winrt::Windows::System::ProcessorArchitecture::X86OnArm64 != PROCESSOR_ARCHITECTURE_IA32_ON_ARM64");
+
+    return GetArchitectureAsString(static_cast<std::uint32_t>(architecture));
+}
+
 inline winrt::Windows::System::ProcessorArchitecture ParseArchitecture(_In_ PCWSTR architecture)
 {
     if (CompareStringOrdinal(architecture, -1, L"x64", -1, TRUE) == CSTR_EQUAL)
