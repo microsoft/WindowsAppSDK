@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
 #include <Microsoft.Utf8.h>
 #include <Kozani.DVC.pb.h>
@@ -13,7 +14,7 @@ namespace Microsoft::Kozani::DvcProtocol
 {
     const char DvcChannelName[] = "KozaniDvc";
 
-    std::string CreatePdu(UINT64 activityId, Dvc::ProtocolDataUnit::DataType type, const std::string& payload);
+    std::string CreatePdu(UINT64 activityId, Dvc::ProtocolDataUnit::DataType type, const std::string& payload = std::string());
     
     std::string CreateConnectionAckPdu(PCSTR connectionId, UINT64 activityId);
     
@@ -23,7 +24,7 @@ namespace Microsoft::Kozani::DvcProtocol
         UINT64 activityId,
         PCWSTR appUserModelId,
         winrt::Windows::ApplicationModel::Activation::ActivationKind activationKind,
-        winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs& args);
+        const std::string& serializedArgs);
 
     std::string CreateActivateAppResultPdu(
         UINT64 activityId, 

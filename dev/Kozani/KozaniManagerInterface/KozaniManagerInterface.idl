@@ -20,6 +20,16 @@ interface IKozaniStatusCallback : IInspectable
 };
 
 [object]
+[uuid(43665c78-faf6-4534-9411-321147fc80ea)]
+[pointer_default(unique)]
+interface IKozaniRemoteDesktopClientLauncher : IUnknown
+{
+    HRESULT Launch(
+        [in, string] LPCWSTR connectionRdpFilePath,
+        [in, string, unique] LPCWSTR userName);
+};
+
+[object]
 [uuid(5882f14f-f954-4af9-bbeb-a7c1a2a6357e)]
 [pointer_default(unique)]
 interface IKozaniManager : IUnknown
@@ -28,8 +38,10 @@ interface IKozaniManager : IUnknown
         INT32 activationKind,
         [in, string] LPCWSTR appUserModelId,
         [in, string] LPCWSTR connectionRdpFilePath,
-        [in, string] LPCWSTR additionalSettingsFilePath,
-        [in] IInspectable* activatedEventArgs,
-        [in] IKozaniStatusCallback* statusCallback,
-        DWORD associatedLocalProcessId);
+        [in] IKozaniRemoteDesktopClientLauncher* rdcLauncher,
+        DWORD associatedLocalProcessId,                         // Use 0 if the remote app is not associated with a local process (no tracking local process for lifetime management).
+        [in, unique] IInspectable* activatedEventArgs,          // optional - can be nullptr if there are no activatedEventArgs
+        [in, unique] IKozaniStatusCallback* statusCallback,     // optional - can be nullptr if the caller does not need status update callbacks
+        [in, string, unique] LPCWSTR additionalSettingsFilePath // optional - can be nullptr if the additional settings file does not exist
+    );
 };

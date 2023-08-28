@@ -12,6 +12,8 @@ BOOL APIENTRY DllMain(HMODULE hmodule, DWORD  reason, LPVOID reserved)
     switch (reason)
     {
     case DLL_PROCESS_ATTACH:
+        // Hook up wil logging MACROs to trace provider.
+        wil::SetResultLoggingCallback(&TraceFailureFromProvider<Microsoft_Kozani_ManagerRuntime_TraceLogger>);
         DisableThreadLibraryCalls(hmodule);
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:

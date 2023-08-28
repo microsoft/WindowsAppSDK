@@ -4,6 +4,38 @@
 import "oaidl.idl";
 import "ocidl.idl";
 
+typedef [v1_enum] enum KozaniAppType
+{
+    KozaniAppType_Unknown = 0,
+    KozaniAppType_PackagedDesktopApp = 1,
+    KozaniAppType_UWP = 2
+} KozaniAppType;
+
+[object]
+[uuid(0b86ddd1-faba-40dc-b92b-9f29654a97b2)]
+[pointer_default(unique)]
+interface IKozaniApplicationLauncher : IUnknown
+{
+    HRESULT Launch(
+        [in, string] LPCWSTR appUserModelId,
+        [in, string, unique] LPCWSTR arguments,
+        [out] DWORD* processId);
+
+    HRESULT LaunchFiles(
+        [in, string] LPCWSTR appUserModelId,
+        [in, string] LPCWSTR verb,
+        UINT32 fileCount,
+        [in, string, size_is(fileCount)] LPCWSTR* filePaths,
+        [in, out] KozaniAppType* appType,
+        [out] DWORD* processId);
+
+    HRESULT LaunchUri(
+        [in, string] LPCWSTR appUserModelId,
+        [in, string] LPCWSTR uri,
+        [in, out] KozaniAppType* appType,
+        [out] DWORD* processId);
+};
+
 [object]
 [uuid(30599ceb-631f-468f-bdd6-febc5bb12b81)]
 [pointer_default(unique)]
@@ -11,5 +43,5 @@ interface IKozaniRemoteManager : IUnknown
 {
     // Connects to client DVC by opening a DVC channel with Kozani_DVC name and sends back an ACK message with connectionId
     // to link the connection to the client request.
-    HRESULT Connect([in, string] LPCSTR connectionId);
+    HRESULT Connect([in, string] LPCSTR connectionId, [in] IKozaniApplicationLauncher* appLauncher);
 };

@@ -275,10 +275,10 @@ namespace Test::KozaniManagerRuntime::ManualTests
                     {
                         runtimeManager.ActivateRemoteApplication(
                             winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch,
-                            aumid.c_str(), rdpFullPath.c_str(), winrt::param::hstring(),
+                            aumid.c_str(), rdpFullPath.c_str(), localProcessId,
                             nullptr,    // IActivatedEventArgs
                             statusCallback.as<winrt::Windows::Foundation::IInspectable>(),
-                            localProcessId);
+                            winrt::param::hstring());
                     }
                     catch (winrt::hresult_error& e)
                     {
