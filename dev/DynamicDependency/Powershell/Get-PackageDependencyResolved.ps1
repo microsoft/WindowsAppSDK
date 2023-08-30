@@ -3,7 +3,19 @@
 
 <#
 .SYNOPSIS
-TODO
+    Return the package full name if the package dependency is resolved.
+
+.DESCRIPTION
+    Return the package full name that would be used if the package dependency
+    were to be resolved.
+
+    This does not add the package to the invoking process' package graph.
+
+.PARAMETER PackageDependencyId
+    The ID of the resolved package dependency.
+
+.LINK
+    https://learn.microsoft.com/windows/win32/api/appmodel/nf-appmodel-getresolvedpackagefullnameforpackagedependency
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(

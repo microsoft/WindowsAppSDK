@@ -3,7 +3,13 @@
 
 <#
 .SYNOPSIS
-TODO
+    Return the package dependency for the specified context handle.
+
+.PARAMETER PackageDependencyContext
+    The handle of the package dependency.
+
+.LINK
+    https://learn.microsoft.com/windows/win32/api/appmodel/nf-appmodel-getidforpackagedependencycontext
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(

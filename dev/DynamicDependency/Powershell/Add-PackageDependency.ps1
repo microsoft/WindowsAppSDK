@@ -3,7 +3,30 @@
 
 <#
 .SYNOPSIS
-TODO
+    Add to the current process' package graph.
+
+.DESCRIPTION
+    Add a run-time reference for the package dependency created earlier via
+    the TryCreate-PackageDependency cmdlet, with the specified options. After
+    successful completion you can use content from the package.
+
+.PARAMETER PackageDependencyId
+    ID of the package dependency to be resolved and added to the invoking
+    process' package graph. This parameter must match a package dependency
+    defined by the TryCreate-PackageDependency cmdlet for the calling
+    user or the system (via the TryCreate-PackageDependencyOptions -ScopeIsSystem option).
+
+.PARAMETER Rank
+    The rank to add the resolved package to the caller's package graph.
+    For more information, see https://learn.microsoft.com/windows/win32/api/appmodel/nf-appmodel-addpackagedependency#remarks
+
+.PARAMETER PrependIfRankCollision
+    If multiple packages are present in the package graph with the same rank,
+    the resolved package is added before others of the same rank. For more
+    information, see https://learn.microsoft.com/windows/win32/api/appmodel/ne-appmodel-addpackagedependencyoptions
+
+.LINK
+    https://learn.microsoft.com/windows/win32/api/appmodel/nf-appmodel-addpackagedependency
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(

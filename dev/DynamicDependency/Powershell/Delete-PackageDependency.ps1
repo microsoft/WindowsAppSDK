@@ -3,7 +3,13 @@
 
 <#
 .SYNOPSIS
-TODO
+    Delete the package dependency.
+
+.PARAMETER
+    The ID of the package dependency to remove.
+
+.LINK
+    https://learn.microsoft.com/windows/win32/api/appmodel/nf-appmodel-deletepackagedependency
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(

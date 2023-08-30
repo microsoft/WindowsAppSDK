@@ -3,7 +3,13 @@
 
 <#
 .SYNOPSIS
-TODO
+    Remove a resolved package dependency from the current process' package graph.
+
+.PARAMETER PackageDependencyContext
+    The handle of the package dependency to remove.
+
+.LINK
+    https://learn.microsoft.com/windows/win32/api/appmodel/nf-appmodel-removepackagedependency
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
