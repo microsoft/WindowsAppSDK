@@ -8,13 +8,14 @@
         <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnError_FailFast)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONERROR_FAILFAST</DefineConstants>
         <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnNoMatch_ShowUI)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONNOMATCH_SHOWUI</DefineConstants>
         <DefineConstants Condition="'$(WindowsAppSDKBootstrapAutoInitializeOptions_OnPackageIdentity_NoOp)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_BOOTSTRAP_AUTO_INITIALIZE_OPTIONS_ONPACKAGEIDENTITY_NOOP</DefineConstants>
+        <WindowsAppSdkIncludeVersionInfo>true</WindowsAppSdkIncludeVersionInfo>
     </PropertyGroup>
 
-    <Target Name="GenerateBootstrapCS" BeforeTargets="BeforeCompile">
-        <ItemGroup>
-            <Compile Include="$(MSBuildThisFileDirectory)..\include\MddBootstrapAutoInitializer.cs" />
-            <Compile Include="$(MSBuildThisFileDirectory)..\include\WindowsAppSDK-VersionInfo.cs" />
-        </ItemGroup>
-    </Target>
+    <ItemGroup>
+        <Compile Include="$(MSBuildThisFileDirectory)..\include\MddBootstrapAutoInitializer.cs" />
+    </ItemGroup>
+
+    <!--Obsolete target retained to prevent build breaks-->
+    <Target Name="GenerateBootstrapCS" BeforeTargets="BeforeCompile" />
 
 </Project>
