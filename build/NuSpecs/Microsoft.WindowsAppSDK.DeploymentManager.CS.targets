@@ -4,14 +4,15 @@
         <DefineConstants Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_Default)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_DEFAULT</DefineConstants>
         <DefineConstants Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_None)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_NONE</DefineConstants>
         <DefineConstants Condition="'$(WindowsAppSDKDeploymentManagerAutoInitializeOptions_OnErrorShowUI)'=='true'">$(DefineConstants);MICROSOFT_WINDOWSAPPSDK_DEPLOYMENTMANAGER_AUTO_INITIALIZE_OPTIONS_ONERRORSHOWUI</DefineConstants>
-        <CoreCompileDependsOn>$(CoreCompileDependsOn);GenerateBootstrapCS</CoreCompileDependsOn>
+        <WindowsAppSdkIncludeVersionInfo>true</WindowsAppSdkIncludeVersionInfo>
     </PropertyGroup>
 
-    <Target Name="GenerateBootstrapCS">
-        <ItemGroup>
-            <Compile Include="$(MSBuildThisFileDirectory)..\include\DeploymentManagerAutoInitializer.cs" />
-            <Compile Include="$(MSBuildThisFileDirectory)..\include\WindowsAppSDK-VersionInfo.cs" />
-        </ItemGroup>
-    </Target>
+    <ItemGroup>
+        <Compile Include="$(MSBuildThisFileDirectory)..\include\DeploymentManagerAutoInitializer.cs" />
+    </ItemGroup>
+
+    <!--Obsolete targets retained to prevent build breaks-->
+    <Target Name="GenerateBootstrapCS" BeforeTargets="BeforeCompile" />
+    <Target Name="GenerateDeploymentManagerCS" BeforeTargets="BeforeCompile" />
 
 </Project>
