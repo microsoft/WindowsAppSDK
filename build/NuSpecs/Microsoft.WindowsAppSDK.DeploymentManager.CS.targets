@@ -11,8 +11,7 @@
         <Compile Include="$(MSBuildThisFileDirectory)..\include\DeploymentManagerAutoInitializer.cs" />
     </ItemGroup>
 
-    <!--Obsolete targets retained to prevent build breaks-->
-    <Target Name="GenerateBootstrapCS" BeforeTargets="BeforeCompile" />
+    <!--Obsolete target retained to prevent build breaks-->
     <Target Name="GenerateDeploymentManagerCS" BeforeTargets="BeforeCompile" />
 
 </Project>
