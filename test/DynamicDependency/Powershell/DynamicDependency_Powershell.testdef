@@ -1,0 +1,20 @@
+{
+    "Tests": [
+        {
+            "Description": "Dynamic Dependencies Powershell API (x86 not currently enabled)",
+            "Type": "Powershell",
+            "Filename": "Test-MsixDynamicDependency.Tests.ps1",
+            "Parameters": "",
+            "Architectures": ["x64", "arm64"],
+            "Status": "Enabled"
+        },
+        {
+            "Description": "Dynamic Dependencies Powershell cmdlets (x86 not currently enabled)",
+            "Type": "Powershell",
+            "Filename": "Test-PackageDependency.Tests.ps1",
+            "Parameters": "",
+            "Architectures": ["x64", "arm64"],
+            "Status": "Enabled"
+        }
+    ]
+}
