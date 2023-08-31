@@ -102,7 +102,7 @@ static PCWSTR GetSystemSupportedArchitecturesAsString(const std::uint16_t native
     case IMAGE_FILE_MACHINE_I386: return L"neutral,x86";
     case IMAGE_FILE_MACHINE_AMD64:return L"neutral,x86,x64";
     case IMAGE_FILE_MACHINE_ARM:  return L"neutral,x86,arm";
-    case IMAGE_FILE_MACHINE_ARM64:return L"neutral,x86,arm,arm64,x86onArm64";
+    case IMAGE_FILE_MACHINE_ARM64:return L"neutral,x86,x64,arm,arm64,x86onArm64";
     default: THROW_HR_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), "nativeMachine=%hu", nativeMachine);
     }
 }
