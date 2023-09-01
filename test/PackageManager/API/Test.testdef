@@ -1,10 +1,10 @@
 ﻿{
     "Tests": [
         {
-            "Description": "PackageManagerTests tests for feature PackageManager",
+            "Description": "PackageManagerTests tests for feature PackageManager (arm64 not currently enabled)",
             "Filename": "PackageManagerTests.dll",
             "Parameters": "",
-            "Architectures": ["x86", "x64", "arm64"],
+            "Architectures": ["x86", "x64"],
             "Status": "Enabled"
         }
     ]
