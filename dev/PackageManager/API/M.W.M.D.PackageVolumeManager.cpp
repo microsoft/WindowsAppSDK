@@ -17,7 +17,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Foundation::Collections::IIterable<winrt::Windows::Management::Deployment::PackageVolume> windowsPackageVolumes{ packageManager.FindPackageVolumes() };
         for (winrt::Windows::Management::Deployment::PackageVolume windowsPackageVolume : windowsPackageVolumes)
         {
-            //winrt::Microsoft::Windows::Management::Deployment::PackageVolume microsoftPackageVolume{ windowsPackageVolume };
             auto microsoftPackageVolume{ winrt::make<winrt::Microsoft::Windows::Management::Deployment::implementation::PackageVolume>(windowsPackageVolume) };
             microsoftPackageVolumes.Append(microsoftPackageVolume);
         }
