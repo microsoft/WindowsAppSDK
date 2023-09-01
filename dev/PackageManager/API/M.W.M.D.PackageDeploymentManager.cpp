@@ -124,7 +124,21 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::AddPackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options)
     {
-        throw hresult_not_implemented();
+        const winrt::Windows::Foundation::Uri packageUri{ package };
+        const auto packageAbsoluteUri{ packageUri.AbsoluteUri() };
+        if (!packageAbsoluteUri.empty())
+        {
+            const std::wstring packageAsString{ package.c_str() };
+            if (packageAsString.ends_with(L".appinstaller"))
+            {
+                //TODO: return AddPackageByAppInstallerFileAsync(packageUri);
+            }
+            else
+            {
+                return AddPackageByUriAsync(packageUri, options);
+            }
+        }
+        THROW_HR_MSG(E_INVALIDARG, "%ls", package.c_str());
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::AddPackageByUriAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options)
@@ -227,7 +241,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         return ::Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::FindAny(m_packageManager, packageSetItem.PackageFamilyName(), minVersion, processorArchitectureFilter);
     }
 
-    void PackageDeploymentManager::Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet)
+    void PackageDeploymentManager::Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet) const
     {
         THROW_HR_IF(E_INVALIDARG, packageSet.Id().empty());
         const auto& packageSetItems{ packageSet.PackageSetItems() };
@@ -238,7 +252,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         }
     }
 
-    void PackageDeploymentManager::Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem)
+    void PackageDeploymentManager::Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem) const
     {
         const auto packageFamilyName{ packageSetItem.PackageFamilyName() };
         THROW_IF_WIN32_ERROR_MSG(VerifyPackageFamilyName(packageFamilyName.c_str()), "PackageFamilyName:%ls", packageFamilyName.c_str());

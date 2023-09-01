@@ -3,6 +3,8 @@
 
 #include "pch.h"
 
+#include <IsWindowsVersion.h>
+
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
 namespace TPF = ::Test::Packages::Framework;
@@ -18,6 +20,11 @@ namespace Test::PackageManager::Tests
 
         TEST_CLASS_SETUP(ClassSetup)
         {
+            if (!::WindowsVersion::IsWindows10_20H1OrGreater())
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
+                return true;
+            }
             RemovePackage_Blue();
             RemovePackage_Green();
             RemovePackage_Redder();
