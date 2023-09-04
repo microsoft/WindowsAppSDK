@@ -54,6 +54,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         throw hresult_not_implemented();
     }
+    void PackageRuntimeManager::RemovePackageSet(winrt::Microsoft::Windows::Management::Deployment::PackageSetRuntimeDisposition const& packageSetRuntimeDisposition)
+    {
+        const auto packageSetItemRuntimeDispositions{ packageSetRuntimeDisposition.PackageSetItemRuntimeDispositions() };
+        for (const winrt::Microsoft::Windows::Management::Deployment::PackageSetItemRuntimeDisposition& packageSetItemRuntimeDisposition : packageSetItemRuntimeDispositions)
+        {
+            RemovePackageSetItem(packageSetItemRuntimeDisposition);
+        }
+    }
 
     winrt::Microsoft::Windows::Management::Deployment::PackageSetItemRuntimeDisposition PackageRuntimeManager::AddPackageSetItem(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& createOptions, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& addOptions)
     {
@@ -74,6 +82,15 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             packageSetItem.Id(), packageFullName.get(), packageDependencyId.get(), mddPackageDependencyContext.get()) };
         mddPackageDependencyContext.reset();
         return packageSetItemRuntimeDisposition;
+    }
+
+    void PackageRuntimeManager::RemovePackageSetItem(winrt::Microsoft::Windows::Management::Deployment::PackageSetItemRuntimeDisposition const& packageSetItemRuntimeDisposition)
+    {
+        const auto packageDependencyContextId{ packageSetItemRuntimeDisposition.PackageDependencyContextId() };
+        MddCore::Win11::RemovePackageDependency(packageDependencyContextId);
+
+        const auto packageDependencyId{ packageSetItemRuntimeDisposition.PackageDependencyId() };
+        MddCore::Win11::DeletePackageDependency(packageDependencyId);
     }
 
     void PackageRuntimeManager::Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet) const

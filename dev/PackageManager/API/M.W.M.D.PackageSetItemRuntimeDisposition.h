@@ -8,6 +8,8 @@
 #include "MsixDynamicDependency.h"
 #include <winrt/Microsoft.Windows.ApplicationModel.DynamicDependency.h>
 
+#include "MddWin11.h"
+
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
     struct PackageSetItemRuntimeDisposition : PackageSetItemRuntimeDispositionT<PackageSetItemRuntimeDisposition>
@@ -30,7 +32,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             m_packageSetItemId(packageSetItemId),
             m_packageFullName(packageFullName),
             m_packageDependencyId(packageDependencyId),
-            m_packageDependencyContextId(ToContextId(mddPackageDependencyContext))
+            m_packageDependencyContextId(MddCore::Win11::ToContextId(mddPackageDependencyContext))
         {
         }
 
@@ -38,9 +40,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         hstring PackageFullName();
         hstring PackageDependencyId();
         winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContextId PackageDependencyContextId();
-
-    private:
-        winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContextId ToContextId(MDD_PACKAGEDEPENDENCY_CONTEXT mddPackageDependencyContext);
 
     private:
         hstring m_packageSetItemId;

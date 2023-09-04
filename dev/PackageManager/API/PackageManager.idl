@@ -421,5 +421,7 @@ namespace Microsoft.Windows.Management.Deployment
             Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions createOptions,
             Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions addOptions);
 
+        void RemovePackageSet(
+            Microsoft.Windows.Management.Deployment.PackageSetRuntimeDisposition packageSetRuntimeDisposition);
     }
 }

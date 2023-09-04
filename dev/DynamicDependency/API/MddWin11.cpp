@@ -168,9 +168,15 @@ HRESULT MddCore::Win11::TryCreatePackageDependency(
 }
 
 void MddCore::Win11::DeletePackageDependency(
+    const winrt::hstring& packageDependencyId)
+{
+    DeletePackageDependency(packageDependencyId.c_str());
+}
+
+void MddCore::Win11::DeletePackageDependency(
     _In_ PCWSTR packageDependencyId)
 {
-    g_win11DeletePackageDependency(packageDependencyId);
+    (void)LOG_IF_FAILED(g_win11DeletePackageDependency(packageDependencyId));
 }
 
 HRESULT MddCore::Win11::AddPackageDependency(
@@ -208,6 +214,12 @@ HRESULT MddCore::Win11::AddPackageDependency(
 
     RETURN_IF_FAILED(g_win11AddPackageDependency(packageDependencyId, rank, win11Options, win11PackageDependencyContext, packageFullName));
     return S_OK;
+}
+
+void MddCore::Win11::RemovePackageDependency(
+    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContextId packageDependencyContextId)
+{
+    return RemovePackageDependency(ToContext(packageDependencyContextId));
 }
 
 void MddCore::Win11::RemovePackageDependency(

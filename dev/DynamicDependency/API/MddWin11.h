@@ -34,6 +34,9 @@ HRESULT TryCreatePackageDependency(
     _Outptr_result_maybenull_ PWSTR* packageDependencyId);
 
 void DeletePackageDependency(
+    const winrt::hstring& packageDependencyId);
+
+void DeletePackageDependency(
     _In_ PCWSTR packageDependencyId);
 
 HRESULT AddPackageDependency(
@@ -50,6 +53,9 @@ HRESULT AddPackageDependency(
     _Outptr_opt_result_maybenull_ PWSTR* packageFullName);
 
 void RemovePackageDependency(
+    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContextId packageDependencyContextId);
+
+void RemovePackageDependency(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext);
 
 HRESULT GetResolvedPackageFullNameForPackageDependency(
@@ -61,6 +67,16 @@ HRESULT GetIdForPackageDependencyContext(
     _Outptr_result_maybenull_ PWSTR* packageDependencyId);
 
 UINT32 GetPackageGraphRevisionId();
+
+inline winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContextId ToContextId(MDD_PACKAGEDEPENDENCY_CONTEXT context)
+{
+    return winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContextId{ static_cast<uint64_t>(reinterpret_cast<INT_PTR>(context)) };
+}
+
+inline MDD_PACKAGEDEPENDENCY_CONTEXT ToContext(winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContextId contextId)
+{
+    return reinterpret_cast<MDD_PACKAGEDEPENDENCY_CONTEXT>(static_cast<INT_PTR>(contextId.Id));
+}
 }
 
 #endif // MDDWIN11DYNAMICDEPENDENCY_H

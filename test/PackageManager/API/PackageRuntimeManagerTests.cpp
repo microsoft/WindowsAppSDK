@@ -12,18 +12,18 @@ namespace TPMT = ::Test::PackageManager::Tests;
 
 namespace Test::PackageManager::Tests
 {
-    class PackageDeploymentManagerTests
+    class PackageRuntimeManagerTests
     {
     public:
-        BEGIN_TEST_CLASS(PackageDeploymentManagerTests)
+        BEGIN_TEST_CLASS(PackageRuntimeManagerTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)
         {
-            if (!::WindowsVersion::IsWindows10_20H1OrGreater())
+            if (!::WindowsVersion::IsWindows11_22H2OrGreater())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageRuntimeManager requires >= 22H2 (Sun Valley 2). Skipping tests");
                 return true;
             }
             RemovePackage_Blue();
@@ -71,7 +71,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code());
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
             try
@@ -87,7 +87,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code());
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
             try
@@ -105,7 +105,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code());
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
             try
@@ -125,7 +125,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code());
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
             try
@@ -145,7 +145,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code());
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
             try
@@ -166,7 +166,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code());
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
         }
 
@@ -195,7 +195,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code());
+                VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
         }
 
@@ -222,7 +222,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code());
+                VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
         }
 
@@ -253,7 +253,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code());
+                VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
         }
 
@@ -272,7 +272,9 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions createOptions;
             winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions addOptions;
             auto packageRuntimeManager{ winrt::Microsoft::Windows::Management::Deployment::PackageRuntimeManager::GetDefault() };
-            packageRuntimeManager.AddPackageSet(packageSet, createOptions, addOptions);
+            const auto packageSetRuntimeDisposition{ packageRuntimeManager.AddPackageSet(packageSet, createOptions, addOptions) };
+
+            packageRuntimeManager.RemovePackageSet(packageSetRuntimeDisposition);
         }
 
         TEST_METHOD(AddPackageSet_1_OlderRegistered_Fail)
@@ -286,7 +288,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder{ Make_PackageSetItem(::TPF::Redder::GetPackageFullName(), ::TPF::Redder::c_packageDirName) };
             packageSet.PackageSetItems().Append(redder);
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
 
             try
             {
@@ -298,7 +300,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code());
+                VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
         }
 
@@ -317,8 +319,9 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions createOptions;
             winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions addOptions;
             auto packageRuntimeManager{ winrt::Microsoft::Windows::Management::Deployment::PackageRuntimeManager::GetDefault() };
-            packageRuntimeManager.AddPackageSet(packageSet, createOptions, addOptions);
+            const auto packageSetRuntimeDisposition{ packageRuntimeManager.AddPackageSet(packageSet, createOptions, addOptions) };
 
+            packageRuntimeManager.RemovePackageSet(packageSetRuntimeDisposition);
             RemovePackage_Redder();
         }
 
@@ -349,7 +352,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code());
+                VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
             ClearPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
@@ -383,7 +386,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code());
+                VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
         }
 
@@ -408,7 +411,9 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions createOptions;
             winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions addOptions;
             auto packageRuntimeManager{ winrt::Microsoft::Windows::Management::Deployment::PackageRuntimeManager::GetDefault() };
-            packageRuntimeManager.AddPackageSet(packageSet, createOptions, addOptions);
+            const auto packageSetRuntimeDisposition{ packageRuntimeManager.AddPackageSet(packageSet, createOptions, addOptions) };
+
+            packageRuntimeManager.RemovePackageSet(packageSetRuntimeDisposition);
         }
 
         TEST_METHOD(AddPackageSet_N_NewerRegistered_Success)
@@ -432,8 +437,9 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions createOptions;
             winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions addOptions;
             auto packageRuntimeManager{ winrt::Microsoft::Windows::Management::Deployment::PackageRuntimeManager::GetDefault() };
-            packageRuntimeManager.AddPackageSet(packageSet, createOptions, addOptions);
+            const auto packageSetRuntimeDisposition{ packageRuntimeManager.AddPackageSet(packageSet, createOptions, addOptions) };
 
+            packageRuntimeManager.RemovePackageSet(packageSetRuntimeDisposition);
             RemovePackage_Redder();
         }
 
@@ -465,10 +471,8 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code());
+                VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
-
-            RemovePackage_Redder();
         }
 
         TEST_METHOD(AddPackageSet_N_RegisteredAndNotInstalled_Fail)
@@ -496,7 +500,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code());
+                VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
         }
 
@@ -532,7 +536,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code());
+                VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
         }
 
@@ -566,7 +570,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code());
+                VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
             ClearPackageStatus(::TPF::Green::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);

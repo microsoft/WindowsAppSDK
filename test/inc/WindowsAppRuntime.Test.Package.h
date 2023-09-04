@@ -230,8 +230,13 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
 
 inline void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
 {
-    if (!IsPackageRegistered(packageFullName))
+    if (IsPackageRegistered(packageFullName))
     {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"AddPackageIfNecessary: %s already registered", packageFullName));
+    }
+    else
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"AddPackageIfNecessary: %s not registered, adding...", packageFullName));
         AddPackage(packageDirName, packageFullName);
     }
 }
@@ -249,8 +254,13 @@ inline void StagePackage(PCWSTR packageDirName, PCWSTR packageFullName)
 
 inline void StagePackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
 {
-    if (!IsPackageAvailable(packageFullName))
+    if (IsPackageAvailable(packageFullName))
     {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"StagePackageIfNecessary: %s already staged", packageFullName));
+    }
+    else
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"StagePackageIfNecessary: %s not staged, staging...", packageFullName));
         StagePackage(packageDirName, packageFullName);
     }
 }

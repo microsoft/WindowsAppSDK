@@ -97,6 +97,8 @@ namespace Test::PackageManager::Tests
         PCWSTR packageFullName,
         PCWSTR packageDirName)
     {
+
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageSetItem: PackageFullName:%s Path:%s", packageFullName, packageDirName));
         const auto [packageName, packageVersion, packageArchitecture, packageResourceId, packagePublisherId, packageFamilyName]{ ::AppModel::Package::ParsePackageFullName(packageFullName) };
 
         winrt::Microsoft::Windows::Management::Deployment::PackageSetItem psi;

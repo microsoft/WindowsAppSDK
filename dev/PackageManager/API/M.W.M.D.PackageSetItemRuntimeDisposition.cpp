@@ -24,9 +24,4 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         return m_packageDependencyContextId;
     }
-    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContextId PackageSetItemRuntimeDisposition::ToContextId(
-        MDD_PACKAGEDEPENDENCY_CONTEXT mddPackageDependencyContext)
-    {
-        return winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContextId{ static_cast<uint64_t>(reinterpret_cast<INT_PTR>(mddPackageDependencyContext)) };
-    }
 }
