@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "Microsoft.Windows.Management.Deployment.FindPackageOptions.g.h"
+#include "Microsoft.Windows.Management.Deployment.FindPackageSetOptions.g.h"
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
-    struct FindPackageOptions : FindPackageOptionsT<FindPackageOptions>
+    struct FindPackageSetOptions : FindPackageSetOptionsT<FindPackageSetOptions>
     {
-        FindPackageOptions() = default;
+        FindPackageSetOptions() = default;
 
         bool TODO_MustHaveAtLeastOneInterfaceOrStaticFactoryPlaceholder();
         void TODO_MustHaveAtLeastOneInterfaceOrStaticFactoryPlaceholder(bool value);
@@ -17,7 +17,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation
 {
-    struct FindPackageOptions : FindPackageOptionsT<FindPackageOptions, implementation::FindPackageOptions>
+    struct FindPackageSetOptions : FindPackageSetOptionsT<FindPackageSetOptions, implementation::FindPackageSetOptions>
     {
     };
 }

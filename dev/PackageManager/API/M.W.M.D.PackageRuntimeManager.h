@@ -12,12 +12,12 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         PackageRuntimeManager() = default;
 
         static winrt::Microsoft::Windows::Management::Deployment::PackageRuntimeManager GetDefault();
-        void AddPackageSet(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet);
-        void AddPackageSet(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& createOptions, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& addOptions);
-        void AddPackageSetById(hstring const& packageSetId);
-        void AddPackageSetById(hstring const& packageSetId, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& createOptions, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& addOptions);
+        winrt::Microsoft::Windows::Management::Deployment::PackageSetRuntimeDisposition AddPackageSet(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet);
+        winrt::Microsoft::Windows::Management::Deployment::PackageSetRuntimeDisposition AddPackageSet(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& createOptions, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& addOptions);
+        winrt::Microsoft::Windows::Management::Deployment::PackageSetRuntimeDisposition AddPackageSetById(hstring const& packageSetId);
+        winrt::Microsoft::Windows::Management::Deployment::PackageSetRuntimeDisposition AddPackageSetById(hstring const& packageSetId, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& createOptions, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& addOptions);
     private:
-        void AddPackageSetItem(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& createOptions, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& addOptions);
+        winrt::Microsoft::Windows::Management::Deployment::PackageSetItemRuntimeDisposition AddPackageSetItem(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& createOptions, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& addOptions);
         void Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet) const;
         void Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem) const;
         void Validate(winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& options) const;

@@ -16,13 +16,15 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.AddPackageOptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.EnsureIsReadyOptions.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.FindPackageOptions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.FindPackageSetOptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentProgress.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentResult.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageRuntimeManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSet.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetItem.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetItemRuntimeDisposition.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetRuntimeDisposition.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolume.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeManager.cpp" />
@@ -35,13 +37,15 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.AddPackageOptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.EnsureIsReadyOptions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.FindPackageOptions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.FindPackageSetOptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentProgress.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentResult.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageRuntimeManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetItem.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetItemRuntimeDisposition.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetRuntimeDisposition.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolume.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeManager.h" />

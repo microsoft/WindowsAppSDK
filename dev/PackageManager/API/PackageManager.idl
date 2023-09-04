@@ -3,15 +3,7 @@
 
 #include <TerminalVelocityFeatures-PackageManager.h>
 
-//import "windows.foundation.idl";
-//import "Windows.Management.Deployment.idl";
-//import "Microsoft.Windows.ApplicationModel.winmd;"
-
-//import "Windows.ApplicationModel.idl";
 import "M.AM.DynamicDependency.idl";
-//import "Microsoft.Windows.ApplicationModel.DynamicDependency.winmd";
-
-//import "Windows.Management.Deployment.idl";
 
 namespace Microsoft.Windows.Management.Deployment
 {
@@ -123,9 +115,31 @@ namespace Microsoft.Windows.Management.Deployment
 
     [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
-    runtimeclass FindPackageOptions
+    runtimeclass PackageSetItemRuntimeDisposition
     {
-        FindPackageOptions();
+        PackageSetItemRuntimeDisposition();
+
+        String PackageSetItemId{ get; };
+        String PackageFullName{ get; };
+        String PackageDependencyId{ get; };
+        Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContextId PackageDependencyContextId{ get; };
+    }
+
+    [feature(Feature_PackageManager)]
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageSetRuntimeDisposition
+    {
+        PackageSetRuntimeDisposition();
+
+        String PackageSetId;
+        IVector<PackageSetItemRuntimeDisposition> PackageSetItemRuntimeDispositions { get; };
+    }
+
+    [feature(Feature_PackageManager)]
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass FindPackageSetOptions
+    {
+        FindPackageSetOptions();
 
         //TODO
         Boolean TODO_MustHaveAtLeastOneInterfaceOrStaticFactoryPlaceholder;
@@ -141,7 +155,7 @@ namespace Microsoft.Windows.Management.Deployment
         void Update(PackageSet packageSet);  		            // Update/Write/Save
         void Remove(String packageSetId);		                // Delete
         PackageSet Get(String packageSetId);		            // Read/Load
-        IVector<PackageSet> Find(FindPackageOptions options);   // Enumerate
+        IVector<PackageSet> Find(FindPackageSetOptions options);// Enumerate
     };
 
     [feature(Feature_PackageManager)]
@@ -389,19 +403,23 @@ namespace Microsoft.Windows.Management.Deployment
         //       pd = TryCreatePackageDependency(p)
         //       AddPackageDependency(pd)
 
-        void AddPackageSet(PackageSet packageSet);
+        Microsoft.Windows.Management.Deployment.PackageSetRuntimeDisposition AddPackageSet(
+            PackageSet packageSet);
 
         [method_name("AddPackageSetWithOptions")]
-        void AddPackageSet(PackageSet packageSet,
-                           Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions createOptions,
-                           Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions addOptions);
+        Microsoft.Windows.Management.Deployment.PackageSetRuntimeDisposition AddPackageSet(
+            PackageSet packageSet,
+            Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions createOptions,
+            Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions addOptions);
 
-        void AddPackageSetById(String packageSetId);
+        Microsoft.Windows.Management.Deployment.PackageSetRuntimeDisposition AddPackageSetById(
+            String packageSetId);
 
         [method_name("AddPackageSetByIdWithOptions")]
-        void AddPackageSetById(String packageSetId,
-                               Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions createOptions,
-                               Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions addOptions);
+        Microsoft.Windows.Management.Deployment.PackageSetRuntimeDisposition AddPackageSetById(
+            String packageSetId,
+            Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions createOptions,
+            Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions addOptions);
 
     }
 }
