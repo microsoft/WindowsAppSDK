@@ -66,7 +66,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
             try
@@ -80,7 +80,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
             try
@@ -96,7 +96,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
             try
@@ -114,7 +114,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
             try
@@ -132,7 +132,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
             try
@@ -151,7 +151,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
         }
 
@@ -399,7 +399,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
             try
@@ -414,7 +414,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
             try
@@ -431,7 +431,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
             try
@@ -450,7 +450,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
             try
@@ -469,7 +469,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
             try
@@ -489,7 +489,7 @@ namespace Test::PackageManager::Tests
             }
             catch (winrt::hresult_error& e)
             {
-                VERIFY_ARE_EQUAL(E_FAIL, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
         }
 
