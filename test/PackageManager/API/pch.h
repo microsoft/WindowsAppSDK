@@ -14,6 +14,7 @@
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.Management.Deployment.h>
 
+#include <winrt/Microsoft.Windows.ApplicationModel.DynamicDependency.h>
 #include <winrt/Microsoft.Windows.Management.Deployment.h>
 
 #include <WexTestClass.h>

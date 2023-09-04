@@ -8,13 +8,14 @@
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
 namespace TPF = ::Test::Packages::Framework;
+namespace TPMT = ::Test::PackageManager::Tests;
 
 namespace Test::PackageManager::Tests
 {
-    class PackageManagerTests
+    class PackageDeploymentManagerTests
     {
     public:
-        BEGIN_TEST_CLASS(PackageManagerTests)
+        BEGIN_TEST_CLASS(PackageDeploymentManagerTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
         END_TEST_CLASS()
 
@@ -43,114 +44,14 @@ namespace Test::PackageManager::Tests
             return true;
         }
 
-        static winrt::Microsoft::Windows::Management::Deployment::PackageSetItem Make_PackageSetItem(
-            PCWSTR packageFullName,
-            PCWSTR packageDirName)
-        {
-            const auto [packageName, packageVersion, packageArchitecture, packageResourceId, packagePublisherId, packageFamilyName]{ ::AppModel::Package::ParsePackageFullName(packageFullName) };
-
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem psi;
-            psi.PackageFamilyName(packageFamilyName);
-            psi.PackageUri(::TP::GetMsixPackageUri(packageDirName));
-            const ::AppModel::Identity::PackageVersion version{ packageVersion };
-            psi.MinVersion(version.ToWinrtPackageVersion());
-            return psi;
-        }
-
-        static void AddPackage_Red()
-        {
-            ::TP::AddPackageIfNecessary(Test::Packages::Framework::Red::c_packageDirName, ::TPF::Red::GetPackageFullName());
-        }
-        static void StagePackage_Red()
-        {
-            ::TP::StagePackageIfNecessary(Test::Packages::Framework::Red::c_packageDirName, ::TPF::Red::GetPackageFullName());
-        }
-        static void RemovePackage_Red()
-        {
-            // Best-effort removal. PackageManager.RemovePackage errors if the package
-            // is not registered, but if it's not registered we're good. "'Tis the destination
-            // that matters, not the journey" so regardless how much or little work
-            // we need do, we're happy as long as the package isn't registered when we're done
-            //
-            // Thus, do a *IfNecessary removal
-            ::TP::RemovePackageIfNecessary(::TPF::Red::GetPackageFullName());
-        }
-
-        static void AddPackage_Redder()
-        {
-            ::TP::AddPackageIfNecessary(Test::Packages::Framework::Redder::c_packageDirName, ::TPF::Redder::GetPackageFullName());
-        }
-        static void StagePackage_Redder()
-        {
-            ::TP::StagePackageIfNecessary(Test::Packages::Framework::Redder::c_packageDirName, ::TPF::Redder::GetPackageFullName());
-        }
-        static void RemovePackage_Redder()
-        {
-            // Best-effort removal. PackageManager.RemovePackage errors if the package
-            // is not registered, but if it's not registered we're good. "'Tis the destination
-            // that matters, not the journey" so regardless how much or little work
-            // we need do, we're happy as long as the package isn't registered when we're done
-            //
-            // Thus, do a *IfNecessary removal
-            ::TP::RemovePackageIfNecessary(::TPF::Redder::GetPackageFullName());
-        }
-
-        static void AddPackage_Green()
-        {
-            ::TP::AddPackageIfNecessary(Test::Packages::Framework::Green::c_packageDirName, ::TPF::Green::GetPackageFullName());
-        }
-        static void StagePackage_Green()
-        {
-            ::TP::StagePackageIfNecessary(Test::Packages::Framework::Green::c_packageDirName, ::TPF::Green::GetPackageFullName());
-        }
-        static void RemovePackage_Green()
-        {
-            // Best-effort removal. PackageManager.RemovePackage errors if the package
-            // is not registered, but if it's not registered we're good. "'Tis the destination
-            // that matters, not the journey" so regardless how much or little work
-            // we need do, we're happy as long as the package isn't registered when we're done
-            //
-            // Thus, do a *IfNecessary removal
-            ::TP::RemovePackageIfNecessary(::TPF::Green::GetPackageFullName());
-        }
-
-        static void AddPackage_Blue()
-        {
-            ::TP::AddPackageIfNecessary(Test::Packages::Framework::Blue::c_packageDirName, ::TPF::Blue::GetPackageFullName());
-        }
-        static void StagePackage_Blue()
-        {
-            ::TP::StagePackageIfNecessary(Test::Packages::Framework::Blue::c_packageDirName, ::TPF::Blue::GetPackageFullName());
-        }
-        static void RemovePackage_Blue()
-        {
-            // Best-effort removal. PackageManager.RemovePackage errors if the package
-            // is not registered, but if it's not registered we're good. "'Tis the destination
-            // that matters, not the journey" so regardless how much or little work
-            // we need do, we're happy as long as the package isn't registered when we're done
-            //
-            // Thus, do a *IfNecessary removal
-            ::TP::RemovePackageIfNecessary(::TPF::Blue::GetPackageFullName());
-        }
-
         void SetPackageStatus(PCWSTR packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus status)
         {
-            const auto packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Framework };
-            auto packages{ m_packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
-            for (const winrt::Windows::ApplicationModel::Package& package : packages)
-            {
-                m_packageManager.SetPackageStatus(package.Id().FullName(), status);
-            }
+            TPMT::SetPackageStatus(m_packageManager, packageFamilyName, status);
         }
 
         void ClearPackageStatus(PCWSTR packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus status)
         {
-            const auto packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Framework };
-            auto packages{ m_packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
-            for (const winrt::Windows::ApplicationModel::Package& package : packages)
-            {
-                m_packageManager.ClearPackageStatus(package.Id().FullName(), status);
-            }
+            TPMT::ClearPackageStatus(m_packageManager, packageFamilyName, status);
         }
 
         TEST_METHOD(IsPackageSetReady_InvalidParameter)
