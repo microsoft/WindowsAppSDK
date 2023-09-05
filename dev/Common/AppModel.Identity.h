@@ -1,10 +1,13 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #ifndef __APPMODEL_IDENTITY_H
 #define __APPMODEL_IDENTITY_H
 
 #include <appmodel.h>
+
+#include <memory>
+#include <stdint.h>
 
 namespace AppModel::Identity
 {
@@ -44,6 +47,34 @@ constexpr PCWSTR GetCurrentArchitectureAsString()
 #else
 #   error "Unknown processor architecture"
 #endif
+}
+
+constexpr PCWSTR GetArchitectureAsString(const std::uint32_t architecture)
+{
+    switch (architecture)
+    {
+        case PROCESSOR_ARCHITECTURE_AMD64:         return L"x64";
+        case PROCESSOR_ARCHITECTURE_ARM:           return L"arm";
+        case PROCESSOR_ARCHITECTURE_ARM64:         return L"arm64";
+        case PROCESSOR_ARCHITECTURE_IA32_ON_ARM64: return L"x86onArm64";
+        case PROCESSOR_ARCHITECTURE_INTEL:         return L"x86";
+        case PROCESSOR_ARCHITECTURE_NEUTRAL:       return L"neutral";
+        case PROCESSOR_ARCHITECTURE_UNKNOWN:       return L"unknown";
+        default:                                   THROW_HR_MSG(E_UNEXPECTED, "Unknown architecture 0x%X", architecture);
+    }
+}
+
+constexpr PCWSTR GetArchitectureAsString(const winrt::Windows::System::ProcessorArchitecture architecture)
+{
+    static_assert(static_cast<int>(winrt::Windows::System::ProcessorArchitecture::Arm) == static_cast<int>(PROCESSOR_ARCHITECTURE_ARM), "winrt::Windows::System::ProcessorArchitecture::Arm != PROCESSOR_ARCHITECTURE_ARM");
+    static_assert(static_cast<int>(winrt::Windows::System::ProcessorArchitecture::Arm64) == static_cast<int>(PROCESSOR_ARCHITECTURE_ARM64), "winrt::Windows::System::ProcessorArchitecture::Arm64 != PROCESSOR_ARCHITECTURE_ARM64");
+    static_assert(static_cast<int>(winrt::Windows::System::ProcessorArchitecture::Neutral) == static_cast<int>(PROCESSOR_ARCHITECTURE_NEUTRAL), "winrt::Windows::System::ProcessorArchitecture::Neutral != PROCESSOR_ARCHITECTURE_NEUTRAL");
+    static_assert(static_cast<int>(winrt::Windows::System::ProcessorArchitecture::Unknown) == static_cast<int>(PROCESSOR_ARCHITECTURE_UNKNOWN), "winrt::Windows::System::ProcessorArchitecture::Unknown != PROCESSOR_ARCHITECTURE_UNKNOWN");
+    static_assert(static_cast<int>(winrt::Windows::System::ProcessorArchitecture::X64) == static_cast<int>(PROCESSOR_ARCHITECTURE_AMD64), "winrt::Windows::System::ProcessorArchitecture::X64 != PROCESSOR_ARCHITECTURE_AMD64");
+    static_assert(static_cast<int>(winrt::Windows::System::ProcessorArchitecture::X86) == static_cast<int>(PROCESSOR_ARCHITECTURE_INTEL), "winrt::Windows::System::ProcessorArchitecture::X86 != PROCESSOR_ARCHITECTURE_INTEL");
+    static_assert(static_cast<int>(winrt::Windows::System::ProcessorArchitecture::X86OnArm64) == static_cast<int>(PROCESSOR_ARCHITECTURE_IA32_ON_ARM64), "winrt::Windows::System::ProcessorArchitecture::X86OnArm64 != PROCESSOR_ARCHITECTURE_IA32_ON_ARM64");
+
+    return GetArchitectureAsString(static_cast<std::uint32_t>(architecture));
 }
 
 inline winrt::Windows::System::ProcessorArchitecture ParseArchitecture(_In_ PCWSTR architecture)
@@ -107,6 +138,109 @@ inline winrt::Windows::System::ProcessorArchitecture ParseShortArchitecture(_In_
     {
         return winrt::Windows::System::ProcessorArchitecture::Unknown;
     }
+}
+
+class PackageVersion : public PACKAGE_VERSION
+{
+public:
+    PackageVersion(const PackageVersion&) = default;
+
+    // Create an instance with the value `major.minor.build.revision`.
+    PackageVersion(std::uint16_t major, std::uint16_t minor = 0, std::uint16_t build = 0, std::uint16_t revision = 0) :
+        PACKAGE_VERSION()
+    {
+        Major = major;
+        Minor = minor;
+        Build = build;
+        Revision = revision;
+    }
+
+    // Create an instance from a version as a uint64.
+    PackageVersion(std::uint64_t version = 0)
+    {
+        Version = version;
+    }
+
+    template<typename TVersion>
+    PackageVersion(TVersion const& t) :
+        PackageVersion(t.Major, t.Minor, t.Build, t.Revision)
+    {
+    }
+
+#if defined(WINRT_Windows_ApplicationModel_2_H)
+    PackageVersion(winrt::Windows::ApplicationModel::PackageVersion packageVersion) :
+        PACKAGE_VERSION()
+    {
+        Major = packageVersion.Major;
+        Minor = packageVersion.Minor;
+        Build = packageVersion.Build;
+        Revision = packageVersion.Revision;
+    }
+#endif // defined(WINRT_Windows_ApplicationModel_2_H)
+
+    PackageVersion& operator=(const PackageVersion&) = default;
+
+    // Return the version as a uint64.
+    std::uint64_t ToVersion() const
+    {
+        return Version;
+    }
+
+#if defined(____x_ABI_CWindows_CApplicationModel_CIPackageId_INTERFACE_DEFINED__)
+    ABI::Windows::ApplicationModel::PackageVersion ToPackageVersion() const
+    {
+        return ABI::Windows::ApplicationModel::PackageVersion{ Major, Minor, Build, Revision };
+    }
+#endif // defined(____x_ABI_CWindows_CApplicationModel_CIPackageId_INTERFACE_DEFINED__)
+
+#if defined(WINRT_Windows_ApplicationModel_2_H)
+    winrt::Windows::ApplicationModel::PackageVersion ToWinrtPackageVersion() const
+    {
+        return winrt::Windows::ApplicationModel::PackageVersion{ Major, Minor, Build, Revision };
+    }
+#endif // defined(WINRT_Windows_ApplicationModel_2_H)
+
+#if defined(_XSTRING_)
+    // Return the string as a formatted value "major.minor.build.revision".
+    std::wstring ToString() const
+    {
+        return ToString(Major, Minor, Build, Revision);
+    }
+
+    static std::wstring ToString(std::uint16_t major, std::uint16_t minor, std::uint16_t build, std::uint16_t revision)
+    {
+#if (__cplusplus >= 202002L) || (defined(_MSVC_LANG) && (_MSVC_LANG >= 202002L))
+        return std::format(L"{}.{}.{}.{}", major, minor, build, revision);
+#else
+        return std::to_wstring(major) + L"." + std::to_wstring(minor) + L"." + std::to_wstring(build) + L"." + std::to_wstring(revision);
+#endif
+    }
+#endif defined(_XSTRING_)
+};
+
+inline bool operator==(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
+{
+    return packageVersion1.Version == packageVersion2.Version;
+}
+inline bool operator!=(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
+{
+    return packageVersion1.Version != packageVersion2.Version;
+}
+inline bool operator<(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
+{
+    return packageVersion1.Version < packageVersion2.Version;
+}
+inline bool operator<=(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
+{
+    return packageVersion1.Version <= packageVersion2.Version;
+}
+inline bool operator>(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
+{
+    return packageVersion1.Version > packageVersion2.Version;
+}
+inline bool operator>=(const PackageVersion& packageVersion1, const PackageVersion& packageVersion2)
+{
+    return packageVersion1.Version >= packageVersion2.Version;
 }
 
 inline bool IsValidVersionShortTag(
