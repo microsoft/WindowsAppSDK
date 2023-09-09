@@ -168,6 +168,21 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         //TODO Validate(packageSet);
 
         winrt::Windows::Management::Deployment::AddPackageOptions addOptions{ ToOptions(options) };
+#if 1
+        try
+        {
+            AddAsync(packageUri, addOptions);
+        }
+        catch (...)
+        {
+            auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
+            co_return winrt::make<PackageDeploymentResult>(
+                PackageDeploymentStatus::CompletedFailure, exception.code(), false, /*TODO*/winrt::guid{});
+        }
+
+        co_return winrt::make<PackageDeploymentResult>(
+            PackageDeploymentStatus::CompletedSuccess, S_OK, true, /*TODO*/winrt::guid{});
+#else
         try
         {
             auto deploymentOperation{ m_packageManager.AddPackageByUriAsync(packageUri, addOptions) };
@@ -200,6 +215,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             co_return winrt::make<PackageDeploymentResult>(
                 PackageDeploymentStatus::CompletedFailure, exception.code(), false, /*TODO*/winrt::guid{});
         }
+#endif
 
         //TODO logTelemetry.Stop();
     }
@@ -263,12 +279,25 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::RemovePackageByFullNameNameAsync(hstring packageFullName, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
+    PackageDeploymentManager::RemovePackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
+    {
+        if (VerifyPackageFamilyName(package.c_str()) == ERROR_SUCCESS)
+        {
+            return RemovePackageByFamilyNameAsync(package, options);
+        }
+        else if (VerifyPackageFullName(package.c_str()) == ERROR_SUCCESS)
+        {
+            return RemovePackageByFullNameAsync(package, options);
+        }
+        THROW_HR_MSG(E_INVALIDARG, "%ls", package.c_str());
+    }
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::RemovePackageByFullNameAsync(hstring packageFullName, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
     {
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::RemovePackageByFamilyNameNameAsync(hstring packageFamilyName, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
+    PackageDeploymentManager::RemovePackageByFamilyNameAsync(hstring packageFamilyName, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
     {
         throw hresult_not_implemented();
     }
@@ -349,6 +378,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         auto packageUri{ packageSetItem.PackageUri() };
         winrt::Windows::Management::Deployment::AddPackageOptions addOptions{ ToOptions(options) };
+        AddAsync(packageUri, addOptions);
+    }
+
+    void PackageDeploymentManager::AddAsync(winrt::Windows::Foundation::Uri const& packageUri, winrt::Windows::Management::Deployment::AddPackageOptions const& addOptions)
+    {
         auto deploymentOperation{ m_packageManager.AddPackageByUriAsync(packageUri, addOptions) };
         deploymentOperation.get();
         try

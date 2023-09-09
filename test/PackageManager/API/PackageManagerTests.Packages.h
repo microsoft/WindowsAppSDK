@@ -129,7 +129,7 @@ namespace Test::PackageManager::Tests
     }
     inline bool IsPackageRegistered_Red()
     {
-        return TP::IsPackageRegistered(TPF::Blue::GetPackageFullName());
+        return TP::IsPackageRegistered(TPF::Red::GetPackageFullName());
     }
 
     inline void AddPackage_Redder()
@@ -152,7 +152,7 @@ namespace Test::PackageManager::Tests
     }
     inline bool IsPackageRegistered_Redder()
     {
-        return TP::IsPackageRegistered(TPF::Blue::GetPackageFullName());
+        return TP::IsPackageRegistered(TPF::Redder::GetPackageFullName());
     }
 
     inline void AddPackage_Green()
@@ -175,7 +175,7 @@ namespace Test::PackageManager::Tests
     }
     inline bool IsPackageRegistered_Green()
     {
-        return TP::IsPackageRegistered(TPF::Blue::GetPackageFullName());
+        return TP::IsPackageRegistered(TPF::Green::GetPackageFullName());
     }
 
     inline void AddPackage_Blue()

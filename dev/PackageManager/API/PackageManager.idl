@@ -340,12 +340,21 @@ namespace Microsoft.Windows.Management.Deployment
     //      - <verb>PackageSetByIdAsync(id, options)
     //    where
     //      <verb> = Add | Register | Stage
+    //      Parameter string for...
+    //          Add      = path | uri
+    //          Register = path | uri | packagefullname | packagefamilyname
+    //          Stage    = path | uri
     // 2. Modification operations involving existing packages...
     //      - <verb>PackageAsync                   (string, options)
     //      - <verb>PackageByPackageFamilyNameAsync(string, options)
     //      - <verb>PackageByPackageFullNameAsync  (string, options)
     //    where
     //      <verb> = Deprovision | Provision | Register | Remove
+    //      Parameter string for...
+    //          Deprovision = packagefamilyname
+    //          Provision   = packagefamilyname
+    //          Register    = packagefamilyname | packagefullname | path\appxmanifest.xml | path containing appxmanifest.xml | file://path/appxmanifest.xml | file://path containing appxmanifest.xml
+    //          Remove      = packagefamilyname | packagefullname
     //
     // TODO: AppInstaller
     // TODO: Move
@@ -378,6 +387,9 @@ namespace Microsoft.Windows.Management.Deployment
 
         // Add packages
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        AddPackageAsync(String package, AddPackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         AddPackageByUriAsync(Windows.Foundation.Uri packageUri, AddPackageOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
@@ -388,10 +400,13 @@ namespace Microsoft.Windows.Management.Deployment
 
         // Remove packages
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        RemovePackageByFullNameNameAsync(String packageFullName, RemovePackageOptions options);
+        RemovePackageAsync(String package, RemovePackageOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        RemovePackageByFamilyNameNameAsync(String packageFamilyName, RemovePackageOptions options);
+        RemovePackageByFullNameAsync(String packageFullName, RemovePackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RemovePackageByFamilyNameAsync(String packageFamilyName, RemovePackageOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RemovePackageSetAsync(PackageSet packageSet, RemovePackageOptions options);
