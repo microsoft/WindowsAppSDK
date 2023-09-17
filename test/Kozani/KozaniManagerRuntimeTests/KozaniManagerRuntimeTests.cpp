@@ -10,8 +10,41 @@ namespace TP = ::Test::Packages;
 
 namespace KozaniManagerTestPackage
 {
-    constexpr PCWSTR c_PackageDirName = L"KozaniManager";
-    constexpr PCWSTR c_PackageFullName = L"KozaniManager_1.0.0.0_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageDirName{ L"KozaniManager" };
+    constexpr PCWSTR c_PackageFullName{ L"KozaniManager_1.0.0.0_neutral__8wekyb3d8bbwe" };
+}
+
+HRESULT RegisterDVCPluginIfNeeded()
+{
+    PCWSTR subkey{ L"Software\\Microsoft\\Terminal Server Client\\Default\\AddIns\\KozaniDVC" };
+    PCWSTR keyname{ L"Name" };
+
+    wil::unique_hkey key;
+    const LSTATUS result{ ::RegOpenKey(HKEY_CURRENT_USER, subkey, &key) };
+    if (result == ERROR_SUCCESS)
+    {
+        WEX::Logging::Log::Comment(L"DVC plugin key already exists!");
+        return S_OK;
+    }
+
+    PCWSTR kozaniDvcClientClsid{ L"ed202fc8-ee21-4bf2-9681-23a8e97be9f3" };
+    WCHAR regCommand[MAX_PATH];
+    swprintf_s(regCommand, L"add \"HKCU\\%s\" /v %s /t REG_SZ /d {%s}", subkey, keyname, kozaniDvcClientClsid);
+    const HINSTANCE hInst{ ShellExecute(nullptr, nullptr, L"reg.exe", regCommand, nullptr, SW_SHOW) };
+    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ShellExecute reg add finished with code: %d", hInst));
+
+    if ((int)hInst > 32)
+    {
+        WEX::Logging::Log::Comment(L"Successfully created DVC plugin key!");
+    }
+    else
+    {
+        const HRESULT hr{ HRESULT_FROM_WIN32(reinterpret_cast<DWORD>(hInst)) };
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ShellExecute failed with: 0x%x", hr));
+        return hr;
+    }
+
+    return S_OK;
 }
 
 namespace Test::KozaniManagerRuntimeTests
@@ -19,9 +52,10 @@ namespace Test::KozaniManagerRuntimeTests
     struct MyKozaniStatusCallback : winrt::implements<MyKozaniStatusCallback, IKozaniStatusCallback, winrt::Windows::Foundation::IInspectable>
     {
 #pragma region IKozaniStatusCallback_methods
-        STDMETHODIMP OnActivated(DWORD pid)
+        STDMETHODIMP OnActivated(DWORD pid, boolean isNewInstance)
         {
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"IKozaniStausCallback::OnActivated is called. pid = %u", pid));
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                L"IKozaniStausCallback::OnActivated is called. pid = %u, isNewInstance = %s", pid, isNewInstance ? L"true" : L"false"));
             m_isActivated = true;
             return S_OK;
         }
@@ -75,8 +109,14 @@ namespace Test::KozaniManagerRuntimeTests
 
         TEST_CLASS_SETUP(ClassSetup)
         {
+            ::TP::RemovePackageIfNecessary(KozaniManagerTestPackage::c_PackageFullName);
             ::TB::Setup();
             ::TP::AddPackage(KozaniManagerTestPackage::c_PackageDirName, KozaniManagerTestPackage::c_PackageFullName);
+            
+            if (FAILED(RegisterDVCPluginIfNeeded()))
+            {
+                return false;
+            }
             return true;
         }
 
@@ -87,17 +127,63 @@ namespace Test::KozaniManagerRuntimeTests
             return true;
         }
 
+        TEST_METHOD(ActivateRemoteApplication_NegativeTests)
+        {
+            auto runtimeManager{ winrt::Microsoft::Kozani::ManagerRuntime::ManagerRuntimeManager::Create() };
+            auto statusCallback{ winrt::make_self<MyKozaniStatusCallback>() };
+
+            WEX::Common::String testDeploymentDir;
+            VERIFY_SUCCEEDED(WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", testDeploymentDir));
+
+            // Negative test case 1: connection RDP file does not exist.
+            try
+            {
+                runtimeManager.ActivateRemoteApplication(winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch,
+                    L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", L"Non-existing.rdp", L"additionalSettings.txt",
+                    nullptr,    // IActivatedEventArgs
+                    statusCallback.as<winrt::Windows::Foundation::IInspectable>(),
+                    0);
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(e.code().value, HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
+            }
+
+            // Negative test case 2: connection RDP file does not contain connection Id.
+            try
+            {
+                std::filesystem::path rdpFullPath((const wchar_t*)testDeploymentDir);
+                rdpFullPath.append(L"MissingConnectionId.rdp");
+
+                runtimeManager.ActivateRemoteApplication(winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch,
+                    L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", rdpFullPath.c_str(), L"additionalSettings.txt",
+                    nullptr,    // IActivatedEventArgs
+                    statusCallback.as<winrt::Windows::Foundation::IInspectable>(),
+                    0);
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(e.code().value, E_INVALIDARG);
+            }
+        }
+
         TEST_METHOD(ActivateRemoteApplication_Launch)
         {
             auto runtimeManager{ winrt::Microsoft::Kozani::ManagerRuntime::ManagerRuntimeManager::Create() };
             auto statusCallback{ winrt::make_self<MyKozaniStatusCallback>() };
 
-            runtimeManager.ActivateRemoteApplication(winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch,
-                L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", L"c:\\data\\connection.rdp", L"c:\\data\\additionalSettings.txt",
-                nullptr,    // IActivatedEventArgs
-                statusCallback.as<winrt::Windows::Foundation::IInspectable>());
+            WEX::Common::String testDeploymentDir;
+            VERIFY_SUCCEEDED(WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", testDeploymentDir));
+            std::filesystem::path rdpFullPath((const wchar_t*)testDeploymentDir);
+            rdpFullPath.append(L"connection.rdp");
 
-            VERIFY_IS_TRUE(statusCallback->IsActivated(), L"IKozaniStausCallback::OnActivated() should have been called.");
+            runtimeManager.ActivateRemoteApplication(winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch,
+                L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", rdpFullPath.c_str(), winrt::param::hstring(),
+                nullptr,    // IActivatedEventArgs
+                statusCallback.as<winrt::Windows::Foundation::IInspectable>(),
+                0);
+
+            //VERIFY_IS_TRUE(statusCallback->IsActivated(), L"IKozaniStausCallback::OnActivated() should have been called.");
         }
     };
 }

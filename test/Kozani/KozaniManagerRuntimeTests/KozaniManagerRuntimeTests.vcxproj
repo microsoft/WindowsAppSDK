@@ -106,6 +106,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ManualTests.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -115,6 +116,12 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <CopyFileToFolders Include="data\MissingConnectionId.rdp">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data\connection.rdp">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

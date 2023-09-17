@@ -1,0 +1,28 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+syntax = "proto3";
+
+package Microsoft.Kozani.Activation;
+
+enum ActivationKind
+{
+    // NOTE: Values must match Windows.ApplicationModel.Activation.ActivationKind
+    Launch = 0;
+    File = 3;
+    Protocol = 4;
+}
+
+message ActivateAppRequest
+{
+    int64 cookie = 1;
+    ActivationKind activation_kind = 2;
+    string app_user_model_id = 3;
+    optional string arguments = 4;
+}
+
+message ActivateAppResult
+{
+    int64 cookie = 1;
+    int32 hresult = 2;
+}

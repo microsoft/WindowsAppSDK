@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -42,7 +42,6 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
     _In_ HSTRING correlationVector) noexcept try
 {
     auto logTelemetry = PushNotificationLongRunningTaskTelemetry::OnRawNotificationReceived::Start(correlationVector);
-    wil::scope_exit([&]() { logTelemetry.Stop(); });
 
     auto lock = m_lock.lock_exclusive();
 
@@ -59,6 +58,8 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
             THROW_IF_FAILED(PushNotificationHelpers::PackagedAppLauncherByClsid(m_comServerClsid, payloadLength, payload));
         }
     }
+
+    logTelemetry.Stop();
 
     return S_OK;
 }

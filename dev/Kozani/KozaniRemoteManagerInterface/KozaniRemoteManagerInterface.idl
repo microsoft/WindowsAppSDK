@@ -9,7 +9,7 @@ import "ocidl.idl";
 [pointer_default(unique)]
 interface IKozaniRemoteManager : IUnknown
 {
-    HRESULT Initialize();
-
-    HRESULT Shutdown();
+    // Connects to client DVC by opening a DVC channel with Kozani_DVC name and sends back an ACK message with connectionId
+    // to link the connection to the client request.
+    HRESULT Connect([in, string] LPCSTR connectionId);
 };

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -23,6 +23,7 @@ private:
     void InitializeQualifierValueMap();
     hstring GetLangugageContext();
 
+    std::once_flag m_areQualifierNamesAndValueMapInitialized;
     MrmContextHandle m_resourceContext = nullptr;
     com_array<hstring> m_qualifierNames;
     winrt::Windows::Foundation::Collections::IMap<hstring, hstring> m_qualifierValueMap = nullptr;

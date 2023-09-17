@@ -17,7 +17,6 @@
     <TargetPlatformName>Windows</TargetPlatformName>
     <CreateInPlace>true</CreateInPlace>
     <PreviewImage>WinUI.Desktop.Cs.BlankApp.png</PreviewImage>
-    <AppIdFilter>blend</AppIdFilter>
     <PromptForSaveOnCreation>true</PromptForSaveOnCreation>
     <LanguageTag>csharp</LanguageTag>
     <LanguageTag>XAML</LanguageTag>

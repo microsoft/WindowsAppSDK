@@ -25,7 +25,8 @@ namespace winrt::Microsoft::Kozani::ManagerRuntime::implementation
         winrt::hstring connectionRdpFilePath,
         winrt::hstring additionalSettingsFilePath,
         Windows::ApplicationModel::Activation::IActivatedEventArgs args,
-        IInspectable statusCallback)
+        IInspectable statusCallback,
+        UINT32 associatedLocalProcessId)
     {
         winrt::check_hresult(m_kozaniManager->ActivateRemoteApplication(
             static_cast<INT32>(activationKind),
@@ -34,6 +35,6 @@ namespace winrt::Microsoft::Kozani::ManagerRuntime::implementation
             additionalSettingsFilePath.c_str(),
             reinterpret_cast<::IInspectable*>(winrt::get_abi(args)),
             reinterpret_cast<::IKozaniStatusCallback*>(winrt::get_abi(statusCallback)),
-            GetCurrentProcessId()));
+            associatedLocalProcessId));
     }
 }

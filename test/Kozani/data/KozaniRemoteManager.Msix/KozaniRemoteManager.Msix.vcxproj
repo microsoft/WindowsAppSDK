@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{a18e00c4-3668-4289-abfc-d1df330da6bf}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>KozaniRemoteManager.Msix</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <PreNMakeBuildTarget>$(PostBuildDependsOn);MakeMSIX</PreNMakeBuildTarget>
+    <NMakeBuildCommandLine>REM Nothing to do!</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>REM TODO Clean then Build</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>REM TODO Clean</NMakeCleanCommandLine>
+    <MakeMsixOutputFilename>KozaniRemoteManager.msix</MakeMsixOutputFilename>
+  </PropertyGroup>
+  <ItemGroup>
+    <MakeMsixInputAssets Include="$(MSBuildThisFileDirectory)\Assets\*" />
+    <MakeMsixInputs Include="$(MSBuildThisFileDirectory)appxmanifest.xml" />
+    <MakeMsixInputs Include="$(OutDir)..\KozaniRemoteManager\KozaniRemoteManager.exe" />
+    <MakeMsixInputs Include="$(OutDir)..\KozaniRemoteManager\KozaniRemoteManager.pdb" />
+    <MakeMsixInputs Include="$(OutDir)..\KozaniRemoteManagerProxyStub\KozaniRemoteManagerProxyStub.dll" />
+    <MakeMsixInputs Include="$(OutDir)..\KozaniRemoteManagerLauncher\KozaniRemoteManagerLauncher.exe" />
+    <MakeMsixInputs Include="$(OutDir)..\KozaniRemoteManagerLauncher\KozaniRemoteManagerLauncher.pdb" />
+  </ItemGroup>
+  <PropertyGroup>
+    <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
+    <PackageCertificatePassword>$(RepoTestCertificatePassword)</PackageCertificatePassword>
+  </PropertyGroup>
+  <Import Project="$(RepoRoot)\MakeMsix.targets" />
+  <ItemGroup>
+    <Xml Include="appxmanifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\dev\Kozani\KozaniRemoteManagerLauncher\KozaniRemoteManagerLauncher.vcxproj">
+      <Project>{45c50da4-f2c7-4a4b-8493-50e5df17b527}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\dev\Kozani\KozaniRemoteManagerProxyStub\KozaniRemoteManagerProxyStub.vcxproj">
+      <Project>{b9933e40-5a7c-482e-9ff3-fc06c1a7b37e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\dev\Kozani\KozaniRemoteManager\KozaniRemoteManager.vcxproj">
+      <Project>{a11c6664-f26a-4e71-b440-2e4e1ba09a93}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -82,6 +82,7 @@
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)appxmanifest.xml" />
     <MakeMsixInputs Include="$(TargetExeFile)" />
     <MakeMsixInputs Include="$(TargetExeProxyStubFile)" />
+    <MakeMsixInputs Include="$(OutDir)..\KozaniManager\KozaniManager.pdb" />
   </ItemGroup>
   <PropertyGroup>
     <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>

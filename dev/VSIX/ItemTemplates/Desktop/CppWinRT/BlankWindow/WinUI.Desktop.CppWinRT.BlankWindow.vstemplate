@@ -12,7 +12,6 @@
     <NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
     <ShowByDefault>false</ShowByDefault>
     <TargetPlatformName>Windows</TargetPlatformName>
-    <AppIdFilter>blend</AppIdFilter>
     <LanguageTag>cpp</LanguageTag>
     <PlatformTag>windows</PlatformTag>
     <ProjectTypeTag>desktop</ProjectTypeTag>

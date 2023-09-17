@@ -16,14 +16,19 @@
 #include <wrl.h>
 #pragma warning(pop)
 
+// Must appear before #include <wil/resource.h> to turn on wil::unique_wtsmem_ptr definition.
+#include <wtsapi32.h>
+
 #include <wil/cppwinrt.h>
 #include <wil/token_helpers.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
+#include <wil/com.h>
+#include <wil_kozani.h>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 
-#include <wil/com.h>
-
 #include <WindowsAppRuntimeInsights.h>
+
+#include "Logging.h"

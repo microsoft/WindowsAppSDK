@@ -1,0 +1,1548 @@
+{
+  "version": "latest",
+  "suppressionSets": {
+    "default": {
+      "name": "default",
+      "createdDate": "2023-04-24 23:45:57Z",
+      "lastUpdatedDate": "2023-04-24 23:45:57Z"
+    }
+  },
+  "results": {
+    "f211f9b9c4428d65bc4b7ffbf3daa2918396621e7cdff90b78f9546f3d4d84db": {
+      "signature": "f211f9b9c4428d65bc4b7ffbf3daa2918396621e7cdff90b78f9546f3d4d84db",
+      "alternativeSignatures": [
+        "d69084f48b5b36b2d05d257f74da6e68066160fcc7456ac3829b8a791379f1a3"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.sharedlibrary/2.2.7-rel-28605-00/tools/SharedLibrary/chk/Native/SharedLibrary.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "cea6892c9c7ef5c51d0af21ca3acddafb95def3c3a028ea53b4002a5d2068f92": {
+      "signature": "cea6892c9c7ef5c51d0af21ca3acddafb95def3c3a028ea53b4002a5d2068f92",
+      "alternativeSignatures": [
+        "e016822729a494811b5b255c523d99a675e4be8bbe84d44d35e8e1cd67b23290"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.sharedlibrary/2.2.7-rel-28605-00/tools/SharedLibrary/ret/Native/SharedLibrary.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "0cdd4d8fd32755aa96a4a9b93745df89bfd89b1646a1a35c7a280b27a1aa4757": {
+      "signature": "0cdd4d8fd32755aa96a4a9b93745df89bfd89b1646a1a35c7a280b27a1aa4757",
+      "alternativeSignatures": [
+        "7e46e0cf213ba373fe81ead132a71a97a36de758ab4f11d93134be5c2a97da19"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.sharedlibrary/2.2.7-rel-28605-00/tools/SharedLibrary/chk/Native/SharedLibrary.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "e3b39e690495bb955b8c0750d552ceee44d00a5ce65898f487c88297707cf785": {
+      "signature": "e3b39e690495bb955b8c0750d552ceee44d00a5ce65898f487c88297707cf785",
+      "alternativeSignatures": [
+        "308ea982cd81494a5b5d97da0f9b964a5e66439dedb96535f8e27c9668103580"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.sharedlibrary/2.2.7-rel-28605-00/tools/SharedLibrary/chk/Native/SharedLibrary.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "a9d17a5b96eedaf4058410f83af74bafdaa98acbdba182278d547a664906f965": {
+      "signature": "a9d17a5b96eedaf4058410f83af74bafdaa98acbdba182278d547a664906f965",
+      "alternativeSignatures": [
+        "db09260579b1cf4ae3f6c309af80b0d691ac5b0279d82c8ac42bcdae9da073ec"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.sharedlibrary/2.2.7-rel-28605-00/tools/SharedLibrary/chk/Native/SharedLibrary.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2026",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "6ffbae50951e5dde74f58d48de5ed5865c57924e8a5aae8537693876aecc557d": {
+      "signature": "6ffbae50951e5dde74f58d48de5ed5865c57924e8a5aae8537693876aecc557d",
+      "alternativeSignatures": [
+        "8e4fb7af4cffd52de2d1d610b85a33cc940f3464fe9a698e9e94e929ca1fdd28"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.sharedlibrary/2.2.7-rel-28605-00/tools/SharedLibrary/ret/Native/SharedLibrary.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "ce626556b6d31634a81702a83ba5d5323595abaf8aad9385f98313e538d0bacc": {
+      "signature": "ce626556b6d31634a81702a83ba5d5323595abaf8aad9385f98313e538d0bacc",
+      "alternativeSignatures": [
+        "942159685894886903a3760e93c6db36d9c2f3738f1bc6eb7610259b46e4a64c"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.sharedlibrary/2.2.7-rel-28605-00/tools/SharedLibrary/ret/Native/SharedLibrary.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "ddf1261353b15a0597a0e44f3d552eb4e5fbb616f2e46b74e969bdedb2d27ffd": {
+      "signature": "ddf1261353b15a0597a0e44f3d552eb4e5fbb616f2e46b74e969bdedb2d27ffd",
+      "alternativeSignatures": [
+        "ebdb97505cdf49a8cadfc5770524b250050b3009d39706cd96b9e85dfe4f3abc"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.sharedlibrary/2.2.7-rel-28605-00/tools/SharedLibrary/ret/Native/SharedLibrary.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2026",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "5e43c8f451e613e181b3c1c047aea63adeae1633a91fa9e4703cf616de285169": {
+      "signature": "5e43c8f451e613e181b3c1c047aea63adeae1633a91fa9e4703cf616de285169",
+      "alternativeSignatures": [
+        "bb96f8ed2b73853b06b71378f6f9e42a17ac4ffeb487f24ac62cec2ee8334e07"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.sharedlibrary/2.2.7-rel-28605-00/tools/SharedLibrary/chk/Native/SharedLibrary.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "23808373aa46bc954894fc9bd4f1ba53ba230e6cbfd24b9385b3779378bec0b0": {
+      "signature": "23808373aa46bc954894fc9bd4f1ba53ba230e6cbfd24b9385b3779378bec0b0",
+      "alternativeSignatures": [
+        "efa7e569574862be22556583fed4b61e9f636c5a6a631ec4b55cff6bfebeb4c9"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.sharedlibrary/2.2.7-rel-28605-00/tools/SharedLibrary/chk/Native/SharedLibrary.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2025",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "a30dd6d2927f25f98dee51d8b2770073cc851628edd674065052032a75906464": {
+      "signature": "a30dd6d2927f25f98dee51d8b2770073cc851628edd674065052032a75906464",
+      "alternativeSignatures": [
+        "db24053ea78d00fe8be576112549dd3864c03bb0ce8f9589d37e134ba5e15d34"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.sharedlibrary/2.2.7-rel-28605-00/tools/SharedLibrary/ret/Native/SharedLibrary.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "070477b31f94102d86cdc36c78e148e0e684db269846e1ae9f83e4882555343e": {
+      "signature": "070477b31f94102d86cdc36c78e148e0e684db269846e1ae9f83e4882555343e",
+      "alternativeSignatures": [
+        "86e13501b2bc9b4fc63ca68619b0e7c628dfa985904bd90223ac30287b603d39"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.sharedlibrary/2.2.7-rel-28605-00/tools/SharedLibrary/ret/Native/SharedLibrary.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2025",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "0e5f31004bbeba8aac573883b89748af659782dbc9f3f9a52be2834240504323": {
+      "signature": "0e5f31004bbeba8aac573883b89748af659782dbc9f3f9a52be2834240504323",
+      "alternativeSignatures": [
+        "d6c3f828a6a251ca59c22543b93f8879ee390659a51bf03b90f499bbab23c0e5"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.sharedlibrary/2.2.7-rel-28605-00/tools/SharedLibrary/chk/Native/SharedLibrary.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "008201641fdbf769baa847b47c7ac5748df3701b19127809fb1acdeccbf1f982": {
+      "signature": "008201641fdbf769baa847b47c7ac5748df3701b19127809fb1acdeccbf1f982",
+      "alternativeSignatures": [
+        "8afaa0c5d7fd18ccd8d1a9700756508c9d4dd8a9620d2c1450c8c884a60a83c9"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.sharedlibrary/2.2.7-rel-28605-00/tools/SharedLibrary/chk/Native/SharedLibrary.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2025",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "2394398727b6a64bb85589281ce5b32db99d980ae2e0a7779effda081888ff04": {
+      "signature": "2394398727b6a64bb85589281ce5b32db99d980ae2e0a7779effda081888ff04",
+      "alternativeSignatures": [
+        "262f116ee71a2b2dc6a73d1da75a8e9694be46c8c37daa8ca776873ebab559f1"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.sharedlibrary/2.2.7-rel-28605-00/tools/SharedLibrary/ret/Native/SharedLibrary.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "e368a52c08abab08d87b008ae5284d84f1f0ac98043084ea8cb90b193a6b3a74": {
+      "signature": "e368a52c08abab08d87b008ae5284d84f1f0ac98043084ea8cb90b193a6b3a74",
+      "alternativeSignatures": [
+        "a5b8f3293392106bca250598475b3ae918115b311aab460b70995c40101e2fa9"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.sharedlibrary/2.2.7-rel-28605-00/tools/SharedLibrary/ret/Native/SharedLibrary.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2025",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "e62bca0e3ebd993c44f1cc31013784d22de5b1ce454ccf4eb8e91a9822e0ac90": {
+      "signature": "e62bca0e3ebd993c44f1cc31013784d22de5b1ce454ccf4eb8e91a9822e0ac90",
+      "alternativeSignatures": [
+        "3ad8b1f743267191a276a827d4734768529727d0972875cfb8d791c7ed7c1e2d"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/Private/System.Private.CoreLib.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "f1f5a17a21491bd445de535a5f6f609445f446fbe765c7ce1150485e9ff15e39": {
+      "signature": "f1f5a17a21491bd445de535a5f6f609445f446fbe765c7ce1150485e9ff15e39",
+      "alternativeSignatures": [
+        "fa8245dbd30398ab889ca9cdbbcbf0726f625e93a72b22129719d2519d8dd1a3"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/Private/System.Private.Debug.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "becb0cac9d90714467d781aac18cc072153d640a4e8f27178d8a83f906cc5817": {
+      "signature": "becb0cac9d90714467d781aac18cc072153d640a4e8f27178d8a83f906cc5817",
+      "alternativeSignatures": [
+        "0f9ddb300dee68def74eca28220dadfda7299fd13109b843cb0fe8313f0c825c"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/Private/System.Private.DeveloperExperience.AppX.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "91a3cac7343d3b5ee207405a076f29babf77f16fdfe5ab135a6a493880cf8f32": {
+      "signature": "91a3cac7343d3b5ee207405a076f29babf77f16fdfe5ab135a6a493880cf8f32",
+      "alternativeSignatures": [
+        "c46572af2b04c70ccbda0f8972a3b9ee3facd7b23aeaa7bb4adc7b9ad8def384"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/Private/System.Private.DeveloperExperience.Console.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "9eef906f9d2647029f339a4618b16c7e041ab15516ae1113bfcfac27b5a9df7c": {
+      "signature": "9eef906f9d2647029f339a4618b16c7e041ab15516ae1113bfcfac27b5a9df7c",
+      "alternativeSignatures": [
+        "962fabfe401ed8da2cf7d385e1a376cf79717cce61d83806713419e32cb9a488"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/Private/System.Private.Interop.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "a9e7b279ad062c59e656f6e8b2f412bfed65cd769317789a95d24c8a2ad75679": {
+      "signature": "a9e7b279ad062c59e656f6e8b2f412bfed65cd769317789a95d24c8a2ad75679",
+      "alternativeSignatures": [
+        "48c6d32042de3a5adb10a3e31f86a63017087462ae748ec8b34da1e218ab0228"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/Private/System.Private.Reflection.Core.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "806bad0f80c4ecbb611e8af6498ff48cbd98df9337165885df1f0a2efee550fb": {
+      "signature": "806bad0f80c4ecbb611e8af6498ff48cbd98df9337165885df1f0a2efee550fb",
+      "alternativeSignatures": [
+        "a4ebbe6f4b185f19f620d1e16e892d414b2dfa5ae25338109ba649c3947aab7e"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/Private/System.Private.Reflection.Execution.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "c172ed55543cd62830b339d0002a6fb747639d84fbe170a67606f54c4b4d13e1": {
+      "signature": "c172ed55543cd62830b339d0002a6fb747639d84fbe170a67606f54c4b4d13e1",
+      "alternativeSignatures": [
+        "33ab028beabafd81376856a9ffa78ccb9269df09b9d2b7c3c263361d33fc337a"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/Private/System.Private.Reflection.Metadata.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "4eb2277edfe1a0e6b8c80cea1e4f2e079b81a770bba84d08902edc0369735d25": {
+      "signature": "4eb2277edfe1a0e6b8c80cea1e4f2e079b81a770bba84d08902edc0369735d25",
+      "alternativeSignatures": [
+        "4e5829ac35bbbf1c95eefc608b6c987c4012b2c460cccb57e1c6130597e7035e"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/Private/System.Private.StackTraceGenerator.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "01cc4a1036a39a4e4e4ad1279e63288f25e6ce70a9dfacbe434a0dcb8ce4c474": {
+      "signature": "01cc4a1036a39a4e4e4ad1279e63288f25e6ce70a9dfacbe434a0dcb8ce4c474",
+      "alternativeSignatures": [
+        "9ee71d6d81b04332d11674b8b5ad3f41ac80d511bd606c3161f7a7016bd4388f"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/Private/System.Private.StackTraceMetadata.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "abc81baf7c495ce29b8586a58f4b74590776d1b31d601152e13c52f5f489411d": {
+      "signature": "abc81baf7c495ce29b8586a58f4b74590776d1b31d601152e13c52f5f489411d",
+      "alternativeSignatures": [
+        "ca74fa04c44f2c3af5ca10b10b6313c8908941e34209ab056da1555d60eeb07b"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/Private/System.Private.Threading.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "ab0b22c78a0721a7279ded6284ddacf080ca070c21c23edb00c4574c9ee528e7": {
+      "signature": "ab0b22c78a0721a7279ded6284ddacf080ca070c21c23edb00c4574c9ee528e7",
+      "alternativeSignatures": [
+        "d00d5dfeeac4cf4034699143d99b36548813f72be5bfb7ad99588c7f838a9f9d"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/Private/System.Private.TypeLoader.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "7c473202d04f2aa905032ca7782603869e7b334e61a3ba38444f9a283eb44ceb": {
+      "signature": "7c473202d04f2aa905032ca7782603869e7b334e61a3ba38444f9a283eb44ceb",
+      "alternativeSignatures": [
+        "1427af0771506aabc2f7fb967f08cc47ad52624f77999f406cccc20d12406ed1"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/Private/System.Private.WinRTInterop.CoreLib.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "e7f99db76be4dc0010e5e8b444148d0123bb5096e0df12770a806b2daf759a6c": {
+      "signature": "e7f99db76be4dc0010e5e8b444148d0123bb5096e0df12770a806b2daf759a6c",
+      "alternativeSignatures": [
+        "73113c350315b8e45211e0c3a33cedf49d8f250166b511ce332749ec47d573fd"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/PrivateWin32/System.Private.CoreLib.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "6d196de06706b2afae946494a175afc5460ddc83705e9fa580a7ccd6965ff439": {
+      "signature": "6d196de06706b2afae946494a175afc5460ddc83705e9fa580a7ccd6965ff439",
+      "alternativeSignatures": [
+        "8f7aafdd710f10b6f5f843c5c96fe69446f2037a7ba546922254cdf298f6f080"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/PrivateWin32/System.Private.Interop.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "ad67c1f51edf3c22ff5cbd7ce990d74dd005ad2c3af794bc65de8e3d07be9ebd": {
+      "signature": "ad67c1f51edf3c22ff5cbd7ce990d74dd005ad2c3af794bc65de8e3d07be9ebd",
+      "alternativeSignatures": [
+        "d1b429e2159ed25dc9dff06b4186dd69a780658a60b3f2a5227c7b527adc90e0"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/PrivateWin32/System.Private.Reflection.Core.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "d31061890f12e1e19d108e54c24e5bd25585a214d109cbaf2c19e9cee728523c": {
+      "signature": "d31061890f12e1e19d108e54c24e5bd25585a214d109cbaf2c19e9cee728523c",
+      "alternativeSignatures": [
+        "a3121c25ebaea109eb40aacffe1a33f258c56a291c8030ac2be30cbbc50164cf"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/PrivateWin32/System.Private.Reflection.Execution.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "e677570b88e873cf67af2c54d304003bc803b1ddd3d757081f8e7479f827a40b": {
+      "signature": "e677570b88e873cf67af2c54d304003bc803b1ddd3d757081f8e7479f827a40b",
+      "alternativeSignatures": [
+        "f54054687271c2af1ba84de257788d6942f4bcb5526da2aeec7b1302cc364ec9"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/PrivateWin32/System.Private.TypeLoader.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "b7cf03847eca12b23d69a191280f5df13715f2d3c97d5a57821c4cedd4ff7943": {
+      "signature": "b7cf03847eca12b23d69a191280f5df13715f2d3c97d5a57821c4cedd4ff7943",
+      "alternativeSignatures": [
+        "232ba788100b4baacce112be3030bcb0c3d5525280cc15a8686cd804c0def1c7"
+      ],
+      "target": "packages/runtime.win10-arm.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm/ilc/Lib/Runtime/mrt100_app.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "027fb5028364f71398660a9f071ae2b2090247d4509b394312a4ba6e1993a598": {
+      "signature": "027fb5028364f71398660a9f071ae2b2090247d4509b394312a4ba6e1993a598",
+      "alternativeSignatures": [
+        "55c2030cb08ff69cd1f40a8b8f91ad6b1d91db47a45bb45a2be08764d5173e12"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/Private/System.Private.CoreLib.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "8f27ad59bcb295d55c65ebe05d726c275208aef0e22627b5814e6da8e0db31af": {
+      "signature": "8f27ad59bcb295d55c65ebe05d726c275208aef0e22627b5814e6da8e0db31af",
+      "alternativeSignatures": [
+        "0f8fabfd04fbe58cd2987a79e8d345cc6d49253ba97c59bcabb4eaa61142b066"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/Private/System.Private.Debug.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "84106f3a963d9e935bb638805af4868d0b54fac3d4f102e97c650a20eadfdcba": {
+      "signature": "84106f3a963d9e935bb638805af4868d0b54fac3d4f102e97c650a20eadfdcba",
+      "alternativeSignatures": [
+        "df5f6cdbdf38c54a3236c0b6e1bfb6bed55bf82cd98aaf3b55f5df73863a7fb3"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/Private/System.Private.DeveloperExperience.AppX.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "f55c89a1b91c3bf8b8739c60ae6611f9a6272e71321f44a9316e5e5315c0c4f1": {
+      "signature": "f55c89a1b91c3bf8b8739c60ae6611f9a6272e71321f44a9316e5e5315c0c4f1",
+      "alternativeSignatures": [
+        "164a09e77265d31de91dfa6408abf85c4f8b05cec9903956ca2ef4d7c3709f66"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/Private/System.Private.DeveloperExperience.Console.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "7dcaf6a03475c60b3d9e530087d1f738a85214609aeec5d29d47b8dc05ca2595": {
+      "signature": "7dcaf6a03475c60b3d9e530087d1f738a85214609aeec5d29d47b8dc05ca2595",
+      "alternativeSignatures": [
+        "615822281835ca66077a09f621663f16be5e65db6a9ad9a4d62d02ff60f92cd4"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/Private/System.Private.Interop.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "eb26c4f806db9d5fdc007722924df367d676141d9b768d8d67d037abf8887007": {
+      "signature": "eb26c4f806db9d5fdc007722924df367d676141d9b768d8d67d037abf8887007",
+      "alternativeSignatures": [
+        "fa5bd42209272109b2e2505ca0bd6d4485dee4abb0ec137330062feceb189ea3"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/Private/System.Private.Reflection.Core.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "2801478c03cacb5b583c5ba6598a62e2632a0c1b38e1d0a780cb26351fb7477d": {
+      "signature": "2801478c03cacb5b583c5ba6598a62e2632a0c1b38e1d0a780cb26351fb7477d",
+      "alternativeSignatures": [
+        "0356f94d5f3f3b01729c0f5b8951b38d50fe6edf1a6a1a2a32ceddc851aa80e7"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/Private/System.Private.Reflection.Execution.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "e7312aa4e57e0d4315180ab01bfb24ec9d121d7eab81ed28ecf79447d48e36e7": {
+      "signature": "e7312aa4e57e0d4315180ab01bfb24ec9d121d7eab81ed28ecf79447d48e36e7",
+      "alternativeSignatures": [
+        "3ac92460be5dd6e43860bd1448c9bd2028419d92aae8f1a2d50b9334fc0ab9c7"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/Private/System.Private.Reflection.Metadata.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "8eb628ac1181bac1a45fbc48e87b5fa00e3368b3f74d551dc7019fcdc6909054": {
+      "signature": "8eb628ac1181bac1a45fbc48e87b5fa00e3368b3f74d551dc7019fcdc6909054",
+      "alternativeSignatures": [
+        "93406b2f361ea5508b8b4d418893e9ce7be253fc3730e279fdcb02d2e4d2eabd"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/Private/System.Private.StackTraceGenerator.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "50cfc0729e82851a2d6295a2d2f4b75de57ee80ba92a613b1b52319fdb98abbd": {
+      "signature": "50cfc0729e82851a2d6295a2d2f4b75de57ee80ba92a613b1b52319fdb98abbd",
+      "alternativeSignatures": [
+        "c3f5495a55e124b4c0034018ba6973246a735dd413df25b080842faa51d4cbdc"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/Private/System.Private.StackTraceMetadata.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "60ea45bae7ea4d8ad7e8d7ad3f6f92cb5ebf2476ba2e25f0da99689c9ce603e6": {
+      "signature": "60ea45bae7ea4d8ad7e8d7ad3f6f92cb5ebf2476ba2e25f0da99689c9ce603e6",
+      "alternativeSignatures": [
+        "d74965467428284d16ac7e64e9b4d9627073cedb367f3eb6876a68d5d19f7a7a"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/Private/System.Private.Threading.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "047abae20775d05ac53c014396aa46e098c94b70f4a19030956a0bcf0f9e1766": {
+      "signature": "047abae20775d05ac53c014396aa46e098c94b70f4a19030956a0bcf0f9e1766",
+      "alternativeSignatures": [
+        "b28b37cfddbf6e8f1a0250fca25d626fc6ac3c66af0aa775b9934ace95a2a6d3"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/Private/System.Private.TypeLoader.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "487105c928a1f8635966c7320e94826fa28414a2829b25f7071089d28fb21999": {
+      "signature": "487105c928a1f8635966c7320e94826fa28414a2829b25f7071089d28fb21999",
+      "alternativeSignatures": [
+        "b7e2dcf4cccdb3d0bdd96833b7a745b15b7af26d26983b3c48c828a0b6cd149d"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/Private/System.Private.WinRTInterop.CoreLib.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "adf2d378bb5a28a6161993e528c1bfcc2f82237240693f1e92b9ddc2502fa09d": {
+      "signature": "adf2d378bb5a28a6161993e528c1bfcc2f82237240693f1e92b9ddc2502fa09d",
+      "alternativeSignatures": [
+        "280d5e3991214c19c5da94277e68e9c96cc16e9f3ef8af1de8191e0906a0faf1"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/PrivateWin32/System.Private.CoreLib.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "5ec51d0d6b815286f499815107b1c8582f63457d87b58fa2b34e640228742ba0": {
+      "signature": "5ec51d0d6b815286f499815107b1c8582f63457d87b58fa2b34e640228742ba0",
+      "alternativeSignatures": [
+        "421dff1b6f23d69f6b82d987adb868036ed383fc1ad355115190036a7b4f3c63"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/PrivateWin32/System.Private.Interop.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "19b136bce21ae96fd0caf0cbaa6475f65e804cab86f28fdc6120546ab194781e": {
+      "signature": "19b136bce21ae96fd0caf0cbaa6475f65e804cab86f28fdc6120546ab194781e",
+      "alternativeSignatures": [
+        "69d752bb68190b441c4c8096bfcaa6b8134891a6013bd9b5a50db4e944e5b253"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/PrivateWin32/System.Private.Reflection.Core.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "5b73553e2eb3e79653686486450103db32c4531ef9db6437674c86b1cb54bcb4": {
+      "signature": "5b73553e2eb3e79653686486450103db32c4531ef9db6437674c86b1cb54bcb4",
+      "alternativeSignatures": [
+        "15667cd2ae427fd558228148519b3d1a1d2d425291413a12dc085b1600073a6d"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/PrivateWin32/System.Private.Reflection.Execution.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "0530db706096482b276ac61f779ecc1993808aa3fed170b0f15e3bfc5341fae3": {
+      "signature": "0530db706096482b276ac61f779ecc1993808aa3fed170b0f15e3bfc5341fae3",
+      "alternativeSignatures": [
+        "25047c33338e0680a39814aa4a1ae34c261667addea1a2da870271e360f1f7aa"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/PrivateWin32/System.Private.TypeLoader.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "eb399ec341a52adaa8e2c73529956ada83cd479c97d76a33ea9dd199ec932b58": {
+      "signature": "eb399ec341a52adaa8e2c73529956ada83cd479c97d76a33ea9dd199ec932b58",
+      "alternativeSignatures": [
+        "4c683998df8730561ce3d81cb755c8131c1c027fc22b0c070f71daf57593dc53"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/Lib/Runtime/mrt100_app.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "e4e04cec077adf67a37f5b382e0e31a8e14b1bb5a35d22cb9439e9ef3be2ae3c": {
+      "signature": "e4e04cec077adf67a37f5b382e0e31a8e14b1bb5a35d22cb9439e9ef3be2ae3c",
+      "alternativeSignatures": [
+        "0bd7a3672266165a845cf7bf6847e8e3d3201ffd2b183d030aec292bc764073a"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/tools/link/link.exe",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "4f4da296615e7e6c6c728316c7328a11c29b17d4b7b9764a0301279e4fadb628": {
+      "signature": "4f4da296615e7e6c6c728316c7328a11c29b17d4b7b9764a0301279e4fadb628",
+      "alternativeSignatures": [
+        "26b6558054da528f0a2aede8f4a2366619ca774cdc40ff0b1f4e1e59735f87b0"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/tools/link/link.exe",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2008",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "dc826b1f538277999bf0ff8f95b274d68fd017c3051f41119531bdb09c934793": {
+      "signature": "dc826b1f538277999bf0ff8f95b274d68fd017c3051f41119531bdb09c934793",
+      "alternativeSignatures": [
+        "1503178718fdb9767b4949341396aa6182562b6bf1d0f79da43a2f973c1d3dee"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/tools/link/link.exe",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2024",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "dc7e375ed7280737e4070a1fd0e1ff7af18e5d01be7522e18e879109899ab737": {
+      "signature": "dc7e375ed7280737e4070a1fd0e1ff7af18e5d01be7522e18e879109899ab737",
+      "alternativeSignatures": [
+        "681754d58a8b4850b6481fb2edb7b63c64092268b8ac63bfd94486e61300a339"
+      ],
+      "target": "packages/runtime.win10-arm64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/arm64/ilc/tools/link/link.exe",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2025",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "70d79b743d5981cdaeae1707710b6f05e939e41e737044dabf87bc491c33af14": {
+      "signature": "70d79b743d5981cdaeae1707710b6f05e939e41e737044dabf87bc491c33af14",
+      "alternativeSignatures": [
+        "6df04763b7d012ee287cb22a5fae798e69fcc998fec1aae25029c32a7b12d758"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/Private/System.Private.CoreLib.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "8cda23a16184c2afcfc9ccd08ac6674f87e706246f3e32e3c8771e73bb1e6b96": {
+      "signature": "8cda23a16184c2afcfc9ccd08ac6674f87e706246f3e32e3c8771e73bb1e6b96",
+      "alternativeSignatures": [
+        "1c302bca460cd0c91cce2dbb2e55e9d6274d9b3ad0e885b128aa1c362690928c"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/Private/System.Private.Debug.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "ed7e37dc79f4d4e17fd108253ed91614bac88a5e6767ae7c3ddb0dec705fd2f4": {
+      "signature": "ed7e37dc79f4d4e17fd108253ed91614bac88a5e6767ae7c3ddb0dec705fd2f4",
+      "alternativeSignatures": [
+        "204795b06b281c0255d439c25d611bc529e80c8e2f85a8ae3e2ecc4bd8baa9dc"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/Private/System.Private.DeveloperExperience.AppX.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "a36cb143123bdecd4d68f3f1fedda16d6ba9142f16071b7876c0633fe867d9b8": {
+      "signature": "a36cb143123bdecd4d68f3f1fedda16d6ba9142f16071b7876c0633fe867d9b8",
+      "alternativeSignatures": [
+        "3f882ed1bce9d264c2630a31a90ba45f20d446bd5b4718ffdc759b38b692f624"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/Private/System.Private.DeveloperExperience.Console.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "5ff5d4ec5e8fa22b4b42ebec9bf6a46b41838c33172a0e67ad28519d931e85ef": {
+      "signature": "5ff5d4ec5e8fa22b4b42ebec9bf6a46b41838c33172a0e67ad28519d931e85ef",
+      "alternativeSignatures": [
+        "5f7a4a9e20a18ce7f5af00e4483e71efc712143bddd4fe25154949317828335e"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/Private/System.Private.Interop.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "abc4090d9223f201bd8ff4a4daa2389617dddd2872659b7c74ff3cc25e3d0fcc": {
+      "signature": "abc4090d9223f201bd8ff4a4daa2389617dddd2872659b7c74ff3cc25e3d0fcc",
+      "alternativeSignatures": [
+        "71562503c0810aa671476c472e6294c23a89bdd5c413cb7c7dc1e57cd3b3a7c6"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/Private/System.Private.Reflection.Core.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "ba3aa937f9de1b00988ec46d7ddeba5078deb4c44caecb755038c648262387ac": {
+      "signature": "ba3aa937f9de1b00988ec46d7ddeba5078deb4c44caecb755038c648262387ac",
+      "alternativeSignatures": [
+        "9b8717d0cff6583a7c926efa24c95330e885c092562993133def9e519d0c7d40"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/Private/System.Private.Reflection.Execution.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "862ae029520cc9a161e95558cfec070d6d3aceb7c0067f865e3e871693668b0a": {
+      "signature": "862ae029520cc9a161e95558cfec070d6d3aceb7c0067f865e3e871693668b0a",
+      "alternativeSignatures": [
+        "dcac6d83f58729829c3220d89fd7939753a1bb2a5afee061eba08e0857404641"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/Private/System.Private.Reflection.Metadata.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "6b13bd4055211c3102b46e0f311cfb8e60ab0239465da1cc98202934ff2a71bd": {
+      "signature": "6b13bd4055211c3102b46e0f311cfb8e60ab0239465da1cc98202934ff2a71bd",
+      "alternativeSignatures": [
+        "e17a93ff3a1860e8169406e8f3b2ffc9c8b73e9b8f1d208b0c42a51981184d27"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/Private/System.Private.StackTraceGenerator.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "4f069a574a019721b3aca862e152ed2f2d7617462c53b124f417cedd9a9955ad": {
+      "signature": "4f069a574a019721b3aca862e152ed2f2d7617462c53b124f417cedd9a9955ad",
+      "alternativeSignatures": [
+        "9a77d1dc8d60f556e5ce4650c07639e9c497afa78c81a4957cf45c033b940c5d"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/Private/System.Private.StackTraceMetadata.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "3eeaae035b4ba524af03e4ad56910178725e4c39e46f4cff8b91ef6b79535fda": {
+      "signature": "3eeaae035b4ba524af03e4ad56910178725e4c39e46f4cff8b91ef6b79535fda",
+      "alternativeSignatures": [
+        "0e60f84157c1759f16efc2b57e511cc2dde7a42606a89a54ff468d0e1cd67a6e"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/Private/System.Private.Threading.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "d951dd1ab2bd0f62b6cbc013139bc45ad8df0e7af104dd7473f3d482e0a25183": {
+      "signature": "d951dd1ab2bd0f62b6cbc013139bc45ad8df0e7af104dd7473f3d482e0a25183",
+      "alternativeSignatures": [
+        "23fc3fb58933b757bc9c4aea702748bcac0ca72792505d1f2c6c4fa077965638"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/Private/System.Private.TypeLoader.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "2e65bdb9a79d7ea07530ee961aca9c72e7016c2d58707ece2c2e2de3fe404344": {
+      "signature": "2e65bdb9a79d7ea07530ee961aca9c72e7016c2d58707ece2c2e2de3fe404344",
+      "alternativeSignatures": [
+        "180435dc528f4d112c9a4ff14b46364bbfd3dd863ce8c8785d079e785ef7c369"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/Private/System.Private.WinRTInterop.CoreLib.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "a1ab685f56e9f409919cc37ccafa7379b9f5815bfe34e38a8a73b54a99d7eeaa": {
+      "signature": "a1ab685f56e9f409919cc37ccafa7379b9f5815bfe34e38a8a73b54a99d7eeaa",
+      "alternativeSignatures": [
+        "92c64f595208e9addd0e9b306590936f1c9940f7eb1819e750eedbd80ca02a03"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/PrivateWin32/System.Private.CoreLib.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "072d6a229eeb7998acfcd48d975dfafdbda06e4d30f0f4a180a0d530a2cdcc60": {
+      "signature": "072d6a229eeb7998acfcd48d975dfafdbda06e4d30f0f4a180a0d530a2cdcc60",
+      "alternativeSignatures": [
+        "c40b801b4a861a7431dd74f9cd6a1698baefae246de9574a2d1d6209821252c5"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/PrivateWin32/System.Private.Interop.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "ba5279cbe225d67536c8f8ed9f7d7d90914f5d1e557b86b3eddb367f214d2d30": {
+      "signature": "ba5279cbe225d67536c8f8ed9f7d7d90914f5d1e557b86b3eddb367f214d2d30",
+      "alternativeSignatures": [
+        "a98dd78446ee395b9e62ff2996db2c6d016c649fa5db06d419c9d29702aa5d64"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/PrivateWin32/System.Private.Reflection.Core.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "852a9d654ebe82849efd3c689c4d63d7ba5cbb8203c1c6367070f0380fab1c4e": {
+      "signature": "852a9d654ebe82849efd3c689c4d63d7ba5cbb8203c1c6367070f0380fab1c4e",
+      "alternativeSignatures": [
+        "6530f3b91caec8ec26935b4b09751cacb397242ee2cb89e13cf7803f93351f41"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/PrivateWin32/System.Private.Reflection.Execution.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "3a8fd509358e0a3091db07d8259c72b03bb703b6b69953892fb64c709af35217": {
+      "signature": "3a8fd509358e0a3091db07d8259c72b03bb703b6b69953892fb64c709af35217",
+      "alternativeSignatures": [
+        "f74c3ef58c3fb7dd43cdc3aa4ec2cef45fab632eafc66551a94d6ea83f623a56"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/PrivateWin32/System.Private.TypeLoader.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "31505762e3deb1750c90715d2ac41bc7e7f4c0c98a3eb7ab2a054518ba21613d": {
+      "signature": "31505762e3deb1750c90715d2ac41bc7e7f4c0c98a3eb7ab2a054518ba21613d",
+      "alternativeSignatures": [
+        "d5feda4d24a3d0fbf74d053597a957d0b7ef91ca0fd8cbc5c30a388055169b2f"
+      ],
+      "target": "packages/runtime.win10-x64.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x64/ilc/Lib/Runtime/mrt100_app.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "a9718479d8df819fa9f7fb1286975c178723230e1e0d747de53729895bd04c25": {
+      "signature": "a9718479d8df819fa9f7fb1286975c178723230e1e0d747de53729895bd04c25",
+      "alternativeSignatures": [
+        "4609b6d25b2da1e28ea6a9a44c38a4e3d3c25c7fbfb001aaa6f903b96393b338"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/Private/System.Private.CoreLib.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "42ce452ea6fd3937671d544353e212eb11b5fbb3e8b19a922b4cce5a816fce9b": {
+      "signature": "42ce452ea6fd3937671d544353e212eb11b5fbb3e8b19a922b4cce5a816fce9b",
+      "alternativeSignatures": [
+        "a864f7b3701f3b611f215f85c74802eebdf686690574c6ace7cb748dd7899015"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/Private/System.Private.Debug.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "f98d8ed2a4008b8e24e2b25f204338ca22a93b0f996bfda784768b8f4cbe94ae": {
+      "signature": "f98d8ed2a4008b8e24e2b25f204338ca22a93b0f996bfda784768b8f4cbe94ae",
+      "alternativeSignatures": [
+        "af49fb6e30f6999275286ec04f70dcdcffc8204a0b522b2935fd9ffb836cfb80"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/Private/System.Private.DeveloperExperience.AppX.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "22562b2ea22450a9dc28035c9faec601170ec3131d93f9ff299d1733c352d561": {
+      "signature": "22562b2ea22450a9dc28035c9faec601170ec3131d93f9ff299d1733c352d561",
+      "alternativeSignatures": [
+        "f55468d9d34bfa6ca8ddd6c584eb518e77ac7c27608645fbfc86d2ffb256f99d"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/Private/System.Private.DeveloperExperience.Console.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "6ca5e43b830854e5caa46ece9ab73873145bca25c33c0b30d04fa220a1e0c119": {
+      "signature": "6ca5e43b830854e5caa46ece9ab73873145bca25c33c0b30d04fa220a1e0c119",
+      "alternativeSignatures": [
+        "929fcafdb68eb6d5dc29b5e7eb139f041dd31d356eb6035f995c9289d759a2eb"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/Private/System.Private.Interop.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "0863c9b7835b7b0f6534fa4e8efcef8daf8170ac2d527148c4b770579ac511e5": {
+      "signature": "0863c9b7835b7b0f6534fa4e8efcef8daf8170ac2d527148c4b770579ac511e5",
+      "alternativeSignatures": [
+        "fb4051d150ad06cc476aa0e508db12872c5ea667d65d0418b7898a885898cbf1"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/Private/System.Private.Reflection.Core.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "63482f4fd4c91190b8eeceb29a9d8f6a92dd41049f9f5358e4d1fc759f16c27a": {
+      "signature": "63482f4fd4c91190b8eeceb29a9d8f6a92dd41049f9f5358e4d1fc759f16c27a",
+      "alternativeSignatures": [
+        "fe950aac98d8f3b5bd34db682fff2ffa6b146de1ca151bd02b81b43fc48aea43"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/Private/System.Private.Reflection.Execution.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "e4829a4249483805130aa598203da748c54818237bb4855f223bf0a20135a660": {
+      "signature": "e4829a4249483805130aa598203da748c54818237bb4855f223bf0a20135a660",
+      "alternativeSignatures": [
+        "73a3209e0a7cb0d01b58af1d287e0b8c43a2249f7045fb376e1fa6db528b6c9f"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/Private/System.Private.Reflection.Metadata.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "d1031d47efe2fad1038b41ad35c630cadc19f839ef329d7eda940240076670f2": {
+      "signature": "d1031d47efe2fad1038b41ad35c630cadc19f839ef329d7eda940240076670f2",
+      "alternativeSignatures": [
+        "0f201798125b060532b0ae1a3b0aa8e8978af85ded9fa0ad448f2d9e5078e6b1"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/Private/System.Private.StackTraceGenerator.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "a71d5a1b400eb42a98718c34ddd4fc93ecd379c22eda8557409ed7c6753a1dd3": {
+      "signature": "a71d5a1b400eb42a98718c34ddd4fc93ecd379c22eda8557409ed7c6753a1dd3",
+      "alternativeSignatures": [
+        "4ce565230141bec91aa0e67348c92f9be3f158b32be50e4f7fe592ac9e429bd9"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/Private/System.Private.StackTraceMetadata.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "0e80b9126b9bf8c20eec4e0d9c7eb480f2d96035fbe31e45996738bf9bb110d5": {
+      "signature": "0e80b9126b9bf8c20eec4e0d9c7eb480f2d96035fbe31e45996738bf9bb110d5",
+      "alternativeSignatures": [
+        "1ebbac185a33599689d8f780797766f4ccdd3a2aaab2d2fe9ce872a724f8937c"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/Private/System.Private.Threading.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "a009d13bc6328d79a1e42665f9f5071dd1022fad32a2e6ce8f1a62d1bcd0070a": {
+      "signature": "a009d13bc6328d79a1e42665f9f5071dd1022fad32a2e6ce8f1a62d1bcd0070a",
+      "alternativeSignatures": [
+        "0ebca1d90b4df128181d3f92e610ca19664fcdeace9332f6be9c111acc4466b1"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/Private/System.Private.TypeLoader.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "10b498ea9a880f414c22a5f21f3f3735566aa7aebf35efda898f33b74604345b": {
+      "signature": "10b498ea9a880f414c22a5f21f3f3735566aa7aebf35efda898f33b74604345b",
+      "alternativeSignatures": [
+        "b21926e1b3b2f3b340cb28ec15cd5a777c1aa29ac8d48277f7ca2122597ab821"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/Private/System.Private.WinRTInterop.CoreLib.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "53d4a3f20e9e582cbc1c39817262a2fdbef195ce647afd41b47d08a825ec778e": {
+      "signature": "53d4a3f20e9e582cbc1c39817262a2fdbef195ce647afd41b47d08a825ec778e",
+      "alternativeSignatures": [
+        "1ab5bad48174092d616eced6f104f468e7bb5205567fd50702b1bd235bf3b624"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/PrivateWin32/System.Private.CoreLib.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "67fbb1f4c0a20bb4df4dcb298b5359ae9e566d0e0791314195fca962c0177d9c": {
+      "signature": "67fbb1f4c0a20bb4df4dcb298b5359ae9e566d0e0791314195fca962c0177d9c",
+      "alternativeSignatures": [
+        "1dc0b13cbc069cb87c69bc94046539c79f2a156a39302441d7af21e5375c5080"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/PrivateWin32/System.Private.Interop.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "d0e329df13db8a1229b41418d6c0ba6ddb2b9b38f7507d95c1bd77ac3db44c6b": {
+      "signature": "d0e329df13db8a1229b41418d6c0ba6ddb2b9b38f7507d95c1bd77ac3db44c6b",
+      "alternativeSignatures": [
+        "614741db90ad51bb0727461f30a2b182bd624cb61e1e5e5f7dac605065eedc50"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/PrivateWin32/System.Private.Reflection.Core.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "1c38d6e10e8f93fcc52e85abe0402f4fb4208eeddfcf1301f443435350b39bfd": {
+      "signature": "1c38d6e10e8f93fcc52e85abe0402f4fb4208eeddfcf1301f443435350b39bfd",
+      "alternativeSignatures": [
+        "09df2b5294f9aadbb10c32f40acbde5d86b63e08928df0b221ec7ec36f60933c"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/PrivateWin32/System.Private.Reflection.Execution.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "b5c1bf4861a761f01caea4d48585f0a0a1e5b1f2cae94fae900c6263f23a5cc0": {
+      "signature": "b5c1bf4861a761f01caea4d48585f0a0a1e5b1f2cae94fae900c6263f23a5cc0",
+      "alternativeSignatures": [
+        "d9dd2fc04f35b507b0e51508ab37e8449be6c36fbed3cc8d3fb0c864ccc28b12"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/PrivateWin32/System.Private.TypeLoader.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "16ffdb24cc1769d9c7d897589c2bc8fd3306720b95b8cfaeac4bf202be5fcf09": {
+      "signature": "16ffdb24cc1769d9c7d897589c2bc8fd3306720b95b8cfaeac4bf202be5fcf09",
+      "alternativeSignatures": [
+        "d70b28ddf70dc9aa79fd3b3fb437cd33eeeb82349986416718dd9894762aa553"
+      ],
+      "target": "packages/runtime.win10-x86.microsoft.net.native.compiler/2.2.8-rel-28605-00/tools/x86/ilc/Lib/Runtime/mrt100_app.dll",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2023-04-24 23:45:57Z",
+      "expirationDate": null,
+      "type": null
+    }
+  }
+}

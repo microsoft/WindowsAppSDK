@@ -17,4 +17,6 @@
 #include <WindowsAppRuntime.Test.Package.h>
 #include <WindowsAppRuntime.Test.Bootstrap.h>
 
+HRESULT RegisterDVCPluginIfNeeded();
+
 #endif //PCH_H

@@ -15,7 +15,6 @@
     <TargetPlatformName>Windows</TargetPlatformName>
     <CreateInPlace>true</CreateInPlace>
     <PreviewImage>WinUI.Desktop.CppWinRT.SingleProjectPackagedApp.png</PreviewImage>
-    <AppIdFilter>blend</AppIdFilter>
     <PromptForSaveOnCreation>true</PromptForSaveOnCreation>
     <LanguageTag>cpp</LanguageTag>
     <LanguageTag>XAML</LanguageTag>

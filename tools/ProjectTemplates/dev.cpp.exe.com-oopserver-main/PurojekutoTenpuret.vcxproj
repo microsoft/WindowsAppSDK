@@ -136,6 +136,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PurojekutoTenpuret-Constants.h" />
+    <ClInclude Include="PurojekutoTenpuret-Override.h" />
     <ClInclude Include="PurojekutoTenpuretActivity.h" />
     <ClInclude Include="PurojekutoTenpuretTraceLogging.h" />
   </ItemGroup>

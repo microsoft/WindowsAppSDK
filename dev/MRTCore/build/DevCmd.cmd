@@ -7,7 +7,8 @@ set PrereleaseArg=
 
 setlocal enableextensions enabledelayedexpansion
 set _ARGS=
-set VsVersion=2019
+rem Try to fall back to the original value, 2019, if the value 2022 run into issues.
+set VsVersion=2022
 if exist %temp%\WinUI.PreserveContext.marker del %temp%\WinUI.PreserveContext.marker
 :ParseArgs
 if "%1" EQU "" (

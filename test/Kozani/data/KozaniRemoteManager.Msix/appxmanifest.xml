@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
+  xmlns:desktop4="http://schemas.microsoft.com/appx/manifest/desktop/windows10/4"  
+  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap uap3 uap5 desktop4 com rescap">
+
+  <Identity
+    Name="KozaniRemoteManager"
+    Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+    Version="1.0.0.0" />
+
+  <Properties>
+    <DisplayName>KozaniRemoteManager for tests</DisplayName>
+    <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
+    <Logo>Assets\logo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+    <!--<PackageDependency Name="Microsoft.VCLibs.140.00.UWPDesktop" MinVersion="14.0.30035.0" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" />-->
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en"/>
+  </Resources>
+
+  <Applications>
+    <Application Id="LauncherApp"
+      Executable="KozaniRemoteManagerLauncher.exe"
+      EntryPoint="Windows.FullTrustApplication"
+      desktop4:SupportsMultipleInstances="true">
+      <uap:VisualElements
+        DisplayName="KozaniRemoteManagerLauncher"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png"
+        Description="KozaniRemoteManagerLauncher"
+        BackgroundColor="transparent">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
+        <uap:SplashScreen Image="Assets\SplashScreen.png" uap5:Optional="true"/>
+      </uap:VisualElements>
+      <Extensions>
+        <uap5:Extension Category="windows.appExecutionAlias">
+          <uap5:AppExecutionAlias desktop4:Subsystem="console">
+            <uap5:ExecutionAlias Alias="KozaniRemoteManagerLauncher.exe" />
+          </uap5:AppExecutionAlias>
+        </uap5:Extension>
+      </Extensions>
+    </Application>
+
+    <Application Id="APIServer"
+      Executable="KozaniRemoteManager.exe"
+      EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="KozaniRemoteManager"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png"
+        Description="KozaniRemoteManager"
+        BackgroundColor="transparent">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
+        <uap:SplashScreen Image="Assets\SplashScreen.png" uap5:Optional="true"/>
+      </uap:VisualElements>
+      <Extensions>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="KozaniRemoteManager.exe" DisplayName="KozaniRemoteManager API server">
+              <com:Class Id="17b65d52-f4a5-4ea6-9e62-031168b05017" DisplayName="KozaniRemoteManager API server"/>
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+        <com:Extension Category="windows.comInterface">
+          <com:ComInterface>
+            <!--Proxy stub's CLSID is the same as the IID of the FIRST interface in the IDL-->
+            <com:ProxyStub Id="30599ceb-631f-468f-bdd6-febc5bb12b81" DisplayName="KozaniRemoteManager ProxyStub" Path="KozaniRemoteManagerProxyStub.dll"/>
+            <com:Interface Id="30599ceb-631f-468f-bdd6-febc5bb12b81" ProxyStubClsid="30599ceb-631f-468f-bdd6-febc5bb12b81"/><!-- IID_IKozaniRemoteManager -->
+          </com:ComInterface>
+        </com:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+  
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>
