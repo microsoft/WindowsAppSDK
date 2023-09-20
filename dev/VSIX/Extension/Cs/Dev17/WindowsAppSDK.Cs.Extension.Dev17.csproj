@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="Current">
+<Project ToolsVersion="Current">
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
@@ -39,9 +39,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="@(ContentNugetPackages)">
+    <ExtensionDependencies Include="$(PkgNuget_VisualStudio)\**\NuGet.VisualStudio.dll" />
+    <Content Include="@(ExtensionDependencies)">
+      <VSIXSubPath>.</VSIXSubPath>
       <IncludeInVSIX>true</IncludeInVSIX>
-      <VSIXSubPath>Packages</VSIXSubPath>
     </Content>
     <Content Include="$(ExtensionDir)WindowsAppSDK.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -61,14 +62,13 @@
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.3.32804.24" ExcludeAssets="runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.TemplateWizardInterface" Version="17.5.33428.366" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="NuGet.VisualStudio" Version="17.6.1" GeneratePathProperty="true" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.4.2118">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="[$(WindowsAppSDKVersion)]" GeneratePathProperty="true">
-      <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="[$(WindowsSDKBuildToolsVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>

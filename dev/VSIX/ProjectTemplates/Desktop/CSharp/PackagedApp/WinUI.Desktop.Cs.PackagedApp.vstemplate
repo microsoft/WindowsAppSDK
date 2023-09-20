@@ -1,37 +1,37 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="ProjectGroup">
-  <TemplateData>
-    <Name ID="1029" Package="FIXME-PACKAGEGUID" />
-    <Description ID="1031" Package="FIXME-PACKAGEGUID" />
-    <Icon>WinUI.Desktop.Cs.PackagedApp.ico</Icon>
-    <TemplateID>Microsoft.WinUI.Desktop.Cs.PackagedApp</TemplateID>
-    <TemplateGroupID>WinRT-Managed</TemplateGroupID>
-    <ProjectType>CSharp</ProjectType>
-    <CreateNewFolder>false</CreateNewFolder>
-    <DefaultName>App</DefaultName>
-    <ProvideDefaultName>true</ProvideDefaultName>
-    <LocationField>Enabled</LocationField>
-    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
-    <NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
-    <TargetPlatformName>Windows</TargetPlatformName>
-    <CreateInPlace>true</CreateInPlace>
-    <PreviewImage>WinUI.Desktop.Cs.PackagedApp.png</PreviewImage>
-    <PromptForSaveOnCreation>true</PromptForSaveOnCreation>
-    <LanguageTag>csharp</LanguageTag>
-    <LanguageTag>XAML</LanguageTag>
-    <PlatformTag>windows</PlatformTag>
-    <ProjectTypeTag>desktop</ProjectTypeTag>
-    <ProjectTypeTag>WinUI</ProjectTypeTag>
-  </TemplateData>
-  <TemplateContent PreferedSolutionConfiguration="Debug|x86">
-    <CustomParameters>
-      <CustomParameter Name="$WindowsAppSDKNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <CustomParameter Name="$WindowsSDKBuildToolsNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <CustomParameter Name="$DotNetVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries"/>
-    </CustomParameters>
-    <ProjectCollection>
-      <ProjectTemplateLink ProjectName="$projectname$ (Package)" CopyParameters="true">WapProj\WinUI.Desktop.Cs.WapProj.vstemplate</ProjectTemplateLink>
-      <ProjectTemplateLink ProjectName="$projectname$" CopyParameters="true">BlankApp\WinUI.Desktop.Cs.BlankApp.vstemplate</ProjectTemplateLink>
-    </ProjectCollection>
-  </TemplateContent>
+    <TemplateData>
+        <Name ID="1029" Package="FIXME-PACKAGEGUID" />
+        <Description ID="1031" Package="FIXME-PACKAGEGUID" />
+        <Icon>WinUI.Desktop.Cs.PackagedApp.ico</Icon>
+        <TemplateID>Microsoft.WinUI.Desktop.Cs.PackagedApp</TemplateID>
+        <TemplateGroupID>WinRT-Managed</TemplateGroupID>
+        <ProjectType>CSharp</ProjectType>
+        <CreateNewFolder>false</CreateNewFolder>
+        <DefaultName>App</DefaultName>
+        <ProvideDefaultName>true</ProvideDefaultName>
+        <LocationField>Enabled</LocationField>
+        <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+        <NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
+        <TargetPlatformName>Windows</TargetPlatformName>
+        <CreateInPlace>true</CreateInPlace>
+        <PreviewImage>WinUI.Desktop.Cs.PackagedApp.png</PreviewImage>
+        <PromptForSaveOnCreation>true</PromptForSaveOnCreation>
+        <LanguageTag>csharp</LanguageTag>
+        <LanguageTag>XAML</LanguageTag>
+        <PlatformTag>windows</PlatformTag>
+        <ProjectTypeTag>desktop</ProjectTypeTag>
+        <ProjectTypeTag>WinUI</ProjectTypeTag>
+    </TemplateData>
+    <TemplateContent PreferedSolutionConfiguration="Debug|x86">
+        <CustomParameters>
+            <CustomParameter Name="$WindowsAppSDKNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
+            <CustomParameter Name="$WindowsSDKBuildToolsNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
+            <CustomParameter Name="$DotNetVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries"/>
+        </CustomParameters>
+        <ProjectCollection>
+            <ProjectTemplateLink ProjectName="$projectname$ (Package)" CopyParameters="true">WapProj\WinUI.Desktop.Cs.WapProj.vstemplate</ProjectTemplateLink>
+            <ProjectTemplateLink ProjectName="$projectname$" CopyParameters="true">BlankApp\WinUI.Desktop.Cs.BlankApp.vstemplate</ProjectTemplateLink>
+        </ProjectCollection>
+    </TemplateContent>
 </VSTemplate>
