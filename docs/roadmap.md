@@ -43,11 +43,17 @@ Headline features for this release include:
 A list of 1.2 features, aimed to ship near the end of 2022, will be shared in a future roadmap update.
 
 ### Features by release
+
 Legend:
+
 &#128994; - Available as supported feature
+
 &#128311; - Available as experimental feature  
+
 Blank -  Not available
+
 **WinUI 3 - Windows App SDK 1.3** is our latest release.
+
 | Customer Capability | Project Reunion 0.5 <br/>(March 2021) | Windows App SDK 0.8 <br/>(June 2021) | Windows App SDK 1.0 <br/> (November 2021) | Windows App SDK 1.1 <br/> (June 2022) | Windows App SDK 1.2 <br/> (November 2022) | Windows App SDK 1.3 <br/> (April 2023)
 | ------------------- | --------------------------------                | ------------------------------- | ----------------------------- | -----| ----- | ----- |
 | Supported in any app using the Windows App SDK                        | &#128994;          | &#128994;          | &#128994;      | &#128994;     | &#128994; | &#128994;
