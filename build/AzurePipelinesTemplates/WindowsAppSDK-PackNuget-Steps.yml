@@ -157,7 +157,7 @@ steps:
   displayName: MoveToOutputDirectory
   inputs:
     SourceFolder: '$(build.artifactStagingDirectory)\FullNuget'
-    TargetFolder: '$(ob_outputDirectory)\TransportPackage'
+    TargetFolder: '$(ob_outputDirectory)'
 
 - ${{ if not( parameters.IsOneBranch ) }}:
   - task: PublishBuildArtifacts@1
@@ -171,7 +171,7 @@ steps:
     displayName: 'NuGet push to ProjectReunion.nuget.internal'
     inputs:
       command: 'push'
-      packagesToPush: '$(ob_outputDirectory)\TransportPackage\*.nupkg'
+      packagesToPush: '$(ob_outputDirectory)\*.nupkg'
       verbosityPush: 'Detailed'
       nuGetFeedType: 'internal'
       #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
