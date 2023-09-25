@@ -7,7 +7,7 @@ steps:
 - task: UseDotNet@2
   displayName: Use .NET Core SDK 6
   inputs:
-    useGlobalJson: 'true'
+    useGlobalJson: true
 
   # Extract the build revision number from Build.BuildNumber. This is needed to pass to build-nupkg.
   # This relies on the format of the pipeline name being of the format: $(date:yyMM).$(date:dd)$(rev:rrr)
