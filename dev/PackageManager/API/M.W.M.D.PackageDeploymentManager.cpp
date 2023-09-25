@@ -57,7 +57,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         //TODO auto logTelemetry{ PackageDeploymentTelemetry::CreateChannelAsync::Start(g_telemetryHelper, remoteId) };
 
-        auto strong = get_strong(); //TODO why?
+        auto strong = get_strong();
 
         auto cancellation{ co_await winrt::get_cancellation_token() };
         cancellation.enable_propagation(true);
@@ -145,7 +145,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         //TODO auto logTelemetry{ PackageDeploymentTelemetry::CreateChannelAsync::Start(g_telemetryHelper, remoteId) };
 
-        auto strong = get_strong(); //TODO why?
+        auto strong = get_strong(); 
 
         auto cancellation{ co_await winrt::get_cancellation_token() };
         cancellation.enable_propagation(true);
@@ -168,7 +168,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         //TODO Validate(packageSet);
 
         winrt::Windows::Management::Deployment::AddPackageOptions addOptions{ ToOptions(options) };
-#if 1
         try
         {
             AddAsync(packageUri, addOptions);
@@ -182,40 +181,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
         co_return winrt::make<PackageDeploymentResult>(
             PackageDeploymentStatus::CompletedSuccess, S_OK, true, /*TODO*/winrt::guid{});
-#else
-        try
-        {
-            auto deploymentOperation{ m_packageManager.AddPackageByUriAsync(packageUri, addOptions) };
-            deploymentOperation.get();
-            const auto deploymentResult{ deploymentOperation.GetResults() };
-            if (deploymentOperation.Status() != winrt::Windows::Foundation::AsyncStatus::Completed)
-            {
-                co_return winrt::make<PackageDeploymentResult>(
-                    PackageDeploymentStatus::CompletedSuccess, S_OK, deploymentResult.IsRegistered(), /*TODO*/winrt::guid{});
-            }
-            else if (deploymentOperation.Status() == winrt::Windows::Foundation::AsyncStatus::Error)
-            {
-                const winrt::hresult hr{ static_cast<HRESULT>(deploymentOperation.ErrorCode()) };
-                const winrt::hresult extendedHr{ deploymentResult.ExtendedErrorCode() };
-                FAIL_FAST_HR_IF_MSG(E_UNEXPECTED, SUCCEEDED(hr) && SUCCEEDED(extendedHr), "%ls", packageUri.ToString().c_str());
-                const winrt::hresult resultHr{ FAILED(hr) ? hr : extendedHr };
-                co_return winrt::make<PackageDeploymentResult>(
-                    PackageDeploymentStatus::CompletedFailure, resultHr, deploymentResult.IsRegistered(), /*TODO*/winrt::guid{});
-            }
-            else if (deploymentOperation.Status() == winrt::Windows::Foundation::AsyncStatus::Canceled)
-            {
-                THROW_WIN32_MSG(ERROR_CANCELLED, "%ls", packageUri.ToString().c_str());
-            }
-            FAIL_FAST_HR_MSG(E_UNEXPECTED, "Status:%d Uri:%ls", static_cast<int>(deploymentOperation.Status()), packageUri.ToString().c_str());
-        }
-        catch (...)
-        {
-            auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-            (void)LOG_HR_MSG(exception.code(), "%ls", packageUri.ToString().c_str());
-            co_return winrt::make<PackageDeploymentResult>(
-                PackageDeploymentStatus::CompletedFailure, exception.code(), false, /*TODO*/winrt::guid{});
-        }
-#endif
 
         //TODO logTelemetry.Stop();
     }
@@ -224,7 +189,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         //TODO auto logTelemetry{ PackageDeploymentTelemetry::CreateChannelAsync::Start(g_telemetryHelper, remoteId) };
 
-        auto strong = get_strong(); //TODO why?
+        auto strong = get_strong(); 
 
         auto cancellation{ co_await winrt::get_cancellation_token() };
         cancellation.enable_propagation(true);
