@@ -5,14 +5,9 @@ parameters:
 
 steps:
 - task: UseDotNet@2
-  displayName: Use .NET Core SDK 5
-  inputs:
-    version: 5.0.407
-
-- task: UseDotNet@2
   displayName: Use .NET Core SDK 6
   inputs:
-    version: 6.0.401
+    useGlobalJson: 'true'
 
   # Extract the build revision number from Build.BuildNumber. This is needed to pass to build-nupkg.
   # This relies on the format of the pipeline name being of the format: $(date:yyMM).$(date:dd)$(rev:rrr)
@@ -87,14 +82,6 @@ steps:
     arguments: >
       -ProductMajor "$(major)"
       -ProductMinor "$(minor)"
-
-- task: PowerShell@2
-  displayName: 'Download dotnet installer'
-  condition: or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'), eq(variables['buildPlatform'], 'arm64'))
-  inputs:
-    targetType: filePath
-    filePath: '$(Build.SourcesDirectory)\build\scripts\DownloadDotNetRuntimeInstaller.ps1'
-    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
 
 - task: PowerShell@2
   displayName: 'Download vcredist installer'

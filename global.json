@@ -1,6 +1,7 @@
 {
-  "tools": {
-    "dotnet": "6.0.406"
+  "sdk": {
+    "version": "6.0.414",
+    "rollForward": "latestMajor"
   },
   "msbuild-sdks": {
     "Microsoft.WinAppSDK.EngCommon": "1.5.230711"
