@@ -92,6 +92,14 @@ steps:
     arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
 
 - task: PowerShell@2
+  displayName: 'Download dotnet installer'
+  condition: or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'), eq(variables['buildPlatform'], 'arm64'))
+  inputs:
+    targetType: filePath
+    filePath: '$(Build.SourcesDirectory)\build\scripts\DownloadDotNetRuntimeInstaller.ps1'
+    arguments: -Platform "$(buildPlatform)" -OutputDirectory "$(build.SourcesDirectory)\packages"
+
+- task: PowerShell@2
   displayName: 'Download desktop bridge CRT'
   condition: or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64'), eq(variables['buildPlatform'], 'arm64'))
   inputs:
