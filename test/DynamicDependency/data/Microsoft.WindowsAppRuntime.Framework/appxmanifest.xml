@@ -81,6 +81,7 @@
         <InProcessServer>
             <Path>Microsoft.WindowsAppRuntime.dll</Path>
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.AddPackageOptions" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.AddPackageSetOptions" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.EnsureIsReadyOptions" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.FindPackageOptions" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageDeploymentManager" ThreadingModel="both" />
@@ -89,9 +90,10 @@
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageRuntimeManager" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageSet" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageSetItem" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageSetItemRuntimeDisposition" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageSetManager" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageSetRuntimeDisposition" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageVolume" ThreadingModel="both" />
-            <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageVolume;" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageVolumeManager" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageVolumeStatus" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.RegisterPackageOptions" ThreadingModel="both" />
