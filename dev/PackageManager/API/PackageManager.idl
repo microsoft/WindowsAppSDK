@@ -27,6 +27,7 @@ namespace Microsoft.Windows.Management.Deployment
     [contract(PackageDeploymentContract, 1)]
     enum DeploymentPriority
     {
+        // Default? Caller?
         Low,
         Normal,
         Immediate
@@ -197,26 +198,6 @@ namespace Microsoft.Windows.Management.Deployment
 
     [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
-    runtimeclass EnsureIsReadyOptions
-    {
-        EnsureIsReadyOptions();
-
-        // Options influencing deployment if/when needed
-        DeploymentProcessingModel DeploymentProcessingModel;
-        DeploymentPriority DeploymentPriority;
-
-        // ??? Additional info potentially needed for deployment operations
-        //TODO see AddPackageOptions
-        //TODO see RegisterPackageOptions
-        //TODO see StagePackageOptions
-
-        // Additional info for runtime use
-        //TODO see CreatePackageDependencyOptions
-        //TODO see AddPackageDependencyOptions
-    }
-
-    [feature(Feature_PackageManager)]
-    [contract(PackageDeploymentContract, 1)]
     enum StubPackageOption
     {
         Default,
@@ -255,6 +236,18 @@ namespace Microsoft.Windows.Management.Deployment
 
         Boolean IsLimitToExistingPackagesSupported { get; };    // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
         Boolean LimitToExistingPackages;
+    }
+
+    // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
+    [feature(Feature_PackageManager)]
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass AddPackageSetOptions
+    {
+        AddPackageSetOptions();
+
+        DeploymentProcessingModel DeploymentProcessingModel;
+        DeploymentPriority DeploymentPriority;
+        AddPackageOptions AddPackageOptions;
     }
 
     // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
@@ -319,6 +312,26 @@ namespace Microsoft.Windows.Management.Deployment
         DeploymentPriority Priority;
     }
 
+    [feature(Feature_PackageManager)]
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass EnsureIsReadyOptions
+    {
+        EnsureIsReadyOptions();
+
+        // Options influencing deployment if/when needed
+        DeploymentProcessingModel DeploymentProcessingModel;
+        DeploymentPriority DeploymentPriority;
+
+        // ??? Additional info potentially needed for deployment operations
+        //TODO see AddPackageOptions
+        //TODO see RegisterPackageOptions
+        //TODO see StagePackageOptions
+
+        // Additional info for runtime use
+        //TODO see CreatePackageDependencyOptions
+        //TODO see AddPackageDependencyOptions
+    }
+
     // The API surface is strongly consistent:
     // 1. Modification operations involving incoming packages...
     //      - <verb>PackageAsync       (string, options)
@@ -327,12 +340,21 @@ namespace Microsoft.Windows.Management.Deployment
     //      - <verb>PackageSetByIdAsync(id, options)
     //    where
     //      <verb> = Add | Register | Stage
+    //      Parameter string for...
+    //          Add      = path | uri
+    //          Register = path | uri | packagefullname | packagefamilyname
+    //          Stage    = path | uri
     // 2. Modification operations involving existing packages...
     //      - <verb>PackageAsync                   (string, options)
     //      - <verb>PackageByPackageFamilyNameAsync(string, options)
     //      - <verb>PackageByPackageFullNameAsync  (string, options)
     //    where
     //      <verb> = Deprovision | Provision | Register | Remove
+    //      Parameter string for...
+    //          Deprovision = packagefamilyname
+    //          Provision   = packagefamilyname
+    //          Register    = packagefamilyname | packagefullname | path\appxmanifest.xml | path containing appxmanifest.xml | file://path/appxmanifest.xml | file://path containing appxmanifest.xml
+    //          Remove      = packagefamilyname | packagefullname
     //
     // TODO: AppInstaller
     // TODO: Move
@@ -365,20 +387,26 @@ namespace Microsoft.Windows.Management.Deployment
 
         // Add packages
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        AddPackageAsync(String package, AddPackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         AddPackageByUriAsync(Windows.Foundation.Uri packageUri, AddPackageOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        AddPackageSetAsync(PackageSet packageSet, AddPackageOptions options);
+        AddPackageSetAsync(PackageSet packageSet, AddPackageSetOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        AddPackageSetByIdAsync(String packageSetId, AddPackageOptions options);
+        AddPackageSetByIdAsync(String packageSetId, AddPackageSetOptions options);
 
         // Remove packages
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        RemovePackageByFullNameNameAsync(String packageFullName, RemovePackageOptions options);
+        RemovePackageAsync(String package, RemovePackageOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        RemovePackageByFamilyNameNameAsync(String packageFamilyName, RemovePackageOptions options);
+        RemovePackageByFullNameAsync(String packageFullName, RemovePackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RemovePackageByFamilyNameAsync(String packageFamilyName, RemovePackageOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RemovePackageSetAsync(PackageSet packageSet, RemovePackageOptions options);
