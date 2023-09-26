@@ -127,6 +127,10 @@ namespace Test::PackageManager::Tests
         // Thus, do a *IfNecessary removal
         TP::RemovePackageIfNecessary(TPF::Red::GetPackageFullName());
     }
+    inline bool IsPackageRegistered_Red()
+    {
+        return TP::IsPackageRegistered(TPF::Red::GetPackageFullName());
+    }
 
     inline void AddPackage_Redder()
     {
@@ -145,6 +149,10 @@ namespace Test::PackageManager::Tests
         //
         // Thus, do a *IfNecessary removal
         TP::RemovePackageIfNecessary(TPF::Redder::GetPackageFullName());
+    }
+    inline bool IsPackageRegistered_Redder()
+    {
+        return TP::IsPackageRegistered(TPF::Redder::GetPackageFullName());
     }
 
     inline void AddPackage_Green()
@@ -165,6 +173,10 @@ namespace Test::PackageManager::Tests
         // Thus, do a *IfNecessary removal
         TP::RemovePackageIfNecessary(TPF::Green::GetPackageFullName());
     }
+    inline bool IsPackageRegistered_Green()
+    {
+        return TP::IsPackageRegistered(TPF::Green::GetPackageFullName());
+    }
 
     inline void AddPackage_Blue()
     {
@@ -183,6 +195,16 @@ namespace Test::PackageManager::Tests
         //
         // Thus, do a *IfNecessary removal
         TP::RemovePackageIfNecessary(TPF::Blue::GetPackageFullName());
+    }
+    inline bool IsPackageRegistered_Blue()
+    {
+        return TP::IsPackageRegistered(TPF::Blue::GetPackageFullName());
+    }
+
+    inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFullName)
+    {
+        auto package{ packageManager.FindPackageForUser(winrt::hstring(), packageFullName) };
+        return package.Status();
     }
 
     inline void SetPackageStatus(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus status)
