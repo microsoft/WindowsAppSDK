@@ -19,6 +19,7 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
 
     <NugetPackageDirectory>$(RepoRoot)\packages</NugetPackageDirectory>
+    <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>WasdkStrongNameSign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
