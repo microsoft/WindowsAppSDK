@@ -8,7 +8,6 @@ steps:
   displayName: Use .NET Core SDK 6
   inputs:
     version: 6.0.414
-    rollForward: latestMajor
 
   # Extract the build revision number from Build.BuildNumber. This is needed to pass to build-nupkg.
   # This relies on the format of the pipeline name being of the format: $(date:yyMM).$(date:dd)$(rev:rrr)
