@@ -1,87 +1,46 @@
 # MakeMSIX API in Windows App SDK
 - [1. Background](#1-background)
-- [2. Summary of existing options in relation to proposed API](#2-summary-of-existing-options-in-relation-to-proposed-API)
-- [3. Examples](#4-examples)
-    - [3.1. Packing a package](#41-packing-a-package)
-    - [3.2. Unbundling and unpacking a package to change information](#32-unbundling-and-unpacking-a-package-to-change-information)
-    - [3.3. Helper methods for examples](#33-helper-methods-for-examples) 
-- [4. API Details](#4-API-details)
-- [5. Appendix](#5-Appendix)
-- [6. Existing interfaces and options](#6-existing-interfaces-and-options)
-  - [6.1. Makeappx](#61-makeappx)
-    - [6.1.1. pack](#611-pack)
-    - [6.1.2. bundle](#612-bundle)
-    - [6.1.3. unpack](#613-unpack)
-    - [6.1.4. unbundle](#614-unbundle)
-  - [6.2. Makemsix](#62-makemsix)
-    - [6.2.1. pack](#621-pack)
-    - [6.2.2. bundle](#622-bundle)
-    - [6.2.3. unpack](#623-unpack)
-    - [6.2.4. unbundle](#624-unbundle)
-  - [6.3. MSIXMgr](#63-msixmgr)
-    - [6.3.1. unpack](#631-unpack)
+- [2. Examples](#2-examples)
+    - [2.1. Packing a package](#21-packing-a-package)
+    - [2.2. Unbundling and unpacking a package to change information](#22-unbundling-and-unpacking-a-package-to-change-information)
+    - [2.3. Helper methods for examples](#23-helper-methods-for-examples) 
+- [3. API Details](#3-API-details)
+- [4. Appendix](#4-Appendix)
+- [5. Existing interfaces and options](#5-existing-interfaces-and-options)
+  - [5.1. Makeappx](#51-makeappx)
+    - [5.1.1. pack](#511-pack)
+    - [5.1.2. bundle](#512-bundle)
+    - [5.1.3. unpack](#513-unpack)
+    - [5.1.4. unbundle](#514-unbundle)
+  - [5.2. Makemsix](#52-makemsix)
+    - [5.2.1. pack](#521-pack)
+    - [5.2.2. bundle](#522-bundle)
+    - [5.2.3. unpack](#523-unpack)
+    - [5.2.4. unbundle](#524-unbundle)
+  - [5.3. MSIXMgr](#53-msixmgr)
+    - [5.3.1. unpack](#531-unpack)
+- [6. Summary of existing options in relation to proposed API](#6-summary-of-existing-options-in-relation-to-proposed-API)
 
 # 1. Background
 
-The MakeMSIX API allows developers to create app packages for distribution. The API provides a WinRT
-interface that joins the functionality from multiple existing command line tools in one developer
-friendly location to allow creation of msix\appx packages and msixbundle\appxbundle packages,
-unpacking of those packages, and creation of package images for Azure App Attach. In addition to
-functionality from those existing tools, this API adds support for creation of Kozani packages.
+The MakeMSIX API allows developers to create app packages for distribution. 
+The API provides a WinRT interface that supports:
+1. Creation of msix packages and msixbundle bundle packages,
+2. Unpacking and unbundling of packages
+3. Creation of vhd\vdx\cim images for Azure App Attach. 
+4. Creation of Kozani packages.
 
-# 2. Summary of existing options in relation to proposed API
+Creation of Kozani packages is a new feature that has not existed in other msix packaging tools. The
+other features have previously been available in command line tools discussed in the appendix.
 
-Existing options all treat pack and bundle as separate commands. Though they are similar, each
-command does have some options that are irrelevant to the other command. Options that are relevant
-to bundling but not packaging are the Bundle Version, which nearly all callers will specify (the
-alternative is the tool setting the version based on a timestamp), and allowing creation of flat
-bundles. Options that are relevant for packaging but not bundling are hash algorithm, and creation
-of streamable packages and resource packages.
+Kozani packages are msix packages that have been optimized for size by removing unnecessary
+resources. All existing tools that work with msix packages are compatible with Kozani packages.
+Kozani packages can be created manually without this API by modifying the files, manifest, and
+resource index of an existing package using existing win32 apis.
 
-In the long term it's likely that these differences in the information and flags required to support
-creating a bundle and creating a package will only continue to grow.
+# 2. Examples
 
-It is less likely that differences will arise between unbundle and unpack. However, as seen with the
-existing makemsix tool, as long as pack and bundle are separate operations it may not be especially
-useful for unbundle and unpack to be joined. Unpacking of all bundled packages makes sense for a
-command line tool where an IT admin may be typing in individual commands each time and so there's a
-good reason to avoid having to run multiple commands. In cases where the API is actually being used
-programattically, to do something like extract all packages and update every manifest with a
-different version number, there is no avoiding use of filesystem APIs to find each unpacked package.
-In such a case merging the unbundle and unpack command into one API just adds hidden complexity into
-the API in the form of either requiring more configuration options or hiding decisions about default
-choices like folder naming decisions in the API documentation.
-
-For these reasons pack, bundle, unpack, unbundle have been left as separate commands. 
-
-MSIXMgr defines an unpack command which has fairly different usage from the makeappx unpack command.
-The msixmgr unpack command merges creation of an image file and adding packages to that image file
-into one command. The msixmgr command line supports adding all packages in a folder to an image at
-once. The CIM file format it supports always expands to fit those apps, but msixmgr does not
-currently support expandable vhdx files. This means that the caller needs to know up front the size
-of all unpacked packages when creating vhds, which will be difficult to know without either
-unpacking them first or reading each package's block map to get file sizes. This API proposes
-getting rid of that requirement and having the API implementation itself determine the size of all
-packages being added in order to create an image of the correct size. This behavior is more
-consistent with other types of package creation and eliminates the API differences between CIM files
-and VHD\VHDX files.
-
-As the API supports creation of .cim, .vhd, and .vhdx file as well as .msix and .msixbundle files,
-callers may find it strange to need to first pack their directory to an msix, and then create the
-vhdx from the msix, rather than just creating the vhdx directly. However, signing is not integrated
-into any of these tools, and is a separate step that is done after packaging is complete. The Appx
-SIP knows how to sign packages, but not vhdx and other mounted directories. The result is that
-creating a vhdx with an appx signature file (appxsignature.p7x) requires first creating the package,
-then signing it, then creating the vhdx. Allowing creation of a cim, vhd, or vhdx file directly from
-a directory seems likely to cause confusion for developers who may not realize that they won't be
-able to sign the package in the image. This API always applies ACLs for the package
-to the folder, and never validates the signature. If signature validation of a package (checking
-that the root cert of a package is trusted on the current machine) is an important API for callers
-it can be done as a separate operation from creation of an image file.
-
-# 3. Examples
-
-## 3.1. Packing a package
+## 2.1. Packing a package
 
 ```cpp
     void CreatePackagesFromFolderExample()
@@ -93,7 +52,7 @@ it can be done as a separate operation from creation of an image file.
         // Initial Conditions: The build has already produced a directory that contains the exact layout of each individual package
         // that it wants to bundle.
         // Each folder has an appxmanifest.xml in the root directory.
-        
+
         // A full non-relative path to those layout folder is needed, as below.
         // Layout directories are inside this root, for example: packageLayoutRootPath\\ContosoApp1_2023.302.1739.686_x64__8wekyb3d8bbwe.
         std::wstring packageLayoutRootPath{ L"D:\\test\\ContosoApp1\\BuildOutput\\PackageLayouts" };
@@ -103,9 +62,9 @@ it can be done as a separate operation from creation of an image file.
         // The build tool wants to create the full bundle at this location
         std::wstring bundleOutputFilePath{ L"D:\\test\\ContosoApp1\\BuildOutput\\Package\\bundleOutput.msixbundle" };
         // The build tool wants to create the kozani package at this location
-        std::wstring kozaniPackageOutputFilePath{ L"D:\\test\\ContosoApp1\\BuildOutput\\Package\\kozaniPackagedOutput.msix" };
+        std::wstring kozaniPackageOutputFilePath{ L"D:\\test\\ContosoApp1\\BuildOutput\\Package\\kozaniPackagedOutput.msixbundle" };
         // The build tool wants to create the app attach image at this location
-        std::wstring appAttachImageFilePath{ L"D:\\test\\ContosoApp1\\BuildOutput\\Package\\appAttachOutput.vhdx" };
+        std::wstring appAttachImageFilePath{ L"D:\\xample\\ContosoApp1\\BuildOutput\\Package\\appAttachOutput.vhdx" };
         // The certificate to sign the package is at
         std::wstring developerCertPfxFile{ L"D:\\test\\ContosoApp1\\developerCert.pfx" };
 
@@ -129,7 +88,7 @@ it can be done as a separate operation from creation of an image file.
             // All packages in the bundle have the same version in this example, grab one of them to set on the bundle.
             if (packageIdentity == nullptr)
             {
-                packageIdentity = MakeMSIXManager::GetPackageInformation(directoryEntry.path().c_str()).get().Identity();
+                packageIdentity = MakeMSIXManager::GetPackageInformation(packageOutputFilePath.c_str()).get().Identity();
             }
         }
 
@@ -162,14 +121,15 @@ it can be done as a separate operation from creation of an image file.
         // Step 3. Create app attach vhd from the bundle created in Step 1.
         CreateMountableImageOptions mountableImageOptions = CreateMountableImageOptions();
         mountableImageOptions.OverwriteOutputFileIfExists(true);
-        winrt::Windows::Foundation::Collections::IVector<winrt::hstring> packagesToAddToImage{ winrt::single_threaded_vector<winrt::hstring>() };
+        winrt::Windows::Foundation::Collections::IVector<winrt::hstring> packagesToAddToImage{
+        winrt::single_threaded_vector<winrt::hstring>() };
         packagesToAddToImage.Append(bundleOutputFilePath);
 
         MakeMSIXManager::CreateMountableImage(packagesToAddToImage, appAttachImageFilePath.c_str(), mountableImageOptions).get();
     }
 ```
 
-## 3.2. Unbundling and unpacking a package to change information
+## 2.2. Unbundling and unpacking a package to change information
 
 ```cpp
     void ChangeVersionOfAllPackagesInBundle()
@@ -179,8 +139,8 @@ it can be done as a separate operation from creation of an image file.
         {
             // Scenario: A developer is writing code to update the version of all packages in a bundle.
 
-            std::filesystem::path bundleFilePath{ L"D:\\test\\bundle.msixbundle" };
-            std::wstring outputDirRoot{ L"D:\\test\\unpackedBundleOutput" };
+            std::filesystem::path bundleFilePath{ L"D:\\test\\ContosoApp1\\BuildOutput\\Package\\bundleOutput.msixbundle" };
+            std::wstring outputDirRoot{ L"D:\\test\\ContosoApp1\\BuildOutput\\newVersion" };
             winrt::Windows::ApplicationModel::PackageVersion newVersion = winrt::Windows::ApplicationModel::PackageVersion(1, 0, 0, 0);
 
             std::filesystem::path outputDirForBundle{ outputDirRoot };
@@ -214,11 +174,9 @@ it can be done as a separate operation from creation of an image file.
                 extractPackageOptions.OverwriteOutputFilesIfExists(true);
                 MakeMSIXManager::ExtractPackage(file.path().c_str(), outputDirForPackage.c_str(), extractPackageOptions).get();
             }
-                            
+
             std::filesystem::path outputDirRootForPackedPackages{ outputDirRoot };
             outputDirRootForPackedPackages /= L"packedPackages";
-            std::filesystem::path outputPathForBundle{ outputDirRoot };
-            outputPathForBundle /= bundleFilePath.filename();
 
             // Iterate through packages and repack each one.
             for (const auto& packageDir : std::filesystem::directory_iterator(outputDirRootForPackages))
@@ -234,6 +192,8 @@ it can be done as a separate operation from creation of an image file.
                 MakeMSIXManager::CreatePackage(packageDir.path().c_str(), outputPackagePath.c_str(), createPackageOptions).get();
             }
 
+            std::filesystem::path outputPathForBundle{ outputDirRoot };
+            outputPathForBundle /= bundleFilePath.filename();
             // Re-bundle with the new version
             auto createBundleOptions = CreateBundleOptions();
             createBundleOptions.OverwriteOutputFileIfExists(true);
@@ -248,7 +208,7 @@ it can be done as a separate operation from creation of an image file.
     }
 ```
 
-## 3.3. Helper methods for examples
+## 2.3. Helper methods for examples
 
 Windows has existing non-WinRT APIs for signing packages available in the CryptoAPI
 https://learn.microsoft.com/en-us/windows/win32/seccrypto/using-cryptography
@@ -402,7 +362,7 @@ from the Windows SDK are included here.
     }
 ```
 
-# 4. API Details
+# 3. API Details
 
 ```c#
 // Copyright (c) Microsoft Corporation and Contributors.
@@ -470,7 +430,7 @@ namespace Microsoft.Kozani.MakeMSIX
 
         /// ScaleFactors supported by the output package
         /// If field is empty, all scale factors from the original package are maintained.
-        Windows.Foundation.Collections.IVector<String> ScaleFactors{ get; };
+        Windows.Foundation.Collections.IVector<UInt32> ScaleFactors{ get; };
 
         /// Overwrite output file if it already exists.
         /// Defaults to true.
@@ -553,17 +513,17 @@ namespace Microsoft.Kozani.MakeMSIX
         /// Publisher of the package
         String Publisher{ get; };
         
-        /// FamilyName of the package
-        String FamilyName{ get; };
-        
         /// Version of the package
-        Windows.ApplicationModel.PackageVersion Version { get; };
+        Windows.ApplicationModel.PackageVersion Version{ get; };
         
         /// Architecture of the package
         Windows.System.ProcessorArchitecture Architecture{ get; };
         
         /// ResourceId of the package
         String ResourceId{ get; };
+
+        /// FamilyName of the package
+        String FamilyName{ get; };
  
         /// FullName of the package.
         String FullName{ get; };
@@ -579,7 +539,7 @@ namespace Microsoft.Kozani.MakeMSIX
         Windows.Foundation.Collections.IVectorView<String> Languages{ get; };
 
         /// ScaleFactors supported by the package
-        Windows.Foundation.Collections.IVectorView<String> ScaleFactors{ get; };
+        Windows.Foundation.Collections.IVectorView<UInt32> ScaleFactors{ get; };
     }
 
     /// Static methods for creating and unpacking packages.
@@ -636,20 +596,18 @@ namespace Microsoft.Kozani.MakeMSIX
         static Windows.Foundation.IAsyncOperation<PackageInformation> GetPackageInformation(String packageFileName);
     };
 }
-
-
 ```
 
-# 5. Appendix
+# 4. Appendix
 
-# 6. Existing interfaces and options
+# 5. Existing interfaces and options
 
 The existing tools are:
 -   [Makeappx.exe](https://learn.microsoft.com/en-us/windows/win32/appxpkg/make-appx-package--makeappx-exe-)
     Shipped in Windows' Platform SDK.
-    Exposes pack, unpack, bundle, and unbundle commands, as well as encryption support
-    via a custom key-file list file, and creation of packages via a custom mapping file
-    to allow creation of packages with different payloads from the same folder.
+    Exposes pack, unpack, bundle, unbundle, encrypt, decrypt and content group mapping.
+    Makeappx defines and uses its own file formats for encryption key files and content group
+    mapping to allow creation of packages with different payloads from the same folder.
 
 -   [Makemsix.exe](https://github.com/Microsoft/msix-packaging) Available via the msix-packaging
     project. Exposes pack, unpack, unbundle, and bundle* commands (*Bundle command only supports
@@ -677,9 +635,9 @@ Msixmgr.exe is mostly for specific Azure app attach packaging scenarios not cove
 tools. To use it programmatically would require either process creation or building the
 msix-packaging github project and linking the static lib it produces into a project.
 
-## 6.1. Makeappx
+## 5.1. Makeappx
 
-### 6.1.1. Pack
+### 5.1.1. Pack
 Usage:
 ------
     MakeAppx pack [options] /d <content directory> /p <output package name>
@@ -746,7 +704,7 @@ Options:
     /v, /verbose: Enables verbose output of messages to the console.
     /?, /help: Displays this help text.
 
-### 6.1.2. Bundle
+### 5.1.2. Bundle
 
 Usage:
 ------
@@ -841,23 +799,21 @@ Options:
     /v, /verbose: Enables verbose output of messages to the console.
     /?, /help: Displays this help text.
 
-## 6.2. MakeMsix
+## 5.2. MakeMsix
 
-MakeMSIX is generally a subset of MakeAppx's functionality. It lacks support for
-encryption, content groups, mapping files, and bundle support is limited to
-only allowing creation of flat bundles (bundles where the appxbundle file itself
-only references but does not contain the main and resource appxpackages)
+MakeMSIX is generally a subset of MakeAppx's functionality. It lacks support for encryption, content
+groups, mapping files, and bundle support is limited to only allowing creation of flat bundles
+(bundles where the appxbundle file itself only references but does not contain the main and resource
+appxpackages)
 
-It does add the ability to optionally unpack all packages inside the bundle
-in one command using the -pfn-flat option, as in:
-makemsix.exe unbundle -p <bundle> -d <directory> -pfn-flat
+It does add the ability to optionally unpack all packages inside the bundle in one command using the
+-pfn-flat option, as in: makemsix.exe unbundle -p <bundle> -d <directory> -pfn-flat
 
-There is, however, no good option for reversing this command when recreating the
-packages and bundle. Callers need to call makemsix pack on each individual
-package folder and then follow it with a makemsix bundle call to generate a
-flat bundle.
+There is, however, no good option for reversing this command when recreating the packages and
+bundle. Callers need to call makemsix pack on each individual package folder and then follow it with
+a makemsix bundle call to generate a flat bundle.
 
-### 6.2.1. Pack
+### 5.2.1. Pack
 Usage:
 ---------------
     makemsix.exe pack -d <directory> -p <package> [options]
@@ -962,24 +918,85 @@ Options:
     -? [Flag]
         Displays this help text.
 
-## 6.3. MSIXMgr
+## 5.3. MSIXMgr
 
-### 6.3.1. Unpack
-msixmgr.exe -Unpack -packagePath <path to package> -destination <output folder> [-applyacls] [-create] [-vhdSize <size in MB>] [-filetype <CIM | VHD | VHDX>] [-rootDirectory <rootDirectory>]
+### 5.3.1. Unpack
 
--Unpack: Unpack a package (.appx, .msix, .appxbundle, .msixbundle) and extract its contents to a folder.
-                -applyACLs: optional parameter that applies ACLs to the resulting package folder(s) and 
-                their parent folder
-                -create: optional parameter that creates a new image with the specified -filetype and 
-                unpacks the packages to that image
-                -destination: the directory to place the resulting package folder(s) in
-                -fileType: the type of file to unpack packages to. Valid file types include {VHD, VHDX, CIM}. 
-                This is a required parameter when unpacking to CIM files
-                -packagePath: the path to the package to unpack OR the path to a directory containing 
-                multiple packages to unpack
-                -rootDirectory: root directory on an image to unpack packages to. Required parameter 
-                for unpacking to new and existing CIM files
-                -validateSignature: optional parameter that validates a package's signature file before 
-                unpacking the package. This will require that the package's certificate is installed on the machine.
-                -vhdSize: the desired size of the VHD or VHDX file in MB. Must be between 5 and 2040000 MB. 
-                Use only for VHD or VHDX files
+Usage:
+---------------
+msixmgr.exe -Unpack -packagePath <path to package> -destination <output folder> [-applyacls]
+[-create] [-vhdSize <size in MB>] [-filetype <CIM | VHD | VHDX>] [-rootDirectory <rootDirectory>]
+
+Options:
+---------------
+    -Unpack: Unpack a package (.appx, .msix, .appxbundle, .msixbundle) and extract its contents to a folder.
+    -applyACLs: optional parameter that applies ACLs to the resulting package folder(s) and 
+    their parent folder
+    -create: optional parameter that creates a new image with the specified -filetype and 
+    unpacks the packages to that image
+    -destination: the directory to place the resulting package folder(s) in
+    -fileType: the type of file to unpack packages to. Valid file types include {VHD, VHDX, CIM}. 
+    This is a required parameter when unpacking to CIM files
+    -packagePath: the path to the package to unpack OR the path to a directory containing 
+    multiple packages to unpack
+    -rootDirectory: root directory on an image to unpack packages to. Required parameter 
+    for unpacking to new and existing CIM files
+    -validateSignature: optional parameter that validates a package's signature file before 
+    unpacking the package. This will require that the package's certificate is installed on the machine.
+    -vhdSize: the desired size of the VHD or VHDX file in MB. Must be between 5 and 2040000 MB. 
+    Use only for VHD or VHDX files
+
+# 6. Summary of existing options in relation to proposed API
+
+# 6.1 Pack and Bundle
+Existing tools all treat pack and bundle as separate commands. Though they are similar, each command
+does have some options that are irrelevant to the other command. Options that are relevant to
+bundling but not packaging are the Bundle Version, which nearly all callers will specify (the
+alternative is the tool setting the version based on a timestamp), and allowing creation of flat
+bundles. Options that are relevant for packaging but not bundling are hash algorithm, and creation
+of streamable packages and resource packages.
+
+In the long term it's likely that these differences in the information and flags required to support
+creating a bundle and creating a package will only continue to grow.
+
+# 6.2 Unpack and Unbundle
+
+Existing tools have generally chosen to have unpack and unbundle as separate commands.
+
+In cases where the API is being used programattically to do something like extract all packages and
+update every manifest with a different version number, developers will have to handle the
+differences between bundles and packages when recreating the package so the benefit of merging
+unpack and unbundle seems small.
+
+MSIXMgr defines an unpack command which has different usage from the unpack command of other tools.
+The msixmgr unpack command merges creation of an image file and adding packages to that image file
+into one command. Since the tool is specifically for creating Azure App Attach images developers are
+unlikely to ever need to further interact with the resulting files inside the Azure App Attach
+image. For the purposes of this API the unpack command of MSIXMgr seems more similar to a package
+conversion like CreateKozaniPackage and so has been renamed to CreateMountableImage rather than
+trying to fit all options that are only relevant for "unpacking" to a mountable image into the
+unpack command.
+
+The msixmgr unpack command line supports adding all packages in a folder to an image at once. The
+CIM file format it supports always expands to fit those apps, but msixmgr does not currently support
+expandable vhdx files. This means that the caller needs to know up front the size of all unpacked
+packages when creating vhds, which will be difficult to know without either unpacking them first or
+reading each package's block map to get file sizes. This API proposes getting rid of that
+requirement and having the API implementation itself determine the size of all packages being added
+in order to create an image of the correct size. This behavior is more consistent with other types
+of package creation and eliminates the API differences between CIM files and VHD\VHDX files.
+
+Callers may find it strange to need to first pack their directory to an msix or msixbundle, and then
+create the vhdx from the package, rather than just creating the vhdx directly from the directory.
+However, signing is not integrated into any of these tools, and is a separate step that is done
+after packaging is complete. The Appx SIP knows how to sign packages, but not vhdx and other mounted
+directories. The result is that creating a vhdx with an appx signature file (appxsignature.p7x)
+requires first creating the package, then signing it, then creating the vhdx. Allowing creation of a
+cim, vhd, or vhdx file directly from a directory seems likely to cause confusion for developers who
+may not realize that they won't be able to sign the package in the image. 
+
+This API always applies ACLs for the package to the folder, and never validates the signature so
+those options in msixmgr have not been exposed. If signature validation of a package (checking that
+the root cert of a package is trusted on the current machine) is an important API for callers it can
+be done as a separate operation from creation of an image file. This keeps signature concerns
+completely outside the scope of this API.
