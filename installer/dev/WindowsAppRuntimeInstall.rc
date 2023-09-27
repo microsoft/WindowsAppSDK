@@ -117,13 +117,6 @@ END
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 
-#ifndef WINDOWSAPPSDKBUILDPIPELINE
-#define WINDOWSAPPSDKBUILDPIPELINE 0 // Developer inner-loop
-#endif
-#if WINDOWSAPPSDKBUILDPIPELINE == 1
-#include <WindowsAppSDK-VersionInfo.h>
-#endif
-
 #define VERSIONINFO_FILENAME "WindowsAppRuntimeInstall.exe"
 #define VERSIONINFO_FILETYPE VFT_APP
 #include "eng\common\VersionInfo\AssemblyInfo.ver"
