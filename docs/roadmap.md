@@ -9,7 +9,7 @@ Empower developers to create the richest & most engaging native apps & surfaces 
 ## Road to the next release
 
 Our next WinAppSDK release will be version 1.5, expected to arrive in the first half of 2024 (24H1). 
-In the last quarter of 2023 and going into the first half of 2024, the WinAppSDK's main goals are to become leaner and more efficient in our engineering processes and begin on an exciting new long-term journey towards supporting Cross-proc Islands.
+In the last quarter of 2023 and going into the first half of 2024, the WinAppSDK's main goals are to become leaner and more efficient in our engineering processes and begin on an exciting new long-term journey towards supporting Cross-process Islands.
 
 ### Upcoming features for the Windows App SDK 1.5
 
@@ -19,7 +19,7 @@ Headline areas of work and features for the 1.5 timeframe include:
   - Upgrading our internal processes and infrastructure, allowing for more flexibility in shipping so we can speed up feature development and improve our undocked architecture
   - Improving support for the next Visual Studio and .NET MAUI
 - **WinUI 3**
-  - Getting started on a multi-release effort to support Cross-proc Islands, including fundamental input and rendering support for Content Islands
+  - Getting started on a multi-release effort to support Cross-process Islands, including fundamental input and rendering support for Content Islands
   - Continuing to support File Explorer enhancements that we started in the 1.4 release
   - Adding controls to close the WinUI 2 to WinUI 3 gap for developers interested in porting their apps, including but not limited to the following:
     - Segmented control
@@ -40,4 +40,4 @@ Technologies within the Windows App SDK have already benefitted greatly from the
 
 *Thank you* for your continued passion and drive to make Windows App SDK the best platform it can be; it has really made a difference!
 
-You can join in by contributing to existing issues, or filing a new issue on the [Windows App SDK](https://github.com/microsoft/WindowsAppSDK) or [WinUI](https://github.com/microsoft/microsoft-ui-xaml) GitHub repos. If you're interested in WinUI 3, come join us on the live Windows Development [Community Calls](https://www.youtube.com/playlist?list=PLI_J2v67C23ZqsolUDaHoFkF1GKvGrttB), which are hosted quarterly. Finally, you can stay in touch with us on Twitter using [#WindowsAppSDK](https://twitter.com/search?q=%23WindowsAppSDK).
+You can join in by contributing to existing issues, or filing a new issue on the [Windows App SDK](https://github.com/microsoft/WindowsAppSDK) or [WinUI](https://github.com/microsoft/microsoft-ui-xaml) GitHub repos. If you're interested in WinUI 3, come join us on the live Windows Development [Community Calls](https://www.youtube.com/playlist?list=PLI_J2v67C23ZqsolUDaHoFkF1GKvGrttB), which are hosted quarterly. Finally, you can find and tag us on X (formerly Twitter) using [#WindowsAppSDK](https://twitter.com/search?q=%23WindowsAppSDK).
