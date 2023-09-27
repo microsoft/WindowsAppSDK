@@ -20,7 +20,7 @@
 
     <NugetPackageDirectory>$(RepoRoot)\packages</NugetPackageDirectory>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>WasdkStrongNameSign.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>$(RepoRoot)\WasdkStrongNameSign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <!-- Compilation differs for the build pipeline vs local development -->
