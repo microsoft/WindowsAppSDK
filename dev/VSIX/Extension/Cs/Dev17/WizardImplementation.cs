@@ -13,16 +13,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace WindowsAppSDK.Cs.Extension
+namespace WindowsAppSDK.TemplateUtilities
 {
-
     public class NuGetPackageInstaller : IWizard
     {
-        private IVsPackageInstaller _packageInstaller;
         private string _packageId;
         private Project _project;
+        private IComponentModel _componentModel;
         IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
-
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
@@ -47,11 +45,9 @@ namespace WindowsAppSDK.Cs.Extension
                 }
             }
 
-            var componentModel = (IComponentModel)Microsoft.VisualStudio.Shell.ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
-            IVsPackageInstaller installer = componentModel.GetService<IVsPackageInstaller>();
-            _packageInstaller = installer;
+            _componentModel = (IComponentModel)Microsoft.VisualStudio.Shell.ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
 
-            _nugetProjectUpdateEvents = componentModel.GetService<IVsNuGetProjectUpdateEvents>();
+            _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
             _nugetProjectUpdateEvents.SolutionRestoreFinished += OnSolutionRestoreFinished;
         }
 
@@ -60,11 +56,11 @@ namespace WindowsAppSDK.Cs.Extension
             _project = project;
         }
 
-        public void BeforeOpeningFile(ProjectItem projectItem)
+        public void BeforeOpeningFile(ProjectItem _)
         {
         }
 
-        public void ProjectItemFinishedGenerating(ProjectItem projectItem)
+        public void ProjectItemFinishedGenerating(ProjectItem _)
         {
         }
 
@@ -75,6 +71,8 @@ namespace WindowsAppSDK.Cs.Extension
 
         private void OnSolutionRestoreFinished(IReadOnlyList<string> projects)
         {
+            // Debouncing prevents multiple rapid executions of 'InstallNuGetPackageAsync'
+            // during solution restore.
             _nugetProjectUpdateEvents.SolutionRestoreFinished -= OnSolutionRestoreFinished;
             var joinableTaskFactory = new JoinableTaskFactory(ThreadHelper.JoinableTaskContext);
             joinableTaskFactory.RunAsync(InstallNuGetPackageAsync);
@@ -83,9 +81,10 @@ namespace WindowsAppSDK.Cs.Extension
 
         private Task InstallNuGetPackageAsync()
         {
+            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
             try
             {
-                _packageInstaller.InstallPackage(null, _project, _packageId, "", false);
+                installer.InstallPackage(null, _project, _packageId, "", false);
             }
             catch (Exception ex)
             {
