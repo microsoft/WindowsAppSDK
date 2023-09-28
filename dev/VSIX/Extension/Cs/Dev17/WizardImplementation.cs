@@ -50,25 +50,20 @@ namespace WindowsAppSDK.TemplateUtilities
             _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
             _nugetProjectUpdateEvents.SolutionRestoreFinished += OnSolutionRestoreFinished;
         }
-
         public void ProjectFinishedGenerating(Project project)
         {
             _project = project;
         }
-
         public void BeforeOpeningFile(ProjectItem _)
         {
         }
-
         public void ProjectItemFinishedGenerating(ProjectItem _)
         {
         }
-
         public void RunFinished()
         {
 
         }
-
         private void OnSolutionRestoreFinished(IReadOnlyList<string> projects)
         {
             // Debouncing prevents multiple rapid executions of 'InstallNuGetPackageAsync'
@@ -78,7 +73,6 @@ namespace WindowsAppSDK.TemplateUtilities
             joinableTaskFactory.RunAsync(InstallNuGetPackageAsync);
 
         }
-
         private Task InstallNuGetPackageAsync()
         {
             IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
@@ -92,7 +86,6 @@ namespace WindowsAppSDK.TemplateUtilities
             }
             return Task.CompletedTask;
         }
-
         public bool ShouldAddProjectItem(string _)
         {
             return true;
