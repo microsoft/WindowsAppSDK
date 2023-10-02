@@ -58,7 +58,7 @@ namespace WindowsAppRuntimeInstaller
     HRESULT AddPackage(
         WindowsAppRuntimeInstaller::InstallActivity::Context& installActivityContext,
         const Uri& packageUri,
-        const std::unique_ptr<PackageProperties>& packageProperties,
+        const std::unique_ptr<PackageProperties>&,
         bool forceDeployment)
     {
         const auto deploymentOptions{ forceDeployment ?
