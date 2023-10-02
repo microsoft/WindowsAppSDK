@@ -117,6 +117,8 @@ END
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 
+#include <WindowsAppSDK-VersionInfo.h>
+
 #define VERSIONINFO_FILENAME "WindowsAppRuntimeInstall.exe"
 #define VERSIONINFO_FILETYPE VFT_APP
 #include "eng\common\VersionInfo\AssemblyInfo.ver"
