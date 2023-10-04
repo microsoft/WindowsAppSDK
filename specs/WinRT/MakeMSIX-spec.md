@@ -42,170 +42,157 @@ resource index of an existing package using existing win32 apis.
 
 ## 2.1. Packing a package
 
-```cpp
-    void CreatePackagesFromFolderExample()
+```c#
+static async Task CreatePackagesFromFolderExample()
+{
+    // Scenario: A developer is creating their own app. A build tool wants to create every type of distributable package for them.
+
+    // Initial Conditions: The build has already produced a directory that contains the exact layout of each individual package
+    // that it wants to bundle.
+    // Each folder has an appxmanifest.xml in the root directory.
+
+    // A full non-relative path to those layout folder is needed, as below.
+    // Layout directories are inside this root, for example: packageLayoutRootPath\\ContosoApp1_2023.302.1739.686_x64__8wekyb3d8bbwe.
+    string packageLayoutRootPath = "D:\\test\\ContosoApp1\\BuildOutput\\PackageLayouts";
+    // The build tool packages each folder and puts the resulting packages at this location
+    string packageOutputRootDirectoryPath = "D:\\test\\ContosoApp1\\BuildOutput\\packagedOutput\\";
+    // The build tool wants to create the full bundle at this location
+    string bundleOutputFilePath = "D:\\test\\ContosoApp1\\BuildOutput\\Package\\bundleOutput.msixbundle";
+    // The build tool wants to create the kozani package at this location
+    string kozaniPackageOutputFilePath = "D:\\test\\ContosoApp1\\BuildOutput\\Package\\kozaniPackagedOutput.msixbundle";
+    // The build tool wants to create the app attach image at this location
+    string appAttachImageFilePath = "D:\\xample\\ContosoApp1\\BuildOutput\\Package\\appAttachOutput.vhdx";
+    // The certificate to sign the package is at
+    string developerCertPfxFile = "D:\\test\\ContosoApp1\\developerCert.pfx";
+
+    // Step 1. Create the full bundle.
+    // Iterate through package layout folders and pack each one.
+    DirectoryInfo packageLayoutRootDirectory = new DirectoryInfo(packageLayoutRootPath);
+    var packTasks = packageLayoutRootDirectory.EnumerateDirectories()
+                .Select(async directory =>
+                {
+                    PackageInformation packageInfo = await MakeMSIXManager.GetPackageInformation(directory.FullName);
+
+                    var createPackageOptions = new CreatePackageOptions();
+                    createPackageOptions.OverwriteOutputFileIfExists = true;
+                    string packageOutputFilePath = packageOutputRootDirectoryPath + "\\" + packageInfo.Identity.FullName + ".appx";
+
+                    await MakeMSIXManager.CreatePackage(directory.FullName, packageOutputFilePath, createPackageOptions);
+                    return packageOutputFilePath;
+                })
+                .ToArray();
+    await Task.WhenAll(packTasks);
+
+    // Confirm the directory did contain package layouts.
+    if (packTasks.Length == 0)
     {
-        winrt::init_apartment();
-
-        // Scenario: A developer is creating their own app. A build tool wants to create every type of distributable package for them.
-
-        // Initial Conditions: The build has already produced a directory that contains the exact layout of each individual package
-        // that it wants to bundle.
-        // Each folder has an appxmanifest.xml in the root directory.
-
-        // A full non-relative path to those layout folder is needed, as below.
-        // Layout directories are inside this root, for example: packageLayoutRootPath\\ContosoApp1_2023.302.1739.686_x64__8wekyb3d8bbwe.
-        std::wstring packageLayoutRootPath{ L"D:\\test\\ContosoApp1\\BuildOutput\\PackageLayouts" };
-
-        // The build tool packages each folder and puts the resulting packages at this location
-        std::wstring packageOutputRootDirectoryPath{ L"D:\\test\\ContosoApp1\\BuildOutput\\packagedOutput\\" };
-        // The build tool wants to create the full bundle at this location
-        std::wstring bundleOutputFilePath{ L"D:\\test\\ContosoApp1\\BuildOutput\\Package\\bundleOutput.msixbundle" };
-        // The build tool wants to create the kozani package at this location
-        std::wstring kozaniPackageOutputFilePath{ L"D:\\test\\ContosoApp1\\BuildOutput\\Package\\kozaniPackagedOutput.msixbundle" };
-        // The build tool wants to create the app attach image at this location
-        std::wstring appAttachImageFilePath{ L"D:\\xample\\ContosoApp1\\BuildOutput\\Package\\appAttachOutput.vhdx" };
-        // The certificate to sign the package is at
-        std::wstring developerCertPfxFile{ L"D:\\test\\ContosoApp1\\developerCert.pfx" };
-
-        // Step 1. Create the full bundle.
-        PackageIdentity packageIdentity = nullptr;
-        // Iterate through package layout folders and pack each one.
-        for (const std::filesystem::directory_entry& directoryEntry : std::filesystem::directory_iterator(packageLayoutRootPath))
-        {
-            if (!directoryEntry.is_directory())
-            {
-                continue;
-            }
-
-            CreatePackageOptions createPackageOptions = CreatePackageOptions();
-            createPackageOptions.OverwriteOutputFileIfExists(true);
-            std::wstring packageFolderName = directoryEntry.path().filename().wstring();
-            std::wstring packageOutputFilePath{ packageOutputRootDirectoryPath + packageFolderName + L".appx" };
-
-            MakeMSIXManager::CreatePackage(directoryEntry.path().c_str(), packageOutputFilePath.c_str(), createPackageOptions).get();
-
-            // All packages in the bundle have the same version in this example, grab one of them to set on the bundle.
-            if (packageIdentity == nullptr)
-            {
-                packageIdentity = MakeMSIXManager::GetPackageInformation(packageOutputFilePath.c_str()).get().Identity();
-            }
-        }
-
-        // Confirm the directory did contain package layouts.
-        if (packageIdentity == nullptr)
-        {
-            winrt::throw_hresult(E_INVALIDARG);
-        }
-
-        // Bundle all the packages together.
-        CreateBundleOptions createbundleOptions = CreateBundleOptions();
-        createbundleOptions.OverwriteOutputFileIfExists(true);
-        createbundleOptions.FlatBundle(true);
-        createbundleOptions.Version(packageIdentity.Version());
-        MakeMSIXManager::CreateBundle(packageOutputRootDirectoryPath, bundleOutputFilePath.c_str(), createbundleOptions).get();
-
-        // Sign the bundle
-        Example_SignPackage(developerCertPfxFile, bundleOutputFilePath);
-
-        // Step 2. Create the kozani package from the bundle created in Step 1.
-        CreateKozaniPackageOptions createKozaniPackageOptions = CreateKozaniPackageOptions();
-        createKozaniPackageOptions.OverwriteOutputFileIfExists(true);
-        createKozaniPackageOptions.RemoveExtensions(true);
-        // Append "Kozani" to the package name, and trim non-english languages from the package.
-        std::wstring newPackageName{ packageIdentity.Name() + L"Kozani" };
-        createKozaniPackageOptions.Name(newPackageName);
-        createKozaniPackageOptions.Languages().Append(L"en-US");
-        MakeMSIXManager::CreateKozaniPackage(bundleOutputFilePath, kozaniPackageOutputFilePath.c_str(), createKozaniPackageOptions).get();
-
-        // Step 3. Create app attach vhd from the bundle created in Step 1.
-        CreateMountableImageOptions mountableImageOptions = CreateMountableImageOptions();
-        mountableImageOptions.OverwriteOutputFileIfExists(true);
-        winrt::Windows::Foundation::Collections::IVector<winrt::hstring> packagesToAddToImage{
-        winrt::single_threaded_vector<winrt::hstring>() };
-        packagesToAddToImage.Append(bundleOutputFilePath);
-
-        MakeMSIXManager::CreateMountableImage(packagesToAddToImage, appAttachImageFilePath.c_str(), mountableImageOptions).get();
+        throw new Exception("No packages found at path: " + packageLayoutRootPath);
     }
+
+    PackageInformation packageInfo = await MakeMSIXManager.GetPackageInformation(packTasks[0].Result);
+
+    // Bundle all the packages together.
+    CreateBundleOptions createbundleOptions = new CreateBundleOptions()
+    {
+        OverwriteOutputFileIfExists = true,
+        FlatBundle = true,
+        Version = packageInfo.Identity.Version,
+    };
+
+    await MakeMSIXManager.CreateBundle(packageOutputRootDirectoryPath, bundleOutputFilePath, createbundleOptions);
+
+    // Sign the bundle
+    await Example_SignPackage(developerCertPfxFile, bundleOutputFilePath);
+
+    // Step 2. Create the kozani package from the bundle created in Step 1.
+    // Append "Kozani" to the package name, and trim non-english languages from the package.
+    string newPackageName = packageInfo.Identity.Name + "Kozani";
+    CreateKozaniPackageOptions createKozaniPackageOptions = new CreateKozaniPackageOptions()
+    {
+        OverwriteOutputFileIfExists = true,
+        RemoveExtensions = true,
+        Name = newPackageName,
+    };
+    createKozaniPackageOptions.Languages.Append("en-US");
+    await MakeMSIXManager.CreateKozaniPackage(bundleOutputFilePath, kozaniPackageOutputFilePath, createKozaniPackageOptions);
+
+    // Step 3. Create app attach vhd from the bundle created in Step 1.
+    CreateMountableImageOptions mountableImageOptions = new CreateMountableImageOptions
+    {
+        OverwriteOutputFileIfExists = true
+    };
+
+    List<string> packagesToAddToImage = new List<string>
+    {
+        bundleOutputFilePath
+    };
+
+    await MakeMSIXManager.CreateMountableImage(packagesToAddToImage, appAttachImageFilePath, mountableImageOptions);
+    return;
+}
 ```
 
 ## 2.2. Unbundling and unpacking a package to change information
 
-```cpp
-    void ChangeVersionOfAllPackagesInBundle()
-    {
-        winrt::init_apartment();
-        try
-        {
-            // Scenario: A developer is writing code to update the version of all packages in a bundle.
+```c#
+static async Task ChangeVersionOfAllPackagesInBundle()
+{
+    // Scenario: A developer is writing code to update the version of all packages in a bundle.
 
-            std::filesystem::path bundleFilePath{ L"D:\\test\\ContosoApp1\\BuildOutput\\Package\\bundleOutput.msixbundle" };
-            std::wstring outputDirRoot{ L"D:\\test\\ContosoApp1\\BuildOutput\\newVersion" };
-            winrt::Windows::ApplicationModel::PackageVersion newVersion = winrt::Windows::ApplicationModel::PackageVersion(1, 0, 0, 0);
+    // Sample arguments.
+    var bundleFilePath = new FileInfo("D:\\test\\ContosoApp1\\BuildOutput\\Package\\bundleOutput.msixbundle");
+    var outputDirRoot = new FileInfo("D:\\test\\ContosoApp1\\BuildOutput\\newVersion");
+    // Staging directories for the files while unpacking and repacking.
+    string outputDirForBundle = outputDirRoot + "\\bundle";
+    string outputDirRootForPackages = outputDirRoot + "\\unpackedPackages";
+    string outputDirForPackedPackages = outputDirRoot + "\\packedPackages";
 
-            std::filesystem::path outputDirForBundle{ outputDirRoot };
-            outputDirForBundle /= L"bundle";
-            std::filesystem::path outputDirRootForPackages{ outputDirRoot };
-            outputDirRootForPackages /= L"unpackedPackages";
+    Windows.ApplicationModel.PackageVersion newVersion = new Windows.ApplicationModel.PackageVersion(1, 0, 0, 0);
 
-            // Unbundle the bundle to its own folder. After the operation the folder will contain the
-            // bundled packages as appx\msix packages, as well as the bundle metadata.
-            auto extractBundleOptions = ExtractBundleOptions();
-            extractBundleOptions.OverwriteOutputFilesIfExists(true);
-            MakeMSIXManager::ExtractBundle(bundleFilePath.c_str(), outputDirForBundle.c_str(), extractBundleOptions).get();
+    // Unbundle the bundle to a folder. After the operation the folder will contain the
+    // bundled packages as appx\msix packages, as well as the bundle metadata.
+    var extractBundleOptions = new ExtractBundleOptions();
+    extractBundleOptions.OverwriteOutputFilesIfExists = true;
+    await MakeMSIXManager.ExtractBundle(bundleFilePath.FullName, outputDirForBundle, extractBundleOptions);
 
-            // Iterate through the bundled packages and unpack each one.
-            for (const auto& file : std::filesystem::directory_iterator(outputDirForBundle))
-            {
-                // Skip the metadata files.
-                std::wstring fileExtension{ file.path().extension() };
-                std::transform(fileExtension.begin(), fileExtension.end(), fileExtension.begin(), towlower);
-                if ((fileExtension.compare(L".appx") != 0) &&
-                    (fileExtension.compare(L".msix") != 0))
+    // Iterate through the bundled packages and unpack and repack each one with the changed version.
+    DirectoryInfo outputBundleDirInfo = new DirectoryInfo(outputDirForBundle);
+    var extractTasks = outputBundleDirInfo.EnumerateFiles().Where(file =>
                 {
-                    continue;
-                }
+                    // Ignore bundle footprint and metadata files in the folder.
+                    return (String.Compare(file.Extension, ".appx", comparisonType: StringComparison.OrdinalIgnoreCase) == 0) ||
+                            (String.Compare(file.Extension, ".msix", comparisonType: StringComparison.OrdinalIgnoreCase) == 0);
+                })
+                .Select(async file =>
+                {
+                    // Name the output folder for the unpacked package as the file name of the package
+                    string outputDirForPackage = outputDirRootForPackages + "\\" + file.Name;
 
-                // Name the unpacked folders based on the package file name.
-                std::filesystem::path outputDirForPackage{ outputDirRootForPackages };
-                outputDirForPackage /= file.path().stem();
+                    var extractPackageOptions = new ExtractPackageOptions();
+                    extractPackageOptions.OverwriteOutputFilesIfExists = true;
+                    await MakeMSIXManager.ExtractPackage(file.FullName, outputDirForPackage, extractPackageOptions);
 
-                auto extractPackageOptions = ExtractPackageOptions();
-                extractPackageOptions.OverwriteOutputFilesIfExists(true);
-                MakeMSIXManager::ExtractPackage(file.path().c_str(), outputDirForPackage.c_str(), extractPackageOptions).get();
-            }
+                    string outputPackagePath = outputDirForPackedPackages + "\\" + file.Name;
 
-            std::filesystem::path outputDirRootForPackedPackages{ outputDirRoot };
-            outputDirRootForPackedPackages /= L"packedPackages";
+                    // Change the version when re-packing
+                    var createPackageOptions = new CreatePackageOptions();
+                    createPackageOptions.OverwriteOutputFileIfExists = true;
+                    createPackageOptions.Version = newVersion;
+                    await MakeMSIXManager.CreatePackage(outputDirForPackage, outputPackagePath, createPackageOptions);
+                    return;
+                })
+                .ToArray();
+    await Task.WhenAll(extractTasks);
 
-            // Iterate through packages and repack each one.
-            for (const auto& packageDir : std::filesystem::directory_iterator(outputDirRootForPackages))
-            {
-                std::filesystem::path outputPackagePath{ outputDirRootForPackedPackages };
-                std::wstring outputPackageFileName = packageDir.path().filename().wstring() + L".appx";
-                outputPackagePath /= outputPackageFileName;
-
-                // Change the version when re-packing
-                auto createPackageOptions = CreatePackageOptions();
-                createPackageOptions.OverwriteOutputFileIfExists(true);
-                createPackageOptions.Version(newVersion);
-                MakeMSIXManager::CreatePackage(packageDir.path().c_str(), outputPackagePath.c_str(), createPackageOptions).get();
-            }
-
-            std::filesystem::path outputPathForBundle{ outputDirRoot };
-            outputPathForBundle /= bundleFilePath.filename();
-            // Re-bundle with the new version
-            auto createBundleOptions = CreateBundleOptions();
-            createBundleOptions.OverwriteOutputFileIfExists(true);
-            createBundleOptions.Version(newVersion);
-            MakeMSIXManager::CreateBundle(outputDirRootForPackedPackages.c_str(), outputPathForBundle.c_str(), createBundleOptions).get();
-        }
-        catch (winrt::hresult_error const& ex)
-        {
-            OutputDebugString(ex.message().c_str());
-            winrt::check_hresult(ex.code());
-        }
-    }
+    string outputPathForBundle = outputDirRoot + "\\" + bundleFilePath.Name;
+    // Re-bundle with the new version
+    var createBundleOptions = new CreateBundleOptions();
+    createBundleOptions.OverwriteOutputFileIfExists = true;
+    createBundleOptions.Version = newVersion;
+    await MakeMSIXManager.CreateBundle(outputDirForPackedPackages, outputPathForBundle, createBundleOptions);
+    
+    return;
+}
 ```
 
 ## 2.3. Helper methods for examples
@@ -214,152 +201,89 @@ Windows has existing non-WinRT APIs for signing packages available in the Crypto
 https://learn.microsoft.com/en-us/windows/win32/seccrypto/using-cryptography
 For completeness purposes some helper methods to instead find and call signtool.exe
 from the Windows SDK are included here.
-```cpp
-    /// <summary>
-    /// Create a process and synchronously wait for it to exit.
-    /// </summary>
-    /// <param name="commandLine">CommandLine argument for CreateProcess</param>
-    /// <param name="exitCode">Exit code of the process</param>
-    /// <returns>Success if process is created and exit code is returned.</returns>
-    HRESULT CreateProcessAndWaitForExitCode(std::wstring commandLine, DWORD& exitCode)
+```c#
+/// <summary>
+/// Create a process and synchronously wait for it to exit.
+/// </summary>
+/// <param name="fileName">FileName argument for Process.StartInfo</param>
+/// <param name="commandLine">Arguments for Process.StartInfo</param>
+/// <returns>Exit code of the process.</returns>
+static async Task<int> CreateProcessAndWaitForExitCodeAsync(string fileName, string arguments)
+{
+    Process process = new Process();
+    process.StartInfo.FileName = fileName;
+    process.StartInfo.Arguments = arguments;
+    process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+    if (!process.Start())
     {
-        STARTUPINFO startupInfo;
-        ZeroMemory(&startupInfo, sizeof(startupInfo));
-        startupInfo.cb = sizeof(startupInfo);
-
-        PROCESS_INFORMATION processInformation;
-        ZeroMemory(&processInformation, sizeof(processInformation));
-
-        if (!CreateProcess(
-            nullptr,
-            const_cast<LPWSTR>(commandLine.c_str()),
-            nullptr,
-            nullptr,
-            FALSE,
-            0,
-            nullptr,
-            nullptr,
-            &startupInfo,
-            &processInformation
-        ))
-        {
-            return HRESULT_FROM_WIN32(GetLastError());
-        }
-
-        DWORD waitResult = WaitForSingleObject(processInformation.hProcess, INFINITE);
-        switch (waitResult)
-        {
-        case WAIT_OBJECT_0:
-            break;
-        case WAIT_FAILED:
-            return HRESULT_FROM_WIN32(GetLastError());
-        case WAIT_ABANDONED:
-        case WAIT_TIMEOUT:
-        default:
-            return E_UNEXPECTED;
-        }
-        if (!GetExitCodeProcess(processInformation.hProcess, &exitCode))
-        {
-            return HRESULT_FROM_WIN32(GetLastError());
-        }
-
-        return S_OK;
+        throw new Exception("Child process failed to start");
     }
+    await process.WaitForExitAsync();
+    return process.ExitCode;
+}
 
-    std::filesystem::path GetPlatformSDKPath()
+static string GetPlatformSDKPath()
+{
+    using (RegistryKey? sdkKey = Registry.LocalMachine.OpenSubKey("SOFTWARE\\WOW6432Node\\Microsoft\\Microsoft SDKs\\Windows\\v10.0"))
     {
-        wil::unique_hkey hKey;
-        std::wstring sdkRegPath{ LR"(SOFTWARE\WOW6432Node\Microsoft\Microsoft SDKs\Windows\v10.0)" };
-        winrt::check_hresult(RegOpenKeyEx(HKEY_LOCAL_MACHINE, sdkRegPath.c_str(), 0, KEY_READ, &hKey));
+        string? installPath;
+        string? productVersion;
+        if ((sdkKey == null) ||
+            (sdkKey.GetValueKind("InstallationFolder") != RegistryValueKind.String) ||
+            (sdkKey.GetValueKind("ProductVersion") != RegistryValueKind.String) ||
+            string.IsNullOrEmpty(installPath = sdkKey.GetValue("InstallationFolder") as string) ||
+            string.IsNullOrEmpty(productVersion = sdkKey.GetValue("ProductVersion") as string))
+        {
+            throw new InvalidOperationException();
+        }
 
-        std::wstring installPathKeyName{ L"InstallationFolder" };
-        WCHAR installPathBuffer[MAX_PATH];
-        DWORD installPathBufferLength = sizeof(installPathBuffer);
-        winrt::check_hresult(RegGetValueW(
-            hKey.get(),
-            nullptr,
-            installPathKeyName.c_str(),
-            RRF_RT_REG_SZ,
-            nullptr /* pdwType */,
-            &installPathBuffer,
-            &installPathBufferLength));
-        std::wstring installPathString{ installPathBuffer };
-
-        std::wstring productVersionKeyName{ L"ProductVersion" };
-        WCHAR productVersionBuffer[MAX_PATH];
-        DWORD productVersionBufferLength = sizeof(productVersionBuffer);
-        winrt::check_hresult(RegGetValueW(
-            hKey.get(),
-            nullptr,
-            productVersionKeyName.c_str(),
-            RRF_RT_REG_SZ,
-            nullptr /* pdwType */,
-            &productVersionBuffer,
-            &productVersionBufferLength));
-        std::wstring productVersionString{ productVersionBuffer };
         // The install path of the platform sdk in the filesystem always uses version format x.x.x.x
         // even though the version string in the registry may be stored as x.x if the full version is
         // x.x.0.0 
-        auto versionPartsFound = std::count(productVersionString.begin(), productVersionString.end(), '.') + 1;
-        INT64 versionPartsRequired = 4;
-        INT64 versionDigitsToAdd = versionPartsRequired - versionPartsFound;
-        for (auto i = 0; i < versionDigitsToAdd; i++)
+        int versionPartsFound = productVersion.Count(c => c == '.') + 1;
+        int versionPartsRequired = 4;
+        int versionDigitsToAdd = versionPartsRequired - versionPartsFound;
+        for (int i = 0; i < versionDigitsToAdd; i++)
         {
-            productVersionString += L".0";
+            productVersion += ".0";
         }
-        std::wstring processorArchitecture{};
-        SYSTEM_INFO systemInfo;
-        GetNativeSystemInfo(&systemInfo);
-        switch (systemInfo.wProcessorArchitecture)
+        string processorArchitecture = "";
+        switch (System.Runtime.InteropServices.RuntimeInformation.OSArchitecture)
         {
-        case PROCESSOR_ARCHITECTURE_AMD64:
-            processorArchitecture += L"x64";
-            break;
-        case PROCESSOR_ARCHITECTURE_ARM:
-            processorArchitecture += L"arm";
-            break;
-        case PROCESSOR_ARCHITECTURE_ARM64:
-            processorArchitecture += L"arm64";
-            break;
-        case PROCESSOR_ARCHITECTURE_INTEL:
-            processorArchitecture += L"x86";
-            break;
-        case PROCESSOR_ARCHITECTURE_IA64:
-        case PROCESSOR_ARCHITECTURE_UNKNOWN:
-            winrt::throw_hresult(E_UNEXPECTED);
+            case System.Runtime.InteropServices.Architecture.X64:
+                processorArchitecture = "x64";
+                break;
+            case System.Runtime.InteropServices.Architecture.Arm:
+                processorArchitecture = "arm";
+                break;
+            case System.Runtime.InteropServices.Architecture.Arm64:
+                processorArchitecture = "arm64";
+                break;
+            case System.Runtime.InteropServices.Architecture.X86:
+                processorArchitecture = "x86";
+                break;
+            default:
+                throw new Exception("Unknown Windows SDK architecture");
         }
 
-        std::filesystem::path platformSDKExecutablePath = installPathString;
-        platformSDKExecutablePath /= L"bin";
-        platformSDKExecutablePath /= productVersionString;
-        platformSDKExecutablePath /= processorArchitecture;
-
+        string platformSDKExecutablePath = Path.Combine(installPath, "bin", productVersion, processorArchitecture);
         return platformSDKExecutablePath;
     }
 
-    void LaunchSignToolWithArguments(std::wstring arguments)
-    {
-        std::filesystem::path signToolPath = GetPlatformSDKPath();
-        signToolPath /= L"signtool.exe";
+    throw new Exception("Windows SDK Path not found in registry");
+}
 
-        std::wstring commandLine{ signToolPath };
-        commandLine += L" " + arguments;
-        DWORD exitCode{};
-        winrt::check_hresult(CreateProcessAndWaitForExitCode(commandLine, exitCode));
-        if (exitCode == EXIT_FAILURE)
-        {
-            winrt::throw_hresult(E_FAIL);
-        }
-    }
-
-    void Example_SignPackage(std::wstring pfxFile, std::wstring packageFile)
+static async Task Example_SignPackage(string pfxFile, string packageFile)
+{
+    string signToolPath = Path.Combine(GetPlatformSDKPath(), "signtool.exe");
+    string signToolArguments = "sign /fd SHA256 /f " + pfxFile + " " + packageFile;
+    int exitCode = await CreateProcessAndWaitForExitCodeAsync(signToolPath, signToolArguments);
+    if (exitCode != 0)
     {
-        std::wstring signToolArguments;
-        signToolArguments.append(L"sign /fd SHA256 /f ");
-        signToolArguments.append(pfxFile);
-        signToolArguments.append(L" " + packageFile);
-        LaunchSignToolWithArguments(signToolArguments);
+        throw new Exception("Signtool failed with argumemnts: " + signToolArguments);
     }
+    return;
+}
 ```
 
 # 3. API Details
