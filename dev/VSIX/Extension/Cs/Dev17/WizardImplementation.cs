@@ -18,40 +18,39 @@ namespace WindowsAppSDK.TemplateUtilities
 {
 	public class NuGetPackageInstaller : IWizard
 	{
-		private string _packageId;
-		private Project _project;
-		private IComponentModel _componentModel;
-		IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
-		public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
-		{
-			ThreadHelper.ThrowIfNotOnUIThread();
+        private string _packageId;
+        private Project _project;
+        private IComponentModel _componentModel;
+        private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
 
-			if (replacementsDictionary.TryGetValue("$wizarddata$", out string wizardDataXml))
-			{
-				// Parse the XML
-				XDocument xDoc = XDocument.Parse(wizardDataXml);
+        public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
 
-				// Extract the default namespace from the XML value
-				XNamespace ns = xDoc.Root.GetDefaultNamespace();
+            _packageId = ExtractPackageId(replacementsDictionary);
+            _componentModel = (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
+            _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
+            _nugetProjectUpdateEvents.SolutionRestoreFinished += OnSolutionRestoreFinished;
+        }
+        private string ExtractPackageId(Dictionary<string, string> replacementsDictionary)
+        {
+            if (replacementsDictionary.TryGetValue("$wizarddata$", out string wizardDataXml))
+            {
+                XDocument xDoc = XDocument.Parse(wizardDataXml);
+                XNamespace ns = xDoc.Root.GetDefaultNamespace();
+                string packageId = xDoc.Descendants(ns + "package")
+                                      .Attributes("id")
+                                      .Select(attr => attr.Value)
+                                      .FirstOrDefault();
 
-				string packageId = xDoc.Descendants(ns + "package")
-									  .Attributes("id")
-									  .Select(attr => attr.Value)
-									  .FirstOrDefault();
-
-				// Check if the packageId is not null or empty
-				if (!string.IsNullOrEmpty(packageId))
-				{
-					_packageId = packageId;
-				}
-			}
-
-			_componentModel = (IComponentModel)Microsoft.VisualStudio.Shell.ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
-
-			_nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
-			_nugetProjectUpdateEvents.SolutionRestoreFinished += OnSolutionRestoreFinished;
-		}
-		public void ProjectFinishedGenerating(Project project)
+                if (!string.IsNullOrEmpty(packageId))
+                {
+                    return packageId;
+                }
+            }
+            return null;
+        }
+        public void ProjectFinishedGenerating(Project project)
 		{
 			_project = project;
 		}
@@ -76,38 +75,65 @@ namespace WindowsAppSDK.TemplateUtilities
 		}
 		private Task InstallNuGetPackageAsync()
 		{
-			IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
             if (string.IsNullOrEmpty(_packageId))
             {
                 string message = "Failed to install the NuGet package. The package ID provided in the template configuration is either missing or invalid. Please ensure the template is correctly configured with a valid package ID.";
-
-                // Use the Run method to synchronously switch to and execute on the UI thread
-                ThreadHelper.JoinableTaskFactory.Run(async delegate
-                {
-                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-                    VsShellUtilities.ShowMessageBox(
-                        ServiceProvider.GlobalProvider,
-                        message,
-                        "Error",
-                        OLEMSGICON.OLEMSGICON_CRITICAL,
-                        OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                        OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-                });
+                DisplayMessageToUser(message, "Error", OLEMSGICON.OLEMSGICON_CRITICAL);
+                LogError(message);
                 return Task.CompletedTask;
             }
-
+            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
             try
-			{
-				installer.InstallPackage(null, _project, _packageId, "", false);
-			}
-			catch (Exception ex)
-			{
+            {
+                installer.InstallPackage(null, _project, _packageId, "", false);
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = "Failed to install the Microsoft.WindowsAppSDK package. You can try installing it manually from the following link: https://www.nuget.org/packages/Microsoft.WindowsAppSDK";
+                DisplayMessageToUser(errorMessage, "Installation Error", OLEMSGICON.OLEMSGICON_CRITICAL);
 
-			}
-			return Task.CompletedTask;
+                string logMessage = $"Failed to install Microsoft.WindowsAppSDK package. Exception details: \n" +
+                                    $"Message: {ex.Message}\n" +
+                                    $"Source: {ex.Source}\n" +
+                                    $"Stack Trace: {ex.StackTrace}\n" +
+                                    $"Target Site: {ex.TargetSite}\n";
+
+                if (ex.InnerException != null)
+                {
+                    logMessage += $"Inner Exception Message: {ex.InnerException.Message}\n" +
+                                  $"Inner Exception Stack Trace: {ex.InnerException.StackTrace}\n";
+                }
+                LogError(logMessage);
+            }
+
+            return Task.CompletedTask;
 		}
-		public bool ShouldAddProjectItem(string _)
+        private void DisplayMessageToUser(string message, string title, OLEMSGICON icon)
+        {
+            ThreadHelper.JoinableTaskFactory.Run(async delegate
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                VsShellUtilities.ShowMessageBox(
+                    ServiceProvider.GlobalProvider,
+                    message,
+                    title,
+                    icon,
+                    OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            });
+        }
+        private void LogError(string message)
+        {
+            IVsActivityLog log = ServiceProvider.GlobalProvider.GetService(typeof(SVsActivityLog)) as IVsActivityLog;
+            if (log != null)
+            {
+                log.LogEntry(
+                    (UInt32)__ACTIVITYLOG_ENTRYTYPE.ALE_ERROR,
+                    "WindowsAppSDK.TemplateUtilities",
+                    message);
+            }
+        }
+        public bool ShouldAddProjectItem(string _)
 		{
 			return true;
 		}
