@@ -80,7 +80,6 @@ namespace WindowsAppSDK.TemplateUtilities
                 string message = "Failed to install the NuGet package. The package ID provided in the template configuration is either missing or invalid. Please ensure the template is correctly configured with a valid package ID.";
                 DisplayMessageToUser(message, "Error", OLEMSGICON.OLEMSGICON_CRITICAL);
                 LogError(message);
-                return Task.CompletedTask;
             }
             IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
             try
