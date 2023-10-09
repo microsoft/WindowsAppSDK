@@ -89,7 +89,7 @@ namespace WindowsAppSDK.TemplateUtilities
             }
             catch (Exception ex)
             {
-                string errorMessage = "Failed to install the Microsoft.WindowsAppSDK package. You can try installing it manually from the following link: https://www.nuget.org/packages/Microsoft.WindowsAppSDK";
+                string errorMessage = "Failed to install the Microsoft.WindowsAppSDK package. You can try installing it manually from: https://www.nuget.org/packages/Microsoft.WindowsAppSDK";
                 DisplayMessageToUser(errorMessage, "Installation Error", OLEMSGICON.OLEMSGICON_CRITICAL);
 
                 string logMessage = $"Failed to install Microsoft.WindowsAppSDK package. Exception details: \n" +
