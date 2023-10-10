@@ -31,12 +31,13 @@ The API provides a WinRT interface that supports:
 4. Creation of Kozani packages.
 
 Creation of Kozani packages is a new feature that has not existed in other msix packaging tools. The
-other features have previously been available in command line tools discussed in the appendix.
+other features in this spec have previously been available in command line tools discussed in the
+appendix.
 
 Kozani packages are msix packages that have been optimized for size by removing unnecessary
 resources. All existing tools that work with msix packages are compatible with Kozani packages.
 Kozani packages can be created manually without this API by modifying the files, manifest, and
-resource index of an existing package using existing win32 apis.
+resource index of an existing package using existing APIs.
 
 # 2. Examples
 
@@ -356,6 +357,10 @@ namespace Microsoft.Kozani.MakeMSIX
         /// If field is empty, all scale factors from the original package are maintained.
         Windows.Foundation.Collections.IVector<UInt32> ScaleFactors{ get; };
 
+        /// DirectX feature levels supported by the output package
+        /// If field is empty, all DirectX feature levels from the original package are maintained.
+        Windows.Foundation.Collections.IVector<String> DXFeatureLevels{ get; };
+
         /// Overwrite output file if it already exists.
         /// Defaults to true.
         Boolean OverwriteOutputFileIfExists;
@@ -373,7 +378,7 @@ namespace Microsoft.Kozani.MakeMSIX
         CreateBundleOptions();
 
         /// Create as a flat bundle. Package locations will be stored as external path references
-        /// rather than being stored inside the msixbundle file itself. 
+        /// to files outside the msixbundle file. 
         /// Defaults to false.
         Boolean FlatBundle;
 
@@ -436,7 +441,10 @@ namespace Microsoft.Kozani.MakeMSIX
         
         /// Publisher of the package
         String Publisher{ get; };
-        
+
+        /// PublisherId of the package
+        String PublisherId{ get; };
+
         /// Version of the package
         Windows.ApplicationModel.PackageVersion Version{ get; };
         
@@ -464,6 +472,9 @@ namespace Microsoft.Kozani.MakeMSIX
 
         /// ScaleFactors supported by the package
         Windows.Foundation.Collections.IVectorView<UInt32> ScaleFactors{ get; };
+
+        /// DirectX feature levels supported by the package
+        Windows.Foundation.Collections.IVectorView<String> DXFeatureLevels{ get; };
     }
 
     /// Static methods for creating and unpacking packages.
@@ -527,35 +538,36 @@ namespace Microsoft.Kozani.MakeMSIX
 # 5. Existing interfaces and options
 
 The existing tools are:
--   [Makeappx.exe](https://learn.microsoft.com/en-us/windows/win32/appxpkg/make-appx-package--makeappx-exe-)
-    Shipped in Windows' Platform SDK.
-    Exposes pack, unpack, bundle, unbundle, encrypt, decrypt and content group mapping.
-    Makeappx defines and uses its own file formats for encryption key files and content group
-    mapping to allow creation of packages with different payloads from the same folder.
+- [Makeappx.exe](https://learn.microsoft.com/en-us/windows/win32/appxpkg/make-appx-package--makeappx-exe-)
+    - Shipped in Windows' Platform SDK.
+    - Exposes pack, unpack, bundle, unbundle, encrypt, decrypt and content group mapping.
+    - Makeappx defines and uses its own file formats for encryption key files and content group
+      mapping to allow creation of packages with different payloads from the same folder.
 
--   [Makemsix.exe](https://github.com/Microsoft/msix-packaging) Available via the msix-packaging
-    project. Exposes pack, unpack, unbundle, and bundle* commands (*Bundle command only supports
-    creation of
-    [flat bundles](https://learn.microsoft.com/en-us/windows/msix/package/flat-bundles). Flat
-    bundles are bundles where package locations are stored as external path references rather than
-    being stored inside the msixbundle file itself. Flat bundles are referred to as sparse bundles
-    in the makeappx documentation).
+- [Makemsix.exe](https://github.com/Microsoft/msix-packaging) 
+    - Available via the msix-packaging project.
+    - Exposes pack, unpack, unbundle, and bundle* commands
+        - (*Bundle command only supports creation of
+          [flat bundles](https://learn.microsoft.com/en-us/windows/msix/package/flat-bundles). Flat
+          bundles are bundles where package locations are stored as external path references rather
+          than being stored inside the msixbundle file itself. Flat bundles are referred to as
+          sparse bundles in the makeappx documentation).
     
--   [Msixmgr.exe](https://github.com/Microsoft/msix-packaging) Available via the msix-packaging
-    project and
-    [direct download from learn.microsoft.com](https://learn.microsoft.com/en-us/azure/virtual-desktop/app-attach-msixmgr).
-    Exposes "unpack" command to convert msix packages to vhd, vhdx, cim image files.
+- [Msixmgr.exe](https://github.com/Microsoft/msix-packaging) 
+    - Available via the msix-packaging project and
+      [direct download from learn.microsoft.com](https://learn.microsoft.com/en-us/azure/virtual-desktop/app-attach-msixmgr).
+    - Exposes "unpack" command to convert msix packages to vhd, vhdx, cim image files.
 
 None of the existing tools provide a programmatic interface for all aspects of packaging.
 
-Makeappx.exe provides the only complete implementation of packaging and bundling but requires
+- Makeappx.exe provides the only complete implementation of packaging and bundling but requires
 process creation and does not return any specific errors from process exit. It also does not support
 any of the Azure app attach scenarios.
 
-Makemsix.exe is a cross-platform implementation of packaging, but does not support a complete set of
+- Makemsix.exe is a cross-platform implementation of packaging, but does not support a complete set of
 bundling features. The functionality is exposed as a command line as well as flat dll exports.
 
-Msixmgr.exe is mostly for specific Azure app attach packaging scenarios not covered by the other
+- Msixmgr.exe is mostly for specific Azure app attach packaging scenarios not covered by the other
 tools. To use it programmatically would require either process creation or building the
 msix-packaging github project and linking the static lib it produces into a project.
 
@@ -917,7 +929,7 @@ after packaging is complete. The Appx SIP knows how to sign packages, but not vh
 directories. The result is that creating a vhdx with an appx signature file (appxsignature.p7x)
 requires first creating the package, then signing it, then creating the vhdx. Allowing creation of a
 cim, vhd, or vhdx file directly from a directory seems likely to cause confusion for developers who
-may not realize that they won't be able to sign the package in the image. 
+may not realize that they won't be able to sign the package in the image.
 
 This API always applies ACLs for the package to the folder, and never validates the signature so
 those options in msixmgr have not been exposed. If signature validation of a package (checking that
