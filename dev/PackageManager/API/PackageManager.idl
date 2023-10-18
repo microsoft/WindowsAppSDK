@@ -375,6 +375,9 @@ namespace Microsoft.Windows.Management.Deployment
         //TODO Ditto PackageSet operations of Stage, Register, Repair, Reset
 
         //TODO Boolean IsRegistrationPending(String packageFamilyName);
+        //
+        //TODO [method_name("IsRegistrationPendingForUser")]
+        //TODO Boolean IsRegistrationPending(String userSecurityId, String packageFamilyName);
     }
 
     [feature(Feature_PackageManager)]
