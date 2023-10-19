@@ -1,0 +1,90 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include <TerminalVelocityFeatures-ApplicationData.h>
+
+namespace Microsoft.Windows.Storage
+{
+    [feature(Feature_ApplicationData)]
+    [contractversion(1)]
+    apicontract ApplicationDataContract{};
+
+    [feature(Feature_ApplicationData)]
+    [contract(ApplicationDataContract, 1)]
+    enum ApplicationDataLocality
+    {
+        // NOTE: Values 0-99 match Windows.Storage.ApplicationDataLocality.
+        //       Values 1000+ are unique to us here.
+        Local = 0,
+        LocalCache = 3,
+        Roaming = 1,
+        SharedLocal = 4,
+        Temporary = 2,
+        Machine = 1000,
+    };
+
+    [feature(Feature_ApplicationData)]
+    [contract(ApplicationDataContract, 1)]
+    runtimeclass ApplicationDataContainer
+    {
+        ApplicationDataContainer();
+
+        Windows.Foundation.Map<String, ApplicationDataContainer> Containers { get; };
+        String Name { get; };
+        Values Windows.Foundation.PropertySet { get; };
+
+        void Close();
+        void Dispose();
+
+        ApplicationDataContainer CreateContainer(String name, ApplicationDataCreateDisposition disposition);
+        void DeleteContainer(String name);
+    };
+
+    [feature(Feature_PackageManager)]
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass ApplicationData
+    {
+        /// Get an instance of ApplicationData
+        /// @note Requires the current process has package identity.
+        /// @note This is equivalent to Windows.Stoarge.ApplicationData.Current.
+        static ApplicationData GetDefault();
+
+        /// Get an instance of ApplicationData for the specified package family.
+        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.CreateForPackageFamily()
+        static ApplicationData GetForPackageFamily(String packageFamilyName);
+
+        /// Get an instance of ApplicationData for the specified user.
+        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.GetForUserAsync()
+        Windows.Foundation.IAsyncOperation<ApplicationData> GetForUserAsync(Windows.System.User user);
+
+        /// Get an instance of ApplicationData for the specified unpackaged app.
+        static ApplicationData GetForUnpackaged(String publisher, String name);
+
+        String LocalCachePath { get; };
+        String LocalPath { get; };
+        String MachinePath { get; };
+        String RoamingPath { get; };
+        String SharedLocalPath { get; };
+        String TemporaryPath { get; };
+
+        Windows.Storage.StorageFolder LocalCacheFolder { get; };
+        Windows.Storage.StorageFolder LocalFolder { get; };
+        Windows.Storage.StorageFolder MachineFolder { get; };
+        Windows.Storage.StorageFolder RoamingFolder { get; };
+        Windows.Storage.StorageFolder SharedLocalFolder { get; };
+        Windows.Storage.StorageFolder TemporaryFolder { get; };
+
+        ApplicationDataContainer LocalSettings { get; };
+        ApplicationDataContainer RoamingSettings { get; };
+
+        Windows.Foundation.IAsyncAction ClearAsync();
+        Windows.Foundation.IAsyncAction ClearPublisherCacheFolderAsync();
+        Windows.Foundation.IAsyncAction ClearMachineFolderAsync();
+
+        void Close();
+        void Dispose();
+
+        Windows.Storage.StorageFolder GetPublisherCacheFolder(String folderName);
+        String GetPublisherCachePath(String folderName);
+    }
+}
