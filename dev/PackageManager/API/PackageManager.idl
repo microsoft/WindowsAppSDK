@@ -299,6 +299,7 @@ namespace Microsoft.Windows.Management.Deployment
     {
         RemovePackageOptions();
 
+        Boolean OkIfNotFound;
         Boolean PreserveApplicationData;
         Boolean PreserveRoamableApplicationData;
         Boolean RemoveForAllUsers;
