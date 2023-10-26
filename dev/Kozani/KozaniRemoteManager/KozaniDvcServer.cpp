@@ -4,7 +4,6 @@
 #pragma once
 
 #include "pch.h"
-#include <shobjidl.h>
 #include <pchannel.h>
 #include <Kozani.DVC.pb.h>
 
@@ -83,6 +82,16 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         return S_OK;
     }
 
+    void KozaniDvcServer::ProcessClientConnection(_In_ PCSTR connectionId, _In_ IKozaniApplicationLauncher* appLauncher)
+    {
+        {
+            auto lock{ m_appLauncherLock.lock_exclusive() };
+            m_appLauncher = appLauncher;
+        }
+
+        SendConnectionAck(connectionId);
+    }
+
     void KozaniDvcServer::OpenDvc()
     {
         auto lock{ std::unique_lock<std::recursive_mutex>(m_dvcLock) };
@@ -151,13 +160,13 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             }
 
             HANDLE events[]{ m_dvcThreadExit.get(), readComplete.get() };
-            LOG_HR_MSG(KOZANI_S_INFO, "[DVC] Listener thread starting to wait");
+            LOG_HR_MSG(KOZANI_E_INFO, "[DVC] Listener thread starting to wait");
 
             // When we reach this point, the DVC listener thread has passed setup phase and is running.
             m_dvcThreadStarted.SetEvent();
 
             const DWORD result{ WaitForMultipleObjects(ARRAYSIZE(events), events, FALSE, INFINITE) };
-            LOG_HR_MSG(KOZANI_S_INFO, "[DVC] Listener thread wait completed (result=0x%x)", result);
+            LOG_HR_MSG(KOZANI_E_INFO, "[DVC] Listener thread wait completed (result=0x%x)", result);
             if (result == WAIT_FAILED)
             {
                 hr = HRESULT_FROM_WIN32(GetLastError());
@@ -170,7 +179,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                 case WAIT_OBJECT_0:
                 {
                     // Thread exit handle signaled.
-                    LOG_HR_MSG(KOZANI_S_INFO, "[DVC] Thread exit event handled");
+                    LOG_HR_MSG(KOZANI_E_INFO, "[DVC] Thread exit event handled");
                     return S_OK;
                 }
 
@@ -346,6 +355,10 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
                 connectionManager.m_activityMap.erase(pdu.activity_id());
             }
+
+            wchar_t textBuffer[300]{};
+            swprintf(textBuffer, ARRAYSIZE(textBuffer), L"Error code: 0x%x, message: %hs", hr, errorMessage.c_str());
+            MessageBox(nullptr, textBuffer, L"Error", MB_ICONERROR);
         }
     }
     CATCH_LOG_RETURN()
@@ -386,16 +399,19 @@ namespace Microsoft::Kozani::KozaniRemoteManager
             }
         }
 
-        wil::com_ptr<IApplicationActivationManager> aam;
-        HRESULT hrCoCreateInstance{ CoCreateInstance(CLSID_ApplicationActivationManager, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&aam)) };
-        if (FAILED(hrCoCreateInstance))
-        {
-            errorMessage = "Failed to CoCreateInstance CLSID_ApplicationActivationManager.";
-            RETURN_HR(hrCoCreateInstance);
-        }
-
         std::wstring appUserModelId{ ::Microsoft::Utf8::ToUtf16(activateAppRequest.app_user_model_id()) };
         DWORD processId{};
+
+        wil::com_ptr<IKozaniApplicationLauncher> appLauncher;
+        {
+            // Lock and assign m_appLauncher to local com_ptr appLauncher, which adds ref count of the IKozaniApplicationLauncher object to 
+            // keep it alive through this method. m_appLauncher can be replaced with a different object and deref in another thread when there is another
+            // client connection coming in. Do not hold the lock during app activation so if the current activation takes a long time it will not block 
+            // subsequent activation requests.
+            auto lock{ m_appLauncherLock.lock_shared() };
+            appLauncher = m_appLauncher;
+        }
+
         switch (activateAppRequest.activation_kind())
         {
             case Dvc::ActivationKind::Launch:
@@ -412,8 +428,8 @@ namespace Microsoft::Kozani::KozaniRemoteManager
 
                         launchArgs = ::Microsoft::Utf8::ToUtf16(args.arguments());
                     }
-                    
-                    HRESULT hrActivateApp{ aam->ActivateApplication(appUserModelId.c_str(), launchArgs.c_str(), AO_NONE, &processId) };
+
+                    HRESULT hrActivateApp{ appLauncher->Launch(appUserModelId.c_str(), launchArgs.c_str(), &processId) };
                     if (FAILED(hrActivateApp))
                     {
                         errorMessage = "Failed to Activate app.";
@@ -423,11 +439,11 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                 break;
 
             case Dvc::ActivationKind::File:
-                // ToDo: https://task.ms/43963854 support FTA launch.
+                RETURN_IF_FAILED(ProcessFileActivationRequest(appLauncher.get(), appUserModelId, activateAppRequest, processId, errorMessage));
                 break;
 
             case Dvc::ActivationKind::Protocol:
-                // ToDo: https://task.ms/43963854 support protocol launch.
+                RETURN_IF_FAILED(ProcessProtocolActivationRequest(appLauncher.get(), appUserModelId, activateAppRequest, processId, errorMessage));
                 break;
 
             default:
@@ -482,6 +498,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
                 {
                     const DWORD errorOpenProcess{ LOG_LAST_ERROR_MSG("ProcessId: %u", processId) };
 
+                    //connectionManager.m_processIdMap.erase(processId);
                     connectionManager.m_activityMap.erase(iter);
                     errorMessage = "Failed to OpenProcess after the app is activated. The app may have crashed. Process Id: " + std::to_string(processId);
                     RETURN_WIN32(errorOpenProcess);
@@ -508,6 +525,101 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         }
 
         SendActivateAppResult(pdu.activity_id(), S_OK, processId, isNewInstance);
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    HRESULT KozaniDvcServer::ProcessFileActivationRequest(
+        _In_ IKozaniApplicationLauncher* appLauncher,
+        const std::wstring& appUserModelId,
+        const Dvc::ActivateAppRequest& activateAppRequest,
+        _Out_ DWORD& processId,
+        _Out_ std::string& errorMessage) noexcept try
+    {
+        if (activateAppRequest.arguments().empty())
+        {
+            errorMessage = "Arguments for File activation cannot be empty";
+            RETURN_WIN32(ERROR_INVALID_DATA);
+        }
+
+        Dvc::FileActivationArgs args;
+        if (!args.ParseFromString(activateAppRequest.arguments()))
+        {
+            errorMessage = "Failed to parse File activation arguments";
+            RETURN_WIN32(ERROR_INVALID_DATA);
+        }
+
+        int filePathsCount{ args.file_paths_size() };
+
+        // There should be at least 1 file path in the FileActivationArgs for file activation to work.
+        RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_DATA), filePathsCount <= 0);
+
+        std::vector<std::wstring> filePathArray;
+        wistd::unique_ptr<PCWSTR> filePaths{ new PCWSTR[filePathsCount] };
+        RETURN_IF_NULL_ALLOC(filePaths);
+
+        PCWSTR* pFilePaths{ filePaths.get() };
+        ZeroMemory(pFilePaths, sizeof(PCWSTR) * filePathsCount);
+
+        for (int i = 0; i < filePathsCount; i++)
+        {
+            std::wstring clientLocalPath{ ::Microsoft::Utf8::ToUtf16(args.file_paths(i)) };
+            
+            filePathArray.emplace_back(GetRedirectedClientPath(clientLocalPath));
+            pFilePaths[i] = filePathArray.back().c_str();
+        }
+        
+        KozaniAppType appType{ GetAppType(appUserModelId) };
+        std::wstring verb{ ::Microsoft::Utf8::ToUtf16(args.verb()) };
+        HRESULT hrActivateApp{ appLauncher->LaunchFiles(appUserModelId.c_str(), verb.c_str(), filePathsCount, pFilePaths, &appType, &processId) };
+        if (FAILED(hrActivateApp))
+        {
+            errorMessage = "Failed to activate app for file ";
+            std::string path{ ::Microsoft::Utf8::ToUtf8(pFilePaths[0]) };
+            errorMessage += path;
+            RETURN_HR(hrActivateApp);
+        }
+
+        UpdateAppTypeIfNeeded(appUserModelId, appType);
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    HRESULT KozaniDvcServer::ProcessProtocolActivationRequest(
+        _In_ IKozaniApplicationLauncher* appLauncher,
+        const std::wstring& appUserModelId,
+        const Dvc::ActivateAppRequest& activateAppRequest,
+        _Out_ DWORD& processId,
+        _Out_ std::string& errorMessage) noexcept try
+    {
+        processId = 0;
+        errorMessage.clear();
+
+        if (activateAppRequest.arguments().empty())
+        {
+            errorMessage = "Arguments for Protocol activation cannot be empty";
+            RETURN_WIN32(ERROR_INVALID_DATA);
+        }
+
+        Dvc::ProtocolActivationArgs args;
+        if (!args.ParseFromString(activateAppRequest.arguments()))
+        {
+            errorMessage = "Failed to parse Protocol activation arguments";
+            RETURN_WIN32(ERROR_INVALID_DATA);
+        }
+
+        KozaniAppType appType{ GetAppType(appUserModelId) };
+        std::wstring uri{ ::Microsoft::Utf8::ToUtf16(args.uri()) };
+        HRESULT hrActivateApp{ appLauncher->LaunchUri(appUserModelId.c_str(), uri.c_str(), &appType, &processId) };
+        if (FAILED(hrActivateApp))
+        {
+            errorMessage = "Failed to activate app for URI: ";
+            std::string uriUtf8{ ::Microsoft::Utf8::ToUtf8(uri) };
+            errorMessage += uriUtf8;
+            RETURN_HR(hrActivateApp);
+        }
+
+        UpdateAppTypeIfNeeded(appUserModelId, appType);
         return S_OK;
     }
     CATCH_RETURN()
@@ -549,6 +661,23 @@ namespace Microsoft::Kozani::KozaniRemoteManager
     }
     CATCH_RETURN()
 
+    // Convert local path from the remote client to a path that can be addressed by the remote desktop server. Local drives of the client have been 
+    // rediected to the server so the server can directly access them. For example, local path "C:\data\MyFile.txt" will be redirected to the server
+    // side with addressable path "\\tsclient\C\data\MyFile.txt"
+    std::wstring KozaniDvcServer::GetRedirectedClientPath(const std::wstring& localPath)
+    {
+        // UNC paths are not redirected so we return it as it is.
+        if (localPath.starts_with(L"\\\\"))
+        {
+            return localPath;
+        }
+
+        std::wstring redirectedPath{ L"\\\\tsclient\\" };
+        redirectedPath += localPath[0];
+        redirectedPath += localPath.substr(2);
+        return redirectedPath;
+    }
+
     bool KozaniDvcServer::IsActivationKindSupported(Dvc::ActivationKind kind)
     {
         switch (kind)
@@ -581,7 +710,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         m_dvcListenerThread = std::thread(&KozaniDvcServer::ProcessDvcIncomingDataThreadFunc, this);
 
         HANDLE events[] = { m_dvcThreadStarted.get(), m_dvcThreadExit.get() };
-        LOG_HR_MSG(KOZANI_S_INFO, "[StartDvcListenerThread] Waiting for listener thread starting status");
+        LOG_HR_MSG(KOZANI_E_INFO, "[StartDvcListenerThread] Waiting for listener thread starting status");
 
         // Wait for listerner thread to start successfully. Wait no longer than 5s. 
         DWORD result = WaitForMultipleObjects(ARRAYSIZE(events), events, FALSE, 5000);
@@ -591,7 +720,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         {
             case WAIT_OBJECT_0:
                 // Thread successfully started and is running.
-                LOG_HR_MSG(KOZANI_S_INFO, "[StartDvcListenerThread] Listener thread successfully started");
+                LOG_HR_MSG(KOZANI_E_INFO, "[StartDvcListenerThread] Listener thread successfully started");
                 return;
 
             case WAIT_OBJECT_0 + 1:
@@ -714,5 +843,39 @@ namespace Microsoft::Kozani::KozaniRemoteManager
     {
         std::string pdu{ CreateAppTerminationNoticePdu(activityId) };
         SendDvcProtocolData(pdu.c_str(), static_cast<UINT32>(pdu.size()));
+    }
+
+    // Look up the type of the app from the m_appTypeMap as an optimization, as the launcher finds the type of the app (UWP or packaged desktop app) 
+    // by different activation API behaviors. At first, the app type is unknown for a particular AUMID. Once it is activated for file or protocol,
+    // the appLauncher returns the app type, so we can cache in the map for faster activation next time.
+    KozaniAppType KozaniDvcServer::GetAppType(const std::wstring& appUserModelId)
+    {
+        auto lock{ m_appTypeMapLock.lock_shared() };
+
+        KozaniAppType appType{ KozaniAppType_Unknown };
+        auto iter{ m_appTypeMap.find(appUserModelId) };
+        if (iter != m_appTypeMap.end())
+        {
+            appType = iter->second;
+        }
+        return appType;
+    }
+
+    void KozaniDvcServer::UpdateAppTypeIfNeeded(const std::wstring& appUserModelId, KozaniAppType appType)
+    {
+        auto lock{ m_appTypeMapLock.lock_exclusive() };
+
+        auto iter{ m_appTypeMap.find(appUserModelId) };
+        if (iter != m_appTypeMap.end())
+        {
+            if (iter->second != appType)
+            {
+                iter->second = appType;
+            }
+        }
+        else
+        {
+            m_appTypeMap[appUserModelId] = appType;
+        }
     }
 }

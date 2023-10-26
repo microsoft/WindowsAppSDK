@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -9,13 +9,89 @@
 
 namespace MddCore::Win11
 {
-decltype(&::TryCreatePackageDependency) g_win11TryCreatePackageDependency{};
-decltype(&::DeletePackageDependency) g_win11DeletePackageDependency{};
-decltype(&::AddPackageDependency) g_win11AddPackageDependency{};
-decltype(&::RemovePackageDependency) g_win11RemovePackageDependency{};
-decltype(&::GetResolvedPackageFullNameForPackageDependency) g_win11GetResolvedPackageFullNameForPackageDependency{};
-decltype(&::GetIdForPackageDependencyContext) g_win11GetIdForPackageDependencyContext{};
-decltype(&::GetPackageGraphRevisionId) g_win11GetPackageGraphRevisionId{};
+static HMODULE g_dllApisetAppmodelRuntime_1_6{};
+static decltype(&::TryCreatePackageDependency) g_win11TryCreatePackageDependency{};
+static decltype(&::DeletePackageDependency) g_win11DeletePackageDependency{};
+static decltype(&::AddPackageDependency) g_win11AddPackageDependency{};
+static decltype(&::RemovePackageDependency) g_win11RemovePackageDependency{};
+static decltype(&::GetResolvedPackageFullNameForPackageDependency) g_win11GetResolvedPackageFullNameForPackageDependency{};
+static decltype(&::GetIdForPackageDependencyContext) g_win11GetIdForPackageDependencyContext{};
+static decltype(&::GetPackageGraphRevisionId) g_win11GetPackageGraphRevisionId{};
+
+constexpr PackageDependencyLifetimeKind ToLifetimeKind(MddPackageDependencyLifetimeKind lifetimeKind)
+{
+    switch (lifetimeKind)
+    {
+        case MddPackageDependencyLifetimeKind::Process: return PackageDependencyLifetimeKind_Process;
+        case MddPackageDependencyLifetimeKind::FilePath: return PackageDependencyLifetimeKind_FilePath;
+        case MddPackageDependencyLifetimeKind::RegistryKey: return PackageDependencyLifetimeKind_RegistryKey;
+        default: THROW_HR_MSG(E_UNEXPECTED, "Unknown MddPackageDependencyLifetimeKind (%d)", lifetimeKind);
+    };
+}
+
+constexpr PackageDependencyLifetimeKind ToLifetimeKind(winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind)
+{
+    switch (lifetimeKind)
+    {
+        case winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind::Process: return PackageDependencyLifetimeKind_Process;
+        case winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind::FilePath: return PackageDependencyLifetimeKind_FilePath;
+        case winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind::RegistryKey: return PackageDependencyLifetimeKind_RegistryKey;
+        default: THROW_HR_MSG(E_UNEXPECTED, "Unknown winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeKind (%d)", lifetimeKind);
+    };
+}
+}
+
+HRESULT WINAPI MddWin11Initialize() noexcept
+{
+    if (!MddCore::Win11::IsSupported())
+    {
+        return S_OK;
+    }
+
+    HMODULE dllApisetAppmodelRuntime_1_6{ LoadLibraryExW(L"api-ms-win-appmodel-runtime-l1-1-6.dll", nullptr, 0) };
+    FAIL_FAST_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllApisetAppmodelRuntime_1_6);
+
+    auto win11TryCreatePackageDependency{ GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_6, TryCreatePackageDependency) };
+    RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), win11TryCreatePackageDependency);
+    auto win11DeletePackageDependency{ GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_6, DeletePackageDependency) };
+    RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), win11DeletePackageDependency);
+    auto win11AddPackageDependency{ GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_6, AddPackageDependency) };
+    RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), win11AddPackageDependency);
+    auto win11RemovePackageDependency{ GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_6, RemovePackageDependency) };
+    RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), win11RemovePackageDependency);
+    auto win11GetResolvedPackageFullNameForPackageDependency{ GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_6, GetResolvedPackageFullNameForPackageDependency) };
+    RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), win11GetResolvedPackageFullNameForPackageDependency);
+    auto win11GetIdForPackageDependencyContext{ GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_6, GetIdForPackageDependencyContext) };
+    RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), win11GetIdForPackageDependencyContext);
+    auto win11GetPackageGraphRevisionId{ GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_6, GetPackageGraphRevisionId) };
+    RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), win11GetPackageGraphRevisionId);
+
+    MddCore::Win11::g_dllApisetAppmodelRuntime_1_6 = dllApisetAppmodelRuntime_1_6;
+    MddCore::Win11::g_win11TryCreatePackageDependency = win11TryCreatePackageDependency;
+    MddCore::Win11::g_win11DeletePackageDependency = win11DeletePackageDependency;
+    MddCore::Win11::g_win11AddPackageDependency = win11AddPackageDependency;
+    MddCore::Win11::g_win11RemovePackageDependency = win11RemovePackageDependency;
+    MddCore::Win11::g_win11GetResolvedPackageFullNameForPackageDependency = win11GetResolvedPackageFullNameForPackageDependency;
+    MddCore::Win11::g_win11GetIdForPackageDependencyContext = win11GetIdForPackageDependencyContext;
+    MddCore::Win11::g_win11GetPackageGraphRevisionId = win11GetPackageGraphRevisionId;
+    return S_OK;
+}
+
+HRESULT WINAPI MddWin11Shutdown() noexcept
+{
+    if (MddCore::Win11::g_dllApisetAppmodelRuntime_1_6)
+    {
+        MddCore::Win11::g_win11TryCreatePackageDependency = nullptr;
+        MddCore::Win11::g_win11DeletePackageDependency = nullptr;
+        MddCore::Win11::g_win11AddPackageDependency = nullptr;
+        MddCore::Win11::g_win11RemovePackageDependency = nullptr;
+        MddCore::Win11::g_win11GetResolvedPackageFullNameForPackageDependency = nullptr;
+        MddCore::Win11::g_win11GetIdForPackageDependencyContext = nullptr;
+        MddCore::Win11::g_win11GetPackageGraphRevisionId = nullptr;
+        FreeLibrary(MddCore::Win11::g_dllApisetAppmodelRuntime_1_6);
+        MddCore::Win11::g_dllApisetAppmodelRuntime_1_6 = nullptr;
+    }
+    return S_OK;
 }
 
 bool MddCore::Win11::IsSupported()
@@ -24,45 +100,39 @@ bool MddCore::Win11::IsSupported()
     return s_isSupported;
 }
 
-HRESULT MddCore::Win11::Initialize()
+HRESULT MddCore::Win11::TryCreatePackageDependency(
+    PSID user,
+    const winrt::hstring& packageFamilyName,
+    const winrt::Windows::ApplicationModel::PackageVersion& minVersion,
+    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures packageDependencyProcessorArchitectures,
+    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& options,
+    _Outptr_result_maybenull_ PWSTR* packageDependencyId)
 {
-    HMODULE dllApisetAppmodelRuntime_1_6{ LoadLibraryExW(L"api-ms-win-appmodel-runtime-l1-1-6.dll", nullptr, 0) };
-    FAIL_FAST_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllApisetAppmodelRuntime_1_6);
+    PCWSTR win11PackageFamilyName{ packageFamilyName.c_str() };
 
-    auto win11TryCreatePackageDependency{ GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_6, TryCreatePackageDependency) };
-    RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), g_win11TryCreatePackageDependency);
-    auto win11DeletePackageDependency{ GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_6, DeletePackageDependency) };
-    RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), g_win11DeletePackageDependency);
-    auto win11AddPackageDependency{ GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_6, AddPackageDependency) };
-    RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), g_win11AddPackageDependency);
-    auto win11RemovePackageDependency{ GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_6, RemovePackageDependency) };
-    RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), g_win11RemovePackageDependency);
-    auto win11GetResolvedPackageFullNameForPackageDependency{ GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_6, GetResolvedPackageFullNameForPackageDependency) };
-    RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), g_win11GetResolvedPackageFullNameForPackageDependency);
-    auto win11GetIdForPackageDependencyContext{ GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_6, GetIdForPackageDependencyContext) };
-    RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), g_win11GetIdForPackageDependencyContext);
-    auto win11GetPackageGraphRevisionId{ GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_6, GetPackageGraphRevisionId) };
-    RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), g_win11GetPackageGraphRevisionId);
+    const ::AppModel::Identity::PackageVersion minPackageVersion{ minVersion };
+    const PACKAGE_VERSION win11MinVersion{ minPackageVersion };
 
-    g_win11TryCreatePackageDependency = win11TryCreatePackageDependency;
-    g_win11DeletePackageDependency = win11DeletePackageDependency;
-    g_win11AddPackageDependency = win11AddPackageDependency;
-    g_win11RemovePackageDependency = win11RemovePackageDependency;
-    g_win11GetResolvedPackageFullNameForPackageDependency = win11GetResolvedPackageFullNameForPackageDependency;
-    g_win11GetIdForPackageDependencyContext = win11GetIdForPackageDependencyContext;
-    g_win11GetPackageGraphRevisionId = win11GetPackageGraphRevisionId;
+    auto win11PackageDependencyProcessorArchitectures{ PackageDependencyProcessorArchitectures_None };
+    WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_Neutral, WI_IsFlagSet(packageDependencyProcessorArchitectures, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Neutral));
+    WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_X86, WI_IsFlagSet(packageDependencyProcessorArchitectures, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::X86));
+    WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_X64, WI_IsFlagSet(packageDependencyProcessorArchitectures, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::X64));
+    WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_Arm, WI_IsFlagSet(packageDependencyProcessorArchitectures, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Arm));
+    WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_Arm64, WI_IsFlagSet(packageDependencyProcessorArchitectures, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Arm64));
+    WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_X86A64, WI_IsFlagSet(packageDependencyProcessorArchitectures, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::X86OnArm64));
+
+    const auto win11LifetimeKind{ ToLifetimeKind(options.LifetimeArtifactKind()) };
+
+    PCWSTR win11LifetimeArtifact{ options.LifetimeArtifact().c_str() };
+
+    auto win11Options{ CreatePackageDependencyOptions_None };
+    WI_SetFlagIf(win11Options, CreatePackageDependencyOptions_DoNotVerifyDependencyResolution, !options.VerifyDependencyResolution());
+    //TODO CreatePackageDependencyOptions_ScopeIsSystem
+
+    RETURN_IF_FAILED(g_win11TryCreatePackageDependency(user, win11PackageFamilyName, win11MinVersion,
+        win11PackageDependencyProcessorArchitectures, win11LifetimeKind, win11LifetimeArtifact,
+        win11Options, packageDependencyId));
     return S_OK;
-}
-
-void MddCore::Win11::Shutdown()
-{
-    g_win11TryCreatePackageDependency = nullptr;
-    g_win11DeletePackageDependency = nullptr;
-    g_win11AddPackageDependency = nullptr;
-    g_win11RemovePackageDependency = nullptr;
-    g_win11GetResolvedPackageFullNameForPackageDependency = nullptr;
-    g_win11GetIdForPackageDependencyContext = nullptr;
-    g_win11GetPackageGraphRevisionId = nullptr;
 }
 
 HRESULT MddCore::Win11::TryCreatePackageDependency(
@@ -75,35 +145,58 @@ HRESULT MddCore::Win11::TryCreatePackageDependency(
     MddCreatePackageDependencyOptions options,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId)
 {
-    static_assert(static_cast<int>(MddPackageDependencyProcessorArchitectures::None) == static_cast<int>(PackageDependencyProcessorArchitectures_None));
-    static_assert(static_cast<int>(MddPackageDependencyProcessorArchitectures::Neutral) == static_cast<int>(PackageDependencyProcessorArchitectures_Neutral));
-    static_assert(static_cast<int>(MddPackageDependencyProcessorArchitectures::X86) == static_cast<int>(PackageDependencyProcessorArchitectures_X86));
-    static_assert(static_cast<int>(MddPackageDependencyProcessorArchitectures::X64) == static_cast<int>(PackageDependencyProcessorArchitectures_X64));
-    static_assert(static_cast<int>(MddPackageDependencyProcessorArchitectures::Arm) == static_cast<int>(PackageDependencyProcessorArchitectures_Arm));
-    static_assert(static_cast<int>(MddPackageDependencyProcessorArchitectures::Arm64) == static_cast<int>(PackageDependencyProcessorArchitectures_Arm64));
-    static_assert(static_cast<int>(MddPackageDependencyProcessorArchitectures::X86OnArm64) == static_cast<int>(PackageDependencyProcessorArchitectures_X86A64));
-    auto win11PackageDependencyProcessorArchitectures{ static_cast<::PackageDependencyProcessorArchitectures>(packageDependencyProcessorArchitectures) };
+    const ::AppModel::Identity::PackageVersion win11MinVersion{ minVersion };
 
-    static_assert(static_cast<int>(MddPackageDependencyLifetimeKind::Process) == static_cast<int>(PackageDependencyLifetimeKind_Process));
-    static_assert(static_cast<int>(MddPackageDependencyLifetimeKind::FilePath) == static_cast<int>(PackageDependencyLifetimeKind_FilePath));
-    static_assert(static_cast<int>(MddPackageDependencyLifetimeKind::RegistryKey) == static_cast<int>(PackageDependencyLifetimeKind_RegistryKey));
-    auto win11LifetimeKind{ static_cast<::PackageDependencyLifetimeKind>(lifetimeKind) };
+    auto win11PackageDependencyProcessorArchitectures{ PackageDependencyProcessorArchitectures_None };
+    WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_Neutral, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::Neutral));
+    WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_X86, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::X86));
+    WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_X64, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::X64));
+    WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_Arm, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::Arm));
+    WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_Arm64, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::Arm64));
+    WI_SetFlagIf(win11PackageDependencyProcessorArchitectures, PackageDependencyProcessorArchitectures_X86A64, WI_IsFlagSet(packageDependencyProcessorArchitectures, MddPackageDependencyProcessorArchitectures::X86OnArm64));
 
-    static_assert(static_cast<int>(MddCreatePackageDependencyOptions::None) == static_cast<int>(CreatePackageDependencyOptions_None));
-    static_assert(static_cast<int>(MddCreatePackageDependencyOptions::DoNotVerifyDependencyResolution) == static_cast<int>(CreatePackageDependencyOptions_DoNotVerifyDependencyResolution));
-    static_assert(static_cast<int>(MddCreatePackageDependencyOptions::ScopeIsSystem) == static_cast<int>(CreatePackageDependencyOptions_ScopeIsSystem));
-    auto win11Options{ static_cast<::CreatePackageDependencyOptions>(options) };
+    const auto win11LifetimeKind{ ToLifetimeKind(lifetimeKind) };
 
-    RETURN_IF_FAILED(g_win11TryCreatePackageDependency(user, packageFamilyName, minVersion,
+    auto win11Options{ CreatePackageDependencyOptions_None };
+    WI_SetFlagIf(win11Options, CreatePackageDependencyOptions_DoNotVerifyDependencyResolution, WI_IsFlagSet(options, MddCreatePackageDependencyOptions::DoNotVerifyDependencyResolution));
+    WI_SetFlagIf(win11Options, CreatePackageDependencyOptions_ScopeIsSystem, WI_IsFlagSet(options, MddCreatePackageDependencyOptions::ScopeIsSystem));
+
+    RETURN_IF_FAILED(g_win11TryCreatePackageDependency(user, packageFamilyName, win11MinVersion,
         win11PackageDependencyProcessorArchitectures, win11LifetimeKind, lifetimeArtifact,
         win11Options, packageDependencyId));
     return S_OK;
 }
 
 void MddCore::Win11::DeletePackageDependency(
+    const winrt::hstring& packageDependencyId)
+{
+    DeletePackageDependency(packageDependencyId.c_str());
+}
+
+void MddCore::Win11::DeletePackageDependency(
     _In_ PCWSTR packageDependencyId)
 {
-    g_win11DeletePackageDependency(packageDependencyId);
+    (void)LOG_IF_FAILED(g_win11DeletePackageDependency(packageDependencyId));
+}
+
+HRESULT MddCore::Win11::AddPackageDependency(
+    const winrt::hstring& packageDependencyId,
+    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& options,
+    _Out_ MDD_PACKAGEDEPENDENCY_CONTEXT* packageDependencyContext,
+    _Outptr_opt_result_maybenull_ PWSTR* packageFullName)
+{
+    PCWSTR win11PackageDependencyId{ packageDependencyId.c_str() };
+
+    const auto win11Rank{ options.Rank() };
+
+    auto win11Options{ AddPackageDependencyOptions_None };
+    WI_SetFlagIf(win11Options, AddPackageDependencyOptions_PrependIfRankCollision, options.PrependIfRankCollision());
+
+    static_assert(sizeof(MDD_PACKAGEDEPENDENCY_CONTEXT) == sizeof(PACKAGEDEPENDENCY_CONTEXT));
+    auto win11PackageDependencyContext{ reinterpret_cast<PACKAGEDEPENDENCY_CONTEXT*>(packageDependencyContext) };
+
+    RETURN_IF_FAILED(g_win11AddPackageDependency(win11PackageDependencyId, win11Rank, win11Options, win11PackageDependencyContext, packageFullName));
+    return S_OK;
 }
 
 HRESULT MddCore::Win11::AddPackageDependency(
@@ -113,15 +206,20 @@ HRESULT MddCore::Win11::AddPackageDependency(
     _Out_ MDD_PACKAGEDEPENDENCY_CONTEXT* packageDependencyContext,
     _Outptr_opt_result_maybenull_ PWSTR* packageFullName)
 {
-    static_assert(static_cast<int>(MddAddPackageDependencyOptions::None) == static_cast<int>(AddPackageDependencyOptions_None));
-    static_assert(static_cast<int>(MddAddPackageDependencyOptions::PrependIfRankCollision) == static_cast<int>(AddPackageDependencyOptions_PrependIfRankCollision));
-    auto win11Options{ static_cast<::AddPackageDependencyOptions>(options) };
+    auto win11Options{ AddPackageDependencyOptions_None };
+    WI_SetFlagIf(win11Options, AddPackageDependencyOptions_PrependIfRankCollision, WI_IsFlagSet(options, MddAddPackageDependencyOptions::PrependIfRankCollision));
 
     static_assert(sizeof(MDD_PACKAGEDEPENDENCY_CONTEXT) == sizeof(PACKAGEDEPENDENCY_CONTEXT));
     auto win11PackageDependencyContext{ reinterpret_cast<PACKAGEDEPENDENCY_CONTEXT*>(packageDependencyContext) };
 
     RETURN_IF_FAILED(g_win11AddPackageDependency(packageDependencyId, rank, win11Options, win11PackageDependencyContext, packageFullName));
     return S_OK;
+}
+
+void MddCore::Win11::RemovePackageDependency(
+    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContextId packageDependencyContextId)
+{
+    return RemovePackageDependency(ToContext(packageDependencyContextId));
 }
 
 void MddCore::Win11::RemovePackageDependency(

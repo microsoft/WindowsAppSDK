@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #ifndef __WINDOWSAPPRUNTIME_TEST_PACKAGE_H
@@ -30,22 +30,28 @@
 #define WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.Singleton-Test"
 
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAMEPREFIX     L"WindowsAppRuntime.Test.DDLM"
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION        WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION        WINDOWSAPPRUNTIME_TEST_METADATA_VERSION
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING
+#define MSIX_PACKAGE_ARCHITECTURE_ARM       L"arm"
+#define MSIX_PACKAGE_ARCHITECTURE_ARM64     L"arm64"
+#define MSIX_PACKAGE_ARCHITECTURE_NEUTRAL   L"neutral"
+#define MSIX_PACKAGE_ARCHITECTURE_X64       L"x64"
+#define MSIX_PACKAGE_ARCHITECTURE_X86       L"x86"
 #if defined(_M_X64)
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE   L"x64"
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE   MSIX_PACKAGE_ARCHITECTURE_X64
 #elif defined(_M_IX86)
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE   L"x86"
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE   MSIX_PACKAGE_ARCHITECTURE_X86
 #elif defined(_M_ARM64)
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE   L"arm64"
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE   MSIX_PACKAGE_ARCHITECTURE_ARM64
 #elif defined(_M_ARM)
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE   L"arm"
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE   MSIX_PACKAGE_ARCHITECTURE_ARM
 #else
 #   error "Unknown processor architecture"
 #endif
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME           WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAMEPREFIX L"-" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION L"-" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME           WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAMEPREFIX L"-" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING L"-" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID    WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_FAMILYNAME     WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_FULLNAME       WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE L"__" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_FULLNAME       WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE L"__" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID
 
 namespace Test::Packages
 {
@@ -88,7 +94,7 @@ namespace DynamicDependencyDataStore
     constexpr PCWSTR c_PackageDirName = L"DynamicDependency.DataStore";
     constexpr PCWSTR c_PackageNamePrefix = L"WindowsAppRuntime.Test.DynDep.DataStore";
     constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore-" WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
-    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore-" WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore-" WINDOWSAPPRUNTIME_TEST_METADATA_RELEASE_STRING "_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 namespace WindowsAppRuntimeMain = DynamicDependencyDataStore;
 
@@ -96,7 +102,7 @@ namespace WindowsAppRuntimeSingleton
 {
     constexpr PCWSTR c_PackageDirName = L"WindowsAppRuntime.Test.Singleton";
     constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.Singleton_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
-    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.Singleton_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.Singleton_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 
 namespace DeploymentWindowsAppRuntimeFramework
@@ -149,7 +155,30 @@ inline bool IsPackageRegistered(PCWSTR packageFullName)
     return !path.empty();
 }
 
-inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
+inline bool IsPackageAvailable(PCWSTR packageFullName)
+{
+    // Check if the package is available for use
+    // This means registered to the current user OR staged
+    // NOTE: To check if a package is staged and not registered to the current user:
+    //              bool isStaged = IsPackageAvailable(p) && !IsPackageRegistered(p)
+    if (IsPackageRegistered(packageFullName))
+    {
+        return true;
+    }
+    PackageOrigin packageOrigin{};
+    const auto rc{ GetStagedPackageOrigin(packageFullName, &packageOrigin) };
+    if (rc == ERROR_SUCCESS)
+    {
+        return true;
+    }
+    else if (rc == ERROR_APP_DATA_NOT_FOUND)
+    {
+        return false;
+    }
+    THROW_WIN32(rc);
+}
+
+inline std::filesystem::path GetMsixPackagePath(PCWSTR packageDirName)
 {
     // Build the target package's .msix filename. It's under the Solution's $(OutDir)
     // NOTE: It could live in ...\Something.msix\... or ...\Something\...
@@ -179,7 +208,18 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
 
         //VERIFY_IS_TRUE(std::filesystem::is_regular_file(msix));
     }
-    auto msixUri = winrt::Windows::Foundation::Uri(msix.c_str());
+    return msix.c_str();
+}
+
+inline winrt::Windows::Foundation::Uri GetMsixPackageUri(PCWSTR packageDirName)
+{
+    auto path{ GetMsixPackagePath(packageDirName) };
+    return winrt::Windows::Foundation::Uri{ path.c_str() };
+}
+
+inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
+{
+    auto msixUri{ GetMsixPackageUri(packageDirName) };
 
     // Install the package
     winrt::Windows::Management::Deployment::PackageManager packageManager;
@@ -190,9 +230,38 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
 
 inline void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
 {
-    if (!IsPackageRegistered(packageFullName))
+    if (IsPackageRegistered(packageFullName))
     {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"AddPackageIfNecessary: %s already registered", packageFullName));
+    }
+    else
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"AddPackageIfNecessary: %s not registered, adding...", packageFullName));
         AddPackage(packageDirName, packageFullName);
+    }
+}
+
+inline void StagePackage(PCWSTR packageDirName, PCWSTR packageFullName)
+{
+    auto msixUri{ GetMsixPackageUri(packageDirName) };
+
+    // Install the package
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
+    auto deploymentResult{ packageManager.StagePackageAsync(msixUri, nullptr, options).get() };
+    VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"StagePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+}
+
+inline void StagePackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
+{
+    if (IsPackageAvailable(packageFullName))
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"StagePackageIfNecessary: %s already staged", packageFullName));
+    }
+    else
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"StagePackageIfNecessary: %s not staged, staging...", packageFullName));
+        StagePackage(packageDirName, packageFullName);
     }
 }
 

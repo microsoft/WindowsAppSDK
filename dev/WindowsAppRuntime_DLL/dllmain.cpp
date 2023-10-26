@@ -1,8 +1,9 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
 
+#include <MddWin11.h>
 #include <MddDetourPackageGraph.h>
 #include <urfw.h>
 
@@ -30,6 +31,7 @@ static HRESULT DetoursInitialize()
     DetourRestoreAfterWith();
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionBegin());
 
+    FAIL_FAST_IF_FAILED(MddWin11Initialize());
     FAIL_FAST_IF_FAILED(MddDetourPackageGraphInitialize());
     FAIL_FAST_IF_FAILED(UrfwInitialize());
 

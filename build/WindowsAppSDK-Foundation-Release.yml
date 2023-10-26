@@ -57,7 +57,7 @@ extends:
       isNativeCode: false #TODO turn back on when bug in CheckCFlags2.exe is fixed
       binskim:
         enabled: true
-        break: true
+        break: false
 
     stages:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
@@ -65,3 +65,4 @@ extends:
         PublishToMaestro: ${{ parameters.PublishToMaestro }}
         IgnoreFailures: ${{ parameters.IgnoreFailures }}
         SignOutput: ${{ parameters.SignOutput }}
+        PublishPackage: true

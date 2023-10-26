@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -33,13 +33,13 @@ HRESULT RegisterDVCPluginIfNeeded()
     const HINSTANCE hInst{ ShellExecute(nullptr, nullptr, L"reg.exe", regCommand, nullptr, SW_SHOW) };
     WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ShellExecute reg add finished with code: %d", hInst));
 
-    if ((int)hInst > 32)
+    if (reinterpret_cast<INT_PTR>(hInst) > 32)
     {
         WEX::Logging::Log::Comment(L"Successfully created DVC plugin key!");
     }
     else
     {
-        const HRESULT hr{ HRESULT_FROM_WIN32(reinterpret_cast<DWORD>(hInst)) };
+        const HRESULT hr{ HRESULT_FROM_WIN32(static_cast<HRESULT>(reinterpret_cast<INT_PTR>(hInst))) };
         WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ShellExecute failed with: 0x%x", hr));
         return hr;
     }
@@ -139,10 +139,10 @@ namespace Test::KozaniManagerRuntimeTests
             try
             {
                 runtimeManager.ActivateRemoteApplication(winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch,
-                    L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", L"Non-existing.rdp", L"additionalSettings.txt",
+                    L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", L"Non-existing.rdp", 0, 
                     nullptr,    // IActivatedEventArgs
                     statusCallback.as<winrt::Windows::Foundation::IInspectable>(),
-                    0);
+                    L"additionalSettings.txt");
             }
             catch (winrt::hresult_error& e)
             {
@@ -156,10 +156,10 @@ namespace Test::KozaniManagerRuntimeTests
                 rdpFullPath.append(L"MissingConnectionId.rdp");
 
                 runtimeManager.ActivateRemoteApplication(winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch,
-                    L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", rdpFullPath.c_str(), L"additionalSettings.txt",
+                    L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", rdpFullPath.c_str(), 0, 
                     nullptr,    // IActivatedEventArgs
                     statusCallback.as<winrt::Windows::Foundation::IInspectable>(),
-                    0);
+                    L"additionalSettings.txt");
             }
             catch (winrt::hresult_error& e)
             {
@@ -178,12 +178,10 @@ namespace Test::KozaniManagerRuntimeTests
             rdpFullPath.append(L"connection.rdp");
 
             runtimeManager.ActivateRemoteApplication(winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch,
-                L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", rdpFullPath.c_str(), winrt::param::hstring(),
+                L"Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", rdpFullPath.c_str(), 0, 
                 nullptr,    // IActivatedEventArgs
                 statusCallback.as<winrt::Windows::Foundation::IInspectable>(),
-                0);
-
-            //VERIFY_IS_TRUE(statusCallback->IsActivated(), L"IKozaniStausCallback::OnActivated() should have been called.");
+                winrt::param::hstring());
         }
     };
 }

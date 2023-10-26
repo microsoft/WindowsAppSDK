@@ -62,7 +62,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)WinRTInprocModule.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WinRTModuleManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WinRTPackage.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)winrt_msixdynamicdependency.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)winrt_namespaces.h" />
   </ItemGroup>
   <ItemGroup>
@@ -72,6 +71,7 @@
     <PublicHeaders Include="$(MSBuildThisFileDirectory)appmodel_msixdynamicdependency.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MddLifetimeManagement.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MddLifetimeManagementTest.h" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)MddWin11.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)..\..\common\TerminalVelocityFeatures-DynamicDependency.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)wil_msixdynamicdependency.h" />
