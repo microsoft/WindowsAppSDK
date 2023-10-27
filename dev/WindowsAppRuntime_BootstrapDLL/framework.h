@@ -30,3 +30,5 @@
 #include <WindowsAppRuntime.VersionInfo.h>
 
 #include "wil_msixdynamicdependency.h"
+
+//TODO #include <winrt/Microsoft.Windows.ApplicationModel.DynamicDependency.h>

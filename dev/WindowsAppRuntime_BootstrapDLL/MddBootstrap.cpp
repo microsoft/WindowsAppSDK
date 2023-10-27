@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -9,6 +9,8 @@
 #include "MsixDynamicDependency.h"
 
 #include "IDynamicDependencyLifetimeManager.h"
+
+#include "MddWin11.h"
 
 #include <filesystem>
 
@@ -353,72 +355,127 @@ void FirstTimeInitialization(
     // Make a copy of the versionTag in preparation of succcess
     auto packageVersionTag{ std::wstring(!versionTag ? L"" : versionTag) };
 
-    // Create the lifetime manager
-    wil::com_ptr_nothrow<IDynamicDependencyLifetimeManager> lifetimeManager;
-    wil::unique_event endTheLifetimeManagerEvent;
-    auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
-    CreateLifetimeManager(majorMinorVersion, versionTag, minVersion, lifetimeManager, endTheLifetimeManagerEvent, activityContext.GetInitializationPackageFullName());
-
-    const PACKAGE_INFO* frameworkPackageInfo{};
-    auto packageInfoBuffer{ GetFrameworkPackageInfoForPackage(activityContext.GetInitializationPackageFullName().get(), frameworkPackageInfo) };
-
-    // Temporarily add the framework's package directory to PATH so LoadLibrary can find it and any colocated imports
-    wil::unique_dll_directory_cookie dllDirectoryCookie{ AddFrameworkToPath(frameworkPackageInfo->path) };
-
-    auto windowsAppRuntimeDllFilename{ std::wstring(frameworkPackageInfo->path) + L"\\Microsoft.WindowsAppRuntime.dll" };
-    wil::unique_hmodule windowsAppRuntimeDll(LoadLibraryEx(windowsAppRuntimeDllFilename.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH));
-    if (!windowsAppRuntimeDll)
+    // Use the Win11 APIs if available (instead of WinAppSDK's implementation)
+//TODO optimize common code
+    if (MddCore::Win11::IsSupported())
     {
-        const auto lastError{ GetLastError() };
-        THROW_WIN32_MSG(lastError, "Error in LoadLibrary: %d (0x%X) loading %ls", lastError, lastError, windowsAppRuntimeDllFilename.c_str());
+        // Add the framework package to the package graph
+        auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
+        const PACKAGE_INFO* frameworkPackageInfo{};
+        auto packageInfoBuffer{ GetFrameworkPackageInfoForPackage(activityContext.GetInitializationPackageFullName().get(), frameworkPackageInfo) };
+
+        const MddPackageDependencyProcessorArchitectures architectureFilter{};
+        const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
+        const MddCreatePackageDependencyOptions createOptions{};
+        wil::unique_process_heap_string packageDependencyId;
+        THROW_IF_FAILED(MddCore::Win11::TryCreatePackageDependency(nullptr, frameworkPackageInfo->packageFamilyName, minVersion, architectureFilter, lifetimeKind, nullptr, createOptions, &packageDependencyId));
+        //
+        const MddAddPackageDependencyOptions addOptions{};
+        MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
+        wil::unique_process_heap_string packageFullName;
+        THROW_IF_FAILED(MddCore::Win11::AddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, &packageFullName));
+
+        // Pass along test information (if necessary)
+        if (!g_test_ddlmPackageNamePrefix.empty())
+        {
+            FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_ddlmPackagePublisherId.empty());
+            FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_frameworkPackageNamePrefix.empty());
+            FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_mainPackageNamePrefix.empty());
+
+            uint16_t majorVersion{ static_cast<uint16_t>(majorMinorVersion >> 16) };
+            uint16_t minorVersion{ static_cast<uint16_t>(majorMinorVersion) };
+            PCWSTR packagVersionTagDelimiter{ packageVersionTag.empty() ? L"" : L"-" };
+
+            WCHAR frameworkPackageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
+            wsprintf(frameworkPackageFamilyName, L"%s-%hu.%hu%s%s_8wekyb3d8bbwe", g_test_frameworkPackageNamePrefix.c_str(),
+                     majorVersion, minorVersion, packagVersionTagDelimiter, packageVersionTag.c_str());
+
+            WCHAR mainPackageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
+            wsprintf(mainPackageFamilyName, L"%s-%hu.%hu%s%s_8wekyb3d8bbwe", g_test_mainPackageNamePrefix.c_str(),
+                     majorVersion, minorVersion, packagVersionTagDelimiter, packageVersionTag.c_str());
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(frameworkPackageFamilyName, mainPackageFamilyName);
+        }
+
+        // Track our initialized state
+        //TODO g_lifetimeManager = lifetimeManager.detach();
+        //TODO g_endTheLifetimeManagerEvent = std::move(endTheLifetimeManagerEvent);
+        //TODO g_windowsAppRuntimeDll = std::move(windowsAppRuntimeDll);
+        g_packageDependencyId = std::move(packageDependencyId);
+        g_packageDependencyContext = packageDependencyContext;
+        //
+        g_initializationMajorMinorVersion = majorMinorVersion;
+        g_initializationVersionTag = std::move(packageVersionTag);
+        g_initializationFrameworkPackageVersion.Version = frameworkPackageInfo->packageId.version.Version;
     }
-
-    // Add the framework package to the package graph
-    const MddPackageDependencyProcessorArchitectures architectureFilter{};
-    const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
-    const MddCreatePackageDependencyOptions createOptions{};
-    wil::unique_process_heap_string packageDependencyId;
-    THROW_IF_FAILED(MddTryCreatePackageDependency(nullptr, frameworkPackageInfo->packageFamilyName, minVersion, architectureFilter, lifetimeKind, nullptr, createOptions, &packageDependencyId));
-    //
-    const MddAddPackageDependencyOptions addOptions{};
-    MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
-    THROW_IF_FAILED(MddAddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, nullptr));
-
-    // Remove our temporary path addition
-    RemoveFrameworkFromPath(frameworkPackageInfo->path);
-    dllDirectoryCookie.reset();
-
-    // Pass along test information (if necessary)
-    if (!g_test_ddlmPackageNamePrefix.empty())
+    else
     {
-        FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_ddlmPackagePublisherId.empty());
-        FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_frameworkPackageNamePrefix.empty());
-        FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_mainPackageNamePrefix.empty());
+        // Create the lifetime manager
+        wil::com_ptr_nothrow<IDynamicDependencyLifetimeManager> lifetimeManager;
+        wil::unique_event endTheLifetimeManagerEvent;
+        auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
+        CreateLifetimeManager(majorMinorVersion, versionTag, minVersion, lifetimeManager, endTheLifetimeManagerEvent, activityContext.GetInitializationPackageFullName());
 
-        uint16_t majorVersion{ static_cast<uint16_t>(majorMinorVersion >> 16) };
-        uint16_t minorVersion{ static_cast<uint16_t>(majorMinorVersion) };
-        PCWSTR packagVersionTagDelimiter{ packageVersionTag.empty() ? L"" : L"-" };
+        const PACKAGE_INFO* frameworkPackageInfo{};
+        auto packageInfoBuffer{ GetFrameworkPackageInfoForPackage(activityContext.GetInitializationPackageFullName().get(), frameworkPackageInfo) };
 
-        WCHAR frameworkPackageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
-        wsprintf(frameworkPackageFamilyName, L"%s-%hu.%hu%s%s_8wekyb3d8bbwe", g_test_frameworkPackageNamePrefix.c_str(),
-                 majorVersion, minorVersion, packagVersionTagDelimiter, packageVersionTag.c_str());
+        // Temporarily add the framework's package directory to PATH so LoadLibrary can find it and any colocated imports
+        wil::unique_dll_directory_cookie dllDirectoryCookie{ AddFrameworkToPath(frameworkPackageInfo->path) };
 
-        WCHAR mainPackageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
-        wsprintf(mainPackageFamilyName, L"%s-%hu.%hu%s%s_8wekyb3d8bbwe", g_test_mainPackageNamePrefix.c_str(),
-                 majorVersion, minorVersion, packagVersionTagDelimiter, packageVersionTag.c_str());
-        ::WindowsAppRuntime::VersionInfo::TestInitialize(frameworkPackageFamilyName, mainPackageFamilyName);
+        auto windowsAppRuntimeDllFilename{ std::wstring(frameworkPackageInfo->path) + L"\\Microsoft.WindowsAppRuntime.dll" };
+        wil::unique_hmodule windowsAppRuntimeDll(LoadLibraryEx(windowsAppRuntimeDllFilename.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH));
+        if (!windowsAppRuntimeDll)
+        {
+            const auto lastError{ GetLastError() };
+            THROW_WIN32_MSG(lastError, "Error in LoadLibrary: %d (0x%X) loading %ls", lastError, lastError, windowsAppRuntimeDllFilename.c_str());
+        }
+
+        // Add the framework package to the package graph
+        const MddPackageDependencyProcessorArchitectures architectureFilter{};
+        const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
+        const MddCreatePackageDependencyOptions createOptions{};
+        wil::unique_process_heap_string packageDependencyId;
+        THROW_IF_FAILED(MddTryCreatePackageDependency(nullptr, frameworkPackageInfo->packageFamilyName, minVersion, architectureFilter, lifetimeKind, nullptr, createOptions, &packageDependencyId));
+        //
+        const MddAddPackageDependencyOptions addOptions{};
+        MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
+        THROW_IF_FAILED(MddAddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, nullptr));
+
+        // Remove our temporary path addition
+        RemoveFrameworkFromPath(frameworkPackageInfo->path);
+        dllDirectoryCookie.reset();
+
+        // Pass along test information (if necessary)
+        if (!g_test_ddlmPackageNamePrefix.empty())
+        {
+            FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_ddlmPackagePublisherId.empty());
+            FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_frameworkPackageNamePrefix.empty());
+            FAIL_FAST_HR_IF(E_UNEXPECTED, g_test_mainPackageNamePrefix.empty());
+
+            uint16_t majorVersion{ static_cast<uint16_t>(majorMinorVersion >> 16) };
+            uint16_t minorVersion{ static_cast<uint16_t>(majorMinorVersion) };
+            PCWSTR packagVersionTagDelimiter{ packageVersionTag.empty() ? L"" : L"-" };
+
+            WCHAR frameworkPackageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
+            wsprintf(frameworkPackageFamilyName, L"%s-%hu.%hu%s%s_8wekyb3d8bbwe", g_test_frameworkPackageNamePrefix.c_str(),
+                     majorVersion, minorVersion, packagVersionTagDelimiter, packageVersionTag.c_str());
+
+            WCHAR mainPackageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
+            wsprintf(mainPackageFamilyName, L"%s-%hu.%hu%s%s_8wekyb3d8bbwe", g_test_mainPackageNamePrefix.c_str(),
+                     majorVersion, minorVersion, packagVersionTagDelimiter, packageVersionTag.c_str());
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(frameworkPackageFamilyName, mainPackageFamilyName);
+        }
+
+        // Track our initialized state
+        g_lifetimeManager = lifetimeManager.detach();
+        g_endTheLifetimeManagerEvent = std::move(endTheLifetimeManagerEvent);
+        g_windowsAppRuntimeDll = std::move(windowsAppRuntimeDll);
+        g_packageDependencyId = std::move(packageDependencyId);
+        g_packageDependencyContext = packageDependencyContext;
+        //
+        g_initializationMajorMinorVersion = majorMinorVersion;
+        g_initializationVersionTag = std::move(packageVersionTag);
+        g_initializationFrameworkPackageVersion.Version = frameworkPackageInfo->packageId.version.Version;
     }
-
-    // Track our initialized state
-    g_lifetimeManager = lifetimeManager.detach();
-    g_endTheLifetimeManagerEvent = std::move(endTheLifetimeManagerEvent);
-    g_windowsAppRuntimeDll = std::move(windowsAppRuntimeDll);
-    g_packageDependencyId = std::move(packageDependencyId);
-    g_packageDependencyContext = packageDependencyContext;
-    //
-    g_initializationMajorMinorVersion = majorMinorVersion;
-    g_initializationVersionTag = std::move(packageVersionTag);
-    g_initializationFrameworkPackageVersion.Version = frameworkPackageInfo->packageId.version.Version;
 }
 
 /// Determine the path for the Windows App Runtime Framework package

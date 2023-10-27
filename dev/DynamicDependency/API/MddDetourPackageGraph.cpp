@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -115,7 +115,7 @@ HRESULT WINAPI MddDetourPackageGraphInitialize() noexcept
     // Use the Win11 APIs if available (instead of Detour'ing to our own implementation)
     if (MddCore::Win11::IsSupported())
     {
-        RETURN_IF_FAILED(MddCore::Win11::Initialize());
+        RETURN_IF_FAILED(MddWin11Initialize());
         return S_OK;
     }
 
@@ -172,7 +172,7 @@ HRESULT _MddDetourPackageGraphShutdown() noexcept
     // Use the Win11 APIs if available (instead of Detour'ing to our own implementation)
     if (MddCore::Win11::IsSupported())
     {
-        MddCore::Win11::Shutdown();
+        MddWin11Shutdown();
         return S_OK;
     }
 
