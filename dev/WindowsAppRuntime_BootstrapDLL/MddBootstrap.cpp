@@ -150,7 +150,7 @@ STDAPI MddBootstrapInitialize2(
             DebugBreak();
         }
 
-        if (hr == HRESULT_FROM_WIN32(ERROR_NO_MATCH))
+        if (hr == STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED)
         {
             if (WI_IsFlagSet(options, MddBootstrapInitializeOptions_OnNoMatch_ShowUI) ||
                 IsOptionEnabled(L"MICROSOFT_WINDOWSAPPRUNTIME_BOOTSTRAP_INITIALIZE_SHOWUI"))
@@ -236,7 +236,7 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
     if (initializationCount == 1)
     {
         // Last one out turn out the lights...
-        if (g_packageDependencyContext && g_windowsAppRuntimeDll)
+        if (g_packageDependencyContext && (MddCore::Win11::IsSupported() || g_windowsAppRuntimeDll))
         {
             MddRemovePackageDependency(g_packageDependencyContext);
             g_packageDependencyContext = nullptr;
@@ -312,7 +312,8 @@ void VerifyInitializationIsCompatible(
     // Sanity check we're already initialized
     // g_lifetimeManager is optional. Don't check it
     // g_endTheLifetimeManagerEvent is optional. Don't check it
-    FAIL_FAST_HR_IF(E_UNEXPECTED, g_windowsAppRuntimeDll == nullptr);
+    // g_windowsAppRuntimeDll is only relevant if not delegating to OS APIs
+    FAIL_FAST_HR_IF(E_UNEXPECTED, !MddCore::Win11::IsSupported() && (g_windowsAppRuntimeDll == nullptr));
     FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyId == nullptr);
     FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyContext == nullptr);
 
@@ -356,7 +357,7 @@ void FirstTimeInitialization(
     FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyContext != nullptr);
 
     // Make a copy of the versionTag in preparation of succcess
-    auto packageVersionTag{ std::wstring(!versionTag ? L"" : versionTag) };
+    const std::wstring packageVersionTag{ !versionTag ? L"" : versionTag };
 
     // Use the Win11 APIs if available (instead of WinAppSDK's implementation)
 //TODO optimize common code
@@ -451,14 +452,19 @@ void FirstTimeInitialization(
             uint16_t minorVersion{ static_cast<uint16_t>(majorMinorVersion) };
             PCWSTR packagVersionTagDelimiter{ packageVersionTag.empty() ? L"" : L"-" };
 
-            WCHAR frameworkPackageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
-            wsprintf(frameworkPackageFamilyName, L"%s-%hu.%hu%s%s_8wekyb3d8bbwe", g_test_frameworkPackageNamePrefix.c_str(),
-                     majorVersion, minorVersion, packagVersionTagDelimiter, packageVersionTag.c_str());
+            const std::wstring frameworkPackageFamilyName{ std::format(L"{}-{}.{}{}{}_8wekyb3d8bbwe",
+                                                                       g_test_frameworkPackageNamePrefix,
+                                                                       majorVersion, minorVersion,
+                                                                       packagVersionTagDelimiter, packageVersionTag) };
+            FAIL_FAST_HR_IF_MSG(E_UNEXPECTED, frameworkPackageFamilyName.length() > PACKAGE_FAMILY_NAME_MAX_LENGTH, "%ls", frameworkPackageFamilyName.c_str());
 
-            WCHAR mainPackageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
-            wsprintf(mainPackageFamilyName, L"%s-%hu.%hu%s%s_8wekyb3d8bbwe", g_test_mainPackageNamePrefix.c_str(),
-                     majorVersion, minorVersion, packagVersionTagDelimiter, packageVersionTag.c_str());
-            ::WindowsAppRuntime::VersionInfo::TestInitialize(frameworkPackageFamilyName, mainPackageFamilyName);
+            const std::wstring mainPackageFamilyName{ std::format(L"{}-{}.{}{}{}_8wekyb3d8bbwe",
+                                                                  g_test_mainPackageNamePrefix,
+                                                                  majorVersion, minorVersion,
+                                                                  packagVersionTagDelimiter, packageVersionTag) };
+            FAIL_FAST_HR_IF_MSG(E_UNEXPECTED, mainPackageFamilyName.length() > PACKAGE_FAMILY_NAME_MAX_LENGTH, "%ls", mainPackageFamilyName.c_str());
+
+            ::WindowsAppRuntime::VersionInfo::TestInitialize(frameworkPackageFamilyName.c_str(), mainPackageFamilyName.c_str());
         }
 
         // Track our initialized state
@@ -474,23 +480,26 @@ void FirstTimeInitialization(
     }
 }
 
-/// Determine the package famile name for the Windows App Runtime Framework package
+/// Determine the package family name for the Windows App Runtime Framework package
 std::wstring GetFrameworkPackageFamilyName(
     UINT32 majorMinorVersion,
     PCWSTR versionTag)
 {
     PCWSTR namePrefix{ !g_test_frameworkPackageNamePrefix.empty() ?
-        g_test_frameworkPackageNamePrefix.c_str() :
-        L"Microsoft.WindowsAppRuntime" };
+                            g_test_frameworkPackageNamePrefix.c_str() :
+                            L"Microsoft.WindowsAppRuntime" };
 
     const uint16_t majorVersion{ static_cast<uint16_t>(majorMinorVersion >> 16) };
     const uint16_t minorVersion{ static_cast<uint16_t>(majorMinorVersion) };
 
-    PCWSTR versionTagDelimiter{ (!versionTag || (*versionTag == L'\0')) ? L"" : L"-" };
+    PCWSTR packageVersionTag{ !versionTag ? L"" : versionTag };
+    PCWSTR packageVersionTagDelimiter{ (packageVersionTag[0] == L'\0') ? L"" : L"-"};
 
-    WCHAR packageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
-    wsprintf(packageFamilyName, L"%s-%hu.%hu%s%s_8wekyb3d8bbwe",
-             namePrefix, majorVersion, minorVersion, versionTagDelimiter, versionTag);
+    const std::wstring packageFamilyName{ std::format(L"{}-{}.{}{}{}_8wekyb3d8bbwe",
+                                                      namePrefix, majorVersion, minorVersion,
+                                                      packageVersionTagDelimiter, packageVersionTag) };
+    THROW_HR_IF_MSG(E_INVALIDARG, packageFamilyName.length() > PACKAGE_FAMILY_NAME_MAX_LENGTH, "%ls", packageFamilyName.c_str());
+
     return packageFamilyName;
 }
 
@@ -743,17 +752,21 @@ CLSID FindDDLMViaAppExtension(
     // Look for windows.appExtension with name="microsoft.winappruntime.ddlm-<majorversion>.<minorversion>-<shortarchitecture>[-shorttag]"
     // NOTE: <majorversion>.<minorversion> MUST have a string length <= 8 characters ("12.34567", "12345.67", etc) to fit within
     //       the maximum allowed length of a windows.appExtension's Name (39 chars) on Windows versions <= RS5 (10.0.17763.0).
-    WCHAR appExtensionName[100]{};
+    std::wstring appExtensionName;
     const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
     const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
     const auto versionShortTag{ AppModel::Identity::GetVersionShortTagFromVersionTag(versionTag) };
     if (!versionShortTag.empty())
     {
-        wsprintf(appExtensionName, L"microsoft.winappruntime.ddlm-%hu.%hu-%s-%s", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsShortString(), versionShortTag.c_str());
+        appExtensionName = std::format(L"microsoft.winappruntime.ddlm-{}.{}-{}-{}",
+            majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsShortString(), versionShortTag);
+        THROW_HR_IF_MSG(E_INVALIDARG, appExtensionName.length() > PACKAGE_NAME_MAX_LENGTH, "%ls", appExtensionName.c_str());
     }
     else
     {
-        wsprintf(appExtensionName, L"microsoft.winappruntime.ddlm-%hu.%hu-%s", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsShortString());
+        appExtensionName = std::format(L"microsoft.winappruntime.ddlm-{}.{}-{}",
+            majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsShortString());
+        THROW_HR_IF_MSG(E_INVALIDARG, appExtensionName.length() > PACKAGE_NAME_MAX_LENGTH, "%ls", appExtensionName.c_str());
     }
 
     auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };
@@ -815,8 +828,8 @@ CLSID FindDDLMViaAppExtension(
             continue;
         }
     }
-    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NO_MATCH), !foundAny, "AppExtension.Name=%ls, Major=%hu, Minor=%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
-                    appExtensionName, majorVersion, minorVersion, (!versionTag ? L"" : versionTag),
+    THROW_HR_IF_MSG(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, !foundAny, "AppExtension.Name=%ls, Major=%hu, Minor=%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
+                    appExtensionName.c_str(), majorVersion, minorVersion, (!versionTag ? L"" : versionTag),
                     minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
     return bestFitClsid;
 }
@@ -1013,7 +1026,7 @@ void FindDDLMViaEnumeration(
             continue;
         }
     }
-    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NO_MATCH), !foundAny, "Enumeration: %ls", criteria.get());
+    THROW_HR_IF_MSG(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, !foundAny, "Enumeration: %ls", criteria.get());
     (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_FOUND,
                      "Bootstrap.Intitialize: %ls best matches the criteria (%ls) of %d packages scanned",
                      bestFitPackageFullName.c_str(), criteria.get(), packagesScanned);

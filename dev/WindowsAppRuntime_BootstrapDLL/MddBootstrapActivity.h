@@ -56,10 +56,15 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
             return m_mddBootstrapAPI;
         }
 
+        const uint32_t GetInitializationCount) const
+        {
+            return m_initializationCount;
+        }
+
         const uint32_t GetInitializeData(PWSTR& initializationPackageFullName) const
         {
             initializationPackageFullName = m_initializationPackageFullName.get();
-            return m_initializationCount;
+            return GetInitializationCount();
         }
 
         wil::unique_cotaskmem_string& GetInitializationPackageFullName()
