@@ -109,10 +109,9 @@ STDAPI MddBootstrapInitialize2(
 
     auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
 
-    PWSTR initializationFrameworkPackageFullName{};
-    auto initializationCount{ activityContext.GetInitializeData(initializationFrameworkPackageFullName) };
+    auto initializationCount{ activityContext.GetInitializeCount() };
     activityContext.SetMddBootstrapAPI(WindowsAppRuntime::MddBootstrap::Activity::MddBootstrapAPI::Initialize);
-    auto threadCallback = wil::ThreadFailureCallback(wilResultLoggingThreadCallback);
+    auto threadCallback{ wil::ThreadFailureCallback(wilResultLoggingThreadCallback) };
     auto initializeActivity{
         activityContext.GetInitializeActivity().Start(
             majorMinorVersion,
@@ -176,6 +175,7 @@ STDAPI MddBootstrapInitialize2(
 
     if (activityContext.GetInitializeActivity().IsRunning())
     {
+        PCWSTR initializationFrameworkPackageFullName{};
         initializationCount = activityContext.GetInitializeData(initializationFrameworkPackageFullName);
         initializeActivity.StopWithResult(
             hr,
@@ -199,8 +199,7 @@ HRESULT _MddBootstrapInitialize(
     PCWSTR versionTag,
     PACKAGE_VERSION minVersion) noexcept try
 {
-    PWSTR initializationFrameworkPackageFullName{};
-    auto initializationCount{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeData(initializationFrameworkPackageFullName) };
+    const auto initializationCount{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get().GetInitializeCount() };
 
     // Are we already initialized?
     if (initializationCount > 0)
@@ -223,10 +222,10 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
 
     auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
 
-    PWSTR initializationFrameworkPackageFullName{};
-    auto initializationCount{ activityContext.GetInitializeData(initializationFrameworkPackageFullName) };
+    PCWSTR initializationFrameworkPackageFullName{};
+    const auto initializationCount{ activityContext.GetInitializeData(initializationFrameworkPackageFullName) };
     activityContext.SetMddBootstrapAPI(WindowsAppRuntime::MddBootstrap::Activity::MddBootstrapAPI::Shutdown);
-    auto threadCallback = wil::ThreadFailureCallback(wilResultLoggingThreadCallback);
+    auto threadCallback{ wil::ThreadFailureCallback(wilResultLoggingThreadCallback) };
     auto shutdownActivity{
         activityContext.GetShutdownActivity().Start(
             static_cast<UINT32>(initializationCount),
