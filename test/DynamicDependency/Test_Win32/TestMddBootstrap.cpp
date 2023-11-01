@@ -253,7 +253,8 @@ namespace Test::DynamicDependency
             const UINT32 c_Version_MajorMinor_Incompatible{ c_Version_MajorMinor + 1 };
             VERIFY_ARE_EQUAL(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE, MddBootstrapInitialize(c_Version_MajorMinor_Incompatible, nullptr, c_minVersion));
 
-            VERIFY_ARE_EQUAL(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE, MddBootstrapInitialize(c_Version_MajorMinor, L"NotTheVersionTag", c_minVersion));
+            VERIFY_ARE_EQUAL(E_INVALIDARG, MddBootstrapInitialize(c_Version_MajorMinor, L"MakesPackageFamilyNameTooLong", c_minVersion));
+            VERIFY_ARE_EQUAL(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE, MddBootstrapInitialize(c_Version_MajorMinor, L"Zathras", c_minVersion));
 
             const PACKAGE_VERSION c_minVersion_Incompatible{ UINT64_MAX };
             VERIFY_ARE_EQUAL(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE, MddBootstrapInitialize(c_Version_MajorMinor, nullptr, c_minVersion_Incompatible));
@@ -288,7 +289,8 @@ namespace Test::DynamicDependency
             const PACKAGE_VERSION c_minVersion3{};
             VERIFY_ARE_EQUAL(c_minVersion3.Version, c_minVersion1.Version);
             VERIFY_ARE_NOT_EQUAL(c_minVersion3.Version, c_minVersion2.Version);
-            VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, MddBootstrapInitialize(c_Version_MajorMinor3, L"NotTheVersionTag", c_minVersion3));
+            VERIFY_ARE_EQUAL(E_INVALIDARG, MddBootstrapInitialize(c_Version_MajorMinor3, L"MakesPackageFamilyNameTooLong", c_minVersion3));
+            VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, MddBootstrapInitialize(c_Version_MajorMinor3, L"Zathras", c_minVersion3));
 
             // Incompatible criteria. Verify Initialize+Shutdown brought us
             // back to initial state so we can fail to initialize as expected

@@ -118,7 +118,15 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
 
         void SetInitializationPackageFullName(PWSTR initializationPackageFullName)
         {
-            m_initializationPackageFullName.reset(initializationPackageFullName);
+            if (initializationPackageFullName)
+            {
+                auto packageFullName{ wil::make_cotaskmem_string(initializationPackageFullName) };
+                m_initializationPackageFullName = std::move(packageFullName);
+            }
+            else
+            {
+                m_initializationPackageFullName.reset();
+            }
         }
 
         void StopActivityForWilReturnHR(const bool stopActivityForWilReturnHR)

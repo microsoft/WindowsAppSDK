@@ -316,6 +316,11 @@ void VerifyInitializationIsCompatible(
     FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyId == nullptr);
     FAIL_FAST_HR_IF(E_UNEXPECTED, g_packageDependencyContext == nullptr);
 
+    // Verify the parameter(s)
+    // NOTE: GetFrameworkPackageFamilyName() verifies the resulting package family name is valid.
+    //       We don't care about the return value, just the verification along the way.
+    GetFrameworkPackageFamilyName(majorMinorVersion, versionTag);
+
     // Is the initialization request compatible with the current initialization state?
     THROW_HR_IF_MSG(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE,
                     majorMinorVersion != g_initializationMajorMinorVersion,
