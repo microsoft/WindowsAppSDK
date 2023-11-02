@@ -26,6 +26,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implem
         void Delete();
         winrt::PackageDependencyContext Add();
         winrt::PackageDependencyContext Add(Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& options);
+        winrt::PackageDependencyContext Resolve();
 
     private:
         static winrt::PackageDependency Create(

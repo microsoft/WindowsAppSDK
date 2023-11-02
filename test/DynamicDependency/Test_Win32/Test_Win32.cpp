@@ -10,6 +10,8 @@
 
 #include "Test_Win32.h"
 
+#include <MddWin11.h>
+
 namespace TF = ::Test::FileSystem;
 namespace TP = ::Test::Packages;
 
@@ -243,6 +245,7 @@ void Test::DynamicDependency::Test_Win32::VerifyPackageDependency(
     }
     else
     {
+        VERIFY_IS_NOT_NULL(packageFullName, WEX::Common::String().Format(L"PackageFullName=null Expected=%s", expectedPackageFullName));
         VERIFY_ARE_EQUAL(std::wstring(packageFullName.get()), std::wstring(expectedPackageFullName));
     }
 }
@@ -257,6 +260,12 @@ void Test::DynamicDependency::Test_Win32::VerifyPackageDependency(
 
 void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(PCWSTR path)
 {
+    // N/A when DynamicDependency delegates to the Win11 OS API
+    if (MddCore::Win11::IsSupported())
+    {
+        return;
+    }
+
     std::wstring expectedPath{ path };
     std::wstring pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH").get() };
     VERIFY_ARE_EQUAL(expectedPath, pathEnvironmentVariable);
@@ -264,6 +273,12 @@ void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(PCWSTR p
 
 void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(PCWSTR path1, PCWSTR path)
 {
+    // N/A when DynamicDependency delegates to the Win11 OS API
+    if (MddCore::Win11::IsSupported())
+    {
+        return;
+    }
+
     std::wstring pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH").get() };
     std::wstring expectedPath{ std::wstring(path1) + L";" + path };
     VERIFY_ARE_EQUAL(expectedPath, pathEnvironmentVariable);
@@ -271,6 +286,12 @@ void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(PCWSTR p
 
 void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(PCWSTR path1, PCWSTR path2, PCWSTR path)
 {
+    // N/A when DynamicDependency delegates to the Win11 OS API
+    if (MddCore::Win11::IsSupported())
+    {
+        return;
+    }
+
     std::wstring pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH").get() };
     std::wstring expectedPath{ std::wstring(path1) + L";" + path2 + L";" + path };
     VERIFY_ARE_EQUAL(expectedPath, pathEnvironmentVariable);
@@ -278,6 +299,12 @@ void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(PCWSTR p
 
 void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(PCWSTR path1, PCWSTR path2, PCWSTR path3, PCWSTR path)
 {
+    // N/A when DynamicDependency delegates to the Win11 OS API
+    if (MddCore::Win11::IsSupported())
+    {
+        return;
+    }
+
     std::wstring pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH").get() };
     std::wstring expectedPath{ std::wstring(path1) + L";" + path2 + L";" + path3 + L";" + path };
     VERIFY_ARE_EQUAL(expectedPath, pathEnvironmentVariable);

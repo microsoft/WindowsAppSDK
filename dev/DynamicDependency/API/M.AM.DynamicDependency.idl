@@ -3,7 +3,7 @@
 
 namespace Microsoft.Windows.ApplicationModel.DynamicDependency
 {
-    [contractversion(2)]
+    [contractversion(3)]
     apicontract DynamicDependencyContract{};
 
     /// CPU architectures to optionally filter available packages against a package dependency.
@@ -246,6 +246,7 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         /// Successful calls change the package graph's current revision id.
         ///
         /// @see PackageGraphRevisionId
+        /// @see Resolve
         PackageDependencyContext Add();
 
         /// Resolve a previously pinned PackageDependency to a specific package and
@@ -285,7 +286,19 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         /// Successful calls change the package graph's current revision id.
         ///
         /// @see PackageGraphRevisionId
+        /// @see Resolve
         PackageDependencyContext Add(AddPackageDependencyOptions options);
+
+        /// Resolve a previously pinned PackageDependency to a specific package.
+        ///
+        /// @note This does NOT update the calling process' package graph.
+        ///
+        /// Package resolution is specific to a user. The same package dependency can
+        /// resolve to different packages for different users on a system.
+        ///
+        /// @see Add
+        [contract(DynamicDependencyContract, 3)]
+        PackageDependencyContext Resolve();
 
         /// Return the package graph's current revision id.
         [contract(DynamicDependencyContract, 2)]

@@ -118,6 +118,12 @@ namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implem
         return context;
     }
 
+    winrt::PackageDependencyContext PackageDependency::Resolve()
+    {
+        //TODO:Resolve
+        throw winrt::hresult_not_implemented();
+    }
+
     winrt::PackageDependency PackageDependency::Create(
         PSID userSid,
         PCWSTR packageFamilyName,

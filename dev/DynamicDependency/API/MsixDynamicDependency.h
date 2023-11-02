@@ -192,14 +192,23 @@ STDAPI MddAddPackageDependency(
 STDAPI_(void) MddRemovePackageDependency(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext) noexcept;
 
-/// Return the package full name that would be used if the
-/// PackageDependency were to be resolved. Does not add the
+/// Return the package full name to which the
+/// PackageDependency has been resolved. Does not add the
 /// package to the process graph.
 ///
 /// @param packageFullName allocated via HeapAlloc; use HeapFree to deallocate.
 ///                        If the package dependency cannot be resolved the function
 ///                        succeeds but packageFullName is nullptr.
 STDAPI MddGetResolvedPackageFullNameForPackageDependency(
+    _In_ PCWSTR packageDependencyId,
+    _Outptr_result_maybenull_ PWSTR* packageFullName) noexcept;
+
+/// Resolve the PackageDependency (if not already resolved).
+///
+/// @param packageFullName allocated via HeapAlloc; use HeapFree to deallocate.
+///                        If the package dependency cannot be resolved the function
+///                        succeeds but packageFullName is nullptr.
+STDAPI MddResolvePackageFullNameForPackageDependency(
     _In_ PCWSTR packageDependencyId,
     _Outptr_result_maybenull_ PWSTR* packageFullName) noexcept;
 

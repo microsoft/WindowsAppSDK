@@ -109,6 +109,27 @@ HRESULT MddCore::PackageGraph::Add(
     return S_OK;
 }
 
+HRESULT MddCore::PackageGraph::GetResolvedPackageDependency(
+    PCWSTR packageDependencyId,
+    wil::unique_process_heap_string& packageFullName) noexcept try
+{
+    packageFullName.reset();
+
+    // Get the package dependency
+    auto foundPackageDependency{ MddCore::PackageDependencyManager::GetPackageDependency(packageDependencyId) };
+    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !foundPackageDependency);
+
+    // Is the package dependency already resolved?
+    const auto& packageDependency{ *foundPackageDependency };
+    if (!packageDependency.PackageFullName().empty())
+    {
+        // Gotcha!
+        packageFullName = wil::make_process_heap_string(packageDependency.PackageFullName().c_str());
+    }
+    return S_OK;
+}
+CATCH_RETURN();
+
 HRESULT MddCore::PackageGraph::ResolvePackageDependency(
     PCWSTR packageDependencyId,
     MddAddPackageDependencyOptions options,
@@ -128,7 +149,7 @@ HRESULT MddCore::PackageGraph::ResolvePackageDependency(
         return S_OK;
     }
 
-    // Rewsolve it
+    // Resolve it
     return ResolvePackageDependency(packageDependency, options, packageFullName);
 }
 CATCH_RETURN();

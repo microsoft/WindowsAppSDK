@@ -26,6 +26,15 @@ UINT32 MddCore::PackageGraphManager::SetPackageGraphRevisionId(const UINT32 valu
     return static_cast<UINT32>(InterlockedExchange(&s_packageGraphRevisionId, value));
 }
 
+HRESULT MddCore::PackageGraphManager::GetResolvedPackageDependency(
+    PCWSTR packageDependencyId,
+    wil::unique_process_heap_string& packageFullName)
+{
+    std::unique_lock<std::recursive_mutex> lock(s_lock);
+
+    return s_packageGraph.GetResolvedPackageDependency(packageDependencyId, packageFullName);
+}
+
 HRESULT MddCore::PackageGraphManager::ResolvePackageDependency(
     PCWSTR packageDependencyId,
     MddAddPackageDependencyOptions options,
