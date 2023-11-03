@@ -35,6 +35,15 @@ HRESULT MddCore::PackageGraphManager::GetResolvedPackageDependency(
     return s_packageGraph.GetResolvedPackageDependency(packageDependencyId, packageFullName);
 }
 
+HRESULT MddCore::PackageGraphManager::GetResolvedPackageDependency2(
+    PCWSTR packageDependencyId,
+    wil::unique_process_heap_string& packageFullName)
+{
+    std::unique_lock<std::recursive_mutex> lock(s_lock);
+
+    return s_packageGraph.GetResolvedPackageDependency2(packageDependencyId, packageFullName);
+}
+
 HRESULT MddCore::PackageGraphManager::ResolvePackageDependency(
     PCWSTR packageDependencyId,
     MddAddPackageDependencyOptions options,

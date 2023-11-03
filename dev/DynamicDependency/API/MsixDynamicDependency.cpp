@@ -128,6 +128,32 @@ STDAPI MddGetResolvedPackageFullNameForPackageDependency(
 }
 CATCH_RETURN();
 
+STDAPI MddGetResolvedPackageFullNameForPackageDependency2(
+    _In_ PCWSTR packageDependencyId,
+    _Outptr_result_maybenull_ PWSTR* packageFullName) noexcept try
+{
+    *packageFullName = nullptr;
+
+    // Use the Win11 APIs if available (instead of Detour'ing to our own implementation)
+    if (MddCore::Win11::IsSupported())
+    {
+        RETURN_IF_FAILED(MddCore::Win11::GetResolvedPackageFullNameForPackageDependency2(packageDependencyId, packageFullName));
+        return S_OK;
+    }
+
+    // WinAppSDK's Dynamic Dependencies requires a non-packaged process
+    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), AppModel::Identity::IsPackagedProcess());
+
+    RETURN_HR_IF(E_INVALIDARG, !packageDependencyId || (packageDependencyId[0] == L'\0'));
+
+    wil::unique_process_heap_string fullName;
+    RETURN_IF_FAILED(MddCore::PackageGraphManager::GetResolvedPackageDependency2(packageDependencyId, fullName));
+
+    *packageFullName = fullName.release();
+    return S_OK;
+}
+CATCH_RETURN();
+
 STDAPI MddResolvePackageFullNameForPackageDependency(
     _In_ PCWSTR packageDependencyId,
     _Outptr_result_maybenull_ PWSTR* packageFullName) noexcept try

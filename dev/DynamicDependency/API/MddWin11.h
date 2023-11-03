@@ -21,8 +21,9 @@ namespace MddCore::Win11
         __declspec(selectany) decltype(&::GetIdForPackageDependencyContext) g_win11GetIdForPackageDependencyContext{};
         __declspec(selectany) decltype(&::GetPackageGraphRevisionId) g_win11GetPackageGraphRevisionId{};
 
-        //TODO:Resolve __declspec(selectany) HMODULE g_dllApisetAppmodelRuntime_1_7{};
+        __declspec(selectany) HMODULE g_dllApisetAppmodelRuntime_1_7{};
         //TODO:Resolve __declspec(selectany) decltype(&::ResolvePackageFullNameForPackageDependency) g_win11ResolvePackageFullNameForPackageDependency{};
+        //TODO:GetResolved2 __declspec(selectany) decltype(&::GetResolvedPackageFullNameForPackageDependency2) g_win11GetResolvedPackageFullNameForPackageDependency2{};
 
         __declspec(selectany) bool g_isSupported{ WindowsVersion::IsWindows11_22H2OrGreater() };
 
@@ -68,6 +69,11 @@ namespace MddCore::Win11
     inline bool IsSupported()
     {
         return MddCore::Win11::details::g_isSupported;
+    }
+
+    inline bool IsGetResolvedPackageFullNameForPackageDependency2Supported()
+    {
+        return IsSupported() && MddCore::Win11::details::g_dllApisetAppmodelRuntime_1_7;
     }
 
     inline HRESULT TryCreatePackageDependency(
@@ -141,15 +147,15 @@ namespace MddCore::Win11
 #endif // defined(WINRT_Microsoft_Windows_ApplicationModel_DynamicDependency_H)
 
     inline void DeletePackageDependency(
-        const winrt::hstring& packageDependencyId)
-    {
-        DeletePackageDependency(packageDependencyId.c_str());
-    }
-
-    inline void DeletePackageDependency(
         _In_ PCWSTR packageDependencyId)
     {
         (void)LOG_IF_FAILED(MddCore::Win11::details::g_win11DeletePackageDependency(packageDependencyId));
+    }
+
+    inline void DeletePackageDependency(
+        const winrt::hstring& packageDependencyId)
+    {
+        DeletePackageDependency(packageDependencyId.c_str());
     }
 
     inline HRESULT AddPackageDependency(
@@ -217,6 +223,16 @@ namespace MddCore::Win11
         return S_OK;
     }
 
+    inline HRESULT GetResolvedPackageFullNameForPackageDependency2(
+        _In_ PCWSTR packageDependencyId,
+        _Outptr_result_maybenull_ PWSTR* packageFullName)
+    {
+        //TODO:GetResolved2 RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), g_win11GetResolvedPackageFullNameForPackageDependency2);
+        //TODO:GetResolved2 RETURN_IF_FAILED(MddCore::Win11::details::g_win11GetResolvedPackageFullNameForPackageDependency2(packageDependencyId, packageFullName));
+        //TODO:GetResolved2 return S_OK;
+        RETURN_WIN32(ERROR_NOT_SUPPORTED);
+    }
+
     inline HRESULT ResolvePackageFullNameForPackageDependency(
         _In_ PCWSTR packageDependencyId,
         _Outptr_result_maybenull_ PWSTR* packageFullName)
@@ -268,14 +284,24 @@ inline HRESULT WINAPI MddWin11Initialize() noexcept
     auto win11GetPackageGraphRevisionId{ GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_6, GetPackageGraphRevisionId) };
     RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), win11GetPackageGraphRevisionId);
     //
-    //TODO:Resolve HMODULE dllApisetAppmodelRuntime_1_7{ LoadLibraryExW(L"api-ms-win-appmodel-runtime-l1-1-7.dll", nullptr, 0) };
-    //TODO:Resolve FAIL_FAST_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllApisetAppmodelRuntime_1_7);
-    //TODO:Resolve
-    //TODO:Resolve auto win11ResolvePackageFullNameForPackageDependency{ GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_7, ResolvePackageFullNameForPackageDependency) };
-    //TODO:Resolve RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), win11ResolvePackageFullNameForPackageDependency);
+    //TODO:GetResolved2 decltype(&::GetResolvedPackageFullNameForPackageDependency2) win11GetResolvedPackageFullNameForPackageDependency2{};
+    HMODULE dllApisetAppmodelRuntime_1_7{ LoadLibraryExW(L"api-ms-win-appmodel-runtime-l1-1-7.dll", nullptr, 0) };
+    if (dllApisetAppmodelRuntime_1_7 == nullptr)
+    {
+        const auto rc{ GetLastError() };
+        RETURN_HR_IF(HRESULT_FROM_WIN32(rc), rc != ERROR_MOD_NOT_FOUND);
+    }
+    else
+    {
+        //TODO:Resolve auto win11ResolvePackageFullNameForPackageDependency{ GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_7, ResolvePackageFullNameForPackageDependency) };
+        //TODO:Resolve RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), win11ResolvePackageFullNameForPackageDependency);
+        //TODO:GetResolved2 win11GetResolvedPackageFullNameForPackageDependency2 = GetProcAddressByFunctionDeclaration(dllApisetAppmodelRuntime_1_7, GetResolvedPackageFullNameForPackageDependency);
+        //TODO:GetResolved2 RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), win11GetResolvedPackageFullNameForPackageDependency2);
+    }
 
-    //TODO:Resolve MddCore::Win11::details::g_dllApisetAppmodelRuntime_1_7 = dllApisetAppmodelRuntime_1_7;
+    MddCore::Win11::details::g_dllApisetAppmodelRuntime_1_7 = dllApisetAppmodelRuntime_1_7;
     //TODO:Resolve MddCore::Win11::details::g_win11ResolvePackageFullNameForPackageDependency = win11ResolvePackageFullNameForPackageDependency;
+    //TODO:GetResolved2 MddCore::Win11::details::g_win11GetResolvedPackageFullNameForPackageDependency2 = win11GetResolvedPackageFullNameForPackageDependency2;
     //
     MddCore::Win11::details::g_dllApisetAppmodelRuntime_1_6 = dllApisetAppmodelRuntime_1_6;
     MddCore::Win11::details::g_win11TryCreatePackageDependency = win11TryCreatePackageDependency;
@@ -290,12 +316,13 @@ inline HRESULT WINAPI MddWin11Initialize() noexcept
 
 inline HRESULT WINAPI MddWin11Shutdown() noexcept
 {
-    //TODO:Resolve if (MddCore::Win11::details::g_dllApisetAppmodelRuntime_1_7)
-    //TODO:Resolve {
-    //TODO:Resolve     MddCore::Win11::details::g_win11ResolvePackageFullNameForPackageDependency = nullptr;
-    //TODO:Resolve     FreeLibrary(MddCore::Win11::details::g_dllApisetAppmodelRuntime_1_7);
-    //TODO:Resolve     MddCore::Win11::details::g_dllApisetAppmodelRuntime_1_7 = nullptr;
-    //TODO:Resolve }
+    if (MddCore::Win11::details::g_dllApisetAppmodelRuntime_1_7)
+    {
+        //TODO:Resolve MddCore::Win11::details::g_win11ResolvePackageFullNameForPackageDependency = nullptr;
+        //TODO:GetResolved2 MddCore::Win11::details::g_win11GetResolvedPackageFullNameForPackageDependency2 = nullptr;
+        FreeLibrary(MddCore::Win11::details::g_dllApisetAppmodelRuntime_1_7);
+        MddCore::Win11::details::g_dllApisetAppmodelRuntime_1_7 = nullptr;
+    }
 
     if (MddCore::Win11::details::g_dllApisetAppmodelRuntime_1_6)
     {
