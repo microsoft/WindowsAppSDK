@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -16,6 +16,8 @@
 
 #include <M.AM.Converters.h>
 
+#include "MddWin11.h"
+
 namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implementation
 {
     PackageDependency::PackageDependency(hstring const& id) :
@@ -25,21 +27,37 @@ namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implem
 
     winrt::PackageDependency PackageDependency::GetFromId(hstring const& id)
     {
-        auto tokenUser{ wil::get_token_information<TOKEN_USER>(GetCurrentThreadEffectiveToken()) };
-        auto exists{ MddCore::PackageDependencyManager::ExistsPackageDependency(tokenUser->User.Sid, id.c_str()) };
-        if (!exists)
+        // Use the Win11 APIs if available (instead of Detour'ing to our own implementation)
+        if (MddCore::Win11::IsSupported())
         {
-            return nullptr;
+            //TODO GetPackageDependencyInfo(userSid, id.c_str(), &packageDependencyInfo)
+        }
+        else
+        {
+            auto tokenUser{ wil::get_token_information<TOKEN_USER>(GetCurrentThreadEffectiveToken()) };
+            auto exists{ MddCore::PackageDependencyManager::ExistsPackageDependency(tokenUser->User.Sid, id.c_str()) };
+            if (!exists)
+            {
+                return nullptr;
+            }
         }
         return winrt::make<implementation::PackageDependency>(id);
     }
 
     winrt::PackageDependency PackageDependency::GetFromIdForSystem(hstring const& id)
     {
-        auto exists{ MddCore::PackageDependencyManager::ExistsPackageDependency(nullptr, id.c_str()) };
-        if (!exists)
+        // Use the Win11 APIs if available (instead of Detour'ing to our own implementation)
+        if (MddCore::Win11::IsSupported())
         {
-            return nullptr;
+            //TODO GetPackageDependencyInfo(userSid, id.c_str(), &packageDependencyInfo)
+        }
+        else
+        {
+            auto exists{ MddCore::PackageDependencyManager::ExistsPackageDependency(nullptr, id.c_str()) };
+            if (!exists)
+            {
+                return nullptr;
+            }
         }
         return winrt::make<implementation::PackageDependency>(id);
     }
