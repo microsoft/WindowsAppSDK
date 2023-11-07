@@ -9,6 +9,6 @@
     mc:Ignorable="d">
 
     <Grid>
-        <TextBlock Text="UnitTestAppWindow" FontSize="36" />
+
     </Grid>
 </Window>
