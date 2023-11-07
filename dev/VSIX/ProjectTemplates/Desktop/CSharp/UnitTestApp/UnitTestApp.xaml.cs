@@ -45,13 +45,10 @@ namespace $safeprojectname$
             Microsoft.VisualStudio.TestPlatform.TestExecutor.UnitTestClient.CreateDefaultUI();
 
             m_window = new UnitTestAppWindow();
-
-            // Ensure the current window is active
             m_window.Activate();
 
             UITestMethodAttribute.DispatcherQueue = m_window.DispatcherQueue;
 
-            // Replace back with e.Arguments when https://github.com/microsoft/microsoft-ui-xaml/issues/3368 is fixed
             Microsoft.VisualStudio.TestPlatform.TestExecutor.UnitTestClient.Run(Environment.CommandLine);
         }
 
