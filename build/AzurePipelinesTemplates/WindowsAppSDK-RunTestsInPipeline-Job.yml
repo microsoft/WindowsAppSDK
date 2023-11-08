@@ -110,7 +110,7 @@ jobs:
     ${{ if parameters.isArm64Platfrom }}:
       name: 'WinAppSDK-Test-Pool-Arm64'
       demands: ImageOverride -equals $(imageName)
-  timeoutInMinutes: 60
+  timeoutInMinutes: 120
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
   steps:
