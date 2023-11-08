@@ -36,6 +36,7 @@
 
 #include <Microsoft.Utf8.h>
 
+#include "KozaniManagerTracelogging.h"
 #include "KozaniProtobufMessages.h"
 #include "KozaniDvcProtocol.h"
 #include "Logging.h"
