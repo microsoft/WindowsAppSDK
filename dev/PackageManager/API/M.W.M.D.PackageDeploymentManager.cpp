@@ -57,7 +57,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         //TODO auto logTelemetry{ PackageDeploymentTelemetry::CreateChannelAsync::Start(g_telemetryHelper, remoteId) };
 
-        auto strong = get_strong();
+        auto strong{ get_strong() };
 
         auto cancellation{ co_await winrt::get_cancellation_token() };
         cancellation.enable_propagation(true);
@@ -145,7 +145,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         //TODO auto logTelemetry{ PackageDeploymentTelemetry::CreateChannelAsync::Start(g_telemetryHelper, remoteId) };
 
-        auto strong = get_strong(); 
+        auto strong{ get_strong() };
 
         auto cancellation{ co_await winrt::get_cancellation_token() };
         cancellation.enable_propagation(true);
@@ -189,7 +189,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         //TODO auto logTelemetry{ PackageDeploymentTelemetry::CreateChannelAsync::Start(g_telemetryHelper, remoteId) };
 
-        auto strong = get_strong(); 
+        auto strong{ get_strong() };
 
         auto cancellation{ co_await winrt::get_cancellation_token() };
         cancellation.enable_propagation(true);
@@ -314,7 +314,17 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         auto packageUri{ packageSetItem.PackageUri() };
         winrt::Windows::Management::Deployment::AddPackageOptions addOptions{ ToOptions(options) };
         auto deploymentOperation{ m_packageManager.AddPackageByUriAsync(packageUri, addOptions) };
+#if 0
+        //TODO Replace .get with this to propogate intra-package progress?
+        deploymentOperation.Progress([&](IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> const& /* sender */,
+                                     PackageDeploymentProgress const& args)
+        {
+            ...compute new value...
+            progress(value);
+        });
+#else
         deploymentOperation.get();
+#endif
         try
         {
             const auto deploymentResult{ deploymentOperation.GetResults() };
@@ -349,7 +359,17 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     void PackageDeploymentManager::AddAsync(winrt::Windows::Foundation::Uri const& packageUri, winrt::Windows::Management::Deployment::AddPackageOptions const& addOptions)
     {
         auto deploymentOperation{ m_packageManager.AddPackageByUriAsync(packageUri, addOptions) };
+#if 0
+        //TODO Replace .get with this to propogate intra-package progress?
+        deploymentOperation.Progress([&](IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> const& /* sender */,
+                                     PackageDeploymentProgress const& args)
+        {
+            ...compute new value...
+            progress(value);
+        });
+#else
         deploymentOperation.get();
+#endif
         try
         {
             const auto deploymentResult{ deploymentOperation.GetResults() };
