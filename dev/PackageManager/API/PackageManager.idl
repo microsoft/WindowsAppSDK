@@ -306,6 +306,7 @@ namespace Microsoft.Windows.Management.Deployment
     {
         RemovePackageOptions();
 
+        Boolean OkIfNotFound;
         Boolean PreserveApplicationData;
         Boolean PreserveRoamableApplicationData;
         Boolean RemoveForAllUsers;
@@ -414,7 +415,12 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RemovePackageSetByIdAsync(String packageSetId, RemovePackageOptions options);
 
-        // Ditto PackageSet operations of Stage, Register, Repair, Reset
+        //TODO Ditto PackageSet operations of Stage, Register, Repair, Reset
+
+        //TODO Boolean IsRegistrationPending(String packageFamilyName);
+        //
+        //TODO [method_name("IsRegistrationPendingForUser")]
+        //TODO Boolean IsRegistrationPending(String userSecurityId, String packageFamilyName);
     }
 
     [feature(Feature_PackageManager)]
