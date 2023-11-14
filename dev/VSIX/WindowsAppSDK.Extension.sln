@@ -82,6 +82,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsAppSDK.Cpp.Extension
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.UnitTestApp", "ProjectTemplates\Desktop\CSharp\UnitTestApp\WinUI.Desktop.Cs.UnitTestApp.csproj", "{45777B9F-9CC1-47D7-BD66-C3C194277902}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.CppWinRT.UnitTestApp", "ProjectTemplates\Desktop\CppWinRT\UnitTestApp\WinUI.Desktop.CppWinRT.UnitTestApp.csproj", "{DFA6B905-57A3-4B31-A74B-25BA2243389F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -207,6 +209,7 @@ Global
 		{D9C038B7-6A62-4945-A030-4AC7597F53CA} = {EC44EE95-8EC9-4EE5-A8A6-E6BE2F32C843}
 		{E54D1AD4-E935-479D-8A69-FC073E4DB33D} = {1A8A7481-2108-496B-802D-39F9C08D86F3}
 		{45777B9F-9CC1-47D7-BD66-C3C194277902} = {EC44EE95-8EC9-4EE5-A8A6-E6BE2F32C843}
+		{DFA6B905-57A3-4B31-A74B-25BA2243389F} = {1A8A7481-2108-496B-802D-39F9C08D86F3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A417E325-71BD-4C29-94F8-F21FB3F5C392}
