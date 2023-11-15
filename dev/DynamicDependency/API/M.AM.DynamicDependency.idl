@@ -3,7 +3,7 @@
 
 namespace Microsoft.Windows.ApplicationModel.DynamicDependency
 {
-    [contractversion(3)]
+    [contractversion(2)]
     apicontract DynamicDependencyContract{};
 
     /// CPU architectures to optionally filter available packages against a package dependency.
