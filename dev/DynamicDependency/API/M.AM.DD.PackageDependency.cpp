@@ -30,7 +30,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implem
         // Use the Win11 APIs if available (instead of Detour'ing to our own implementation)
         if (MddCore::Win11::IsSupported())
         {
-            //TODO GetPackageDependencyInfo(userSid, id.c_str(), &packageDependencyInfo)
+            //TODO:GetResolved2 GetPackageDependencyInfo2(userSid, id.c_str(), &packageDependencyInfo)
         }
         else
         {
@@ -49,7 +49,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implem
         // Use the Win11 APIs if available (instead of Detour'ing to our own implementation)
         if (MddCore::Win11::IsSupported())
         {
-            //TODO GetPackageDependencyInfo(userSid, id.c_str(), &packageDependencyInfo)
+            //TODO:GetResolved2 GetPackageDependencyInfo2(userSid, id.c_str(), &packageDependencyInfo)
         }
         else
         {
@@ -134,12 +134,6 @@ namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implem
         auto context{ winrt::make<implementation::PackageDependencyContext>(packageDependencyContext.get()) };
         packageDependencyContext.release();
         return context;
-    }
-
-    winrt::PackageDependencyContext PackageDependency::Resolve()
-    {
-        //TODO:Resolve
-        throw winrt::hresult_not_implemented();
     }
 
     winrt::PackageDependency PackageDependency::Create(

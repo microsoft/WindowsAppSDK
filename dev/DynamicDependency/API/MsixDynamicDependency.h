@@ -216,15 +216,6 @@ STDAPI MddGetResolvedPackageFullNameForPackageDependency2(
     _In_ PCWSTR packageDependencyId,
     _Outptr_result_maybenull_ PWSTR* packageFullName) noexcept;
 
-/// Resolve the PackageDependency (if not already resolved).
-///
-/// @param packageFullName allocated via HeapAlloc; use HeapFree to deallocate.
-///                        If the package dependency cannot be resolved the function
-///                        succeeds but packageFullName is nullptr.
-STDAPI MddResolvePackageFullNameForPackageDependency(
-    _In_ PCWSTR packageDependencyId,
-    _Outptr_result_maybenull_ PWSTR* packageFullName) noexcept;
-
 /// Return the package dependency for the context.
 ///
 /// @param packageDependencyId allocated via HeapAlloc; use HeapFree to deallocate.

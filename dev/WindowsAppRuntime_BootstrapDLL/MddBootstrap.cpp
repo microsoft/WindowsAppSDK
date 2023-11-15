@@ -364,13 +364,10 @@ void FirstTimeInitialization(
     const std::wstring packageVersionTag{ !versionTag ? L"" : versionTag };
 
     // Use the Win11 APIs if available (instead of WinAppSDK's implementation)
-//TODO optimize common code
     if (MddCore::Win11::IsSupported())
     {
         // Add the framework package to the package graph
         const std::wstring frameworkPackageFamilyName{ GetFrameworkPackageFamilyName(majorMinorVersion, packageVersionTag.c_str()) };
-
-        // Add the framework package to the package graph
         const MddPackageDependencyProcessorArchitectures architectureFilter{};
         const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
         const MddCreatePackageDependencyOptions createOptions{};
@@ -397,9 +394,6 @@ void FirstTimeInitialization(
         }
 
         // Track our initialized state
-        //TODO g_lifetimeManager = lifetimeManager.detach();
-        //TODO g_endTheLifetimeManagerEvent = std::move(endTheLifetimeManagerEvent);
-        //TODO g_windowsAppRuntimeDll = std::move(windowsAppRuntimeDll);
         g_packageDependencyId = std::move(packageDependencyId);
         g_packageDependencyContext = packageDependencyContext;
         //
