@@ -60,7 +60,8 @@ namespace Microsoft.Windows.Management.Deployment
 
         PackageVolumeStatus Status { get; };
 
-        void FixMe();
+        Boolean CheckReset();
+        void Reset();
     };
 
     [feature(Feature_PackageManager)]

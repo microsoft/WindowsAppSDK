@@ -20,7 +20,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         bool IsFullTrustPackageSupported();
         bool IsAppxInstallSupported();
         winrt::Microsoft::Windows::Management::Deployment::PackageVolumeStatus Status();
-        void FixMe();
+        bool CheckReset();
+        void Reset();
 
     private:
         bool m_isSystemVolume{};

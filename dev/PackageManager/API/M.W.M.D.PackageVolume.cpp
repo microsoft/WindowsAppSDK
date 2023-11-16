@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "M.W.M.D.PackageVolume.h"
 #include "Microsoft.Windows.Management.Deployment.PackageVolume.g.cpp"
+#include <frameworkudk/AppxPackageVolumeReset.h>
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
@@ -50,8 +51,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         throw hresult_not_implemented();
     }
-    void PackageVolume::FixMe()
+    bool PackageVolume::CheckReset()
     {
-        throw hresult_not_implemented();
+        bool needsReset{};
+        THROW_IF_FAILED(AppxPackageVolumeReset_CheckDeviceForAppReset(Name().c_str(), &needsReset)); // use PackageStorePath instead of Name?
+        return needsReset;
+    }
+    void PackageVolume::Reset()
+    {
+        THROW_IF_FAILED(AppxPackageVolumeReset_Reset(Name().c_str()));
     }
 }
