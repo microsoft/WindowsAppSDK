@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
-    <Name ID="1029" Package="FIXME-PACKAGEGUID" />
-    <Description ID="1031" Package="FIXME-PACKAGEGUID" />
+    <Name ID="1036" Package="FIXME-PACKAGEGUID" />
+    <Description ID="1037" Package="FIXME-PACKAGEGUID" />
     <Icon>WinUI.Desktop.CppWinRT.UnitTestApp.ico</Icon>
     <TemplateID>Microsoft.WinUI.Desktop.CppWinRT.UnitTestApp</TemplateID>
     <ProjectType>VC</ProjectType>
@@ -21,6 +21,7 @@
     <PlatformTag>windows</PlatformTag>
     <ProjectTypeTag>desktop</ProjectTypeTag>
     <ProjectTypeTag>winui</ProjectTypeTag>
+    <ProjectTypeTag>Test</ProjectTypeTag>
   </TemplateData>
   <TemplateContent PreferedSolutionConfiguration="Debug|Win32">
     <Project File="ProjectTemplate.vcxproj" ReplaceParameters="true">
@@ -35,6 +36,7 @@
       <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.idl">MainWindow.idl</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.xaml.cpp">MainWindow.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.xaml.h">MainWindow.h</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="UnitTests.cpp">UnitTests.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="Package.appxmanifest">Package-native.appxmanifest</ProjectItem>
       <Folder Name="Assets" TargetFolderName="Assets">
         <ProjectItem ReplaceParameters="false" TargetFileName="LockScreenLogo.scale-200.png">LockScreenLogo.scale-200.png</ProjectItem>

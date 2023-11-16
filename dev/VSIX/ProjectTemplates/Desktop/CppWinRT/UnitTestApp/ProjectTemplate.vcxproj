@@ -37,10 +37,10 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions);DISABLE_XAML_GENERATED_MAIN</PreprocessorDefinitions>
 
       <!-- Normally this is set by Microsoft.Cpp.UnitTest.props, but that requires AppContainerApplication=true or ApplicationType=''-->
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(VCInstallDir)Auxiliary\VS\UnitTest\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(VCInstallDir)Auxiliary\VS\UnitTest\include\UWP</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(VCInstallDir)Auxiliary\VS\UnitTest\lib;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(VCInstallDir)Auxiliary\VS\UnitTest\lib\UWP;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
 
@@ -49,7 +49,7 @@
     <ProjectCapability Include="TestContainer" />
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="CppUnitTestFramework.Universal.Net5, Version=17.0" />
+    <SDKReference Include="CppUnitTestFramework.Universal.Net6, Version=17.0" />
     <SDKReference Include="TestPlatform.Universal, Version=17.1" />
   </ItemGroup>
 

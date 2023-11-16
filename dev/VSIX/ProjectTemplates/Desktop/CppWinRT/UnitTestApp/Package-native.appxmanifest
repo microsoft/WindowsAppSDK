@@ -54,7 +54,7 @@
 		<Extension Category="windows.activatableClass.inProcessServer">
 			<InProcessServer>
 				<Path>WinRT.Host.dll</Path>
-				<ActivatableClass ActivatableClassId="Microsoft.VisualStudio.TestPlatform.WinRTTestExecutor.UnitTestClient" ThreadingModel="both" />
+				<ActivatableClass ActivatableClassId="Microsoft.VisualStudio.TestPlatform.TestExecutor.WinRTCore.UnitTestClient" ThreadingModel="both" />
 			</InProcessServer>
 		</Extension>
 	</Extensions>

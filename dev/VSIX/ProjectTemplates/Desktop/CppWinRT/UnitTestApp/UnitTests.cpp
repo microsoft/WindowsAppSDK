@@ -3,9 +3,7 @@
 #include "CppUnitTest.h"
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-
-
-namespace UITests
+namespace $safeprojectname$
 {
     TEST_CLASS(CppUnitTests)
     {
