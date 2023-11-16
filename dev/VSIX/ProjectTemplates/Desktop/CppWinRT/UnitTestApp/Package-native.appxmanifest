@@ -49,14 +49,14 @@
     <rescap:Capability Name="runFullTrust" />
   </Capabilities>
 
-	<!-- Is this better here or in app.manifest? -->
-	<Extensions>
-		<Extension Category="windows.activatableClass.inProcessServer">
-			<InProcessServer>
-				<Path>WinRT.Host.dll</Path>
-				<ActivatableClass ActivatableClassId="Microsoft.VisualStudio.TestPlatform.TestExecutor.WinRTCore.UnitTestClient" ThreadingModel="both" />
-			</InProcessServer>
-		</Extension>
-	</Extensions>
+  <!-- Is this better here or in app.manifest? -->
+  <Extensions>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>WinRT.Host.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.VisualStudio.TestPlatform.TestExecutor.WinRTCore.UnitTestClient" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+  </Extensions>
 
 </Package>
