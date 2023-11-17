@@ -146,6 +146,13 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
+    <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CppWinRT\UnitTestApp\WinUI.Desktop.CppWinRT.UnitTestApp.csproj">
+      <Project>{DFA6B905-57A3-4B31-A74B-25BA2243389F}</Project>
+      <Name>WinUI.Desktop.CppWinRT.UnitTestApp</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(ExtensionDir)Cpp\Common\VSPackage.resx">
