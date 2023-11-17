@@ -77,3 +77,4 @@ extends:
         PublishToMaestro: ${{ parameters.PublishToMaestro }}
         IgnoreFailures: ${{ parameters.IgnoreFailures }}
         SignOutput: ${{ parameters.SignOutput }}
+        PublishPackage: true

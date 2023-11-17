@@ -47,6 +47,7 @@ steps:
 - ${{ if not( parameters.RunPrefast ) }}:
   - task: PowerShell@2
     name: BuildBinaries
+    retryCountOnTaskFailure: 10
     inputs:
       filePath: 'BuildAll.ps1'
       arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"

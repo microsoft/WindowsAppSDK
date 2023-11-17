@@ -31,4 +31,5 @@
 
 #include <WindowsAppRuntimeInsights.h>
 
+#include <KozaniRemoteManager_h.h>
 #include "Logging.h"

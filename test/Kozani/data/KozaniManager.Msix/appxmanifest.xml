@@ -5,9 +5,11 @@
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
   xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
+  xmlns:uap10="http://schemas.microsoft.com/appx/manifest/uap/windows10/10"
   xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+  xmlns:desktop4="http://schemas.microsoft.com/appx/manifest/desktop/windows10/4" 
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap uap3 uap5 com rescap">
+  IgnorableNamespaces="uap uap3 uap5 uap10 com desktop4 rescap">
 
   <Identity
     Name="KozaniManager"
@@ -21,7 +23,7 @@
   </Properties>
 
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.19041.0" MaxVersionTested="10.0.19041.0" />
   </Dependencies>
 
   <Resources>
@@ -29,6 +31,7 @@
   </Resources>
 
   <Applications>
+    
     <Application Id="App"
       Executable="KozaniManager.exe"
       EntryPoint="Windows.FullTrustApplication">
@@ -55,13 +58,36 @@
             <!--Proxy stub's CLSID is the same as the IID of the FIRST interface in the IDL-->
             <com:ProxyStub Id="5239c3b0-9e90-11ed-87cd-0800200c9a66" DisplayName="KozaniManager ProxyStub" Path="KozaniManagerProxyStub.dll"/>
             <com:Interface Id="5239c3b0-9e90-11ed-87cd-0800200c9a66" ProxyStubClsid="5239c3b0-9e90-11ed-87cd-0800200c9a66"/><!-- IID_IKozaniStausCallback -->
+            <com:Interface Id="43665c78-faf6-4534-9411-321147fc80ea" ProxyStubClsid="5239c3b0-9e90-11ed-87cd-0800200c9a66"/><!-- IID_IKozaniRemoteDesktopClientLauncher -->
             <com:Interface Id="5882f14f-f954-4af9-bbeb-a7c1a2a6357e" ProxyStubClsid="5239c3b0-9e90-11ed-87cd-0800200c9a66"/><!-- IID_IKozaniManager -->
             <com:Interface Id="A1230201-1439-4e62-a414-190d0ac3d40e" ProxyStubClsid="5239c3b0-9e90-11ed-87cd-0800200c9a66"/><!-- IID_IWTSPlugin -->
           </com:ComInterface>
         </com:Extension>
       </Extensions>
     </Application>
+
+    <Application Id="KozaniHostRuntimeApp" Executable="KozaniHostRuntime.exe" EntryPoint="Windows.FullTrustApplication" desktop4:SupportsMultipleInstances="true">
+      <uap:VisualElements DisplayName="KozaniHostRuntime" Description="Kozani Host Runtime" BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile Square71x71Logo="Assets\Square150x150Logo.png" />
+      </uap:VisualElements>
+    </Application>
+
   </Applications>
+
+  <Extensions>
+    
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>KozaniManagerRuntime.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Kozani.ManagerRuntime.ManagerRuntimeManager" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    
+    <uap10:Extension Category="windows.hostRuntime" Executable="KozaniHostRuntime.exe" uap10:RuntimeBehavior="packagedClassicApp" uap10:TrustLevel="mediumIL">
+      <uap10:HostRuntime Id="KozaniHostRuntime" />
+    </uap10:Extension>
+    
+  </Extensions>
   
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
