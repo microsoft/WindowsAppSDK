@@ -49,7 +49,6 @@
     <rescap:Capability Name="runFullTrust" />
   </Capabilities>
 
-  <!-- Is this better here or in app.manifest? -->
   <Extensions>
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
