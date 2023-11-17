@@ -22,29 +22,9 @@
     <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
-
-
     <ProjectSubType>NativeUnitTestProject</ProjectSubType>
-
-
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-
-  
-  <ItemDefinitionGroup>
-    <ClCompile>
-      <!-- Required to provide custom winmain to pass cmd line to App-->
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);DISABLE_XAML_GENERATED_MAIN</PreprocessorDefinitions>
-
-      <!-- Normally this is set by Microsoft.Cpp.UnitTest.props, but that requires AppContainerApplication=true or ApplicationType=''-->
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(VCInstallDir)Auxiliary\VS\UnitTest\include\UWP</AdditionalIncludeDirectories>
-    </ClCompile>
-    <Link>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(VCInstallDir)Auxiliary\VS\UnitTest\lib\UWP;</AdditionalLibraryDirectories>
-    </Link>
-  </ItemDefinitionGroup>
-
-
   <ItemGroup>
     <ProjectCapability Include="TestContainer" />
   </ItemGroup>
@@ -52,8 +32,6 @@
     <SDKReference Include="CppUnitTestFramework.Universal.Net6, Version=17.0" />
     <SDKReference Include="TestPlatform.Universal, Version=17.1" />
   </ItemGroup>
-
-
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -107,9 +85,14 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);DISABLE_XAML_GENERATED_MAIN</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(VCInstallDir)Auxiliary\VS\UnitTest\include\UWP</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(VCInstallDir)Auxiliary\VS\UnitTest\lib\UWP;</AdditionalLibraryDirectories>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
