@@ -1,7 +1,7 @@
 {
     "instanceUrl": "https://microsoft.visualstudio.com",
     "projectName": "os",
-    "areaPath": "OS\\Windows Client and Services\\ADEPT\\NEON\\WinAppSDK Developer Experience\\WinAppSDK Engineering System",
+    "areaPath": "OS\\Windows Client and Services\\ADEPT\\NEON\\Windex\\WinAppSDK Engineering System",
     "iterationPath": "OS\\2311",
     "notificationAliases": [ "WinAppSDK-Build@microsoft.com" ],
     "ignoreBranchName": true,
