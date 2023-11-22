@@ -198,4 +198,10 @@
   <data name="1035" xml:space="preserve">
     <value>Windows UI ライブラリ (WinUI 3) に基づいて、デスクトップ アプリとユニバーサル Windows プラットフォーム (UWP) アプリの両方の C++/WinRT Windows ランタイム コンポーネント (.winmd) を作成するためのプロジェクトです。</value>
   </data>
+  <data name="1036" xml:space="preserve">
+    <value>単体テスト アプリ (WinUI 3)</value>
+  </data>
+  <data name="1037" xml:space="preserve">
+    <value>MSTest を使用して WinUI 3 用 C++/WinRT 単体テスト アプリを作成するためのプロジェクトです。</value>
+  </data>
 </root>
