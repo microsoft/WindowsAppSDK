@@ -198,4 +198,10 @@
   <data name="1035" xml:space="preserve">
     <value>Microsoft Store를 통해 테스트용으로 로드하거나 배포하기 위한 MSIX 패키지와 함께 Windows UI 라이브러리(WinUI 3)를 기반으로 하는 데스크톱 앱을 만들기 위한 프로젝트 템플릿입니다.</value>
   </data>
+  <data name="1036" xml:space="preserve">
+    <value>단위 테스트 앱(데스크톱의 WinUI 3)</value>
+  </data>
+  <data name="1037" xml:space="preserve">
+    <value>MSTest를 사용하여 WinUI 3 앱용 단위 테스트 앱을 만드는 프로젝트입니다.</value>
+  </data>
 </root>
