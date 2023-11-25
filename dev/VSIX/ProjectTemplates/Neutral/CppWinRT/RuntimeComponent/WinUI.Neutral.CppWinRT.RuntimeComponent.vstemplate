@@ -20,7 +20,7 @@
     <LanguageTag>XAML</LanguageTag>
     <PlatformTag>windows</PlatformTag>
     <ProjectTypeTag>desktop</ProjectTypeTag>
-    <ProjectTypeTag>winui</ProjectTypeTag>
+    <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>
   <TemplateContent>
     <Project File="ProjectTemplate.vcxproj" ReplaceParameters="true">

@@ -21,7 +21,7 @@
     <LanguageTag>XAML</LanguageTag>
     <PlatformTag>windows</PlatformTag>
     <ProjectTypeTag>desktop</ProjectTypeTag>
-    <ProjectTypeTag>winui</ProjectTypeTag>
+    <ProjectTypeTag>WinUI</ProjectTypeTag>
     <ProjectTypeTag>test</ProjectTypeTag>
   </TemplateData>
   <TemplateContent PreferedSolutionConfiguration="Debug|x86">
