@@ -1,18 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!--
-    VS SDK Notes: This resx file contains the resources that will be consumed from
-    your package by Visual Studio. For example, Visual Studio will attempt to load
-    resource '1000' from this resource stream when it needs to load one of your
-    package's template's name. Because Visual Studio will always look in the
-    VSPackage.resources stream first for resources it needs, you should put additional
-    resources that Visual Studio will load directly into this resx file.
-
-    By convention, strings that have both non-experimental and experimental versions
-    have consecutive IDs (even = non-experimental, odd = experimental).
-
-    Resources that you would like to access directly from your package in a strong-typed
-    fashion should be stored in Resources.resx or another resx file.
--->
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -211,5 +197,11 @@
   </data>
   <data name="1035" xml:space="preserve">
     <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan, hem Masaüstü hem de Evrensel Windows Platformu (UWP) uygulamaları için bir C++/WinRT Windows Çalışma Zamanı Bileşeni (.winmd) oluşturmaya yönelik proje.</value>
+  </data>
+  <data name="1036" xml:space="preserve">
+    <value>Birim Testi Uygulaması (WinUI 3)</value>
+  </data>
+  <data name="1037" xml:space="preserve">
+    <value>MSTest kullanarak WinUI 3 için bir C++/WinRT birim testi uygulamasını oluşturmaya yönelik bir proje.</value>
   </data>
 </root>
