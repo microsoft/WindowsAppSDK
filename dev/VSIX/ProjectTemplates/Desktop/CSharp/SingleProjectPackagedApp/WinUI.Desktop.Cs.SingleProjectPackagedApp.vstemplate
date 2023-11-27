@@ -31,9 +31,9 @@
     </CustomParameters>
     <Project File="ProjectTemplate.csproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" TargetFileName="launchSettings.json">Properties\launchSettings.json</ProjectItem>
-      <ProjectItem ReplaceParameters="true" TargetFileName="win10-arm64.pubxml">Properties\PublishProfiles\win10-arm64.pubxml</ProjectItem>
-      <ProjectItem ReplaceParameters="true" TargetFileName="win10-x64.pubxml">Properties\PublishProfiles\win10-x64.pubxml</ProjectItem>
-      <ProjectItem ReplaceParameters="true" TargetFileName="win10-x86.pubxml">Properties\PublishProfiles\win10-x86.pubxml</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="win-arm64.pubxml">Properties\PublishProfiles\win-arm64.pubxml</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="win-x64.pubxml">Properties\PublishProfiles\win-x64.pubxml</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="win-x86.pubxml">Properties\PublishProfiles\win-x86.pubxml</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="app.manifest">app.manifest</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="App.xaml">App.xaml</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="App.xaml.cs">App.xaml.cs</ProjectItem>
