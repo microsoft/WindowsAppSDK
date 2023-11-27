@@ -209,8 +209,6 @@ STDAPI MddGetResolvedPackageFullNameForPackageDependency(
 /// package to the process graph.
 ///
 /// @param packageFullName allocated via HeapAlloc; use HeapFree to deallocate.
-///                        If the package dependency cannot be resolved the function
-///                        succeeds but packageFullName is nullptr.
 /// @note An unknown packageDependencyId returns HRESULT_FROM_WIN32(ERROR_NOT_FOUND).
 STDAPI MddGetResolvedPackageFullNameForPackageDependency2(
     _In_ PCWSTR packageDependencyId,

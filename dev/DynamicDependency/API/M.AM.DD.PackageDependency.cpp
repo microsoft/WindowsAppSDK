@@ -30,7 +30,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implem
         // Use the Win11 APIs if available (instead of Detour'ing to our own implementation)
         if (MddCore::Win11::IsSupported())
         {
-            //TODO:GetResolved2 GetPackageDependencyInfo2(userSid, id.c_str(), &packageDependencyInfo)
+            //TODO:47775758 GetResolved2 GetPackageDependencyInfo2(userSid, id.c_str(), &packageDependencyInfo)
         }
         else
         {
@@ -49,7 +49,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implem
         // Use the Win11 APIs if available (instead of Detour'ing to our own implementation)
         if (MddCore::Win11::IsSupported())
         {
-            //TODO:GetResolved2 GetPackageDependencyInfo2(userSid, id.c_str(), &packageDependencyInfo)
+            //TODO:47775758 GetResolved2 GetPackageDependencyInfo2(userSid, id.c_str(), &packageDependencyInfo)
         }
         else
         {
