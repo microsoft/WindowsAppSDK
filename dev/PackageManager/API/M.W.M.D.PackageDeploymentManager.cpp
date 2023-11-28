@@ -339,6 +339,26 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         throw hresult_not_implemented();
     }
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::ResetPackageAsync(hstring package)
+    {
+        throw hresult_not_implemented();
+    }
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::ResetPackageByUriAsync(winrt::Windows::Foundation::Uri packageUri)
+    {
+        throw hresult_not_implemented();
+    }
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::ResetPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet)
+    {
+        throw hresult_not_implemented();
+    }
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::ResetPackageSetByIdAsync(hstring packageSetId)
+    {
+        throw hresult_not_implemented();
+    }
     bool PackageDeploymentManager::IsPackageRegistrationPending(hstring const& packageFamilyName)
     {
         throw hresult_not_implemented();

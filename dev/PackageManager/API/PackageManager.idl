@@ -508,7 +508,17 @@ namespace Microsoft.Windows.Management.Deployment
         //-------------------------------------------------------------
         // Reset packages
 
-        //TODO
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        ResetPackageAsync(String package);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        ResetPackageByUriAsync(Windows.Foundation.Uri packageUri);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        ResetPackageSetAsync(PackageSet packageSet);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        ResetPackageSetByIdAsync(String packageSetId);
 
         //-------------------------------------------------------------
         // Repair packages
