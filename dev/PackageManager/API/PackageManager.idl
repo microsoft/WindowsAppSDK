@@ -278,6 +278,18 @@ namespace Microsoft.Windows.Management.Deployment
     // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
     [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
+    runtimeclass StagePackageSetOptions
+    {
+        StagePackageSetOptions();
+
+        DeploymentProcessingModel DeploymentProcessingModel;
+        DeploymentPriority DeploymentPriority;
+        StagePackageOptions StagePackageOptions;
+    }
+
+    // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
+    [feature(Feature_PackageManager)]
+    [contract(PackageDeploymentContract, 1)]
     runtimeclass RegisterPackageOptions
     {
         RegisterPackageOptions();
@@ -302,6 +314,18 @@ namespace Microsoft.Windows.Management.Deployment
     // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
     [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
+    runtimeclass RegisterPackageSetOptions
+    {
+        RegisterPackageSetOptions();
+
+        DeploymentProcessingModel DeploymentProcessingModel;
+        DeploymentPriority DeploymentPriority;
+        RegisterPackageOptions RegisterPackageOptions;
+    }
+
+    // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
+    [feature(Feature_PackageManager)]
+    [contract(PackageDeploymentContract, 1)]
     runtimeclass RemovePackageOptions
     {
         RemovePackageOptions();
@@ -311,6 +335,18 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean PreserveRoamableApplicationData;
         Boolean RemoveForAllUsers;
         DeploymentPriority Priority;
+    }
+
+    // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
+    [feature(Feature_PackageManager)]
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass RemovePackageSetOptions
+    {
+        RemovePackageSetOptions();
+
+        DeploymentProcessingModel DeploymentProcessingModel;
+        DeploymentPriority DeploymentPriority;
+        RemovePackageOptions RemovePackageOptions;
     }
 
     [feature(Feature_PackageManager)]
@@ -355,13 +391,10 @@ namespace Microsoft.Windows.Management.Deployment
     //          Deprovision = packagefamilyname
     //          Provision   = packagefamilyname
     //          Register    = packagefamilyname | packagefullname | path\appxmanifest.xml | path containing appxmanifest.xml | file://path/appxmanifest.xml | file://path containing appxmanifest.xml
-    //          Remove      = packagefamilyname | packagefullname
+    //          Remove      = packagefamilyname | packagefullname | uri
     //
-    // TODO: AppInstaller
-    // TODO: Move
     // TODO: Find
     // TODO: Properties (Status, StubPreference)
-    // TODO: RequestAdd
     //
     [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
@@ -370,23 +403,43 @@ namespace Microsoft.Windows.Management.Deployment
         // Get an instance of the manager
         static PackageDeploymentManager GetDefault();
 
-        // Return true if the necessary package(s) are present and available for use
+        //-------------------------------------------------------------
+        // IsReady
+
+        // Return true if the package(s) are present and available for use
+
+        Boolean IsPackageReady(String package);
+
+        Boolean IsPackageByUriReady(Windows.Foundation.Uri packageUri);
+
         Boolean IsPackageSetReady(PackageSet packageSet);
 
         Boolean IsPackageSetReadyById(String packageSetId);
+
+        //-------------------------------------------------------------
+        // EnsureIsReady
 
         // Check if the necessary package(s) are present
         // and available for use and if not then Make It So.
         // If the necessary packages(s) are not present on the system
         // then make them available (download, install, etc).
         // If the necessary packages are present and available this is equivalent to IsReady(id).
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        EnsurePackageIsReadyAsync(String package, EnsureIsReadyOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        EnsurePackageByUriIsReadyAsync(Windows.Foundation.Uri packageUri, EnsureIsReadyOptions options);
+
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         EnsurePackageSetIsReadyAsync(PackageSet packageSet, EnsureIsReadyOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         EnsurePackageSetIsReadyByIdAsync(String packageSetId, EnsureIsReadyOptions options);
 
+        //-------------------------------------------------------------
         // Add packages
+
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         AddPackageAsync(String package, AddPackageOptions options);
 
@@ -399,7 +452,40 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         AddPackageSetByIdAsync(String packageSetId, AddPackageSetOptions options);
 
+        //-------------------------------------------------------------
+        // Stage packages
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        StagePackageAsync(String package, StagePackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        StagePackageByUriAsync(Windows.Foundation.Uri packageUri, StagePackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        StagePackageSetAsync(PackageSet packageSet, StagePackageSetOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        StagePackageSetByIdAsync(String packageSetId, StagePackageSetOptions options);
+
+
+        //-------------------------------------------------------------
+        // Register packages
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RegisterPackageAsync(String package, RegisterPackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RegisterPackageByUriAsync(Windows.Foundation.Uri packageUri, RegisterPackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RegisterPackageSetAsync(PackageSet packageSet, RegisterPackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RegisterPackageSetByIdAsync(String packageSetId, RegisterPackageOptions options);
+
+        //-------------------------------------------------------------
         // Remove packages
+
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RemovePackageAsync(String package, RemovePackageOptions options);
 
@@ -410,17 +496,32 @@ namespace Microsoft.Windows.Management.Deployment
         RemovePackageByFamilyNameAsync(String packageFamilyName, RemovePackageOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RemovePackageByUriAsync(Windows.Foundation.Uri packageUri, RemovePackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RemovePackageSetAsync(PackageSet packageSet, RemovePackageOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RemovePackageSetByIdAsync(String packageSetId, RemovePackageOptions options);
 
-        //TODO Ditto PackageSet operations of Stage, Register, Repair, Reset
 
-        //TODO Boolean IsRegistrationPending(String packageFamilyName);
-        //
-        //TODO [method_name("IsRegistrationPendingForUser")]
-        //TODO Boolean IsRegistrationPending(String userSecurityId, String packageFamilyName);
+        //-------------------------------------------------------------
+        // Reset packages
+
+        //TODO
+
+        //-------------------------------------------------------------
+        // Repair packages
+
+        //TODO
+
+        //-------------------------------------------------------------
+        // IsRegistrationPending
+
+        Boolean IsPackageRegistrationPending(String packageFamilyName);
+
+        [method_name("IsRegistrationPendingForUser")]
+        Boolean IsPackageRegistrationPending(String userSecurityId, String packageFamilyName);
     }
 
     [feature(Feature_PackageManager)]

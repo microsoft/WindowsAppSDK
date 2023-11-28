@@ -3,30 +3,30 @@
 
 #pragma once
 
-#include "Microsoft.Windows.Management.Deployment.AddPackageSetOptions.g.h"
+#include "Microsoft.Windows.Management.Deployment.StagePackageSetOptions.g.h"
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
-    struct AddPackageSetOptions : AddPackageSetOptionsT<AddPackageSetOptions>
+    struct StagePackageSetOptions : StagePackageSetOptionsT<StagePackageSetOptions>
     {
-        AddPackageSetOptions() = default;
+        StagePackageSetOptions() = default;
 
         winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel DeploymentProcessingModel();
         void DeploymentProcessingModel(winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel const& value);
         winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority DeploymentPriority();
         void DeploymentPriority(winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority const& value);
-        winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions AddPackageOptions();
-        void AddPackageOptions(winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions const& value);
+        winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions StagePackageOptions();
+        void StagePackageOptions(winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions const& value);
 
     private:
         winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel m_deploymentProcessingModel{ winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel::Sequential };
         winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority m_deploymentPriority{ winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority::Normal };
-        winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions m_addPackageOptions;
+        winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions m_stagePackageOptions;
     };
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation
 {
-    struct AddPackageSetOptions : AddPackageSetOptionsT<AddPackageSetOptions, implementation::AddPackageSetOptions>
+    struct StagePackageSetOptions : StagePackageSetOptionsT<StagePackageSetOptions, implementation::StagePackageSetOptions>
     {
     };
 }

@@ -31,16 +31,15 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         void StageInPlace(bool value);
         bool AllowUnsigned();
         void AllowUnsigned(bool value);
-        bool IsDeferRegistrationWhenPackagesAreInUseSupported();
         bool DeferRegistrationWhenPackagesAreInUse();
         void DeferRegistrationWhenPackagesAreInUse(bool value);
         bool IsExpectedDigestsSupported();
         winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, hstring> ExpectedDigests();
 
     private:
-        winrt::Microsoft::Windows::Management::Deployment::PackageVolume m_appDataVolume{};
-        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri> m_dependencyPackageUris{};
-        winrt::Windows::Foundation::Collections::IVector<hstring> m_optionalPackageFamilyNames{};
+        winrt::Microsoft::Windows::Management::Deployment::PackageVolume m_appDataVolume;
+        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri> m_dependencyPackageUris;
+        winrt::Windows::Foundation::Collections::IVector<hstring> m_optionalPackageFamilyNames;
         winrt::Windows::Foundation::Uri m_externalLocationUri{ nullptr };
         bool m_developerMode{};
         bool m_forceAppShutdown{};
@@ -48,7 +47,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         bool m_forceUpdateFromAnyVersion{};
         bool m_installAllResources{};
         bool m_stageInPlace{};
-        bool m_allowUnsigned{};
+        bool m_allowUnsigned{ true };
         bool m_deferRegistrationWhenPackagesAreInUse{};
         winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, hstring> m_expectedDigests;
     };

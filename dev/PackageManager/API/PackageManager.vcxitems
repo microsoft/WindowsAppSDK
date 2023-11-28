@@ -31,8 +31,11 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeStatus.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.RegisterPackageOptions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.RegisterPackageSetOptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.RemovePackageOptions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.RemovePackageSetOptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.StagePackageOptions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.StagePackageSetOptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentResolver.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -53,8 +56,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeStatus.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.RegisterPackageOptions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.RemovePackageOptions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.RegisterPackageSetOptions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.RemovePackageSetOptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.StagePackageOptions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.StagePackageSetOptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MsixPackageManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageDeploymentResolver.h" />
   </ItemGroup>
