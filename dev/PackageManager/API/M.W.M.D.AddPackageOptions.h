@@ -39,7 +39,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         void RetainFilesOnFailure(bool value);
         bool StageInPlace();
         void StageInPlace(bool value);
-        bool IsDeferRegistrationWhenPackagesAreInUseSupported();
         bool DeferRegistrationWhenPackagesAreInUse();
         void DeferRegistrationWhenPackagesAreInUse(bool value);
         bool IsExpectedDigestsSupported();
@@ -50,10 +49,10 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
     private:
         winrt::Microsoft::Windows::Management::Deployment::PackageVolume m_targetVolume{};
-        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri> m_dependencyPackageUris{};
-        winrt::Windows::Foundation::Collections::IVector<hstring> m_optionalPackageFamilyNames{};
-        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri>  m_optionalPackageUris{};
-        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri>  m_relatedPackageUris{};
+        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri> m_dependencyPackageUris;
+        winrt::Windows::Foundation::Collections::IVector<hstring> m_optionalPackageFamilyNames;
+        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri> m_optionalPackageUris;
+        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri> m_relatedPackageUris;
         winrt::Windows::Foundation::Uri m_externalLocationUri{ nullptr };
         winrt::Microsoft::Windows::Management::Deployment::StubPackageOption m_stubPackageOption{};
         bool m_allowUnsigned{};

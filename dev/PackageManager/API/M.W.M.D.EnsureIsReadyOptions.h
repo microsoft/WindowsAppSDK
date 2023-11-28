@@ -17,7 +17,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         void DeploymentPriority(winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority const& value);
 
     private:
-        winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel m_deploymentProcessingModel{};
+        winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel m_deploymentProcessingModel{ winrt::Microsoft::Windows::Management::Deployment::DeploymentProcessingModel::Sequential };
         winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority m_deploymentPriority{ winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority::Normal };
     };
 }

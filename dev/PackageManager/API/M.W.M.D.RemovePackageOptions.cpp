@@ -8,6 +8,14 @@
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
+    bool RemovePackageOptions::OkIfNotFound()
+    {
+        return m_okIfNotFound;
+    }
+    void RemovePackageOptions::OkIfNotFound(bool value)
+    {
+        m_okIfNotFound = value;
+    }
     bool RemovePackageOptions::PreserveApplicationData()
     {
         return m_preserveApplicationData;

@@ -11,6 +11,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         RemovePackageOptions() = default;
 
+        bool OkIfNotFound();
+        void OkIfNotFound(bool value);
         bool PreserveApplicationData();
         void PreserveApplicationData(bool value);
         bool PreserveRoamableApplicationData();
@@ -21,6 +23,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         void Priority(winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority const& value);
 
     private:
+        bool m_okIfNotFound{ true };
         bool m_preserveApplicationData{};
         bool m_preserveRoamableApplicationData{};
         bool m_removeForAllUsers{};
