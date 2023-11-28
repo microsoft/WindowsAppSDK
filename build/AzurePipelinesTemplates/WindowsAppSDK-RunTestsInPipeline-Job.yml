@@ -63,11 +63,6 @@ jobs:
           buildPlatform: x86
           buildConfiguration: release
           testLocale: en-US
-        co_refresh_x64fre:
-          imageName: co_refresh
-          buildPlatform: x64
-          buildConfiguration: release
-          testLocale: en-US
         rs_prerelease_x64fre:
           imageName: rs_prerelease
           buildPlatform: x64
