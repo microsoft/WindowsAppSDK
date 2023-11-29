@@ -85,11 +85,6 @@ jobs:
           buildPlatform: arm64
           buildConfiguration: release
           testLocale: en-US
-        Server22_DC_arm64fre:
-          imageName: Windows.11.Server2022.DataCenter.arm64
-          buildPlatform: arm64
-          buildConfiguration: release
-          testLocale: en-US
   pool:
     type: windows
     isCustom: true
