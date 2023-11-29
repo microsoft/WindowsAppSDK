@@ -198,4 +198,10 @@
   <data name="1035" xml:space="preserve">
     <value>Šablona projektu pro vytvoření desktopové aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3) spolu s balíčkem MSIX pro zkušební načtení nebo distribuci prostřednictvím Microsoft Store.</value>
   </data>
+  <data name="1036" xml:space="preserve">
+    <value>Aplikace pro testování jednotek (WinUI 3 na desktopu)</value>
+  </data>
+  <data name="1037" xml:space="preserve">
+    <value>Projekt pro vytvoření aplikace testu jednotek pro aplikace WinUI 3 pomocí NÁSTROJE MSTest</value>
+  </data>
 </root>

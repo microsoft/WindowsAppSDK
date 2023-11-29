@@ -198,4 +198,10 @@
   <data name="1035" xml:space="preserve">
     <value>Um modelo de projeto para criar um Aplicativo para desktop baseado na Biblioteca de Interface do Usuário do Windows (WinUI 3) juntamente com um pacote MSIX para sideload ou distribuição por meio da Microsoft Store.</value>
   </data>
+  <data name="1036" xml:space="preserve">
+    <value>Aplicativo de Teste de Unidade (WinUI 3 na Área de Trabalho)</value>
+  </data>
+  <data name="1037" xml:space="preserve">
+    <value>Um projeto para criar um aplicativo de teste de unidade para aplicativos WinUI 3 usando o MSTest.</value>
+  </data>
 </root>

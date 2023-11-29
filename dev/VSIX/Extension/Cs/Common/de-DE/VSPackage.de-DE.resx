@@ -198,4 +198,10 @@
   <data name="1035" xml:space="preserve">
     <value>Eine Projektvorlage zum Erstellen einer Desktop-App, die auf der Windows-UI-Bibliothek (WinUI 3) basiert, zusammen mit einem MSIX-Paket zum Querladen oder Verteilen über den Microsoft Store.</value>
   </data>
+  <data name="1036" xml:space="preserve">
+    <value>Komponententest-App (WinUI 3 in Desktop)</value>
+  </data>
+  <data name="1037" xml:space="preserve">
+    <value>Ein Projekt zum Erstellen einer Komponententest-App für WinUI 3-Apps mit MSTest.</value>
+  </data>
 </root>
