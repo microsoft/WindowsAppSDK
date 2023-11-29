@@ -1,6 +1,12 @@
 `develop` Branch
 ===
 
+* Update 11/20/2023
+Develop branch has been renamed to the main branch and is now the default branch.
+All pull requests can simply be made to the new default branch.
+
+===
+
 Building the full Windows App SDK package involves multiple repos and build pipelines.
 Beyond the publicly-visible repos, we also have closed-source repos that produce public packages which
 are then consumed by this repo ([WindowsAppSDK](https://github.com/microsoft/WindowsAppSDK)).
