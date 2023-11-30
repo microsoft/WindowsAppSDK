@@ -30,11 +30,8 @@ static HRESULT DetoursInitialize()
     // Detour APIs to our implementation
     DetourRestoreAfterWith();
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionBegin());
-
-    FAIL_FAST_IF_FAILED(MddWin11Initialize());
     FAIL_FAST_IF_FAILED(MddDetourPackageGraphInitialize());
     FAIL_FAST_IF_FAILED(UrfwInitialize());
-
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionCommit());
     return S_OK;
 }
@@ -56,10 +53,8 @@ static HRESULT DetoursShutdown()
     // Stop Detour'ing APIs to our implementation
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionBegin());
     FAIL_FAST_IF_WIN32_ERROR(DetourUpdateThread(GetCurrentThread()));
-
     UrfwShutdown();
     MddDetourPackageGraphShutdown();
-
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionCommit());
     return S_OK;
 }
@@ -71,12 +66,14 @@ BOOL APIENTRY DllMain(HMODULE hmodule, DWORD  reason, LPVOID reserved)
     case DLL_PROCESS_ATTACH:
     {
         DisableThreadLibraryCalls(hmodule);
+        FAIL_FAST_IF_FAILED(MddWin11Initialize());
         FAIL_FAST_IF_FAILED(DetoursInitialize());
         break;
     }
     case DLL_PROCESS_DETACH:
     {
         DetoursShutdown();
+        MddWin11Shutdown();
         break;
     }
     case DLL_THREAD_ATTACH:
