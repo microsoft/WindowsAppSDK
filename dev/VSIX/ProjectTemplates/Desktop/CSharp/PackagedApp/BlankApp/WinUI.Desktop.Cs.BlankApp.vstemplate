@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
     <Hidden>true</Hidden>
@@ -22,13 +22,13 @@
     <LanguageTag>XAML</LanguageTag>
     <PlatformTag>windows</PlatformTag>
     <ProjectTypeTag>desktop</ProjectTypeTag>
-    <ProjectTypeTag>WinUI</ProjectTypeTag>
+    <ProjectTypeTag>winui</ProjectTypeTag>
   </TemplateData>
   <TemplateContent PreferedSolutionConfiguration="Debug|x86">
     <Project File="ProjectTemplate.csproj" ReplaceParameters="true">
-      <ProjectItem ReplaceParameters="true" TargetFileName="win10-arm64.pubxml">Properties\PublishProfiles\win10-arm64.pubxml</ProjectItem>
-      <ProjectItem ReplaceParameters="true" TargetFileName="win10-x64.pubxml">Properties\PublishProfiles\win10-x64.pubxml</ProjectItem>
-      <ProjectItem ReplaceParameters="true" TargetFileName="win10-x86.pubxml">Properties\PublishProfiles\win10-x86.pubxml</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="win-arm64.pubxml">Properties\PublishProfiles\win-arm64.pubxml</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="win-x64.pubxml">Properties\PublishProfiles\win-x64.pubxml</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="win-x86.pubxml">Properties\PublishProfiles\win-x86.pubxml</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="app.manifest">app.manifest</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="App.xaml">App.xaml</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="App.xaml.cs">App.xaml.cs</ProjectItem>
@@ -36,4 +36,13 @@
       <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.xaml.cs">MainWindow.xaml.cs</ProjectItem>
     </Project>
   </TemplateContent>
+  <WizardExtension>
+    <Assembly>WindowsAppSDK.Cs.Extension.Dev17, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>WindowsAppSDK.TemplateUtilities.NuGetPackageInstaller</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <packages>
+      <package id="Microsoft.WindowsAppSDK" />
+    </packages>      
+  </WizardData>
 </VSTemplate>

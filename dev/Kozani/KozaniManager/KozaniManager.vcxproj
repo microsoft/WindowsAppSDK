@@ -171,6 +171,9 @@
     <ProjectReference Include="..\KozaniManagerRuntime\KozaniManagerRuntime.vcxproj">
       <Project>{400ed5ec-4530-4adb-8dce-9d1e6708a1f5}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\KozaniProtocol\KozaniProtocol.vcxproj">
+      <Project>{3f28c3ed-2548-4530-8b6c-832fae0e993d}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

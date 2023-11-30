@@ -15,6 +15,8 @@
 
 #include <wrl\module.h>
 
+#include <winrt_WindowsAppRuntime.h>
+
 #include <windows.applicationmodel.activation.h>
 #include "KozaniDvc-Constants.h"
 #include "ConnectionManager.h"
@@ -85,23 +87,27 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
 {
     STDMETHODIMP ActivateRemoteApplication(
         INT32 activationKind,
-        PCWSTR appUserModelId,
-        PCWSTR connectionRdpFilePath,
-        PCWSTR additionalSettingsFilePath,
-        ::IInspectable* activatedEventArgs,
-        IKozaniStatusCallback* statusCallback,
-        DWORD associatedLocalProcessId) noexcept try
+        _In_ PCWSTR appUserModelId,
+        _In_ PCWSTR connectionRdpFilePath,
+        _In_ IKozaniRemoteDesktopClientLauncher* rdcLauncher,
+        DWORD associatedLocalProcessId,
+        _In_opt_::IInspectable* activatedEventArgs,
+        _In_opt_ IKozaniStatusCallback* statusCallback,
+        _In_opt_ PCWSTR additionalSettingsFilePath) noexcept try
     {
+        RETURN_HR_IF_NULL(E_INVALIDARG, appUserModelId);
+        RETURN_HR_IF_NULL(E_INVALIDARG, connectionRdpFilePath);
+        RETURN_HR_IF_NULL(E_INVALIDARG, rdcLauncher);
+
         const auto activationKindLocal{ static_cast<winrt::Windows::ApplicationModel::Activation::ActivationKind>(activationKind) };
         RETURN_HR_IF_MSG(KOZANI_E_UNSUPPORTED_ACTIVATION_KIND, 
             !IsActivationKindSupported(activationKindLocal),
             "Activation kind: %d", activationKind);
 
         winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs args;
-        if (!activatedEventArgs)
+        if (activatedEventArgs)
         {
-            winrt::com_ptr<::IInspectable> inspectable(activatedEventArgs, winrt::take_ownership_from_abi);
-            args = inspectable.as<winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs>();
+            args = winrt::convert_from_abi<winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs>(activatedEventArgs);
         }
 
         std::string connectionId{ GetConnectionId(connectionRdpFilePath) };
@@ -110,16 +116,15 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
         std::shared_ptr<ActivationRequestStatusReporter> requestStatusReporter{ 
             g_connectionManager.AddNewActivationRequest(connectionId, activationKindLocal, appUserModelId, args, statusCallback, associatedLocalProcessId) };
 
+        // If failure happens after this point, we will automatically cleanup the new request from tracking mechanism.
+        auto cleanupRequestOnFailure = wil::scope_exit([&]()
+        {
+            g_connectionManager.CleanupActivationRequest(requestStatusReporter.get());
+        });
+
         const LONG connectionCountBeforeRDCLaunch{ InterlockedAdd(&g_newConnectionCount, 0) };
 
-        SHELLEXECUTEINFO shellExecuteInfo{};
-        shellExecuteInfo.cbSize = sizeof(shellExecuteInfo);
-        shellExecuteInfo.fMask = SEE_MASK_NOASYNC;  // Will wait for ShellExecuteEx to finish launching the remote desktop client.
-        shellExecuteInfo.lpFile = Dvc::Constants::RemoteDesktopClientExe;
-        shellExecuteInfo.lpParameters = connectionRdpFilePath;
-        shellExecuteInfo.nShow = SW_NORMAL;
-
-        RETURN_IF_WIN32_BOOL_FALSE_MSG(ShellExecuteEx(&shellExecuteInfo), "ShellExecuteEx failed to launch %ls", Dvc::Constants::RemoteDesktopClientExe);
+        RETURN_IF_FAILED(rdcLauncher->Launch(connectionRdpFilePath, nullptr));
 
         // Wait for request status change or time out to ensure this module is alive for RDC to load the DVC plugin hosted by the module.
         // If the module is exiting while RDC is loading the DVC plugin, the DVC loading will fail and RDC will ignore the failure and
@@ -141,6 +146,7 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
                 // finish cannot be determined. The user may take some time to enter the password to login and the login can take time
                 // to finish depending on the server's workload. The IKozaniStatusCallback object will be used by the DVC to communicate
                 // any issues in this longer process.
+                cleanupRequestOnFailure.release();
                 return S_OK;
             }
         }
@@ -159,6 +165,8 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
             RETURN_HR(E_APPLICATION_ACTIVATION_TIMED_OUT);
         }
 
+        // No failures before returning - disable the auto cleanup on failure logic.
+        cleanupRequestOnFailure.release();
         return S_OK;
     } CATCH_RETURN()
 
@@ -168,6 +176,10 @@ private:
         switch (kind)
         {
             case winrt::Windows::ApplicationModel::Activation::ActivationKind::Launch:
+                [[fallthrough]];
+            case winrt::Windows::ApplicationModel::Activation::ActivationKind::File:
+                [[fallthrough]];
+            case winrt::Windows::ApplicationModel::Activation::ActivationKind::Protocol:
                 return true;
         }
 
@@ -185,6 +197,9 @@ void EndOfTheLine()
 
 int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
+    // Hook up wil logging MACROs to trace provider.
+    wil::SetResultLoggingCallback(&TraceFailureFromProvider<Microsoft_Kozani_Manager_TraceLogger>);
+
     // Verify that the version of the library that we linked against is
     // compatible with the version of the headers we compiled against.
     GOOGLE_PROTOBUF_VERIFY_VERSION;

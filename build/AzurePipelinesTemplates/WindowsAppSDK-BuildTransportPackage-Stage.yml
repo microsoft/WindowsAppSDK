@@ -2,6 +2,9 @@ parameters:
 - name: "PublishToMaestro"
   type: boolean
   default: False
+- name: "PublishPackage"
+  type: boolean
+  default: False
 - name: "IgnoreFailures"
   type: boolean
   default: False
@@ -36,6 +39,7 @@ stages:
         type: windows
         isCustom: true
         name: 'ProjectReunionESPool-2022'
+    timeoutInMinutes: 120
     strategy:
       maxParallel: 10
       matrix:
@@ -163,6 +167,7 @@ stages:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
+        PublishPackage: ${{ parameters.PublishPackage }}
 
   # Build WinAppSDK and Run Integration Test from TestAll.ps1
   - job: WinAppSDKIntegrationBuildAndTest
@@ -174,7 +179,7 @@ stages:
       name: 'ProjectReunionESPool-2022'
     variables:
       WindowsAppSDKTransportPackageVersion: $[ dependencies.NugetPackage.outputs['SetVersion.packageVersion'] ]
-      VersionWithDevTag: $[format('{0}.{1}.{2}-{3}.{4}.{5}', variables['major'], variables['minor'], variables['patch'], 'dev', variables['versionDate'], variables['versionCounter'])]
+      VersionWithDevTag: $[format('{0}.{1}.{2}-{3}', variables['major'], variables['minor'], variables['versionDate'], 'dev')]
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_artifactBaseName: "WindowsAppSDKNugetPackage"
     steps:

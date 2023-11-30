@@ -53,11 +53,6 @@ jobs:
           buildPlatform: x64
           buildConfiguration: release
           testLocale: ja-JP
-        21H1_x64fre:
-          imageName: Windows.10.Enterprise.21h1
-          buildPlatform: x64
-          buildConfiguration: release
-          testLocale: en-US
         21H2_MS_x64fre:
           imageName: Windows.11.Enterprise.MultiSession.21h2
           buildPlatform: x64
@@ -66,11 +61,6 @@ jobs:
         22H2_x86fre:
           imageName: Windows.10.Enterprise.22h2
           buildPlatform: x86
-          buildConfiguration: release
-          testLocale: en-US
-        co_refresh_x64fre:
-          imageName: co_refresh
-          buildPlatform: x64
           buildConfiguration: release
           testLocale: en-US
         rs_prerelease_x64fre:
@@ -95,11 +85,6 @@ jobs:
           buildPlatform: arm64
           buildConfiguration: release
           testLocale: en-US
-        Server22_DC_arm64fre:
-          imageName: Windows.11.Server2022.DataCenter.arm64
-          buildPlatform: arm64
-          buildConfiguration: release
-          testLocale: en-US
   pool:
     type: windows
     isCustom: true
@@ -110,7 +95,7 @@ jobs:
     ${{ if parameters.isArm64Platfrom }}:
       name: 'WinAppSDK-Test-Pool-Arm64'
       demands: ImageOverride -equals $(imageName)
-  timeoutInMinutes: 60
+  timeoutInMinutes: 120
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
   steps:

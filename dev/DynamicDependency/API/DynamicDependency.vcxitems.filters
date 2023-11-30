@@ -127,6 +127,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)DataStore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)MddWin11.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)MddWinRT.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -146,9 +149,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)appmodel_packageinfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)winrt_msixdynamicdependency.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
