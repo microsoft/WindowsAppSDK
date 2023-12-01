@@ -26,7 +26,7 @@ Headline areas of work and features for the 1.5 timeframe include:
     - Labels in the command bar flyout top bar items
     - Maps control
     - Investigations into the table view and ink controls
-      - *Update: Although we are continuing to investigate the ink control, it isn't likely to fully land in the 1.5 timeline at this time.*
+      - *Update: Although we are continuing to investigate the table view and ink controls, they aren't likely to fully land in the 1.5 timeline at this time.*
   - Supporting highly functional tabbed windows that work with touch, snapping, and other OS features
   - Drag and drop support in WebView2
   - Improved screen reader support, text scaling support, and other accessibility features
