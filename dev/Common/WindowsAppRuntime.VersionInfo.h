@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #ifndef __MICROSFT_WINDOWSAPPRUNTIME_VERSIONINFO_H
@@ -66,6 +66,18 @@ inline void TestInitialize(
     _In_ PCWSTR mainPackageFamilyName)
 {
     THROW_IF_FAILED(WindowsAppRuntime_VersionInfo_TestInitialize(frameworkPackageFamilyName, mainPackageFamilyName));
+}
+
+/// Initialize VersionInfo's test support. This will constrain package enumeration
+/// and matching for test purposes.
+///
+/// @param frameworkPackageFamilyName only match framework packages with this family name
+///
+/// @note Not for product use. This is for test purposes only to verify the implementation.
+inline void TestInitialize(
+    _In_ PCWSTR frameworkPackageFamilyName)
+{
+    THROW_IF_FAILED(WindowsAppRuntime_VersionInfo_TestInitialize(frameworkPackageFamilyName, nullptr));
 }
 
 /// Shutdown VersionInfo's test support.
