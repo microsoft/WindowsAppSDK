@@ -28,7 +28,18 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
     bool PackageDeploymentManager::IsPackageReady(hstring const& package)
     {
-        throw hresult_not_implemented();
+        if (VerifyPackageFullName(package.c_str()) == ERROR_SUCCESS)
+        {
+            return IsReadyByFullName(package);
+        }
+
+        const winrt::Windows::Foundation::Uri packageUri{ package };
+        const auto packageAbsoluteUri{ packageUri.AbsoluteUri() };
+        if (!packageAbsoluteUri.empty())
+        {
+            return IsPackageByUriReady(packageUri);
+        }
+        THROW_HR_MSG(E_INVALIDARG, "%ls", package.c_str());
     }
     bool PackageDeploymentManager::IsPackageByUriReady(winrt::Windows::Foundation::Uri const& packageUri)
     {
@@ -366,6 +377,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     bool PackageDeploymentManager::IsPackageRegistrationPending(hstring const& userSecurityId, hstring const& packageFamilyName)
     {
         throw hresult_not_implemented();
+    }
+
+    bool PackageDeploymentManager::IsReadyByPackageFullName(hstring const& packageFullName);
+    {
+        return ::Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::FindAny(m_packageManager, packageFullName);
     }
 
     bool PackageDeploymentManager::IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem)

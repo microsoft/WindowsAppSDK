@@ -44,6 +44,11 @@ namespace Test::PackageManager::Tests
             return true;
         }
 
+        winrt::Windows::Management::Deployment::PackageStatus GetPackageStatus(PCWSTR packageFamilyName)
+        {
+            return TPMT::GetPackageStatus(m_packageManager, packageFamilyName);
+        }
+
         void SetPackageStatus(PCWSTR packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus status)
         {
             TPMT::SetPackageStatus(m_packageManager, packageFamilyName, status);
@@ -241,10 +246,11 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
             AddPackage_Red();
             SetPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
 
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
@@ -253,6 +259,7 @@ namespace Test::PackageManager::Tests
             packageSet.PackageSetItems().Append(red);
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(::TPF::Green::GetPackageFullName()));
 
             ClearPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
         }
@@ -367,11 +374,12 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
             AddPackage_Red();
             AddPackage_Green();
             SetPackageStatus(::TPF::Green::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Green::GetPackageFullName()));
 
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
@@ -382,6 +390,7 @@ namespace Test::PackageManager::Tests
             packageSet.PackageSetItems().Append(green);
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Green::GetPackageFullName()));
 
             ClearPackageStatus(::TPF::Green::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
         }
@@ -630,10 +639,11 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
             AddPackage_Red();
             SetPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
 
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
@@ -647,8 +657,7 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
 
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
-
-            //TODO REMOVE ClearPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
         }
 
         TEST_METHOD(EnsurePackageSetIsReadyAsync_N_NotInstalled_Success)
@@ -818,11 +827,12 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
             AddPackage_Red();
             AddPackage_Green();
             SetPackageStatus(::TPF::Green::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Green::GetPackageFullName()));
 
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
@@ -837,9 +847,8 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
 
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(::TPF::Green::GetPackageFullName()));
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
-
-            //TODO REMOVE ClearPackageStatus(::TPF::Green::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
         }
 
         TEST_METHOD(AddPackageByUriAsync_NoSuchPackage_Fail)
@@ -949,10 +958,11 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
             AddPackage_Red();
             SetPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
 
             winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
 
@@ -962,8 +972,7 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
 
             VERIFY_IS_TRUE(IsPackageRegistered_Red());
-
-            //TODO REMOVE ClearPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
         }
 
         TEST_METHOD(AddPackageSetAsync_1_NoSuchPackage_Fail)
@@ -1103,10 +1112,11 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
             AddPackage_Red();
             SetPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
 
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
@@ -1120,8 +1130,7 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
 
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
-
-            //TODO REMOVE ClearPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
         }
 
         TEST_METHOD(AddPackageSetAsync_N_NotInstalled_Success)
@@ -1291,11 +1300,12 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
             AddPackage_Red();
             AddPackage_Green();
             SetPackageStatus(::TPF::Green::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Green::GetPackageFullName()));
 
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
@@ -1311,8 +1321,7 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
 
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
-
-            //TODO REMOVE ClearPackageStatus(::TPF::Green::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(::TPF::Green::GetPackageFullName()));
         }
 
     private:
