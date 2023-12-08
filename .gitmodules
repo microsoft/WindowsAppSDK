@@ -1,0 +1,3 @@
+[submodule "WindowsAppSDKAggregator"]
+	path = WindowsAppSDKAggregator
+	url = https://microsoft@dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKAggregator
