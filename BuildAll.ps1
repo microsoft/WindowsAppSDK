@@ -411,7 +411,7 @@ Try {
     #     }
     $outputDirectoryFullPath = (Join-Path $env:Build_SourcesDirectory $OutputDirectory)
     $transportPackagepath = (Join-Path $outputDirectoryFullPath "Microsoft.WindowsAppSDK.Foundation.TransportPackage.$PackageVersion.nupkg")
-    . eng\common\Scripts\buildMockWinAppSdkPackage.ps1 -TransportPackagePath $transportPackagepath -RepoRoot $env:Build_SourcesDirectory -Output $outputDirectoryFullPath -Platform $Platform -Configuration $Configuration -TransportPackageVersion $PackageVersion -CleanOutput
+    . eng\common\Scripts\buildMockWinAppSdkPackage.ps1 -TransportPackageName "Foundation" -TransportPackagePath $transportPackagepath -RepoRoot $env:Build_SourcesDirectory -Output $outputDirectoryFullPath -Platform $Platform -Configuration $Configuration -TransportPackageVersion $PackageVersion -CleanOutput
 
 }
 Catch

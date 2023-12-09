@@ -2,6 +2,7 @@
 # a mock Windows App SDK package for tests/samples.
 
 param(
+    [Parameter(Mandatory=$true)] [string] $TransportPackageName,
     [Parameter(Mandatory=$true)] [string] $TransportPackagePath,
     [Parameter(Mandatory=$false)] [string] $TransportPackageVersion = "3.0.0-dev",
     [Parameter(Mandatory=$true)] [string] $Output,
@@ -33,7 +34,7 @@ if(!(Test-Path ".\.user\winappsdk.certificate.test.pfx" ))
 # {
 #     . .\buildall.ps1 -clean
 # }
-
+New-Variable -Name ("$TransportPackageName"+"PackageVersion") $TransportPackageVersion
 $localPackagesPath = (Join-Path (Join-Path $RepoRoot "WindowsAppSDKAggregator") "localpackages")
 $packLocationPath = (Join-Path (Join-Path $RepoRoot "WindowsAppSDKAggregator") "PackLocation")
 
