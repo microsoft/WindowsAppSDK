@@ -98,12 +98,12 @@ The following table shows the supported permutations of verbs and targets:
 |-------------|:-----|:---------|:------------------|:----------------|:-------|:---------|:--------|:-----------|
 |IsReady      |  X   |    X     |       OS/WAS      |       WAS       |   X    |    X     |  WAS    |    WAS     |
 |EnsureIsReady|  X   |    X     |         X         |        X        |   X    |    X     |  WAS    |    WAS     |
-|Add          |  X   |    X     |         X         |        X        | OS/WAS |  OS/WAS  | OS/WAS  |    WAS     |
-|Stage        |  X   |    X     |         X         |        X        | OS/WAS |  OS/WAS  | OS/WAS  |    WAS     |
+|Add          | WAS  |    X     |         X         |        X        | OS/WAS |  OS/WAS  | OS/WAS  |    WAS     |
+|Stage        | WAS  |    X     |         X         |        X        | OS/WAS |  OS/WAS  | OS/WAS  |    WAS     |
 |Register     | WAS  |  OS/WAS  |       OS/WAS      |      OS/WAS     | OS/WAS |    X     | OS/WAS  |    WAS     |
 |Remove       |  X   |    X     |        WAS        |      OS/WAS     |   X    |    X     | OS/WAS  |    WAS     |
-|Repair       |  X   |    X     |        WAS        |       TODO      |   X    |    X     |  WAS    |    WAS     |
-|Reset        |  X   |    X     |        WAS        |       TODO      |   X    |    X     |  WAS    |    WAS     |
+|Repair       |  X   |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
+|Reset        |  X   |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
 |Provision    |  X   |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
 |Deprovision  |  X   |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
 
@@ -112,6 +112,57 @@ Legend:
 * OS = Supported by Windows (OS) APIs in the Windows.Management.Deployment.PackageManager namespace.
 * WAS = Supported by Windows App SDK APIs in the Microsoft.Windows.Management.Deployment.PackageDeploymentManager namespace.
 * X = Not supported
+
+# 3.2. Is*Ready()
+
+Is*Ready() methods determine if the target is installed and ready for use. Reasons why a package is not ready can include:
+
+* The package is not present on the machine
+* The package is present on the machine but not registered for the user
+* The package is registered for the user but is not in a healthy status e.g. it's Package.Status=Tampered
+
+Is*Ready() methods are a quick test to determine if more (costly) work is needed before the target can be used.
+
+# 3.3. Ensure*IsReady()
+
+Ensure*IsReady() methods determine if the target is installed and ready for
+use and, if not, makes it so. This can include downloading the target,
+registering it for the user and remediating a package in an unhealthy state.
+
+Thus `EnsurePackageIsReady(pkg, options)` is functionally equivalent to
+
+```c#
+var pdm = new PackageDeploymentManager();
+if (!pdm.IsPackageReady(pkg))
+{
+    var options = new AddPackageOptions();
+    var result = await pdm.AddPackageAsync(pkg, options);
+}
+endif
+```
+
+# 3.3.1. Why Is*Ready() Given Ensure*IsReady()?
+
+Ensure*IsReady() performs an 'is ready' check and returns if all is ready.
+There's no efficiency reasons to call Is*Ready() before
+Ensure*IsReady() (in fact, it's less efficient as Is*Ready() would occur twice).
+
+However, this can be useful if you need additional work
+before potentially performing deployment operations. For example, if you need to prompt
+the user for consent before installing the target e.g.
+
+```c#
+var pdm = new PackageDeploymentManager();
+if (!pdm.IsPackageReady(pkg))
+{
+    bool ok = AskUserForContent(pkg);
+    if (ok)
+    {
+        var options = new EnsureIsReadyOptions();
+        var result = await pdm.EnsurePackageIsReadyAsync(pkg, options);
+    }
+}
+```
 
 # 4. Examples
 
@@ -128,5 +179,66 @@ TODO
 ```c# (but really MIDL3)
 namespace Microsoft.Windows.Management.Deployment
 {
+    [contractversion(1)]
+    apicontract PackageDeploymentContract{};
+
+    /// Represents a package storage volume.
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume
+    [feature(Feature_PackageManager)]
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageVolume
+    {
+        PackageVolume();
+
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.issystemvolume
+        Boolean IsSystemVolume{ get; };
+
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.mountpoint
+        String MountPoint{ get; };
+
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.name
+        String Name{ get; };
+
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.packagestorepath
+        String PackageStorePath{ get; };
+
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.supportshardlinks
+        Boolean SupportsHardLinks{ get; };
+
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isfulltrustpackagesupported
+        Boolean IsFullTrustPackageSupported{ get; };
+
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isappxinstallsupported
+        Boolean IsAppxInstallSupported{ get; };
+
+        /// Return true if the package volume is OK, else false if it needs to be repaired.
+        bool VerifyIfOK();
+
+        /// Repair the package volume (if necessary).
+        void Repair();
+    };
+
+    /// Manages the storage volumes where packages can be installed.
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume
+    [feature(Feature_PackageManager)]
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageVolumeManager
+    {
+        /// Gets all the known volumes, regardless of their current state.
+        /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.findpackagevolumes
+        static IVector<PackageVolume> FindPackageVolumes();
+
+        /// Get the specified volume.
+        /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        static PackageVolume FindPackageVolumeByPath(String path);
+
+        /// Get the specified volume.
+        /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        static PackageVolume FindPackageVolumeByMediaId(String mediaId);
+
+        /// Get the specified volume.
+        /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        static PackageVolume FindPackageVolumeByName(String name);
+    };
 }
 ```

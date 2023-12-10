@@ -44,35 +44,63 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean IsBroken;
     };
 
+    /// Represents a package storage volume.
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume
     [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageVolume
     {
         PackageVolume();
 
+        /// See Windows.Management.Deployment.PackageVolume.IsSystemVolume
+        /// https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.issystemvolume
         Boolean IsSystemVolume{ get; };
+
+        /// https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.mountpoint
         String MountPoint{ get; };
+
+        /// https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.name
         String Name{ get; };
+
+        /// https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.packagestorepath
         String PackageStorePath{ get; };
+
+        /// https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.supportshardlinks
         Boolean SupportsHardLinks{ get; };
+
+        /// https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isfulltrustpackagesupported
         Boolean IsFullTrustPackageSupported{ get; };
+
+        /// https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isappxinstallsupported
         Boolean IsAppxInstallSupported{ get; };
 
-        PackageVolumeStatus Status { get; };
+        /// Return true if the package volume is OK, else false if it needs to be repaired.
+        bool VerifyIfOK();
 
-        void FixMe();
+        /// Repair the package volume (if necessary).
+        void Repair();
     };
 
+    /// Manages the storage volumes where packages can be installed.
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume
     [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageVolumeManager
     {
+        /// Gets all the known volumes, regardless of their current state.
+        /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.findpackagevolumes
         static IVector<PackageVolume> FindPackageVolumes();
 
+        /// Get the specified volume.
+        /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
         static PackageVolume FindPackageVolumeByPath(String path);
 
+        /// Get the specified volume.
+        /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
         static PackageVolume FindPackageVolumeByMediaId(String mediaId);
 
+        /// Get the specified volume.
+        /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
         static PackageVolume FindPackageVolumeByName(String name);
     };
 
