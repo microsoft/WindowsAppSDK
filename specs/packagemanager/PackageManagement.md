@@ -240,5 +240,60 @@ namespace Microsoft.Windows.Management.Deployment
         /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
         static PackageVolume FindPackageVolumeByName(String name);
     };
+
+    /// The progress status of the deployment request.
+    /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.deploymentprogress.state?view=winrt-22621
+    [contract(PackageDeploymentContract, 1)]
+    enum PackageDeploymentProgressStatus
+    {
+        Queued = 0,             // The request is queued
+        InProgress = 1,         // The request is in progress
+        CompletedSuccess = 2,   // The request completed successfully
+        CompletedFailure = 3,   // The request failed with some critical internal error.
+    };
+
+    /// Contains progress information for the deployment request.
+    /// https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.deploymentprogress?view=winrt-22621
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageDeploymentProgress
+    {
+        PackageDeploymentProgressStatus status;
+
+        /// The progress percentage of the deployment request.
+        /// @note This is a double with values 0.0-1.0. Windows.Management.Deployment.DeploymentProgress.percentage is uint32 with values 0-100.
+        Double percentage;
+    }
+
+    /// The status of the deployment request.
+    /// @see PackageDeploymentResult.Status
+    [contract(PackageDeploymentContract, 1)]
+    enum PackageDeploymentStatus
+    {
+        InProgress = 0,         // The request is in progress
+        CompletedSuccess = 1,   // The request completed successfully
+        CompletedFailure = 2,   // The request failed with some critical internal error.
+    };
+
+    // Provides the result of a deployment request.
+    // @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.deploymentresult
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageDeploymentResult
+    {
+        PackageDeploymentStatus Status { get; };
+        HRESULT ExtendedError { get; };
+        Boolean IsRegistered{ get; };
+        Guid ActivityId { get; };
+    }
+
+    /// Defines the stub behavior for an app package that is being added or staged.
+    /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.stubpackageoption?view=winrt-22621
+    [contract(PackageDeploymentContract, 1)]
+    enum StubPackageOption
+    {
+        Default,
+        InstallFull,
+        InstallStub,
+        UsePreference,
+    };
 }
 ```

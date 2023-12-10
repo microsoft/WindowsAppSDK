@@ -106,66 +106,6 @@ namespace Microsoft.Windows.Management.Deployment
 
     [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
-    runtimeclass PackageSetItem
-    {
-        PackageSetItem();
-
-        // Unique id
-        String Id;  //required
-
-        // Package criteria to identify if a matching package is ready for use and to use at runtime
-        String PackageFamilyName;                           //required
-        Windows.ApplicationModel.PackageVersion MinVersion; //required
-        Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyProcessorArchitectures ProcessorArchitectureFilter;
-
-        // Source where a package can be retrieved from if/when needed for install, remediation, etc
-        Windows.Foundation.Uri PackageUri;
-
-        // ??? Additional info potentially needed for deployment operations
-        //TODO see AddPackageOptions
-
-        // Additional info for runtime use
-        //TODO see CreatePackageDependencyOptions
-        //TODO see AddPackageDependencyOptions
-    }
-
-    [feature(Feature_PackageManager)]
-    [contract(PackageDeploymentContract, 1)]
-    runtimeclass PackageSet
-    {
-        PackageSet();
-
-        // Unique id
-        String Id;
-
-        // Package(s) in the set
-        IVector<PackageSetItem> PackageSetItems { get; };
-    }
-
-    [feature(Feature_PackageManager)]
-    [contract(PackageDeploymentContract, 1)]
-    runtimeclass PackageSetItemRuntimeDisposition
-    {
-        PackageSetItemRuntimeDisposition();
-
-        String PackageSetItemId{ get; };
-        String PackageFullName{ get; };
-        String PackageDependencyId{ get; };
-        Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContextId PackageDependencyContextId{ get; };
-    }
-
-    [feature(Feature_PackageManager)]
-    [contract(PackageDeploymentContract, 1)]
-    runtimeclass PackageSetRuntimeDisposition
-    {
-        PackageSetRuntimeDisposition();
-
-        String PackageSetId;
-        IVector<PackageSetItemRuntimeDisposition> PackageSetItemRuntimeDispositions { get; };
-    }
-
-    [feature(Feature_PackageManager)]
-    [contract(PackageDeploymentContract, 1)]
     runtimeclass FindPackageSetOptions
     {
         FindPackageSetOptions();
@@ -189,15 +129,6 @@ namespace Microsoft.Windows.Management.Deployment
 
     [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
-    enum PackageDeploymentStatus
-    {
-        InProgress = 0,         // The request is in progress
-        CompletedSuccess = 1,   // The request completed successfully
-        CompletedFailure = 2,   // The request failed with some critical internal error. //TODO:Check ExtendedError for HRESULT
-    };
-
-    [feature(Feature_PackageManager)]
-    [contract(PackageDeploymentContract, 1)]
     enum PackageDeploymentProgressStatus
     {
         Queued = 0,             // The request is queued
@@ -213,6 +144,15 @@ namespace Microsoft.Windows.Management.Deployment
         PackageDeploymentProgressStatus status;
         Double percentage;
     }
+
+    [feature(Feature_PackageManager)]
+    [contract(PackageDeploymentContract, 1)]
+    enum PackageDeploymentStatus
+    {
+        InProgress = 0,         // The request is in progress
+        CompletedSuccess = 1,   // The request completed successfully
+        CompletedFailure = 2,   // The request failed with some critical internal error. //TODO:Check ExtendedError for HRESULT
+    };
 
     [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
@@ -360,6 +300,44 @@ namespace Microsoft.Windows.Management.Deployment
         //TODO see AddPackageDependencyOptions
     }
 
+    [feature(Feature_PackageManager)]
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageSetItem
+    {
+        PackageSetItem();
+
+        // Unique id
+        String Id;  //required
+
+        // Package criteria to identify if a matching package is ready for use and to use at runtime
+        String PackageFamilyName;                           //required
+        Windows.ApplicationModel.PackageVersion MinVersion; //required
+        Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyProcessorArchitectures ProcessorArchitectureFilter;
+
+        // Source where a package can be retrieved from if/when needed for install, remediation, etc
+        Windows.Foundation.Uri PackageUri;
+
+        // ??? Additional info potentially needed for deployment operations
+        //TODO see AddPackageOptions
+
+        // Additional info for runtime use
+        //TODO see CreatePackageDependencyOptions
+        //TODO see AddPackageDependencyOptions
+    }
+
+    [feature(Feature_PackageManager)]
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageSet
+    {
+        PackageSet();
+
+        // Unique id
+        String Id;
+
+        // Package(s) in the set
+        IVector<PackageSetItem> PackageSetItems { get; };
+    }
+                    
     // The API surface is strongly consistent:
     // 1. Modification operations involving incoming packages...
     //      - <verb>PackageAsync       (string, options)
@@ -443,6 +421,28 @@ namespace Microsoft.Windows.Management.Deployment
         RemovePackageSetByIdAsync(String packageSetId, RemovePackageOptions options);
 
         // Ditto PackageSet operations of Stage, Register, Repair, Reset
+    }
+
+    [feature(Feature_PackageManager)]
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageSetItemRuntimeDisposition
+    {
+        PackageSetItemRuntimeDisposition();
+
+        String PackageSetItemId{ get; };
+        String PackageFullName{ get; };
+        String PackageDependencyId{ get; };
+        Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContextId PackageDependencyContextId{ get; };
+    }
+
+    [feature(Feature_PackageManager)]
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageSetRuntimeDisposition
+    {
+        PackageSetRuntimeDisposition();
+
+        String PackageSetId;
+        IVector<PackageSetItemRuntimeDisposition> PackageSetItemRuntimeDispositions { get; };
     }
 
     [feature(Feature_PackageManager)]
