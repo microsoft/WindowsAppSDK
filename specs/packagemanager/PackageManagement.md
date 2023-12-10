@@ -18,16 +18,13 @@ WinRT APIs in the Windows.Management.Deployment namespace. These APIs provide
 the means to install, update, uninstall, enumerate and otherwise manage
 packages.
 
-A newer generation of the package management APIs are provided via Windows App
-SDK offering functional enhancements and optimizations.
-
 The package management APIs were originally introduced in Windows 8 and have
 continuously expanded to meet MSIX's growing demands over the past decade.
 However, as one of the earliest WinRT APIs they include some patterns out of
 step with current API practices and recommendations. Windows App SDK offers
 the opportunity to provide a new generation of package management APIs in line
 with the latest patterns and recommendations for an improved developer
-experience as well as improved runtime efficiencies.
+experience as well as functional enhancements and improved runtime efficiencies.
 
 Microsoft-internal task [45952398](https://task.ms/45952398)
 
@@ -92,7 +89,7 @@ contain one or more types of identifiers. These can vary for different verbs.
 See the per-method documentation for the specific target types supported by
 each method.
 
-Methods accept options as a matching `<verb>Package[Set]Options` type, e.g.
+These methods accept options as a matching `<verb>Package[Set]Options` type, e.g.
 `AddPackageAsync(string packageUri, AddPackageOptions options)`.
 
 The following table shows the supported permutations of verbs and targets:
@@ -111,10 +108,10 @@ The following table shows the supported permutations of verbs and targets:
 |Deprovision  |  X   |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
 
 Legend:
-* OS = Supported by Windows.Management.Deployment.PackageManager
-* WAS = Supported by Microsoft.Windows.Management.Deployment.PackageDeploymentManager
-* X = Not supported
 
+* OS = Supported by Windows (OS) APIs in the Windows.Management.Deployment.PackageManager namespace.
+* WAS = Supported by Windows App SDK APIs in the Microsoft.Windows.Management.Deployment.PackageDeploymentManager namespace.
+* X = Not supported
 
 # 4. Examples
 
