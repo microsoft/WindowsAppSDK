@@ -169,36 +169,36 @@ stages:
         IsOneBranch: ${{ parameters.IsOneBranch }}
         PublishPackage: ${{ parameters.PublishPackage }}
 
-  # Build WinAppSDK and Run Integration Test from TestAll.ps1
-  - job: WinAppSDKIntegrationBuildAndTest
-    dependsOn: ['NugetPackage']
-    condition: succeeded()
-    pool:
-      type: windows
-      isCustom: true
-      name: 'ProjectReunionESPool-2022'
-    variables:
-      WindowsAppSDKTransportPackageVersion: $[ dependencies.NugetPackage.outputs['SetVersion.packageVersion'] ]
-      VersionWithDevTag: $[format('{0}.{1}.{2}-{3}', variables['major'], variables['minor'], variables['versionDate'], 'dev')]
-      ob_outputDirectory: '$(REPOROOT)\out'
-      ob_artifactBaseName: "WindowsAppSDKNugetPackage"
-    steps:
-      #TODO: Remove the two template calls once Add-AppxPackage has been resolved
-      - template: ..\..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
-        parameters:
-          AzureSubscriptionServiceConnection: 'ProjectReunion Resource Manager'
-          NuGetServiceConnectionName: 'ProjectReunionInternal'
+  # # Build WinAppSDK and Run Integration Test from TestAll.ps1
+  # - job: WinAppSDKIntegrationBuildAndTest
+  #   dependsOn: ['NugetPackage']
+  #   condition: succeeded()
+  #   pool:
+  #     type: windows
+  #     isCustom: true
+  #     name: 'ProjectReunionESPool-2022'
+  #   variables:
+  #     WindowsAppSDKTransportPackageVersion: $[ dependencies.NugetPackage.outputs['SetVersion.packageVersion'] ]
+  #     VersionWithDevTag: $[format('{0}.{1}.{2}-{3}', variables['major'], variables['minor'], variables['versionDate'], 'dev')]
+  #     ob_outputDirectory: '$(REPOROOT)\out'
+  #     ob_artifactBaseName: "WindowsAppSDKNugetPackage"
+  #   steps:
+  #     #TODO: Remove the two template calls once Add-AppxPackage has been resolved
+  #     - template: ..\..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
+  #       parameters:
+  #         AzureSubscriptionServiceConnection: 'ProjectReunion Resource Manager'
+  #         NuGetServiceConnectionName: 'ProjectReunionInternal'
 
-      - template: ..\..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
-        parameters:
-          TransportPackageArtifactName: 'TransportPackage'
-          WindowsAppSDKPackageVersion: $(VersionWithDevTag)
-          BuildType:  'stable'
-          IsOneBranch: ${{ parameters.IsOneBranch }}
-          TransportPackages:
-            FoundationPackage:
-              Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
-              Version: $(WindowsAppSDKTransportPackageVersion)
+  #     - template: ..\..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
+  #       parameters:
+  #         TransportPackageArtifactName: 'TransportPackage'
+  #         WindowsAppSDKPackageVersion: $(VersionWithDevTag)
+  #         BuildType:  'stable'
+  #         IsOneBranch: ${{ parameters.IsOneBranch }}
+  #         TransportPackages:
+  #           FoundationPackage:
+  #             Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
+  #             Version: $(WindowsAppSDKTransportPackageVersion)
 
       # TODO: Reenable, Add-AppxPackage currently does not work on 2022 images. See issue #2908
       # - template: ..\..\eng\common\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml

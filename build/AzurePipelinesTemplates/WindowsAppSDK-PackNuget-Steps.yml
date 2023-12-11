@@ -118,6 +118,12 @@ steps:
     filePath: 'BuildAll.ps1'
     arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
 
+- task: PowerShell@2
+  name: PackNuget
+  inputs:
+    filePath: 'BuildAll.ps1'
+    arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "BuildMock" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
+
 - ${{ if eq(parameters.SignOutput, 'true') }}:
   - task: EsrpCodeSigning@2
     inputs:
