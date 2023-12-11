@@ -135,7 +135,6 @@ Thus `EnsurePackageIsReady(pkg, options)` is functionally equivalent to
 var pdm = new PackageDeploymentManager();
 if (!pdm.IsPackageReady(pkg))
 {
-    var options = new AddPackageOptions();
     var result = await pdm.AddPackageAsync(pkg, options);
 }
 endif
@@ -155,10 +154,9 @@ the user for consent before installing the target e.g.
 var pdm = new PackageDeploymentManager();
 if (!pdm.IsPackageReady(pkg))
 {
-    bool ok = AskUserForContent(pkg);
+    bool ok = AskUserForConsent(pkg);
     if (ok)
     {
-        var options = new EnsureIsReadyOptions();
         var result = await pdm.EnsurePackageIsReadyAsync(pkg, options);
     }
 }
@@ -184,7 +182,6 @@ namespace Microsoft.Windows.Management.Deployment
 
     /// Represents a package storage volume.
     /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume
-    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageVolume
     {
@@ -220,7 +217,6 @@ namespace Microsoft.Windows.Management.Deployment
 
     /// Manages the storage volumes where packages can be installed.
     /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume
-    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageVolumeManager
     {
@@ -253,7 +249,7 @@ namespace Microsoft.Windows.Management.Deployment
     };
 
     /// Contains progress information for the deployment request.
-    /// https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.deploymentprogress?view=winrt-22621
+    /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.deploymentprogress?view=winrt-22621
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageDeploymentProgress
     {
@@ -285,15 +281,295 @@ namespace Microsoft.Windows.Management.Deployment
         Guid ActivityId { get; };
     }
 
-    /// Defines the stub behavior for an app package that is being added or staged.
-    /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.stubpackageoption?view=winrt-22621
     [contract(PackageDeploymentContract, 1)]
-    enum StubPackageOption
+    runtimeclass PackageSetItem
     {
-        Default,
-        InstallFull,
-        InstallStub,
-        UsePreference,
-    };
+        PackageSetItem();
+
+        String Id;
+
+        // Package criteria to identify if a matching package is ready for use and to use at runtime
+        String PackageFamilyName;   //required
+        Windows.ApplicationModel.PackageVersion MinVersion;
+        Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyProcessorArchitectures ProcessorArchitectureFilter;
+
+        // Source where a package can be retrieved from if/when needed for install, remediation, etc
+        Windows.Foundation.Uri PackageUri;
+    }
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageSet
+    {
+        PackageSet();
+
+        String Id;
+        IVector<PackageSetItem> PackageSetItems { get; };
+    }
+
+    // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass AddPackageOptions
+    {
+        AddPackageOptions();
+
+        PackageVolume TargetVolume;
+        IVector<Windows.Foundation.Uri> DependencyPackageUris { get; };
+        IVector<String> OptionalPackageFamilyNames { get; };
+        IVector<Windows.Foundation.Uri> OptionalPackageUris { get; };
+        IVector<Windows.Foundation.Uri> RelatedPackageUris { get; };
+        Windows.Foundation.Uri ExternalLocationUri;
+        Windows.Management.Deployment.StubPackageOption StubPackageOption;
+        Boolean AllowUnsigned;
+        Boolean DeveloperMode;
+        Boolean ForceAppShutdown;
+        Boolean ForceTargetAppShutdown;
+        Boolean ForceUpdateFromAnyVersion;
+        Boolean InstallAllResources;
+        Boolean RequiredContentGroupOnly;
+        Boolean RetainFilesOnFailure;
+        Boolean StageInPlace;
+        Boolean DeferRegistrationWhenPackagesAreInUse;
+
+        Boolean IsExpectedDigestsSupported { get; };            // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
+        IMap<Windows.Foundation.Uri, String> ExpectedDigests{ get; };
+
+        Boolean IsLimitToExistingPackagesSupported { get; };    // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
+        Boolean LimitToExistingPackages;
+    }
+
+    // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass StagePackageOptions
+    {
+        StagePackageOptions();
+
+        PackageVolume TargetVolume;
+        IVector<Windows.Foundation.Uri> DependencyPackageUris { get; };
+        IVector<String> OptionalPackageFamilyNames { get; };
+        IVector<Windows.Foundation.Uri> OptionalPackageUris { get; };
+        IVector<Windows.Foundation.Uri> RelatedPackageUris { get; };
+        Windows.Foundation.Uri ExternalLocationUri;
+        Windows.Management.Deployment.StubPackageOption StubPackageOption;
+        Boolean DeveloperMode;
+        Boolean ForceUpdateFromAnyVersion;
+        Boolean InstallAllResources;
+        Boolean RequiredContentGroupOnly;
+        Boolean StageInPlace;
+        Boolean AllowUnsigned;
+
+        Boolean IsExpectedDigestsSupported { get; };            // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
+        IMap<Windows.Foundation.Uri, String> ExpectedDigests{ get; };
+    }
+
+    // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass RegisterPackageOptions
+    {
+        RegisterPackageOptions();
+
+        PackageVolume AppDataVolume;
+        IVector<Windows.Foundation.Uri> DependencyPackageUris { get; };
+        IVector<String> OptionalPackageFamilyNames { get; };
+        Windows.Foundation.Uri ExternalLocationUri;
+        Boolean DeveloperMode;
+        Boolean ForceAppShutdown;
+        Boolean ForceTargetAppShutdown;
+        Boolean ForceUpdateFromAnyVersion;
+        Boolean InstallAllResources;
+        Boolean StageInPlace;
+        Boolean AllowUnsigned;
+        Boolean DeferRegistrationWhenPackagesAreInUse;
+
+        Boolean IsExpectedDigestsSupported { get; };            // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
+        IMap<Windows.Foundation.Uri, String> ExpectedDigests{ get; };
+    }
+
+    // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass RemovePackageOptions
+    {
+        RemovePackageOptions();
+
+        Boolean OkIfNotFound;
+        Boolean PreserveApplicationData;
+        Boolean PreserveRoamableApplicationData;
+        Boolean RemoveForAllUsers;
+    }
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass EnsurePackageIsReadyOptions
+    {
+        EnsurePackageIsReadyOptions();
+
+        AddPackageOptions AddPackageOptions;
+    }
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageDeploymentManager
+    {
+        // Get an instance of the manager
+        static PackageDeploymentManager GetDefault();
+
+        //-------------------------------------------------------------
+        // IsReady
+
+        // Return true if the package(s) are present and available for use
+
+        Boolean IsPackageReady(String package);
+
+        Boolean IsPackageByUriReady(Windows.Foundation.Uri packageUri);
+
+        Boolean IsPackageSetReady(PackageSet packageSet);
+
+        //-------------------------------------------------------------
+        // EnsureIsReady
+
+        // Check if the necessary package(s) are present
+        // and available for use and if not then Make It So.
+        // If the necessary packages(s) are not present on the system
+        // then make them available (download, install, etc).
+        // If the necessary packages are present and available this is equivalent to IsReady(id).
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        EnsurePackageIsReadyAsync(String package, EnsurePackageIsReadyOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        EnsurePackageByUriIsReadyAsync(Windows.Foundation.Uri packageUri, EnsurePackageIsReadyOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        EnsurePackageSetIsReadyAsync(PackageSet packageSet, EnsurePackageIsReadyOptions options);
+
+        //-------------------------------------------------------------
+        // Add packages
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        AddPackageAsync(String package, AddPackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        AddPackageByUriAsync(Windows.Foundation.Uri packageUri, AddPackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        AddPackageSetAsync(PackageSet packageSet, AddPackageSetOptions options);
+
+        //-------------------------------------------------------------
+        // Stage packages
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        StagePackageAsync(String package, StagePackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        StagePackageByUriAsync(Windows.Foundation.Uri packageUri, StagePackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        StagePackageSetAsync(PackageSet packageSet, StagePackageSetOptions options);
+
+        //-------------------------------------------------------------
+        // Register packages
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RegisterPackageAsync(String package, RegisterPackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RegisterPackageByUriAsync(Windows.Foundation.Uri packageUri, RegisterPackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RegisterPackageSetAsync(PackageSet packageSet, RegisterPackageOptions options);
+
+        //-------------------------------------------------------------
+        // Remove packages
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RemovePackageAsync(String package, RemovePackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RemovePackageByFullNameAsync(String packageFullName, RemovePackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RemovePackageByFamilyNameAsync(String packageFamilyName, RemovePackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RemovePackageByUriAsync(Windows.Foundation.Uri packageUri, RemovePackageOptions options);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RemovePackageSetAsync(PackageSet packageSet, RemovePackageOptions options);
+
+        //-------------------------------------------------------------
+        // Reset packages
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        ResetPackageAsync(String package);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        ResetPackageByUriAsync(Windows.Foundation.Uri packageUri);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        ResetPackageSetAsync(PackageSet packageSet);
+
+        //-------------------------------------------------------------
+        // Repair packages
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RepairPackageAsync(String package);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RepairPackageByUriAsync(Windows.Foundation.Uri packageUri);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RepairPackageSetAsync(PackageSet packageSet);
+
+        //-------------------------------------------------------------
+        // IsRegistrationPending
+
+        Boolean IsPackageRegistrationPending(String packageFamilyName);
+
+        [method_name("IsRegistrationPendingForUser")]
+        Boolean IsPackageRegistrationPending(String userSecurityId, String packageFamilyName);
+    }
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageSetItemRuntimeDisposition
+    {
+        PackageSetItemRuntimeDisposition();
+
+        String PackageSetItemId{ get; };
+        String PackageFullName{ get; };
+        String PackageDependencyId{ get; };
+        Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContextId PackageDependencyContextId{ get; };
+    }
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageSetRuntimeDisposition
+    {
+        PackageSetRuntimeDisposition();
+
+        String PackageSetId;
+        IVector<PackageSetItemRuntimeDisposition> PackageSetItemRuntimeDispositions { get; };
+    }
+
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass PackageRuntimeManager
+    {
+        // Get an instance of the manager
+        static PackageRuntimeManager GetDefault();
+
+        // Make the package(s) in the package set available to the calling process
+        // i.e. dynamically add the package(s) in the package set to the caller's package graph.
+        // This is equivalent to
+        //   FOREACH p IN PackageSetManager.Get(id).PackageSetItems
+        //       pd = TryCreatePackageDependency(p)
+        //       AddPackageDependency(pd)
+
+        Microsoft.Windows.Management.Deployment.PackageSetRuntimeDisposition AddPackageSet(
+            PackageSet packageSet);
+
+        [method_name("AddPackageSetWithOptions")]
+        Microsoft.Windows.Management.Deployment.PackageSetRuntimeDisposition AddPackageSet(
+            PackageSet packageSet,
+            Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions createOptions,
+            Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions addOptions);
+
+        void RemovePackageSet(
+            Microsoft.Windows.Management.Deployment.PackageSetRuntimeDisposition packageSetRuntimeDisposition);
+    }
 }
 ```
