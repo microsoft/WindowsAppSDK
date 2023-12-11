@@ -18,6 +18,11 @@ param(
 
 pushd (Join-Path $RepoRoot "WindowsAppSDKAggregator")
 
+if($CleanOutput)
+{
+    . .\buildall.ps1 -Platform $Platform -Configuration $Configuration -clean
+}
+
 # Do WinAppSDK one-time setup (mainly, creating and installing test cert)
 if(!(Test-Path ".\.user\winappsdk.certificate.test.pfx" ))
 {
@@ -30,10 +35,6 @@ if(!(Test-Path ".\.user\winappsdk.certificate.test.pfx" ))
     }
 }
 
-# if($CleanOutput)
-# {
-#     . .\buildall.ps1 -clean
-# }
 New-Variable -Name ("$TransportPackageName"+"PackageVersion") $TransportPackageVersion
 $localPackagesPath = (Join-Path (Join-Path $RepoRoot "WindowsAppSDKAggregator") "localpackages")
 $packLocationPath = (Join-Path (Join-Path $RepoRoot "WindowsAppSDKAggregator") "PackLocation")
@@ -47,6 +48,14 @@ $files = Get-ChildItem $packLocationPath -File -Filter "*.nukpg"
 Write-host $files
 Copy-Item -Path "$packLocationPath/*" -Destination $Output -Recurse -Filter "*.nupkg"
 popd
+
+if($LASTEXITCODE -ne 0)
+{
+    Write-Host ".\WindowsAppSDKAggregator\buildAll.ps1 failed with exit code: $LASTEXITCODE" -ForegroundColor RED
+    exit $LASTEXITCODE
+}
+exit 0
+
 # # Ensure WinUI transport and mock WinAppSDK packages are build-specific
 
 # $BuildOutput = (Join-Path $RepoRoot "BuildOutput\WindowsAppSDK")
