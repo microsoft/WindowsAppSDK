@@ -119,7 +119,7 @@ steps:
     arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
 
 - task: PowerShell@2
-  name: PackNuget
+  name: BuildMock
   inputs:
     filePath: 'BuildAll.ps1'
     arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "BuildMock" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
