@@ -1,37 +1,44 @@
 # 1. MSIX Package Management
 
 This feature provides package management APIs comparable those in namespace
-Windows.Management.Deployment but with additional functionality, improved
-developer experience and performance optimizations.
+`Windows.Management.Deployment` but with additional functionality, improved developer experience and
+performance optimizations.
 
 - [1. MSIX Package Management](#1-msix-package-management)
 - [2. Background](#2-background)
 - [3. Description](#3-description)
+  - [3.1. API Structure](#31-api-structure)
+  - [3.2. Is\*Ready()](#32-isready)
+  - [3.3. Ensure\*IsReady()](#33-ensureisready)
+    - [3.3.1. Why Is*Ready() Given Ensure*IsReady()?](#331-why-isready-given-ensureisready)
+  - [3.4. Repair](#34-repair)
+  - [3.5. Reset](#35-reset)
+  - [3.6. IsPendingRegistation](#36-ispendingregistation)
+  - [3.7. PackageSets](#37-packagesets)
+  - [3.8. Usability](#38-usability)
 - [4. Examples](#4-examples)
 - [5. Remarks](#5-remarks)
 - [6. API Details](#6-api-details)
 
 # 2. Background
 
-Windows sports the ability to deploy and manage software as MSIX packages via
-WinRT APIs in the Windows.Management.Deployment namespace. These APIs provide
-the means to install, update, uninstall, enumerate and otherwise manage
-packages.
+Windows sports the ability to deploy and manage software as MSIX packages via WinRT APIs in the
+Windows.Management.Deployment namespace. These APIs provide the means to install, update, uninstall,
+enumerate and otherwise manage packages.
 
-The package management APIs were originally introduced in Windows 8 and have
-continuously expanded to meet MSIX's growing demands over the past decade.
-However, as one of the earliest WinRT APIs they include some patterns out of
-step with current API practices and recommendations. Windows App SDK offers
-the opportunity to provide a new generation of package management APIs in line
-with the latest patterns and recommendations for an improved developer
-experience as well as functional enhancements and improved runtime efficiencies.
+The package management APIs were originally introduced in Windows 8 and have continuously expanded
+to meet MSIX's growing demands over the past decade. However, as one of the earliest WinRT APIs they
+include some patterns out of step with current API practices and recommendations. Windows App SDK
+offers the opportunity to provide a new generation of package management APIs in line with the
+latest patterns and recommendations for an improved developer experience as well as functional
+enhancements and improved runtime efficiencies.
 
 Microsoft-internal task [45952398](https://task.ms/45952398)
 
 # 3. Description
 
-This API provides enhanced access to Windows' package management
-capabilities, focusing on the following scenarios:
+This API provides enhanced access to Windows' package management capabilities, focusing on the
+following scenarios:
 
 * Stage a package
 * Register a package
@@ -50,9 +57,9 @@ Additional functionality includes:
 * PackageSets -- Batch operations
 * Usability -- Quality-of-Life enhancements
 
-# 3.1. API Structure
+## 3.1. API Structure
 
-Methods to drive deployment activity typically follows the pattern:
+Methods to drive deployment activity typically follow the pattern:
 
     <verb>Package[Set][By<Type>][Suffix]Async(target, options)
 
@@ -69,8 +76,8 @@ The following verbs are supported:
 * Provision
 * Deprovision
 
-These methods accept their target package(s) as their first parameter. This
-parameter can be an various types of information including:
+These methods accept their target package(s) as their first parameter. This parameter can be an
+various types of information including:
 
 * Filename
 * Path
@@ -78,16 +85,15 @@ parameter can be an various types of information including:
 * PackageFullName
 * Uri
 
-NOTE: Methods with a target of a URI are named ...ByUri....
+**NOTE:** Methods with a target of a URI are named ...ByUri....
 
-NOTE: Methods with a target of a PackageFamilyName are named ...ByPackageFamilyName....
+**NOTE:** Methods with a target of a PackageFamilyName are named ...ByPackageFamilyName....
 
-NOTE: Methods with a target of a PackageFamilyName are named ...ByPackageFullName....
+**NOTE:** Methods with a target of a PackageFamilyName are named ...ByPackageFullName....
 
-NOTE: Methods with no ...By<Type>... qualifier accept a string which can
-contain one or more types of identifiers. These can vary for different verbs.
-See the per-method documentation for the specific target types supported by
-each method.
+**NOTE:** Methods with no ...By<Type>... qualifier accept a string which can contain one or more types
+of identifiers. These can vary for different verbs. See the per-method documentation for the
+specific target types supported by each method.
 
 These methods accept options as a matching `<verb>Package[Set]Options` type, e.g.
 `AddPackageAsync(string packageUri, AddPackageOptions options)`.
@@ -95,7 +101,7 @@ These methods accept options as a matching `<verb>Package[Set]Options` type, e.g
 The following table shows the supported permutations of verbs and targets:
 
 |Verb         | Path | Filename | PackageFamilyName | PackageFullName | file:  | http(s): | ms-uup: | PackageSet |
-|-------------|:-----|:---------|:------------------|:----------------|:-------|:---------|:--------|:-----------|
+|-------------|:----:|:--------:|:-----------------:|:---------------:|:------:|:--------:|:-------:|:----------:|
 |IsReady      |  X   |    X     |       OS/WAS      |       WAS       |   X    |    X     |  WAS    |    WAS     |
 |EnsureIsReady|  X   |    X     |         X         |        X        |   X    |    X     |  WAS    |    WAS     |
 |Add          | WAS  |    X     |         X         |        X        | OS/WAS |  OS/WAS  | OS/WAS  |    WAS     |
@@ -110,24 +116,28 @@ The following table shows the supported permutations of verbs and targets:
 Legend:
 
 * OS = Supported by Windows (OS) APIs in the Windows.Management.Deployment.PackageManager namespace.
-* WAS = Supported by Windows App SDK APIs in the Microsoft.Windows.Management.Deployment.PackageDeploymentManager namespace.
+* WAS = Supported by Windows App SDK APIs in the
+  Microsoft.Windows.Management.Deployment.PackageDeploymentManager namespace.
 * X = Not supported
 
-# 3.2. Is*Ready()
+## 3.2. Is*Ready()
 
-Is*Ready() methods determine if the target is installed and ready for use. Reasons why a package is not ready can include:
+Is*Ready() methods determine if the target is installed and ready for use. Reasons why a package is
+not ready can include:
 
 * The package is not present on the machine
 * The package is present on the machine but not registered for the user
-* The package is registered for the user but is not in a healthy status e.g. it's Package.Status=Tampered
+* The package is registered for the user but is not in a healthy status e.g. it's
+  Package.Status=Tampered
 
-Is*Ready() methods are a quick test to determine if more (costly) work is needed before the target can be used.
+Is*Ready() methods are a quick test to determine if more (costly) work is needed before the target
+can be used.
 
-# 3.3. Ensure*IsReady()
+## 3.3. Ensure*IsReady()
 
-Ensure*IsReady() methods determine if the target is installed and ready for
-use and, if not, makes it so. This can include downloading the target,
-registering it for the user and remediating a package in an unhealthy state.
+Ensure*IsReady() methods determine if the target is installed and ready for use and, if not, makes
+it so. This can include downloading the target, registering it for the user and remediating a
+package in an unhealthy state.
 
 Thus `EnsurePackageIsReady(pkg, options)` is functionally equivalent to
 
@@ -140,15 +150,15 @@ if (!pdm.IsPackageReady(pkg))
 endif
 ```
 
-# 3.3.1. Why Is*Ready() Given Ensure*IsReady()?
+### 3.3.1. Why Is*Ready() Given Ensure*IsReady()?
 
-Ensure*IsReady() performs an 'is ready' check and returns if all is ready.
-There's no efficiency reasons to call Is*Ready() before
-Ensure*IsReady() (in fact, it's less efficient as Is*Ready() would occur twice).
+Ensure*IsReady() performs an 'is ready' check and returns if all is ready. There's no efficiency
+reasons to call Is*Ready() before Ensure*IsReady() (in fact, it's less efficient as Is*Ready() would
+occur twice).
 
-However, this can be useful if you need additional work
-before potentially performing deployment operations. For example, if you need to prompt
-the user for consent before installing the target e.g.
+However, this can be useful if you need additional work before potentially performing deployment
+operations. For example, if you need to prompt the user for consent before installing the target
+e.g.
 
 ```c#
 var pdm = new PackageDeploymentManager();
@@ -162,11 +172,80 @@ if (!pdm.IsPackageReady(pkg))
 }
 ```
 
+## 3.4. Repair
+
+`PackageDeploymentManager` offers Repair APIs providing the same functionality as available
+interactively via Settings' `Repair` button on the detail page for an app (via Apps > Installed Apps
+> ... > Advanced options).
+
+## 3.5. Reset
+
+`PackageDeploymentManager` offers Reset APIs providing the same functionality as available
+interactively via Settings' `Reset` button on the detail page for an app (via Apps > Installed Apps
+> ... > Advanced options).
+
+## 3.6. IsPendingRegistation
+
+`IsPendingRegistation()` detects if package registration is pending for the specified target. For
+example, if a package is in use and `AddPackageByUriAsync()` is called with a newer version and the
+option
+[DeferRegistrationWhenPackagesAreInUse](https://learn.microsoft.com/uwp/api/windows.management.deployment.addpackageoptions.deferregistrationwhenpackagesareinuse)=`true`
+then the registration is delayed until the package is no longer in use and can be updated. In such
+cases `IsPendingRegistration()` returns `true`.
+
+##  3.7. PackageSets
+
+A `PackageSet` is a group of packages to be operated on with one request. Package sets provide a
+convenient means to perform multiple operations.
+
+For example, `IsPackageSetReady(ps)` returns `true` only if all packages referenced by the
+`PackageSet` are ready for use. For another example, `AddPackageSetAsync(ps, options)` is
+functionally equivalent to
+
+```c#
+var pdm = new PackageDeploymentManager();
+foreach (PackageSetItem psi in ps)
+{
+    var result = await pdm.AddPackageAsync(psi.PackageUri, options)
+    if (result.Status != PackageDeploymentStatus.CompletedSuccess)
+    {
+        return result;
+    }
+}
+return new PackageDeploymentResult(PackageDeploymentStatus.CompletedSuccess);
+```
+
+## 3.8. Usability
+
+The package management API in Windows App SDK provides several quality-of-life enhancements over the
+package management APIs in Windows (e.g. Windows.Management.Deployment.PackageManager) including:
+
+* `PackageManager.AddPackageByUriAsync(p)` fails returning `ERROR_INSTALL_PACKAGE_DOWNGRADE` if a newer
+  version of the package is already installed. `PackageDeploymentManager` succeeds as it treats the
+  request as "install this package *or higher version*", as dependencies and other package
+  references are routinely handled.
+* `PackageManager.AddPackageByUriAsync(p)` fails returning `ERROR_PACKAGE_ALREADY_EXISTS` if that
+  exact version of the package is already installed. `PackageDeploymentManager` succeeds as the
+  requested package is installed.
+* Many `PackageManager` operations accept a target package as a file but require it expressed as a
+  `Uri`. `PackageDeploymentManager` provides overrides also accepting it as a `String`.
+* `PackageManager.RemovePackageByFullNameAsyn(p)` fails if the specified package isn't found.
+  `PackageDeploymentManager` succeeds as the requested package is not present at the end of the
+  operation.
+  * This follows the core deployment principle "'Tis not the journey that matters but the
+    destination". In short, it doesn't matter the current state of the system, only the desired end
+    state is achieved.
+* `PackageManager` methods accept inconsistent (and often inconvenient) permutations of expressing a
+  target package. For example, `PackageManager` supports removing a package by PackageFullName but
+  not PackageFamilyName. `PackageDeploymentManager` provides a richer API accepting additional
+  identifiers.
+
 # 4. Examples
 
 Samples illustrating the package management APIs:
 
 - [Sample 1](sample-1.md) - Fabrikam app installing Contoso's Muffin package
+- TODO
 
 # 5. Remarks
 
@@ -396,6 +475,17 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean RemoveForAllUsers;
     }
 
+    // Requires Windows >- 10.0.22000.0 (aka Win11 aka 21H2 aka SV1)
+    [feature(Feature_PackageManager)]
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass ProvisionPackageOptions
+    {
+        ProvisionPackageOptions();
+
+        IVector<String> OptionalPackageFamilyNames { get; };
+        IVector<String> ProjectionOrderPackageFamilyNames { get; };
+    }
+
     [contract(PackageDeploymentContract, 1)]
     runtimeclass EnsurePackageIsReadyOptions
     {
@@ -516,6 +606,30 @@ namespace Microsoft.Windows.Management.Deployment
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RepairPackageSetAsync(PackageSet packageSet);
+
+        //-------------------------------------------------------------
+        // Provision packages
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        ProvisionPackageAsync(String package);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        ProvisionPackageByUriAsync(Windows.Foundation.Uri packageUri);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        ProvisionPackageSetAsync(PackageSet packageSet);
+
+        //-------------------------------------------------------------
+        // Deprovision packages
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        DeprovisionPackageAsync(String package);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        DeprovisionPackageByUriAsync(Windows.Foundation.Uri packageUri);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        DeprovisionPackageSetAsync(PackageSet packageSet);
 
         //-------------------------------------------------------------
         // IsRegistrationPending

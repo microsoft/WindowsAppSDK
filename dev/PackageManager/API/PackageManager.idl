@@ -239,6 +239,17 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean RemoveForAllUsers;
     }
 
+    // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
+    [feature(Feature_PackageManager)]
+    [contract(PackageDeploymentContract, 1)]
+    runtimeclass ProvisionPackageOptions
+    {
+        ProvisionPackageOptions();
+
+        IVector<String> OptionalPackageFamilyNames { get; };
+        IVector<String> ProjectionOrderPackageFamilyNames { get; };
+    }
+
     [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass EnsurePackageIsReadyOptions
@@ -339,6 +350,18 @@ namespace Microsoft.Windows.Management.Deployment
         RemovePackageSetAsync(PackageSet packageSet, RemovePackageOptions options);
 
         //-------------------------------------------------------------
+        // Repair packages
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RepairPackageAsync(String package);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RepairPackageByUriAsync(Windows.Foundation.Uri packageUri);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        RepairPackageSetAsync(PackageSet packageSet);
+
+        //-------------------------------------------------------------
         // Reset packages
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
@@ -351,16 +374,28 @@ namespace Microsoft.Windows.Management.Deployment
         ResetPackageSetAsync(PackageSet packageSet);
 
         //-------------------------------------------------------------
-        // Repair packages
+        // Provision packages
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        RepairPackageAsync(String package);
+        ProvisionPackageAsync(String package, ProvisionPackageOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        RepairPackageByUriAsync(Windows.Foundation.Uri packageUri);
+        ProvisionPackageByUriAsync(Windows.Foundation.Uri packageUri, ProvisionPackageOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        RepairPackageSetAsync(PackageSet packageSet);
+        ProvisionPackageSetAsync(PackageSet packageSet, ProvisionPackageOptions options);
+
+        //-------------------------------------------------------------
+        // Deprovision packages
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        DeprovisionPackageAsync(String package);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        DeprovisionPackageByUriAsync(Windows.Foundation.Uri packageUri);
+
+        Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
+        DeprovisionPackageSetAsync(PackageSet packageSet);
 
         //-------------------------------------------------------------
         // IsRegistrationPending
