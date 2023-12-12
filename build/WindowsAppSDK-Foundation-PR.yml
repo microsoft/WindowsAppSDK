@@ -47,6 +47,8 @@ extends:
       psscriptanalyzer:
         enable: true
         break: true
+    git:
+      submodules: false
 
     stages:
     - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
