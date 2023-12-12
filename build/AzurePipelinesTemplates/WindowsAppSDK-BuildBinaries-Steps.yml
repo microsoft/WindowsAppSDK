@@ -7,12 +7,6 @@ parameters:
   default: True
 
 steps:
-- powershell: |
-    $header = "AUTHORIZATION: bearer $(System.AccessToken)"
-    git -c http.extraheader="$header" submodule sync -- WindowsAppSDKAggregator
-    git -c http.extraheader="$header" submodule update --init --force --depth=1 -- WindowsAppSDKAggregator
-  displayName: Check out WindowsAppSDKAggregator submodule
-
 - task: NuGetToolInstaller@1
 
 - task: NuGetAuthenticate@1
