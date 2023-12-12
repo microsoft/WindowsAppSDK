@@ -16,7 +16,8 @@ performance optimizations.
   - [3.6. IsPackageRegistrationPending](#36-ispackageregistrationpending)
   - [3.7. PackageSets](#37-packagesets)
   - [3.8. PackageRuntimeManager](#38-packageruntimemanager)
-  - [3.9. Usability](#39-usability)
+  - [3.9. PackageVolume Repair](#39-packagevolume-repair)
+  - [3.10. Usability](#310-usability)
 - [4. Examples](#4-examples)
   - [4.1. AddPackageAsync()](#41-addpackageasync)
   - [4.2. AddPackageByUriAsync()](#42-addpackagebyuriasync)
@@ -25,6 +26,7 @@ performance optimizations.
   - [4.5. IsPackageSetReady() and EnsurePackageSetIsReadyAsync()](#45-ispackagesetready-and-ensurepackagesetisreadyasync)
   - [4.6. PackageRuntimeManager.AddPackageSet()](#46-packageruntimemanageraddpackageset)
   - [4.7. PackageRuntimeManager.RemovePackageset()](#47-packageruntimemanagerremovepackageset)
+  - [4.6. PackageVolume.Repair()](#46-packagevolumerepair)
 - [5. Remarks](#5-remarks)
   - [5.1. Platform Support](#51-platform-support)
 - [6. API Details](#6-api-details)
@@ -232,7 +234,32 @@ especially when the caller may not know the exact package(s) involved (for insta
 packages via `ms-uup:`). `PackageRuntimeManager` determines the packages involved for a `PackageSet`
 and dynamically adds them caller's package graph.
 
-## 3.9. Usability
+## 3.9. PackageVolume Repair
+
+Packages are typically<sup>1</sup> installed to a
+[PackageVolume](https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume),
+e.g. `C:\Program Files\WindowsApps` is the default `PackageVolume` on a new Windows system. Windows
+pairs the PackageVolume with the underlying storage volume's media ID to identify the PackageVolume
+even when mount points change (e.g. instead USB flash key and it's mount point is E:, the remove the
+USB flash key and later reinsert it but not it's mounted as K:).
+
+It's possible this tracking information can be invalidated, e.g. backup a drive's content, replace
+the drive with a new one and then restore the content. The packages installed on this drive's
+PackageVolume(s) aren't recognized by Windows because the new drive has a different media ID.
+
+The Windows App SDK's new `PackageVolume.Repair()` detects and corrects these conditions.
+
+`PackageVolume.VerifyIfOk()` checks if the PackageVolume is OK or in need of repair.
+
+**NOTE:** `Repair()` requires admin privilege (`VerifyIfOk()` doesn't).
+
+<sup>1</sup>
+[RegisterPackageOptions.DevelopmentMode](https://learn.microsoft.com/uwp/api/windows.management.deployment.registerpackageoptions.developermode),
+[AddPackageOptions.StageInPlace](https://learn.microsoft.com/uwp/api/windows.management.deployment.registerpackageoptions.stageinplace)
+and other options canalter the typical behavior and install packages to a non-PackageVolume
+location.
+
+## 3.10. Usability
 
 The package management API in Windows App SDK provides several quality-of-life enhancements over the
 package management APIs in Windows (e.g. Windows.Management.Deployment.PackageManager) including:
@@ -625,6 +652,33 @@ PackageVersion ToVersion(uint major, uint minor, uint build, uint revision)
 **NOTE:** This differs from the PackageRuntimeManager.AddPackageSet()() example by explicitly
 removing the packages dynamically added to the package graph when no longer needed.
 
+## 4.6. PackageVolume.Repair()
+
+Fabrikam app checks if a PackageVolume is OK and if not, prompts the user to confirm it should
+proceed to repair the PackageVolume.
+
+```c#
+var CheckAndFixPackageVolume(string path)
+{
+    var packageVolume = PackageVolumeManager.FindPackageVolumeByPath(path);
+    if (!packageVolume.VerifyIsOk())
+    {
+        bool ok = PromptUserForConfirmation();
+        if (!ok)
+        {
+            return;
+        }
+    }
+    try
+    {
+        packageVolume.Repair();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.ToString());
+    }
+}
+```
 
 # 5. Remarks
 
