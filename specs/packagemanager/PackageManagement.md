@@ -13,11 +13,20 @@ performance optimizations.
     - [3.3.1. Why Is*Ready() Given Ensure*IsReady()?](#331-why-isready-given-ensureisready)
   - [3.4. Repair](#34-repair)
   - [3.5. Reset](#35-reset)
-  - [3.6. IsPendingRegistation](#36-ispendingregistation)
+  - [3.6. IsPackageRegistrationPending](#36-ispackageregistrationpending)
   - [3.7. PackageSets](#37-packagesets)
-  - [3.8. Usability](#38-usability)
+  - [3.8. PackageRuntimeManager](#38-packageruntimemanager)
+  - [3.9. Usability](#39-usability)
 - [4. Examples](#4-examples)
+  - [4.1. AddPackageAsync()](#41-addpackageasync)
+  - [4.2. AddPackageByUriAsync()](#42-addpackagebyuriasync)
+  - [4.3. AddPackageSetAsync()](#43-addpackagesetasync)
+  - [4.4. EnsurePackageSetIsReadyAsync()](#44-ensurepackagesetisreadyasync)
+  - [4.5. IsPackageSetReady() and EnsurePackageSetIsReadyAsync()](#45-ispackagesetready-and-ensurepackagesetisreadyasync)
+  - [4.6. PackageRuntimeManager.AddPackageSet()](#46-packageruntimemanageraddpackageset)
+  - [4.7. PackageRuntimeManager.RemovePackageset()](#47-packageruntimemanagerremovepackageset)
 - [5. Remarks](#5-remarks)
+  - [5.1. Platform Support](#51-platform-support)
 - [6. API Details](#6-api-details)
 
 # 2. Background
@@ -53,8 +62,9 @@ Additional functionality includes:
 
 * IsReady -- Is a package ready for use?
 * EnsureIsReady -- Is a package ready for use and, if not, make it so
-* IsPendingRegistration -- Is there an update waiting to install?
+* IsPackageRegistrationPending -- Is there an update waiting to install?
 * PackageSets -- Batch operations
+* PackageRuntimeManager -- Batch operations for use at runtime via Dynamic Dependencies
 * Usability -- Quality-of-Life enhancements
 
 ## 3.1. API Structure
@@ -127,7 +137,7 @@ not ready can include:
 
 * The package is not present on the machine
 * The package is present on the machine but not registered for the user
-* The package is registered for the user but is not in a healthy status e.g. it's
+* The package is registered for the user but is not in a healthy status e.g. its
   Package.Status=Tampered
 
 Is*Ready() methods are a quick test to determine if more (costly) work is needed before the target
@@ -142,7 +152,7 @@ package in an unhealthy state.
 Thus `EnsurePackageIsReady(pkg, options)` is functionally equivalent to
 
 ```c#
-var pdm = new PackageDeploymentManager();
+var pdm = PackageDeploymentManager().GetDefault();
 if (!pdm.IsPackageReady(pkg))
 {
     var result = await pdm.AddPackageAsync(pkg, options);
@@ -161,7 +171,7 @@ operations. For example, if you need to prompt the user for consent before insta
 e.g.
 
 ```c#
-var pdm = new PackageDeploymentManager();
+var pdm = PackageDeploymentManager().GetDefault();
 if (!pdm.IsPackageReady(pkg))
 {
     bool ok = AskUserForConsent(pkg);
@@ -184,14 +194,14 @@ interactively via Settings' `Repair` button on the detail page for an app (via A
 interactively via Settings' `Reset` button on the detail page for an app (via Apps > Installed Apps
 > ... > Advanced options).
 
-## 3.6. IsPendingRegistation
+## 3.6. IsPackageRegistrationPending
 
-`IsPendingRegistation()` detects if package registration is pending for the specified target. For
+`IsPackageRegistrationPending()` detects if package registration is pending for the specified target. For
 example, if a package is in use and `AddPackageByUriAsync()` is called with a newer version and the
 option
 [DeferRegistrationWhenPackagesAreInUse](https://learn.microsoft.com/uwp/api/windows.management.deployment.addpackageoptions.deferregistrationwhenpackagesareinuse)=`true`
 then the registration is delayed until the package is no longer in use and can be updated. In such
-cases `IsPendingRegistration()` returns `true`.
+cases `IsPackageRegistrationPending()` returns `true`.
 
 ##  3.7. PackageSets
 
@@ -203,8 +213,8 @@ For example, `IsPackageSetReady(ps)` returns `true` only if all packages referen
 functionally equivalent to
 
 ```c#
-var pdm = new PackageDeploymentManager();
-foreach (PackageSetItem psi in ps)
+var pdm = PackageDeploymentManager().GetDefault();
+foreach (PackageSetItem psi in ps.PackageSetItems)
 {
     var result = await pdm.AddPackageAsync(psi.PackageUri, options)
     if (result.Status != PackageDeploymentStatus.CompletedSuccess)
@@ -215,7 +225,14 @@ foreach (PackageSetItem psi in ps)
 return new PackageDeploymentResult(PackageDeploymentStatus.CompletedSuccess);
 ```
 
-## 3.8. Usability
+## 3.8. PackageRuntimeManager
+
+The `PackageRuntimeManager` API provides Dynamic Dependency support for PackageSet operations,
+especially when the caller may not know the exact package(s) involved (for instance, when targeting
+packages via `ms-uup:`). `PackageRuntimeManager` determines the packages involved for a `PackageSet`
+and dynamically adds them caller's package graph.
+
+## 3.9. Usability
 
 The package management API in Windows App SDK provides several quality-of-life enhancements over the
 package management APIs in Windows (e.g. Windows.Management.Deployment.PackageManager) including:
@@ -242,14 +259,390 @@ package management APIs in Windows (e.g. Windows.Management.Deployment.PackageMa
 
 # 4. Examples
 
-Samples illustrating the package management APIs:
+## 4.1. AddPackageAsync()
 
-- [Sample 1](sample-1.md) - Fabrikam app installing Contoso's Muffin package
-- TODO
+Fabrikam app installing Contoso's Muffin package from a .msix file.
+
+```c#
+void Install()
+{
+    var package = "d:\\contoso\\muffin.msix";
+    var packageDeploymentManager = PackageDeploymentManager.GetDefault();
+    var options = new AddPackageOptions();
+    var deploymentResult = await packageDeploymentManager.AddPackageAsync(package, options);
+    try
+    {
+        if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
+        {
+            Console.WriteLine("OK");
+        }
+        else
+        {
+            Console.WriteLine("Error {}", deploymentResult.ExtendedError());
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.ToString());
+    }
+}
+```
+
+## 4.2. AddPackageByUriAsync()
+
+Fabrikam app installing Contoso's Muffin package from an https: source.
+
+```c#
+void Install()
+{
+    var package = new Uri("https://contoson.com/muffin.msix");
+    var packageDeploymentManager = PackageDeploymentManager.GetDefault();
+    var options = new AddPackageOptions();
+    var deploymentResult = await packageDeploymentManager.AddPackageByUriAsync(package, options);
+    try
+    {
+        if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
+        {
+            Console.WriteLine("OK");
+        }
+        else
+        {
+            Console.WriteLine("Error {}", deploymentResult.ExtendedError());
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.ToString());
+    }
+}
+```
+
+**NOTE:** This differs from the AddPackageAsync() example by the method name
+(`AddPackageByUriAsync()` instead of `AddPackageAsync()`) and the target type (https: source as URI
+instead of filename as string).
+
+## 4.3. AddPackageSetAsync()
+
+Fabrikam app installing Contoso's Muffin and Waffle packages via a PackageSet.
+
+```c#
+var Install()
+{
+    var packageSet = new PackageSet();
+    var muffin = new PackageSetItem();
+    muffin.PackageUri = new Uri("c:\\contoso\\muffin-1.2.3.4.msix");
+    packageSet.Add(muffin);
+    var waffle = new PackageSetItem();
+    waffle.PackageUri = new Uri("https://contoso.com/waffle-2.4.6.8.msix");
+    packageSet.Add(waffle);
+
+    var packageDeploymentManager = PackageDeploymentManager.GetDefault();
+    var options = new AddPackageOptions();
+    var deploymentResult = await packageDeploymentManager.AddPackageByUriAsync(packageSet, options);
+    try
+    {
+        if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
+        {
+            Console.WriteLine("OK");
+        }
+        else
+        {
+            Console.WriteLine("Error {}", deploymentResult.ExtendedError());
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.ToString());
+    }
+}
+```
+
+**NOTE:** This differs from the AddPackageByUriAsync() example by the method name
+(`AddPackageSetAsync` instead of `AddPackageByUriAsync()`), the target type (`PackageSet` containing
+2 URIs instead of a URI), and installing 2 packages instead of 1.
+
+## 4.4. EnsurePackageSetIsReadyAsync()
+
+Fabrikam app installing Contoso's Muffin and Waffle packages if necessary via a PackageSet.
+
+```c#
+var Install()
+{
+    var packageSet = new PackageSet();
+    var muffin = new PackageSetItem();
+    muffin.PackageFamilyName = "contoso.muffin_1234567890abc";
+    muffin.MinVersion = ToVersion(1, 2, 3, 4);
+    muffin.PackageUri = new Uri("c:\\contoso\\muffin-1.2.3.4.msix");
+    packageSet.Add(muffin);
+    var waffle = new PackageSetItem();
+    waffle.PackageFamilyName = "contoso.waffle_1234567890abc";
+    waffle.MinVersion = ToVersion(2, 4, 6, 8);
+    waffle.PackageUri = new Uri("https://contoso.com/waffle-2.4.6.8.msix");
+    packageSet.Add(waffle);
+
+    var packageDeploymentManager = PackageDeploymentManager.GetDefault();
+    var options = new EnsureIsReadyOptions();
+    var deploymentResult = await packageDeploymentManager.EnsurePackageSetIsReadyAsync(packageSet, options);
+    try
+    {
+        if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
+        {
+            Console.WriteLine("OK");
+        }
+        else
+        {
+            Console.WriteLine("Error {}", deploymentResult.ExtendedError());
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.ToString());
+    }
+}
+
+PackageVersion ToVersion(uint major, uint minor, uint build, uint revision)
+{
+    var version = new PackageVersion();
+    if ((major > UInt16.MaxValue) ||
+        (minor > UInt16.MaxValue) ||
+        (build  > UInt16.MaxValue) ||
+        (revision > UInt16.MaxValue))
+    {
+        throw new ArgumentOutOfRangeException();
+    }
+    version.major = (ushort) major;
+    version.minor = (ushort) minor;
+    version.build = (ushort) build;
+    version.revision = (ushort) revision;
+    return version;
+}
+```
+
+**NOTE:** This differs from the AddPackageBySetAsync() example by the method name
+(`EnsurePackageSetIsReadyAsync()` instead of `AddPackageSetAsync`), the addition of
+PackageFamilyName and MinVersion for each item in the `PackageSet` and the packages will only be
+installed if necessary.
+
+## 4.5. IsPackageSetReady() and EnsurePackageSetIsReadyAsync()
+
+Fabrikam app installing Contoso's Muffin and Waffle packages if necessary, and with explicit user
+confirmation before the installation.
+
+```c#
+var Install()
+{
+    var packageSet = new PackageSet();
+    var muffin = new PackageSetItem();
+    muffin.PackageFamilyName = "contoso.muffin_1234567890abc";
+    muffin.MinVersion = ToVersion(1, 2, 3, 4);
+    muffin.PackageUri = new Uri("c:\\contoso\\muffin-1.2.3.4.msix");
+    packageSet.Add(muffin);
+    var waffle = new PackageSetItem();
+    waffle.PackageFamilyName = "contoso.waffle_1234567890abc";
+    waffle.MinVersion = ToVersion(2, 4, 6, 8);
+    waffle.PackageUri = new Uri("https://contoso.com/waffle-2.4.6.8.msix");
+    packageSet.Add(waffle);
+
+    var packageDeploymentManager = PackageDeploymentManager.GetDefault();
+    if (!packageDeploymentManager.IsPackageSetReady(packageSet))
+    {
+        bool ok = PromptUserForConfirmation();
+        if (!ok)
+        {
+            return;
+        }
+    }
+
+    var options = new EnsureIsReadyOptions();
+    var deploymentResult = await packageDeploymentManager.EnsurePackageSetIsReadyAsync(packageSet, options);
+    try
+    {
+        if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
+        {
+            Console.WriteLine("OK");
+        }
+        else
+        {
+            Console.WriteLine("Error {}", deploymentResult.ExtendedError());
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.ToString());
+    }
+}
+
+PackageVersion ToVersion(uint major, uint minor, uint build, uint revision)
+{
+    var version = new PackageVersion();
+    if ((major > UInt16.MaxValue) ||
+        (minor > UInt16.MaxValue) ||
+        (build  > UInt16.MaxValue) ||
+        (revision > UInt16.MaxValue))
+    {
+        throw new ArgumentOutOfRangeException();
+    }
+    version.major = (ushort) major;
+    version.minor = (ushort) minor;
+    version.build = (ushort) build;
+    version.revision = (ushort) revision;
+    return version;
+}
+```
+
+**NOTE:** This differs from the EnsurePackageSetIsReadyAsync() example checking if
+`EnsurePackageSetIsReadyAsync()` will need to do any work and prompting the user to confirm it's OK
+to proceed.
+
+## 4.6. PackageRuntimeManager.AddPackageSet()
+
+Fabrikam app uses Contoso's Muffin and Waffle packages via Dynamic Dependencies, installing them if
+necessary. These packages are added to the package graph and not explicitly removed (they stay in
+the package graph until process termination).
+
+```c#
+var AddMuffinsAndWafflesToThePackageGraph()
+{
+    var packageSet = new PackageSet();
+    var muffin = new PackageSetItem();
+    muffin.PackageFamilyName = "contoso.muffin_1234567890abc";
+    muffin.MinVersion = ToVersion(1, 2, 3, 4);
+    muffin.PackageUri = new Uri("c:\\contoso\\muffin-1.2.3.4.msix");
+    packageSet.Add(muffin);
+    var waffle = new PackageSetItem();
+    waffle.PackageFamilyName = "contoso.waffle_1234567890abc";
+    waffle.MinVersion = ToVersion(2, 4, 6, 8);
+    waffle.PackageUri = new Uri("https://contoso.com/waffle-2.4.6.8.msix");
+    packageSet.Add(waffle);
+
+    var packageDeploymentManager = PackageDeploymentManager.GetDefault();
+    var options = new EnsureIsReadyOptions();
+    var deploymentResult = await packageDeploymentManager.EnsurePackageSetIsReadyAsync(packageSet, options);
+    try
+    {
+        if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
+        {
+            Console.WriteLine("OK");
+        }
+        else
+        {
+            Console.WriteLine("Error {}", deploymentResult.ExtendedError());
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.ToString());
+    }
+
+    var packageRuntimeManager = PackageRuntimeManager.GetDefault();
+    var packageSetRuntimeDisposition = packageRuntimeManager.AddPackageSet(packageSet);
+}
+
+PackageVersion ToVersion(uint major, uint minor, uint build, uint revision)
+{
+    var version = new PackageVersion();
+    if ((major > UInt16.MaxValue) ||
+        (minor > UInt16.MaxValue) ||
+        (build  > UInt16.MaxValue) ||
+        (revision > UInt16.MaxValue))
+    {
+        throw new ArgumentOutOfRangeException();
+    }
+    version.major = (ushort) major;
+    version.minor = (ushort) minor;
+    version.build = (ushort) build;
+    version.revision = (ushort) revision;
+    return version;
+}
+```
+
+**NOTE:** This differs from the EnsurePackageSetIsReadyAsync() example adding the packages
+referenced by the `PackageSet` to the process' package graph for subsequent access of the content.
+
+## 4.7. PackageRuntimeManager.RemovePackageset()
+
+Fabrikam app uses Contoso's Muffin and Waffle packages via Dynamic Dependencies, installing them if
+necessary. These packages are added to the package graph and later removed when no longer needed.
+
+```c#
+var DoAwesomeStuffUsingMuffinsAndWaffles()
+{
+    var packageSet = new PackageSet();
+    var muffin = new PackageSetItem();
+    muffin.PackageFamilyName = "contoso.muffin_1234567890abc";
+    muffin.MinVersion = ToVersion(1, 2, 3, 4);
+    muffin.PackageUri = new Uri("c:\\contoso\\muffin-1.2.3.4.msix");
+    packageSet.Add(muffin);
+    var waffle = new PackageSetItem();
+    waffle.PackageFamilyName = "contoso.waffle_1234567890abc";
+    waffle.MinVersion = ToVersion(2, 4, 6, 8);
+    waffle.PackageUri = new Uri("https://contoso.com/waffle-2.4.6.8.msix");
+    packageSet.Add(waffle);
+
+    var packageDeploymentManager = PackageDeploymentManager.GetDefault();
+    var options = new EnsureIsReadyOptions();
+    var deploymentResult = await packageDeploymentManager.EnsurePackageSetIsReadyAsync(packageSet, options);
+    try
+    {
+        if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
+        {
+            Console.WriteLine("OK");
+        }
+        else
+        {
+            Console.WriteLine("Error {}", deploymentResult.ExtendedError());
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.ToString());
+    }
+
+    var packageRuntimeManager = PackageRuntimeManager.GetDefault();
+    var packageSetRuntimeDisposition = packageRuntimeManager.AddPackageSet(packageSet);
+    DoAwesomeStuff();
+    packageRuntimeManager.RemovePackageSet(packageSetRuntimeDisposition);
+}
+
+PackageVersion ToVersion(uint major, uint minor, uint build, uint revision)
+{
+    var version = new PackageVersion();
+    if ((major > UInt16.MaxValue) ||
+        (minor > UInt16.MaxValue) ||
+        (build  > UInt16.MaxValue) ||
+        (revision > UInt16.MaxValue))
+    {
+        throw new ArgumentOutOfRangeException();
+    }
+    version.major = (ushort) major;
+    version.minor = (ushort) minor;
+    version.build = (ushort) build;
+    version.revision = (ushort) revision;
+    return version;
+}
+```
+
+**NOTE:** This differs from the PackageRuntimeManager.AddPackageSet()() example by explicitly
+removing the packages dynamically added to the package graph when no longer needed.
+
 
 # 5. Remarks
 
-TODO
+## 5.1. Platform Support
+
+This API is only available on Windows >= 10.0.19041.0 (aka 2004 aka 20H1).
+
+A subset of functionality is available on newer releases, e.g. `AddPackageOptions.ExpectedDigests`
+requires Windows >= 10.0.22621.0 (aka Win11 22H2). Any
+functionality requiring newer releases of windows than then 20H1 baseline has affordances to detect at runtime if the current platform supports the feature e.g.
+
+```c#
+var options = new AddPackageOptions();
+if (options.IsLimitToExistingPackagesSupported)
+{
+    options.LimitToExistingPackages = true;
+}
+```
 
 # 6. API Details
 
@@ -385,7 +778,7 @@ namespace Microsoft.Windows.Management.Deployment
         IVector<PackageSetItem> PackageSetItems { get; };
     }
 
-    // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
+    // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
     [contract(PackageDeploymentContract, 1)]
     runtimeclass AddPackageOptions
     {
@@ -416,7 +809,7 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean LimitToExistingPackages;
     }
 
-    // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
+    // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
     [contract(PackageDeploymentContract, 1)]
     runtimeclass StagePackageOptions
     {
@@ -440,7 +833,7 @@ namespace Microsoft.Windows.Management.Deployment
         IMap<Windows.Foundation.Uri, String> ExpectedDigests{ get; };
     }
 
-    // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
+    // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
     [contract(PackageDeploymentContract, 1)]
     runtimeclass RegisterPackageOptions
     {
@@ -463,7 +856,7 @@ namespace Microsoft.Windows.Management.Deployment
         IMap<Windows.Foundation.Uri, String> ExpectedDigests{ get; };
     }
 
-    // Requires Windows >- 10.0.19041.0 (aka 2004 aka 20H1)
+    // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
     [contract(PackageDeploymentContract, 1)]
     runtimeclass RemovePackageOptions
     {
@@ -475,7 +868,7 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean RemoveForAllUsers;
     }
 
-    // Requires Windows >- 10.0.22000.0 (aka Win11 aka 21H2 aka SV1)
+    // Requires Windows >= 10.0.22000.0 (aka Win11 aka 21H2 aka SV1)
     [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass ProvisionPackageOptions
@@ -636,7 +1029,7 @@ namespace Microsoft.Windows.Management.Deployment
 
         Boolean IsPackageRegistrationPending(String packageFamilyName);
 
-        [method_name("IsRegistrationPendingForUser")]
+        [method_name("IsPackageRegistrationPendingForUser")]
         Boolean IsPackageRegistrationPending(String userSecurityId, String packageFamilyName);
     }
 
