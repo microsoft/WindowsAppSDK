@@ -21,7 +21,7 @@ Param(
     [string]$Platform = "x64",
     [string]$Configuration = "Release",
     [string]$AzureBuildStep = "all",
-    [string]$OutputDirectory = "BuildOutput",
+    [string]$OutputDirectory = (Split-Path $MyInvocation.MyCommand.Path) + "\BuildOutput",
     [string]$PGOBuildMode = "Optimize",
     [string]$UpdateVersionDetailsPath = $null,
     [switch]$Clean = $false
@@ -412,8 +412,7 @@ Try {
     }
     if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMock"))
     {
-        $outputDirectoryFullPath = (Join-Path $env:Build_SourcesDirectory $OutputDirectory)
-        $transportPackagepath = (Join-Path $outputDirectoryFullPath "Microsoft.WindowsAppSDK.Foundation.TransportPackage.$PackageVersion.nupkg")
+        $transportPackagepath = (Join-Path $OutputDirectory "Microsoft.WindowsAppSDK.Foundation.TransportPackage.$PackageVersion.nupkg")
         . eng\common\Scripts\buildMockWinAppSdkPackage.ps1 -TransportPackageName "Foundation" -TransportPackagePath $transportPackagepath -RepoRoot $env:Build_SourcesDirectory -Output $outputDirectoryFullPath -Platform $Platform -Configuration $Configuration -TransportPackageVersion $PackageVersion -CleanOutput
     }
 }
