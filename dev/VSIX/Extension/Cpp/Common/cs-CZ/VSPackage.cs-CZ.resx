@@ -198,10 +198,4 @@
   <data name="1035" xml:space="preserve">
     <value>Projekt pro vytvoření součásti prostředí Windows Runtime C++/WinRT (.winmd) pro desktopovou i Univerzální platformu Windows (UPW) založené na Knihovně uživatelského rozhraní Windows (WinUI 3).</value>
   </data>
-  <data name="1036" xml:space="preserve">
-    <value>Aplikace pro testování jednotek (WinUI 3)</value>
-  </data>
-  <data name="1037" xml:space="preserve">
-    <value>Projekt pro vytvoření aplikace pro testování jednotek C++/WinRT pro WinUI 3 pomocí MSTestu</value>
-  </data>
 </root>

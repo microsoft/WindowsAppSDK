@@ -198,10 +198,4 @@
   <data name="1035" xml:space="preserve">
     <value>Windows UI ライブラリ (WinUI 3) に基づいてデスクトップ アプリを作成するためのプロジェクト テンプレートと、Microsoft Store を介したサイドローディングまたは配布用の MSIX パッケージです。</value>
   </data>
-  <data name="1036" xml:space="preserve">
-    <value>単体テスト アプリ (デスクトップの WinUI 3)</value>
-  </data>
-  <data name="1037" xml:space="preserve">
-    <value>MSTest を使用して WinUI 3 アプリの単体テスト アプリを作成するプロジェクトです。</value>
-  </data>
 </root>

@@ -198,10 +198,4 @@
   <data name="1035" xml:space="preserve">
     <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan, hem Masaüstü hem de Evrensel Windows Platformu (UWP) uygulamaları için bir C++/WinRT Windows Çalışma Zamanı Bileşeni (.winmd) oluşturmaya yönelik proje.</value>
   </data>
-  <data name="1036" xml:space="preserve">
-    <value>Birim Testi Uygulaması (WinUI 3)</value>
-  </data>
-  <data name="1037" xml:space="preserve">
-    <value>MSTest kullanarak WinUI 3 için bir C++/WinRT birim testi uygulamasını oluşturmaya yönelik bir proje.</value>
-  </data>
 </root>
