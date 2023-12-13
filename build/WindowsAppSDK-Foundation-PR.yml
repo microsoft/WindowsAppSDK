@@ -54,3 +54,11 @@ extends:
         PublishToMaestro: false
         SignOutput: false
         PublishPackage: false
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
+      parameters:
+        PublishToMaestro: false
+        SignOutput: false
+        PublishPackage: false

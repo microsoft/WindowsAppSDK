@@ -1,3 +1,17 @@
+parameters:
+- name: "PublishToMaestro"
+  type: boolean
+  default: True
+- name: "IgnoreFailures"
+  type: boolean
+  default: False
+- name: "SignOutput"
+  type: boolean
+  default: True
+- name: "IsOneBranch"
+  type: boolean
+  default: True
+
 stages:
 - stage: Pack
   dependsOn: Build
