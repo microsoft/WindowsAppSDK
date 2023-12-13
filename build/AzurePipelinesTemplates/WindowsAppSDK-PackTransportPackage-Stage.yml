@@ -1,0 +1,32 @@
+stages:
+- stage: Pack
+  dependsOn: Build
+  # Skip the build job if we are reusing the output of a previous build.
+  # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
+  condition:
+    and(eq(variables['useBuildOutputFromBuildId'],''), succeeded()
+  jobs:
+  - job: NugetPackage
+    pool:
+      # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
+      ${{ if parameters.IsOneBranch }}:
+        type: windows
+      ${{ if not( parameters.IsOneBranch ) }}:
+        type: windows
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
+    timeoutInMinutes: 120
+    dependsOn:
+    - BuildBinaries
+    - BuildBinaries_release_anycpu
+    - BuildMRT
+    condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
+    variables:
+      ob_outputDirectory: '$(REPOROOT)\out'
+      ob_artifactBaseName: "TransportPackage"
+    steps:
+    - template: WindowsAppSDK-PackNuget-Steps.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        IsOneBranch: ${{ parameters.IsOneBranch }}
+        PublishPackage: ${{ parameters.PublishPackage }}
