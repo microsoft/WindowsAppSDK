@@ -49,7 +49,7 @@ extends:
         break: true
 
     stages:
-    - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
       parameters:
         SignOutput: false
 
