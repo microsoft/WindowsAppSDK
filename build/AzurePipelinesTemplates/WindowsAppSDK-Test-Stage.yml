@@ -12,14 +12,8 @@ stages:
     parameters:
       jobName: PipelineTestsX64
       isArm64Platfrom: false
-      dependsOn:
-        - BuildBinaries
-        - BuildMRT
 
   - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
     parameters:
       jobName: PipelineTestsArm64
       isArm64Platfrom: true
-      dependsOn:
-        - BuildBinaries
-        - BuildMRT

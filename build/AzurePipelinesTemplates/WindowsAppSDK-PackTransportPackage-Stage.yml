@@ -27,10 +27,6 @@ stages:
         isCustom: true
         name: 'ProjectReunionESPool-2022'
     timeoutInMinutes: 120
-    dependsOn:
-    - BuildBinaries
-    - BuildBinaries_release_anycpu
-    - BuildMRT
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_artifactBaseName: "TransportPackage"
