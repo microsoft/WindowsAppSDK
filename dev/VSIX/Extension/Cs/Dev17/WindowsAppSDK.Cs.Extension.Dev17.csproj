@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="Current">
+﻿git <Project ToolsVersion="Current">
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
@@ -28,7 +28,7 @@
     <IsProductComponent Condition="'$(Deployment)' == 'Component'">true</IsProductComponent>
     <!-- This MUST match VSPackage.PackageGuidString -->
     <PackageGuidString>{B0F1BA01-DE66-4EF9-9C8B-DBB99FB4DA4B}</PackageGuidString>
-    <!-- Dev17 templates should target .NET 6 -->
+    <!-- Dev17 templates should target .NET 8 -->
     <DotNetVersion>net8.0</DotNetVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
