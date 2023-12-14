@@ -28,6 +28,9 @@ stages:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_artifactBaseName: "TransportPackage"
     steps:
+    - checkout: self
+      submodules: true
+
     - task: NuGetAuthenticate@1
       inputs:
         nuGetServiceConnections: 'ProjectReunionInternal'
