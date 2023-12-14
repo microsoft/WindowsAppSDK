@@ -103,6 +103,7 @@ steps:
 
 - task: CopyFiles@2
   displayName: MoveToOutputDirectory
+  condition: always()
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
