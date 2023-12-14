@@ -198,4 +198,13 @@
   <data name="1035" xml:space="preserve">
     <value>專案範本，用於建立使用 Windows UI 程式庫 (WinUI 3) 的傳統型應用程式以及 MSIX 套件，以便透過 Microsoft Store 側載或散佈。</value>
   </data>
+  <data name="1037" xml:space="preserve">
+    <value>單元測試應用程式 (電腦版 WinUI 3)</value>
+  </data>
+  <data name="1038" xml:space="preserve">
+    <value>[實驗性] 單元測試應用程式 (電腦版 WinUI 3)</value>
+  </data>
+  <data name="1039" xml:space="preserve">
+    <value>用於使用 MSTest 為 WinUI 3 應用程式建立單元測試應用程式的專案。</value>
+  </data>
 </root>

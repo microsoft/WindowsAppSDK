@@ -198,4 +198,13 @@
   <data name="1035" xml:space="preserve">
     <value>Шаблон проекта для создания классического приложения на основе библиотеки пользовательского интерфейса Windows (WinUI 3) и пакета MSIX для загрузки неопубликованного приложения или распространения через Microsoft Store.</value>
   </data>
+  <data name="1037" xml:space="preserve">
+    <value>Приложение модульного тестирования (WinUI 3 на рабочем столе)</value>
+  </data>
+  <data name="1038" xml:space="preserve">
+    <value>[Эксперимент] Приложение модульного тестирования (WinUI 3 на рабочем столе)</value>
+  </data>
+  <data name="1039" xml:space="preserve">
+    <value>Проект по созданию приложения модульного тестирования для приложений WinUI 3 с использованием MSTest.</value>
+  </data>
 </root>

@@ -198,4 +198,13 @@
   <data name="1035" xml:space="preserve">
     <value>Проект по созданию компонента среды выполнения Windows (.winmd) C++/WinRT для классических приложений и приложений на универсальной платформе Windows (UWP) на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
   </data>
+  <data name="1037" xml:space="preserve">
+    <value>Приложение модульного тестирования (WinUI 3)</value>
+  </data>
+  <data name="1038" xml:space="preserve">
+    <value>[Эксперимент] Приложение модульного тестирования (WinUI 3)</value>
+  </data>
+  <data name="1039" xml:space="preserve">
+    <value>Проект по созданию приложения модульного теста C++/WinRT для WinUI 3 с помощью MSTest.</value>
+  </data>
 </root>
