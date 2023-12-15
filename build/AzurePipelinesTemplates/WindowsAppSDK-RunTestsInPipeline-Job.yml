@@ -63,11 +63,6 @@ jobs:
           buildPlatform: x86
           buildConfiguration: release
           testLocale: en-US
-        co_refresh_x64fre:
-          imageName: co_refresh
-          buildPlatform: x64
-          buildConfiguration: release
-          testLocale: en-US
         rs_prerelease_x64fre:
           imageName: rs_prerelease
           buildPlatform: x64
@@ -87,11 +82,6 @@ jobs:
           testLocale: en-US
         Win11_Enterprise_arm64fre:
           imageName: Windows.11.Enterprise.arm64
-          buildPlatform: arm64
-          buildConfiguration: release
-          testLocale: en-US
-        Server22_DC_arm64fre:
-          imageName: Windows.11.Server2022.DataCenter.arm64
           buildPlatform: arm64
           buildConfiguration: release
           testLocale: en-US
