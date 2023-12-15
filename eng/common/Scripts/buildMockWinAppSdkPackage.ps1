@@ -43,9 +43,6 @@ $WindowsAppSDKPackageVersion = "$WindowsAppSDKPackageVersionBase-$TransportPacka
 Copy-Item $TransportPackagePath -destination $localPackagesPath
 
 . .\buildall.ps1 -WindowsAppSDKPackageVersion $WindowsAppSDKPackageVersion -Platform $Platform -Configuration $Configuration -Channel "dev" -TransportPackages "" -BuildOutput $BuildOutput -NugetConfig $NugetConfig -PackageCache $PackageCache -PackageStore $PackageStore -LocalPackages $PackageStore -SkipVerifyProductVersion -AzurePipelineBuild:$AzurePipelineBuild -Fake:$Fake
-
-$files = Get-ChildItem $packLocationPath -File -Filter "*.nukpg"
-Write-host $files
 Copy-Item -Path "$packLocationPath/*" -Destination $Output -Recurse -Filter "*.nupkg"
 popd
 
