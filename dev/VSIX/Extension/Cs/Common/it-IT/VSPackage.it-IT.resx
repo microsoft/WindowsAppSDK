@@ -201,6 +201,9 @@
   <data name="1037" xml:space="preserve">
     <value>Test unitario app (WinUI 3 in desktop)</value>
   </data>
+  <data name="1038" xml:space="preserve">
+    <value>[Sperimentale] Test unitario app (WinUI 3 in desktop)</value>
+  </data>
   <data name="1039" xml:space="preserve">
     <value>Progetto per creare un'app unit test per le app WinUI 3 con MSTest.</value>
   </data>

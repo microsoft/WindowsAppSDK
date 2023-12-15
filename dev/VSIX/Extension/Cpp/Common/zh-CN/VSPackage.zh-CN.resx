@@ -201,6 +201,9 @@
   <data name="1037" xml:space="preserve">
     <value>单元测试应用(WinUI 3)</value>
   </data>
+  <data name="1038" xml:space="preserve">
+    <value>[Experimental] 单元测试应用(WinUI 3)</value>
+  </data>
   <data name="1039" xml:space="preserve">
     <value>用于使用 MSTest 为 WinUI 3 创建 C++/WinRT 单元测试应用的项目。</value>
   </data>
