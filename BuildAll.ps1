@@ -247,7 +247,7 @@ Try {
 
                     if ($lastexitcode -ne 0)
                     {
-                        write-host "ERROR: msbuild restore '$MRTSourcesDirectory\mrt\MrtCore.sln' FAILED."
+                        write-host "ERROR: Building '$MRTSourcesDirectory\mrt\MrtCore.sln' FAILED."
                         exit 1
                     }
                 }
