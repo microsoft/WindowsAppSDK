@@ -217,7 +217,7 @@ functionally equivalent to
 
 ```c#
 var pdm = PackageDeploymentManager().GetDefault();
-foreach (PackageSetItem psi in ps.PackageSetItems)
+foreach (PackageSetItem psi in ps.Items)
 {
     var result = await pdm.AddPackageAsync(psi.PackageUri, options)
     if (result.Status != PackageDeploymentStatus.CompletedSuccess)
@@ -344,15 +344,11 @@ instead of filename as string).
 Fabrikam app installing Contoso's Muffin and Waffle packages via a PackageSet.
 
 ```c#
-var Install()
+void Install()
 {
-    var packageSet = new PackageSet();
-    var muffin = new PackageSetItem();
-    muffin.PackageUri = new Uri("c:\\contoso\\muffin-1.2.3.4.msix");
-    packageSet.Add(muffin);
-    var waffle = new PackageSetItem();
-    waffle.PackageUri = new Uri("https://contoso.com/waffle-2.4.6.8.msix");
-    packageSet.Add(waffle);
+    var packageSet = new PackageSet() {
+        Items = { new PackageSetItem() { PackageUri = new Uri("c:\\contoso\\muffin-1.2.3.4.msix") },
+                { new PackageSetItem() { PackageUri = new Uri("https://contoso.com/waffle-2.4.6.8.msix") } };
 
     var packageDeploymentManager = PackageDeploymentManager.GetDefault();
     var options = new AddPackageOptions();
@@ -377,19 +373,15 @@ var Install()
 Fabrikam app installing Contoso's Muffin and Waffle packages if necessary via a PackageSet.
 
 ```c#
-var Install()
+void Install()
 {
-    var packageSet = new PackageSet();
-    var muffin = new PackageSetItem();
-    muffin.PackageFamilyName = "contoso.muffin_1234567890abc";
-    muffin.MinVersion = ToVersion(1, 2, 3, 4);
-    muffin.PackageUri = new Uri("c:\\contoso\\muffin-1.2.3.4.msix");
-    packageSet.Add(muffin);
-    var waffle = new PackageSetItem();
-    waffle.PackageFamilyName = "contoso.waffle_1234567890abc";
-    waffle.MinVersion = ToVersion(2, 4, 6, 8);
-    waffle.PackageUri = new Uri("https://contoso.com/waffle-2.4.6.8.msix");
-    packageSet.Add(waffle);
+    var packageSet = new PackageSet() {
+        Items = { new PackageSetItem() { PackageFamilyName = "contoso.muffin_1234567890abc",
+                                         MinVersion = ToVersion(1, 2, 3, 4),
+                                         PackageUri = new Uri("c:\\contoso\\muffin-1.2.3.4.msix") },
+                { new PackageSetItem() { PackageFamilyName = "contoso.waffle_1234567890abc",
+                                         MinVersion = ToVersion(2, 4, 6, 8),
+                                         PackageUri = new Uri("https://contoso.com/waffle-2.4.6.8.msix") } };
 
     var packageDeploymentManager = PackageDeploymentManager.GetDefault();
     var options = new EnsureReadyOptions();
@@ -404,22 +396,13 @@ var Install()
     }
 }
 
-PackageVersion ToVersion(uint major, uint minor, uint build, uint revision)
-{
-    var version = new PackageVersion();
-    if ((major > UInt16.MaxValue) ||
-        (minor > UInt16.MaxValue) ||
-        (build  > UInt16.MaxValue) ||
-        (revision > UInt16.MaxValue))
-    {
-        throw new ArgumentOutOfRangeException();
-    }
-    version.major = (ushort) major;
-    version.minor = (ushort) minor;
-    version.build = (ushort) build;
-    version.revision = (ushort) revision;
-    return version;
-}
+PackageVersion ToVersion(uint major, uint minor, uint build, uint revision) =>
+    new PackageVersion {
+        Major = checked((ushort)major),
+        Minor = checked((ushort)minor),
+        Build = checked((ushort)build),
+        Revision = checked((ushort)revision)
+    };
 ```
 
 **NOTE:** This differs from the AddPackageBySetAsync() example by the method name
@@ -433,19 +416,15 @@ Fabrikam app installing Contoso's Muffin and Waffle packages if necessary, and w
 confirmation before the installation.
 
 ```c#
-var Install()
+void Install()
 {
-    var packageSet = new PackageSet();
-    var muffin = new PackageSetItem();
-    muffin.PackageFamilyName = "contoso.muffin_1234567890abc";
-    muffin.MinVersion = ToVersion(1, 2, 3, 4);
-    muffin.PackageUri = new Uri("c:\\contoso\\muffin-1.2.3.4.msix");
-    packageSet.Add(muffin);
-    var waffle = new PackageSetItem();
-    waffle.PackageFamilyName = "contoso.waffle_1234567890abc";
-    waffle.MinVersion = ToVersion(2, 4, 6, 8);
-    waffle.PackageUri = new Uri("https://contoso.com/waffle-2.4.6.8.msix");
-    packageSet.Add(waffle);
+    var packageSet = new PackageSet() {
+        Items = { new PackageSetItem() { PackageFamilyName = "contoso.muffin_1234567890abc",
+                                         MinVersion = ToVersion(1, 2, 3, 4),
+                                         PackageUri = new Uri("c:\\contoso\\muffin-1.2.3.4.msix") },
+                { new PackageSetItem() { PackageFamilyName = "contoso.waffle_1234567890abc",
+                                         MinVersion = ToVersion(2, 4, 6, 8),
+                                         PackageUri = new Uri("https://contoso.com/waffle-2.4.6.8.msix") } };
 
     var packageDeploymentManager = PackageDeploymentManager.GetDefault();
     if (!packageDeploymentManager.IsPackageSetReady(packageSet))
@@ -469,22 +448,13 @@ var Install()
     }
 }
 
-PackageVersion ToVersion(uint major, uint minor, uint build, uint revision)
-{
-    var version = new PackageVersion();
-    if ((major > UInt16.MaxValue) ||
-        (minor > UInt16.MaxValue) ||
-        (build  > UInt16.MaxValue) ||
-        (revision > UInt16.MaxValue))
-    {
-        throw new ArgumentOutOfRangeException();
-    }
-    version.major = (ushort) major;
-    version.minor = (ushort) minor;
-    version.build = (ushort) build;
-    version.revision = (ushort) revision;
-    return version;
-}
+PackageVersion ToVersion(uint major, uint minor, uint build, uint revision) =>
+    new PackageVersion {
+        Major = checked((ushort)major),
+        Minor = checked((ushort)minor),
+        Build = checked((ushort)build),
+        Revision = checked((ushort)revision)
+    };
 ```
 
 **NOTE:** This differs from the EnsurePackageSetReadyAsync() example checking if
@@ -498,19 +468,15 @@ necessary. These packages are added to the package graph and not explicitly remo
 the package graph until process termination).
 
 ```c#
-var AddMuffinsAndWafflesToThePackageGraph()
+void AddMuffinsAndWafflesToThePackageGraph()
 {
-    var packageSet = new PackageSet();
-    var muffin = new PackageSetItem();
-    muffin.PackageFamilyName = "contoso.muffin_1234567890abc";
-    muffin.MinVersion = ToVersion(1, 2, 3, 4);
-    muffin.PackageUri = new Uri("c:\\contoso\\muffin-1.2.3.4.msix");
-    packageSet.Add(muffin);
-    var waffle = new PackageSetItem();
-    waffle.PackageFamilyName = "contoso.waffle_1234567890abc";
-    waffle.MinVersion = ToVersion(2, 4, 6, 8);
-    waffle.PackageUri = new Uri("https://contoso.com/waffle-2.4.6.8.msix");
-    packageSet.Add(waffle);
+    var packageSet = new PackageSet() {
+        Items = { new PackageSetItem() { PackageFamilyName = "contoso.muffin_1234567890abc",
+                                         MinVersion = ToVersion(1, 2, 3, 4),
+                                         PackageUri = new Uri("c:\\contoso\\muffin-1.2.3.4.msix") },
+                { new PackageSetItem() { PackageFamilyName = "contoso.waffle_1234567890abc",
+                                         MinVersion = ToVersion(2, 4, 6, 8),
+                                         PackageUri = new Uri("https://contoso.com/waffle-2.4.6.8.msix") } };
 
     var packageDeploymentManager = PackageDeploymentManager.GetDefault();
     var options = new EnsureReadyOptions();
@@ -528,22 +494,13 @@ var AddMuffinsAndWafflesToThePackageGraph()
     var packageSetRuntimeDisposition = packageRuntimeManager.AddPackageSet(packageSet);
 }
 
-PackageVersion ToVersion(uint major, uint minor, uint build, uint revision)
-{
-    var version = new PackageVersion();
-    if ((major > UInt16.MaxValue) ||
-        (minor > UInt16.MaxValue) ||
-        (build  > UInt16.MaxValue) ||
-        (revision > UInt16.MaxValue))
-    {
-        throw new ArgumentOutOfRangeException();
-    }
-    version.major = (ushort) major;
-    version.minor = (ushort) minor;
-    version.build = (ushort) build;
-    version.revision = (ushort) revision;
-    return version;
-}
+PackageVersion ToVersion(uint major, uint minor, uint build, uint revision) =>
+    new PackageVersion {
+        Major = checked((ushort)major),
+        Minor = checked((ushort)minor),
+        Build = checked((ushort)build),
+        Revision = checked((ushort)revision)
+    };
 ```
 
 **NOTE:** This differs from the EnsurePackageSetReadyAsync() example adding the packages
@@ -555,19 +512,15 @@ Fabrikam app uses Contoso's Muffin and Waffle packages via Dynamic Dependencies,
 necessary. These packages are added to the package graph and later removed when no longer needed.
 
 ```c#
-var DoAwesomeStuffUsingMuffinsAndWaffles()
+void DoAwesomeStuffUsingMuffinsAndWaffles()
 {
-    var packageSet = new PackageSet();
-    var muffin = new PackageSetItem();
-    muffin.PackageFamilyName = "contoso.muffin_1234567890abc";
-    muffin.MinVersion = ToVersion(1, 2, 3, 4);
-    muffin.PackageUri = new Uri("c:\\contoso\\muffin-1.2.3.4.msix");
-    packageSet.Add(muffin);
-    var waffle = new PackageSetItem();
-    waffle.PackageFamilyName = "contoso.waffle_1234567890abc";
-    waffle.MinVersion = ToVersion(2, 4, 6, 8);
-    waffle.PackageUri = new Uri("https://contoso.com/waffle-2.4.6.8.msix");
-    packageSet.Add(waffle);
+    var packageSet = new PackageSet() {
+        Items = { new PackageSetItem() { PackageFamilyName = "contoso.muffin_1234567890abc",
+                                         MinVersion = ToVersion(1, 2, 3, 4),
+                                         PackageUri = new Uri("c:\\contoso\\muffin-1.2.3.4.msix") },
+                { new PackageSetItem() { PackageFamilyName = "contoso.waffle_1234567890abc",
+                                         MinVersion = ToVersion(2, 4, 6, 8),
+                                         PackageUri = new Uri("https://contoso.com/waffle-2.4.6.8.msix") } };
 
     var packageDeploymentManager = PackageDeploymentManager.GetDefault();
     var options = new EnsureReadyOptions();
@@ -587,22 +540,13 @@ var DoAwesomeStuffUsingMuffinsAndWaffles()
     packageRuntimeManager.RemovePackageSet(packageSetRuntimeDisposition);
 }
 
-PackageVersion ToVersion(uint major, uint minor, uint build, uint revision)
-{
-    var version = new PackageVersion();
-    if ((major > UInt16.MaxValue) ||
-        (minor > UInt16.MaxValue) ||
-        (build  > UInt16.MaxValue) ||
-        (revision > UInt16.MaxValue))
-    {
-        throw new ArgumentOutOfRangeException();
-    }
-    version.major = (ushort) major;
-    version.minor = (ushort) minor;
-    version.build = (ushort) build;
-    version.revision = (ushort) revision;
-    return version;
-}
+PackageVersion ToVersion(uint major, uint minor, uint build, uint revision) =>
+    new PackageVersion {
+        Major = checked((ushort)major),
+        Minor = checked((ushort)minor),
+        Build = checked((ushort)build),
+        Revision = checked((ushort)revision)
+    };
 ```
 
 **NOTE:** This differs from the PackageRuntimeManager.AddPackageSet()() example by explicitly
@@ -614,9 +558,9 @@ Fabrikam app checks if a PackageVolume is OK and if not, prompts the user to con
 proceed to repair the PackageVolume.
 
 ```c#
-var CheckAndFixPackageVolume(string path)
+void CheckAndFixPackageVolume(string packageStorePath)
 {
-    var packageVolume = PackageVolumeManager.FindPackageVolumeByPath(path);
+    var packageVolume = PackageVolume.FindPackageVolumeByPath(packageStorePath);
     if (packageVolume.IsRepairNeeded())
     {
         bool ok = PromptUserForConfirmation();
@@ -660,8 +604,6 @@ namespace Microsoft.Windows.Management.Deployment
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageVolume
     {
-        PackageVolume();
-
         /// Gets all the known volumes, regardless of their current state.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolumes
         static IVector<PackageVolume> FindPackageVolumes();
@@ -768,7 +710,7 @@ namespace Microsoft.Windows.Management.Deployment
 
         String Id;
         Uri PackageUri;
-        IVector<PackageSetItem> PackageSetItems { get; };
+        IVector<PackageSetItem> Items { get; };
     }
 
     // Requires Windows >= 10.0.19041.0 (aka 2004 aka 20H1)
@@ -1056,7 +998,7 @@ namespace Microsoft.Windows.Management.Deployment
         // Make the package(s) in the package set available to the calling process
         // i.e. dynamically add the package(s) in the package set to the caller's package graph.
         // This is equivalent to
-        //   FOREACH p IN PackageSetManager.Get(id).PackageSetItems
+        //   FOREACH p IN PackageSetManager.Get(id).Items
         //       pd = TryCreatePackageDependency(p)
         //       AddPackageDependency(pd)
 
