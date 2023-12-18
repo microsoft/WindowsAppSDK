@@ -9,12 +9,12 @@ performance optimizations.
 - [3. Description](#3-description)
   - [3.1. API Structure](#31-api-structure)
   - [3.2. Is\*Ready()](#32-isready)
-  - [3.3. Ensure\*IsReady()](#33-ensureisready)
-    - [3.3.1. Why Is*Ready() Given Ensure*IsReady()?](#331-why-isready-given-ensureisready)
+  - [3.3. Ensure\*Ready()](#33-ensureready)
+    - [3.3.1. Why Is*Ready() Given Ensure*Ready()?](#331-why-isready-given-ensureready)
   - [3.4. Repair](#34-repair)
   - [3.5. Reset](#35-reset)
   - [3.6. IsPackageRegistrationPending](#36-ispackageregistrationpending)
-  - [3.7. PackageSets](#37-packagesets)
+  - [3.7. PackageSet](#37-packageset)
   - [3.8. PackageRuntimeManager](#38-packageruntimemanager)
   - [3.9. PackageVolume Repair](#39-packagevolume-repair)
   - [3.10. Usability](#310-usability)
@@ -22,8 +22,8 @@ performance optimizations.
   - [4.1. AddPackageAsync()](#41-addpackageasync)
   - [4.2. AddPackageByUriAsync()](#42-addpackagebyuriasync)
   - [4.3. AddPackageSetAsync()](#43-addpackagesetasync)
-  - [4.4. EnsurePackageSetIsReadyAsync()](#44-ensurepackagesetisreadyasync)
-  - [4.5. IsPackageSetReady() and EnsurePackageSetIsReadyAsync()](#45-ispackagesetready-and-ensurepackagesetisreadyasync)
+  - [4.4. EnsurePackageSetReadyAsync()](#44-ensurepackagesetisreadyasync)
+  - [4.5. IsPackageSetReady() and EnsurePackageSetReadyAsync()](#45-ispackagesetready-and-ensurepackagesetisreadyasync)
   - [4.6. PackageRuntimeManager.AddPackageSet()](#46-packageruntimemanageraddpackageset)
   - [4.7. PackageRuntimeManager.RemovePackageset()](#47-packageruntimemanagerremovepackageset)
   - [4.6. PackageVolume.Repair()](#46-packagevolumerepair)
@@ -63,7 +63,7 @@ following scenarios:
 Additional functionality includes:
 
 * IsReady -- Is a package ready for use?
-* EnsureIsReady -- Is a package ready for use and, if not, make it so
+* EnsureReady -- Is a package ready for use and, if not, make it so
 * IsPackageRegistrationPending -- Is there an update waiting to install?
 * PackageSets -- Batch operations
 * PackageRuntimeManager -- Batch operations for use at runtime via Dynamic Dependencies
@@ -112,18 +112,18 @@ These methods accept options as a matching `<verb>Package[Set]Options` type, e.g
 
 The following table shows the supported permutations of verbs and targets:
 
-|Verb         | Path | Filename | PackageFamilyName | PackageFullName | file:  | http(s): | ms-uup: | PackageSet |
-|-------------|:----:|:--------:|:-----------------:|:---------------:|:------:|:--------:|:-------:|:----------:|
-|IsReady      |  X   |    X     |       OS/WAS      |       WAS       |   X    |    X     |  WAS    |    WAS     |
-|EnsureIsReady|  X   |    X     |         X         |        X        |   X    |    X     |  WAS    |    WAS     |
-|Add          | WAS  |    X     |         X         |        X        | OS/WAS |  OS/WAS  | OS/WAS  |    WAS     |
-|Stage        | WAS  |    X     |         X         |        X        | OS/WAS |  OS/WAS  | OS/WAS  |    WAS     |
-|Register     | WAS  |  OS/WAS  |       OS/WAS      |      OS/WAS     | OS/WAS |    X     | OS/WAS  |    WAS     |
-|Remove       |  X   |    X     |        WAS        |      OS/WAS     |   X    |    X     | OS/WAS  |    WAS     |
-|Repair       |  X   |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
-|Reset        |  X   |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
-|Provision    |  X   |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
-|Deprovision  |  X   |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
+|Verb       | Path | Filename | PackageFamilyName | PackageFullName | file:  | http(s): | ms-uup: | PackageSet |
+|-----------|:----:|:--------:|:-----------------:|:---------------:|:------:|:--------:|:-------:|:----------:|
+|IsReady    |  X   |    X     |       OS/WAS      |       WAS       |   X    |    X     |  WAS    |    WAS     |
+|EnsureReady|  X   |    X     |         X         |        X        |   X    |    X     |  WAS    |    WAS     |
+|Add        | WAS  |    X     |         X         |        X        | OS/WAS |  OS/WAS  | OS/WAS  |    WAS     |
+|Stage      | WAS  |    X     |         X         |        X        | OS/WAS |  OS/WAS  | OS/WAS  |    WAS     |
+|Register   | WAS  |  OS/WAS  |       OS/WAS      |      OS/WAS     | OS/WAS |    X     | OS/WAS  |    WAS     |
+|Remove     |  X   |    X     |        WAS        |      OS/WAS     |   X    |    X     | OS/WAS  |    WAS     |
+|Repair     |  X   |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
+|Reset      |  X   |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
+|Provision  |  X   |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
+|Deprovision|  X   |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
 
 Legend:
 
@@ -145,13 +145,13 @@ not ready can include:
 Is*Ready() methods are a quick test to determine if more (costly) work is needed before the target
 can be used.
 
-## 3.3. Ensure*IsReady()
+## 3.3. Ensure*Ready()
 
-Ensure*IsReady() methods determine if the target is installed and ready for use and, if not, makes
+Ensure*Ready() methods determine if the target is installed and ready for use and, if not, makes
 it so. This can include downloading the target, registering it for the user and remediating a
 package in an unhealthy state.
 
-Thus `EnsurePackageIsReady(pkg, options)` is functionally equivalent to
+Thus `EnsurePackageReady(pkg, options)` is functionally equivalent to
 
 ```c#
 var pdm = PackageDeploymentManager().GetDefault();
@@ -162,10 +162,10 @@ if (!pdm.IsPackageReady(pkg))
 endif
 ```
 
-### 3.3.1. Why Is*Ready() Given Ensure*IsReady()?
+### 3.3.1. Why Is*Ready() Given Ensure*Ready()?
 
-Ensure*IsReady() performs an 'is ready' check and returns if all is ready. There's no efficiency
-reasons to call Is*Ready() before Ensure*IsReady() (in fact, it's less efficient as Is*Ready() would
+Ensure*Ready() performs an 'is ready' check and returns if all is ready. There's no efficiency
+reasons to call Is*Ready() before Ensure*Ready() (in fact, it's less efficient as Is*Ready() would
 occur twice).
 
 However, this can be useful if you need additional work before potentially performing deployment
@@ -179,7 +179,7 @@ if (!pdm.IsPackageReady(pkg))
     bool ok = AskUserForConsent(pkg);
     if (ok)
     {
-        var result = await pdm.EnsurePackageIsReadyAsync(pkg, options);
+        var result = await pdm.EnsurePackageReadyAsync(pkg, options);
     }
 }
 ```
@@ -205,10 +205,12 @@ option
 then the registration is delayed until the package is no longer in use and can be updated. In such
 cases `IsPackageRegistrationPending()` returns `true`.
 
-##  3.7. PackageSets
+##  3.7. PackageSet
 
 A `PackageSet` is a group of packages to be operated on with one request. Package sets provide a
 convenient means to perform multiple operations.
+
+NOTE: There is no ordering guarantee of items processed in a PackageSet.
 
 For example, `IsPackageSetReady(ps)` returns `true` only if all packages referenced by the
 `PackageSet` are ready for use. For another example, `AddPackageSetAsync(ps, options)` is
@@ -247,7 +249,8 @@ It's possible this tracking information can be invalidated, e.g. backup a drive'
 the drive with a new one and then restore the content. The packages installed on this drive's
 PackageVolume(s) aren't recognized by Windows because the new drive has a different media ID.
 
-The Windows App SDK's new `PackageVolume.Repair()` detects and corrects these conditions.
+The Windows App SDK's new `PackageVolume.Repair()` will attempt to detect these and other like
+conditions and correct them.
 
 `PackageVolume.VerifyIfOk()` checks if the PackageVolume is OK or in need of repair.
 
@@ -297,20 +300,13 @@ void Install()
     var packageDeploymentManager = PackageDeploymentManager.GetDefault();
     var options = new AddPackageOptions();
     var deploymentResult = await packageDeploymentManager.AddPackageAsync(package, options);
-    try
+    if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
     {
-        if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
-        {
-            Console.WriteLine("OK");
-        }
-        else
-        {
-            Console.WriteLine("Error {}", deploymentResult.ExtendedError());
-        }
+        Console.WriteLine("OK");
     }
-    catch (Exception ex)
+    else
     {
-        Console.WriteLine(ex.ToString());
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
     }
 }
 ```
@@ -322,24 +318,17 @@ Fabrikam app installing Contoso's Muffin package from an https: source.
 ```c#
 void Install()
 {
-    var package = new Uri("https://contoson.com/muffin.msix");
+    var package = new Uri("https://contoso.com/muffin.msix");
     var packageDeploymentManager = PackageDeploymentManager.GetDefault();
     var options = new AddPackageOptions();
     var deploymentResult = await packageDeploymentManager.AddPackageByUriAsync(package, options);
-    try
+    if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
     {
-        if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
-        {
-            Console.WriteLine("OK");
-        }
-        else
-        {
-            Console.WriteLine("Error {}", deploymentResult.ExtendedError());
-        }
+        Console.WriteLine("OK");
     }
-    catch (Exception ex)
+    else
     {
-        Console.WriteLine(ex.ToString());
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError());
     }
 }
 ```
@@ -366,20 +355,13 @@ var Install()
     var packageDeploymentManager = PackageDeploymentManager.GetDefault();
     var options = new AddPackageOptions();
     var deploymentResult = await packageDeploymentManager.AddPackageByUriAsync(packageSet, options);
-    try
+    if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
     {
-        if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
-        {
-            Console.WriteLine("OK");
-        }
-        else
-        {
-            Console.WriteLine("Error {}", deploymentResult.ExtendedError());
-        }
+        Console.WriteLine("OK");
     }
-    catch (Exception ex)
+    else
     {
-        Console.WriteLine(ex.ToString());
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError());
     }
 }
 ```
@@ -388,7 +370,7 @@ var Install()
 (`AddPackageSetAsync` instead of `AddPackageByUriAsync()`), the target type (`PackageSet` containing
 2 URIs instead of a URI), and installing 2 packages instead of 1.
 
-## 4.4. EnsurePackageSetIsReadyAsync()
+## 4.4. EnsurePackageSetReadyAsync()
 
 Fabrikam app installing Contoso's Muffin and Waffle packages if necessary via a PackageSet.
 
@@ -408,22 +390,15 @@ var Install()
     packageSet.Add(waffle);
 
     var packageDeploymentManager = PackageDeploymentManager.GetDefault();
-    var options = new EnsureIsReadyOptions();
-    var deploymentResult = await packageDeploymentManager.EnsurePackageSetIsReadyAsync(packageSet, options);
-    try
+    var options = new EnsureReadyOptions();
+    var deploymentResult = await packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options);
+    if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
     {
-        if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
-        {
-            Console.WriteLine("OK");
-        }
-        else
-        {
-            Console.WriteLine("Error {}", deploymentResult.ExtendedError());
-        }
+        Console.WriteLine("OK");
     }
-    catch (Exception ex)
+    else
     {
-        Console.WriteLine(ex.ToString());
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError());
     }
 }
 
@@ -446,11 +421,11 @@ PackageVersion ToVersion(uint major, uint minor, uint build, uint revision)
 ```
 
 **NOTE:** This differs from the AddPackageBySetAsync() example by the method name
-(`EnsurePackageSetIsReadyAsync()` instead of `AddPackageSetAsync`), the addition of
+(`EnsurePackageSetReadyAsync()` instead of `AddPackageSetAsync`), the addition of
 PackageFamilyName and MinVersion for each item in the `PackageSet` and the packages will only be
 installed if necessary.
 
-## 4.5. IsPackageSetReady() and EnsurePackageSetIsReadyAsync()
+## 4.5. IsPackageSetReady() and EnsurePackageSetReadyAsync()
 
 Fabrikam app installing Contoso's Muffin and Waffle packages if necessary, and with explicit user
 confirmation before the installation.
@@ -480,22 +455,15 @@ var Install()
         }
     }
 
-    var options = new EnsureIsReadyOptions();
-    var deploymentResult = await packageDeploymentManager.EnsurePackageSetIsReadyAsync(packageSet, options);
-    try
+    var options = new EnsureReadyOptions();
+    var deploymentResult = await packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options);
+    if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
     {
-        if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
-        {
-            Console.WriteLine("OK");
-        }
-        else
-        {
-            Console.WriteLine("Error {}", deploymentResult.ExtendedError());
-        }
+        Console.WriteLine("OK");
     }
-    catch (Exception ex)
+    else
     {
-        Console.WriteLine(ex.ToString());
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError());
     }
 }
 
@@ -517,8 +485,8 @@ PackageVersion ToVersion(uint major, uint minor, uint build, uint revision)
 }
 ```
 
-**NOTE:** This differs from the EnsurePackageSetIsReadyAsync() example checking if
-`EnsurePackageSetIsReadyAsync()` will need to do any work and prompting the user to confirm it's OK
+**NOTE:** This differs from the EnsurePackageSetReadyAsync() example checking if
+`EnsurePackageSetReadyAsync()` will need to do any work and prompting the user to confirm it's OK
 to proceed.
 
 ## 4.6. PackageRuntimeManager.AddPackageSet()
@@ -543,22 +511,15 @@ var AddMuffinsAndWafflesToThePackageGraph()
     packageSet.Add(waffle);
 
     var packageDeploymentManager = PackageDeploymentManager.GetDefault();
-    var options = new EnsureIsReadyOptions();
-    var deploymentResult = await packageDeploymentManager.EnsurePackageSetIsReadyAsync(packageSet, options);
-    try
+    var options = new EnsureReadyOptions();
+    var deploymentResult = await packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options);
+    if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
     {
-        if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
-        {
-            Console.WriteLine("OK");
-        }
-        else
-        {
-            Console.WriteLine("Error {}", deploymentResult.ExtendedError());
-        }
+        Console.WriteLine("OK");
     }
-    catch (Exception ex)
+    else
     {
-        Console.WriteLine(ex.ToString());
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError());
     }
 
     var packageRuntimeManager = PackageRuntimeManager.GetDefault();
@@ -583,7 +544,7 @@ PackageVersion ToVersion(uint major, uint minor, uint build, uint revision)
 }
 ```
 
-**NOTE:** This differs from the EnsurePackageSetIsReadyAsync() example adding the packages
+**NOTE:** This differs from the EnsurePackageSetReadyAsync() example adding the packages
 referenced by the `PackageSet` to the process' package graph for subsequent access of the content.
 
 ## 4.7. PackageRuntimeManager.RemovePackageset()
@@ -607,22 +568,15 @@ var DoAwesomeStuffUsingMuffinsAndWaffles()
     packageSet.Add(waffle);
 
     var packageDeploymentManager = PackageDeploymentManager.GetDefault();
-    var options = new EnsureIsReadyOptions();
-    var deploymentResult = await packageDeploymentManager.EnsurePackageSetIsReadyAsync(packageSet, options);
-    try
+    var options = new EnsureReadyOptions();
+    var deploymentResult = await packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options);
+    if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
     {
-        if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
-        {
-            Console.WriteLine("OK");
-        }
-        else
-        {
-            Console.WriteLine("Error {}", deploymentResult.ExtendedError());
-        }
+        Console.WriteLine("OK");
     }
-    catch (Exception ex)
+    else
     {
-        Console.WriteLine(ex.ToString());
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError());
     }
 
     var packageRuntimeManager = PackageRuntimeManager.GetDefault();
@@ -669,14 +623,7 @@ var CheckAndFixPackageVolume(string path)
             return;
         }
     }
-    try
-    {
-        packageVolume.Repair();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine(ex.ToString());
-    }
+    packageVolume.Repair();
 }
 ```
 
@@ -829,6 +776,7 @@ namespace Microsoft.Windows.Management.Deployment
         PackageSet();
 
         String Id;
+        Uri PackageUri;
         IVector<PackageSetItem> PackageSetItems { get; };
     }
 
@@ -916,29 +864,31 @@ namespace Microsoft.Windows.Management.Deployment
     {
         RemovePackageOptions();
 
-        Boolean OkIfNotFound;
+        Boolean FailIfNotFound;
         Boolean PreserveApplicationData;
         Boolean PreserveRoamableApplicationData;
         Boolean RemoveForAllUsers;
     }
 
-    // Requires Windows >= 10.0.22000.0 (aka Win11 aka 21H2 aka SV1)
     [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass ProvisionPackageOptions
     {
         ProvisionPackageOptions();
 
+        Boolean IsOptionalPackageFamilyNamesSupported{ get; };  // Requires Windows >= 10.0.22000.0 (aka Win11 21H2)
         IVector<String> OptionalPackageFamilyNames { get; };
+
+        Boolean IsProjectionOrderPackageFamilyNamesSupported{ get; };   // Requires Windows >= 10.0.22000.0 (aka Win11 21H2)
         IVector<String> ProjectionOrderPackageFamilyNames { get; };
     }
 
     [contract(PackageDeploymentContract, 1)]
-    runtimeclass EnsurePackageIsReadyOptions
+    runtimeclass EnsureReadyOptions
     {
-        EnsurePackageIsReadyOptions();
+        EnsureReadyOptions();
 
-        AddPackageOptions AddPackageOptions;
+        AddPackageOptions AddPackageOptions { get; };
     }
 
     [contract(PackageDeploymentContract, 1)]
@@ -959,7 +909,7 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean IsPackageSetReady(PackageSet packageSet);
 
         //-------------------------------------------------------------
-        // EnsureIsReady
+        // EnsureReady
 
         // Check if the necessary package(s) are present
         // and available for use and if not then Make It So.
@@ -968,13 +918,13 @@ namespace Microsoft.Windows.Management.Deployment
         // If the necessary packages are present and available this is equivalent to IsReady(id).
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        EnsurePackageIsReadyAsync(String package, EnsurePackageIsReadyOptions options);
+        EnsurePackageReadyAsync(String package, EnsureReadyOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        EnsurePackageByUriIsReadyAsync(Windows.Foundation.Uri packageUri, EnsurePackageIsReadyOptions options);
+        EnsurePackageReadyByUriAsync(Windows.Foundation.Uri packageUri, EnsureReadyOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        EnsurePackageSetIsReadyAsync(PackageSet packageSet, EnsurePackageIsReadyOptions options);
+        EnsurePackageSetReadyAsync(PackageSet packageSet, EnsureReadyOptions options);
 
         //-------------------------------------------------------------
         // Add packages
@@ -1083,8 +1033,7 @@ namespace Microsoft.Windows.Management.Deployment
 
         Boolean IsPackageRegistrationPending(String packageFamilyName);
 
-        [method_name("IsPackageRegistrationPendingForUser")]
-        Boolean IsPackageRegistrationPending(String userSecurityId, String packageFamilyName);
+        Boolean IsPackageRegistrationPendingForUser(String userSecurityId, String packageFamilyName);
     }
 
     [contract(PackageDeploymentContract, 1)]
