@@ -26,7 +26,7 @@ namespace $rootnamespace$
         public $safeitemname$()
         {
             this.InitializeComponent();
-            ExtendsContentIntoTitleBar = true; // provides default WinUI custom title bar experience
+            this.ExtendsContentIntoTitleBar = true; // provides default WinUI custom title bar experience
         }
     }
 }
