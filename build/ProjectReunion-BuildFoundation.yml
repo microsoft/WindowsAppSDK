@@ -19,3 +19,4 @@ stages:
     SignOutput: False
     PublishPackage: False
     IsOneBranch: False
+    BuildMockWindowsAppSDK: False

@@ -8,6 +8,9 @@ parameters:
 - name: "IsOneBranch"
   type: boolean
   default: True
+- name: "BuildMockWindowsAppSDK"
+  type: boolean
+  default: True
 
 stages:
 - stage: Pack
@@ -179,11 +182,12 @@ stages:
         filePath: 'BuildAll.ps1'
         arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
 
-    - task: PowerShell@2
-      name: BuildMock
-      inputs:
-        filePath: 'BuildAll.ps1'
-        arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "BuildMock" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
+    - ${{ if eq(parameters.BuildMockWindowsAppSDK, 'true') }}:
+      - task: PowerShell@2
+        name: BuildMock
+        inputs:
+          filePath: 'BuildAll.ps1'
+          arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "BuildMock" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
 
     - ${{ if eq(parameters.SignOutput, 'true') }}:
       - task: EsrpCodeSigning@2
