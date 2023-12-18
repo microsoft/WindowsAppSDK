@@ -1,8 +1,8 @@
 # 1. MSIX Package Management
 
-This feature provides package management APIs comparable those in namespace
-`Windows.Management.Deployment` but with additional functionality, improved developer experience and
-performance optimizations.
+This feature provides package management APIs comparable to those in namespace
+[Windows.Management.Deployment](https://learn.microsoft.com/uwp/api/windows.management.deployment)
+but with additional functionality, improved developer experience and performance optimizations.
 
 - [1. MSIX Package Management](#1-msix-package-management)
 - [2. Background](#2-background)
@@ -10,7 +10,7 @@ performance optimizations.
   - [3.1. API Structure](#31-api-structure)
   - [3.2. Is\*Ready()](#32-isready)
   - [3.3. Ensure\*Ready()](#33-ensureready)
-    - [3.3.1. Why Is*Ready() Given Ensure*Ready()?](#331-why-isready-given-ensureready)
+    - [3.3.1. Why Is\*Ready() Given Ensure\*Ready()?](#331-why-isready-given-ensureready)
   - [3.4. Repair](#34-repair)
   - [3.5. Reset](#35-reset)
   - [3.6. IsPackageRegistrationPending](#36-ispackageregistrationpending)
@@ -22,18 +22,18 @@ performance optimizations.
   - [4.1. AddPackageAsync()](#41-addpackageasync)
   - [4.2. AddPackageByUriAsync()](#42-addpackagebyuriasync)
   - [4.3. AddPackageSetAsync()](#43-addpackagesetasync)
-  - [4.4. EnsurePackageSetReadyAsync()](#44-ensurepackagesetisreadyasync)
-  - [4.5. IsPackageSetReady() and EnsurePackageSetReadyAsync()](#45-ispackagesetready-and-ensurepackagesetisreadyasync)
+  - [4.4. EnsurePackageSetReadyAsync()](#44-ensurepackagesetreadyasync)
+  - [4.5. IsPackageSetReady() and EnsurePackageSetReadyAsync()](#45-ispackagesetready-and-ensurepackagesetreadyasync)
   - [4.6. PackageRuntimeManager.AddPackageSet()](#46-packageruntimemanageraddpackageset)
   - [4.7. PackageRuntimeManager.RemovePackageset()](#47-packageruntimemanagerremovepackageset)
-  - [4.6. PackageVolume.Repair()](#46-packagevolumerepair)
+  - [4.8. PackageVolume.Repair()](#48-packagevolumerepair)
 - [5. Remarks](#5-remarks)
   - [5.1. Platform Support](#51-platform-support)
 - [6. API Details](#6-api-details)
 
 # 2. Background
 
-Windows sports the ability to deploy and manage software as MSIX packages via WinRT APIs in the
+Windows supports the ability to deploy and manage software as MSIX packages via WinRT APIs in the
 Windows.Management.Deployment namespace. These APIs provide the means to install, update, uninstall,
 enumerate and otherwise manage packages.
 
@@ -64,7 +64,7 @@ Additional functionality includes:
 
 * IsReady -- Is a package ready for use?
 * EnsureReady -- Is a package ready for use and, if not, make it so
-* IsPackageRegistrationPending -- Is there an update waiting to install?
+* IsPackageRegistrationPending -- Is there an update waiting to register?
 * PackageSets -- Batch operations
 * PackageRuntimeManager -- Batch operations for use at runtime via Dynamic Dependencies
 * Usability -- Quality-of-Life enhancements
@@ -78,7 +78,7 @@ Methods to drive deployment activity typically follow the pattern:
 The following verbs are supported:
 
 * Is...Ready
-* Ensure...IsReady
+* Ensure...Ready
 * Add
 * Stage
 * Register
@@ -101,7 +101,7 @@ various types of information including:
 
 **NOTE:** Methods with a target of a PackageFamilyName are named ...ByPackageFamilyName....
 
-**NOTE:** Methods with a target of a PackageFamilyName are named ...ByPackageFullName....
+**NOTE:** Methods with a target of a PackageFullName are named ...ByPackageFullName....
 
 **NOTE:** Methods with no ...By<Type>... qualifier accept a string which can contain one or more types
 of identifiers. These can vary for different verbs. See the per-method documentation for the
@@ -112,18 +112,18 @@ These methods accept options as a matching `<verb>Package[Set]Options` type, e.g
 
 The following table shows the supported permutations of verbs and targets:
 
-|Verb       | Path | Filename | PackageFamilyName | PackageFullName | file:  | http(s): | ms-uup: | PackageSet |
-|-----------|:----:|:--------:|:-----------------:|:---------------:|:------:|:--------:|:-------:|:----------:|
-|IsReady    |  X   |    X     |       OS/WAS      |       WAS       |   X    |    X     |  WAS    |    WAS     |
-|EnsureReady|  X   |    X     |         X         |        X        |   X    |    X     |  WAS    |    WAS     |
-|Add        | WAS  |    X     |         X         |        X        | OS/WAS |  OS/WAS  | OS/WAS  |    WAS     |
-|Stage      | WAS  |    X     |         X         |        X        | OS/WAS |  OS/WAS  | OS/WAS  |    WAS     |
-|Register   | WAS  |  OS/WAS  |       OS/WAS      |      OS/WAS     | OS/WAS |    X     | OS/WAS  |    WAS     |
-|Remove     |  X   |    X     |        WAS        |      OS/WAS     |   X    |    X     | OS/WAS  |    WAS     |
-|Repair     |  X   |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
-|Reset      |  X   |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
-|Provision  |  X   |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
-|Deprovision|  X   |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
+|Verb       | Path   | Filename | PackageFamilyName | PackageFullName | file:  | http(s): | ms-uup: | PackageSet |
+|-----------|:------:|:--------:|:-----------------:|:---------------:|:------:|:--------:|:-------:|:----------:|
+|IsReady    |   X    |    X     |       OS/WAS      |       WAS       |   X    |    X     |  WAS    |    WAS     |
+|EnsureReady|   X    |    X     |         X         |        X        |   X    |    X     |  WAS    |    WAS     |
+|Add        | OS/WAS |    X     |         X         |        X        | OS/WAS |  OS/WAS  | OS/WAS  |    WAS     |
+|Stage      | OS/WAS |    X     |         X         |        X        | OS/WAS |  OS/WAS  | OS/WAS  |    WAS     |
+|Register   |  WAS   |  OS/WAS  |       OS/WAS      |      OS/WAS     | OS/WAS |    X     | OS/WAS  |    WAS     |
+|Remove     |   X    |    X     |        WAS        |      OS/WAS     |   X    |    X     | OS/WAS  |    WAS     |
+|Repair     |   X    |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
+|Reset      |   X    |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
+|Provision  |   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
+|Deprovision|   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
 
 Legend:
 
@@ -132,9 +132,9 @@ Legend:
   Microsoft.Windows.Management.Deployment.PackageDeploymentManager namespace.
 * X = Not supported
 
-## 3.2. Is*Ready()
+## 3.2. Is\*Ready()
 
-Is*Ready() methods determine if the target is installed and ready for use. Reasons why a package is
+Is\*Ready() methods determine if the target is installed and ready for use. Reasons why a package is
 not ready can include:
 
 * The package is not present on the machine
@@ -142,12 +142,12 @@ not ready can include:
 * The package is registered for the user but is not in a healthy status e.g. its
   Package.Status=Tampered
 
-Is*Ready() methods are a quick test to determine if more (costly) work is needed before the target
+Is\*Ready() methods are a quick test to determine if more (costly) work is needed before the target
 can be used.
 
-## 3.3. Ensure*Ready()
+## 3.3. Ensure\*Ready()
 
-Ensure*Ready() methods determine if the target is installed and ready for use and, if not, makes
+Ensure\*Ready() methods determine if the target is installed and ready for use and, if not, makes
 it so. This can include downloading the target, registering it for the user and remediating a
 package in an unhealthy state.
 
@@ -159,13 +159,12 @@ if (!pdm.IsPackageReady(pkg))
 {
     var result = await pdm.AddPackageAsync(pkg, options);
 }
-endif
 ```
 
-### 3.3.1. Why Is*Ready() Given Ensure*Ready()?
+### 3.3.1. Why Is\*Ready() Given Ensure\*Ready()?
 
-Ensure*Ready() performs an 'is ready' check and returns if all is ready. There's no efficiency
-reasons to call Is*Ready() before Ensure*Ready() (in fact, it's less efficient as Is*Ready() would
+Ensure\*Ready() performs an 'is ready' check and returns if all is ready. There's no efficiency
+reasons to call Is\*Ready() before Ensure\*Ready() (in fact, it's less efficient as Is\*Ready() would
 occur twice).
 
 However, this can be useful if you need additional work before potentially performing deployment
@@ -187,14 +186,14 @@ if (!pdm.IsPackageReady(pkg))
 ## 3.4. Repair
 
 `PackageDeploymentManager` offers Repair APIs providing the same functionality as available
-interactively via Settings' `Repair` button on the detail page for an app (via Apps > Installed Apps
-> ... > Advanced options).
+interactively via Settings' `Repair` button on the detail page for an app (via Apps &gt; Installed
+Apps &gt; ... menu's Advanced options).
 
 ## 3.5. Reset
 
 `PackageDeploymentManager` offers Reset APIs providing the same functionality as available
-interactively via Settings' `Reset` button on the detail page for an app (via Apps > Installed Apps
-> ... > Advanced options).
+interactively via Settings' `Reset` button on the detail page for an app (via Apps &gt; Installed
+Apps &gt; ... menu's Advanced options).
 
 ## 3.6. IsPackageRegistrationPending
 
@@ -234,16 +233,19 @@ return new PackageDeploymentResult(PackageDeploymentStatus.CompletedSuccess);
 The `PackageRuntimeManager` API provides Dynamic Dependency support for PackageSet operations,
 especially when the caller may not know the exact package(s) involved (for instance, when targeting
 packages via `ms-uup:`). `PackageRuntimeManager` determines the packages involved for a `PackageSet`
-and dynamically adds them caller's package graph.
+and dynamically adds them to the caller's package graph.
 
 ## 3.9. PackageVolume Repair
 
 Packages are typically<sup>1</sup> installed to a
 [PackageVolume](https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume),
-e.g. `C:\Program Files\WindowsApps` is the default `PackageVolume` on a new Windows system. Windows
-pairs the PackageVolume with the underlying storage volume's media ID to identify the PackageVolume
-even when mount points change (e.g. instead USB flash key and it's mount point is E:, the remove the
-USB flash key and later reinsert it but not it's mounted as K:).
+For example, `C:\Program Files\WindowsApps` is the default `PackageVolume` on a new Windows system.
+
+Windows pairs a `PackageVolume` with the underlying storage volume's media ID to identify the
+PackageVolume even when mount points change. For example, insert USB flash key and it's mount point
+is E:, then remove the USB flash key and later reinsert it but now it's mounted as K:. The
+`PackageVolume` is recognized at K: now because it volume K: has the media ID associated with the
+`PackageVolume`.
 
 It's possible this tracking information can be invalidated, e.g. backup a drive's content, replace
 the drive with a new one and then restore the content. The packages installed on this drive's
@@ -252,9 +254,9 @@ PackageVolume(s) aren't recognized by Windows because the new drive has a differ
 The Windows App SDK's new `PackageVolume.Repair()` will attempt to detect these and other like
 conditions and correct them.
 
-`PackageVolume.VerifyIfOk()` checks if the PackageVolume is OK or in need of repair.
+`PackageVolume.IsRepairNeeded()` checks if the PackageVolume is OK or in need of repair.
 
-**NOTE:** `Repair()` requires admin privilege (`VerifyIfOk()` doesn't).
+**NOTE:** `Repair()` requires admin privilege (`IsRepairNeeded()` doesn't).
 
 <sup>1</sup>
 [RegisterPackageOptions.DevelopmentMode](https://learn.microsoft.com/uwp/api/windows.management.deployment.registerpackageoptions.developermode),
@@ -328,7 +330,7 @@ void Install()
     }
     else
     {
-        Console.WriteLine("Error {}", deploymentResult.ExtendedError());
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
     }
 }
 ```
@@ -361,7 +363,7 @@ var Install()
     }
     else
     {
-        Console.WriteLine("Error {}", deploymentResult.ExtendedError());
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
     }
 }
 ```
@@ -398,7 +400,7 @@ var Install()
     }
     else
     {
-        Console.WriteLine("Error {}", deploymentResult.ExtendedError());
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
     }
 }
 
@@ -463,7 +465,7 @@ var Install()
     }
     else
     {
-        Console.WriteLine("Error {}", deploymentResult.ExtendedError());
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
     }
 }
 
@@ -519,7 +521,7 @@ var AddMuffinsAndWafflesToThePackageGraph()
     }
     else
     {
-        Console.WriteLine("Error {}", deploymentResult.ExtendedError());
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
     }
 
     var packageRuntimeManager = PackageRuntimeManager.GetDefault();
@@ -576,7 +578,7 @@ var DoAwesomeStuffUsingMuffinsAndWaffles()
     }
     else
     {
-        Console.WriteLine("Error {}", deploymentResult.ExtendedError());
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
     }
 
     var packageRuntimeManager = PackageRuntimeManager.GetDefault();
@@ -606,7 +608,7 @@ PackageVersion ToVersion(uint major, uint minor, uint build, uint revision)
 **NOTE:** This differs from the PackageRuntimeManager.AddPackageSet()() example by explicitly
 removing the packages dynamically added to the package graph when no longer needed.
 
-## 4.6. PackageVolume.Repair()
+## 4.8. PackageVolume.Repair()
 
 Fabrikam app checks if a PackageVolume is OK and if not, prompts the user to confirm it should
 proceed to repair the PackageVolume.
@@ -615,7 +617,7 @@ proceed to repair the PackageVolume.
 var CheckAndFixPackageVolume(string path)
 {
     var packageVolume = PackageVolumeManager.FindPackageVolumeByPath(path);
-    if (!packageVolume.VerifyIsOk())
+    if (packageVolume.IsRepairNeeded())
     {
         bool ok = PromptUserForConfirmation();
         if (!ok)
@@ -660,6 +662,22 @@ namespace Microsoft.Windows.Management.Deployment
     {
         PackageVolume();
 
+        /// Gets all the known volumes, regardless of their current state.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolumes
+        static IVector<PackageVolume> FindPackageVolumes();
+
+        /// Get the specified volume.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        static PackageVolume FindPackageVolumeByPath(String path);
+
+        /// Get the specified volume.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        static PackageVolume FindPackageVolumeByMediaId(String mediaId);
+
+        /// Get the specified volume.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
+        static PackageVolume FindPackageVolumeByName(String name);
+
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.issystemvolume
         Boolean IsSystemVolume{ get; };
 
@@ -681,37 +699,15 @@ namespace Microsoft.Windows.Management.Deployment
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume.isappxinstallsupported
         Boolean IsAppxInstallSupported{ get; };
 
-        /// Return true if the package volume is OK, else false if it needs to be repaired.
-        bool VerifyIfOK();
+        /// Return true if the package volume is damaged and needs to be repaired.
+        bool IsRepairNeeded();
 
         /// Repair the package volume (if necessary).
         void Repair();
     };
 
-    /// Manages the storage volumes where packages can be installed.
-    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume
-    [contract(PackageDeploymentContract, 1)]
-    runtimeclass PackageVolumeManager
-    {
-        /// Gets all the known volumes, regardless of their current state.
-        /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.findpackagevolumes
-        static IVector<PackageVolume> FindPackageVolumes();
-
-        /// Get the specified volume.
-        /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
-        static PackageVolume FindPackageVolumeByPath(String path);
-
-        /// Get the specified volume.
-        /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
-        static PackageVolume FindPackageVolumeByMediaId(String mediaId);
-
-        /// Get the specified volume.
-        /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
-        static PackageVolume FindPackageVolumeByName(String name);
-    };
-
     /// The progress status of the deployment request.
-    /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.deploymentprogress.state?view=winrt-22621
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress.state?view=winrt-22621
     [contract(PackageDeploymentContract, 1)]
     enum PackageDeploymentProgressStatus
     {
@@ -722,15 +718,15 @@ namespace Microsoft.Windows.Management.Deployment
     };
 
     /// Contains progress information for the deployment request.
-    /// @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.deploymentprogress?view=winrt-22621
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress?view=winrt-22621
     [contract(PackageDeploymentContract, 1)]
-    runtimeclass PackageDeploymentProgress
+    struct PackageDeploymentProgress
     {
-        PackageDeploymentProgressStatus status;
+        PackageDeploymentProgressStatus Status;
 
         /// The progress percentage of the deployment request.
         /// @note This is a double with values 0.0-1.0. Windows.Management.Deployment.DeploymentProgress.percentage is uint32 with values 0-100.
-        Double percentage;
+        Double Progress;
     }
 
     /// The status of the deployment request.
@@ -744,13 +740,12 @@ namespace Microsoft.Windows.Management.Deployment
     };
 
     // Provides the result of a deployment request.
-    // @see https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.deploymentresult
+    // @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageDeploymentResult
     {
         PackageDeploymentStatus Status { get; };
         HRESULT ExtendedError { get; };
-        Boolean IsRegistered{ get; };
         Guid ActivityId { get; };
     }
 
@@ -760,13 +755,9 @@ namespace Microsoft.Windows.Management.Deployment
         PackageSetItem();
 
         String Id;
-
-        // Package criteria to identify if a matching package is ready for use and to use at runtime
-        String PackageFamilyName;   //required
+        String PackageFamilyName;
         Windows.ApplicationModel.PackageVersion MinVersion;
         Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyProcessorArchitectures ProcessorArchitectureFilter;
-
-        // Source where a package can be retrieved from if/when needed for install, remediation, etc
         Windows.Foundation.Uri PackageUri;
     }
 
