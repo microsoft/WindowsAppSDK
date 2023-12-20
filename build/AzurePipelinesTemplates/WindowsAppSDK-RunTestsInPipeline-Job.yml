@@ -7,6 +7,9 @@ parameters:
 - name: jobName
   type: string
   default: PipelineTests
+- name: isArm64Platfrom
+  type: boolean
+  default: false
 - name: dependsOn
   type: object
   default:
