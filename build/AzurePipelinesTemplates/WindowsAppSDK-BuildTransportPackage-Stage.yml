@@ -132,6 +132,7 @@ stages:
     parameters:
       jobName: PipelineTestsX64
       isArm64Platfrom: false
+      testMatrix: $[ variables.PipelineTests ] # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
       dependsOn:
         - BuildBinaries
         - BuildMRT
@@ -140,6 +141,7 @@ stages:
     parameters:
       jobName: PipelineTestsArm64
       isArm64Platfrom: true
+      testMatrix: $[ variables.PipelineTestsArm64 ] # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
       dependsOn:
         - BuildBinaries
         - BuildMRT
