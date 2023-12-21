@@ -137,15 +137,6 @@ stages:
         - BuildBinaries
         - BuildMRT
 
-  - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
-    parameters:
-      jobName: PipelineTestsArm64
-      isArm64Platfrom: true
-      testMatrix: $[ variables.PipelineTestsArm64 ] # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
-      dependsOn:
-        - BuildBinaries
-        - BuildMRT
-
   - job: NugetPackage
     pool:
       # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs

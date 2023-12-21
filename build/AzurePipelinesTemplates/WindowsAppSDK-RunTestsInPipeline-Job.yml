@@ -28,13 +28,8 @@ jobs:
   pool:
     type: windows
     isCustom: true
-    # arm64 and amd64 use different pools because their VM types are different.
-    ${{ if not( parameters.isArm64Platfrom ) }}:
-      name: 'WinAppSDK-Test-Pool'
-      demands: ImageOverride -equals $(imageName)
-    ${{ if parameters.isArm64Platfrom }}:
-      name: 'WinAppSDK-Test-Pool-Arm64'
-      demands: ImageOverride -equals $(imageName)
+    name: $(poolName)
+    demands: ImageOverride -equals $(imageName)
   timeoutInMinutes: 120
   variables:
     testPayloadArtifactDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)
