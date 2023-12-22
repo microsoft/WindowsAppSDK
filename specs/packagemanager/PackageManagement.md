@@ -610,7 +610,7 @@ namespace Microsoft.Windows.Management.Deployment
 
         /// Get the specified volume.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
-        static PackageVolume FindPackageVolumeByPath(String path);
+        static PackageVolume FindPackageVolumeByPath(String packageStorePath);
 
         /// Get the specified volume.
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
@@ -642,7 +642,7 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean IsAppxInstallSupported{ get; };
 
         /// Return true if the package volume is damaged and needs to be repaired.
-        bool IsRepairNeeded();
+        Boolean IsRepairNeeded();
 
         /// Repair the package volume (if necessary).
         void Repair();
@@ -837,7 +837,7 @@ namespace Microsoft.Windows.Management.Deployment
 
         Boolean IsPackageReady(String package);
 
-        Boolean IsPackageByUriReady(Windows.Foundation.Uri packageUri);
+        Boolean IsPackageReadyByUri(Windows.Foundation.Uri packageUri);
 
         Boolean IsPackageSetReady(PackageSet packageSet);
 
