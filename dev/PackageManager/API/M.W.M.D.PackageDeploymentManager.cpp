@@ -37,11 +37,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         const auto packageAbsoluteUri{ packageUri.AbsoluteUri() };
         if (!packageAbsoluteUri.empty())
         {
-            return IsPackageByUriReady(packageUri);
+            return IsPackageReadyByUri(packageUri);
         }
         THROW_HR_MSG(E_INVALIDARG, "%ls", package.c_str());
     }
-    bool PackageDeploymentManager::IsPackageByUriReady(winrt::Windows::Foundation::Uri const& packageUri)
+    bool PackageDeploymentManager::IsPackageReadyByUri(winrt::Windows::Foundation::Uri const& packageUri)
     {
         throw hresult_not_implemented();
     }
@@ -49,7 +49,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         Validate(packageSet);
 
-        for (const winrt::Microsoft::Windows::Management::Deployment::PackageSetItem& packageSetItem : packageSet.PackageSetItems())
+        for (const winrt::Microsoft::Windows::Management::Deployment::PackageSetItem& packageSetItem : packageSet.Items())
         {
             if (!IsReady(packageSetItem))
             {
@@ -67,22 +67,18 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         }
         return true;
     }
-    bool PackageDeploymentManager::IsPackageSetReadyById(hstring const& packageSetId)
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::EnsurePackageReadyAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options)
     {
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::EnsurePackageIsReadyAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options)
+    PackageDeploymentManager::EnsurePackageReadyByUriAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options)
     {
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::EnsurePackageByUriIsReadyAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options)
-    {
-        throw hresult_not_implemented();
-    }
-    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::EnsurePackageSetIsReadyAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options)
+    PackageDeploymentManager::EnsurePackageSetReadyAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options)
     {
         //TODO auto logTelemetry{ PackageDeploymentTelemetry::CreateChannelAsync::Start(g_telemetryHelper, remoteId) };
 
@@ -109,9 +105,9 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         Validate(packageSet);
 
         // Is there any work to do?
-        packageDeploymentProgress.status(PackageDeploymentProgressStatus::InProgress);
+        packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
         const double c_progressPercentageStartOfIsReady{ 0.01 };
-        packageDeploymentProgress.percentage(c_progressPercentageStartOfIsReady);
+        packageDeploymentProgress.Progress = c_progressPercentageStartOfIsReady;
         progress(packageDeploymentProgress);
         if (IsPackageSetReady(packageSet))
         {
@@ -120,16 +116,16 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         }
 
         const double c_progressPercentageStartOfInstalls{ 0.10 };
-        packageDeploymentProgress.percentage(c_progressPercentageStartOfInstalls);
+        packageDeploymentProgress.Progress = c_progressPercentageStartOfInstalls;
         progress(packageDeploymentProgress);
-        auto packageSetItems{ packageSet.PackageSetItems() };
+        auto packageSetItems{ packageSet.Items() };
         const double progressIncrementPerPackageSetItem{ (1.0 - c_progressPercentageStartOfInstalls) / packageSetItems.Size() };
         for (const winrt::Microsoft::Windows::Management::Deployment::PackageSetItem& packageSetItem : packageSetItems)
         {
             try
             {
-                EnsureIsReadyAsync(packageSetItem, options);
-                packageDeploymentProgress.percentage(packageDeploymentProgress.percentage() + progressIncrementPerPackageSetItem);
+                EnsureReadyAsync(packageSetItem, options);
+                packageDeploymentProgress.Progress = packageDeploymentProgress.Progress + progressIncrementPerPackageSetItem;
                 progress(packageDeploymentProgress);
             }
             catch (...)
@@ -144,11 +140,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             PackageDeploymentStatus::CompletedSuccess, S_OK, true, /*TODO*/winrt::guid{});
 
         //TODO logTelemetry.Stop();
-    }
-    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::EnsurePackageSetIsReadyByIdAsync(hstring packageSetId, winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions options)
-    {
-        throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::AddPackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options)
@@ -240,18 +231,18 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         // Check parameter(s)
         Validate(packageSet);
 
-        packageDeploymentProgress.status(PackageDeploymentProgressStatus::InProgress);
+        packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
         const double c_progressPercentageStartOfInstalls{ 0.10 };
-        packageDeploymentProgress.percentage(c_progressPercentageStartOfInstalls);
+        packageDeploymentProgress.Progress = c_progressPercentageStartOfInstalls;
         progress(packageDeploymentProgress);
-        auto packageSetItems{ packageSet.PackageSetItems() };
+        auto packageSetItems{ packageSet.Items() };
         const double progressIncrementPerPackageSetItem{ (1.0 - c_progressPercentageStartOfInstalls) / packageSetItems.Size() };
         for (const winrt::Microsoft::Windows::Management::Deployment::PackageSetItem& packageSetItem : packageSetItems)
         {
             try
             {
                 AddAsync(packageSetItem, options);
-                packageDeploymentProgress.percentage(packageDeploymentProgress.percentage() + progressIncrementPerPackageSetItem);
+                packageDeploymentProgress.Progress = packageDeploymentProgress.Progress + progressIncrementPerPackageSetItem;
                 progress(packageDeploymentProgress);
             }
             catch (...)
@@ -266,11 +257,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             PackageDeploymentStatus::CompletedSuccess, S_OK, true, /*TODO*/winrt::guid{});
 
         //TODO logTelemetry.Stop();
-    }
-    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::AddPackageSetByIdAsync(hstring packageSetId, winrt::Microsoft::Windows::Management::Deployment::AddPackageSetOptions options)
-    {
-        throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::StagePackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options)
@@ -288,11 +274,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::StagePackageSetByIdAsync(hstring packageSetId, winrt::Microsoft::Windows::Management::Deployment::StagePackageSetOptions options)
-    {
-        throw hresult_not_implemented();
-    }
-    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RegisterPackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
     {
         throw hresult_not_implemented();
@@ -304,11 +285,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RegisterPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
-    {
-        throw hresult_not_implemented();
-    }
-    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::RegisterPackageSetByIdAsync(hstring packageSetId, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
     {
         throw hresult_not_implemented();
     }
@@ -346,11 +322,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::RemovePackageSetByIdAsync(hstring packageSetId, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
-    {
-        throw hresult_not_implemented();
-    }
-    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::ResetPackageAsync(hstring package)
     {
         throw hresult_not_implemented();
@@ -366,7 +337,47 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::ResetPackageSetByIdAsync(hstring packageSetId)
+    PackageDeploymentManager::RepairPackageAsync(hstring package)
+    {
+        throw hresult_not_implemented();
+    }
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::RepairPackageByUriAsync(winrt::Windows::Foundation::Uri packageUri)
+    {
+        throw hresult_not_implemented();
+    }
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::RepairPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet)
+    {
+        throw hresult_not_implemented();
+    }
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::ProvisionPackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions options)
+    {
+        throw hresult_not_implemented();
+    }
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::ProvisionPackageByUriAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions options)
+    {
+        throw hresult_not_implemented();
+    }
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::ProvisionPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageSetOptions options)
+    {
+        throw hresult_not_implemented();
+    }
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::DeprovisionPackageAsync(hstring package)
+    {
+        throw hresult_not_implemented();
+    }
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::DeprovisionPackageByUriAsync(winrt::Windows::Foundation::Uri packageUri)
+    {
+        throw hresult_not_implemented();
+    }
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
+    PackageDeploymentManager::DeprovisionPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet)
     {
         throw hresult_not_implemented();
     }
@@ -374,7 +385,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         throw hresult_not_implemented();
     }
-    bool PackageDeploymentManager::IsPackageRegistrationPending(hstring const& userSecurityId, hstring const& packageFamilyName)
+    bool PackageDeploymentManager::IsPackageRegistrationPendingForUser(hstring const& userSecurityId, hstring const& packageFamilyName)
     {
         throw hresult_not_implemented();
     }
@@ -394,7 +405,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     void PackageDeploymentManager::Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet) const
     {
         THROW_HR_IF(E_INVALIDARG, packageSet.Id().empty());
-        const auto& packageSetItems{ packageSet.PackageSetItems() };
+        const auto& packageSetItems{ packageSet.Items() };
         THROW_HR_IF(E_INVALIDARG, packageSetItems.Size() == 0);
         for (const winrt::Microsoft::Windows::Management::Deployment::PackageSetItem& packageSetItem : packageSetItems)
         {
@@ -411,7 +422,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         THROW_HR_IF_NULL_MSG(E_INVALIDARG, packageUri, "PackageUri:<null>");
     }
 
-    void PackageDeploymentManager::EnsureIsReadyAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem, winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions const& options)
+    void PackageDeploymentManager::EnsureReadyAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem, winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions const& options)
     {
         if (IsReady(packageSetItem))
         {
@@ -700,11 +711,10 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             toOptions |= winrt::Windows::Management::Deployment::RemovalOptions::RemoveForAllUsers;
         }
-        //TODO DeploymentPriority Priority;
         return toOptions;
     }
 
-    winrt::Windows::Management::Deployment::AddPackageOptions PackageDeploymentManager::ToOptions(winrt::Microsoft::Windows::Management::Deployment::EnsureIsReadyOptions const& /*options*/) const
+    winrt::Windows::Management::Deployment::AddPackageOptions PackageDeploymentManager::ToOptions(winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions const& /*options*/) const
     {
         return winrt::Windows::Management::Deployment::AddPackageOptions();
     }

@@ -14,16 +14,10 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.AddPackageOptions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.AddPackageSetOptions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.FindPackageSetOptions.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.EnsureReadyOptions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentProgress.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentResult.cpp">
@@ -44,40 +38,22 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetRuntimeDisposition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolume.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeStatus.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.ProvisionPackageOptions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.RegisterPackageOptions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.RegisterPackageSetOptions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.StagePackageOptions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.StagePackageSetOptions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentResolver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.EnsureIsReadyOptions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.RemovePackageOptions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.M.D.RemovePackageSetOptions.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDeploymentResolver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -85,16 +61,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.AddPackageOptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.AddPackageSetOptions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.FindPackageSetOptions.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.EnsureReadyOptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentProgress.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageDeploymentResult.h">
@@ -115,43 +85,25 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetRuntimeDisposition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageSetManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolume.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.PackageVolumeStatus.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.ProvisionPackageOptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.RegisterPackageOptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.RegisterPackageSetOptions.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.RemovePackageOptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.StagePackageOptions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.StagePackageSetOptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)MsixPackageManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageDeploymentResolver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.EnsureIsReadyOptions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.RemovePackageOptions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.RemovePackageSetOptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

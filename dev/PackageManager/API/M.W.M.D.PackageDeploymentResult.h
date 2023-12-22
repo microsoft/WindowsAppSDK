@@ -15,12 +15,10 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus Status();
         winrt::hresult ExtendedError();
         winrt::guid ActivityId();
-        bool IsRegistered();
 
     private:
         PackageDeploymentStatus m_status{};
         winrt::hresult m_extendedError;
-        bool m_isRegistered{};
         winrt::guid m_activityId{};
     };
 }

@@ -16,7 +16,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         m_supportsHardLinks = value.SupportsHardLinks();
         m_isFullTrustPackageSupported = value.IsFullTrustPackageSupported();
         m_isAppxInstallSupported = value.IsAppxInstallSupported();
-        //TODO m_packageStatus = value.Status();
     }
     bool PackageVolume::IsSystemVolume()
     {
@@ -46,11 +45,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         return m_isAppxInstallSupported;
     }
-    winrt::Microsoft::Windows::Management::Deployment::PackageVolumeStatus PackageVolume::Status()
+    bool PackageVolume::IsRepairNeeded()
     {
         throw hresult_not_implemented();
     }
-    void PackageVolume::FixMe()
+    void PackageVolume::Repair()
     {
         throw hresult_not_implemented();
     }
