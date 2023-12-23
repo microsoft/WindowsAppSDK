@@ -669,7 +669,7 @@ namespace Microsoft.Windows.Management.Deployment
         /// The progress percentage of the deployment request.
         /// @note This is a double with values 0.0-1.0. Windows.Management.Deployment.DeploymentProgress.percentage is uint32 with values 0-100.
         Double Progress;
-    }
+    };
 
     /// The status of the deployment request.
     /// @see PackageDeploymentResult.Status
@@ -803,7 +803,6 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean RemoveForAllUsers;
     }
 
-    [feature(Feature_PackageManager)]
     [contract(PackageDeploymentContract, 1)]
     runtimeclass ProvisionPackageOptions
     {
@@ -869,7 +868,7 @@ namespace Microsoft.Windows.Management.Deployment
         AddPackageByUriAsync(Windows.Foundation.Uri packageUri, AddPackageOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        AddPackageSetAsync(PackageSet packageSet, AddPackageSetOptions options);
+        AddPackageSetAsync(PackageSet packageSet, AddPackageOptions options);
 
         //-------------------------------------------------------------
         // Stage packages
@@ -881,7 +880,7 @@ namespace Microsoft.Windows.Management.Deployment
         StagePackageByUriAsync(Windows.Foundation.Uri packageUri, StagePackageOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        StagePackageSetAsync(PackageSet packageSet, StagePackageSetOptions options);
+        StagePackageSetAsync(PackageSet packageSet, StagePackageOptions options);
 
         //-------------------------------------------------------------
         // Register packages
