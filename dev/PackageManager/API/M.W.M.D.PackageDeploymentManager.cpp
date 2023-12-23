@@ -378,7 +378,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
     bool PackageDeploymentManager::IsPackageRegistrationPending(hstring const& packageFamilyName)
     {
-        throw hresult_not_implemented();
+        return IsPackageRegistrationPendingForUser(hstring{}, packageFamilyName);
     }
     bool PackageDeploymentManager::IsPackageRegistrationPendingForUser(hstring const& userSecurityId, hstring const& packageFamilyName)
     {
