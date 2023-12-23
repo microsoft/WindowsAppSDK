@@ -11,7 +11,9 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         EnsureReadyOptions() = default;
 
+        winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions AddPackageOptions();
     private:
+        winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions m_addPackageOptions{};
     };
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation

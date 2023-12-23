@@ -12,6 +12,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         PackageVolume() = delete;
         PackageVolume(winrt::Windows::Management::Deployment::PackageVolume const& value);
 
+        static winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageVolume> FindPackageVolumes();
+        static winrt::Microsoft::Windows::Management::Deployment::PackageVolume FindPackageVolumeByPath(hstring const& packageStorePath);
+        static winrt::Microsoft::Windows::Management::Deployment::PackageVolume FindPackageVolumeByMediaId(hstring const& mediaId);
+        static winrt::Microsoft::Windows::Management::Deployment::PackageVolume FindPackageVolumeByName(hstring const& name);
+
         bool IsSystemVolume();
         hstring MountPoint();
         hstring Name();

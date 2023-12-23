@@ -6,19 +6,17 @@
 #include "Microsoft.Windows.Management.Deployment.PackageDeploymentManager.g.cpp"
 
 #include "M.W.M.D.PackageDeploymentResult.h"
-#include "M.W.M.D.PackageDeploymentProgress.h"
-#include "M.W.M.D.PackageVolumeManager.h"
 #include "MsixPackageManager.h"
 #include "PackageDeploymentResolver.h"
 
-static_assert(static_cast<int>(winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::Default) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::Default),
-              "winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::Default != winrt::Windows::Management::Deployment::StubPackageOption::Default");
-static_assert(static_cast<int>(winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::InstallFull) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::InstallFull),
-              "winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::InstallFull != winrt::Windows::Management::Deployment::StubPackageOption::InstallFull");
-static_assert(static_cast<int>(winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::InstallStub) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::InstallStub),
-              "winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::InstallStub != winrt::Windows::Management::Deployment::StubPackageOption::InstallStub");
-static_assert(static_cast<int>(winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::UsePreference) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::UsePreference),
-              "winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::UsePreference != winrt::Windows::Management::Deployment::StubPackageOption::UsePreference");
+static_assert(static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::Default) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::Default),
+              "winrt::Windows::Management::Deployment::StubPackageOption::Default != winrt::Windows::Management::Deployment::StubPackageOption::Default");
+static_assert(static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::InstallFull) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::InstallFull),
+              "winrt::Windows::Management::Deployment::StubPackageOption::InstallFull != winrt::Windows::Management::Deployment::StubPackageOption::InstallFull");
+static_assert(static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::InstallStub) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::InstallStub),
+              "winrt::Windows::Management::Deployment::StubPackageOption::InstallStub != winrt::Windows::Management::Deployment::StubPackageOption::InstallStub");
+static_assert(static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::UsePreference) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::UsePreference),
+              "winrt::Windows::Management::Deployment::StubPackageOption::UsePreference != winrt::Windows::Management::Deployment::StubPackageOption::UsePreference");
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
@@ -30,7 +28,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         if (VerifyPackageFullName(package.c_str()) == ERROR_SUCCESS)
         {
-            return IsReadyByFullName(package);
+            return IsReadyByPackageFullName(package);
         }
 
         const winrt::Windows::Foundation::Uri packageUri{ package };
@@ -96,9 +94,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
         auto progress{ co_await winrt::get_progress_token() };
         auto packageDeploymentProgress{
-            winrt::make<
-                winrt::Microsoft::Windows::Management::Deployment::implementation::PackageDeploymentProgress>(
-                    PackageDeploymentProgressStatus::Queued, 0) };
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress{
+                PackageDeploymentProgressStatus::Queued, 0} };
         progress(packageDeploymentProgress);
 
         // Check parameter(s)
@@ -179,9 +176,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
         auto progress{ co_await winrt::get_progress_token() };
         auto packageDeploymentProgress{
-            winrt::make<
-                winrt::Microsoft::Windows::Management::Deployment::implementation::PackageDeploymentProgress>(
-                    PackageDeploymentProgressStatus::Queued, 0) };
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress{
+                PackageDeploymentProgressStatus::Queued, 0} };
         progress(packageDeploymentProgress);
 
         // Check parameter(s)
@@ -205,7 +201,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         //TODO logTelemetry.Stop();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::AddPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::AddPackageSetOptions options)
+    PackageDeploymentManager::AddPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options)
     {
         //TODO auto logTelemetry{ PackageDeploymentTelemetry::CreateChannelAsync::Start(g_telemetryHelper, remoteId) };
 
@@ -223,9 +219,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
         auto progress{ co_await winrt::get_progress_token() };
         auto packageDeploymentProgress{
-            winrt::make<
-                winrt::Microsoft::Windows::Management::Deployment::implementation::PackageDeploymentProgress>(
-                    PackageDeploymentProgressStatus::Queued, 0) };
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress{
+                PackageDeploymentProgressStatus::Queued, 0} };
         progress(packageDeploymentProgress);
 
         // Check parameter(s)
@@ -269,7 +264,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::StagePackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::StagePackageSetOptions options)
+    PackageDeploymentManager::StagePackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options)
     {
         throw hresult_not_implemented();
     }
@@ -362,7 +357,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::ProvisionPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageSetOptions options)
+    PackageDeploymentManager::ProvisionPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions options)
     {
         throw hresult_not_implemented();
     }
@@ -390,7 +385,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         throw hresult_not_implemented();
     }
 
-    bool PackageDeploymentManager::IsReadyByPackageFullName(hstring const& packageFullName);
+    bool PackageDeploymentManager::IsReadyByPackageFullName(hstring const& packageFullName)
     {
         return ::Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::FindAny(m_packageManager, packageFullName);
     }
@@ -467,7 +462,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         }
     }
 
-    void PackageDeploymentManager::AddAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem, winrt::Microsoft::Windows::Management::Deployment::AddPackageSetOptions const& options)
+    void PackageDeploymentManager::AddAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions const& options)
     {
         auto packageUri{ packageSetItem.PackageUri() };
         winrt::Windows::Management::Deployment::AddPackageOptions addOptions{ ToOptions(options) };
@@ -594,11 +589,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             toOptions.LimitToExistingPackages(options.LimitToExistingPackages());
         }
         return toOptions;
-    }
-
-    winrt::Windows::Management::Deployment::AddPackageOptions PackageDeploymentManager::ToOptions(winrt::Microsoft::Windows::Management::Deployment::AddPackageSetOptions const& options) const
-    {
-        return ToOptions(options.AddPackageOptions());
     }
 
     winrt::Windows::Management::Deployment::StagePackageOptions PackageDeploymentManager::ToOptions(winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions const& options) const

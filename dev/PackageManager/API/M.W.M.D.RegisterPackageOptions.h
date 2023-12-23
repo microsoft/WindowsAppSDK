@@ -37,7 +37,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Foundation::Collections::IMap<winrt::Windows::Foundation::Uri, hstring> ExpectedDigests();
 
     private:
-        winrt::Microsoft::Windows::Management::Deployment::PackageVolume m_appDataVolume;
+        winrt::Microsoft::Windows::Management::Deployment::PackageVolume m_appDataVolume{ nullptr };
         winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri> m_dependencyPackageUris;
         winrt::Windows::Foundation::Collections::IVector<hstring> m_optionalPackageFamilyNames;
         winrt::Windows::Foundation::Uri m_externalLocationUri{ nullptr };

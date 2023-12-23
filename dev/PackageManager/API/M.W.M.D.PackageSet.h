@@ -20,6 +20,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     private:
         hstring m_id;
         winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageSetItem> m_items;
+        winrt::Windows::Foundation::Uri m_packageUri{ nullptr };
     };
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation

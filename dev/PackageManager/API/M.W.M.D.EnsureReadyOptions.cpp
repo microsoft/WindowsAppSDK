@@ -10,4 +10,8 @@
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
+    winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions EnsureReadyOptions::AddPackageOptions()
+    {
+        return m_addPackageOptions;
+    }
 }

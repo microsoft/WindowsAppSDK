@@ -11,9 +11,9 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         ProvisionPackageOptions() = default;
 
-        bool OptionalPackageFamilyNames();
+        bool IsOptionalPackageFamilyNamesSupported();
         winrt::Windows::Foundation::Collections::IVector<hstring> OptionalPackageFamilyNames();
-        bool ProjectionOrderPackageFamilyNames();
+        bool IsProjectionOrderPackageFamilyNamesSupported();
         winrt::Windows::Foundation::Collections::IVector<hstring> ProjectionOrderPackageFamilyNames();
 
     private:
