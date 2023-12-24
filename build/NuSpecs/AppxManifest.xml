@@ -27,78 +27,73 @@
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
         <Path>Microsoft.WindowsAppRuntime.dll</Path>
-          <!-- NOTE: Keep ActivationClass elements sorted by absolute ActivatableClassId (namespace.class) -->
+        <!-- NOTE: Keep ActivationClass elements sorted by absolute ActivatableClassId (namespace.class) -->
 
-          <!-- Dynamic Dependency -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContext" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyRank" ThreadingModel="both" />
+        <!-- Dynamic Dependency -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContext" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyRank" ThreadingModel="both" />
 
-          <!-- WinAppSDK Deployment -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions" ThreadingModel="both" />
+        <!-- WinAppSDK Deployment -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions" ThreadingModel="both" />
 
-          <!-- VersionInfo -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.ReleaseInfo" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.RuntimeInfo" ThreadingModel="both" />
+        <!-- VersionInfo -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.ReleaseInfo" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.RuntimeInfo" ThreadingModel="both" />
 
-          <!-- AppLifecycle -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationRegistrationManager" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.AppInstance" ThreadingModel="both" />
+        <!-- AppLifecycle -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationRegistrationManager" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.AppInstance" ThreadingModel="both" />
 
-          <!-- AppNotifications -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationManager" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotification" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationProgressData" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationActivatedEventArgs" ThreadingModel="both" />
+        <!-- AppNotifications -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationManager" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotification" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationProgressData" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationActivatedEventArgs" ThreadingModel="both" />
 
-          <!-- AppNotificationBuilder -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationTextProperties" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationButton" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationProgressBar" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationComboBox" ThreadingModel="both" />
+        <!-- AppNotificationBuilder -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationTextProperties" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationButton" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationProgressBar" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationComboBox" ThreadingModel="both" />
 
-          <!-- Deployment -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.AddPackageOptions" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.AddPackageSetOptions" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.EnsureIsReadyOptions" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.FindPackageOptions" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageDeploymentManager" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageDeploymentProgress" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageDeploymentResult" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageRuntimeManager" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageSet" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageSetItem" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageSetItemRuntimeDisposition" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageSetManager" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageSetRuntimeDisposition" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageVolume" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageVolumeManager" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageVolumeStatus" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.RegisterPackageOptions" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.RemovePackageOptions" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.StagePackageOptions" ThreadingModel="both" />
+        <!-- Deployment -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.AddPackageOptions" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.EnsureReadyOptions" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageDeploymentManager" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageDeploymentResult" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageRuntimeManager" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageSet" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageSetItem" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageSetItemRuntimeDisposition" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageSetRuntimeDisposition" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.PackageVolume" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.ProvisionPackageOptions" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.RegisterPackageOptions" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.RemovePackageOptions" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Management.Deployment.StagePackageOptions" ThreadingModel="both" />
 
-          <!-- PushNotifications -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationChannel" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationCreateChannelResult" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationActivationInfo" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationRegistrationToken" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationManager" ThreadingModel="both" />
+        <!-- PushNotifications -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationChannel" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationCreateChannelResult" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationActivationInfo" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationRegistrationToken" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationManager" ThreadingModel="both" />
 
-          <!-- AccessControl -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers" ThreadingModel="both" />
+        <!-- AccessControl -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers" ThreadingModel="both" />
 
-          <!-- Environment Manager -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.System.EnvironmentManager" ThreadingModel="both" />
+        <!-- Environment Manager -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.System.EnvironmentManager" ThreadingModel="both" />
 
-          <!-- PowerNotifications -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Power.PowerManager" ThreadingModel="both" />
+        <!-- PowerNotifications -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Power.PowerManager" ThreadingModel="both" />
 
       </InProcessServer>
     </Extension>
