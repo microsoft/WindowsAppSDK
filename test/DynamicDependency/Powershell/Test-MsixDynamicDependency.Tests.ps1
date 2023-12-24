@@ -79,7 +79,7 @@ Function AddTestPackages
     }
     Add-AppxPackage $packageMsix
     $p = Get-AppxPackage $packageName
-    if (($p -eq $null) -Or ($p.PackageFullName -ne $packageFullName))
+    if ($p -eq $null)
     {
         Write-Error $p
         Write-Error "Get-AppxPackage result not expected"

@@ -159,6 +159,7 @@
   <ItemGroup>
     <ResourceCompile Include="WindowsAppRuntimeInstall.rc">
       <PreprocessorDefinitions Condition="Exists('windowsappruntime_definitions_override.h')">USE_DEFINITIONS_OVERRIDE_HEADER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(RepoRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

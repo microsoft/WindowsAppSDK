@@ -1,0 +1,80 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include <TerminalVelocityFeatures-Workloads.h>
+
+namespace Microsoft.Windows.System.Workloads
+{
+    [feature(Feature_Workloads)]
+    [contractversion(1)]
+    apicontract WorkloadsContract{};
+
+    [feature(Feature_Workloads)]
+    [contract(WorkloadsContract, 1)]
+    enum WorkloadStatus
+    {
+        InProgress = 0,         // The request is in progress
+        CompletedSuccess = 1,   // The request completed successfully
+        CompletedFailure = 2,   // The request failed with some critical internal error. //TODO:Check ExtendedError for HRESULT
+                                // See ExtendedError for HRESULT
+    };
+
+    [feature(Feature_Workloads)]
+    [contract(WorkloadsContract, 1)]
+    runtimeclass WorkloadResult
+    {
+        WorkloadStatus Status { get; };
+        HRESULT ExtendedError { get; };
+    }
+
+    [feature(Feature_Workloads)]
+    [contract(WorkloadsContract, 1)]
+    enum WorkloadProgressStatus
+    {
+        Queued = 0,             // The request is queued
+        InProgress = 1,         // The request is in progress
+        CompletedSuccess = 2,   // The request completed successfully
+        CompletedFailure = 3,   // The request failed with a critical internal error
+                                // See ExtendedError for HRESULT
+    };
+
+    [feature(Feature_Workloads)]
+    [contract(WorkloadsContract, 1)]
+    runtimeclass WorkloadProgress
+    {
+        WorkloadProgressStatus status;
+        Double percentage;
+    }
+
+    [feature(Feature_Workloads)]
+    [contract(WorkloadsContract, 1)]
+    interface IWorkloadHandler
+    {
+        Windows.Foundation.IAsyncOperationWithProgress<WorkloadResult, WorkloadProgress>
+        RemoveAsync();
+    }
+
+    [feature(Feature_Workloads)]
+    [contract(WorkloadsContract, 1)]
+    runtimeclass Workload
+    {
+        Workload();
+
+        String Id { get; };
+        String DisplayName { get; };
+        String WorkloadHandlerActivatableClassId { get; };
+
+        IWorkloadHandler WorkloadHandler{ get; };
+    }
+
+    [feature(Feature_Workloads)]
+    [contract(WorkloadsContract, 1)]
+    runtimeclass WorkloadManager
+    {
+        static WorkloadManager GetDefault();
+
+        Workload GetWorkload(String id);
+
+        IVector<String> FindIds();
+    }
+}
