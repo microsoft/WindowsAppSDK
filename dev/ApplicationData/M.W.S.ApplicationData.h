@@ -10,11 +10,12 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     struct ApplicationData : ApplicationDataT<ApplicationData>
     {
         ApplicationData() = default;
+        ApplicationData(winrt::Windows::Storage::ApplicationData const& value);
 
         static winrt::Microsoft::Windows::Storage::ApplicationData GetDefault();
         static winrt::Microsoft::Windows::Storage::ApplicationData GetForPackageFamily(hstring const& packageFamilyName);
         static winrt::Microsoft::Windows::Storage::ApplicationData GetForUnpackaged(hstring const& publisher, hstring const& name);
-        winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::Storage::ApplicationData> GetForUser(winrt::Windows::System::User user);
+        static winrt::Microsoft::Windows::Storage::ApplicationData GetForUser(winrt::Windows::System::User user);
         hstring LocalCachePath();
         hstring LocalPath();
         hstring MachinePath();
@@ -37,6 +38,9 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         void Dispose();
         hstring GetPublisherCachePath(hstring const& folderName);
         winrt::Windows::Storage::StorageFolder GetPublisherCacheFolder(hstring const& folderName);
+
+    private:
+        winrt::Windows::Storage::ApplicationData m_applicationData;
     };
 }
 namespace winrt::Microsoft::Windows::Storage::factory_implementation

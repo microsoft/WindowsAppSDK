@@ -86,7 +86,7 @@ namespace Microsoft.Windows.Storage
         /// Get an instance of ApplicationData for the specified user.
         /// @note This is equivalent to Windows.Storage.ApplicationDataManager.GetForUserAsync()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.getforuserasync
-        Windows.Foundation.IAsyncOperation<ApplicationData> GetForUser(Windows.System.User user);
+        static ApplicationData GetForUser(Windows.System.User user);
 
         /// Get an instance of ApplicationData for the specified package family for the current user.
         /// @note This is equivalent to Windows.Storage.ApplicationDataManager.CreateForPackageFamily()
