@@ -102,7 +102,7 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::RetrieveNotification
         wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
         UINT32 appUserModelIdSize{ APPLICATION_USER_MODEL_ID_MAX_LENGTH };
 
-        THROW_IF_FAILED(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
+        THROW_IF_FAILED(::GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
         return appUserModelId;
     }
     else

@@ -41,11 +41,11 @@ namespace Microsoft.Windows.Storage
     /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdatacontainer
     [feature(Feature_ApplicationData)]
     [contract(ApplicationDataContract, 1)]
-    runtimeclass ApplicationDataContainer
+    runtimeclass ApplicationDataContainer : Windows.Foundation.IClosable
     {
         /// Return the child settings containers of the settings container.
         /// https://learn.microsoft.com/uwp/api/windows.storage.applicationdatacontainer.containers
-        IMapView<String, ApplicationDataContainer> Containers { get; };
+        IMap<String, ApplicationDataContainer> Containers { get; };
 
         /// Return the name of the current settings container.
         /// https://learn.microsoft.com/uwp/api/windows.storage.applicationdatacontainer.name
@@ -57,10 +57,7 @@ namespace Microsoft.Windows.Storage
 
         /// Return an object that represents the settings in the settings container.
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdatacontainer.values
-        Windows.Foundation.Collections.PropertySet Values { get; };
-
-        void Close();
-        void Dispose();
+        Windows.Foundation.Collections.IPropertySet Values { get; };
 
         /// Create or open the specified settings container in the settings container.
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdatacontainer.createcontainer
@@ -75,7 +72,7 @@ namespace Microsoft.Windows.Storage
     /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata
     [feature(Feature_ApplicationData)]
     [contract(ApplicationDataContract, 1)]
-    runtimeclass ApplicationData
+    runtimeclass ApplicationData : Windows.Foundation.IClosable
     {
         /// Get an instance of ApplicationData for the current user.
         /// @note Requires the current process has package identity.
@@ -95,6 +92,9 @@ namespace Microsoft.Windows.Storage
 
         /// Get an instance of ApplicationData for the specified unpackaged app for the current user.
         static ApplicationData GetForUnpackaged(String publisher, String name);
+
+        /// Return true if the package family supports the machine data store.
+        Boolean IsMachinePathSupported();
 
         /// Return the path for the local cache data store not included in backup and restore operations.
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.localcachefolder
@@ -178,9 +178,6 @@ namespace Microsoft.Windows.Storage
         /// @see MachineLocalPath
         /// @see MachineLocalFolder
         Windows.Foundation.IAsyncAction ClearMachineFolderAsync();
-
-        void Close();
-        void Dispose();
 
         /// Return the path for the shared data store for the publisher of the app.
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.getpublishercachefolder

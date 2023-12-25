@@ -6,6 +6,12 @@
 #include "M.W.S.ApplicationData.h"
 #include "Microsoft.Windows.Storage.ApplicationData.g.cpp"
 
+#include "M.W.S.ApplicationDataContainer.h"
+
+#include <winrt/Windows.Management.Core.h>
+
+#include "ApplicationDataTelemetry.h"
+
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::Local));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::LocalCache) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::LocalCache));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Roaming) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::Roaming));
@@ -13,26 +19,40 @@ static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::Applicati
 
 namespace winrt::Microsoft::Windows::Storage::implementation
 {
-    ApplicationData::ApplicationData(winrt::Windows::Storage::ApplicationData const& value) :
-        m_applicationData(value)
+    ApplicationData::ApplicationData(winrt::Windows::Storage::ApplicationData const& value, hstring const& packageFamilyName) :
+        m_applicationData(value),
+        m_packageFamilyName(packageFamilyName)
     {
     }
     winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetDefault()
     {
-        throw hresult_not_implemented();
-    }
-    winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForPackageFamily(hstring const& packageFamilyName)
-    {
-        throw hresult_not_implemented();
-    }
-    winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUnpackaged(hstring const& publisher, hstring const& name)
-    {
-        throw hresult_not_implemented();
+        const auto packageFamilyName{ ::AppModel::Identity::GetCurrentPackageFamilyName<winrt::hstring>() };
+        auto applicationData{ winrt::Windows::Storage::ApplicationData::Current() };
+        return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(applicationData, packageFamilyName);
     }
     winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUser(winrt::Windows::System::User user)
     {
+        const auto packageFamilyName{ ::AppModel::Identity::GetCurrentPackageFamilyName<winrt::hstring>() };
         auto applicationData{ winrt::Windows::Storage::ApplicationData::GetForUserAsync(user).get() };
-        return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(applicationData);
+        return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(applicationData, packageFamilyName);
+    }
+    winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForPackageFamily(hstring const& packageFamilyName)
+    {
+        auto applicationData{ winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(packageFamilyName) };
+        return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(applicationData, packageFamilyName);
+    }
+    winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUnpackaged(hstring const& publisher, hstring const& name)
+    {
+        // TODO implement GetForUnpackaged
+        throw hresult_not_implemented();
+    }
+    bool ApplicationData::IsMachinePathSupported()
+    {
+#if defined(TODO_FrameworkUdk__ApplicationData_MachinePathIsSupported)
+        bool isSupported{};
+        THROW_IF_FAILED(ApplicationData_IsMachinePathSupported(m_packageFamilyName.c_str(), isSupported));
+#endif
+        return false;
     }
     hstring ApplicationData::LocalCachePath()
     {
@@ -44,7 +64,11 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     hstring ApplicationData::MachinePath()
     {
-        throw hresult_not_implemented();
+        wil::unique_cotaskmem_string programData;
+        THROW_IF_FAILED(::SHGetKnownFolderPath(FOLDERID_ProgramData, 0, nullptr, wil::out_param(programData)));
+        std::filesystem::path path{ programData.get() };
+        path /= m_packageFamilyName.c_str();
+        return hstring{ path.c_str() };
     }
     hstring ApplicationData::RoamingPath()
     {
@@ -52,7 +76,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     hstring ApplicationData::SharedLocalPath()
     {
-        throw hresult_not_implemented();
+        return m_applicationData.SharedLocalFolder().Path();
     }
     hstring ApplicationData::TemporaryPath()
     {
@@ -68,7 +92,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::MachineFolder()
     {
-        throw hresult_not_implemented();
+        return winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(MachinePath()).get();
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::RoamingFolder()
     {
@@ -76,7 +100,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::SharedLocalFolder()
     {
-        throw hresult_not_implemented();
+        return m_applicationData.SharedLocalFolder();
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::TemporaryFolder()
     {
@@ -84,11 +108,13 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     winrt::Microsoft::Windows::Storage::ApplicationDataContainer ApplicationData::LocalSettings()
     {
-        throw hresult_not_implemented();
+        auto applicationDataContainer{ m_applicationData.LocalSettings() };
+        return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationDataContainer>(applicationDataContainer);
     }
     winrt::Microsoft::Windows::Storage::ApplicationDataContainer ApplicationData::RoamingSettings()
     {
-        throw hresult_not_implemented();
+        auto applicationDataContainer{ m_applicationData.RoamingSettings() };
+        return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationDataContainer>(applicationDataContainer);
     }
     winrt::Windows::Foundation::IAsyncAction ApplicationData::ClearAllAsync()
     {
@@ -100,26 +126,35 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     winrt::Windows::Foundation::IAsyncAction ApplicationData::ClearPublisherCacheFolderAsync(hstring folderName)
     {
-        throw hresult_not_implemented();
+        return m_applicationData.ClearPublisherCacheFolderAsync(folderName);
     }
     winrt::Windows::Foundation::IAsyncAction ApplicationData::ClearMachineFolderAsync()
     {
-        throw hresult_not_implemented();
+        const auto path{ MachinePath() };
+
+        auto logTelemetry{ ApplicationDataTelemetry::ClearMachineFolderAsync::Start(path) };
+
+        auto strong{ get_strong() };
+
+        logTelemetry.IgnoreCurrentThread();
+        co_await winrt::resume_background();
+        auto logTelemetryContinuation{ logTelemetry.ContinueOnCurrentThread() };
+
+        const auto options{ wil::RemoveDirectoryOptions::KeepRootDirectory | wil::RemoveDirectoryOptions::RemoveReadOnly };
+        wil::RemoveDirectoryRecursive(path.c_str(), options);
+
+        logTelemetry.Stop();
     }
     void ApplicationData::Close()
     {
-        throw hresult_not_implemented();
-    }
-    void ApplicationData::Dispose()
-    {
-        throw hresult_not_implemented();
+        m_applicationData.Close();
     }
     hstring ApplicationData::GetPublisherCachePath(hstring const& folderName)
     {
-        throw hresult_not_implemented();
+        return m_applicationData.GetPublisherCacheFolder(folderName).Path();
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::GetPublisherCacheFolder(hstring const& folderName)
     {
-        throw hresult_not_implemented();
+        return m_applicationData.GetPublisherCacheFolder(folderName);
     }
 }

@@ -14,12 +14,13 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationDataContainer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationDataContainer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationDataContainer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationData.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationDataContainer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationDataTelemetry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
   </ItemGroup>
   <ItemGroup>

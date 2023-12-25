@@ -11,18 +11,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationDataContainer.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationData.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationDataContainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationDataContainer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationData.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationDataTelemetry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h">

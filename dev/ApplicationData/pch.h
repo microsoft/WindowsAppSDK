@@ -13,6 +13,7 @@
 #include <mutex>
 
 #include <wil/cppwinrt.h>
+#include <wil/filesystem.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 
@@ -22,3 +23,5 @@
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
+
+#include <appmodel.identity.h>

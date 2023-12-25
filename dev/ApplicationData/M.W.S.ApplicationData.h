@@ -10,12 +10,13 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     struct ApplicationData : ApplicationDataT<ApplicationData>
     {
         ApplicationData() = default;
-        ApplicationData(winrt::Windows::Storage::ApplicationData const& value);
+        ApplicationData(winrt::Windows::Storage::ApplicationData const& value, hstring const& packageFamilyName);
 
         static winrt::Microsoft::Windows::Storage::ApplicationData GetDefault();
+        static winrt::Microsoft::Windows::Storage::ApplicationData GetForUser(winrt::Windows::System::User user);
         static winrt::Microsoft::Windows::Storage::ApplicationData GetForPackageFamily(hstring const& packageFamilyName);
         static winrt::Microsoft::Windows::Storage::ApplicationData GetForUnpackaged(hstring const& publisher, hstring const& name);
-        static winrt::Microsoft::Windows::Storage::ApplicationData GetForUser(winrt::Windows::System::User user);
+        bool IsMachinePathSupported();
         hstring LocalCachePath();
         hstring LocalPath();
         hstring MachinePath();
@@ -35,12 +36,12 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         winrt::Windows::Foundation::IAsyncAction ClearPublisherCacheFolderAsync(hstring folderName);
         winrt::Windows::Foundation::IAsyncAction ClearMachineFolderAsync();
         void Close();
-        void Dispose();
         hstring GetPublisherCachePath(hstring const& folderName);
         winrt::Windows::Storage::StorageFolder GetPublisherCacheFolder(hstring const& folderName);
 
     private:
         winrt::Windows::Storage::ApplicationData m_applicationData;
+        winrt::hstring m_packageFamilyName;
     };
 }
 namespace winrt::Microsoft::Windows::Storage::factory_implementation
