@@ -25,6 +25,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)ApplicationData.idl" />

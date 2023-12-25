@@ -35,7 +35,7 @@ namespace Microsoft.Windows.Storage
 
         // Returns the specified container only if it already exists. Raises an exception of type System.Exception if the specified container does not exist.
         Existing,
-    } ApplicationDataCreateDisposition;
+    };
 
     /// Represents a container for settings. The methods and properties of this class support creating, deleting, enumerating, and traversing the container hierarchy.
     /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdatacontainer
@@ -45,7 +45,7 @@ namespace Microsoft.Windows.Storage
     {
         /// Return the child settings containers of the settings container.
         /// https://learn.microsoft.com/uwp/api/windows.storage.applicationdatacontainer.containers
-        Windows.Foundation.Map<String, ApplicationDataContainer> Containers { get; };
+        IMapView<String, ApplicationDataContainer> Containers { get; };
 
         /// Return the name of the current settings container.
         /// https://learn.microsoft.com/uwp/api/windows.storage.applicationdatacontainer.name
@@ -57,7 +57,7 @@ namespace Microsoft.Windows.Storage
 
         /// Return an object that represents the settings in the settings container.
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdatacontainer.values
-        Windows.Foundation.PropertySet Values { get; };
+        Windows.Foundation.Collections.PropertySet Values { get; };
 
         void Close();
         void Dispose();
@@ -73,8 +73,8 @@ namespace Microsoft.Windows.Storage
 
     /// Provides access to the application data store.
     /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata
-    [feature(Feature_PackageManager)]
-    [contract(PackageDeploymentContract, 1)]
+    [feature(Feature_ApplicationData)]
+    [contract(ApplicationDataContract, 1)]
     runtimeclass ApplicationData
     {
         /// Get an instance of ApplicationData for the current user.
@@ -163,8 +163,8 @@ namespace Microsoft.Windows.Storage
         /// @see RoamingFolder
         /// @see TemporaryPath
         /// @see TemporaryFolder
-        [method_name("ClearAllAsync")]
-        Windows.Foundation.IAsyncAction ClearAsync();
+        [method_name("ClearAsync")]
+        Windows.Foundation.IAsyncAction ClearAllAsync();
 
         /// Remove all data from the specified data store.
         Windows.Foundation.IAsyncAction ClearAsync(ApplicationDataLocality locality);

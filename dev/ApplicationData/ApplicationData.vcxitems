@@ -20,6 +20,7 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationDataContainer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.ApplicationData.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)ApplicationData.idl" />

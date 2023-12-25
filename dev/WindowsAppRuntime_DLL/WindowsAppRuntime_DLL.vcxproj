@@ -85,6 +85,7 @@
   <ImportGroup Label="Shared">
     <Import Project="..\AccessControl\AccessControl.vcxitems" Label="AccessControl" />
     <Import Project="..\AppLifecycle\AppLifecycle.vcxitems" Label="AppLifecycle" />
+    <Import Project="..\ApplicationData\ApplicationData.vcxitems" Label="Shared" />
     <Import Project="..\PushNotifications\PushNotifications.vcxitems" Label="PushNotifications" />
     <Import Project="..\AppNotifications\AppNotifications.vcxitems" Label="AppNotifications" />
     <Import Project="..\AppNotifications\AppNotificationBuilder\AppNotificationBuilder.vcxitems" Label="AppNotificationBuilder" />
