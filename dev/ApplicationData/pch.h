@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -16,6 +16,7 @@
 #include <wil/filesystem.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
+#include <wil/token_helpers.h>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>

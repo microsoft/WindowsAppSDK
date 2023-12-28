@@ -8,6 +8,8 @@
 
 #include "M.W.S.ApplicationDataContainer.h"
 
+#include <shlobj_core.h>
+
 #include <winrt/Windows.Management.Core.h>
 
 #include "ApplicationDataTelemetry.h"
@@ -27,17 +29,41 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetDefault()
     {
         const auto packageFamilyName{ ::AppModel::Identity::GetCurrentPackageFamilyName<winrt::hstring>() };
-        auto applicationData{ winrt::Windows::Storage::ApplicationData::Current() };
+        winrt::Windows::Storage::ApplicationData applicationData{ nullptr };
+        if (wil::get_token_is_app_container())
+        {
+            applicationData = winrt::Windows::Storage::ApplicationData::Current();
+        }
+        else
+        {
+            applicationData = winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(packageFamilyName);
+        }
         return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(applicationData, packageFamilyName);
     }
     winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUser(winrt::Windows::System::User user)
     {
+        if (!user)
+        {
+            return GetDefault();
+        }
         const auto packageFamilyName{ ::AppModel::Identity::GetCurrentPackageFamilyName<winrt::hstring>() };
         auto applicationData{ winrt::Windows::Storage::ApplicationData::GetForUserAsync(user).get() };
         return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(applicationData, packageFamilyName);
     }
     winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForPackageFamily(hstring const& packageFamilyName)
     {
+        if (wil::get_token_is_app_container())
+        {
+            // ApplicationDataManager.CreateForPackageFamily requires the caller is not in an AppContainer
+            // But if you ask for your own package family name it's equivalent to GetDefault()
+            const auto currentPackageFamilyName{ ::AppModel::Identity::GetCurrentPackageFamilyName<winrt::hstring>() };
+            if (CompareStringOrdinal(packageFamilyName.c_str(), -1, currentPackageFamilyName.c_str(), -1, TRUE) == CSTR_EQUAL)
+            {
+                return GetDefault();
+            }
+
+            // Let's fall through and let CreateForPackageFamily()'s error handling report the problem
+        }
         auto applicationData{ winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(packageFamilyName) };
         return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(applicationData, packageFamilyName);
     }
