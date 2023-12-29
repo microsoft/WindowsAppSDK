@@ -74,11 +74,9 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     bool ApplicationData::IsMachinePathSupported()
     {
-#if defined(TODO_FrameworkUdk__ApplicationData_MachinePathIsSupported)
-        bool isSupported{};
-        THROW_IF_FAILED(ApplicationData_IsMachinePathSupported(m_packageFamilyName.c_str(), isSupported));
-#endif
-        return false;
+        const auto path{ _MachinePath(m_packageFamilyName) };
+        const std::filesystem::directory_entry directoryEntry{ path };
+        return directoryEntry.is_directory();
     }
     hstring ApplicationData::LocalCachePath()
     {
@@ -90,15 +88,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     hstring ApplicationData::MachinePath()
     {
-        // Path = ...apprepository...\ApplicationData\...pkgfamilyname...\Machine
-        // This is typically %ProgramData%\Microsoft\Windows\AppRepository\ApplicationData\...pkgfamilyname...\Machine
-        PCWSTR c_path{ L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx" };
-        PCWSTR c_valueName{ L"PackageRepositoryRoot" };
-        std::filesystem::path appRepository{ wil::reg::get_value_string(HKEY_LOCAL_MACHINE, c_path, c_valueName) };
-        auto path{ appRepository / L"ApplicationData" };
-        path /= m_packageFamilyName.c_str();
-        path /= "Machine";
-        return hstring{ path.c_str() };
+        return winrt::hstring{ _MachinePath(m_packageFamilyName).c_str()};
     }
     hstring ApplicationData::RoamingPath()
     {
@@ -186,5 +176,17 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     winrt::Windows::Storage::StorageFolder ApplicationData::GetPublisherCacheFolder(hstring const& folderName)
     {
         return m_applicationData.GetPublisherCacheFolder(folderName);
+    }
+    std::filesystem::path ApplicationData::_MachinePath(hstring const& packageFamilyName)
+    {
+        // Path = ...apprepository...\ApplicationData\...pkgfamilyname...\Machine
+        // This is typically %ProgramData%\Microsoft\Windows\AppRepository\ApplicationData\...pkgfamilyname...\Machine
+        PCWSTR c_path{ L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx" };
+        PCWSTR c_valueName{ L"PackageRepositoryRoot" };
+        std::filesystem::path appRepository{ wil::reg::get_value_string(HKEY_LOCAL_MACHINE, c_path, c_valueName) };
+        auto path{ appRepository / L"ApplicationData" };
+        path /= packageFamilyName.c_str();
+        path /= "Machine";
+        return path;
     }
 }

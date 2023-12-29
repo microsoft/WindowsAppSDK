@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -38,6 +38,9 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         void Close();
         hstring GetPublisherCachePath(hstring const& folderName);
         winrt::Windows::Storage::StorageFolder GetPublisherCacheFolder(hstring const& folderName);
+
+    private:
+        static std::filesystem::path _MachinePath(hstring const& packageFamilyName);
 
     private:
         winrt::Windows::Storage::ApplicationData m_applicationData;
