@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #ifndef __SECURITY_USER_H
@@ -13,7 +13,7 @@ inline bool IsLocalSystem(HANDLE token = nullptr)
     DWORD localSystemSidBufferSize{ ARRAYSIZE(localSystemSidBuffer) };
     THROW_IF_WIN32_BOOL_FALSE(CreateWellKnownSid(WinLocalSystemSid, nullptr, localSystemSid, &localSystemSidBufferSize));
 
-    wistd::unique_ptr<TOKEN_USER> user{ wil::get_token_information<TOKEN_USER>(!token ? GetCurrentThreadEffectiveToken() : token) };
+    const auto user{ wil::get_token_information<TOKEN_USER>(!token ? GetCurrentThreadEffectiveToken() : token) };
     PSID userSid{ user->User.Sid };
 
     return !!EqualSid(userSid, localSystemSid);

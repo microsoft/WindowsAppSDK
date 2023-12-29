@@ -90,10 +90,14 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     hstring ApplicationData::MachinePath()
     {
-        wil::unique_cotaskmem_string programData;
-        THROW_IF_FAILED(::SHGetKnownFolderPath(FOLDERID_ProgramData, 0, nullptr, wil::out_param(programData)));
-        std::filesystem::path path{ programData.get() };
+        // Path = ...apprepository...\ApplicationData\...pkgfamilyname...\Machine
+        // This is typically %ProgramData%\Microsoft\Windows\AppRepository\ApplicationData\...pkgfamilyname...\Machine
+        PCWSTR c_path{ L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx" };
+        PCWSTR c_valueName{ L"PackageRepositoryRoot" };
+        std::filesystem::path appRepository{ wil::reg::get_value_string(HKEY_LOCAL_MACHINE, c_path, c_valueName) };
+        auto path{ appRepository / L"ApplicationData" };
         path /= m_packageFamilyName.c_str();
+        path /= "Machine";
         return hstring{ path.c_str() };
     }
     hstring ApplicationData::RoamingPath()

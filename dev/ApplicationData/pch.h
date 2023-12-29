@@ -14,6 +14,7 @@
 
 #include <wil/cppwinrt.h>
 #include <wil/filesystem.h>
+#include <wil/registry.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <wil/token_helpers.h>
