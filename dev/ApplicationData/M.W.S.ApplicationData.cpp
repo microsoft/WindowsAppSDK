@@ -64,8 +64,33 @@ namespace winrt::Microsoft::Windows::Storage::implementation
 
             // Let's fall through and let CreateForPackageFamily()'s error handling report the problem
         }
-        auto applicationData{ winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(packageFamilyName) };
-        return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(applicationData, packageFamilyName);
+
+        try
+        {
+            auto applicationData{ winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(packageFamilyName) };
+            return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(applicationData, packageFamilyName);
+        }
+        catch (winrt::hresult_error& e)
+        {
+            // CreateForPackageFamily() fails for Framework packages with HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)
+            // But we succeed (the return object is just limited in function)
+            if (e.code() == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+            {
+                UINT32 count{};
+                UINT32 bufferLength{};
+                UINT32 packageProperties{};
+                const auto rc{ ::FindPackagesByPackageFamily(packageFamilyName.c_str(), PACKAGE_FILTER_DIRECT, &count, nullptr, &bufferLength, nullptr, &packageProperties) };
+                if ((rc == ERROR_INSUFFICIENT_BUFFER) && (count > 0))
+                {
+                    // The package family has package(s) registered for the user with at least 1 Framework package
+                    // (and a package family can't have Framework and not-Framework packages in the same package family)
+                    return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(nullptr, packageFamilyName);
+                }
+            }
+
+            // Nope! Not a framework. We have an actual error
+            throw;
+        }
     }
     winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUnpackaged(hstring const& publisher, hstring const& name)
     {
@@ -75,78 +100,164 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     bool ApplicationData::IsMachinePathSupported()
     {
         const auto path{ _MachinePath(m_packageFamilyName) };
-        const std::filesystem::directory_entry directoryEntry{ path };
-        return directoryEntry.is_directory();
+        return _PathExists(path);
     }
     hstring ApplicationData::LocalCachePath()
     {
+        if (!m_applicationData)
+        {
+            return winrt::hstring{};
+        }
         return m_applicationData.LocalCacheFolder().Path();
     }
     hstring ApplicationData::LocalPath()
     {
+        if (!m_applicationData)
+        {
+            return winrt::hstring{};
+        }
         return m_applicationData.LocalFolder().Path();
     }
     hstring ApplicationData::MachinePath()
     {
-        return winrt::hstring{ _MachinePath(m_packageFamilyName).c_str()};
+        const auto path{ _MachinePath(m_packageFamilyName) };
+        winrt::hstring machinePath;
+        if (_PathExists(path))
+        {
+            machinePath = path.c_str();
+        }
+        return machinePath;
     }
     hstring ApplicationData::RoamingPath()
     {
+        if (!m_applicationData)
+        {
+            return winrt::hstring{};
+        }
         return m_applicationData.RoamingFolder().Path();
     }
     hstring ApplicationData::SharedLocalPath()
     {
-        return m_applicationData.SharedLocalFolder().Path();
+        if (!m_applicationData)
+        {
+            return winrt::hstring{};
+        }
+
+        // SharedLocalFolder is only available if the device has the appropriate group policy.  If the group policy
+        // is not enabled, the device administrator must enable it. From Local Group Policy Editor, navigate to
+        // Computer Configuration\Administrative Templates\Windows Components\App Package Deployment,
+        // then change the setting "Allow a Windows app to share application data between users" to "Enabled."
+        //
+        // After the group policy is enabled, SharedLocalFolder can be accessed.
+        //
+        // @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.sharedlocalfolder
+
+        auto sharedLocalFolder{ m_applicationData.SharedLocalFolder() };
+        winrt::hstring path;
+        if (sharedLocalFolder)
+        {
+            path = sharedLocalFolder.Path();
+        }
+        return path;
     }
     hstring ApplicationData::TemporaryPath()
     {
+        if (!m_applicationData)
+        {
+            return winrt::hstring{};
+        }
         return m_applicationData.TemporaryFolder().Path();
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::LocalCacheFolder()
     {
+        if (!m_applicationData)
+        {
+            return nullptr;
+        }
         return m_applicationData.LocalCacheFolder();
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::LocalFolder()
     {
+        if (!m_applicationData)
+        {
+            return nullptr;
+        }
         return m_applicationData.LocalFolder();
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::MachineFolder()
     {
-        return winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(MachinePath()).get();
+        const auto path{ MachinePath() };
+        if (path.empty())
+        {
+            return nullptr;
+        }
+        return winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(path).get();
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::RoamingFolder()
     {
+        if (!m_applicationData)
+        {
+            return nullptr;
+        }
         return m_applicationData.RoamingFolder();
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::SharedLocalFolder()
     {
+        if (!m_applicationData)
+        {
+            return nullptr;
+        }
         return m_applicationData.SharedLocalFolder();
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::TemporaryFolder()
     {
+        if (!m_applicationData)
+        {
+            return nullptr;
+        }
         return m_applicationData.TemporaryFolder();
     }
     winrt::Microsoft::Windows::Storage::ApplicationDataContainer ApplicationData::LocalSettings()
     {
+        if (!m_applicationData)
+        {
+            return nullptr;
+        }
         auto applicationDataContainer{ m_applicationData.LocalSettings() };
         return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationDataContainer>(applicationDataContainer);
     }
     winrt::Microsoft::Windows::Storage::ApplicationDataContainer ApplicationData::RoamingSettings()
     {
+        if (!m_applicationData)
+        {
+            return nullptr;
+        }
         auto applicationDataContainer{ m_applicationData.RoamingSettings() };
         return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationDataContainer>(applicationDataContainer);
     }
     winrt::Windows::Foundation::IAsyncAction ApplicationData::ClearAllAsync()
     {
-        return m_applicationData.ClearAsync();
+        if (!m_applicationData)
+        {
+            co_return;
+        }
+        co_await m_applicationData.ClearAsync();
     }
     winrt::Windows::Foundation::IAsyncAction ApplicationData::ClearAsync(winrt::Microsoft::Windows::Storage::ApplicationDataLocality locality)
     {
-        return m_applicationData.ClearAsync(static_cast<winrt::Windows::Storage::ApplicationDataLocality>(locality));
+        if (!m_applicationData)
+        {
+            co_return;
+        }
+        co_await m_applicationData.ClearAsync(static_cast<winrt::Windows::Storage::ApplicationDataLocality>(locality));
     }
     winrt::Windows::Foundation::IAsyncAction ApplicationData::ClearPublisherCacheFolderAsync(hstring folderName)
     {
-        return m_applicationData.ClearPublisherCacheFolderAsync(folderName);
+        if (!m_applicationData)
+        {
+            co_return;
+        }
+        co_await m_applicationData.ClearPublisherCacheFolderAsync(folderName);
     }
     winrt::Windows::Foundation::IAsyncAction ApplicationData::ClearMachineFolderAsync()
     {
@@ -167,19 +278,61 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     void ApplicationData::Close()
     {
-        m_applicationData.Close();
+        if (m_applicationData)
+        {
+            m_applicationData.Close();
+        }
     }
     hstring ApplicationData::GetPublisherCachePath(hstring const& folderName)
     {
-        return m_applicationData.GetPublisherCacheFolder(folderName).Path();
+        if (!m_applicationData)
+        {
+            return winrt::hstring{};
+        }
+
+        try
+        {
+            return m_applicationData.GetPublisherCacheFolder(folderName).Path();
+        }
+        catch (winrt::hresult_error& e)
+        {
+            // GetPublisherCacheFolder() throws HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) when it doesn't exist
+            if (e.code() == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+            {
+                return winrt::hstring{};
+            }
+
+            // Nope! We have an actual error
+            throw;
+        }
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::GetPublisherCacheFolder(hstring const& folderName)
     {
+        if (!m_applicationData)
+        {
+            return nullptr;
+        }
+
+        try
+        {
+            return m_applicationData.GetPublisherCacheFolder(folderName);
+        }
+        catch (winrt::hresult_error& e)
+        {
+            // GetPublisherCacheFolder() throws HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) when it doesn't exist
+            if (e.code() == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+            {
+                return nullptr;
+            }
+
+            // Nope! We have an actual error
+            throw;
+        }
         return m_applicationData.GetPublisherCacheFolder(folderName);
     }
     std::filesystem::path ApplicationData::_MachinePath(hstring const& packageFamilyName)
     {
-        // Path = ...apprepository...\ApplicationData\...pkgfamilyname...\Machine
+        // Path = HKLM\...apprepository...\ApplicationData\...pkgfamilyname...\Machine
         // This is typically %ProgramData%\Microsoft\Windows\AppRepository\ApplicationData\...pkgfamilyname...\Machine
         PCWSTR c_path{ L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx" };
         PCWSTR c_valueName{ L"PackageRepositoryRoot" };
@@ -188,5 +341,11 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         path /= packageFamilyName.c_str();
         path /= "Machine";
         return path;
+    }
+
+    bool ApplicationData::_PathExists(std::filesystem::path const& path)
+    {
+        const std::filesystem::directory_entry directoryEntry{ path };
+        return directoryEntry.is_directory();
     }
 }

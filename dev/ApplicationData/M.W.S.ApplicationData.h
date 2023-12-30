@@ -41,6 +41,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
 
     private:
         static std::filesystem::path _MachinePath(hstring const& packageFamilyName);
+        static bool _PathExists(std::filesystem::path const& path);
 
     private:
         winrt::Windows::Storage::ApplicationData m_applicationData;
