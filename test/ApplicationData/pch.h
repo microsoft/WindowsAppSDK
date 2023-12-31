@@ -6,7 +6,11 @@
 
 #include <unknwn.h>
 
+#include <shlobj_core.h>
+#include <shlobj.h>
+
 #include <wil/cppwinrt.h>
+#include <wil/filesystem.h>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
