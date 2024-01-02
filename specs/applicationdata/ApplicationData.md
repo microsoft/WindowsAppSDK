@@ -7,6 +7,10 @@
   - [3.2. \*Path properties](#32-path-properties)
   - [3.3. Reliable access](#33-reliable-access)
   - [3.4. Per-Machine data store](#34-per-machine-data-store)
+    - [3.4.1. Machine Path/Folder](#341-machine-pathfolder)
+    - [3.4.2. Manifested Opt-In](#342-manifested-opt-in)
+    - [3.4.3. Machine Path Creation/Deletion](#343-machine-path-creationdeletion)
+    - [3.4.4. APIs](#344-apis)
   - [3.5. Unpackaged app data stores](#35-unpackaged-app-data-stores)
 - [4. Examples](#4-examples)
   - [4.1. Packaged app using LocalPath](#41-packaged-app-using-localpath)
@@ -87,6 +91,50 @@ Microsoft.Windows.Storage.ApplicationData provides consistent behavior as develo
 
 ## 3.4. Per-Machine data store
 
+Package families can optionally have a per-machine data store.
+
+### 3.4.1. Machine Path/Folder
+
+The path for a package family’s "Machine Folder" is located at `%ProgramData%\Microsoft\Windows\AppRepository\ApplicationData\...packagefamilyname...\Machine`.
+
+This directory is ACL’d similarly to a package’s System Metadata directory (`%ProgramData%\Microsoft\Windows\AppRepository\Packages\...pkgfullname...`) e.g.
+
+```
+BUILTIN\Users:(OI)(CI)(Rc,S,RD,REA,X,RA)
+S-1-15-3-2977037414-864741429-1129033548-1928484290-1803339615-1058153653-556172075:(OI)(CI)(RX)
+BUILTIN\Users:(OI)(CI)(R)
+NT SERVICE\TrustedInstaller:(I)(F)
+NT SERVICE\TrustedInstaller:(I)(CI)(IO)(F)
+NT AUTHORITY\SYSTEM:(I)(F)
+NT AUTHORITY\SYSTEM:(I)(OI)(CI)(IO)(F)
+BUILTIN\Administrators:(I)(RX)
+BUILTIN\Administrators:(I)(OI)(CI)(IO)(GR,GE)
+S-1-15-3-1024-3635283841-2530182609-996808640-1887759898-3848208603-3313616867-983405619-2501854204:(I)(RX)
+S-1-15-3-1024-3635283841-2530182609-996808640-1887759898-3848208603-3313616867-983405619-2501854204:(I)(OI)(CI)(IO)(GR,GE)
+```
+
+### 3.4.2. Manifested Opt-In
+
+The "Machine Folder" is only available for packages that explicitly opt-in to enabling it via appxmanifest.xml
+
+```xml
+<Package>
+  ...
+  <Properties>
+    <appdata:ApplicationData>
+      <MachineFolder/>
+    </appdata:ApplicationData>
+    ...
+```
+
+### 3.4.3. Machine Path Creation/Deletion
+
+A new Undocked Deployment Extension Handler (DEH) creates the Machine path when a package in the package family is installed, if it doesn't already exist.
+
+The Machine path is removed when the last package in the package family is removed from the machine.
+
+### 3.4.4. APIs
+
 New properties and methods to access per-machine data:
 
 * ApplicationDataLocality.Machine
@@ -94,6 +142,8 @@ New properties and methods to access per-machine data:
 * IsMachinePathSupported
 * MachineFolder
 * MachinePath
+
+**NOTE:** The per-machine APIs require the caller has the package family registered for the user -or- is running as SYSTEM.
 
 ## 3.5. Unpackaged app data stores
 
@@ -110,6 +160,7 @@ Unpackaged applications can use the ApplicationData API to access app data store
 |ApplicationData.LocalSettings   |HKCU\SOFTWARE\<publisher>\<product>                                |
 
 <sup>1</sup>
+
 [GetTempPath2W()](https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-gettemppath2w)
 returns `C:\Windows\SystemTemp` for SYSTEM processes else for non-SYSTEM processes checks for the
 existence of environment variables in the following order and uses the first path found:
