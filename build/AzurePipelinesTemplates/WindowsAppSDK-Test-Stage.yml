@@ -4,7 +4,7 @@ stages:
   condition: not(failed())
   jobs:
   # Arm64 uses a different VM type than x64, thus requiring them to be in different
-  # pools, hence, we spilt the two scenarios into separate jobs.
+  # pools, hence, we split the two scenarios into separate jobs.
   - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
     parameters:
       jobName: PipelineTestsX64

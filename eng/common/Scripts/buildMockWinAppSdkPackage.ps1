@@ -1,10 +1,9 @@
-# This script is invoked by build.cmd to produce a WinUI transport package, and from that,
-# a mock Windows App SDK package for tests/samples.
-
+# This script will be used by BuildAll.ps1 to build a mock WindowsAppSDK Package. A path to the TransportPackage used must be provided to
+# the TransportPackagePath parameter along with the PackageName and PackageVersion in each respective parameters
 param(
     [Parameter(Mandatory=$true)] [string] $TransportPackageName,
     [Parameter(Mandatory=$true)] [string] $TransportPackagePath,
-    [Parameter(Mandatory=$false)] [string] $TransportPackageVersion = "3.0.0-dev",
+    [Parameter(Mandatory=$false)] [string] $TransportPackageVersion,
     [Parameter(Mandatory=$true)] [string] $Output,
     [Parameter(Mandatory=$true)] [string] $RepoRoot,
     [Parameter(Mandatory=$true)] [string] $Platform,

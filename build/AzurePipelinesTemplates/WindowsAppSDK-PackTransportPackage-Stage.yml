@@ -141,7 +141,7 @@ stages:
         LIB: $(Build.SourcesDirectory)
 
     - task: PublishSymbols@2
-      displayName: 'Publish symbols to public server(without source indexing)'
+      displayName: 'Publish symbols to public server (without source indexing)'
       inputs:
         searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
         symbolServerType: 'TeamServices'
