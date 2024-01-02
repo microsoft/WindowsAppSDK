@@ -240,7 +240,7 @@ Per https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingf
   > Roaming data and settings is no longer supported as of Windows 11. The recommended replacement
       is Azure App Service. Azure App Service is widely supported, well documented, reliable, and
       supports cross-platform/cross-ecosystem scenarios such as iOS, Android and web. Settings
-      stored here no longer roam (as of Windows 11), but the settings store is still available. 
+      stored here no longer roam (as of Windows 11), but the settings store is still available.
 
 We provide `RoamingFolder` and `RoamingSettings` equivalents but they're only as functional as
 Windows provides (i.e. no data roaming on Windows after 1909 aka 19H2 aka 10.0.18363.0).
@@ -412,7 +412,6 @@ namespace Microsoft.Windows.Storage
         /// @see RoamingFolder
         /// @see TemporaryPath
         /// @see TemporaryFolder
-        [method_name("ClearAsync")]
         Windows.Foundation.IAsyncAction ClearAllAsync();
 
         /// Remove all data from the specified data store.
