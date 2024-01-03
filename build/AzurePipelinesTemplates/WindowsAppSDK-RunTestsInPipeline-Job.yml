@@ -1,15 +1,11 @@
 # This runs the integration tests directly in the pipeline on the images hosted by the 'WinAppSDK-Test-Pool'.
 # This pool is a 1ES Hosted Pool with custom images, which lets us run tests on builds beyond what is
-# supported by Helix or the Azure DevOps Microsoft hosted agents. In case of arm64, we use the
-# 'WinAppSDK-Test-Pool-Arm64' pool instead, and use parameter isArm64Platfrom to drive pool selection.
+# supported by Helix or the Azure DevOps Microsoft hosted agents.
 
 parameters:
 - name: jobName
   type: string
   default: PipelineTests
-- name: isArm64Platfrom
-  type: boolean
-  default: false
 - name: dependsOn
   type: object
   default:
