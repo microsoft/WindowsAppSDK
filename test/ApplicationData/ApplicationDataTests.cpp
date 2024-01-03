@@ -357,22 +357,322 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(LocalSettings_Main)
         {
-            //TODO
+            winrt::hstring packageFamilyName{ Main_PackageFamilyName };
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForPackageFamily(packageFamilyName) };
+            VERIFY_IS_NOT_NULL(applicationData);
+
+            auto systemApplicationData{ winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(packageFamilyName) };
+            VERIFY_IS_NOT_NULL(systemApplicationData);
+
+            const auto localSettings{ applicationData.LocalSettings() };
+            const auto systemLocalSettings{ systemApplicationData.LocalSettings() };
+            VERIFY_ARE_EQUAL(static_cast<int32_t>(localSettings.Locality()), static_cast<int32_t>(systemLocalSettings.Locality()));
+
+            auto containers{ localSettings.Containers() };
+            VERIFY_ARE_EQUAL(0u, containers.Size());
+            auto systemContainers{ systemLocalSettings.Containers() };
+            VERIFY_ARE_EQUAL(0u, systemContainers.Size());
+            VERIFY_ARE_EQUAL(containers.Size(), systemContainers.Size());
+
+            const winrt::hstring foodAndStuff{ L"FoodAndStuff" };
+            VERIFY_IS_FALSE(containers.HasKey(foodAndStuff));
+            VERIFY_IS_FALSE(systemContainers.HasKey(foodAndStuff));
+
+            auto container{ localSettings.CreateContainer(foodAndStuff, winrt::Microsoft::Windows::Storage::ApplicationDataCreateDisposition::Always) };
+            VERIFY_ARE_EQUAL(foodAndStuff, container.Name());
+            //
+            VERIFY_ARE_EQUAL(0u, containers.Size());
+            VERIFY_IS_FALSE(containers.HasKey(foodAndStuff));
+            containers = localSettings.Containers();
+            VERIFY_ARE_EQUAL(1u, containers.Size());
+            VERIFY_IS_TRUE(containers.HasKey(foodAndStuff));
+            container = containers.Lookup(foodAndStuff);
+            VERIFY_IS_NOT_NULL(container);
+            VERIFY_ARE_EQUAL(foodAndStuff, container.Name());
+            //
+            VERIFY_ARE_EQUAL(0u, systemContainers.Size());
+            VERIFY_IS_FALSE(systemContainers.HasKey(foodAndStuff));
+            systemContainers = systemLocalSettings.Containers();
+            VERIFY_ARE_EQUAL(1u, systemContainers.Size());
+            VERIFY_IS_TRUE(systemContainers.HasKey(foodAndStuff));
+            auto systemContainer{ systemContainers.Lookup(foodAndStuff) };
+            VERIFY_IS_NOT_NULL(systemContainer);
+            VERIFY_ARE_EQUAL(foodAndStuff, systemContainer.Name());
+
+            const winrt::hstring keyMeat{ L"Meat" };
+            const winrt::hstring rawValueSteak{ L"Steak" };
+            auto valueSteak{ winrt::Windows::Foundation::PropertyValue::CreateString(rawValueSteak) };
+            auto values{ container.Values() };
+            VERIFY_ARE_EQUAL(0u, values.Size());
+            values.Insert(keyMeat, valueSteak);
+            VERIFY_ARE_EQUAL(1u, values.Size());
+            auto steak{ values.Lookup(keyMeat) };
+            VERIFY_IS_NOT_NULL(steak);
+            auto steakLookupAsReferenceString{ steak.try_as<winrt::Windows::Foundation::IReference<winrt::hstring>>() };
+            VERIFY_IS_NOT_NULL(steakLookupAsReferenceString);
+            auto steakString{ steakLookupAsReferenceString.GetString() };
+            VERIFY_ARE_EQUAL(rawValueSteak, steakString);
+            //
+            auto systemValues{ systemContainer.Values() };
+            VERIFY_ARE_EQUAL(1u, systemValues.Size());
+            auto systemSteak{ systemValues.Lookup(keyMeat) };
+            VERIFY_IS_NOT_NULL(systemSteak);
+            auto systemSteakLookupAsReferenceString{ systemSteak.try_as<winrt::Windows::Foundation::IReference<winrt::hstring>>() };
+            VERIFY_IS_NOT_NULL(systemSteakLookupAsReferenceString);
+            auto systemSteakString{ systemSteakLookupAsReferenceString.GetString() };
+            VERIFY_ARE_EQUAL(rawValueSteak, systemSteakString);
+
+            const winrt::hstring keyDrink{ L"Drink" };
+            const winrt::hstring rawValueWhiskey{ L"Whiskey" };
+            auto valueWhiskey{ winrt::Windows::Foundation::PropertyValue::CreateString(rawValueWhiskey) };
+            VERIFY_ARE_EQUAL(1u, systemValues.Size());
+            systemValues.Insert(keyDrink, valueWhiskey);
+            VERIFY_ARE_EQUAL(2u, systemValues.Size());
+            auto systemWhiskey{ systemValues.Lookup(keyDrink) };
+            VERIFY_IS_NOT_NULL(systemWhiskey);
+            auto systemWhiskeyLookupAsReferenceString{ systemWhiskey.try_as<winrt::Windows::Foundation::IReference<winrt::hstring>>() };
+            VERIFY_IS_NOT_NULL(systemWhiskeyLookupAsReferenceString);
+            auto systemWhiskeyString{ systemWhiskeyLookupAsReferenceString.GetString() };
+            VERIFY_ARE_EQUAL(rawValueWhiskey, systemWhiskeyString);
+            //
+            VERIFY_ARE_EQUAL(2u, values.Size());
+            auto whiskey{ values.Lookup(keyDrink) };
+            VERIFY_IS_NOT_NULL(whiskey);
+            auto whiskeyLookupAsReferenceString{ whiskey.try_as<winrt::Windows::Foundation::IReference<winrt::hstring>>() };
+            VERIFY_IS_NOT_NULL(whiskeyLookupAsReferenceString);
+            auto whiskeyString{ whiskeyLookupAsReferenceString.GetString() };
+            VERIFY_ARE_EQUAL(rawValueWhiskey, whiskeyString);
+
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local, container.Locality());
+            container.Close();
+            try
+            {
+                auto locality{ container.Locality() };
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(RO_E_CLOSED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+            }
+            VERIFY_ARE_EQUAL(winrt::Windows::Storage::ApplicationDataLocality::Local, systemContainer.Locality());
+            systemContainer.Close();
+            try
+            {
+                auto locality{ systemContainer.Locality() };
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(RO_E_CLOSED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+            }
+
+            VERIFY_ARE_EQUAL(1u, localSettings.Containers().Size());
+            VERIFY_ARE_EQUAL(1u, systemLocalSettings.Containers().Size());
+            localSettings.DeleteContainer(foodAndStuff);
+            VERIFY_ARE_EQUAL(0u, localSettings.Containers().Size());
+            VERIFY_ARE_EQUAL(0u, systemLocalSettings.Containers().Size());
+
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local, localSettings.Locality());
+            localSettings.Close();
+            try
+            {
+                auto locality{ localSettings.Locality() };
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(RO_E_CLOSED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+            }
+            VERIFY_ARE_EQUAL(winrt::Windows::Storage::ApplicationDataLocality::Local, systemLocalSettings.Locality());
+            systemLocalSettings.Close();
+            try
+            {
+                auto locality{ systemLocalSettings.Locality() };
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(RO_E_CLOSED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+            }
         }
 
         TEST_METHOD(LocalSettings_Framework)
         {
-            //TODO
+            winrt::hstring packageFamilyName{ Framework_PackageFamilyName };
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForPackageFamily(packageFamilyName) };
+            VERIFY_IS_NOT_NULL(applicationData);
+            const auto localSettings{ applicationData.LocalSettings() };
+            VERIFY_IS_NULL(localSettings);
+
+            try
+            {
+                auto systemApplicationData{ winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(packageFamilyName) };
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND), e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+            }
         }
 
         TEST_METHOD(RoamingSettings_Main)
         {
-            //TODO
+            winrt::hstring packageFamilyName{ Main_PackageFamilyName };
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForPackageFamily(packageFamilyName) };
+            VERIFY_IS_NOT_NULL(applicationData);
+
+            auto systemApplicationData{ winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(packageFamilyName) };
+            VERIFY_IS_NOT_NULL(systemApplicationData);
+
+            const auto roamingSettings{ applicationData.RoamingSettings() };
+            const auto systemRoamingSettings{ systemApplicationData.RoamingSettings() };
+            VERIFY_ARE_EQUAL(static_cast<int32_t>(roamingSettings.Locality()), static_cast<int32_t>(systemRoamingSettings.Locality()));
+
+            auto containers{ roamingSettings.Containers() };
+            VERIFY_ARE_EQUAL(0u, containers.Size());
+            auto systemContainers{ systemRoamingSettings.Containers() };
+            VERIFY_ARE_EQUAL(0u, systemContainers.Size());
+            VERIFY_ARE_EQUAL(containers.Size(), systemContainers.Size());
+
+            const winrt::hstring foodAndStuff{ L"FoodAndStuff" };
+            VERIFY_IS_FALSE(containers.HasKey(foodAndStuff));
+            VERIFY_IS_FALSE(systemContainers.HasKey(foodAndStuff));
+
+            auto container{ roamingSettings.CreateContainer(foodAndStuff, winrt::Microsoft::Windows::Storage::ApplicationDataCreateDisposition::Always) };
+            VERIFY_ARE_EQUAL(foodAndStuff, container.Name());
+            //
+            VERIFY_ARE_EQUAL(0u, containers.Size());
+            VERIFY_IS_FALSE(containers.HasKey(foodAndStuff));
+            containers = roamingSettings.Containers();
+            VERIFY_ARE_EQUAL(1u, containers.Size());
+            VERIFY_IS_TRUE(containers.HasKey(foodAndStuff));
+            container = containers.Lookup(foodAndStuff);
+            VERIFY_IS_NOT_NULL(container);
+            VERIFY_ARE_EQUAL(foodAndStuff, container.Name());
+            //
+            VERIFY_ARE_EQUAL(0u, systemContainers.Size());
+            VERIFY_IS_FALSE(systemContainers.HasKey(foodAndStuff));
+            systemContainers = systemRoamingSettings.Containers();
+            VERIFY_ARE_EQUAL(1u, systemContainers.Size());
+            VERIFY_IS_TRUE(systemContainers.HasKey(foodAndStuff));
+            auto systemContainer{ systemContainers.Lookup(foodAndStuff) };
+            VERIFY_IS_NOT_NULL(systemContainer);
+            VERIFY_ARE_EQUAL(foodAndStuff, systemContainer.Name());
+
+            const winrt::hstring keyMeat{ L"Meat" };
+            const winrt::hstring rawValueSteak{ L"Steak" };
+            auto valueSteak{ winrt::Windows::Foundation::PropertyValue::CreateString(rawValueSteak) };
+            auto values{ container.Values() };
+            VERIFY_ARE_EQUAL(0u, values.Size());
+            values.Insert(keyMeat, valueSteak);
+            VERIFY_ARE_EQUAL(1u, values.Size());
+            auto steak{ values.Lookup(keyMeat) };
+            VERIFY_IS_NOT_NULL(steak);
+            auto steakLookupAsReferenceString{ steak.try_as<winrt::Windows::Foundation::IReference<winrt::hstring>>() };
+            VERIFY_IS_NOT_NULL(steakLookupAsReferenceString);
+            auto steakString{ steakLookupAsReferenceString.GetString() };
+            VERIFY_ARE_EQUAL(rawValueSteak, steakString);
+            //
+            auto systemValues{ systemContainer.Values() };
+            VERIFY_ARE_EQUAL(1u, systemValues.Size());
+            auto systemSteak{ systemValues.Lookup(keyMeat) };
+            VERIFY_IS_NOT_NULL(systemSteak);
+            auto systemSteakLookupAsReferenceString{ systemSteak.try_as<winrt::Windows::Foundation::IReference<winrt::hstring>>() };
+            VERIFY_IS_NOT_NULL(systemSteakLookupAsReferenceString);
+            auto systemSteakString{ systemSteakLookupAsReferenceString.GetString() };
+            VERIFY_ARE_EQUAL(rawValueSteak, systemSteakString);
+
+            const winrt::hstring keyDrink{ L"Drink" };
+            const winrt::hstring rawValueWhiskey{ L"Whiskey" };
+            auto valueWhiskey{ winrt::Windows::Foundation::PropertyValue::CreateString(rawValueWhiskey) };
+            VERIFY_ARE_EQUAL(1u, systemValues.Size());
+            systemValues.Insert(keyDrink, valueWhiskey);
+            VERIFY_ARE_EQUAL(2u, systemValues.Size());
+            auto systemWhiskey{ systemValues.Lookup(keyDrink) };
+            VERIFY_IS_NOT_NULL(systemWhiskey);
+            auto systemWhiskeyLookupAsReferenceString{ systemWhiskey.try_as<winrt::Windows::Foundation::IReference<winrt::hstring>>() };
+            VERIFY_IS_NOT_NULL(systemWhiskeyLookupAsReferenceString);
+            auto systemWhiskeyString{ systemWhiskeyLookupAsReferenceString.GetString() };
+            VERIFY_ARE_EQUAL(rawValueWhiskey, systemWhiskeyString);
+            //
+            VERIFY_ARE_EQUAL(2u, values.Size());
+            auto whiskey{ values.Lookup(keyDrink) };
+            VERIFY_IS_NOT_NULL(whiskey);
+            auto whiskeyLookupAsReferenceString{ whiskey.try_as<winrt::Windows::Foundation::IReference<winrt::hstring>>() };
+            VERIFY_IS_NOT_NULL(whiskeyLookupAsReferenceString);
+            auto whiskeyString{ whiskeyLookupAsReferenceString.GetString() };
+            VERIFY_ARE_EQUAL(rawValueWhiskey, whiskeyString);
+
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Roaming, container.Locality());
+            container.Close();
+            try
+            {
+                auto roamingity{ container.Locality() };
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(RO_E_CLOSED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+            }
+            VERIFY_ARE_EQUAL(winrt::Windows::Storage::ApplicationDataLocality::Roaming, systemContainer.Locality());
+            systemContainer.Close();
+            try
+            {
+                auto roamingity{ systemContainer.Locality() };
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(RO_E_CLOSED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+            }
+
+            VERIFY_ARE_EQUAL(1u, roamingSettings.Containers().Size());
+            VERIFY_ARE_EQUAL(1u, systemRoamingSettings.Containers().Size());
+            roamingSettings.DeleteContainer(foodAndStuff);
+            VERIFY_ARE_EQUAL(0u, roamingSettings.Containers().Size());
+            VERIFY_ARE_EQUAL(0u, systemRoamingSettings.Containers().Size());
+
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Roaming, roamingSettings.Locality());
+            roamingSettings.Close();
+            try
+            {
+                auto roamingity{ roamingSettings.Locality() };
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(RO_E_CLOSED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+            }
+            VERIFY_ARE_EQUAL(winrt::Windows::Storage::ApplicationDataLocality::Roaming, systemRoamingSettings.Locality());
+            systemRoamingSettings.Close();
+            try
+            {
+                auto roamingity{ systemRoamingSettings.Locality() };
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(RO_E_CLOSED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+            }
         }
 
         TEST_METHOD(RoamingSettings_Framework)
         {
-            //TODO
+            winrt::hstring packageFamilyName{ Framework_PackageFamilyName };
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForPackageFamily(packageFamilyName) };
+            VERIFY_IS_NOT_NULL(applicationData);
+            const auto roamingSettings{ applicationData.RoamingSettings() };
+            VERIFY_IS_NULL(roamingSettings);
+
+            try
+            {
+                auto systemApplicationData{ winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(packageFamilyName) };
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND), e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+            }
         }
 
         TEST_METHOD(ClearAllAsync_Main)
@@ -405,12 +705,12 @@ namespace Test::PackageManager::Tests
             //TODO
         }
 
-        TEST_METHOD(ClearMachineAsync_Main)
+        TEST_METHOD(ClearMachineFolderAsync_Main)
         {
             //TODO
         }
 
-        TEST_METHOD(ClearMachineAsync_Framework)
+        TEST_METHOD(ClearMachineFolderAsync_Framework)
         {
             //TODO
         }
