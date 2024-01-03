@@ -17,6 +17,7 @@
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::Local));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::LocalCache) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::LocalCache));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Roaming) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::Roaming));
+static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::SharedLocal) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::SharedLocal));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Temporary) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::Temporary));
 
 namespace winrt::Microsoft::Windows::Storage::implementation
@@ -108,7 +109,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         {
             return winrt::hstring{};
         }
-        return m_applicationData.LocalCacheFolder().Path();
+        return StorageFolderToPath(m_applicationData.LocalCacheFolder());
     }
     hstring ApplicationData::LocalPath()
     {
@@ -116,7 +117,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         {
             return winrt::hstring{};
         }
-        return m_applicationData.LocalFolder().Path();
+        return StorageFolderToPath(m_applicationData.LocalFolder());
     }
     hstring ApplicationData::MachinePath()
     {
@@ -134,7 +135,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         {
             return winrt::hstring{};
         }
-        return m_applicationData.RoamingFolder().Path();
+        return StorageFolderToPath(m_applicationData.RoamingFolder());
     }
     hstring ApplicationData::SharedLocalPath()
     {
@@ -152,13 +153,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         //
         // @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.sharedlocalfolder
 
-        auto sharedLocalFolder{ m_applicationData.SharedLocalFolder() };
-        winrt::hstring path;
-        if (sharedLocalFolder)
-        {
-            path = sharedLocalFolder.Path();
-        }
-        return path;
+        return StorageFolderToPath(m_applicationData.SharedLocalFolder());
     }
     hstring ApplicationData::TemporaryPath()
     {
@@ -166,7 +161,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         {
             return winrt::hstring{};
         }
-        return m_applicationData.TemporaryFolder().Path();
+        return StorageFolderToPath(m_applicationData.TemporaryFolder());
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::LocalCacheFolder()
     {
@@ -249,7 +244,14 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         {
             co_return;
         }
-        co_await m_applicationData.ClearAsync(static_cast<winrt::Windows::Storage::ApplicationDataLocality>(locality));
+        if (locality == winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Machine)
+        {
+            co_await ClearMachineFolderAsync();
+        }
+        else
+        {
+            co_await m_applicationData.ClearAsync(static_cast<winrt::Windows::Storage::ApplicationDataLocality>(locality));
+        }
     }
     winrt::Windows::Foundation::IAsyncAction ApplicationData::ClearPublisherCacheFolderAsync(hstring folderName)
     {
@@ -285,26 +287,13 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     hstring ApplicationData::GetPublisherCachePath(hstring const& folderName)
     {
-        if (!m_applicationData)
+        auto folder{ GetPublisherCacheFolder(folderName) };
+        winrt::hstring path;
+        if (folder)
         {
-            return winrt::hstring{};
+            path = folder.Path();
         }
-
-        try
-        {
-            return m_applicationData.GetPublisherCacheFolder(folderName).Path();
-        }
-        catch (winrt::hresult_error& e)
-        {
-            // GetPublisherCacheFolder() throws HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) when it doesn't exist
-            if (e.code() == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
-            {
-                return winrt::hstring{};
-            }
-
-            // Nope! We have an actual error
-            throw;
-        }
+        return path;
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::GetPublisherCacheFolder(hstring const& folderName)
     {
@@ -328,7 +317,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
             // Nope! We have an actual error
             throw;
         }
-        return m_applicationData.GetPublisherCacheFolder(folderName);
     }
     std::filesystem::path ApplicationData::_MachinePath(hstring const& packageFamilyName)
     {
@@ -347,5 +335,14 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     {
         const std::filesystem::directory_entry directoryEntry{ path };
         return directoryEntry.is_directory();
+    }
+    winrt::hstring ApplicationData::StorageFolderToPath(winrt::Windows::Storage::StorageFolder storageFolder)
+    {
+        winrt::hstring path;
+        if (storageFolder)
+        {
+            path = storageFolder.Path();
+        }
+        return path;
     }
 }
