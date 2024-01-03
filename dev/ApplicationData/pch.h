@@ -23,7 +23,9 @@
 #include <winrt/Windows.Foundation.Collections.h>
 
 #include <winrt/Windows.ApplicationModel.h>
+#include <winrt/Windows.Management.Deployment.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
 
 #include <appmodel.identity.h>
+#include <security.user.h>

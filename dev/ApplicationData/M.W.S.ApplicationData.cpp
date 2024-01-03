@@ -100,6 +100,11 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     bool ApplicationData::IsMachinePathSupported()
     {
+        if (!IsMachinePathAccessAllowed(m_packageFamilyName))
+        {
+            return false;
+        }
+
         const auto path{ _MachinePath(m_packageFamilyName) };
         return _PathExists(path);
     }
@@ -121,6 +126,11 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     hstring ApplicationData::MachinePath()
     {
+        if (!IsMachinePathAccessAllowed(m_packageFamilyName))
+        {
+            throw hresult_access_denied();
+        }
+
         const auto path{ _MachinePath(m_packageFamilyName) };
         winrt::hstring machinePath;
         if (_PathExists(path))
@@ -329,6 +339,25 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         path /= packageFamilyName.c_str();
         path /= "Machine";
         return path;
+    }
+    bool ApplicationData::IsMachinePathAccessAllowed(hstring const& packageFamilyName)
+    {
+        // Gotta have the package family registered for the user OR the user is SYSTEM
+        if (::Security::User::IsLocalSystem())
+        {
+            return true;
+        }
+
+        winrt::Windows::Management::Deployment::PackageManager packageManager;
+        auto packages{ packageManager.FindPackagesForUser(winrt::hstring{}, packageFamilyName) };
+        auto packagesVector{ packages.try_as<winrt::Windows::Foundation::Collections::IVector<winrt::Windows::ApplicationModel::Package>>() };
+        if (packagesVector.Size() > 0)
+        {
+            return true;
+        }
+
+        // Required conditions not met. Access denied
+        return false;
     }
 
     bool ApplicationData::_PathExists(std::filesystem::path const& path)

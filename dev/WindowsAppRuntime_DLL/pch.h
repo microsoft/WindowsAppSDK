@@ -54,6 +54,7 @@
 #include <microsoft.configuration.h>
 #include <microsoft.utf8.h>
 #include <security.integritylevel.h>
+#include <security.user.h>
 #include <windowsappruntime.selfcontained.h>
 #include <windowsappruntime.versioninfo.h>
 
