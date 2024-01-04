@@ -48,15 +48,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         }
         return FindPackageVolumeByName(winrt::hstring{ volumeName });
     }
-    winrt::Microsoft::Windows::Management::Deployment::PackageVolume PackageVolume::FindPackageVolumeByMediaId(hstring const& mediaId)
+    winrt::Microsoft::Windows::Management::Deployment::PackageVolume PackageVolume::FindPackageVolumeByName(hstring const& name)
     {
         winrt::Windows::Management::Deployment::PackageManager packageManager;
         winrt::Windows::Management::Deployment::PackageVolume windowsPackageVolume{ packageManager.FindPackageVolume(mediaId) };
         return winrt::make<winrt::Microsoft::Windows::Management::Deployment::implementation::PackageVolume>(windowsPackageVolume);
-    }
-    winrt::Microsoft::Windows::Management::Deployment::PackageVolume PackageVolume::FindPackageVolumeByName(hstring const& name)
-    {
-        throw hresult_not_implemented();
     }
     bool PackageVolume::IsSystemVolume()
     {
