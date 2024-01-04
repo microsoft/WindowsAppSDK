@@ -198,10 +198,13 @@
   <data name="1035" xml:space="preserve">
     <value>A project for creating a C++/WinRT Windows Runtime Component (.winmd) for both Desktop and Universal Windows Platform (UWP) apps, based on the Windows UI Library (WinUI 3).</value>
   </data>
-  <data name="1036" xml:space="preserve">
+  <data name="1037" xml:space="preserve">
     <value>Unit Test App (WinUI 3)</value>
   </data>
-  <data name="1037" xml:space="preserve">
+  <data name="1038" xml:space="preserve">
+    <value>[Experimental] Unit Test App (WinUI 3)</value>
+  </data>
+  <data name="1039" xml:space="preserve">
     <value>A project for creating a C++/WinRT unit test app for WinUI 3 using MSTest.</value>
   </data>
 </root>

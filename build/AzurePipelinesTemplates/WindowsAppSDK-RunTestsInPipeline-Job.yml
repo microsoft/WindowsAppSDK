@@ -20,7 +20,6 @@ jobs:
   dependsOn: ${{ parameters.dependsOn }}
   strategy:
     matrix: ${{ parameters.testMatrix }}
-
   pool:
     type: windows
     isCustom: true
