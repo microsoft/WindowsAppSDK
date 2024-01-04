@@ -600,7 +600,11 @@ namespace Microsoft.Windows.Management.Deployment
     apicontract PackageDeploymentContract{};
 
     /// Represents a package storage volume.
+    /// @note A volume 'name' is the volume's media ID (you can treat 'Volume Name' == 'Volume Media ID').
     /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume
+    /// @see https://learn.microsoft.com/windows/win32/properties/props-system-volumeid
+    /// @see https://learn.microsoft.com/sysinternals/downloads/volumeid
+    /// @see https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-getvolumenameforvolumemountpointw
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageVolume
     {
@@ -613,10 +617,7 @@ namespace Microsoft.Windows.Management.Deployment
         static PackageVolume FindPackageVolumeByPath(String packageStorePath);
 
         /// Get the specified volume.
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
-        static PackageVolume FindPackageVolumeByMediaId(String mediaId);
-
-        /// Get the specified volume.
+        /// @name The volume media ID (a GUID value)
         /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.findpackagevolume
         static PackageVolume FindPackageVolumeByName(String name);
 
