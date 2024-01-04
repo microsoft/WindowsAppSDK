@@ -9,4 +9,3 @@ stages:
     parameters:
       jobName: PipelineTests
       testMatrix: $[ variables.PipelineTests ] # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
-      isArm64Platfrom: false
