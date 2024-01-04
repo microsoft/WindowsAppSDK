@@ -710,7 +710,7 @@ namespace Microsoft.Windows.Management.Deployment
         PackageSet();
 
         String Id;
-        Uri PackageUri;
+        Windows.Foundation.Uri PackageUri;
         IVector<PackageSetItem> Items { get; };
     }
 
@@ -941,13 +941,13 @@ namespace Microsoft.Windows.Management.Deployment
         // Provision packages
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        ProvisionPackageAsync(String package);
+        ProvisionPackageAsync(String package, ProvisionPackageOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        ProvisionPackageByUriAsync(Windows.Foundation.Uri packageUri);
+        ProvisionPackageByUriAsync(Windows.Foundation.Uri packageUri, ProvisionPackageOptions options);
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
-        ProvisionPackageSetAsync(PackageSet packageSet);
+        ProvisionPackageSetAsync(PackageSet packageSet, ProvisionPackageOptions options);
 
         //-------------------------------------------------------------
         // Deprovision packages
@@ -998,8 +998,8 @@ namespace Microsoft.Windows.Management.Deployment
         // Make the package(s) in the package set available to the calling process
         // i.e. dynamically add the package(s) in the package set to the caller's package graph.
         // This is equivalent to
-        //   FOREACH p IN PackageSetManager.Get(id).Items
-        //       pd = TryCreatePackageDependency(p)
+        //   FOREACH psi IN packageSet.Items
+        //       pd = TryCreatePackageDependency(psi)
         //       AddPackageDependency(pd)
 
         Microsoft.Windows.Management.Deployment.PackageSetRuntimeDisposition AddPackageSet(
