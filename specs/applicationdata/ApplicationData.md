@@ -346,10 +346,12 @@ namespace Microsoft.Windows.Storage
         Boolean IsMachinePathSupported();
 
         /// Return the path for the local cache data store not included in backup and restore operations.
+        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.LocalCacheFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.localcachefolder
         String LocalCachePath { get; };
 
         /// Return the path for the local data store. This location is backed up to the cloud.
+        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.LocalFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.localfolder
         String LocalPath { get; };
 
@@ -359,14 +361,17 @@ namespace Microsoft.Windows.Storage
 
         /// Return the path for the roaming data store.
         /// @warning Roaming data and settings are no longer supported after Windows 10 version 1901 (aka 19H1 aka 10.0.18363.0).
+        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.RoamingFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingfolder
         String RoamingPath { get; };
 
         /// Return the path for the shared data store.
+        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.SharedLocalFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.sharedlocalfolder
         String SharedLocalPath { get; };
 
         /// Return the path for the temporary data store.
+        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.TemporaryFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.temporaryfolder
         String TemporaryPath { get; };
 
@@ -404,6 +409,7 @@ namespace Microsoft.Windows.Storage
         ApplicationDataContainer RoamingSettings { get; };
 
         /// Remove all data from the local, local cache, roaming, and temporary data stores.
+        /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.clearasync
         /// @see LocalCachePath
         /// @see LocalCacheFolder
         /// @see LocalPath
@@ -415,11 +421,13 @@ namespace Microsoft.Windows.Storage
         Windows.Foundation.IAsyncAction ClearAllAsync();
 
         /// Remove all data from the specified data store.
+        /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.clearasync
         Windows.Foundation.IAsyncAction ClearAsync(ApplicationDataLocality locality);
 
         /// Remove all data from the shared data store in the specified subfolder.
         /// @see SharedLocalPath
         /// @see SharedLocalFolder
+        /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.clearpublishercachefolderasync
         Windows.Foundation.IAsyncAction ClearPublisherCacheFolderAsync(String folderName);
 
         /// Remove all data from machine data store.
