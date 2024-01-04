@@ -198,10 +198,13 @@
   <data name="1035" xml:space="preserve">
     <value>A project template for creating a Desktop app based on the Windows UI Library (WinUI 3) along with a MSIX package for side-loading or distribution via the Microsoft Store.</value>
   </data>
-  <data name="1036" xml:space="preserve">
+  <data name="1037" xml:space="preserve">
     <value>Unit Test App (WinUI 3 in Desktop)</value>
   </data>
-  <data name="1037" xml:space="preserve">
+  <data name="1038" xml:space="preserve">
+    <value>[Experimental] Unit Test App (WinUI 3 in Desktop)</value>
+  </data>
+  <data name="1039" xml:space="preserve">
     <value>A project to create a unit test app for WinUI 3 apps using MSTest.</value>
   </data>
 </root>

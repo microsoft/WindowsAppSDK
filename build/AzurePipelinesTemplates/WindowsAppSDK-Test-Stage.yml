@@ -7,10 +7,6 @@ stages:
   # pools, hence, we split the two scenarios into separate jobs.
   - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
     parameters:
-      jobName: PipelineTestsX64
+      jobName: PipelineTests
+      testMatrix: $[ variables.PipelineTests ] # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
       isArm64Platfrom: false
-
-  - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
-    parameters:
-      jobName: PipelineTestsArm64
-      isArm64Platfrom: true
