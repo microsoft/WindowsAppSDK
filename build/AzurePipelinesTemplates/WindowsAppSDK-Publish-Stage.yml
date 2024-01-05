@@ -6,7 +6,7 @@ parameters:
   type: boolean
   default: True
 stages:
-- stage: Test
+- stage: Publish
   dependsOn:
   - Test
   - Pack
