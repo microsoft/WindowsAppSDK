@@ -17,7 +17,6 @@ parameters:
 
 jobs:
 - job: ${{ parameters.jobName }}
-  dependsOn: ${{ parameters.dependsOn }}
   strategy:
     matrix: ${{ parameters.testMatrix }}
   pool:

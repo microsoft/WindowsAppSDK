@@ -1,0 +1,3 @@
+[submodule "WindowsAppSDKAggregator"]
+	path = WindowsAppSDKAggregator
+	url = ../WindowsAppSDKAggregator

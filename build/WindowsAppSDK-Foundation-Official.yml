@@ -65,9 +65,18 @@ extends:
         break: false
 
     stages:
-    - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        PublishPackage: true
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Publish-Stage.yml@self
       parameters:
         PublishToMaestro: ${{ parameters.PublishToMaestro }}
         IgnoreFailures: ${{ parameters.IgnoreFailures }}
-        SignOutput: ${{ parameters.SignOutput }}
-        PublishPackage: true

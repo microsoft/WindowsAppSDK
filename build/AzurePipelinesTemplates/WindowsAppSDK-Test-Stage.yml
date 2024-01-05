@@ -1,0 +1,11 @@
+stages:
+- stage: Test
+  dependsOn: Build
+  condition: not(failed())
+  jobs:
+  # Arm64 uses a different VM type than x64, thus requiring them to be in different
+  # pools, hence, we split the two scenarios into separate jobs.
+  - template: WindowsAppSDK-RunTestsInPipeline-Job.yml@self
+    parameters:
+      jobName: PipelineTests
+      testMatrix: $[ variables.PipelineTests ] # testMatrix is supplied by WindowsAppSDKConfig/WindowsAppSDK-Foundation-TestConfig.yml
