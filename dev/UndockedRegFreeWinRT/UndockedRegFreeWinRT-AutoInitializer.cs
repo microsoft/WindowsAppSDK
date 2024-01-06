@@ -22,6 +22,9 @@ namespace Microsoft.Windows.Foundation.UndockedRegFreeWinRTCS
         [global::System.Runtime.CompilerServices.ModuleInitializer]
         internal static void AccessWindowsAppSDK()
         {
+            // Set base directory env var for PublishSingleFile support (referenced by SxS redirection)
+            Environment.SetEnvironmentVariable("MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", AppContext.BaseDirectory);
+
             // No error handling needed as the target function does nothing (just {return S_OK}).
             // It's the act of calling the function causing the DllImport to load the DLL that
             // matters. This provides the moral equivalent of a native DLL's Import Address
