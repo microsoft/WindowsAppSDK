@@ -9,6 +9,8 @@
 #include "MsixPackageManager.h"
 #include "PackageDeploymentResolver.h"
 
+#include "PackageManagerTelemetry.h"
+
 static_assert(static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::Default) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::Default),
               "winrt::Windows::Management::Deployment::StubPackageOption::Default != winrt::Windows::Management::Deployment::StubPackageOption::Default");
 static_assert(static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::InstallFull) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::InstallFull),
@@ -78,19 +80,17 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::EnsurePackageSetReadyAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options)
     {
-        //TODO auto logTelemetry{ PackageDeploymentTelemetry::CreateChannelAsync::Start(g_telemetryHelper, remoteId) };
+        auto logTelemetry{ PackageManagementTelemetry::EnsurePackageSetReadyAsync::Start(packageSet.Id()) };
 
         auto strong{ get_strong() };
 
         auto cancellation{ co_await winrt::get_cancellation_token() };
         cancellation.enable_propagation(true);
 
-        //TODO logTelemetry.IgnoreCurrentThread();
-
         // Allow to register the progress and complete handler
+        logTelemetry.IgnoreCurrentThread();
         co_await resume_background();
-
-        //TODO auto logTelemetryContinuation = logTelemetry.ContinueOnCurrentThread();
+        auto logTelemetryContinuation{ logTelemetry.ContinueOnCurrentThread() };
 
         auto progress{ co_await winrt::get_progress_token() };
         auto packageDeploymentProgress{
@@ -109,7 +109,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         if (IsPackageSetReady(packageSet))
         {
             co_return winrt::make<PackageDeploymentResult>(
-                PackageDeploymentStatus::CompletedSuccess, S_OK, true, /*TODO*/winrt::guid{});
+                PackageDeploymentStatus::CompletedSuccess, S_OK, /*TODO*/winrt::guid{});
         }
 
         const double c_progressPercentageStartOfInstalls{ 0.10 };
@@ -129,14 +129,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             {
                 auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
                 co_return winrt::make<PackageDeploymentResult>(
-                    PackageDeploymentStatus::CompletedFailure, exception.code(), false, /*TODO*/winrt::guid{});
+                    PackageDeploymentStatus::CompletedFailure, exception.code(), /*TODO*/winrt::guid{});
             }
         }
 
         co_return winrt::make<PackageDeploymentResult>(
-            PackageDeploymentStatus::CompletedSuccess, S_OK, true, /*TODO*/winrt::guid{});
+            PackageDeploymentStatus::CompletedSuccess, S_OK, /*TODO*/winrt::guid{});
 
-        //TODO logTelemetry.Stop();
+        logTelemetry.Stop(packageSet.Id());
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::AddPackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options)
@@ -160,19 +160,18 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::AddPackageByUriAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options)
     {
-        //TODO auto logTelemetry{ PackageDeploymentTelemetry::CreateChannelAsync::Start(g_telemetryHelper, remoteId) };
+        const winrt::hstring packageUriAsString{ packageUri.ToString() };
+        auto logTelemetry{ PackageManagementTelemetry::AddPackageByUriAsync::Start(packageUriAsString) };
 
         auto strong{ get_strong() };
 
         auto cancellation{ co_await winrt::get_cancellation_token() };
         cancellation.enable_propagation(true);
 
-        //TODO logTelemetry.IgnoreCurrentThread();
-
         // Allow to register the progress and complete handler
+        logTelemetry.IgnoreCurrentThread();
         co_await resume_background();
-
-        //TODO auto logTelemetryContinuation = logTelemetry.ContinueOnCurrentThread();
+        auto logTelemetryContinuation{ logTelemetry.ContinueOnCurrentThread() };
 
         auto progress{ co_await winrt::get_progress_token() };
         auto packageDeploymentProgress{
@@ -192,30 +191,28 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
             co_return winrt::make<PackageDeploymentResult>(
-                PackageDeploymentStatus::CompletedFailure, exception.code(), false, /*TODO*/winrt::guid{});
+                PackageDeploymentStatus::CompletedFailure, exception.code(), /*TODO*/winrt::guid{});
         }
 
         co_return winrt::make<PackageDeploymentResult>(
-            PackageDeploymentStatus::CompletedSuccess, S_OK, true, /*TODO*/winrt::guid{});
+            PackageDeploymentStatus::CompletedSuccess, S_OK, /*TODO*/winrt::guid{});
 
-        //TODO logTelemetry.Stop();
+        logTelemetry.Stop(packageUriAsString);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::AddPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options)
     {
-        //TODO auto logTelemetry{ PackageDeploymentTelemetry::CreateChannelAsync::Start(g_telemetryHelper, remoteId) };
+        auto logTelemetry{ PackageManagementTelemetry::AddPackageSetAsync::Start(packageSet.Id()) };
 
         auto strong{ get_strong() };
 
         auto cancellation{ co_await winrt::get_cancellation_token() };
         cancellation.enable_propagation(true);
 
-        //TODO logTelemetry.IgnoreCurrentThread();
-
         // Allow to register the progress and complete handler
+        logTelemetry.IgnoreCurrentThread();
         co_await resume_background();
-
-        //TODO auto logTelemetryContinuation = logTelemetry.ContinueOnCurrentThread();
+        auto logTelemetryContinuation{ logTelemetry.ContinueOnCurrentThread() };
 
         auto progress{ co_await winrt::get_progress_token() };
         auto packageDeploymentProgress{
@@ -244,14 +241,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             {
                 auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
                 co_return winrt::make<PackageDeploymentResult>(
-                    PackageDeploymentStatus::CompletedFailure, exception.code(), false, /*TODO*/winrt::guid{});
+                    PackageDeploymentStatus::CompletedFailure, exception.code(), /*TODO*/winrt::guid{});
             }
         }
 
         co_return winrt::make<PackageDeploymentResult>(
-            PackageDeploymentStatus::CompletedSuccess, S_OK, true, /*TODO*/winrt::guid{});
+            PackageDeploymentStatus::CompletedSuccess, S_OK, /*TODO*/winrt::guid{});
 
-        //TODO logTelemetry.Stop();
+        logTelemetry.Stop(packageSet.Id());
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::StagePackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options)

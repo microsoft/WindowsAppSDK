@@ -10,7 +10,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     struct PackageDeploymentResult : PackageDeploymentResultT<PackageDeploymentResult>
     {
         PackageDeploymentResult() = default;
-        PackageDeploymentResult(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus status, winrt::hresult const& extendedError, bool isRegistered, winrt::guid const& activityId);
+        PackageDeploymentResult(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus status, winrt::hresult const& extendedError, winrt::guid const& activityId);
 
         winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus Status();
         winrt::hresult ExtendedError();

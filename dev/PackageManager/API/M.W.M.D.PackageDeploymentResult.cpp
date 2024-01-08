@@ -7,7 +7,7 @@
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
-    PackageDeploymentResult::PackageDeploymentResult(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus status, winrt::hresult const& extendedError, bool isRegistered, winrt::guid const& activityId) :
+    PackageDeploymentResult::PackageDeploymentResult(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus status, winrt::hresult const& extendedError, winrt::guid const& activityId) :
         m_status(status),
         m_extendedError(extendedError),
         m_activityId(activityId)
