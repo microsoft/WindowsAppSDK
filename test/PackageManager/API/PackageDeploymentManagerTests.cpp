@@ -869,7 +869,8 @@ namespace Test::PackageManager::Tests
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
-            winrt::hstring package{ ::TPF::Red::c_packageDirName };
+            const auto packagePath{ TP::GetMsixPackagePath(::TPF::Red::c_packageDirName) };
+            const winrt::hstring package{ packagePath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
             auto deploymentResult{ packageDeploymentManager.AddPackageAsync(package, options).get() };
@@ -889,7 +890,8 @@ namespace Test::PackageManager::Tests
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
-            winrt::hstring package{ ::TPF::Red::c_packageDirName };
+            const auto packagePath{ TP::GetMsixPackagePath(::TPF::Red::c_packageDirName) };
+            const winrt::hstring package{ packagePath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
             auto deploymentResult{ packageDeploymentManager.AddPackageAsync(package, options).get() };
@@ -905,7 +907,8 @@ namespace Test::PackageManager::Tests
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
-            winrt::hstring package{ ::TPF::Red::c_packageDirName };
+            const auto packagePath{ TP::GetMsixPackagePath(::TPF::Red::c_packageDirName) };
+            const winrt::hstring package{ packagePath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
             auto deploymentResult{ packageDeploymentManager.AddPackageAsync(package, options).get() };
@@ -921,7 +924,8 @@ namespace Test::PackageManager::Tests
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
-            winrt::hstring package{ ::TPF::Red::c_packageDirName };
+            const auto packagePath{ TP::GetMsixPackagePath(::TPF::Red::c_packageDirName) };
+            const winrt::hstring package{ packagePath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
             auto deploymentResult{ packageDeploymentManager.AddPackageAsync(package, options).get() };
@@ -939,7 +943,8 @@ namespace Test::PackageManager::Tests
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
-            winrt::hstring package{ ::TPF::Red::c_packageDirName };
+            const auto packagePath{ TP::GetMsixPackagePath(::TPF::Red::c_packageDirName) };
+            const winrt::hstring package{ packagePath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
             auto deploymentResult{ packageDeploymentManager.AddPackageAsync(package, options).get() };
@@ -963,7 +968,8 @@ namespace Test::PackageManager::Tests
             SetPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
 
-            winrt::hstring package{ ::TPF::Red::c_packageDirName };
+            const auto packagePath{ TP::GetMsixPackagePath(::TPF::Red::c_packageDirName) };
+            const winrt::hstring package{ packagePath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
             auto deploymentResult{ packageDeploymentManager.AddPackageAsync(package, options).get() };
@@ -1440,6 +1446,609 @@ namespace Test::PackageManager::Tests
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
             auto deploymentResult{ packageDeploymentManager.AddPackageSetAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(::TPF::Green::GetPackageFullName()));
+        }
+
+        TEST_METHOD(StagePackageAsync_NoSuchPackage_Fail)
+        {
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            PCWSTR package{ L"c:\\does\\not\\exist.msix" };
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageAsync(package, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_OPEN_PACKAGE_FAILED), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+        }
+
+        TEST_METHOD(StagePackageAsync_NotInstalled_Success)
+        {
+            RemovePackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const auto packagePath{ TP::GetMsixPackagePath(::TPF::Red::c_packageDirName) };
+            const winrt::hstring package{ packagePath.c_str() };
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageAsync(package, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(IsPackageStaged_Red());
+        }
+
+        TEST_METHOD(StagePackageAsync_Staged_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            StagePackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const auto packagePath{ TP::GetMsixPackagePath(::TPF::Red::c_packageDirName) };
+            const winrt::hstring package{ packagePath.c_str() };
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageAsync(package, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(IsPackageStaged_Red());
+        }
+
+        TEST_METHOD(StagePackageAsync_Registered_Success)
+        {
+            AddPackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const auto packagePath{ TP::GetMsixPackagePath(::TPF::Red::c_packageDirName) };
+            const winrt::hstring package{ packagePath.c_str() };
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageAsync(package, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(IsPackageStaged_Red());
+        }
+
+        TEST_METHOD(StagePackageAsync_OlderStaged_Success)
+        {
+            AddPackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const auto packagePath{ TP::GetMsixPackagePath(::TPF::Red::c_packageDirName) };
+            const winrt::hstring package{ packagePath.c_str() };
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageAsync(package, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(IsPackageStaged_Red());
+
+            RemovePackage_Redder();
+        }
+
+        TEST_METHOD(StagePackageAsync_NewerStaged_Success)
+        {
+            AddPackage_Redder();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const auto packagePath{ TP::GetMsixPackagePath(::TPF::Red::c_packageDirName) };
+            const winrt::hstring package{ packagePath.c_str() };
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageAsync(package, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(IsPackageStaged_Redder());
+
+            RemovePackage_Redder();
+        }
+
+        TEST_METHOD(StagePackageAsync_StagedPackageStatusBad_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            AddPackage_Red();
+            SetPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
+
+            const auto packagePath{ TP::GetMsixPackagePath(::TPF::Red::c_packageDirName) };
+            const winrt::hstring package{ packagePath.c_str() };
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageAsync(package, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(IsPackageStaged_Red());
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
+        }
+
+        TEST_METHOD(StagePackageByUriAsync_NoSuchPackage_Fail)
+        {
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            PCWSTR c_packageUriAsString{ L"file://c:/does/not/exist.msix" };
+            winrt::Windows::Foundation::Uri packageUri{ c_packageUriAsString };
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_OPEN_PACKAGE_FAILED), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+        }
+
+        TEST_METHOD(StagePackageByUriAsync_NotInstalled_Success)
+        {
+            RemovePackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(IsPackageStaged_Red());
+        }
+
+        TEST_METHOD(StagePackageByUriAsync_Staged_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            StagePackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(IsPackageStaged_Red());
+        }
+
+        TEST_METHOD(StagePackageByUriAsync_Registered_Success)
+        {
+            AddPackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(IsPackageStaged_Red());
+        }
+
+        TEST_METHOD(StagePackageByUriAsync_OlderStaged_Success)
+        {
+            AddPackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(IsPackageStaged_Red());
+
+            RemovePackage_Redder();
+        }
+
+        TEST_METHOD(StagePackageByUriAsync_NewerStaged_Success)
+        {
+            AddPackage_Redder();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(IsPackageStaged_Redder());
+
+            RemovePackage_Redder();
+        }
+
+        TEST_METHOD(StagePackageByUriAsync_StagedPackageStatusBad_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            AddPackage_Red();
+            SetPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
+
+            winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(IsPackageStaged_Red());
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
+        }
+
+        TEST_METHOD(StagePackageSetAsync_1_NoSuchPackage_Fail)
+        {
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"Does.Not.Exist" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem packageSetItem;
+            PCWSTR c_packageFamilyName{ L"Does.Not.Exist_1234567890abc" };
+            packageSetItem.PackageFamilyName(c_packageFamilyName);
+            PCWSTR c_packageUriAsString{ L"file://c:/does/not/exist.msix" };
+            winrt::Windows::Foundation::Uri packageUri{ c_packageUriAsString };
+            packageSetItem.PackageUri(packageUri);
+            packageSet.Items().Append(packageSetItem);
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_OPEN_PACKAGE_FAILED), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(StagePackageSetAsync_1_NotInstalled_Success)
+        {
+            RemovePackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
+            packageSet.Items().Append(red);
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(IsPackageSetStaged(packageSet));
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(StagePackageSetAsync_1_Staged_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            StagePackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
+            packageSet.Items().Append(red);
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(StagePackageSetAsync_1_Registered_Success)
+        {
+            AddPackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
+            packageSet.Items().Append(red);
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(StagePackageSetAsync_1_OlderStaged_Success)
+        {
+            AddPackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder{ Make_PackageSetItem(::TPF::Redder::GetPackageFullName(), ::TPF::Redder::c_packageDirName) };
+            packageSet.Items().Append(redder);
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            RemovePackage_Redder();
+        }
+
+        TEST_METHOD(StagePackageSetAsync_1_NewerStaged_Success)
+        {
+            AddPackage_Redder();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
+            packageSet.Items().Append(red);
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            RemovePackage_Redder();
+        }
+
+        TEST_METHOD(StagePackageSetAsync_1_StagedPackageStatusBad_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            AddPackage_Red();
+            SetPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
+            packageSet.Items().Append(red);
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
+        }
+
+        TEST_METHOD(StagePackageSetAsync_N_NotInstalled_Success)
+        {
+            RemovePackage_Red();
+            RemovePackage_Green();
+            RemovePackage_Blue();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
+            packageSet.Items().Append(red);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
+            packageSet.Items().Append(green);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
+            packageSet.Items().Append(blue);
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(StagePackageSetAsync_N_Staged_Success)
+        {
+            AddPackage_Red();
+            AddPackage_Green();
+            AddPackage_Blue();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
+            packageSet.Items().Append(red);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
+            packageSet.Items().Append(green);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
+            packageSet.Items().Append(blue);
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(StagePackageSetAsync_N_NewerStaged_Success)
+        {
+            AddPackage_Redder();
+            AddPackage_Green();
+            AddPackage_Blue();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
+            packageSet.Items().Append(red);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
+            packageSet.Items().Append(green);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
+            packageSet.Items().Append(blue);
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            RemovePackage_Redder();
+        }
+
+        TEST_METHOD(StagePackageSetAsync_N_OlderStaged_Success)
+        {
+            AddPackage_Red();
+            AddPackage_Green();
+            AddPackage_Blue();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder{ Make_PackageSetItem(::TPF::Redder::GetPackageFullName(), ::TPF::Redder::c_packageDirName) };
+            packageSet.Items().Append(redder);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
+            packageSet.Items().Append(green);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
+            packageSet.Items().Append(blue);
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            RemovePackage_Redder();
+        }
+
+        TEST_METHOD(StagePackageSetAsync_N_StagedAndNotInstalled_Success)
+        {
+            AddPackage_Red();
+            RemovePackage_Green();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
+            packageSet.Items().Append(red);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
+            packageSet.Items().Append(green);
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(StagePackageSetAsync_N_StagedAndNotInstalledAndStaged_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            AddPackage_Red();
+            RemovePackage_Green();
+            StagePackage_Blue();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
+            packageSet.Items().Append(red);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
+            packageSet.Items().Append(green);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
+            packageSet.Items().Append(blue);
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(StagePackageSetAsync_N_StagedPackageStatusOkAndBad_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            AddPackage_Red();
+            AddPackage_Green();
+            SetPackageStatus(::TPF::Green::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Green::GetPackageFullName()));
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
+            packageSet.Items().Append(red);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
+            packageSet.Items().Append(green);
+
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
+            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
 

@@ -131,6 +131,37 @@ namespace Test::PackageManager::Tests
     {
         return TP::IsPackageRegistered(TPF::Red::GetPackageFullName());
     }
+    inline bool IsPackageStaged_Red()
+    {
+        return TP::IsPackageStaged(TPF::Red::GetPackageFullName());
+    }
+    inline bool IsPackageFamilyStaged(winrt::hstring const& packageFamilyName, winrt::Windows::ApplicationModel::PackageVersion minVersion)
+    {
+        winrt::Windows::Management::Deployment::PackageManager packageManager;
+        const auto packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Framework };
+        auto packages{ packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
+        for (const winrt::Windows::ApplicationModel::Package& package : packages)
+        {
+            const auto version{ package.Id().Version() };
+            const ::AppModel::Identity::PackageVersion packageVersion{ version };
+            if (packageVersion >= minVersion)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    inline bool IsPackageSetStaged(winrt::Microsoft::Windows::Management::Deployment::PackageSet& packageSet)
+    {
+        for (const winrt::Microsoft::Windows::Management::Deployment::PackageSetItem& packageSetItem : packageSet.Items())
+        {
+            if (!IsPackageFamilyStaged(packageSetItem.PackageFamilyName(), packageSetItem.MinVersion()))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 
     inline void AddPackage_Redder()
     {
@@ -153,6 +184,10 @@ namespace Test::PackageManager::Tests
     inline bool IsPackageRegistered_Redder()
     {
         return TP::IsPackageRegistered(TPF::Redder::GetPackageFullName());
+    }
+    inline bool IsPackageStaged_Redder()
+    {
+        return TP::IsPackageStaged(TPF::Redder::GetPackageFullName());
     }
 
     inline void AddPackage_Green()
@@ -177,6 +212,10 @@ namespace Test::PackageManager::Tests
     {
         return TP::IsPackageRegistered(TPF::Green::GetPackageFullName());
     }
+    inline bool IsPackageStaged_Green()
+    {
+        return TP::IsPackageStaged(TPF::Green::GetPackageFullName());
+    }
 
     inline void AddPackage_Blue()
     {
@@ -199,6 +238,10 @@ namespace Test::PackageManager::Tests
     inline bool IsPackageRegistered_Blue()
     {
         return TP::IsPackageRegistered(TPF::Blue::GetPackageFullName());
+    }
+    inline bool IsPackageStaged_Blue()
+    {
+        return TP::IsPackageStaged(TPF::Blue::GetPackageFullName());
     }
 
     inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFullName)

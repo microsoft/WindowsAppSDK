@@ -155,16 +155,9 @@ inline bool IsPackageRegistered(PCWSTR packageFullName)
     return !path.empty();
 }
 
-inline bool IsPackageAvailable(PCWSTR packageFullName)
+inline bool IsPackageStaged(PCWSTR packageFullName)
 {
-    // Check if the package is available for use
-    // This means registered to the current user OR staged
-    // NOTE: To check if a package is staged and not registered to the current user:
-    //              bool isStaged = IsPackageAvailable(p) && !IsPackageRegistered(p)
-    if (IsPackageRegistered(packageFullName))
-    {
-        return true;
-    }
+    // Check if the package is staged
     PackageOrigin packageOrigin{};
     const auto rc{ GetStagedPackageOrigin(packageFullName, &packageOrigin) };
     if (rc == ERROR_SUCCESS)
@@ -176,6 +169,15 @@ inline bool IsPackageAvailable(PCWSTR packageFullName)
         return false;
     }
     THROW_WIN32(rc);
+}
+
+inline bool IsPackageAvailable(PCWSTR packageFullName)
+{
+    // Check if the package is available for use
+    // This means registered to the current user OR staged
+    // NOTE: To check if a package is staged and not registered to the current user:
+    //              bool isStaged = IsPackageAvailable(p) && !IsPackageRegistered(p)
+    return IsPackageRegistered(packageFullName) || IsPackageStaged(packageFullName);
 }
 
 inline std::filesystem::path GetMsixPackagePath(PCWSTR packageDirName)
