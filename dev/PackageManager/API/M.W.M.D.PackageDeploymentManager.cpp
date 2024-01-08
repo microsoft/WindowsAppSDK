@@ -426,10 +426,10 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         auto deploymentOperation{ m_packageManager.AddPackageByUriAsync(packageUri, addOptions) };
 #if 0
         //TODO Replace .get with this to propogate intra-package progress?
-        deploymentOperation.Progress([&](IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> const& /* sender */,
-                                     PackageDeploymentProgress const& args)
+        deploymentOperation.Progress([&](winrt::Windows::Foundation::IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> const& /* sender */,
+                                     PackageDeploymentProgress const& progressInfo)
         {
-            ...compute new value...
+            const auto value{ progressInfo.Progress };
             progress(value);
         });
 #else
@@ -471,10 +471,10 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         auto deploymentOperation{ m_packageManager.AddPackageByUriAsync(packageUri, addOptions) };
 #if 0
         //TODO Replace .get with this to propogate intra-package progress?
-        deploymentOperation.Progress([&](IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> const& /* sender */,
-                                     PackageDeploymentProgress const& args)
+        deploymentOperation.Progress([&](winrt::Windows::Foundation::IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress> const& /*sender*/ ,
+                                     PackageDeploymentProgress const& progressInfo)
         {
-            ...compute new value...
+            const auto value{ progressInfo.Progress };
             progress(value);
         });
 #else
