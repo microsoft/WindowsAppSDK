@@ -50,15 +50,53 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         bool IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSet);
         void Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet) const;
         void Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem) const;
-        void EnsureReadyAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem, winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions const& options);
-        void AddAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions const& options);
-        void AddAsync(winrt::Windows::Foundation::Uri const& packageUri, winrt::Windows::Management::Deployment::AddPackageOptions const& addOptions);
+        HRESULT EnsureReadyAsync(
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem,
+            winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions const& options,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+        HRESULT AddAsync(
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem,
+            winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions const& options,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+        HRESULT AddAsync(
+            winrt::Windows::Foundation::Uri const& packageUri,
+            winrt::Windows::Management::Deployment::AddPackageOptions const& addOptions,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+        HRESULT StageAsync(
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem,
+            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions const& options,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+        HRESULT StageAsync(
+            winrt::Windows::Foundation::Uri const& packageUri,
+            winrt::Windows::Management::Deployment::StagePackageOptions const& stageOptions,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
         winrt::Windows::Management::Deployment::PackageVolume ToPackageVolume(winrt::Microsoft::Windows::Management::Deployment::PackageVolume const& packageVolume) const;
         winrt::Windows::Management::Deployment::AddPackageOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions const& options) const;
         winrt::Windows::Management::Deployment::StagePackageOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions const& options) const;
         winrt::Windows::Management::Deployment::RegisterPackageOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions const& options) const;
         winrt::Windows::Management::Deployment::RemovalOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions const& options) const;
         winrt::Windows::Management::Deployment::AddPackageOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions const& options) const;
+        static double PercentageToProgress(uint32_t percentage);
 
     private:
         winrt::Windows::Management::Deployment::PackageManager m_packageManager;

@@ -1488,6 +1488,7 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            RemovePackage_Red();
             StagePackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -1522,7 +1523,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(StagePackageAsync_OlderStaged_Success)
         {
-            AddPackage_Red();
+            RemovePackage_Red();
+            StagePackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
@@ -1541,7 +1543,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(StagePackageAsync_NewerStaged_Success)
         {
-            AddPackage_Redder();
+            RemovePackage_Redder();
+            StagePackage_Redder();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
@@ -1566,7 +1569,8 @@ namespace Test::PackageManager::Tests
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
-            AddPackage_Red();
+            RemovePackage_Red();
+            StagePackage_Red();
             SetPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
 
@@ -1617,6 +1621,7 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            RemovePackage_Red();
             StagePackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -1649,7 +1654,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(StagePackageByUriAsync_OlderStaged_Success)
         {
-            AddPackage_Red();
+            RemovePackage_Red();
+            StagePackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
@@ -1667,7 +1673,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(StagePackageByUriAsync_NewerStaged_Success)
         {
-            AddPackage_Redder();
+            RemovePackage_Redder();
+            StagePackage_Redder();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
@@ -1691,7 +1698,7 @@ namespace Test::PackageManager::Tests
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
-            AddPackage_Red();
+            StagePackage_Red();
             SetPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
 
@@ -1756,6 +1763,7 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            RemovePackage_Red();
             StagePackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -1771,7 +1779,8 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
 
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+            VERIFY_IS_TRUE(IsPackageSetStaged(packageSet));
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
         TEST_METHOD(StagePackageSetAsync_1_Registered_Success)
@@ -1791,12 +1800,14 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
 
+            VERIFY_IS_TRUE(IsPackageSetStaged(packageSet));
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
         TEST_METHOD(StagePackageSetAsync_1_OlderStaged_Success)
         {
-            AddPackage_Red();
+            RemovePackage_Red();
+            StagePackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
@@ -1811,14 +1822,16 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
 
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+            VERIFY_IS_TRUE(IsPackageSetStaged(packageSet));
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
 
             RemovePackage_Redder();
         }
 
         TEST_METHOD(StagePackageSetAsync_1_NewerStaged_Success)
         {
-            AddPackage_Redder();
+            RemovePackage_Redder();
+            StagePackage_Redder();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
@@ -1833,7 +1846,8 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
 
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+            VERIFY_IS_TRUE(IsPackageSetStaged(packageSet));
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
 
             RemovePackage_Redder();
         }
@@ -1846,7 +1860,7 @@ namespace Test::PackageManager::Tests
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
-            AddPackage_Red();
+            StagePackage_Red();
             SetPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
 
@@ -1861,7 +1875,7 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
 
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+            VERIFY_IS_TRUE(IsPackageStaged_Red());
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
         }
 
@@ -1888,14 +1902,18 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
 
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+            VERIFY_IS_TRUE(IsPackageSetStaged(packageSet));
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
         TEST_METHOD(StagePackageSetAsync_N_Staged_Success)
         {
-            AddPackage_Red();
-            AddPackage_Green();
-            AddPackage_Blue();
+            RemovePackage_Red();
+            RemovePackage_Green();
+            RemovePackage_Blue();
+            StagePackage_Red();
+            StagePackage_Green();
+            StagePackage_Blue();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
@@ -1914,14 +1932,18 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
 
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+            VERIFY_IS_TRUE(IsPackageSetStaged(packageSet));
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
         TEST_METHOD(StagePackageSetAsync_N_NewerStaged_Success)
         {
-            AddPackage_Redder();
-            AddPackage_Green();
-            AddPackage_Blue();
+            RemovePackage_Redder();
+            RemovePackage_Green();
+            RemovePackage_Blue();
+            StagePackage_Redder();
+            StagePackage_Green();
+            StagePackage_Blue();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
@@ -1940,16 +1962,20 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
 
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+            VERIFY_IS_TRUE(IsPackageSetStaged(packageSet));
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
 
             RemovePackage_Redder();
         }
 
         TEST_METHOD(StagePackageSetAsync_N_OlderStaged_Success)
         {
-            AddPackage_Red();
-            AddPackage_Green();
-            AddPackage_Blue();
+            RemovePackage_Red();
+            RemovePackage_Green();
+            RemovePackage_Blue();
+            StagePackage_Red();
+            StagePackage_Green();
+            StagePackage_Blue();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
@@ -1968,14 +1994,16 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
 
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+            VERIFY_IS_TRUE(IsPackageSetStaged(packageSet));
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
 
             RemovePackage_Redder();
         }
 
         TEST_METHOD(StagePackageSetAsync_N_StagedAndNotInstalled_Success)
         {
-            AddPackage_Red();
+            RemovePackage_Red();
+            StagePackage_Red();
             RemovePackage_Green();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -2002,8 +2030,10 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            AddPackage_Red();
+            RemovePackage_Red();
+            StagePackage_Red();
             RemovePackage_Green();
+            RemovePackage_Blue();
             StagePackage_Blue();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -2023,7 +2053,8 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
 
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+            VERIFY_IS_TRUE(IsPackageSetStaged(packageSet));
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
         TEST_METHOD(StagePackageSetAsync_N_StagedPackageStatusOkAndBad_Success)
@@ -2034,8 +2065,10 @@ namespace Test::PackageManager::Tests
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
-            AddPackage_Red();
-            AddPackage_Green();
+            RemovePackage_Red();
+            StagePackage_Red();
+            RemovePackage_Green();
+            StagePackage_Green();
             SetPackageStatus(::TPF::Green::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Green::GetPackageFullName()));
 
@@ -2052,8 +2085,8 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
 
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(::TPF::Green::GetPackageFullName()));
+            VERIFY_IS_TRUE(IsPackageStaged_Green());
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Green::GetPackageFullName()));
         }
 
     private:

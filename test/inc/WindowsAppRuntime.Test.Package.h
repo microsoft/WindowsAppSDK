@@ -141,6 +141,37 @@ inline std::wstring GetPackagePath(PCWSTR packageFullName)
     return std::wstring(path.get());
 }
 
+#if defined(__APPMODEL_IDENTITY_H)
+inline bool IsPackageFamilyRegistered(PCWSTR packageFamilyName, uint64_t minVersion = 0)
+{
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    auto packages{ packageManager.FindPackagesForUser(winrt::hstring(), packageFamilyName) };
+    for (const winrt::Windows::ApplicationModel::Package& package : packages)
+    {
+        if (minVersion == 0)
+        {
+            // Any package in the family is good enough for us
+            return true;
+        }
+        const auto version{ package.Id().Version() };
+        const ::AppModel::Identity::PackageVersion packageVersion{ version };
+        if (packageVersion >= minVersion)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+#endif // defined(__APPMODEL_IDENTITY_H)
+
+#if defined(__APPMODEL_IDENTITY_H)
+inline bool IsPackageFamilyRegistered(PCWSTR packageFamilyName, winrt::Windows::ApplicationModel::PackageVersion minVersion)
+{
+    const ::AppModel::Identity::PackageVersion packageVersion{ minVersion };
+    return IsPackageFamilyRegistered(packageFamilyName, packageVersion.Version);
+}
+#endif // defined(__APPMODEL_IDENTITY_H)
+
 inline std::wstring GetPackagePath(const std::wstring& packageFullName)
 {
     return GetPackagePath(packageFullName.c_str());
@@ -149,7 +180,7 @@ inline std::wstring GetPackagePath(const std::wstring& packageFullName)
 inline bool IsPackageRegistered(PCWSTR packageFullName)
 {
     // Check if the package is registered to the current user via GetPackagePath().
-    // GetPackagePath() fails if the package isn't registerd to the current user.
+    // GetPackagePath() fails if the package isn't registered to the current user.
     // Simplest and most portable test across the platforms we might run on
     const auto path = GetPackagePath(packageFullName);
     return !path.empty();
@@ -284,6 +315,42 @@ inline void RemovePackageIfNecessary(PCWSTR packageFullName)
         RemovePackage(packageFullName);
     }
 }
+
+#if defined(__APPMODEL_IDENTITY_H)
+inline void RemovePackageFamily(PCWSTR packageFamilyName)
+{
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    const auto packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Framework |
+                             winrt::Windows::Management::Deployment::PackageTypes::Main };
+    auto packages{ packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
+    for (const winrt::Windows::ApplicationModel::Package& package : packages)
+    {
+        winrt::Windows::ApplicationModel::PackageId packageId{ package.Id() };
+        winrt::hstring packageFullName{ packageId.FullName() };
+        RemovePackage(packageFullName.c_str());
+    }
+}
+#endif // defined(__APPMODEL_IDENTITY_H)
+
+#if defined(__APPMODEL_IDENTITY_H)
+inline void RemovePackageFamilyIfNecessary(PCWSTR packageFamilyName)
+{
+    if (IsPackageFamilyRegistered(packageFamilyName))
+    {
+        RemovePackageFamily(packageFamilyName);
+    }
+}
+#endif // defined(__APPMODEL_IDENTITY_H)
+
+#if defined(__APPMODEL_IDENTITY_H)
+inline void RemovePackageFamilyIfNecessary(PCWSTR packageFamilyName, winrt::Windows::ApplicationModel::PackageVersion minVersion)
+{
+    if (IsPackageFamilyRegistered(packageFamilyName, minVersion))
+    {
+        RemovePackageFamily(packageFamilyName);
+    }
+}
+#endif // defined(__APPMODEL_IDENTITY_H)
 
 inline void AddPackage_DynamicDependencyLifetimeManager()
 {

@@ -117,6 +117,16 @@ namespace Test::PackageManager::Tests
     {
         TP::StagePackageIfNecessary(Test::Packages::Framework::Red::c_packageDirName, TPF::Red::GetPackageFullName());
     }
+    inline void RemovePackageFamily_Red()
+    {
+        // Best-effort removal. PackageManager.RemovePackage errors if the package
+        // is not registered, but if it's not registered we're good. "'Tis the destination
+        // that matters, not the journey" so regardless how much or little work
+        // we need do, we're happy as long as the package isn't registered when we're done
+        //
+        // Thus, do a *IfNecessary removal
+        TP::RemovePackageFamilyIfNecessary(TPF::Red::c_packageFamilyName);
+    }
     inline void RemovePackage_Red()
     {
         // Best-effort removal. PackageManager.RemovePackage errors if the package
@@ -171,6 +181,16 @@ namespace Test::PackageManager::Tests
     {
         TP::StagePackageIfNecessary(Test::Packages::Framework::Redder::c_packageDirName, TPF::Redder::GetPackageFullName());
     }
+    inline void RemovePackageFamily_Redder()
+    {
+        // Best-effort removal. PackageManager.RemovePackage errors if the package
+        // is not registered, but if it's not registered we're good. "'Tis the destination
+        // that matters, not the journey" so regardless how much or little work
+        // we need do, we're happy as long as the package isn't registered when we're done
+        //
+        // Thus, do a *IfNecessary removal
+        TP::RemovePackageFamilyIfNecessary(TPF::Redder::c_packageFamilyName);
+    }
     inline void RemovePackage_Redder()
     {
         // Best-effort removal. PackageManager.RemovePackage errors if the package
@@ -198,6 +218,16 @@ namespace Test::PackageManager::Tests
     {
         TP::StagePackageIfNecessary(Test::Packages::Framework::Green::c_packageDirName, TPF::Green::GetPackageFullName());
     }
+    inline void RemovePackageFamily_Green()
+    {
+        // Best-effort removal. PackageManager.RemovePackage errors if the package
+        // is not registered, but if it's not registered we're good. "'Tis the destination
+        // that matters, not the journey" so regardless how much or little work
+        // we need do, we're happy as long as the package isn't registered when we're done
+        //
+        // Thus, do a *IfNecessary removal
+        TP::RemovePackageFamilyIfNecessary(TPF::Green::c_packageFamilyName);
+    }
     inline void RemovePackage_Green()
     {
         // Best-effort removal. PackageManager.RemovePackage errors if the package
@@ -224,6 +254,16 @@ namespace Test::PackageManager::Tests
     inline void StagePackage_Blue()
     {
         TP::StagePackageIfNecessary(Test::Packages::Framework::Blue::c_packageDirName, TPF::Blue::GetPackageFullName());
+    }
+    inline void RemovePackageFamily_Blue()
+    {
+        // Best-effort removal. PackageManager.RemovePackage errors if the package
+        // is not registered, but if it's not registered we're good. "'Tis the destination
+        // that matters, not the journey" so regardless how much or little work
+        // we need do, we're happy as long as the package isn't registered when we're done
+        //
+        // Thus, do a *IfNecessary removal
+        TP::RemovePackageFamilyIfNecessary(TPF::Blue::c_packageFamilyName);
     }
     inline void RemovePackage_Blue()
     {
