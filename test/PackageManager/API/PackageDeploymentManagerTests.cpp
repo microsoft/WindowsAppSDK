@@ -529,7 +529,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(EnsurePackageSetReadyAsync_1_NotInstalled_Success)
         {
-            RemovePackage_Red();
+            RemovePackageFamily_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
@@ -676,7 +676,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(EnsurePackageSetReadyAsync_N_NotInstalled_Success)
         {
-            RemovePackage_Red();
+            RemovePackageFamily_Red();
             RemovePackage_Green();
             RemovePackage_Blue();
 
@@ -1596,6 +1596,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(StagePackageAsync_Registered_Success)
         {
+            RemovePackageFamily_Red();
             AddPackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -1666,7 +1667,7 @@ namespace Test::PackageManager::Tests
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
-            RemovePackage_Red();
+            RemovePackageFamily_Red();
             StagePackage_Red();
             SetPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
@@ -1743,6 +1744,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(StagePackageByUriAsync_Registered_Success)
         {
+            RemovePackageFamily_Red();
             AddPackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -1775,14 +1777,15 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
 
-            VERIFY_IS_TRUE(IsPackageStaged_Red());
+            VERIFY_IS_FALSE(IsPackageStaged_Red());
+            VERIFY_IS_TRUE(IsPackageStaged_Redder());
 
-            RemovePackage_Redder();
+            RemovePackageFamily_Red();
         }
 
         TEST_METHOD(StagePackageByUriAsync_NewerStaged_Success)
         {
-            RemovePackageFamily_Redder();
+            RemovePackageFamily_Red();
             StagePackage_Redder();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -1798,7 +1801,7 @@ namespace Test::PackageManager::Tests
 
             VERIFY_IS_TRUE(IsPackageStaged_Redder());
 
-            RemovePackageFamily_Redder();
+            RemovePackageFamily_Red();
         }
 
         TEST_METHOD(StagePackageByUriAsync_StagedPackageStatusBad_Success)
@@ -1809,6 +1812,7 @@ namespace Test::PackageManager::Tests
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
+            RemovePackageFamily_Red();
             StagePackage_Red();
             SetPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
@@ -1853,7 +1857,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(StagePackageSetAsync_1_NotInstalled_Success)
         {
-            RemovePackage_Red();
+            RemovePackageFamily_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
@@ -1880,7 +1884,7 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            RemovePackage_Red();
+            RemovePackageFamily_Red();
             StagePackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -1904,6 +1908,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(StagePackageSetAsync_1_Registered_Success)
         {
+            RemovePackageFamily_Red();
             AddPackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -1948,12 +1953,15 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(IsPackageSetStaged(packageSet));
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
 
+            VERIFY_IS_FALSE(IsPackageStaged_Red());
+            VERIFY_IS_TRUE(IsPackageStaged_Redder());
+
             RemovePackageFamily_Red();
         }
 
         TEST_METHOD(StagePackageSetAsync_1_NewerStaged_Success)
         {
-            RemovePackageFamily_Redder();
+            RemovePackageFamily_Red();
             StagePackage_Redder();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -1974,7 +1982,7 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(IsPackageSetStaged(packageSet));
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
 
-            RemovePackageFamily_Redder();
+            RemovePackageFamily_Red();
         }
 
         TEST_METHOD(StagePackageSetAsync_1_StagedPackageStatusBad_Success)
@@ -1985,7 +1993,7 @@ namespace Test::PackageManager::Tests
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
-            RemovePackage_Red();
+            RemovePackageFamily_Red();
             StagePackage_Red();
             SetPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
@@ -2009,7 +2017,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(StagePackageSetAsync_N_NotInstalled_Success)
         {
-            RemovePackage_Red();
+            RemovePackageFamily_Red();
             RemovePackage_Green();
             RemovePackage_Blue();
 
@@ -2038,7 +2046,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(StagePackageSetAsync_N_Staged_Success)
         {
-            RemovePackage_Red();
+            RemovePackageFamily_Red();
             RemovePackage_Green();
             RemovePackage_Blue();
             StagePackage_Red();
@@ -2099,12 +2107,12 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(IsPackageSetStaged(packageSet));
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
 
-            RemovePackageFamily_Redder();
+            RemovePackageFamily_Red();
         }
 
         TEST_METHOD(StagePackageSetAsync_N_OlderStaged_Success)
         {
-            RemovePackage_Red();
+            RemovePackageFamily_Red();
             RemovePackage_Green();
             RemovePackage_Blue();
             StagePackage_Red();
@@ -2133,12 +2141,17 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(IsPackageSetStaged(packageSet));
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
 
-            RemovePackageFamily_Redder();
+            VERIFY_IS_FALSE(IsPackageStaged_Red());
+            VERIFY_IS_TRUE(IsPackageStaged_Redder());
+            VERIFY_IS_TRUE(IsPackageStaged_Blue());
+            VERIFY_IS_TRUE(IsPackageStaged_Green());
+
+            RemovePackageFamily_Red();
         }
 
         TEST_METHOD(StagePackageSetAsync_N_StagedAndNotInstalled_Success)
         {
-            RemovePackage_Red();
+            RemovePackageFamily_Red();
             RemovePackage_Green();
             StagePackage_Red();
 
@@ -2168,7 +2181,7 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            RemovePackage_Red();
+            RemovePackageFamily_Red();
             RemovePackage_Green();
             RemovePackage_Blue();
             StagePackage_Red();
@@ -2205,7 +2218,7 @@ namespace Test::PackageManager::Tests
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
-            RemovePackage_Red();
+            RemovePackageFamily_Red();
             RemovePackage_Green();
             StagePackage_Red();
             StagePackage_Green();
