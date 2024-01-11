@@ -31,15 +31,14 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         winrt::Windows::Storage::StorageFolder TemporaryFolder();
         winrt::Microsoft::Windows::Storage::ApplicationDataContainer LocalSettings();
         winrt::Microsoft::Windows::Storage::ApplicationDataContainer RoamingSettings();
-        winrt::Windows::Foundation::IAsyncAction ClearAllAsync();
         winrt::Windows::Foundation::IAsyncAction ClearAsync(winrt::Microsoft::Windows::Storage::ApplicationDataLocality locality);
         winrt::Windows::Foundation::IAsyncAction ClearPublisherCacheFolderAsync(hstring folderName);
-        winrt::Windows::Foundation::IAsyncAction ClearMachineFolderAsync();
         void Close();
         hstring GetPublisherCachePath(hstring const& folderName);
         winrt::Windows::Storage::StorageFolder GetPublisherCacheFolder(hstring const& folderName);
 
     private:
+        winrt::Windows::Foundation::IAsyncAction ClearMachineFolderAsync();
         static std::filesystem::path _MachinePath(hstring const& packageFamilyName);
         static bool IsMachinePathAccessAllowed(hstring const& packageFamilyName);
         static bool _PathExists(std::filesystem::path const& path);

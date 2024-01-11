@@ -240,14 +240,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         auto applicationDataContainer{ m_applicationData.RoamingSettings() };
         return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationDataContainer>(applicationDataContainer);
     }
-    winrt::Windows::Foundation::IAsyncAction ApplicationData::ClearAllAsync()
-    {
-        if (!m_applicationData)
-        {
-            co_return;
-        }
-        co_await m_applicationData.ClearAsync();
-    }
     winrt::Windows::Foundation::IAsyncAction ApplicationData::ClearAsync(winrt::Microsoft::Windows::Storage::ApplicationDataLocality locality)
     {
         if (!m_applicationData)
@@ -271,23 +263,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         }
         co_await m_applicationData.ClearPublisherCacheFolderAsync(folderName);
     }
-    winrt::Windows::Foundation::IAsyncAction ApplicationData::ClearMachineFolderAsync()
-    {
-        const auto path{ MachinePath() };
-
-        auto logTelemetry{ ApplicationDataTelemetry::ClearMachineFolderAsync::Start(path) };
-
-        auto strong{ get_strong() };
-
-        logTelemetry.IgnoreCurrentThread();
-        co_await winrt::resume_background();
-        auto logTelemetryContinuation{ logTelemetry.ContinueOnCurrentThread() };
-
-        const auto options{ wil::RemoveDirectoryOptions::KeepRootDirectory | wil::RemoveDirectoryOptions::RemoveReadOnly };
-        wil::RemoveDirectoryRecursive(path.c_str(), options);
-
-        logTelemetry.Stop();
-    }
     void ApplicationData::Close()
     {
         if (m_applicationData)
@@ -304,6 +279,23 @@ namespace winrt::Microsoft::Windows::Storage::implementation
             path = folder.Path();
         }
         return path;
+    }
+    winrt::Windows::Foundation::IAsyncAction ApplicationData::ClearMachineFolderAsync()
+    {
+        const auto path{ MachinePath() };
+
+        auto logTelemetry{ ApplicationDataTelemetry::ClearMachineFolderAsync::Start(path) };
+
+        auto strong{ get_strong() };
+
+        logTelemetry.IgnoreCurrentThread();
+        co_await winrt::resume_background();
+        auto logTelemetryContinuation{ logTelemetry.ContinueOnCurrentThread() };
+
+        const auto options{ wil::RemoveDirectoryOptions::KeepRootDirectory | wil::RemoveDirectoryOptions::RemoveReadOnly };
+        wil::RemoveDirectoryRecursive(path.c_str(), options);
+
+        logTelemetry.Stop();
     }
     winrt::Windows::Storage::StorageFolder ApplicationData::GetPublisherCacheFolder(hstring const& folderName)
     {

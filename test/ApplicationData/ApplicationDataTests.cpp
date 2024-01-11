@@ -675,16 +675,6 @@ namespace Test::PackageManager::Tests
             }
         }
 
-        TEST_METHOD(ClearAllAsync_Main)
-        {
-            //TODO
-        }
-
-        TEST_METHOD(ClearAllAsync_Framework)
-        {
-            //TODO
-        }
-
         TEST_METHOD(ClearAsync_Main)
         {
             //TODO
@@ -695,22 +685,22 @@ namespace Test::PackageManager::Tests
             //TODO
         }
 
+        TEST_METHOD(ClearFolderAsync_Machine_Main)
+        {
+            //TODO
+        }
+
+        TEST_METHOD(ClearFolderAsync_Machine_Framework)
+        {
+            //TODO
+        }
+
         TEST_METHOD(ClearPublisherCacheFolderAsync_Main)
         {
             //TODO
         }
 
         TEST_METHOD(ClearPublisherCacheFolderAsync_Framework)
-        {
-            //TODO
-        }
-
-        TEST_METHOD(ClearMachineFolderAsync_Main)
-        {
-            //TODO
-        }
-
-        TEST_METHOD(ClearMachineFolderAsync_Framework)
         {
             //TODO
         }
