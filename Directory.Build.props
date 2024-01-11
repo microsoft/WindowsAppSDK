@@ -21,7 +21,7 @@
     <NugetPackageDirectory>$(RepoRoot)\packages</NugetPackageDirectory>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(RepoRoot)\WasdkStrongNameSign.snk</AssemblyOriginatorKeyFile>
-    <WindowsSdkPackageVersion>10.0.22621.30-preview.aot5.ni-release-svc-prod3</WindowsSdkPackageVersion>
+    <WindowsSdkPackageVersion>10.0.22621.30-preview.aot7.ni-release-svc-prod3</WindowsSdkPackageVersion>
   </PropertyGroup>
 
   <!-- Compilation differs for the build pipeline vs local development -->
