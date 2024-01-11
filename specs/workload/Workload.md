@@ -28,8 +28,10 @@ This API supports managing workloads focusing on the following scenarios:
 A workload has the following properties:
 
 * Id -- programmatic identifier
+* Rank -- prioritization for selection if multiple workloads have the same id
 * DisplayName -- localizable name for user/human consumption
 * Handler -- WinRT object providing operations manipulating the workload
+* Supported Actions -- Operation(s) a  handler can perform
 
 An MSIX package can define one or more workloads. The following manifest schema is used:
 
@@ -38,9 +40,10 @@ An MSIX package can define one or more workloads. The following manifest schema 
   ...
   <Properties>
     <workload:Workloads>
-      <Workload Id="id" DisplayName="dn">
-        <Actions>
-          <Handler ActivatableClassId="acid">
+      <Workload Id="id" Rank="rank" DisplayName="dn">
+        <Actions ActivatableClassId="acid">
+          <action/>
+          ...
         </Actions>
       </Workload>
       ...
@@ -56,11 +59,34 @@ The following validations apply:
   * String length: 1-255
   * Allowed characters: [A-Za-z0-9_.]
   * Comparison: Case-Insensitive (locale-invariant)
-  * Occurrence: Unique across all workloads in a package
+  * Occurrence: Required (minOccurs=maxOccurs=1)
+  * Validation: Unique across all workloads in a package
+* Rank (rank)
+  * Int32
+  * Occurrence: Required (minOccurs=maxOccurs=1)
 * DisplayName (dn)
-  * Standard `DisplayName` definition
+  * [Standard `DisplayName` definition](https://learn.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-displayname)
+  * Occurrence: Required (minOccurs=maxOccurs=1)
 * ActivatableClassId (acid)
-  * Standard `ActivatableClassId` definition
+  * [Standard `ActivatableClassId` definition](https://learn.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-activatableclass)
+  * Occurrence: Optional (minOccurs=0, maxOccurs=1)
+* Actions
+  * Occurrence: Optional (minOccurs=0, maxOccurs=1)
+* actions
+  * The actions supported by this handler.
+  * Occurrence: Required (minOccurs=maxOccurs=1).
+  * NOTE: Currently only <Remove> is supported but other actions will be added in the future e.g. if a Repair action is supported expressing support for both Remove and Repair would be
+
+```xml
+        <Actions ActivatableClassId="acid">
+          <Remove/>
+          <Repair/>
+        </Actions>
+```
+
+### 3.2.1. Workload 'Id' and Collisions
+
+If packages are registered with multiple workloads containing the same id then the workload
 
 # 4. Examples
 
@@ -79,10 +105,16 @@ namespace RemoveAllWorkloads
             foreach (string id in workloadManager.FindIds())
             {
                 var workload = workloadManager.GetWorkload(id)
-                Console.Write($"Removing {workload.DisplayName}...");
-                var workloadHandler = workload.WorkloadHandler;
-                await workloadHandler.RemoveAsync();
-                Console.WriteLine($"Gone!");
+                if (workload.CanRemove())
+                {
+                    Console.Write($"Removing {workload.DisplayName}...");
+                    await workload.RemoveWorkloadAsync();
+                    Console.WriteLine($"Gone!");
+                }
+                else
+                {
+                    Console.Write($"{workload.DisplayName} does not support Remove");
+                }
             }
         }
     }
@@ -139,8 +171,9 @@ namespace Microsoft.Windows.System.Workloads
     [contract(WorkloadsContract, 1)]
     interface IWorkloadHandler
     {
+        /// Remove the workload
         Windows.Foundation.IAsyncOperationWithProgress<WorkloadResult, WorkloadProgress>
-        RemoveAsync();
+        RemoveWorkloadAsync();
     }
 
     [contract(WorkloadsContract, 1)]
@@ -158,11 +191,12 @@ namespace Microsoft.Windows.System.Workloads
         /// Return the localized display name for this workload
         String DisplayName { get; };
 
-        /// Return the activatable class id for the handler for this workload
-        String WorkloadHandlerActivatableClassId { get; };
+        /// Return true if the workload supports Remove.
+        Boolean CanRemove();
 
-        /// Return a new instance of the handler for this workload
-        IWorkloadHandler WorkloadHandler{ get; };
+        /// Remove the workload
+        Windows.Foundation.IAsyncOperationWithProgress<WorkloadResult, WorkloadProgress>
+        RemoveWorkloadAsync();
     }
 }
 ```
