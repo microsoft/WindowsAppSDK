@@ -55,7 +55,7 @@ The following validations apply:
 * Id (id)
   * String length: 1-255
   * Allowed characters: [A-Za-z0-9_.]
-  * Comparison: Case-Insensitive
+  * Comparison: Case-Insensitive (locale-invariant)
   * Occurence: Unique across all workloads in a package
 * DisplayName (dn)
   * Standard `DisplayName` definition
