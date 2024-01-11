@@ -56,7 +56,7 @@ The following validations apply:
   * String length: 1-255
   * Allowed characters: [A-Za-z0-9_.]
   * Comparison: Case-Insensitive (locale-invariant)
-  * Occurence: Unique across all workloads in a package
+  * Occurrence: Unique across all workloads in a package
 * DisplayName (dn)
   * Standard `DisplayName` definition
 * ActivatableClassId (acid)
