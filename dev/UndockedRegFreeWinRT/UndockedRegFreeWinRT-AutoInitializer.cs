@@ -6,6 +6,7 @@
 // DO NOT MODIFY. Changes to this file may cause incorrect behavior and will be lost on updates.
 // </auto-generated>
 
+using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
