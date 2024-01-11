@@ -182,12 +182,13 @@ stages:
         filePath: 'BuildAll.ps1'
         arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
 
-    - ${{ if eq(parameters.BuildMockWindowsAppSDK, 'true') }}:
-      - task: PowerShell@2
-        name: BuildMock
-        inputs:
-          filePath: 'BuildAll.ps1'
-          arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "BuildMock" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
+    # Disable building MockWindowsAppSDK until we can consider the public vs private scenario
+    # - ${{ if eq(parameters.BuildMockWindowsAppSDK, 'true') }}:
+    #   - task: PowerShell@2
+    #     name: BuildMock
+    #     inputs:
+    #       filePath: 'BuildAll.ps1'
+    #       arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "BuildMock" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
 
     - ${{ if eq(parameters.SignOutput, 'true') }}:
       - task: EsrpCodeSigning@2
