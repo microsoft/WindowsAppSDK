@@ -408,18 +408,6 @@ namespace Microsoft.Windows.Storage
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingsettings
         ApplicationDataContainer RoamingSettings { get; };
 
-        /// Remove all data from the local, local cache, roaming, and temporary data stores.
-        /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.clearasync
-        /// @see LocalCachePath
-        /// @see LocalCacheFolder
-        /// @see LocalPath
-        /// @see LocalFolder
-        /// @see RoamingPath
-        /// @see RoamingFolder
-        /// @see TemporaryPath
-        /// @see TemporaryFolder
-        Windows.Foundation.IAsyncAction ClearAllAsync();
-
         /// Remove all data from the specified data store.
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.clearasync
         Windows.Foundation.IAsyncAction ClearAsync(ApplicationDataLocality locality);
@@ -429,11 +417,6 @@ namespace Microsoft.Windows.Storage
         /// @see SharedLocalFolder
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.clearpublishercachefolderasync
         Windows.Foundation.IAsyncAction ClearPublisherCacheFolderAsync(String folderName);
-
-        /// Remove all data from machine data store.
-        /// @see MachineLocalPath
-        /// @see MachineLocalFolder
-        Windows.Foundation.IAsyncAction ClearMachineFolderAsync();
 
         /// Return the path for the shared data store for the publisher of the app.
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.getpublishercachefolder
