@@ -78,7 +78,7 @@ namespace RemoveAllWorkloads
             var workloadManager = WorkloadManager.GetDefault();
             foreach (string id in workloadManager.FindIds())
             {
-                var workload = workloadManager.GetWorkload(id)
+                var workload = workloadManager.GetWorkload(id);
                 Console.Write($"Removing {workload.DisplayName}...");
                 var workloadHandler = workload.WorkloadHandler;
                 await workloadHandler.RemoveAsync();
