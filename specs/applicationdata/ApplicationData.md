@@ -28,8 +28,6 @@ additional functionality, improved developer experience and performance optimiza
 
 This feature provides APIs to access and manipulate app data stores.
 
-- [1. Application Data](#1-application-data)
-
 # 2. Background
 
 Windows provides data stores for packaged applications to store data by user and package family via
