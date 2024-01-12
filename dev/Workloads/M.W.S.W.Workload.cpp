@@ -22,6 +22,8 @@ namespace winrt::Microsoft::Windows::System::Workloads::implementation
     }
     winrt::Windows::Foundation::Collections::IVector<hstring> Workload::FindIds()
     {
+        auto logTelemetry{ WorkloadTelemetry::FindsIds::Start() };
+
         auto ids{ winrt::single_threaded_vector<hstring>() };
 
         //TODO wil::unique_cotaskmem_ptr<PWSTR[]> workloadIds;
@@ -37,6 +39,8 @@ namespace winrt::Microsoft::Windows::System::Workloads::implementation
     }
     winrt::Microsoft::Windows::System::Workloads::Workload Workload::GetWorkload(hstring const& workloadId)
     {
+        auto logTelemetry{ WorkloadTelemetry::GetWorkload::Start(workloadId) };
+
         //TODO winrt::Windows::Foundation::Collections::IPropertySet properties;
         //TODO THROW_IF_FAILED(FrameworkUDk.PackageManagementWorkloads_GetWorkload(workloadId.c_str(), wil::out_param(properties)));
         //TODO
