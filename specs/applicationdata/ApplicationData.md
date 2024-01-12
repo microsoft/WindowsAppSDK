@@ -60,13 +60,14 @@ This API provides an equivalent superset of
 with the following notable differences:
 
 * **No roaming functionality** -- We don't provide equivalents to Windows.Storage.ApplicationData's
-      [RoamingSettings](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingsettings),
-      [RoamingStorageQuota](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingstoragequota),
-      [Version](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.version),
-      [SetVersionAsync()](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.setversionasync),
-      [SignalDataChanged()](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.signaldatachanged)
-      and
-      [DataChanged](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.datachanged). See [5.1. Platform Support](#51-platform-support) for more details.
+  [RoamingSettings](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingsettings),
+  [RoamingStorageQuota](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingstoragequota),
+  [Version](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.version),
+  [SetVersionAsync()](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.setversionasync),
+  [SignalDataChanged()](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.signaldatachanged)
+  and
+  [DataChanged](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.datachanged).
+  See [5.1. Platform Support](#51-platform-support) for more details.
 * **GetDefault() works for all packaged apps** -- Equivalent to .Current but works for all packaged
   apps (not just callers running in an AppContainer). See
   [3.3. Reliable access](#33-reliable-access).
@@ -81,16 +82,19 @@ New *Path equivalents to Windows.Storage.ApplicationData's *Folder but returning
 
 ## 3.3. Reliable access
 
-`Windows.Storage.ApplicationData.Current` only works for packaged apps **running in an AppContainer**. Processes not running in an AppContainer (e.g. MediumIL) must use the equivalent `Windows.Management.Core.ApplicationDataManager.CreateForPackageFamily(Windows.ApplicationModel.Package.Current.Id.FamilyName)`.
+`Windows.Storage.ApplicationData.Current` only works for packaged apps **running in an
+AppContainer**. Processes not running in an AppContainer (e.g. MediumIL) must use the equivalent
+`Windows.Management.Core.ApplicationDataManager.CreateForPackageFamily(Windows.ApplicationModel.Package.Current.Id.FamilyName)`.
 
-Microsoft.Windows.Storage.ApplicationData provides consistent behavior as developers expect e.g. `ApplicationData.Current` works regardless if the caller's running in an AppContainer or not.
+Microsoft.Windows.Storage.ApplicationData provides consistent behavior as developers expect e.g.
+`ApplicationData.Current` works regardless if the caller's running in an AppContainer or not.
 
 ## 3.4. Per-Machine data store
 
 New properties and methods to access per-machine data:
 
 * ApplicationDataLocality.Machine
-* ClearMachineFolderAsync()
+* ClearFolderAsync(Locality=Machine)
 * IsMachinePathSupported
 * MachineFolder
 * MachinePath
