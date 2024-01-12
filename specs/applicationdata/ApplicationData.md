@@ -7,6 +7,10 @@
   - [3.2. \*Path properties](#32-path-properties)
   - [3.3. Reliable access](#33-reliable-access)
   - [3.4. Per-Machine data store](#34-per-machine-data-store)
+    - [3.4.1. Machine Path/Folder](#341-machine-pathfolder)
+    - [3.4.2. Manifested Opt-In](#342-manifested-opt-in)
+    - [3.4.3. Machine Path Creation/Deletion](#343-machine-path-creationdeletion)
+    - [3.4.4. APIs](#344-apis)
   - [3.5. Unpackaged app data stores](#35-unpackaged-app-data-stores)
 - [4. Examples](#4-examples)
   - [4.1. Packaged app using LocalPath](#41-packaged-app-using-localpath)
@@ -23,8 +27,6 @@ This feature provides application data APIs comparable to those in namespaces
 additional functionality, improved developer experience and performance optimizations.
 
 This feature provides APIs to access and manipulate app data stores.
-
-- [1. Application Data](#1-application-data)
 
 # 2. Background
 
@@ -91,6 +93,50 @@ Microsoft.Windows.Storage.ApplicationData provides consistent behavior as develo
 
 ## 3.4. Per-Machine data store
 
+Package families can optionally have a per-machine data store.
+
+### 3.4.1. Machine Path/Folder
+
+The path for a package family’s "Machine Folder" is located at `%ProgramData%\Microsoft\Windows\AppRepository\ApplicationData\...packagefamilyname...\Machine`.
+
+This directory is ACL’d similarly to a package’s System Metadata directory (`%ProgramData%\Microsoft\Windows\AppRepository\Packages\...pkgfullname...`) e.g.
+
+```
+BUILTIN\Users:(OI)(CI)(Rc,S,RD,REA,X,RA)
+S-1-15-3-2977037414-864741429-1129033548-1928484290-1803339615-1058153653-556172075:(OI)(CI)(RX)
+BUILTIN\Users:(OI)(CI)(R)
+NT SERVICE\TrustedInstaller:(I)(F)
+NT SERVICE\TrustedInstaller:(I)(CI)(IO)(F)
+NT AUTHORITY\SYSTEM:(I)(F)
+NT AUTHORITY\SYSTEM:(I)(OI)(CI)(IO)(F)
+BUILTIN\Administrators:(I)(RX)
+BUILTIN\Administrators:(I)(OI)(CI)(IO)(GR,GE)
+S-1-15-3-1024-3635283841-2530182609-996808640-1887759898-3848208603-3313616867-983405619-2501854204:(I)(RX)
+S-1-15-3-1024-3635283841-2530182609-996808640-1887759898-3848208603-3313616867-983405619-2501854204:(I)(OI)(CI)(IO)(GR,GE)
+```
+
+### 3.4.2. Manifested Opt-In
+
+The "Machine Folder" is only available for packages that explicitly opt-in to enabling it via appxmanifest.xml
+
+```xml
+<Package>
+  ...
+  <Properties>
+    <appdata:ApplicationData>
+      <MachineFolder/>
+    </appdata:ApplicationData>
+    ...
+```
+
+### 3.4.3. Machine Path Creation/Deletion
+
+A new Undocked Deployment Extension Handler (DEH) creates the Machine path when a package in the package family is installed, if it doesn't already exist.
+
+The Machine path is removed when the last package in the package family is removed from the machine.
+
+### 3.4.4. APIs
+
 New properties and methods to access per-machine data:
 
 * ApplicationDataLocality.Machine
@@ -98,6 +144,8 @@ New properties and methods to access per-machine data:
 * IsMachinePathSupported
 * MachineFolder
 * MachinePath
+
+**NOTE:** The per-machine APIs require the caller has the package family registered for the user -or- is running as SYSTEM.
 
 ## 3.5. Unpackaged app data stores
 
@@ -114,6 +162,7 @@ Unpackaged applications can use the ApplicationData API to access app data store
 |ApplicationData.LocalSettings   |HKCU\SOFTWARE\<publisher>\<product>                                |
 
 <sup>1</sup>
+
 [GetTempPath2W()](https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-gettemppath2w)
 returns `C:\Windows\SystemTemp` for SYSTEM processes else for non-SYSTEM processes checks for the
 existence of environment variables in the following order and uses the first path found:
@@ -193,7 +242,7 @@ Per https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingf
   > Roaming data and settings is no longer supported as of Windows 11. The recommended replacement
       is Azure App Service. Azure App Service is widely supported, well documented, reliable, and
       supports cross-platform/cross-ecosystem scenarios such as iOS, Android and web. Settings
-      stored here no longer roam (as of Windows 11), but the settings store is still available. 
+      stored here no longer roam (as of Windows 11), but the settings store is still available.
 
 We provide `RoamingFolder` and `RoamingSettings` equivalents but they're only as functional as
 Windows provides (i.e. no data roaming on Windows after 1909 aka 19H2 aka 10.0.18363.0).
@@ -299,10 +348,12 @@ namespace Microsoft.Windows.Storage
         Boolean IsMachinePathSupported();
 
         /// Return the path for the local cache data store not included in backup and restore operations.
+        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.LocalCacheFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.localcachefolder
         String LocalCachePath { get; };
 
         /// Return the path for the local data store. This location is backed up to the cloud.
+        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.LocalFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.localfolder
         String LocalPath { get; };
 
@@ -312,14 +363,17 @@ namespace Microsoft.Windows.Storage
 
         /// Return the path for the roaming data store.
         /// @warning Roaming data and settings are no longer supported after Windows 10 version 1901 (aka 19H1 aka 10.0.18363.0).
+        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.RoamingFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingfolder
         String RoamingPath { get; };
 
         /// Return the path for the shared data store.
+        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.SharedLocalFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.sharedlocalfolder
         String SharedLocalPath { get; };
 
         /// Return the path for the temporary data store.
+        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.TemporaryFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.temporaryfolder
         String TemporaryPath { get; };
 
@@ -356,30 +410,15 @@ namespace Microsoft.Windows.Storage
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingsettings
         ApplicationDataContainer RoamingSettings { get; };
 
-        /// Remove all data from the local, local cache, roaming, and temporary data stores.
-        /// @see LocalCachePath
-        /// @see LocalCacheFolder
-        /// @see LocalPath
-        /// @see LocalFolder
-        /// @see RoamingPath
-        /// @see RoamingFolder
-        /// @see TemporaryPath
-        /// @see TemporaryFolder
-        [method_name("ClearAsync")]
-        Windows.Foundation.IAsyncAction ClearAllAsync();
-
         /// Remove all data from the specified data store.
+        /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.clearasync
         Windows.Foundation.IAsyncAction ClearAsync(ApplicationDataLocality locality);
 
         /// Remove all data from the shared data store in the specified subfolder.
         /// @see SharedLocalPath
         /// @see SharedLocalFolder
+        /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.clearpublishercachefolderasync
         Windows.Foundation.IAsyncAction ClearPublisherCacheFolderAsync(String folderName);
-
-        /// Remove all data from machine data store.
-        /// @see MachineLocalPath
-        /// @see MachineLocalFolder
-        Windows.Foundation.IAsyncAction ClearMachineFolderAsync();
 
         /// Return the path for the shared data store for the publisher of the app.
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.getpublishercachefolder
