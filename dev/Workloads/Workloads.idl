@@ -5,29 +5,27 @@
 
 namespace Microsoft.Windows.System.Workloads
 {
-    [feature(Feature_Workloads)]
     [contractversion(1)]
     apicontract WorkloadsContract{};
 
-    [feature(Feature_Workloads)]
     [contract(WorkloadsContract, 1)]
     enum WorkloadStatus
     {
         InProgress = 0,         // The request is in progress
         CompletedSuccess = 1,   // The request completed successfully
-        CompletedFailure = 2,   // The request failed with some critical internal error. //TODO:Check ExtendedError for HRESULT
+        CompletedFailure = 2,   // The request failed with some critical internal error.
                                 // See ExtendedError for HRESULT
     };
 
-    [feature(Feature_Workloads)]
     [contract(WorkloadsContract, 1)]
     runtimeclass WorkloadResult
     {
         WorkloadStatus Status { get; };
+        HRESULT Error { get; };
         HRESULT ExtendedError { get; };
+        String ErrorText { get; };
     }
 
-    [feature(Feature_Workloads)]
     [contract(WorkloadsContract, 1)]
     enum WorkloadProgressStatus
     {
@@ -38,43 +36,44 @@ namespace Microsoft.Windows.System.Workloads
                                 // See ExtendedError for HRESULT
     };
 
-    [feature(Feature_Workloads)]
     [contract(WorkloadsContract, 1)]
-    runtimeclass WorkloadProgress
+    struct WorkloadProgress
     {
-        WorkloadProgressStatus status;
-        Double percentage;
-    }
+        WorkloadProgressStatus Status;
+        Double Progress;
+    };
 
-    [feature(Feature_Workloads)]
     [contract(WorkloadsContract, 1)]
     interface IWorkloadHandler
     {
+        /// Remove the workload
         Windows.Foundation.IAsyncOperationWithProgress<WorkloadResult, WorkloadProgress>
-        RemoveAsync();
+        RemoveWorkloadAsync();
     }
 
-    [feature(Feature_Workloads)]
     [contract(WorkloadsContract, 1)]
     runtimeclass Workload
     {
-        Workload();
+        /// Return the Id for all workloads
+        static IVector<String> FindIds();
 
+        /// Return a workload
+        static Workload GetWorkload(String id);
+
+        /// Return the unique identifier for this workload
         String Id { get; };
+
+        /// Return the rank for this workload
+        Int32 Rank { get; };
+
+        /// Return the localized display name for this workload
         String DisplayName { get; };
-        String WorkloadHandlerActivatableClassId { get; };
 
-        IWorkloadHandler WorkloadHandler{ get; };
-    }
+        /// Return true if the workload supports Remove.
+        Boolean CanRemove();
 
-    [feature(Feature_Workloads)]
-    [contract(WorkloadsContract, 1)]
-    runtimeclass WorkloadManager
-    {
-        static WorkloadManager GetDefault();
-
-        Workload GetWorkload(String id);
-
-        IVector<String> FindIds();
+        /// Remove the workload
+        Windows.Foundation.IAsyncOperationWithProgress<WorkloadResult, WorkloadProgress>
+        RemoveWorkloadAsync();
     }
 }

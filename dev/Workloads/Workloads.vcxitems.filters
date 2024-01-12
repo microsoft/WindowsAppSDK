@@ -14,13 +14,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.S.W.Workload.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.S.W.WorkloadProgress.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.S.W.WorkloadResult.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.S.W.WorkloadManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -28,13 +22,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.W.Workload.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.W.WorkloadProgress.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.W.WorkloadResult.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.W.WorkloadManager.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.W.WorkloadTelemetry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
