@@ -143,6 +143,10 @@ bool Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::FindAny(
 {
     // Find the/any match
     auto package{ packageManager.FindPackageForUser(winrt::hstring(), packageFullName) };
+    if (!package)
+    {
+        return false;
+    }
 
     // Package status must be OK to use a package
     auto status{ package.Status() };

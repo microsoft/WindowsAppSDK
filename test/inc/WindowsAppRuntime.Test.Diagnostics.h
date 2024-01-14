@@ -1,10 +1,17 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #ifndef __WINDOWSAPPRUNTIME_TEST_DIAGNOSTICS_H
 #define __WINDOWSAPPRUNTIME_TEST_DIAGNOSTICS_H
 
 #include <WexTestClass.h>
+
+#include <sddl.h>
+
+#include <filesystem>
+
+#include <wil\resource.h>
+#include <wil\token_helpers.h>
 
 namespace Test::Diagnostics
 {

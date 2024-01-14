@@ -188,6 +188,19 @@ inline bool IsPackageRegistered(PCWSTR packageFullName)
 
 inline bool IsPackageStaged(PCWSTR packageFullName)
 {
+#if 0
+    UINT32 pathLength{};
+    const auto rc{ ::GetStagedPackagePathByFullName(packageFullName, &pathLength, nullptr) };
+    if (rc == ERROR_INSUFFICIENT_BUFFER)
+    {
+        return true;
+    }
+    else if (rc == HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
+    {
+        return false;
+    }
+    THROW_WIN32(rc);
+#else
     // Check if the package is staged
     PackageOrigin packageOrigin{};
     const auto rc{ GetStagedPackageOrigin(packageFullName, &packageOrigin) };
@@ -200,6 +213,7 @@ inline bool IsPackageStaged(PCWSTR packageFullName)
         return false;
     }
     THROW_WIN32(rc);
+#endif
 }
 
 inline bool IsPackageAvailable(PCWSTR packageFullName)
@@ -315,42 +329,6 @@ inline void RemovePackageIfNecessary(PCWSTR packageFullName)
         RemovePackage(packageFullName);
     }
 }
-
-#if defined(__APPMODEL_IDENTITY_H)
-inline void RemovePackageFamily(PCWSTR packageFamilyName)
-{
-    winrt::Windows::Management::Deployment::PackageManager packageManager;
-    const auto packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Framework |
-                             winrt::Windows::Management::Deployment::PackageTypes::Main };
-    auto packages{ packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
-    for (const winrt::Windows::ApplicationModel::Package& package : packages)
-    {
-        winrt::Windows::ApplicationModel::PackageId packageId{ package.Id() };
-        winrt::hstring packageFullName{ packageId.FullName() };
-        RemovePackage(packageFullName.c_str());
-    }
-}
-#endif // defined(__APPMODEL_IDENTITY_H)
-
-#if defined(__APPMODEL_IDENTITY_H)
-inline void RemovePackageFamilyIfNecessary(PCWSTR packageFamilyName)
-{
-    if (IsPackageFamilyRegistered(packageFamilyName))
-    {
-        RemovePackageFamily(packageFamilyName);
-    }
-}
-#endif // defined(__APPMODEL_IDENTITY_H)
-
-#if defined(__APPMODEL_IDENTITY_H)
-inline void RemovePackageFamilyIfNecessary(PCWSTR packageFamilyName, winrt::Windows::ApplicationModel::PackageVersion minVersion)
-{
-    if (IsPackageFamilyRegistered(packageFamilyName, minVersion))
-    {
-        RemovePackageFamily(packageFamilyName);
-    }
-}
-#endif // defined(__APPMODEL_IDENTITY_H)
 
 inline void AddPackage_DynamicDependencyLifetimeManager()
 {

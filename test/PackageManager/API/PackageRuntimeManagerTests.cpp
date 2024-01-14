@@ -47,14 +47,14 @@ namespace Test::PackageManager::Tests
             return true;
         }
 
-        void SetPackageStatus(PCWSTR packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus status)
+        void SetPackageStatusByPackageFamilyName(PCWSTR packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus status)
         {
-            TPMT::SetPackageStatus(m_packageManager, packageFamilyName, status);
+            TPMT::SetPackageStatusByPackageFamilyName(m_packageManager, packageFamilyName, status);
         }
 
-        void ClearPackageStatus(PCWSTR packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus status)
+        void ClearPackageStatusByPackageFamilyName(PCWSTR packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus status)
         {
-            TPMT::ClearPackageStatus(m_packageManager, packageFamilyName, status);
+            TPMT::ClearPackageStatusByPackageFamilyName(m_packageManager, packageFamilyName, status);
         }
 
         TEST_METHOD(AddPackageSet_InvalidParameter)
@@ -332,7 +332,7 @@ namespace Test::PackageManager::Tests
             END_TEST_METHOD_PROPERTIES()
 
             AddPackage_Red();
-            SetPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
+            SetPackageStatusByPackageFamilyName(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
 
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
@@ -355,7 +355,7 @@ namespace Test::PackageManager::Tests
                 VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
-            ClearPackageStatus(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
+            ClearPackageStatusByPackageFamilyName(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
         }
 
         TEST_METHOD(AddPackageSet_N_NotInstalled_Fail)
@@ -548,7 +548,7 @@ namespace Test::PackageManager::Tests
 
             AddPackage_Red();
             AddPackage_Green();
-            SetPackageStatus(::TPF::Green::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
+            SetPackageStatusByPackageFamilyName(::TPF::Green::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
 
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
             PCWSTR c_packageSetId{ L"RGB" };
@@ -573,7 +573,7 @@ namespace Test::PackageManager::Tests
                 VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
 
-            ClearPackageStatus(::TPF::Green::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
+            ClearPackageStatusByPackageFamilyName(::TPF::Green::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
         }
 
     private:
