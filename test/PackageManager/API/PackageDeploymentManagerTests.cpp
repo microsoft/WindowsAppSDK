@@ -2263,8 +2263,6 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            ::TB::SetupBootstrap();
-
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
             RemovePackageFamily_Red();
@@ -2284,8 +2282,6 @@ namespace Test::PackageManager::Tests
 
             VERIFY_IS_TRUE(IsPackageStaged_Red());
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
-
-            ::TB::CleanupBootstrap();
         }
 
         TEST_METHOD(StagePackageByUriAsync_StagedPackageStatusBad_Success)
@@ -2293,8 +2289,6 @@ namespace Test::PackageManager::Tests
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
-
-            ::TB::SetupBootstrap();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
@@ -2314,8 +2308,6 @@ namespace Test::PackageManager::Tests
 
             VERIFY_IS_TRUE(IsPackageStaged_Red());
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
-
-            ::TB::CleanupBootstrap();
         }
 
         TEST_METHOD(StagePackageSetAsync_1_StagedPackageStatusBad_Success)
@@ -2323,8 +2315,6 @@ namespace Test::PackageManager::Tests
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
-
-            ::TB::SetupBootstrap();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
@@ -2348,8 +2338,6 @@ namespace Test::PackageManager::Tests
 
             VERIFY_IS_TRUE(IsPackageStaged_Red());
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
-
-            ::TB::CleanupBootstrap();
         }
 
         TEST_METHOD(StagePackageSetAsync_N_StagedPackageStatusOkAndBad_Success)
@@ -2357,8 +2345,6 @@ namespace Test::PackageManager::Tests
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
-
-            ::TB::SetupBootstrap();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
@@ -2387,8 +2373,6 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(IsPackageStaged_Red());
             VERIFY_IS_TRUE(IsPackageStaged_Green());
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Green::GetPackageFullName()));
-
-            ::TB::CleanupBootstrap();
         }
     };
 }
