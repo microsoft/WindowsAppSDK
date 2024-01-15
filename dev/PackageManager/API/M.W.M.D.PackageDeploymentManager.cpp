@@ -171,10 +171,12 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     PackageDeploymentManager::AddPackageByUriAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options)
     {
         const winrt::hstring packageUriAsString{ packageUri.ToString() };
-        if (IsUriTarget(packageUri, L".appinstaller"))
+#if defined(TODO_SUPPORT_APPINSTALLER)
+        if (IsUriEndsWith(packageUri, L".appinstaller"))
         {
             return AddPackageByAppInstallerFileAsync(packageUri, options);
         }
+#endif
         auto logTelemetry{ PackageManagementTelemetry::AddPackageByUriAsync::Start(packageUriAsString) };
 
         auto strong{ get_strong() };
@@ -545,26 +547,37 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             return RemovePackageByFullNameAsync(package, options);
         }
+
+        const winrt::Windows::Foundation::Uri packageUri{ package };
+        const auto packageAbsoluteUri{ packageUri.AbsoluteUri() };
+        if (!packageAbsoluteUri.empty())
+        {
+            return RemovePackageByUriAsync(packageUri, options);
+        }
         THROW_HR_MSG(E_INVALIDARG, "%ls", package.c_str());
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageByFullNameAsync(hstring packageFullName, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
     {
+        //TODO Awaiting FrameworkUdk update with PackageManagement_RemovePackageByUriAsync()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageByFamilyNameAsync(hstring packageFamilyName, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
     {
+        //TODO Awaiting FrameworkUdk update with PackageManagement_RemovePackageByUriAsync()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageByUriAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
     {
+        //TODO Awaiting FrameworkUdk update with PackageManagement_RemovePackageByUriAsync()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
     {
+        //TODO Awaiting FrameworkUdk update with PackageManagement_RemovePackageByUriAsync()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
@@ -1490,5 +1503,24 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     double PackageDeploymentManager::PercentageToProgress(uint32_t percentage)
     {
         return static_cast<double>(percentage) / 100.0;
+    }
+
+    bool PackageDeploymentManager::IsUriEndsWith(winrt::Windows::Foundation::Uri const& packageUri, PCWSTR target)
+    {
+        FAIL_FAST_HR_IF(E_UNEXPECTED, !target);
+        FAIL_FAST_HR_IF(E_UNEXPECTED, *target == L'\0');
+
+        if (!packageUri)
+        {
+            return false;
+        }
+        const auto targetLength{ wcslen(target) };
+        const auto path{ packageUri.Path() };
+        if (path.size() < targetLength)
+        {
+            return false;
+        }
+        PCWSTR pathToCompare{ path.c_str() + (path.size() - targetLength) };
+        return CompareStringOrdinal(pathToCompare, -1, target, -1, TRUE) == CSTR_EQUAL;
     }
 }
