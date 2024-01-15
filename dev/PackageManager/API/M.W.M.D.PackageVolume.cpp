@@ -5,6 +5,8 @@
 #include "M.W.M.D.PackageVolume.h"
 #include "Microsoft.Windows.Management.Deployment.PackageVolume.g.cpp"
 
+#include <ExportLoader.h>
+
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
     PackageVolume::PackageVolume(winrt::Windows::Management::Deployment::PackageVolume const& value)
@@ -84,10 +86,23 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
     bool PackageVolume::IsRepairNeeded()
     {
-        throw hresult_not_implemented();
+        // extern "C" HRESULT WINAPI MsixPackageVolumeIsRepairNeeded(_In_ PCWSTR packageVolumePath, _Out_ BOOL* needsReset);
+        typedef HRESULT (WINAPI* MsixPackageVolumeIsRepairNeededFunction)(_In_ PCWSTR packageVolumePath, _Out_ BOOL* needsReset);
+
+        wil::unique_hmodule dll(::ExportLoader::Load(L"appxdeploymentclient.dll"));
+        auto msixPackageVolumeIsRepairNeeded{ ::ExportLoader::GetFunction<MsixPackageVolumeIsRepairNeededFunction>(dll.get(), "MsixPackageVolumeIsRepairNeeded") };
+        BOOL isRepairNeeded{};
+        THROW_IF_FAILED(msixPackageVolumeIsRepairNeeded(m_packageStorePath.c_str(), &isRepairNeeded));
+        return !!isRepairNeeded;
     }
+
     void PackageVolume::Repair()
     {
-        throw hresult_not_implemented();
+        // extern "C" HRESULT WINAPI MsixPackageVolumeRepair(_In_ PCWSTR packageVolumePath);
+        typedef HRESULT (WINAPI* MsixPackageVolumeRepairFunction)(_In_ PCWSTR packageVolumePath);
+
+        wil::unique_hmodule dll(::ExportLoader::Load(L"appxdeploymentclient.dll"));
+        auto msixPackageVolumeRepair{ ::ExportLoader::GetFunction<MsixPackageVolumeRepairFunction>(dll.get(), "MsixPackageVolumeRepair") };
+        THROW_IF_FAILED(msixPackageVolumeRepair(m_packageStorePath.c_str()));
     }
 }

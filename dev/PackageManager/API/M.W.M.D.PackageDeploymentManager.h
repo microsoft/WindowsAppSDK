@@ -46,6 +46,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         bool IsPackageRegistrationPendingForUser(hstring const& userSecurityId, hstring const& packageFamilyName);
 
     private:
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> AddPackageByAppInstallerFileAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options)
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> RegisterPackageByPackageFamilyNameAsync(winrt::hstring const& packageFamilyName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options);
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> RegisterPackageByPackageFullNameAsync(winrt::hstring const& packageFullName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options);
+
+    private:
         bool IsReadyByPackageFullName(hstring const& packageFullName);
         bool IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSet);
         void Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet) const;
@@ -58,7 +63,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
-        HRESULT AddAsync(
+        HRESULT AddPackage(
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem,
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions const& options,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
@@ -66,7 +71,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
-        HRESULT AddAsync(
+        HRESULT AddPackage(
             winrt::Windows::Foundation::Uri const& packageUri,
             winrt::Windows::Management::Deployment::AddPackageOptions const& addOptions,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
@@ -74,7 +79,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
-        HRESULT StageAsync(
+        HRESULT StagePackage(
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem,
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions const& options,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
@@ -82,9 +87,41 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
-        HRESULT StageAsync(
+        HRESULT StagePackage(
             winrt::Windows::Foundation::Uri const& packageUri,
             winrt::Windows::Management::Deployment::StagePackageOptions const& stageOptions,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+        HRESULT RegisterPackage(
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem,
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions const& options,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+        HRESULT RegisterPackage(
+            winrt::Windows::Foundation::Uri const& packageUri,
+            winrt::Windows::Management::Deployment::RegisterPackageOptions const& registerOptions,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+        HRESULT RegisterPackageByPackageFamilyName(
+            winrt::hstring const& packageFamilyName,
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions const& registerOptions,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+        HRESULT RegisterPackageByPackageFullName(
+            winrt::hstring const& packageFullName,
+            winrt::Windows::Management::Deployment::RegisterPackageOptions const& registerOptions,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
             HRESULT& extendedError,
@@ -96,6 +133,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Management::Deployment::RegisterPackageOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions const& options) const;
         winrt::Windows::Management::Deployment::RemovalOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions const& options) const;
         winrt::Windows::Management::Deployment::AddPackageOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions const& options) const;
+        winrt::Windows::Management::Deployment::DeploymentOptions ToDeploymentOptions(winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions const& options) const;
         static double PercentageToProgress(uint32_t percentage);
 
     private:

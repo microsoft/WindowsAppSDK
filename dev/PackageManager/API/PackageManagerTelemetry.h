@@ -329,6 +329,42 @@ public:
         }
         CATCH_LOG()
     END_ACTIVITY_CLASS();
+    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(RegisterPackageByPackageFamilyNameAsync, PDT_ProductAndServicePerformance);
+        DEFINE_ACTIVITY_START(winrt::hstring const& packagePackageFamilyName) noexcept try
+        {
+            TraceLoggingClassWriteStart(
+                RegisterPackageByPackageFamilyNameAsync,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingWideString(packagePackageFamilyName.c_str(), "PackageFamilyName"));
+        }
+        CATCH_LOG()
+        DEFINE_ACTIVITY_STOP(winrt::hstring const& packagePackageFamilyName) noexcept try
+        {
+            TraceLoggingClassWriteStart(
+                RegisterPackageByPackageFamilyNameAsync,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingWideString(packagePackageFamilyName.c_str(), "PackageFamilyName"));
+        }
+        CATCH_LOG()
+    END_ACTIVITY_CLASS();
+    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(RegisterPackageByPackageFullNameAsync, PDT_ProductAndServicePerformance);
+        DEFINE_ACTIVITY_START(winrt::hstring const& packagePackageFullName) noexcept try
+        {
+            TraceLoggingClassWriteStart(
+                RegisterPackageByPackageFullNameAsync,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingWideString(packagePackageFullName.c_str(), "PackageFullName"));
+        }
+        CATCH_LOG()
+        DEFINE_ACTIVITY_STOP(winrt::hstring const& packagePackageFullName) noexcept try
+        {
+            TraceLoggingClassWriteStart(
+                RegisterPackageByPackageFullNameAsync,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingWideString(packagePackageFullName.c_str(), "PackageFullName"));
+        }
+        CATCH_LOG()
+    END_ACTIVITY_CLASS();
 
     BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(RemovePackageAsync, PDT_ProductAndServicePerformance);
         DEFINE_ACTIVITY_START(winrt::hstring const& package) noexcept try
