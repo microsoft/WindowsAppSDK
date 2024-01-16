@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include <Windows.h>
@@ -989,6 +989,12 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
     PCWSTR filenameToUse = filename;
     if (filename == nullptr || *filename == L'\0')
     {
+        wil::unique_cotaskmem_string baseDir;
+        if(SUCCEEDED(wil::TryGetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", baseDir)))
+        {
+            path.swap(baseDir);
+            RETURN_IF_FAILED(StringCchLengthW(path.get(), STRSAFE_MAX_CCH, &bufferCount));
+        }
         filenameToUse = c_defaultPriFilename;
     }
 
@@ -997,8 +1003,8 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
     //   - search under exe path
     //   - if not exist, search parent path
     // If filename is not provided:
-    //   - search under exe path with default name (resources.pri)
-    //   - if not exist, search under same path with [modulename].pri
+    //   - search under exe path (or baseDir) with default name (resources.pri)
+    //   - if not exist, search under exe path (or baseDir) with [modulename].pri
     for (int i = 0; i < 2; i++)
     {
         size_t lengthOfName;
