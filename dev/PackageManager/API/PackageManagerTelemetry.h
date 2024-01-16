@@ -27,7 +27,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& package) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 AddPackageAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(package.c_str(), "Package"));
@@ -45,7 +45,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageUri) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 AddPackageByUriAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageUri.c_str(), "PackageUri"));
@@ -63,7 +63,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageSetId) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 AddPackageSetAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"));
@@ -82,7 +82,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& package) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 DeprovisionPackageAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(package.c_str(), "Package"));
@@ -100,7 +100,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageUri) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 DeprovisionPackageByUriAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageUri.c_str(), "PackageUri"));
@@ -118,7 +118,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageSetId) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 DeprovisionPackageSetAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"));
@@ -137,7 +137,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& package) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 EnsurePackageAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(package.c_str(), "Package"));
@@ -155,7 +155,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageUri) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 EnsurePackageByUriAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageUri.c_str(), "PackageUri"));
@@ -173,7 +173,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageSetId) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 EnsurePackageSetReadyAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"));
@@ -192,7 +192,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageFamilyName) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 IsPackageRegistrationPending,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageFamilyName.c_str(), "PackageFamilyName"));
@@ -211,7 +211,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& userSecurityId, winrt::hstring const& packageFamilyName) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 IsPackageRegistrationPendingForUser,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(userSecurityId.c_str(), "UserSecurityId"),
@@ -231,7 +231,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& package) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 ProvisionPackageAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(package.c_str(), "Package"));
@@ -249,7 +249,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageUri) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 ProvisionPackageByUriAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageUri.c_str(), "PackageUri"));
@@ -267,7 +267,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageSetId) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 ProvisionPackageSetAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"));
@@ -286,7 +286,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& package) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 RegisterPackageAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(package.c_str(), "Package"));
@@ -304,7 +304,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageUri) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 RegisterPackageByUriAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageUri.c_str(), "PackageUri"));
@@ -322,7 +322,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageSetId) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 RegisterPackageSetAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"));
@@ -340,7 +340,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packagePackageFamilyName) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 RegisterPackageByPackageFamilyNameAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packagePackageFamilyName.c_str(), "PackageFamilyName"));
@@ -358,7 +358,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packagePackageFullName) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 RegisterPackageByPackageFullNameAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packagePackageFullName.c_str(), "PackageFullName"));
@@ -377,7 +377,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& package) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 RemovePackageAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(package.c_str(), "Package"));
@@ -395,7 +395,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageUri) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 RemovePackageByUriAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageUri.c_str(), "PackageUri"));
@@ -413,7 +413,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageSetId) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 RemovePackageSetAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"));
@@ -432,7 +432,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& package) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 ResetPackageAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(package.c_str(), "Package"));
@@ -450,7 +450,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageUri) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 ResetPackageByUriAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageUri.c_str(), "PackageUri"));
@@ -468,7 +468,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageSetId) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 ResetPackageSetAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"));
@@ -487,7 +487,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& package) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 RepairPackageAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(package.c_str(), "Package"));
@@ -505,7 +505,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageUri) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 RepairPackageByUriAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageUri.c_str(), "PackageUri"));
@@ -523,7 +523,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageSetId) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 RepairPackageSetAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"));
@@ -542,7 +542,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& package) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 StagePackageAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(package.c_str(), "Package"));
@@ -560,7 +560,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageUri) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 StagePackageByUriAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageUri.c_str(), "PackageUri"));
@@ -578,7 +578,7 @@ public:
         CATCH_LOG()
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageSetId) noexcept try
         {
-            TraceLoggingClassWriteStart(
+            TraceLoggingClassWriteStop(
                 StagePackageSetAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageSetId.c_str(), "PackageSetId"));
