@@ -277,7 +277,8 @@ namespace Test::DynamicDependency
         }
         TEST_METHOD(FullLifecycle_FilePathLifetime_Frameworks_WindowsAppRuntime_MathAdd_Elevated)
         {
-            FullLifecycle_FilePathLifetime_Frameworks_WindowsAppRuntime_MathAdd();
+            WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Temporarily skipping this to avoid hitting b#48525090.");
+            // FullLifecycle_FilePathLifetime_Frameworks_WindowsAppRuntime_MathAdd();
         }
         TEST_METHOD(FullLifecycle_RegistryLifetime_Frameworks_WindowsAppRuntime_MathAdd_Elevated)
         {
