@@ -16,13 +16,13 @@ namespace winrt::Microsoft::Windows::System::Workloads::implementation
         m_id(id),
         m_rank(rank),
         m_displayName(displayName),
-        m_workloadHandlerActivatableClassId(m_workloadHandlerActivatableClassId),
+        m_workloadHandlerActivatableClassId(workloadHandlerActivatableClassId),
         m_canRemove(canRemove)
     {
     }
     winrt::Windows::Foundation::Collections::IVector<hstring> Workload::FindIds()
     {
-        auto logTelemetry{ WorkloadTelemetry::FindsIds::Start() };
+        auto logTelemetry{ WorkloadTelemetry::FindIds::Start() };
 
         auto ids{ winrt::single_threaded_vector<hstring>() };
 
@@ -101,11 +101,12 @@ namespace winrt::Microsoft::Windows::System::Workloads::implementation
         winrt::com_ptr<IInspectable> inspectable;
         winrt::copy_from_abi(inspectable, iinspectable);
         auto workloadHandler{ inspectable.as<winrt::Microsoft::Windows::System::Workloads::IWorkloadHandler>() };
-        {
-            auto logHandler{ WorkloadTelemetry::RemoveWorkloadAsync_Handler::Start(m_id, m_workloadHandlerActivatableClassId) };
-            return workloadHandler.RemoveWorkloadAsync();
-        }
+
+        auto logHandler{ WorkloadTelemetry::RemoveWorkloadAsync_Handler::Start(m_id, m_workloadHandlerActivatableClassId) };
+        auto result{ workloadHandler.RemoveWorkloadAsync() };
+        logHandler.Stop();
 
         logTelemetry.Stop();
+        return result;
     }
 }

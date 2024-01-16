@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT license.
 
 #pragma once
@@ -16,7 +16,8 @@ class WorkloadTelemetry : public wil::TraceLoggingProvider
 
 public:
 
-    DEFINE_COMPLIANT_MEASURES_EVENT(FindIds, PDT_ProductAndServiceUsage);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(FindIds, PDT_ProductAndServiceUsage);
+
     BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(GetWorkload, PDT_ProductAndServicePerformance);
         DEFINE_ACTIVITY_START(winrt::hstring const& id) noexcept try
         {
@@ -27,6 +28,7 @@ public:
         }
         CATCH_LOG()
     END_ACTIVITY_CLASS();
+
     BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(RemoveWorkloadAsync, PDT_ProductAndServicePerformance);
         DEFINE_ACTIVITY_START(winrt::hstring const& id, winrt::hstring const& activatableClassId) noexcept try
         {
@@ -38,6 +40,7 @@ public:
         }
         CATCH_LOG()
     END_ACTIVITY_CLASS();
+
     BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(RemoveWorkloadAsync_Handler, PDT_ProductAndServicePerformance);
         DEFINE_ACTIVITY_START(winrt::hstring const& id, winrt::hstring const& activatableClassId) noexcept try
         {
