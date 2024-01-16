@@ -212,7 +212,6 @@ HRESULT ParseFileTag(IXmlReader* xmlReader)
     PCWSTR value = nullptr;
     std::wstring fileName;
     auto locale = _create_locale(LC_ALL, "C");
-    // Using this pattern intead of calling multiple MoveToAttributeByName improves performance
     HRESULT hr = xmlReader->MoveToFirstAttribute();
     if (S_FALSE == hr)
     {
@@ -275,7 +274,6 @@ HRESULT ParseActivatableClassTag(IXmlReader* xmlReader, PCWSTR fileName)
     auto this_component = make_shared<component>();
     this_component->module_name = fileName;
     HRESULT hr = xmlReader->MoveToFirstAttribute();
-    // Using this pattern intead of calling multiple MoveToAttributeByName improves performance
     const WCHAR* activatableClass = nullptr;
     const WCHAR* threadingModel = nullptr;
     if (S_FALSE == hr)
