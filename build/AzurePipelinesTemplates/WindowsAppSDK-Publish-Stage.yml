@@ -6,7 +6,7 @@ parameters:
   type: boolean
   default: True
 stages:
-- stage: Test
+- stage: Publish
   dependsOn:
   - Test
   - Pack
@@ -14,9 +14,6 @@ stages:
   jobs:
   # Publish
   - job: Publish
-    dependsOn:
-    - NugetPackage
-    # - WinAppSDKIntegrationBuildAndTest
     condition: and(or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true')), eq('${{ parameters.PublishToMaestro }}', 'true'))
     pool:
       type: windows

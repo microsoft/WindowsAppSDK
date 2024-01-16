@@ -410,11 +410,11 @@ Try {
             exit 1
         }
     }
-    if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMock"))
-    {
-        $transportPackagepath = (Join-Path $OutputDirectory "Microsoft.WindowsAppSDK.Foundation.TransportPackage.$PackageVersion.nupkg")
-        . eng\common\Scripts\buildMockWinAppSdkPackage.ps1 -TransportPackageName "Foundation" -TransportPackagePath $transportPackagepath -RepoRoot $env:Build_SourcesDirectory -Output $OutputDirectory -Platform $Platform -Configuration $Configuration -TransportPackageVersion $PackageVersion -CleanOutput
-    }
+    # if (($AzureBuildStep -eq "all") -Or ($AzureBuildStep -eq "BuildMock"))
+    # {
+    #     $transportPackagepath = (Join-Path $OutputDirectory "Microsoft.WindowsAppSDK.Foundation.TransportPackage.$PackageVersion.nupkg")
+    #     . eng\common\Scripts\buildMockWinAppSdkPackage.ps1 -TransportPackageName "Foundation" -TransportPackagePath $transportPackagepath -RepoRoot $env:Build_SourcesDirectory -Output $OutputDirectory -Platform $Platform -Configuration $Configuration -TransportPackageVersion $PackageVersion -CleanOutput
+    # }
 
     $files = Get-ChildItem $OutputDirectory -File -Filter "*.nupkg"
     foreach ($file in $files)
