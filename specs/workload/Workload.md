@@ -86,7 +86,12 @@ The following validations apply:
 
 ### 3.2.1. Workload 'Id' and Collisions
 
-If packages are registered with multiple workloads containing the same id then the workload
+If packages are registered with multiple workloads containing the same `Id` then the workload with
+the highest `Rank` is used. If multiple workloads have the same `Id` and `Rank` then they are
+assumed to be equivalent and one will be used.
+
+NOTE: This is the same collision management algorithm as used by Undocked Deployment Extension
+Handlers (DEHs).
 
 # 4. Examples
 
