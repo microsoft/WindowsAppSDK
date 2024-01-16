@@ -1368,11 +1368,13 @@ namespace Test::PackageManager::Tests
             auto deploymentResult{ packageDeploymentManager.StagePackageAsync(package, options).get() };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_FAILED), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            //
+            // NOTE: ExtendedError() should be HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND) but on some platforms may be S_OK (and also ErrorText() may be empty)
+            VERIFY_IS_TRUE((deploymentResult.ExtendedError() == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND)) || (deploymentResult.ExtendedError() == S_OK), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            if (FAILED(deploymentResult.ExtendedError()))
             {
-                // NOTE: ExtendedError() should be HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND) but on some platforms may be S_OK
-                VERIFY_IS_TRUE((deploymentResult.ExtendedError() == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND)) || (deploymentResult.ExtendedError() == S_OK), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+                VERIFY_IS_FALSE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
             }
-            VERIFY_IS_FALSE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
         }
 
         TEST_METHOD(StagePackageAsync_NotInstalled_Success)
