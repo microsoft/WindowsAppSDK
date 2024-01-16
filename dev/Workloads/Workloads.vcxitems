@@ -15,15 +15,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.S.W.Workload.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.S.W.WorkloadProgress.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.W.S.W.WorkloadResult.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)M.W.S.W.WorkloadManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.W.Workload.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.W.WorkloadProgress.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.W.WorkloadResult.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.W.WorkloadManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.W.S.W.WorkloadTelemetry.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)Workloads.idl">
