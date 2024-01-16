@@ -1,0 +1,118 @@
+parameters:
+- name: "SignOutput"
+  type: boolean
+  default: False
+- name: "IsOneBranch"
+  type: boolean
+  default: True
+
+stages:
+- stage: Build
+  jobs:
+  - job: VerifyCopyrightHeaders
+    dependsOn: []
+    pool:
+      type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022' # This stage is purely a test stage so we will use our own pools here
+    steps:
+    - task: powershell@2
+      displayName: 'Verify copyright headers'
+      inputs:
+        targetType: filePath
+        filePath: tools\VerifyCopyrightHeaders.ps1
+
+  - job: BuildBinaries
+    pool:
+      ${{ if parameters.IsOneBranch }}:
+        type: windows
+      ${{ if not( parameters.IsOneBranch ) }}:
+        type: windows
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
+    timeoutInMinutes: 120
+    strategy:
+      maxParallel: 10
+      matrix:
+        Release_x86:
+          buildPlatform: 'x86'
+          buildConfiguration: 'release'
+          normalizedConfiguration: 'fre'
+          PGOBuildMode: 'Optimize'
+        Release_x64:
+          buildPlatform: 'x64'
+          buildConfiguration: 'release'
+          normalizedConfiguration: 'fre'
+          PGOBuildMode: 'Optimize'
+        Release_Arm64:
+          buildPlatform: 'arm64'
+          buildConfiguration: 'release'
+          normalizedConfiguration: 'fre'
+    variables:
+      ob_outputDirectory: '$(REPOROOT)\out'
+      ob_sdl_codeSignValidation_excludes: '-|**\Release\**;-|**\packages\**'
+      ob_artifactBaseName: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
+    steps:
+    - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        IsOneBranch: ${{ parameters.IsOneBranch }}
+
+  - job: BuildBinaries_release_anycpu
+    # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
+    # Can be expanded to add any other binary as needed
+    pool:
+      ${{ if parameters.IsOneBranch }}:
+        type: windows
+      ${{ if not( parameters.IsOneBranch ) }}:
+        type: windows
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
+    variables:
+      ob_outputDirectory: '$(REPOROOT)\out'
+      ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
+      ob_artifactBaseName: "FoundationBinaries_release_anycpu"
+    steps:
+    - template: WindowsAppSDK-BuildBinaries-AnyCPU-Steps.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        IsOneBranch: ${{ parameters.IsOneBranch }}
+
+  - job: BuildMRT
+    pool:
+      # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
+      ${{ if parameters.IsOneBranch }}:
+        type: windows
+      ${{ if not( parameters.IsOneBranch ) }}:
+        type: windows
+        isCustom: true
+        name: 'ProjectReunionESPool-2022'
+    timeoutInMinutes: 120
+    strategy:
+      maxParallel: 10
+      matrix:
+        Release_x86:
+          buildPlatform: 'x86'
+          buildConfiguration: 'Release'
+          normalizedConfiguration: 'fre'
+          PGOBuildMode: 'Optimize'
+        Release_x64:
+          buildPlatform: 'x64'
+          buildConfiguration: 'Release'
+          normalizedConfiguration: 'fre'
+          PGOBuildMode: 'Optimize'
+        Release_Arm64:
+          buildPlatform: 'arm64'
+          buildConfiguration: 'Release'
+          normalizedConfiguration: 'fre'
+    variables:
+      ob_outputDirectory: '$(REPOROOT)\out'
+      ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
+      ob_sdl_suppression_suppressionFile: $(Build.SourcesDirectory)\dev\MRTCore\.gdn\mrt.gdnsuppress # This value is set on the job cdpx_engine, it will override the global gdnsuppress for this job
+      ob_sdl_suppression_suppressionSet: default
+      ob_artifactBaseName: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
+    steps:
+    - template: WindowsAppSDK-BuildMRT-Steps.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        IsOneBranch: ${{ parameters.IsOneBranch }}
