@@ -15,7 +15,7 @@
     <LanguageTag>csharp</LanguageTag>
     <PlatformTag>windows</PlatformTag>
     <ProjectTypeTag>desktop</ProjectTypeTag>
-    <ProjectTypeTag>winui</ProjectTypeTag>
+    <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>
   <TemplateContent>
     <ProjectItem ReplaceParameters="true" TargetFileName="$fileinputname$.cs">CustomControl.cs</ProjectItem>

@@ -1,0 +1,29 @@
+parameters:
+- name: "PublishToMaestro"
+  type: boolean
+  default: True
+- name: "IgnoreFailures"
+  type: boolean
+  default: True
+stages:
+- stage: Publish
+  dependsOn:
+  - Test
+  - Pack
+  condition: not(failed())
+  jobs:
+  # Publish
+  - job: Publish
+    condition: and(or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true')), eq('${{ parameters.PublishToMaestro }}', 'true'))
+    pool:
+      type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022' # This job is purely for ES, hence this custom pool
+    variables:
+      WindowsAppSDKPackageVersion: $[ stageDependencies.Pack.NugetPackage.outputs['SetVersion.packageVersion'] ]
+    steps:
+    - template: ..\..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml@self
+      parameters:
+        AssetNames: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
+        AssetVersions: $(WindowsAppSDKPackageVersion)
+        TriggerSubscription: true

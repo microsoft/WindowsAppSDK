@@ -105,7 +105,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(OutDir)\..\Framework.Math.Add;$(OutDir)\..\Framework.Math.Multiply;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(OutDir)\..\Framework.Math.Add;$(OutDir)\..\Framework.Math.Multiply;$(RepoRoot)\dev\common;$(RepoRoot)\test\inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions);PRTEST_MODE_UWP=0</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -120,7 +120,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(OutDir)\..\Framework.Math.Add;$(OutDir)\..\Framework.Math.Multiply;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(OutDir)\..\Framework.Math.Add;$(OutDir)\..\Framework.Math.Multiply;$(RepoRoot)\dev\common;$(RepoRoot)\test\inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions);PRTEST_MODE_UWP=0</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -135,7 +135,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(OutDir)\..\Framework.Math.Add;$(OutDir)\..\Framework.Math.Multiply;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(OutDir)\..\Framework.Math.Add;$(OutDir)\..\Framework.Math.Multiply;$(RepoRoot)\dev\common;$(RepoRoot)\test\inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);PRTEST_MODE_UWP=0</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -150,7 +150,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(OutDir)\..\Framework.Math.Add;$(OutDir)\..\Framework.Math.Multiply;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(OutDir)\..\Framework.Math.Add;$(OutDir)\..\Framework.Math.Multiply;$(RepoRoot)\dev\common;$(RepoRoot)\test\inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);PRTEST_MODE_UWP=0</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -165,7 +165,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(OutDir)\..\Framework.Math.Add;$(OutDir)\..\Framework.Math.Multiply;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(OutDir)\..\Framework.Math.Add;$(OutDir)\..\Framework.Math.Multiply;$(RepoRoot)\dev\common;$(RepoRoot)\test\inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);PRTEST_MODE_UWP=0</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -180,7 +180,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(OutDir)\..\Framework.Math.Add;$(OutDir)\..\Framework.Math.Multiply;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\WindowsAppRuntime_BootstrapDLL;$(OutDir)\..\Framework.Math.Add;$(OutDir)\..\Framework.Math.Multiply;$(RepoRoot)\dev\common;$(RepoRoot)\test\inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);PRTEST_MODE_UWP=0</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
