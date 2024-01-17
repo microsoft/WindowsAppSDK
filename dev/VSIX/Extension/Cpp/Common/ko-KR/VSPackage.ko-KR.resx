@@ -1,18 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!--
-    VS SDK Notes: This resx file contains the resources that will be consumed from
-    your package by Visual Studio. For example, Visual Studio will attempt to load
-    resource '1000' from this resource stream when it needs to load one of your
-    package's template's name. Because Visual Studio will always look in the
-    VSPackage.resources stream first for resources it needs, you should put additional
-    resources that Visual Studio will load directly into this resx file.
-
-    By convention, strings that have both non-experimental and experimental versions
-    have consecutive IDs (even = non-experimental, odd = experimental).
-
-    Resources that you would like to access directly from your package in a strong-typed
-    fashion should be stored in Resources.resx or another resx file.
--->
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -211,5 +197,14 @@
   </data>
   <data name="1035" xml:space="preserve">
     <value>Windows UI 라이브러리(WinUI 3)를 기반으로 하는 데스크톱 및 유니버설 Windows 플랫폼(UWP) 앱 두 가지 모두를 위한 C++/WinRT Windows 런타임 구성 요소(.winmd)를 만들기 위한 프로젝트입니다.</value>
+  </data>
+  <data name="1037" xml:space="preserve">
+    <value>단위 테스트 앱(WinUI 3)</value>
+  </data>
+  <data name="1038" xml:space="preserve">
+    <value>[실험적] 단위 테스트 앱(WinUI 3)</value>
+  </data>
+  <data name="1039" xml:space="preserve">
+    <value>MSTest를 사용하여 WinUI 3용 C++/WinRT 단위 테스트 앱을 만드는 프로젝트입니다.</value>
   </data>
 </root>

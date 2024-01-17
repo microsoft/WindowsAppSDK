@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -6,6 +6,8 @@
 #include <Microsoft.Utf8.h>
 
 #include "WindowsAppRuntime.VersionInfo.h"
+
+#include "MddWin11.h"
 
 // Function prototype of the function exported by the resource DLL
 // (defined later in the build pipeline so we can't #include a header from there)
@@ -115,11 +117,20 @@ STDAPI WindowsAppRuntime_VersionInfo_TestInitialize(
     PCWSTR frameworkPackageFamilyName,
     PCWSTR mainPackageFamilyName) noexcept try
 {
-    // Both or neither must be valued
+    // Verify parameters
     const bool frameworkPackageFamilyNameIsEmpty{ !frameworkPackageFamilyName || (*frameworkPackageFamilyName == L'0') };
     const bool mainPackageFamilyNameIsEmpty{ !mainPackageFamilyName || (*mainPackageFamilyName == L'0') };
-    FAIL_FAST_HR_IF(E_UNEXPECTED, frameworkPackageFamilyNameIsEmpty && !mainPackageFamilyNameIsEmpty);
-    FAIL_FAST_HR_IF(E_UNEXPECTED, !frameworkPackageFamilyNameIsEmpty && mainPackageFamilyNameIsEmpty);
+    if (MddCore::Win11::IsSupported())
+    {
+        // Framework is optional but Main is never specified
+        FAIL_FAST_HR_IF(E_UNEXPECTED, !mainPackageFamilyNameIsEmpty);
+    }
+    else
+    {
+        // Both or neither must be valued
+        FAIL_FAST_HR_IF(E_UNEXPECTED, frameworkPackageFamilyNameIsEmpty && !mainPackageFamilyNameIsEmpty);
+        FAIL_FAST_HR_IF(E_UNEXPECTED, !frameworkPackageFamilyNameIsEmpty && mainPackageFamilyNameIsEmpty);
+    }
 
     // Update our state
     if (frameworkPackageFamilyNameIsEmpty)
@@ -132,7 +143,7 @@ STDAPI WindowsAppRuntime_VersionInfo_TestInitialize(
     {
         // Initialize test support
         g_test_frameworkPackageFamilyName = frameworkPackageFamilyName;
-        g_test_mainPackageFamilyName = mainPackageFamilyName;
+        g_test_mainPackageFamilyName = (!mainPackageFamilyName ? L"" : mainPackageFamilyName);
     }
     return S_OK;
 }
