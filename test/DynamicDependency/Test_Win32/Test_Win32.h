@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -246,6 +246,11 @@ namespace Test::DynamicDependency
 
         TEST_CLASS_SETUP(Setup_Elevated)
         {
+            if (/*TODO ::WindowsVersion::IsWindows11_23H1OrGreater() &&*/ !::Test::TAEF::IsEnabled(L"DynamicDependency.23H1"))
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Skipping tests to avoid https://task.ms/48525090");
+                return true;
+            }
             return Setup();
         }
         TEST_CLASS_CLEANUP(Cleanup_Elevated)
@@ -277,8 +282,7 @@ namespace Test::DynamicDependency
         }
         TEST_METHOD(FullLifecycle_FilePathLifetime_Frameworks_WindowsAppRuntime_MathAdd_Elevated)
         {
-            WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Temporarily skipping this to avoid hitting b#48525090.");
-            // FullLifecycle_FilePathLifetime_Frameworks_WindowsAppRuntime_MathAdd();
+            FullLifecycle_FilePathLifetime_Frameworks_WindowsAppRuntime_MathAdd();
         }
         TEST_METHOD(FullLifecycle_RegistryLifetime_Frameworks_WindowsAppRuntime_MathAdd_Elevated)
         {
