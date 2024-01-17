@@ -139,6 +139,22 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
 
 bool Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::FindAny(
     const winrt::Windows::Management::Deployment::PackageManager& packageManager,
+    const winrt::hstring& packageFullName)
+{
+    // Find the/any match
+    auto package{ packageManager.FindPackageForUser(winrt::hstring(), packageFullName) };
+    if (!package)
+    {
+        return false;
+    }
+
+    // Package status must be OK to use a package
+    auto status{ package.Status() };
+    return status.VerifyIsOK();
+}
+
+bool Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::FindAny(
+    const winrt::Windows::Management::Deployment::PackageManager& packageManager,
     const winrt::hstring& packageFamilyName,
     const AppModel::Identity::PackageVersion& minVersion,
     const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures processorArchitectureFilter)

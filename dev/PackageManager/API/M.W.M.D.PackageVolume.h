@@ -9,8 +9,12 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
     struct PackageVolume : PackageVolumeT<PackageVolume>
     {
-        PackageVolume() = default;
+        PackageVolume() = delete;
         PackageVolume(winrt::Windows::Management::Deployment::PackageVolume const& value);
+
+        static winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageVolume> FindPackageVolumes();
+        static winrt::Microsoft::Windows::Management::Deployment::PackageVolume FindPackageVolumeByPath(hstring const& packageStorePath);
+        static winrt::Microsoft::Windows::Management::Deployment::PackageVolume FindPackageVolumeByName(hstring const& name);
 
         bool IsSystemVolume();
         hstring MountPoint();
@@ -19,8 +23,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         bool SupportsHardLinks();
         bool IsFullTrustPackageSupported();
         bool IsAppxInstallSupported();
-        winrt::Microsoft::Windows::Management::Deployment::PackageVolumeStatus Status();
-        void FixMe();
+        bool IsRepairNeeded();
+        void Repair();
 
     private:
         bool m_isSystemVolume{};
@@ -30,7 +34,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         bool m_supportsHardLinks{};
         bool m_isFullTrustPackageSupported{};
         bool m_isAppxInstallSupported{};
-        //TODO winrt::Microsoft::Windows::Management::Deployment::PackageVolumeStatus m_status{};
     };
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation

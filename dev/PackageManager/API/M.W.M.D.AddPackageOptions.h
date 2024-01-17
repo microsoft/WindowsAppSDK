@@ -19,8 +19,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri> RelatedPackageUris();
         winrt::Windows::Foundation::Uri ExternalLocationUri();
         void ExternalLocationUri(winrt::Windows::Foundation::Uri const& value);
-        winrt::Microsoft::Windows::Management::Deployment::StubPackageOption StubPackageOption();
-        void StubPackageOption(winrt::Microsoft::Windows::Management::Deployment::StubPackageOption const& value);
+        winrt::Windows::Management::Deployment::StubPackageOption StubPackageOption();
+        void StubPackageOption(winrt::Windows::Management::Deployment::StubPackageOption const& value);
         bool AllowUnsigned();
         void AllowUnsigned(bool value);
         bool DeveloperMode();
@@ -39,7 +39,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         void RetainFilesOnFailure(bool value);
         bool StageInPlace();
         void StageInPlace(bool value);
-        bool IsDeferRegistrationWhenPackagesAreInUseSupported();
         bool DeferRegistrationWhenPackagesAreInUse();
         void DeferRegistrationWhenPackagesAreInUse(bool value);
         bool IsExpectedDigestsSupported();
@@ -49,13 +48,13 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         void LimitToExistingPackages(bool value);
 
     private:
-        winrt::Microsoft::Windows::Management::Deployment::PackageVolume m_targetVolume{};
-        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri> m_dependencyPackageUris{};
-        winrt::Windows::Foundation::Collections::IVector<hstring> m_optionalPackageFamilyNames{};
-        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri>  m_optionalPackageUris{};
-        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri>  m_relatedPackageUris{};
+        winrt::Microsoft::Windows::Management::Deployment::PackageVolume m_targetVolume{ nullptr };
+        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri> m_dependencyPackageUris;
+        winrt::Windows::Foundation::Collections::IVector<hstring> m_optionalPackageFamilyNames;
+        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri> m_optionalPackageUris;
+        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri> m_relatedPackageUris;
         winrt::Windows::Foundation::Uri m_externalLocationUri{ nullptr };
-        winrt::Microsoft::Windows::Management::Deployment::StubPackageOption m_stubPackageOption{};
+        winrt::Windows::Management::Deployment::StubPackageOption m_stubPackageOption{};
         bool m_allowUnsigned{};
         bool m_developerMode{};
         bool m_forceAppShutdown{};
