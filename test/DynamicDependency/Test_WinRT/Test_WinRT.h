@@ -235,11 +235,6 @@ namespace Test::DynamicDependency
 
         TEST_CLASS_SETUP(Setup_Elevated)
         {
-            if (/*TODO ::WindowsVersion::IsWindows11_23H1OrGreater() &&*/ !::Test::TAEF::IsEnabled(L"DynamicDependency.23H1"))
-            {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Skipping tests to avoid https://task.ms/48525090");
-                return true;
-            }
             return Setup();
         }
         TEST_CLASS_CLEANUP(Cleanup_Elevated)
