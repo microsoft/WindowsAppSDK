@@ -34,6 +34,8 @@ namespace $safeprojectname$
         public UnitTestApp()
         {
             this.InitializeComponent();
+            this.ExtendsContentIntoTitleBar = true; // provides default WinUI custom title bar experience
+
         }
 
         /// <summary>
