@@ -15,12 +15,20 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         m_id = value;
     }
-    winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageSetItem> PackageSet::PackageSetItems()
+    winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::Management::Deployment::PackageSetItem> PackageSet::Items()
     {
-        if (!m_packageSetItems)
+        if (!m_items)
         {
-            m_packageSetItems = winrt::single_threaded_vector<Microsoft::Windows::Management::Deployment::PackageSetItem>();
+            m_items = winrt::single_threaded_vector<Microsoft::Windows::Management::Deployment::PackageSetItem>();
         }
-        return m_packageSetItems;
+        return m_items;
+    }
+    winrt::Windows::Foundation::Uri PackageSet::PackageUri()
+    {
+        return m_packageUri;
+    }
+    void PackageSet::PackageUri(winrt::Windows::Foundation::Uri const& value)
+    {
+        m_packageUri = value;
     }
 }

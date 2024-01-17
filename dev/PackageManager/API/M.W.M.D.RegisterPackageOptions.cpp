@@ -18,6 +18,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         m_appDataVolume = value;
     }
+    winrt::Windows::Foundation::Collections::IVector<hstring> RegisterPackageOptions::DependencyPackageFamilyNames()
+    {
+        if (!m_dependencyPackageFamilyNames)
+        {
+            m_dependencyPackageFamilyNames = winrt::single_threaded_vector<hstring>();
+        }
+        return m_dependencyPackageFamilyNames;
+    }
     winrt::Windows::Foundation::Collections::IVector<winrt::Windows::Foundation::Uri> RegisterPackageOptions::DependencyPackageUris()
     {
         if (!m_dependencyPackageUris)
@@ -41,6 +49,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     void RegisterPackageOptions::ExternalLocationUri(winrt::Windows::Foundation::Uri const& value)
     {
         m_externalLocationUri = value;
+    }
+    bool RegisterPackageOptions::AllowUnsigned()
+    {
+        return m_allowUnsigned;
+    }
+    void RegisterPackageOptions::AllowUnsigned(bool value)
+    {
+        m_allowUnsigned = value;
     }
     bool RegisterPackageOptions::DeveloperMode()
     {
@@ -89,14 +105,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     void RegisterPackageOptions::StageInPlace(bool value)
     {
         m_stageInPlace = value;
-    }
-    bool RegisterPackageOptions::AllowUnsigned()
-    {
-        return m_allowUnsigned;
-    }
-    void RegisterPackageOptions::AllowUnsigned(bool value)
-    {
-        m_allowUnsigned = value;
     }
     bool RegisterPackageOptions::DeferRegistrationWhenPackagesAreInUse()
     {
