@@ -106,10 +106,9 @@ namespace RemoveAllWorkloads
     {
         static void Main()
         {
-            var workloadManager = WorkloadManager.GetDefault();
-            foreach (string id in workloadManager.FindIds())
+            foreach (string id in Workload.FindIds())
             {
-                var workload = workloadManager.GetWorkload(id)
+                var workload = Workload.GetWorkload(id)
                 if (workload.CanRemove())
                 {
                     Console.Write($"Removing {workload.DisplayName}...");
