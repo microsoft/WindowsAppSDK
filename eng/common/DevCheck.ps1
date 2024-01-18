@@ -1290,13 +1290,18 @@ function Test-DeveloperMode
 
 function Get-SystemInfo
 {
-    $productname = $(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ProductName).ProductName
-    $displayversion = $(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name DisplayVersion).DisplayVersion
-    $currentmajor = $(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name CurrentMajorVersionNumber).CurrentMajorVersionNumber
-    $currentminor = $(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name CurrentMinorVersionNumber).CurrentMinorVersionNumber
-    $currentbuild = $(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name CurrentBuild).CurrentBuild
-    $editionid = $(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name EditionId).EditionId
-    $buildlabex = $(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name BuildLabEx).BuildLabEx
+    $values = & reg.exe QUERY "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion"
+    Write-Host $values
+
+
+    $regkey = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
+    $productname = $(Get-ItemProperty -Path $regkey -Name ProductName).ProductName
+    $displayversion = $(Get-ItemProperty -Path $regkey -Name DisplayVersion).DisplayVersion
+    $currentmajor = $(Get-ItemProperty -Path $regkey -Name CurrentMajorVersionNumber).CurrentMajorVersionNumber
+    $currentminor = $(Get-ItemProperty -Path $regkey -Name CurrentMinorVersionNumber).CurrentMinorVersionNumber
+    $currentbuild = $(Get-ItemProperty -Path $regkey -Name CurrentBuild).CurrentBuild
+    $editionid = $(Get-ItemProperty -Path $regkey -Name EditionId).EditionId
+    $buildlabex = $(Get-ItemProperty -Path $regkey -Name BuildLabEx).BuildLabEx
     Write-Host "$($productname) $($displayversion) $($currentmajor).$($currentminor).$($currentbuild) ($($editionid) $($buildlabex))"
     Write-Host "Powershell $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)"
 }
