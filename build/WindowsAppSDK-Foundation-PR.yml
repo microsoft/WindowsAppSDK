@@ -63,4 +63,4 @@ extends:
     - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
       parameters:
         SignOutput: false
-        PublishPackage: true
+        PublishPackage: false
