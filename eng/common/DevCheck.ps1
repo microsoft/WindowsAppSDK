@@ -1290,20 +1290,35 @@ function Test-DeveloperMode
 
 function Get-SystemInfo
 {
-    $values = & reg.exe QUERY "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion"
-    Write-Host $values
-
-
     $regkey = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
-    $productname = $(Get-ItemProperty -Path $regkey -Name ProductName).ProductName
-    $displayversion = $(Get-ItemProperty -Path $regkey -Name DisplayVersion).DisplayVersion
-    $currentmajor = $(Get-ItemProperty -Path $regkey -Name CurrentMajorVersionNumber).CurrentMajorVersionNumber
-    $currentminor = $(Get-ItemProperty -Path $regkey -Name CurrentMinorVersionNumber).CurrentMinorVersionNumber
-    $currentbuild = $(Get-ItemProperty -Path $regkey -Name CurrentBuild).CurrentBuild
-    $editionid = $(Get-ItemProperty -Path $regkey -Name EditionId).EditionId
-    $buildlabex = $(Get-ItemProperty -Path $regkey -Name BuildLabEx).BuildLabEx
-    Write-Host "$($productname) $($displayversion) $($currentmajor).$($currentminor).$($currentbuild) ($($editionid) $($buildlabex))"
-    Write-Host "Powershell $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)"
+    $productname = $(Get-Item -Path $regkey).GetValue('ProductName')
+    $displayversion = $(Get-Item -Path $regkey).GetValue('DisplayVersion')
+    $currentmajor = $(Get-Item -Path $regkey).GetValue('CurrentMajorVersionNumber')
+    $currentminor = $(Get-Item -Path $regkey).GetValue('CurrentMinorVersionNumber')
+    $currentbuild = $(Get-Item -Path $regkey).GetValue('CurrentBuild')
+    Write-Host "Product         : $($productname) $($displayversion) $($currentmajor).$($currentminor).$($currentbuild)"
+
+    $installationtype = $(Get-Item -Path $regkey).GetValue('InstallationType')
+    Write-Host "InstallationType: $($installationtype)"
+
+    $editionid = $(Get-Item -Path $regkey).GetValue('EditionId')
+    $compositioneditionid = $(Get-Item -Path $regkey).GetValue('CompositionEditionID')
+    if ($editionid -eq $compositioneditionid)
+    {
+        Write-Host "Edition         : $($editionid)"
+    }
+    else
+    {
+        Write-Host "Edition         : $($editionid) [$($compositioneditionid)]"
+    }
+
+    $buildlabex = $(Get-Item -Path $regkey).GetValue('BuildLabEx')
+    Write-Host "Build           : $($buildlabex)"
+
+    $lcuver = $(Get-Item -Path $regkey).GetValue('LCUVer')
+    Write-Host "LCU Version     : $($lcuver)"
+
+    Write-Host "Powershell      : $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)"
 }
 
 Write-Output "Checking developer environment..."
