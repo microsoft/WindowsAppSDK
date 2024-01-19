@@ -93,7 +93,7 @@ struct __declspec(uuid(PR_KOZANIMANAGER_CLSID_STRING)) KozaniManagerImpl WrlFina
         DWORD associatedLocalProcessId,
         _In_opt_::IInspectable* activatedEventArgs,
         _In_opt_ IKozaniStatusCallback* statusCallback,
-        _In_opt_ PCWSTR additionalSettingsFilePath) noexcept try
+        _In_opt_ PCWSTR /*additionalSettingsFilePath*/ ) noexcept try
     {
         RETURN_HR_IF_NULL(E_INVALIDARG, appUserModelId);
         RETURN_HR_IF_NULL(E_INVALIDARG, connectionRdpFilePath);

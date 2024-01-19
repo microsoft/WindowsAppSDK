@@ -8,6 +8,14 @@
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
+    bool RemovePackageOptions::FailIfNotFound()
+    {
+        return m_failIfNotFound;
+    }
+    void RemovePackageOptions::FailIfNotFound(bool value)
+    {
+        m_failIfNotFound = value;
+    }
     bool RemovePackageOptions::PreserveApplicationData()
     {
         return m_preserveApplicationData;
@@ -31,13 +39,5 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     void RemovePackageOptions::RemoveForAllUsers(bool value)
     {
         m_removeForAllUsers = value;
-    }
-    winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority RemovePackageOptions::Priority()
-    {
-        return m_priority;
-    }
-    void RemovePackageOptions::Priority(winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority const& value)
-    {
-        m_priority = value;
     }
 }

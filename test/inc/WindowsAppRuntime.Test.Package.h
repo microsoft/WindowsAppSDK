@@ -141,6 +141,37 @@ inline std::wstring GetPackagePath(PCWSTR packageFullName)
     return std::wstring(path.get());
 }
 
+#if defined(__APPMODEL_IDENTITY_H)
+inline bool IsPackageFamilyRegistered(PCWSTR packageFamilyName, uint64_t minVersion = 0)
+{
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    auto packages{ packageManager.FindPackagesForUser(winrt::hstring(), packageFamilyName) };
+    for (const winrt::Windows::ApplicationModel::Package& package : packages)
+    {
+        if (minVersion == 0)
+        {
+            // Any package in the family is good enough for us
+            return true;
+        }
+        const auto version{ package.Id().Version() };
+        const ::AppModel::Identity::PackageVersion packageVersion{ version };
+        if (packageVersion >= minVersion)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+#endif // defined(__APPMODEL_IDENTITY_H)
+
+#if defined(__APPMODEL_IDENTITY_H)
+inline bool IsPackageFamilyRegistered(PCWSTR packageFamilyName, winrt::Windows::ApplicationModel::PackageVersion minVersion)
+{
+    const ::AppModel::Identity::PackageVersion packageVersion{ minVersion };
+    return IsPackageFamilyRegistered(packageFamilyName, packageVersion.Version);
+}
+#endif // defined(__APPMODEL_IDENTITY_H)
+
 inline std::wstring GetPackagePath(const std::wstring& packageFullName)
 {
     return GetPackagePath(packageFullName.c_str());
@@ -149,22 +180,28 @@ inline std::wstring GetPackagePath(const std::wstring& packageFullName)
 inline bool IsPackageRegistered(PCWSTR packageFullName)
 {
     // Check if the package is registered to the current user via GetPackagePath().
-    // GetPackagePath() fails if the package isn't registerd to the current user.
+    // GetPackagePath() fails if the package isn't registered to the current user.
     // Simplest and most portable test across the platforms we might run on
     const auto path = GetPackagePath(packageFullName);
     return !path.empty();
 }
 
-inline bool IsPackageAvailable(PCWSTR packageFullName)
+inline bool IsPackageStaged(PCWSTR packageFullName)
 {
-    // Check if the package is available for use
-    // This means registered to the current user OR staged
-    // NOTE: To check if a package is staged and not registered to the current user:
-    //              bool isStaged = IsPackageAvailable(p) && !IsPackageRegistered(p)
-    if (IsPackageRegistered(packageFullName))
+#if 0
+    UINT32 pathLength{};
+    const auto rc{ ::GetStagedPackagePathByFullName(packageFullName, &pathLength, nullptr) };
+    if (rc == ERROR_INSUFFICIENT_BUFFER)
     {
         return true;
     }
+    else if (rc == HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
+    {
+        return false;
+    }
+    THROW_WIN32(rc);
+#else
+    // Check if the package is staged
     PackageOrigin packageOrigin{};
     const auto rc{ GetStagedPackageOrigin(packageFullName, &packageOrigin) };
     if (rc == ERROR_SUCCESS)
@@ -176,6 +213,16 @@ inline bool IsPackageAvailable(PCWSTR packageFullName)
         return false;
     }
     THROW_WIN32(rc);
+#endif
+}
+
+inline bool IsPackageAvailable(PCWSTR packageFullName)
+{
+    // Check if the package is available for use
+    // This means registered to the current user OR staged
+    // NOTE: To check if a package is staged and not registered to the current user:
+    //              bool isStaged = IsPackageAvailable(p) && !IsPackageRegistered(p)
+    return IsPackageRegistered(packageFullName) || IsPackageStaged(packageFullName);
 }
 
 inline std::filesystem::path GetMsixPackagePath(PCWSTR packageDirName)

@@ -93,11 +93,13 @@ namespace Test::PackageManager::Tests
     namespace TP = ::Test::Packages;
     namespace TPF = ::Test::Packages::Framework;
 
+    // Forward declarations
+    void RemovePackageFamily_Redder();
+
     inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem Make_PackageSetItem(
         PCWSTR packageFullName,
         PCWSTR packageDirName)
     {
-
         WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageSetItem: PackageFullName:%s Path:%s", packageFullName, packageDirName));
         const auto [packageName, packageVersion, packageArchitecture, packageResourceId, packagePublisherId, packageFamilyName]{ ::AppModel::Package::ParsePackageFullName(packageFullName) };
 
@@ -109,6 +111,14 @@ namespace Test::PackageManager::Tests
         return psi;
     }
 
+    inline bool IsPackageRegistered_Red()
+    {
+        return TP::IsPackageRegistered(TPF::Red::GetPackageFullName());
+    }
+    inline bool IsPackageStaged_Red()
+    {
+        return TP::IsPackageStaged(TPF::Red::GetPackageFullName());
+    }
     inline void AddPackage_Red()
     {
         TP::AddPackageIfNecessary(Test::Packages::Framework::Red::c_packageDirName, TPF::Red::GetPackageFullName());
@@ -119,19 +129,42 @@ namespace Test::PackageManager::Tests
     }
     inline void RemovePackage_Red()
     {
-        // Best-effort removal. PackageManager.RemovePackage errors if the package
-        // is not registered, but if it's not registered we're good. "'Tis the destination
-        // that matters, not the journey" so regardless how much or little work
-        // we need do, we're happy as long as the package isn't registered when we're done
-        //
-        // Thus, do a *IfNecessary removal
-        TP::RemovePackageIfNecessary(TPF::Red::GetPackageFullName());
+        if (IsPackageRegistered_Red())
+        {
+            TP::RemovePackage(TPF::Red::GetPackageFullName());
+        }
+        else if (IsPackageStaged_Red)
+        {
+            // We can't directly remove a Stage package not registered for current user
+            // w/o admin privilege but we can add it to make it registered and then remove it.
+            AddPackage_Red();
+            TP::RemovePackage(TPF::Red::GetPackageFullName());
+        }
     }
-    inline bool IsPackageRegistered_Red()
+    inline void RemovePackageFamily_Red()
     {
-        return TP::IsPackageRegistered(TPF::Red::GetPackageFullName());
+        // Same as RemovePackageFamily_Redder
+        RemovePackageFamily_Redder();
+#if 0
+        // The package could be staged and not registered so checking
+        // checking for registered packages in the family is insufficient,
+        // and checking for staged packages not registered for the current user
+        // requires admin privilege (which we may not have). So we'll rely on
+        // remove for each package in the family handling it whether the packages
+        // are staged or registered.
+        TP::RemovePackageIfNecessary(TPF::Red::GetPackageFullName());
+        TP::RemovePackageIfNecessary(TPF::Redder::GetPackageFullName());
+#endif
     }
 
+    inline bool IsPackageRegistered_Redder()
+    {
+        return TP::IsPackageRegistered(TPF::Redder::GetPackageFullName());
+    }
+    inline bool IsPackageStaged_Redder()
+    {
+        return TP::IsPackageStaged(TPF::Redder::GetPackageFullName());
+    }
     inline void AddPackage_Redder()
     {
         TP::AddPackageIfNecessary(Test::Packages::Framework::Redder::c_packageDirName, TPF::Redder::GetPackageFullName());
@@ -142,19 +175,42 @@ namespace Test::PackageManager::Tests
     }
     inline void RemovePackage_Redder()
     {
-        // Best-effort removal. PackageManager.RemovePackage errors if the package
-        // is not registered, but if it's not registered we're good. "'Tis the destination
-        // that matters, not the journey" so regardless how much or little work
-        // we need do, we're happy as long as the package isn't registered when we're done
-        //
-        // Thus, do a *IfNecessary removal
-        TP::RemovePackageIfNecessary(TPF::Redder::GetPackageFullName());
+        if (IsPackageRegistered_Redder())
+        {
+            TP::RemovePackage(TPF::Redder::GetPackageFullName());
+        }
+        else if (IsPackageStaged_Redder())
+        {
+            // We can't directly remove a Stage package not registered for current user
+            // w/o admin privilege but we can add it to make it registered and then remove it.
+            AddPackage_Redder();
+            TP::RemovePackage(TPF::Redder::GetPackageFullName());
+        }
     }
-    inline bool IsPackageRegistered_Redder()
+    inline void RemovePackageFamily_Redder()
     {
-        return TP::IsPackageRegistered(TPF::Redder::GetPackageFullName());
+        RemovePackage_Redder();
+        RemovePackage_Red();
+#if 0
+        // The package could be staged and not registered so checking
+        // checking for registered packages in the family is insufficient,
+        // and checking for staged packages not registered for the current user
+        // requires admin privilege (which we may not have). So we'll rely on
+        // remove for each package in the family handling it whether the packages
+        // are staged or registered.
+        TP::RemovePackageIfNecessary(TPF::Red::GetPackageFullName());
+        TP::RemovePackageIfNecessary(TPF::Redder::GetPackageFullName());
+#endif
     }
 
+    inline bool IsPackageRegistered_Green()
+    {
+        return TP::IsPackageRegistered(TPF::Green::GetPackageFullName());
+    }
+    inline bool IsPackageStaged_Green()
+    {
+        return TP::IsPackageStaged(TPF::Green::GetPackageFullName());
+    }
     inline void AddPackage_Green()
     {
         TP::AddPackageIfNecessary(Test::Packages::Framework::Green::c_packageDirName, TPF::Green::GetPackageFullName());
@@ -165,19 +221,40 @@ namespace Test::PackageManager::Tests
     }
     inline void RemovePackage_Green()
     {
-        // Best-effort removal. PackageManager.RemovePackage errors if the package
-        // is not registered, but if it's not registered we're good. "'Tis the destination
-        // that matters, not the journey" so regardless how much or little work
-        // we need do, we're happy as long as the package isn't registered when we're done
-        //
-        // Thus, do a *IfNecessary removal
-        TP::RemovePackageIfNecessary(TPF::Green::GetPackageFullName());
+        if (IsPackageRegistered_Green())
+        {
+            TP::RemovePackage(TPF::Green::GetPackageFullName());
+        }
+        else if (IsPackageStaged_Green())
+        {
+            // We can't directly remove a Stage package not registered for current user
+            // w/o admin privilege but we can add it to make it registered and then remove it.
+            AddPackage_Green();
+            TP::RemovePackage(TPF::Green::GetPackageFullName());
+        }
     }
-    inline bool IsPackageRegistered_Green()
+    inline void RemovePackageFamily_Green()
     {
-        return TP::IsPackageRegistered(TPF::Green::GetPackageFullName());
+        RemovePackage_Green();
+#if 0
+        // The package could be staged and not registered so checking
+        // checking for registered packages in the family is insufficient,
+        // and checking for staged packages not registered for the current user
+        // requires admin privilege (which we may not have). So we'll rely on
+        // remove for each package in the family handling it whether the packages
+        // are staged or registered.
+        TP::RemovePackageIfNecessary(TPF::Green::GetPackageFullName());
+#endif
     }
 
+    inline bool IsPackageRegistered_Blue()
+    {
+        return TP::IsPackageRegistered(TPF::Blue::GetPackageFullName());
+    }
+    inline bool IsPackageStaged_Blue()
+    {
+        return TP::IsPackageStaged(TPF::Blue::GetPackageFullName());
+    }
     inline void AddPackage_Blue()
     {
         TP::AddPackageIfNecessary(Test::Packages::Framework::Blue::c_packageDirName, TPF::Blue::GetPackageFullName());
@@ -188,17 +265,30 @@ namespace Test::PackageManager::Tests
     }
     inline void RemovePackage_Blue()
     {
-        // Best-effort removal. PackageManager.RemovePackage errors if the package
-        // is not registered, but if it's not registered we're good. "'Tis the destination
-        // that matters, not the journey" so regardless how much or little work
-        // we need do, we're happy as long as the package isn't registered when we're done
-        //
-        // Thus, do a *IfNecessary removal
-        TP::RemovePackageIfNecessary(TPF::Blue::GetPackageFullName());
+        if (IsPackageRegistered_Blue())
+        {
+            TP::RemovePackage(TPF::Blue::GetPackageFullName());
+        }
+        else if (IsPackageStaged_Blue())
+        {
+            // We can't directly remove a Stage package not registered for current user
+            // w/o admin privilege but we can add it to make it registered and then remove it.
+            AddPackage_Blue();
+            TP::RemovePackage(TPF::Blue::GetPackageFullName());
+        }
     }
-    inline bool IsPackageRegistered_Blue()
+    inline void RemovePackageFamily_Blue()
     {
-        return TP::IsPackageRegistered(TPF::Blue::GetPackageFullName());
+        RemovePackage_Blue();
+#if 0
+        // The package could be staged and not registered so checking
+        // checking for registered packages in the family is insufficient,
+        // and checking for staged packages not registered for the current user
+        // requires admin privilege (which we may not have). So we'll rely on
+        // remove for each package in the family handling it whether the packages
+        // are staged or registered.
+        TP::RemovePackageIfNecessary(TPF::Green::GetPackageFullName());
+#endif
     }
 
     inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFullName)
@@ -207,7 +297,12 @@ namespace Test::PackageManager::Tests
         return package.Status();
     }
 
-    inline void SetPackageStatus(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus status)
+    inline void SetPackageStatus(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFullName, winrt::Windows::Management::Deployment::PackageStatus status)
+    {
+        packageManager.SetPackageStatus(packageFullName, status);
+    }
+
+    inline void SetPackageStatusByPackageFamilyName(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus status)
     {
         const auto packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Framework };
         auto packages{ packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
@@ -217,7 +312,12 @@ namespace Test::PackageManager::Tests
         }
     }
 
-    inline void ClearPackageStatus(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus status)
+    inline void ClearPackageStatus(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFullName, winrt::Windows::Management::Deployment::PackageStatus status)
+    {
+        packageManager.ClearPackageStatus(packageFullName, status);
+    }
+
+    inline void ClearPackageStatusByPackageFamilyName(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus status)
     {
         const auto packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Framework };
         auto packages{ packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
