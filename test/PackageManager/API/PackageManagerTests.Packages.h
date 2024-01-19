@@ -133,7 +133,7 @@ namespace Test::PackageManager::Tests
         {
             TP::RemovePackage(TPF::Red::GetPackageFullName());
         }
-        else if (IsPackageStaged_Red)
+        else if (IsPackageStaged_Red())
         {
             // We can't directly remove a Stage package not registered for current user
             // w/o admin privilege but we can add it to make it registered and then remove it.
