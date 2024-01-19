@@ -656,8 +656,19 @@ namespace Microsoft.Windows.Management.Deployment
         void Repair();
     };
 
+    /// Defines the stub behavior for an app package that is being added or staged.
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.stubpackageoption
+    [contract(PackageDeploymentContract, 1)]
+    enum StubPackageOption
+    {
+        Default,
+        InstallFull,
+        InstallStub,
+        UsePreference,
+    };
+
     /// The progress status of the deployment request.
-    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress.state?view=winrt-22621
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress.state
     [contract(PackageDeploymentContract, 1)]
     enum PackageDeploymentProgressStatus
     {
@@ -668,7 +679,7 @@ namespace Microsoft.Windows.Management.Deployment
     };
 
     /// Contains progress information for the deployment request.
-    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress?view=winrt-22621
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress
     [contract(PackageDeploymentContract, 1)]
     struct PackageDeploymentProgress
     {
@@ -746,7 +757,7 @@ namespace Microsoft.Windows.Management.Deployment
         IVector<Windows.Foundation.Uri> OptionalPackageUris { get; };
         IVector<Windows.Foundation.Uri> RelatedPackageUris { get; };
         Windows.Foundation.Uri ExternalLocationUri;
-        Windows.Management.Deployment.StubPackageOption StubPackageOption;
+        StubPackageOption StubPackageOption;
         Boolean AllowUnsigned;
         Boolean DeveloperMode;
         Boolean ForceAppShutdown;
@@ -777,7 +788,7 @@ namespace Microsoft.Windows.Management.Deployment
         IVector<Windows.Foundation.Uri> OptionalPackageUris { get; };
         IVector<Windows.Foundation.Uri> RelatedPackageUris { get; };
         Windows.Foundation.Uri ExternalLocationUri;
-        Windows.Management.Deployment.StubPackageOption StubPackageOption;
+        StubPackageOption StubPackageOption;
         Boolean DeveloperMode;
         Boolean ForceUpdateFromAnyVersion;
         Boolean InstallAllResources;
@@ -796,16 +807,17 @@ namespace Microsoft.Windows.Management.Deployment
         RegisterPackageOptions();
 
         PackageVolume AppDataVolume;
+        IVector<String> DependencyPackageFamilyNames { get; };
         IVector<Windows.Foundation.Uri> DependencyPackageUris { get; };
         IVector<String> OptionalPackageFamilyNames { get; };
         Windows.Foundation.Uri ExternalLocationUri;
+        Boolean AllowUnsigned;
         Boolean DeveloperMode;
         Boolean ForceAppShutdown;
         Boolean ForceTargetAppShutdown;
         Boolean ForceUpdateFromAnyVersion;
         Boolean InstallAllResources;
         Boolean StageInPlace;
-        Boolean AllowUnsigned;
         Boolean DeferRegistrationWhenPackagesAreInUse;
 
         Boolean IsExpectedDigestsSupported { get; };            // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
