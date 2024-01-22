@@ -37,8 +37,6 @@
 
 #include <WexTestClass.h>
 
-#include <appmodel.identity.h>
-
 #include "TestFilesystem.h"
 #include "TestPackages.h"
 

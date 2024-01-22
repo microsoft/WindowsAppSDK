@@ -20,14 +20,6 @@ public:
     static UINT32 SetPackageGraphRevisionId(const UINT32 value);
 
 public:
-    static HRESULT GetResolvedPackageDependency(
-        PCWSTR packageDependencyId,
-        wil::unique_process_heap_string& packageFullName);
-
-    static HRESULT GetResolvedPackageDependency2(
-        PCWSTR packageDependencyId,
-        wil::unique_process_heap_string& packageFullName);
-
     static HRESULT ResolvePackageDependency(
         PCWSTR packageDependencyId,
         MddAddPackageDependencyOptions options,
