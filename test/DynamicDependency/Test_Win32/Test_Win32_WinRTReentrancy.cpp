@@ -36,7 +36,7 @@ void Test::DynamicDependency::Test_Win32::WinRTReentrancy()
     VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkWidgets, S_OK);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
-    VerifyPackageDependency(packageDependencyId_FrameworkWidgets.get(), S_OK, nullptr);
+    VerifyPackageDependency(packageDependencyId_FrameworkWidgets.get(), S_OK, expectedPackageFullName_FrameworkWidgets);
 
     // -- Add
 
@@ -110,7 +110,7 @@ void Test::DynamicDependency::Test_Win32::WinRTReentrancy()
     VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkWidgets, S_OK);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
-    VerifyPackageDependency(packageDependencyId_FrameworkWidgets.get(), S_OK, nullptr);
+    VerifyPackageDependency(packageDependencyId_FrameworkWidgets.get(), S_OK, expectedPackageFullName_FrameworkWidgets);
 
     // -- Delete
 
