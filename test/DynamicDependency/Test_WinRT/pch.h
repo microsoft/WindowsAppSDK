@@ -38,10 +38,8 @@
 #include <WexTestClass.h>
 
 #include <appmodel.identity.h>
-#include <IsWindowsVersion.h>
 
 #include "TestFilesystem.h"
 #include "TestPackages.h"
-#include <WindowsAppRuntime.Test.TAEF.h>
 
 #endif //PCH_H
