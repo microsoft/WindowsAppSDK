@@ -190,7 +190,7 @@ namespace Test::DynamicDependency
             // Major.Minor = 0.0 == No such framework package
             const UINT32 doesNotExist{};
             const PACKAGE_VERSION minVersionMatchAny{};
-            VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, MddBootstrapInitialize(doesNotExist, nullptr, minVersionMatchAny));
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(doesNotExist, nullptr, minVersionMatchAny));
         }
 
         TEST_METHOD(Initialize_DDLMMinVersionNoMatch)
@@ -203,7 +203,7 @@ namespace Test::DynamicDependency
             // Version <major>.65535.65535.65535 to find framework packages for the major.minor version but none meeting this minVersion criteria
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
             PACKAGE_VERSION minVersionNoMatch{ static_cast<UINT64>(Test::Packages::DynamicDependencyLifetimeManager::c_Version.Major) << 48 | 0x0000FFFFFFFFFFFFuI64 };
-            VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersionNoMatch));
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersionNoMatch));
         }
 
         TEST_METHOD(Initialize)
@@ -253,8 +253,7 @@ namespace Test::DynamicDependency
             const UINT32 c_Version_MajorMinor_Incompatible{ c_Version_MajorMinor + 1 };
             VERIFY_ARE_EQUAL(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE, MddBootstrapInitialize(c_Version_MajorMinor_Incompatible, nullptr, c_minVersion));
 
-            VERIFY_ARE_EQUAL(E_INVALIDARG, MddBootstrapInitialize(c_Version_MajorMinor, L"MakesPackageFamilyNameTooLong", c_minVersion));
-            VERIFY_ARE_EQUAL(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE, MddBootstrapInitialize(c_Version_MajorMinor, L"Zathras", c_minVersion));
+            VERIFY_ARE_EQUAL(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE, MddBootstrapInitialize(c_Version_MajorMinor, L"NotTheVersionTag", c_minVersion));
 
             const PACKAGE_VERSION c_minVersion_Incompatible{ UINT64_MAX };
             VERIFY_ARE_EQUAL(MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE, MddBootstrapInitialize(c_Version_MajorMinor, nullptr, c_minVersion_Incompatible));
@@ -289,8 +288,7 @@ namespace Test::DynamicDependency
             const PACKAGE_VERSION c_minVersion3{};
             VERIFY_ARE_EQUAL(c_minVersion3.Version, c_minVersion1.Version);
             VERIFY_ARE_NOT_EQUAL(c_minVersion3.Version, c_minVersion2.Version);
-            VERIFY_ARE_EQUAL(E_INVALIDARG, MddBootstrapInitialize(c_Version_MajorMinor3, L"MakesPackageFamilyNameTooLong", c_minVersion3));
-            VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, MddBootstrapInitialize(c_Version_MajorMinor3, L"Zathras", c_minVersion3));
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(c_Version_MajorMinor3, L"NotTheVersionTag", c_minVersion3));
 
             // Incompatible criteria. Verify Initialize+Shutdown brought us
             // back to initial state so we can fail to initialize as expected
@@ -299,7 +297,7 @@ namespace Test::DynamicDependency
             VERIFY_ARE_NOT_EQUAL(c_minVersion4.Version, c_minVersion1.Version);
             VERIFY_ARE_NOT_EQUAL(c_minVersion4.Version, c_minVersion2.Version);
             VERIFY_ARE_NOT_EQUAL(c_minVersion4.Version, c_minVersion3.Version);
-            VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, MddBootstrapInitialize(c_Version_MajorMinor4, nullptr, c_minVersion4));
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(c_Version_MajorMinor4, nullptr, c_minVersion4));
 
             // Same criteria but MinVersion<package version. Verify Initialize+Shutdown brings us back
             // to initial state so we can initialize again with different (but successful) criteria
@@ -587,7 +585,7 @@ namespace Test::DynamicDependency
             // Major.Minor = 0.0 == No such framework package
             const UINT32 doesNotExist{};
             const PACKAGE_VERSION minVersionMatchAny{};
-            VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, MddBootstrapInitialize(doesNotExist, nullptr, minVersionMatchAny));
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(doesNotExist, nullptr, minVersionMatchAny));
         }
     };
 
@@ -628,7 +626,7 @@ namespace Test::DynamicDependency
             // Major.Minor = 0.0 == No such framework package
             const UINT32 doesNotExist{};
             const PACKAGE_VERSION minVersionMatchAny{};
-            VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, MddBootstrapInitialize(doesNotExist, nullptr, minVersionMatchAny));
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(doesNotExist, nullptr, minVersionMatchAny));
         }
     };
 }
