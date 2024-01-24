@@ -30,7 +30,8 @@
       <!-- /ZH:SHA_256 Hash algorithm for file checksums in debug info -->
       <!-- /await:strict Enable coroutine support. Disable language extensions present in /await that weren't adopted into C++20 -->
       <!-- /d1trimfile:$(RepoRoot) If the prefix for a source file path name string matches "trim-string" the prefix is replaced with the mapping-identifier (if present). Requires /Brepro. -->
-      <AdditionalOptions>%(AdditionalOptions) /Qspectre /ZH:SHA_256 /await:strict /d1trimfile:$(RepoRoot)</AdditionalOptions>
+      <!-- /we4715 If warning 4715 as an error (C4715 = 'function': not all control paths return a value)
+      <AdditionalOptions>%(AdditionalOptions) /Qspectre /ZH:SHA_256 /await:strict /d1trimfile:$(RepoRoot) /we4715</AdditionalOptions>
     </ClCompile>
     <Link>
       <!-- /DEBUG:FULL Create PDF containing full debug information -->
