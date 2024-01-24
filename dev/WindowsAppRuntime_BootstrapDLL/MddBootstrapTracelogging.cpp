@@ -12,7 +12,7 @@ void MddBootstrap_StopActivity(
 {
     if (isActivityRunning)
     {
-        PCWSTR initializationFrameworkPackageFullName{};
+        PWSTR initializationFrameworkPackageFullName{};
         auto initializationCount{ activityContext.GetInitializeData(initializationFrameworkPackageFullName) };
 
         if (activityContext.GetMddBootstrapAPI() == WindowsAppRuntime::MddBootstrap::Activity::MddBootstrapAPI::Initialize)
