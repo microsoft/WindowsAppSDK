@@ -19,11 +19,6 @@ namespace Microsoft::Windows::ApplicationModel::PackageDeploymentResolver
         const winrt::hstring& packageFamilyName,
         const AppModel::Identity::PackageVersion& minVersion,
         const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures processorArchitectureFilter);
-
-    // Return true if any package meets the criteria
-    bool FindAny(
-        const winrt::Windows::Management::Deployment::PackageManager& packageManager,
-        const winrt::hstring& packageFullName);
 }
 
 #endif // PACKAGERESOLVER_H

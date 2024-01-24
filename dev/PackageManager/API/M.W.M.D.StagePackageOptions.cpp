@@ -58,11 +58,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         m_externalLocationUri = value;
     }
-    winrt::Windows::Management::Deployment::StubPackageOption StagePackageOptions::StubPackageOption()
+    winrt::Microsoft::Windows::Management::Deployment::StubPackageOption StagePackageOptions::StubPackageOption()
     {
         return m_stubPackageOption;
     }
-    void StagePackageOptions::StubPackageOption(winrt::Windows::Management::Deployment::StubPackageOption const& value)
+    void StagePackageOptions::StubPackageOption(winrt::Microsoft::Windows::Management::Deployment::StubPackageOption const& value)
     {
         m_stubPackageOption = value;
     }

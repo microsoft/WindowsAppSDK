@@ -7,24 +7,10 @@
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
-    PackageDeploymentResult::PackageDeploymentResult(
-        winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus status,
-        winrt::guid const& activityId) :
+    PackageDeploymentResult::PackageDeploymentResult(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus status, winrt::hresult const& extendedError, bool isRegistered, winrt::guid const& activityId) :
         m_status(status),
-        m_activityId(activityId)
-    {
-    }
-
-    PackageDeploymentResult::PackageDeploymentResult(
-        winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus status,
-        winrt::guid const& activityId,
-        winrt::hresult const& error,
-        winrt::hresult const& extendedError,
-        winrt::hstring const& errorText) :
-        m_status(status),
-        m_error(error),
         m_extendedError(extendedError),
-        m_errorText(errorText),
+        m_isRegistered(isRegistered),
         m_activityId(activityId)
     {
     }
@@ -33,17 +19,13 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         return m_status;
     }
-    winrt::hresult PackageDeploymentResult::Error()
-    {
-        return m_error;
-    }
     winrt::hresult PackageDeploymentResult::ExtendedError()
     {
         return m_extendedError;
     }
-    winrt::hstring PackageDeploymentResult::ErrorText()
+    bool PackageDeploymentResult::IsRegistered()
     {
-        return m_errorText;
+        return m_isRegistered;
     }
     winrt::guid PackageDeploymentResult::ActivityId()
     {

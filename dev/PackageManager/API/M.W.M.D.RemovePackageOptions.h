@@ -11,20 +11,20 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         RemovePackageOptions() = default;
 
-        bool FailIfNotFound();
-        void FailIfNotFound(bool value);
         bool PreserveApplicationData();
         void PreserveApplicationData(bool value);
         bool PreserveRoamableApplicationData();
         void PreserveRoamableApplicationData(bool value);
         bool RemoveForAllUsers();
         void RemoveForAllUsers(bool value);
+        winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority Priority();
+        void Priority(winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority const& value);
 
     private:
-        bool m_failIfNotFound{ true };
         bool m_preserveApplicationData{};
         bool m_preserveRoamableApplicationData{};
         bool m_removeForAllUsers{};
+        winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority m_priority{ winrt::Microsoft::Windows::Management::Deployment::DeploymentPriority::Normal };
     };
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation

@@ -308,8 +308,7 @@ void Install()
     }
     else
     {
-        Console.WriteLine("Error:{} ExtendedError:{} {}",
-            deploymentResult.Error.HResult, deploymentResult.ExtendedError.HResult, deploymentResult.ErrorText);
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
     }
 }
 ```
@@ -331,8 +330,7 @@ void Install()
     }
     else
     {
-        Console.WriteLine("Error:{} ExtendedError:{} {}",
-            deploymentResult.Error.HResult, deploymentResult.ExtendedError.HResult, deploymentResult.ErrorText);
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
     }
 }
 ```
@@ -361,8 +359,7 @@ void Install()
     }
     else
     {
-        Console.WriteLine("Error:{} ExtendedError:{} {}",
-            deploymentResult.Error.HResult, deploymentResult.ExtendedError.HResult, deploymentResult.ErrorText);
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
     }
 }
 ```
@@ -395,8 +392,7 @@ void Install()
     }
     else
     {
-        Console.WriteLine("Error:{} ExtendedError:{} {}",
-            deploymentResult.Error.HResult, deploymentResult.ExtendedError.HResult, deploymentResult.ErrorText);
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
     }
 }
 
@@ -448,8 +444,7 @@ void Install()
     }
     else
     {
-        Console.WriteLine("Error:{} ExtendedError:{} {}",
-            deploymentResult.Error.HResult, deploymentResult.ExtendedError.HResult, deploymentResult.ErrorText);
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
     }
 }
 
@@ -492,8 +487,7 @@ void AddMuffinsAndWafflesToThePackageGraph()
     }
     else
     {
-        Console.WriteLine("Error:{} ExtendedError:{} {}",
-            deploymentResult.Error.HResult, deploymentResult.ExtendedError.HResult, deploymentResult.ErrorText);
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
     }
 
     var packageRuntimeManager = PackageRuntimeManager.GetDefault();
@@ -537,8 +531,7 @@ void DoAwesomeStuffUsingMuffinsAndWaffles()
     }
     else
     {
-        Console.WriteLine("Error:{} ExtendedError:{} {}",
-            deploymentResult.Error.HResult, deploymentResult.ExtendedError.HResult, deploymentResult.ErrorText);
+        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
     }
 
     var packageRuntimeManager = PackageRuntimeManager.GetDefault();
@@ -689,26 +682,13 @@ namespace Microsoft.Windows.Management.Deployment
         CompletedFailure = 2,   // The request failed with some critical internal error.
     };
 
-    /// Provides the result of a deployment request.
-    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult
+    // Provides the result of a deployment request.
+    // @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageDeploymentResult
     {
         PackageDeploymentStatus Status { get; };
-
-        /// The extended error code can be used to distinguish a specific error condition which needs to be handled differently from the general error indicated by the return code. The extended error code may provide a more specific reason for the failure that caused the general error. Also, it usually corresponds directly to the specific message in the ErrorText.
-        HRESULT Error { get; };
-
-        /// The extended error code can be used to distinguish a specific error condition which needs to be handled differently from the general error indicated by the return code. The extended error code may provide a more specific reason for the failure that caused the general error. Also, it usually corresponds directly to the specific message in the ErrorText.
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult.extendederrorcode
         HRESULT ExtendedError { get; };
-
-        /// Gets extended error text for the error if the deployment operation is not successful.
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult.errortext
-        String ErrorText { get; };
-
-        /// Gets the activity identifier used to look up an event in Windows Event Viewer. Gets the activity identifier used to look up an event. All events of a deployment operation are logged with the same activityId.
-        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult.activityid
         Guid ActivityId { get; };
     }
 
