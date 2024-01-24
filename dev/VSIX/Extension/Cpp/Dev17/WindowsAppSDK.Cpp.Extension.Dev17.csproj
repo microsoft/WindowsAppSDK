@@ -8,8 +8,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WindowsAppSDK.Cpp.Extension</RootNamespace>
     <BaseAssemblyName>WindowsAppSDK.Cpp.Extension.Dev17</BaseAssemblyName>
-    <AssemblyName Condition="'$(EnableExperimentalVSIXFeatures)'!='true'">$(BaseAssemblyName)</AssemblyName>
-    <AssemblyName Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">$(BaseAssemblyName).Experimental</AssemblyName>
     <JsonName Condition="'$(EnableExperimentalVSIXFeatures)'!='true'">Microsoft.WindowsAppSDK.Cpp.Dev17.json</JsonName>
     <JsonName Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">Microsoft.WindowsAppSDK.Cpp.Dev17.Experimental.json</JsonName>
     <TargetFramework>net472</TargetFramework>
