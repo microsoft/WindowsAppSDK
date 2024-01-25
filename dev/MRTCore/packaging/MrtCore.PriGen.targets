@@ -87,6 +87,10 @@
     <AppxGeneratePriEnabled Condition="'$(AppxGeneratePriEnabled)' == ''">true</AppxGeneratePriEnabled>
     <AppxGetPackagePropertiesEnabled Condition="'$(AppxGetPackagePropertiesEnabled)' == ''">true</AppxGetPackagePropertiesEnabled>
 
+    <!-- Only application projects should have the PRIs from references merged into the project's own PRI -->
+    <ShouldComputeInputPris Condition="'$(ShouldComputeInputPris)' == '' AND ('$(OutputType)' == 'WinExe' OR '$(OutputType)' == 'Exe')">true</ShouldComputeInputPris>
+    <ShouldComputeInputPris Condition="'$(ShouldComputeInputPris)' == ''">false</ShouldComputeInputPris>
+
     <!--
       For Centennial apps, we want the resources of the unpackaged app to appear in the root namespace of the app. So, set the value
       of PrependPriInitialPath to false.
@@ -650,9 +654,8 @@
 
   <!--
     Get list of PRI files from the payload.
-    In Microsoft.AppxPackage.Targets, this is run only if $(AppxPackage) is 'true' but here, of course, that shouldn't be the case.
   -->
-  <Target Name="_GetPriFilesFromPayload">
+  <Target Name="_GetPriFilesFromPayload" Condition="'$(ShouldComputeInputPris)' == 'true'">
 
     <ItemGroup>
       <_PriFilesFromPayloadRaw Include="@(PackagingOutputs)"
@@ -676,9 +679,8 @@
 
   <!--
     Compute final list of input PRI files.
-    In Microsoft.AppxPackage.Targets, this is run only if $(AppxPackage) is 'true' but here, of course, that shouldn't be the case.
   -->
-  <Target Name="_ComputeInputPriFiles">
+  <Target Name="_ComputeInputPriFiles" Condition="'$(ShouldComputeInputPris)' == 'true'">
 
     <ItemGroup>
       <_PriFile Include="@(_PriFilesFromPayload)" />
