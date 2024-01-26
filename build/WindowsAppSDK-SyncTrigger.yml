@@ -3,8 +3,8 @@ name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 resources:
   pipelines:
   - pipeline: SyncMirrorPipeline
-    project: $(System.TeamProject)
-    source: $(pipelineName)
+    project: ProjectReunion
+    source: Foundation-ES-SyncMirrorRepos
     trigger:
       branches:
         include:
