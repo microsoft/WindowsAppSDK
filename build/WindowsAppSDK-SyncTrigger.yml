@@ -3,7 +3,7 @@ name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 resources:
   pipelines:
   - pipeline: SyncMirrorPipeline
-    project: $(projectName)
+    project: $(System.TeamProject)
     source: $(pipelineName)
     trigger:
       branches:
