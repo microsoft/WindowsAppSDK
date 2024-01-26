@@ -1,0 +1,23 @@
+name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+
+resources:
+  pipelines:
+  - pipeline: SyncMirrorPipeline
+    project: $(projectName)
+    source: $(pipelineName)
+    trigger:
+      branches:
+        include:
+        - $(Build.SourceBranch)
+
+jobs:
+- job: TriggerSyncMirror
+  dependsOn: []
+  pool: 'ProjectReunionESPool-2022'
+  steps:
+  - task: powerShell@2
+    displayName: 'Shell task'
+    inputs:
+      targetType: 'inline'
+      script: |
+        Write-Host "Triggering $(pipelineName) on $(Build.SourceBranch)"
