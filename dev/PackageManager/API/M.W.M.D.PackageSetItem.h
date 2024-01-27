@@ -13,12 +13,10 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
         hstring Id();
         void Id(hstring const& value);
-
         hstring PackageFamilyName();
         void PackageFamilyName(hstring const& value);
         winrt::Windows::ApplicationModel::PackageVersion MinVersion();
         void MinVersion(winrt::Windows::ApplicationModel::PackageVersion const& value);
-
         winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures ProcessorArchitectureFilter();
         void ProcessorArchitectureFilter(winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures const& value);
         winrt::Windows::Foundation::Uri PackageUri();

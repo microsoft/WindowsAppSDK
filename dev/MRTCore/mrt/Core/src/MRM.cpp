@@ -990,7 +990,7 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
     if (filename == nullptr || *filename == L'\0')
     {
         wil::unique_cotaskmem_string baseDir;
-        if(SUCCEEDED(wil::TryGetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", baseDir)))
+        if (SUCCEEDED(wil::TryGetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", baseDir)) && baseDir)
         {
             path.swap(baseDir);
             RETURN_IF_FAILED(StringCchLengthW(path.get(), STRSAFE_MAX_CCH, &bufferCount));

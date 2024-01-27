@@ -308,7 +308,8 @@ void Install()
     }
     else
     {
-        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
+        Console.WriteLine("Error:{} ExtendedError:{} {}",
+            deploymentResult.Error.HResult, deploymentResult.ExtendedError.HResult, deploymentResult.ErrorText);
     }
 }
 ```
@@ -330,7 +331,8 @@ void Install()
     }
     else
     {
-        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
+        Console.WriteLine("Error:{} ExtendedError:{} {}",
+            deploymentResult.Error.HResult, deploymentResult.ExtendedError.HResult, deploymentResult.ErrorText);
     }
 }
 ```
@@ -359,7 +361,8 @@ void Install()
     }
     else
     {
-        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
+        Console.WriteLine("Error:{} ExtendedError:{} {}",
+            deploymentResult.Error.HResult, deploymentResult.ExtendedError.HResult, deploymentResult.ErrorText);
     }
 }
 ```
@@ -392,7 +395,8 @@ void Install()
     }
     else
     {
-        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
+        Console.WriteLine("Error:{} ExtendedError:{} {}",
+            deploymentResult.Error.HResult, deploymentResult.ExtendedError.HResult, deploymentResult.ErrorText);
     }
 }
 
@@ -444,7 +448,8 @@ void Install()
     }
     else
     {
-        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
+        Console.WriteLine("Error:{} ExtendedError:{} {}",
+            deploymentResult.Error.HResult, deploymentResult.ExtendedError.HResult, deploymentResult.ErrorText);
     }
 }
 
@@ -487,7 +492,8 @@ void AddMuffinsAndWafflesToThePackageGraph()
     }
     else
     {
-        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
+        Console.WriteLine("Error:{} ExtendedError:{} {}",
+            deploymentResult.Error.HResult, deploymentResult.ExtendedError.HResult, deploymentResult.ErrorText);
     }
 
     var packageRuntimeManager = PackageRuntimeManager.GetDefault();
@@ -531,7 +537,8 @@ void DoAwesomeStuffUsingMuffinsAndWaffles()
     }
     else
     {
-        Console.WriteLine("Error {}", deploymentResult.ExtendedError.HResult);
+        Console.WriteLine("Error:{} ExtendedError:{} {}",
+            deploymentResult.Error.HResult, deploymentResult.ExtendedError.HResult, deploymentResult.ErrorText);
     }
 
     var packageRuntimeManager = PackageRuntimeManager.GetDefault();
@@ -649,8 +656,19 @@ namespace Microsoft.Windows.Management.Deployment
         void Repair();
     };
 
+    /// Defines the stub behavior for an app package that is being added or staged.
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.stubpackageoption
+    [contract(PackageDeploymentContract, 1)]
+    enum StubPackageOption
+    {
+        Default,
+        InstallFull,
+        InstallStub,
+        UsePreference,
+    };
+
     /// The progress status of the deployment request.
-    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress.state?view=winrt-22621
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress.state
     [contract(PackageDeploymentContract, 1)]
     enum PackageDeploymentProgressStatus
     {
@@ -661,7 +679,7 @@ namespace Microsoft.Windows.Management.Deployment
     };
 
     /// Contains progress information for the deployment request.
-    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress?view=winrt-22621
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress
     [contract(PackageDeploymentContract, 1)]
     struct PackageDeploymentProgress
     {
@@ -682,13 +700,26 @@ namespace Microsoft.Windows.Management.Deployment
         CompletedFailure = 2,   // The request failed with some critical internal error.
     };
 
-    // Provides the result of a deployment request.
-    // @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult
+    /// Provides the result of a deployment request.
+    /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult
     [contract(PackageDeploymentContract, 1)]
     runtimeclass PackageDeploymentResult
     {
         PackageDeploymentStatus Status { get; };
+
+        /// The extended error code can be used to distinguish a specific error condition which needs to be handled differently from the general error indicated by the return code. The extended error code may provide a more specific reason for the failure that caused the general error. Also, it usually corresponds directly to the specific message in the ErrorText.
+        HRESULT Error { get; };
+
+        /// The extended error code can be used to distinguish a specific error condition which needs to be handled differently from the general error indicated by the return code. The extended error code may provide a more specific reason for the failure that caused the general error. Also, it usually corresponds directly to the specific message in the ErrorText.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult.extendederrorcode
         HRESULT ExtendedError { get; };
+
+        /// Gets extended error text for the error if the deployment operation is not successful.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult.errortext
+        String ErrorText { get; };
+
+        /// Gets the activity identifier used to look up an event in Windows Event Viewer. Gets the activity identifier used to look up an event. All events of a deployment operation are logged with the same activityId.
+        /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentresult.activityid
         Guid ActivityId { get; };
     }
 
@@ -726,7 +757,7 @@ namespace Microsoft.Windows.Management.Deployment
         IVector<Windows.Foundation.Uri> OptionalPackageUris { get; };
         IVector<Windows.Foundation.Uri> RelatedPackageUris { get; };
         Windows.Foundation.Uri ExternalLocationUri;
-        Windows.Management.Deployment.StubPackageOption StubPackageOption;
+        StubPackageOption StubPackageOption;
         Boolean AllowUnsigned;
         Boolean DeveloperMode;
         Boolean ForceAppShutdown;
@@ -757,7 +788,7 @@ namespace Microsoft.Windows.Management.Deployment
         IVector<Windows.Foundation.Uri> OptionalPackageUris { get; };
         IVector<Windows.Foundation.Uri> RelatedPackageUris { get; };
         Windows.Foundation.Uri ExternalLocationUri;
-        Windows.Management.Deployment.StubPackageOption StubPackageOption;
+        StubPackageOption StubPackageOption;
         Boolean DeveloperMode;
         Boolean ForceUpdateFromAnyVersion;
         Boolean InstallAllResources;
@@ -776,16 +807,17 @@ namespace Microsoft.Windows.Management.Deployment
         RegisterPackageOptions();
 
         PackageVolume AppDataVolume;
+        IVector<String> DependencyPackageFamilyNames { get; };
         IVector<Windows.Foundation.Uri> DependencyPackageUris { get; };
         IVector<String> OptionalPackageFamilyNames { get; };
         Windows.Foundation.Uri ExternalLocationUri;
+        Boolean AllowUnsigned;
         Boolean DeveloperMode;
         Boolean ForceAppShutdown;
         Boolean ForceTargetAppShutdown;
         Boolean ForceUpdateFromAnyVersion;
         Boolean InstallAllResources;
         Boolean StageInPlace;
-        Boolean AllowUnsigned;
         Boolean DeferRegistrationWhenPackagesAreInUse;
 
         Boolean IsExpectedDigestsSupported { get; };            // Requires Windows >= 10.0.22621.0 (aka Win11 22H2)
