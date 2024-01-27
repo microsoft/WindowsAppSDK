@@ -56,15 +56,10 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
             return m_mddBootstrapAPI;
         }
 
-        const uint32_t GetInitializeCount() const
-        {
-            return m_initializationCount;
-        }
-
-        const uint32_t GetInitializeData(PCWSTR& initializationPackageFullName) const
+        const uint32_t GetInitializeData(PWSTR& initializationPackageFullName) const
         {
             initializationPackageFullName = m_initializationPackageFullName.get();
-            return GetInitializeCount();
+            return m_initializationCount;
         }
 
         wil::unique_cotaskmem_string& GetInitializationPackageFullName()
@@ -118,15 +113,7 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
 
         void SetInitializationPackageFullName(PWSTR initializationPackageFullName)
         {
-            if (initializationPackageFullName)
-            {
-                auto packageFullName{ wil::make_cotaskmem_string(initializationPackageFullName) };
-                m_initializationPackageFullName = std::move(packageFullName);
-            }
-            else
-            {
-                m_initializationPackageFullName.reset();
-            }
+            m_initializationPackageFullName.reset(initializationPackageFullName);
         }
 
         void StopActivityForWilReturnHR(const bool stopActivityForWilReturnHR)

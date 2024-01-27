@@ -113,18 +113,18 @@ static PCWSTR GetSystemSupportedArchitecturesAsString()
     return GetSystemSupportedArchitecturesAsString(nativeMachine);
 }
 
-static bool IsArchitectureSupporedByHostMachine(
+static bool IsArchitectureSupportedByHostMachine(
     const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures architecture)
 {
     const auto supportedArchitectures{ GetSystemSupportedArchitectures() };
     return WI_IsAnyFlagSet(supportedArchitectures, architecture);
 }
 
-static bool IsArchitectureSupporedByHostMachine(
+static bool IsArchitectureSupportedByHostMachine(
     const winrt::Windows::System::ProcessorArchitecture architecture)
 {
     const auto architectureAsPackageDependencyProcessorArchitectures{ ToPackageDependencyProcessorArchitectures(architecture) };
-    return IsArchitectureSupporedByHostMachine(architectureAsPackageDependencyProcessorArchitectures);
+    return IsArchitectureSupportedByHostMachine(architectureAsPackageDependencyProcessorArchitectures);
 }
 }
 

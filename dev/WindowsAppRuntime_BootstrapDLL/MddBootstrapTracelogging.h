@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -41,7 +41,7 @@ public:
         const HRESULT hresult,
         UINT32 initializationCount,
         UINT32 IntegrityFlags,
-        PCWSTR resolvedFrameworkPackageFullName,
+        PWSTR resolvedFrameworkPackageFullName,
         UINT32 failureType,
         PCSTR failureFile,
         unsigned int failureLineNumber,
@@ -78,7 +78,7 @@ public:
     BEGIN_COMPLIANT_CRITICAL_DATA_ACTIVITY_CLASS(Shutdown, PDT_ProductAndServicePerformance);
     void StartActivity(
         UINT32 initializationCount,
-        PCWSTR resolvedFrameworkPackageFullName)
+        PWSTR resolvedFrameworkPackageFullName)
     {
         // Set lifetime activity Id that helps in corelating all sub-activities/telemetry from a single Mdd Bootstrap lifetime
         SetRelatedActivityId(GetLifetimeActivityId());
