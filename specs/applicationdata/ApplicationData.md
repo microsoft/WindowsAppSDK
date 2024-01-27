@@ -70,11 +70,11 @@ with the following notable differences:
   and
   [DataChanged](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.datachanged).
   See [5.1. Platform Support](#51-platform-support) for more details.
-* **GetDefault() works for all packaged apps** -- Equivalent to .Current but works for all packaged
-  apps (not just callers running in an AppContainer). See
+* **GetDefault() works for all packaged apps** -- Equivalent to [Windows.Storage.ApplicationData.Current](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.current)
+  but works for all packaged apps (not just callers running in an AppContainer). See
   [3.3. Reliable access](#33-reliable-access).
-* **`GetForPackageFamily()`** -- Equivalent to Windows.Storage.ApplicationDataManager.CreateForPackageFamily().
-* **`GetForUser()`** -- Synchronous equivalent to GetForUserAsync().
+* **`GetForPackageFamily()`** -- Equivalent to [Windows.Storage.ApplicationDataManager.CreateForPackageFamily()](https://learn.microsoft.com/uwp/api/windows.management.core.applicationdatamanager.createforpackagefamily).
+* **`GetForUser()`** -- Synchronous equivalent to [Windows.Storage.ApplicationData.GetForUserAsync()](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.getforuserasync).
 * **`GetForUnpackaged()`** -- Equivalent functionality for unpackaged apps. See
   [3.5. Unpackaged app data stores](#35-unpackaged-app-data-stores).
 
@@ -95,15 +95,28 @@ Microsoft.Windows.Storage.ApplicationData provides consistent behavior as develo
 
 Package families can optionally have a per-machine data store.
 
+**NOTE:** This location is ACL'd by default to only grant Write access to System and TrustedInstaller.
+Other users (even Administrators) have Read and eXecute rights but not Write. Processes running as
+LocalSystem (e.g. [<desktop6:Extension Category="windows.service">](https://learn.microsoft.com/uwp/schemas/appxpackage/uapmanifestschema/element-desktop6-extension))
+can use this location to manage per-machine data for a package family. This can be useful to share
+data with other drivers or other privileged processes.
+
+Processes with Write access can (if they choose) alter access rights on files or subdirectories in
+a per-machine data store. For example, a Service running as LocalSystem can create a subdirectory
+and call [SetSecurityInfo()](https://learn.microsoft.com/windows/win32/api/aclapi/nf-aclapi-setsecurityinfo)
+to grant more access than provided by default.
+
+**NOTE:** Consider carefully the security implications if alter permissions granting more permissive access than the default.
+
 ### 3.4.1. Machine Path/Folder
 
-The path for a package family’s "Machine Folder" is located at `%ProgramData%\Microsoft\Windows\AppRepository\ApplicationData\...packagefamilyname...\Machine`.
+The path for a package family's "Machine Folder" is located at `%ProgramData%\Microsoft\Windows\AppRepository\ApplicationData\...packagefamilyname...\Machine`.
 
-This directory is ACL’d similarly to a package’s System Metadata directory (`%ProgramData%\Microsoft\Windows\AppRepository\Packages\...pkgfullname...`) e.g.
+This directory is ACL'd similarly to a package's System Metadata directory (`%ProgramData%\Microsoft\Windows\AppRepository\Packages\...pkgfullname...`) e.g.
 
 ```
 BUILTIN\Users:(OI)(CI)(Rc,S,RD,REA,X,RA)
-S-1-15-3-2977037414-864741429-1129033548-1928484290-1803339615-1058153653-556172075:(OI)(CI)(RX)
+S-1-15-3-xxxx:(OI)(CI)(RX)              // Package capability SID
 BUILTIN\Users:(OI)(CI)(R)
 NT SERVICE\TrustedInstaller:(I)(F)
 NT SERVICE\TrustedInstaller:(I)(CI)(IO)(F)
@@ -111,8 +124,8 @@ NT AUTHORITY\SYSTEM:(I)(F)
 NT AUTHORITY\SYSTEM:(I)(OI)(CI)(IO)(F)
 BUILTIN\Administrators:(I)(RX)
 BUILTIN\Administrators:(I)(OI)(CI)(IO)(GR,GE)
-S-1-15-3-1024-3635283841-2530182609-996808640-1887759898-3848208603-3313616867-983405619-2501854204:(I)(RX)
-S-1-15-3-1024-3635283841-2530182609-996808640-1887759898-3848208603-3313616867-983405619-2501854204:(I)(OI)(CI)(IO)(GR,GE)
+S-1-15-3-xxxx:(I)(RX)                   // Package capability SID
+S-1-15-3-xxxx:(I)(OI)(CI)(IO)(GR,GE)    // Package group capability SID
 ```
 
 ### 3.4.2. Manifested Opt-In
@@ -145,36 +158,29 @@ New properties and methods to access per-machine data:
 * MachineFolder
 * MachinePath
 
-**NOTE:** The per-machine APIs require the caller has the package family registered for the user -or- is running as SYSTEM.
-
 ## 3.5. Unpackaged app data stores
 
 Unpackaged applications can use the ApplicationData API to access app data stores in the classic locations:
 
 |Packaged                        |Unpackaged                                                         |
 |--------------------------------|-------------------------------------------------------------------|
-|ApplicationData.LocalCachePath  |%LOCALAPPDATA%\<publisher>\<product>                               |
-|ApplicationData.LocalPath       |%LOCALAPPDATA%\<publisher>\<product>                               |
-|ApplicationData.MachinePath     |%ProgramData%\<publisher>\<product>                                |
-|ApplicationData.RoamingPath     |%APPDATA%                                                          |
-|ApplicationData.TemporaryPath   |[GetTempPath2W()](https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-gettemppath2w)<sup>1</sup>|
-|ApplicationData.LocalSettings   |HKCU\SOFTWARE\Classes\Local Settings\Software\<publisher>\<product>|
-|ApplicationData.LocalSettings   |HKCU\SOFTWARE\<publisher>\<product>                                |
+|ApplicationData.LocalCachePath  |`%LOCALAPPDATA%\<publisher>\<product>`                              |
+|ApplicationData.LocalPath       |`%LOCALAPPDATA%\<publisher>\<product>`                               |
+|ApplicationData.MachinePath     |`%ProgramData%\<publisher>\<product>`                                |
+|ApplicationData.RoamingPath     |`%APPDATA%`                                                          |
+|ApplicationData.TemporaryPath   |`[GetTempPath2W()](https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-gettemppath2w)\<publisher>\<product>`<sup>1,2</sup>|
+|ApplicationData.LocalSettings   |`HKCU\SOFTWARE\Classes\Local Settings\Software\<publisher>\<product>`|
+|ApplicationData.RoamingSettings |`HKCU\SOFTWARE\<publisher>\<product>`                                |
 
 <sup>1</sup>
 
 [GetTempPath2W()](https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-gettemppath2w)
-returns `C:\Windows\SystemTemp` for SYSTEM processes else for non-SYSTEM processes checks for the
-existence of environment variables in the following order and uses the first path found:
+returns the temporary path for the caller. See [GetTempPath2W()](https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-gettemppath2w)
+for more details.
 
-1. The path specified by the TMP environment variable.
-2. The path specified by the TEMP environment variable.
-3. The path specified by the USERPROFILE environment variable.
-4. The Windows directory.
+<sup>2</sup>
 
-See https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-gettemppath2w for more details.
-
-GetTempPath2W() is available on Windows version &gt;= 10.0.20348.0. `ApplicationData.TemporaryPath`
+`GetTempPath2W()` is available on Windows version &gt;= 10.0.20348.0. `ApplicationData.TemporaryPath`
 performs the equivalent logic on older systems (aka Polyfill).
 
 # 4. Examples
@@ -247,13 +253,16 @@ Per https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingf
 We provide `RoamingFolder` and `RoamingSettings` equivalents but they're only as functional as
 Windows provides (i.e. no data roaming on Windows after 1909 aka 19H2 aka 10.0.18363.0).
 
-We don't provide equivalents to Windows.Storage.ApplicationData's
-[RoamingSettings](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingsettings),
-[RoamingStorageQuota](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingstoragequota),
-[Version](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.version),
-[SetVersionAsync()](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.setversionasync),
-[SignalDataChanged()](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.signaldatachanged)
-and [DataChanged](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.datachanged).
+We don't provide equivalents to Windows.Storage.ApplicationData's...
+
+* [DataChanged](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.datachanged)
+* [RoamingFolder](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingfolder)
+* [RoamingSettings](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingsettings)
+* [RoamingStorageQuota](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingstoragequota)
+* [SetVersionAsync()](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.setversionasync)
+* [SignalDataChanged()](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.signaldatachanged)
+* [Version](https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.version)
+
 If you need this functionality use the OS APIs in `Windows.Storage.ApplicationData`.
 
 # 6. API Details
@@ -273,7 +282,6 @@ namespace Microsoft.Windows.Storage
         //       Values 1000+ are unique to us here.
         Local = 0,
         LocalCache = 3,
-        Roaming = 1,
         SharedLocal = 4,
         Temporary = 2,
         Machine = 1000,
@@ -332,7 +340,7 @@ namespace Microsoft.Windows.Storage
         static ApplicationData GetDefault();
 
         /// Get an instance of ApplicationData for the specified user.
-        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.GetForUserAsync()
+        /// @note This is equivalent to Windows.Storage.ApplicationData.GetForUserAsync()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.getforuserasync
         static ApplicationData GetForUser(Windows.System.User user);
 
@@ -342,38 +350,34 @@ namespace Microsoft.Windows.Storage
         static ApplicationData GetForPackageFamily(String packageFamilyName);
 
         /// Get an instance of ApplicationData for the specified unpackaged app for the current user.
-        static ApplicationData GetForUnpackaged(String publisher, String name);
+        static ApplicationData GetForUnpackaged(String publisher, String product);
 
         /// Return true if the package family supports the machine data store.
-        Boolean IsMachinePathSupported();
+        Boolean IsMachinePathSupported { get; };
 
         /// Return the path for the local cache data store not included in backup and restore operations.
-        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.LocalCacheFolder().Path()
+        /// @note This is equivalent to Windows.Storage.ApplicationData.LocalCacheFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.localcachefolder
         String LocalCachePath { get; };
 
         /// Return the path for the local data store. This location is backed up to the cloud.
-        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.LocalFolder().Path()
+        /// @note This is equivalent to Windows.Storage.ApplicationData.LocalFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.localfolder
         String LocalPath { get; };
 
         /// Return the path for the machine data store.
         /// @note This location is per-machine (not per-user like other *Path properties).
+        /// @note Empty string is returned if not supported.
+        /// @see IsMachinePathSupported
         String MachinePath { get; };
 
-        /// Return the path for the roaming data store.
-        /// @warning Roaming data and settings are no longer supported after Windows 10 version 1901 (aka 19H1 aka 10.0.18363.0).
-        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.RoamingFolder().Path()
-        /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingfolder
-        String RoamingPath { get; };
-
         /// Return the path for the shared data store.
-        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.SharedLocalFolder().Path()
+        /// @note This is equivalent to Windows.Storage.ApplicationData.SharedLocalFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.sharedlocalfolder
         String SharedLocalPath { get; };
 
         /// Return the path for the temporary data store.
-        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.TemporaryFolder().Path()
+        /// @note This is equivalent to Windows.Storage.ApplicationData.TemporaryFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.temporaryfolder
         String TemporaryPath { get; };
 
@@ -387,12 +391,9 @@ namespace Microsoft.Windows.Storage
 
         /// Return a StorageFolder for the machine data store.
         /// @note This location is per-machine (not per-user like other *Folder properties).
+        /// @note `null` is returned if not supported.
+        /// @see IsMachinePathSupported
         Windows.Storage.StorageFolder MachineFolder { get; };
-
-        /// Return a StorageFolder for the roaming data store.
-        /// @warning Roaming data and settings are no longer supported after Windows 10 version 1901 (aka 19H1 aka 10.0.18363.0).
-        /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingfolder
-        Windows.Storage.StorageFolder RoamingFolder { get; };
 
         /// Return a StorageFolder for the shared data store.
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.sharedlocalfolder
@@ -406,25 +407,22 @@ namespace Microsoft.Windows.Storage
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.localsettings
         ApplicationDataContainer LocalSettings { get; };
 
-        /// Return the settings container in the roaming data store.
-        /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingsettings
-        ApplicationDataContainer RoamingSettings { get; };
-
         /// Remove all data from the specified data store.
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.clearasync
         Windows.Foundation.IAsyncAction ClearAsync(ApplicationDataLocality locality);
 
-        /// Remove all data from the shared data store in the specified subfolder.
-        /// @see SharedLocalPath
-        /// @see SharedLocalFolder
+        /// Clear the files and subfolders from the specified subfolder of the shared storage folder for the publisher.
+        /// @see GetPublisherCachePath()
+        /// @see GetPublisherCacheFolder()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.clearpublishercachefolderasync
         Windows.Foundation.IAsyncAction ClearPublisherCacheFolderAsync(String folderName);
 
-        /// Return the path for the shared data store for the publisher of the app.
+        /// Return the specified path of the shared data store for the publisher of the app.
+        /// @note This is equivalent to Windows.Storage.ApplicationData.GetPublisherCacheFolder(folderName).Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.getpublishercachefolder
         String GetPublisherCachePath(String folderName);
 
-        /// Return a StorageFolder for the shared data store for the publisher of the app.
+        /// Return the specified subfolder of the shared data store for the publisher of the app.
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.getpublishercachefolder
         Windows.Storage.StorageFolder GetPublisherCacheFolder(String folderName);
     }
