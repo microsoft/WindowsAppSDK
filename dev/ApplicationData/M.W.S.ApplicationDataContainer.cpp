@@ -31,7 +31,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     {
         static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::Local));
         static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::LocalCache) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::LocalCache));
-        static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Roaming) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::Roaming));
         static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Temporary) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::Temporary));
 
         return static_cast<winrt::Microsoft::Windows::Storage::ApplicationDataLocality>(m_applicationDataContainer.Locality());

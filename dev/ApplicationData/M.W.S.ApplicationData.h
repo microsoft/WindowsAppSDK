@@ -15,22 +15,19 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         static winrt::Microsoft::Windows::Storage::ApplicationData GetDefault();
         static winrt::Microsoft::Windows::Storage::ApplicationData GetForUser(winrt::Windows::System::User user);
         static winrt::Microsoft::Windows::Storage::ApplicationData GetForPackageFamily(hstring const& packageFamilyName);
-        static winrt::Microsoft::Windows::Storage::ApplicationData GetForUnpackaged(hstring const& publisher, hstring const& name);
+        static winrt::Microsoft::Windows::Storage::ApplicationData GetForUnpackaged(hstring const& publisher, hstring const& product);
         bool IsMachinePathSupported();
         hstring LocalCachePath();
         hstring LocalPath();
         hstring MachinePath();
-        hstring RoamingPath();
         hstring SharedLocalPath();
         hstring TemporaryPath();
         winrt::Windows::Storage::StorageFolder LocalCacheFolder();
         winrt::Windows::Storage::StorageFolder LocalFolder();
         winrt::Windows::Storage::StorageFolder MachineFolder();
-        winrt::Windows::Storage::StorageFolder RoamingFolder();
         winrt::Windows::Storage::StorageFolder SharedLocalFolder();
         winrt::Windows::Storage::StorageFolder TemporaryFolder();
         winrt::Microsoft::Windows::Storage::ApplicationDataContainer LocalSettings();
-        winrt::Microsoft::Windows::Storage::ApplicationDataContainer RoamingSettings();
         winrt::Windows::Foundation::IAsyncAction ClearAsync(winrt::Microsoft::Windows::Storage::ApplicationDataLocality locality);
         winrt::Windows::Foundation::IAsyncAction ClearPublisherCacheFolderAsync(hstring folderName);
         void Close();
@@ -40,7 +37,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     private:
         winrt::Windows::Foundation::IAsyncAction ClearMachineFolderAsync();
         static std::filesystem::path _MachinePath(hstring const& packageFamilyName);
-        static bool IsMachinePathAccessAllowed(hstring const& packageFamilyName);
         static bool _PathExists(std::filesystem::path const& path);
         static hstring StorageFolderToPath(winrt::Windows::Storage::StorageFolder storageFolder);
 

@@ -16,7 +16,6 @@
 
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Local) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::Local));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::LocalCache) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::LocalCache));
-static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Roaming) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::Roaming));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::SharedLocal) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::SharedLocal));
 static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::ApplicationDataLocality::Temporary) == static_cast<int32_t>(winrt::Windows::Storage::ApplicationDataLocality::Temporary));
 
@@ -93,20 +92,15 @@ namespace winrt::Microsoft::Windows::Storage::implementation
             throw;
         }
     }
-    winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUnpackaged(hstring const& publisher, hstring const& name)
+    winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUnpackaged(hstring const& publisher, hstring const& product)
     {
         // TODO implement GetForUnpackaged
         throw hresult_not_implemented();
     }
     bool ApplicationData::IsMachinePathSupported()
     {
-        if (!IsMachinePathAccessAllowed(m_packageFamilyName))
-        {
-            return false;
-        }
-
         const auto path{ _MachinePath(m_packageFamilyName) };
-        return _PathExists(path);
+        return !path.empty();
     }
     hstring ApplicationData::LocalCachePath()
     {
@@ -126,26 +120,8 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     }
     hstring ApplicationData::MachinePath()
     {
-        if (!IsMachinePathAccessAllowed(m_packageFamilyName))
-        {
-            throw hresult_access_denied();
-        }
-
         const auto path{ _MachinePath(m_packageFamilyName) };
-        winrt::hstring machinePath;
-        if (_PathExists(path))
-        {
-            machinePath = path.c_str();
-        }
-        return machinePath;
-    }
-    hstring ApplicationData::RoamingPath()
-    {
-        if (!m_applicationData)
-        {
-            return winrt::hstring{};
-        }
-        return StorageFolderToPath(m_applicationData.RoamingFolder());
+        return winrt::hstring{ path.c_str() };
     }
     hstring ApplicationData::SharedLocalPath()
     {
@@ -198,14 +174,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         }
         return winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(path).get();
     }
-    winrt::Windows::Storage::StorageFolder ApplicationData::RoamingFolder()
-    {
-        if (!m_applicationData)
-        {
-            return nullptr;
-        }
-        return m_applicationData.RoamingFolder();
-    }
     winrt::Windows::Storage::StorageFolder ApplicationData::SharedLocalFolder()
     {
         if (!m_applicationData)
@@ -229,15 +197,6 @@ namespace winrt::Microsoft::Windows::Storage::implementation
             return nullptr;
         }
         auto applicationDataContainer{ m_applicationData.LocalSettings() };
-        return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationDataContainer>(applicationDataContainer);
-    }
-    winrt::Microsoft::Windows::Storage::ApplicationDataContainer ApplicationData::RoamingSettings()
-    {
-        if (!m_applicationData)
-        {
-            return nullptr;
-        }
-        auto applicationDataContainer{ m_applicationData.RoamingSettings() };
         return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationDataContainer>(applicationDataContainer);
     }
     winrt::Windows::Foundation::IAsyncAction ApplicationData::ClearAsync(winrt::Microsoft::Windows::Storage::ApplicationDataLocality locality)
@@ -330,26 +289,13 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         auto path{ appRepository / L"ApplicationData" };
         path /= packageFamilyName.c_str();
         path /= "Machine";
-        return path;
-    }
-    bool ApplicationData::IsMachinePathAccessAllowed(hstring const& packageFamilyName)
-    {
-        // Gotta have the package family registered for the user OR the user is SYSTEM
-        if (::Security::User::IsLocalSystem())
-        {
-            return true;
-        }
 
-        winrt::Windows::Management::Deployment::PackageManager packageManager;
-        auto packages{ packageManager.FindPackagesForUser(winrt::hstring{}, packageFamilyName) };
-        auto packagesVector{ packages.try_as<winrt::Windows::Foundation::Collections::IVector<winrt::Windows::ApplicationModel::Package>>() };
-        if (packagesVector.Size() > 0)
+        // Does it exist?
+        if (_PathExists(path))
         {
-            return true;
+            return path;
         }
-
-        // Required conditions not met. Access denied
-        return false;
+        return std::filesystem::path{};
     }
 
     bool ApplicationData::_PathExists(std::filesystem::path const& path)

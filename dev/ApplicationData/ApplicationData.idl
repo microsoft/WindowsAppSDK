@@ -5,13 +5,11 @@
 
 namespace Microsoft.Windows.Storage
 {
-    [feature(Feature_ApplicationData)]
     [contractversion(1)]
     apicontract ApplicationDataContract{};
 
     /// Specifies the type of data store.
     /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdatalocality
-    [feature(Feature_ApplicationData)]
     [contract(ApplicationDataContract, 1)]
     enum ApplicationDataLocality
     {
@@ -19,14 +17,12 @@ namespace Microsoft.Windows.Storage
         //       Values 1000+ are unique to us here.
         Local = 0,
         LocalCache = 3,
-        Roaming = 1,
         SharedLocal = 4,
         Temporary = 2,
         Machine = 1000,
     };
 
     /// Specifies options for creating application data containers or returning existing containers.
-    [feature(Feature_ApplicationData)]
     [contract(ApplicationDataContract, 1)]
     enum ApplicationDataCreateDisposition
     {
@@ -39,7 +35,6 @@ namespace Microsoft.Windows.Storage
 
     /// Represents a container for settings. The methods and properties of this class support creating, deleting, enumerating, and traversing the container hierarchy.
     /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdatacontainer
-    [feature(Feature_ApplicationData)]
     [contract(ApplicationDataContract, 1)]
     runtimeclass ApplicationDataContainer : Windows.Foundation.IClosable
     {
@@ -70,7 +65,6 @@ namespace Microsoft.Windows.Storage
 
     /// Provides access to the application data store.
     /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata
-    [feature(Feature_ApplicationData)]
     [contract(ApplicationDataContract, 1)]
     runtimeclass ApplicationData : Windows.Foundation.IClosable
     {
@@ -81,7 +75,7 @@ namespace Microsoft.Windows.Storage
         static ApplicationData GetDefault();
 
         /// Get an instance of ApplicationData for the specified user.
-        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.GetForUserAsync()
+        /// @note This is equivalent to Windows.Storage.ApplicationData.GetForUserAsync()
         /// @note GetForUserAsync(null) is equivalent to GetDefault()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.getforuserasync
         static ApplicationData GetForUser(Windows.System.User user);
@@ -92,38 +86,34 @@ namespace Microsoft.Windows.Storage
         static ApplicationData GetForPackageFamily(String packageFamilyName);
 
         /// Get an instance of ApplicationData for the specified unpackaged app for the current user.
-        static ApplicationData GetForUnpackaged(String publisher, String name);
+        static ApplicationData GetForUnpackaged(String publisher, String product);
 
         /// Return true if the package family supports the machine data store.
-        Boolean IsMachinePathSupported();
+        Boolean IsMachinePathSupported { get; };
 
         /// Return the path for the local cache data store not included in backup and restore operations.
-        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.LocalCacheFolder().Path()
+        /// @note This is equivalent to Windows.Storage.ApplicationData.LocalCacheFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.localcachefolder
         String LocalCachePath { get; };
 
         /// Return the path for the local data store. This location is backed up to the cloud.
-        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.LocalFolder().Path()
+        /// @note This is equivalent to Windows.Storage.ApplicationData.LocalFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.localfolder
         String LocalPath { get; };
 
         /// Return the path for the machine data store.
         /// @note This location is per-machine (not per-user like other *Path properties).
+        /// @note Empty string is returned if not supported.
+        /// @see IsMachinePathSupported
         String MachinePath { get; };
 
-        /// Return the path for the roaming data store.
-        /// @warning Roaming data and settings are no longer supported after Windows 10 version 1901 (aka 19H1 aka 10.0.18363.0).
-        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.RoamingFolder().Path()
-        /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingfolder
-        String RoamingPath { get; };
-
         /// Return the path for the shared data store.
-        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.SharedLocalFolder().Path()
+        /// @note This is equivalent to Windows.Storage.ApplicationData.SharedLocalFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.sharedlocalfolder
         String SharedLocalPath { get; };
 
         /// Return the path for the temporary data store.
-        /// @note This is equivalent to Windows.Storage.ApplicationDataManager.TemporaryFolder().Path()
+        /// @note This is equivalent to Windows.Storage.ApplicationData.TemporaryFolder().Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.temporaryfolder
         String TemporaryPath { get; };
 
@@ -137,12 +127,9 @@ namespace Microsoft.Windows.Storage
 
         /// Return a StorageFolder for the machine data store.
         /// @note This location is per-machine (not per-user like other *Folder properties).
+        /// @note `null` is returned if not supported.
+        /// @see IsMachinePathSupported
         Windows.Storage.StorageFolder MachineFolder { get; };
-
-        /// Return a StorageFolder for the roaming data store.
-        /// @warning Roaming data and settings are no longer supported after Windows 10 version 1901 (aka 19H1 aka 10.0.18363.0).
-        /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingfolder
-        Windows.Storage.StorageFolder RoamingFolder { get; };
 
         /// Return a StorageFolder for the shared data store.
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.sharedlocalfolder
@@ -156,25 +143,22 @@ namespace Microsoft.Windows.Storage
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.localsettings
         ApplicationDataContainer LocalSettings { get; };
 
-        /// Return the settings container in the roaming data store.
-        /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.roamingsettings
-        ApplicationDataContainer RoamingSettings { get; };
-
         /// Remove all data from the specified data store.
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.clearasync
         Windows.Foundation.IAsyncAction ClearAsync(ApplicationDataLocality locality);
 
-        /// Remove all data from the shared data store in the specified subfolder.
-        /// @see SharedLocalPath
-        /// @see SharedLocalFolder
+        /// Clear the files and subfolders from the specified subfolder of the shared storage folder for the publisher.
+        /// @see GetPublisherCachePath()
+        /// @see GetPublisherCacheFolder()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.clearpublishercachefolderasync
         Windows.Foundation.IAsyncAction ClearPublisherCacheFolderAsync(String folderName);
 
-        /// Return the path for the shared data store for the publisher of the app.
+        /// Return the specified path of the shared data store for the publisher of the app.
+        /// @note This is equivalent to Windows.Storage.ApplicationData.GetPublisherCacheFolder(folderName).Path()
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.getpublishercachefolder
         String GetPublisherCachePath(String folderName);
 
-        /// Return a StorageFolder for the shared data store for the publisher of the app.
+        /// Return the specified subfolder of the shared data store for the publisher of the app.
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.getpublishercachefolder
         Windows.Storage.StorageFolder GetPublisherCacheFolder(String folderName);
     }
