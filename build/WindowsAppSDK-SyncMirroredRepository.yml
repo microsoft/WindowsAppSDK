@@ -4,7 +4,7 @@ resources:
   pipelines:
   - pipeline: SyncMirrorPipeline
     project: ProjectReunion
-    source: Foundation-ES-SyncMirrorRepos
+    source: Foundation-ES-SyncMirrorTrigger
     trigger:
       branches:
         include:
