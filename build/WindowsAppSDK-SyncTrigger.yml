@@ -9,4 +9,4 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        Write-Host "Triggering $(pipelineName) on $(Build.SourceBranch)"
+        Write-Host "Triggering Foundation-ES-SyncMirrorRepos"
