@@ -1,15 +1,4 @@
 name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
-
-resources:
-  pipelines:
-  - pipeline: SyncMirrorPipeline
-    project: ProjectReunion
-    source: Foundation-ES-SyncMirrorRepos
-    trigger:
-      branches:
-        include:
-        - $(Build.SourceBranch)
-
 jobs:
 - job: TriggerSyncMirror
   dependsOn: []
