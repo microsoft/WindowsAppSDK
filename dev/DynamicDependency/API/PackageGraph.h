@@ -35,24 +35,6 @@ private:
         MDD_PACKAGEDEPENDENCY_CONTEXT& context);
 
 public:
-    HRESULT GetResolvedPackageDependency(
-        PCWSTR packageDependencyId,
-        wil::unique_process_heap_string& packageFullName) noexcept;
-
-    static HRESULT GetResolvedPackageDependency(
-        const MddCore::PackageDependency& packageDependency,
-        wil::unique_process_heap_string& packageFullName);
-
-public:
-    HRESULT GetResolvedPackageDependency2(
-        PCWSTR packageDependencyId,
-        wil::unique_process_heap_string& packageFullName) noexcept;
-
-    static HRESULT GetResolvedPackageDependency2(
-        const MddCore::PackageDependency& packageDependency,
-        wil::unique_process_heap_string& packageFullName);
-
-public:
     HRESULT ResolvePackageDependency(
         PCWSTR packageDependencyId,
         MddAddPackageDependencyOptions options,
