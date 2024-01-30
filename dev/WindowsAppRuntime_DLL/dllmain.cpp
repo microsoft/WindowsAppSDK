@@ -15,6 +15,29 @@
 
 static HRESULT DetoursInitialize()
 {
+    // We only use Detours for downlevel support for RegFree WinRT,
+    // Dynamic Dependencies and (some) Package Graph functionality.
+    //
+    // URFW is required where OS RegFree WinRT doesn't exist (RS5).
+    // 
+    // Detours is required by Dynamic Dependency's polyfill implementation.
+    // Unecessary when delegating to the OS Dynamic Dependency API
+    // (discoverable via MddCore::Win11::IsSupported() in dev\DynamicDependency\API\MddWin11.h).
+    //
+    // PackageGraph detours are required by Dynamic Dependency's polyfill implementation.
+    //
+    // QED IsDetoursNeeded == (OS <= RS5) or (not MddCore::Win11::IsSupported())
+    //
+    // BUT as we've always run with URFW enabled we'll be paranoid for now and always use Detours
+    // and URFW when Dynamic Dependency doesn't delegate to the OS API (i.e. when WinAppSDK Dynamic Dependency
+    // implementation does polyfill, which will never be on systems lacking OS RegFree WinRT).
+    //
+    if (MddCore::Win11::IsSupported())
+    {
+        // No need for Detours
+        return S_OK;
+    }
+
     // Only detour APIs for not-packaged processes
     if (AppModel::Identity::IsPackagedProcess())
     {

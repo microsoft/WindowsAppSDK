@@ -21,7 +21,7 @@ wil::unique_hmodule Test::DynamicDependency::Test_WinRT::m_bootstrapDll;
 
 bool Test::DynamicDependency::Test_WinRT::Setup()
 {
-    if (/*TODO ::WindowsVersion::IsWindows11_23H1OrGreater() &&*/ !::Test::TAEF::IsEnabled(L"DynamicDependency.23H1"))
+    if (!::Test::TAEF::IsEnabled(L"Bug.48525090.Skip", true))
     {
         WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Skipping tests to avoid https://task.ms/48525090");
         return true;
