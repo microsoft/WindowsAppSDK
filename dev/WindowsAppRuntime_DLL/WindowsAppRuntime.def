@@ -10,7 +10,6 @@ EXPORTS
     MddDeletePackageDependency
     MddGetIdForPackageDependencyContext
     MddGetResolvedPackageFullNameForPackageDependency
-    MddGetResolvedPackageFullNameForPackageDependency2
     MddRemovePackageDependency
     MddTryCreatePackageDependency
     MddLifetimeManagementGC
