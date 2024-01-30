@@ -30,6 +30,7 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
 
 class WindowsAppRuntimeInstaller_TraceLogger final : public wil::TraceLoggingProvider
 {
+    #pragma prefast(disable:6387, "PreFast gets confused over tracelogging parameters")
     IMPLEMENT_TRACELOGGING_CLASS(
         WindowsAppRuntimeInstaller_TraceLogger,
         "Microsoft.WindowsAppRuntimeInstaller",
