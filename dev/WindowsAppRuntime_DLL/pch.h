@@ -30,6 +30,7 @@
 #include <wil/filesystem.h>
 #include <wil/com.h>
 #include <wil/win32_helpers.h>
+#include <wil/registry.h>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>

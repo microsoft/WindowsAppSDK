@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #ifndef __SECURITY_INTEGRITYLEVEL_H
@@ -8,7 +8,7 @@ namespace Security::IntegrityLevel
 {
 inline DWORD GetIntegrityLevel(HANDLE token = nullptr)
 {
-    wistd::unique_ptr<TOKEN_MANDATORY_LABEL> tokenMandatoryLabel{
+    auto tokenMandatoryLabel{
             wil::get_token_information_failfast<TOKEN_MANDATORY_LABEL>(
                 !token ? GetCurrentThreadEffectiveToken() : token) };
     return *GetSidSubAuthority((*tokenMandatoryLabel).Label.Sid,
