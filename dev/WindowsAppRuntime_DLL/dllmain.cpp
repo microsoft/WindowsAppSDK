@@ -13,8 +13,33 @@
 
 #include <../Detours/detours.h>
 
+static bool g_isDetoursInitialized{};
+
 static HRESULT DetoursInitialize()
 {
+    // We only use Detours for downlevel support for RegFree WinRT,
+    // Dynamic Dependencies and (some) Package Graph functionality.
+    //
+    // URFW is required where OS RegFree WinRT doesn't exist (RS5).
+    //
+    // Detours is required by Dynamic Dependency's polyfill implementation.
+    // Unecessary when delegating to the OS Dynamic Dependency API
+    // (discoverable via MddCore::Win11::IsSupported() in dev\DynamicDependency\API\MddWin11.h).
+    //
+    // PackageGraph detours are required by Dynamic Dependency's polyfill implementation.
+    //
+    // QED IsDetoursNeeded == (OS <= RS5) or (not MddCore::Win11::IsSupported())
+    //
+    // BUT as we've always run with URFW enabled we'll be paranoid for now and always use Detours
+    // and URFW when Dynamic Dependency doesn't delegate to the OS API (i.e. when WinAppSDK Dynamic Dependency
+    // implementation does polyfill, which will never be on systems lacking OS RegFree WinRT).
+    //
+    if (MddCore::Win11::IsSupported())
+    {
+        // No need for Detours
+        return S_OK;
+    }
+
     // Only detour APIs for not-packaged processes
     if (AppModel::Identity::IsPackagedProcess())
     {
@@ -30,17 +55,21 @@ static HRESULT DetoursInitialize()
     // Detour APIs to our implementation
     DetourRestoreAfterWith();
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionBegin());
-
-    FAIL_FAST_IF_FAILED(MddWin11Initialize());
     FAIL_FAST_IF_FAILED(MddDetourPackageGraphInitialize());
     FAIL_FAST_IF_FAILED(UrfwInitialize());
-
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionCommit());
+    g_isDetoursInitialized = true;
     return S_OK;
 }
 
 static HRESULT DetoursShutdown()
 {
+    // Did we detour APIs?
+    if (!g_isDetoursInitialized)
+    {
+        return S_OK;
+    }
+
     // Only detour APIs for not-packaged processes
     if (AppModel::Identity::IsPackagedProcess())
     {
@@ -56,11 +85,10 @@ static HRESULT DetoursShutdown()
     // Stop Detour'ing APIs to our implementation
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionBegin());
     FAIL_FAST_IF_WIN32_ERROR(DetourUpdateThread(GetCurrentThread()));
-
     UrfwShutdown();
     MddDetourPackageGraphShutdown();
-
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionCommit());
+    g_isDetoursInitialized = false;
     return S_OK;
 }
 
@@ -71,12 +99,14 @@ BOOL APIENTRY DllMain(HMODULE hmodule, DWORD  reason, LPVOID reserved)
     case DLL_PROCESS_ATTACH:
     {
         DisableThreadLibraryCalls(hmodule);
+        FAIL_FAST_IF_FAILED(MddWin11Initialize());
         FAIL_FAST_IF_FAILED(DetoursInitialize());
         break;
     }
     case DLL_PROCESS_DETACH:
     {
         DetoursShutdown();
+        MddWin11Shutdown();
         break;
     }
     case DLL_THREAD_ATTACH:

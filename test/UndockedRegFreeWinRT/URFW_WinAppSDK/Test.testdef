@@ -1,0 +1,11 @@
+﻿{
+    "Tests": [
+        {
+            "Description": "UndockedRegFreeWinRT (URFW) tests (arm64 not currently enabled)",
+            "Filename": "URFW_WinAppSDK.dll",
+            "Parameters": "",
+            "Architectures": ["x86", "x64"],
+            "Status": "Enabled"
+        }
+    ]
+}

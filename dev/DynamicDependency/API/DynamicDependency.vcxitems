@@ -23,7 +23,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyRank.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MddDetourPackageGraph.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MddLifetimeManagement.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)MddWin11.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MddWinRT.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageDependency.cpp" />

@@ -21,6 +21,7 @@
 #include <wil/win32_helpers.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
+#include <wil/registry.h>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
@@ -37,7 +38,11 @@
 
 #include <WexTestClass.h>
 
+#include <appmodel.identity.h>
+#include <IsWindowsVersion.h>
+
 #include "TestFilesystem.h"
 #include "TestPackages.h"
+#include <WindowsAppRuntime.Test.TAEF.h>
 
 #endif //PCH_H

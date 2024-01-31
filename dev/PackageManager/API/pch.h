@@ -28,5 +28,6 @@
 
 #include <appmodel.identity.h>
 #include <appmodel.package.h>
+#include <security.integritylevel.h>
 
 #include "MsixPackageManager.h"

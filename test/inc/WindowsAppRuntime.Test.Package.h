@@ -38,16 +38,17 @@
 #define MSIX_PACKAGE_ARCHITECTURE_X64       L"x64"
 #define MSIX_PACKAGE_ARCHITECTURE_X86       L"x86"
 #if defined(_M_X64)
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE   MSIX_PACKAGE_ARCHITECTURE_X64
+#define MSIX_PACKAGE_ARCHITECTURE   MSIX_PACKAGE_ARCHITECTURE_X64
 #elif defined(_M_IX86)
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE   MSIX_PACKAGE_ARCHITECTURE_X86
+#define MSIX_PACKAGE_ARCHITECTURE   MSIX_PACKAGE_ARCHITECTURE_X86
 #elif defined(_M_ARM64)
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE   MSIX_PACKAGE_ARCHITECTURE_ARM64
+#define MSIX_PACKAGE_ARCHITECTURE   MSIX_PACKAGE_ARCHITECTURE_ARM64
 #elif defined(_M_ARM)
-#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE   MSIX_PACKAGE_ARCHITECTURE_ARM
+#define MSIX_PACKAGE_ARCHITECTURE   MSIX_PACKAGE_ARCHITECTURE_ARM
 #else
 #   error "Unknown processor architecture"
 #endif
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE   MSIX_PACKAGE_ARCHITECTURE
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME           WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAMEPREFIX L"-" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION_STRING L"-" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID    WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_FAMILYNAME     WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID
@@ -314,11 +315,29 @@ inline void StagePackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullNam
 
 inline void RemovePackage(PCWSTR packageFullName)
 {
-    winrt::Windows::Management::Deployment::PackageManager packageManager;
-    auto deploymentResult{ packageManager.RemovePackageAsync(packageFullName).get() };
-    if (!deploymentResult)
+    try
     {
-        VERIFY_FAIL(WEX::Common::String().Format(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+        winrt::Windows::Management::Deployment::PackageManager packageManager;
+        auto result{ packageManager.RemovePackageAsync(packageFullName) };
+        auto deploymentResult{ result.get() };
+        if (result.Status() == winrt::Windows::Foundation::AsyncStatus::Completed)
+        {
+            VERIFY_IS_NOT_NULL(deploymentResult);
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+        }
+        else if (result.Status() == winrt::Windows::Foundation::AsyncStatus::Error)
+        {
+            VERIFY_IS_NOT_NULL(deploymentResult);
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+        }
+        else
+        {
+            VERIFY_FAIL(WEX::Common::String().Format(L"RemovePackageAsync('%s') Status=%d", packageFullName, result.Status()));
+        }
+    }
+    catch (winrt::hresult_error& e)
+    {
+        VERIFY_ARE_EQUAL(S_OK, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
     }
 }
 

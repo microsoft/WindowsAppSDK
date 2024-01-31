@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -17,6 +17,8 @@ namespace winrt
     using namespace Microsoft::Windows::Security::AccessControl;
 }
 
+namespace TB = ::Test::Bootstrap;
+namespace TP = ::Test::Packages;
 
 namespace Test::AccessControl
 {
@@ -32,7 +34,7 @@ namespace Test::AccessControl
 
         static PCWSTR GetTestPackageFullName()
         {
-            return L"AccessControlTestPackage_1.0.0.0_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE "8wekyb3d8bbwe";
+            return L"AccessControlTestAppPackage_1.0.0.0_" MSIX_PACKAGE_ARCHITECTURE "__8wekyb3d8bbwe";
         }
 
         static PCWSTR GetTestPackageFamilyName()
@@ -58,21 +60,16 @@ namespace Test::AccessControl
         BEGIN_TEST_CLASS(APITests)
             TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK AccessControl test")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
-        END_TEST_CLASS()
+            TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
+            END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassInit)
         {
-            try
-            {
-                ::Test::Packages::RemovePackage(GetTestPackageFamilyName());
-                ::Test::Bootstrap::Setup();
-                ::Test::Packages::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs AccessControlTests.msix
-            }
-            catch (...)
-            {
-                return false;
-            }
+            ::TP::RemovePackageIfNecessary(GetTestPackageFullName());
+            ::TB::CleanupPackages();
+
+            ::TB::Setup();
+            ::TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix");
 
             m_testAppLauncher = winrt::create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL);
             return true;
@@ -80,24 +77,18 @@ namespace Test::AccessControl
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            try
+            if (m_processHandle.is_valid())
             {
-                if (m_processHandle.is_valid())
-                {
-                    VERIFY_IS_TRUE(wil::handle_wait(m_processHandle.get(), 10000));
+                VERIFY_IS_TRUE(wil::handle_wait(m_processHandle.get(), 10000));
 
-                    DWORD exitCode{};
-                    VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(m_processHandle.get(), &exitCode));
-                    VERIFY_ARE_EQUAL(exitCode, 0u);
-                }
-                // Remove in reverse order to avoid conflicts between inter-dependent packages.
-                ::Test::Packages::RemovePackage(GetTestPackageFamilyName());
-                ::Test::Bootstrap::Cleanup();
+                DWORD exitCode{};
+                VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(m_processHandle.get(), &exitCode));
+                VERIFY_ARE_EQUAL(exitCode, 0u);
             }
-            catch (...)
-            {
-                return false;
-            }
+
+            // Remove in reverse order to avoid conflicts between inter-dependent packages.
+            ::TP::RemovePackage(GetTestPackageFullName());
+            ::TB::Cleanup();
             return true;
         }
 

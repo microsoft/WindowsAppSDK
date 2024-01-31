@@ -18,6 +18,7 @@
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <wil/filesystem.h>
+#include <wil/registry.h>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
@@ -40,10 +41,12 @@
 
 #include <appmodel.identity.h>
 #include <appmodel.packagegraph.h>
+#include <IsWindowsVersion.h>
 #include <security.integritylevel.h>
 
 #include "TestFilesystem.h"
 #include "TestPackages.h"
+#include <WindowsAppRuntime.Test.TAEF.h>
 
 #include <winrt/Microsoft.Test.DynamicDependency.Widgets.h>
 
