@@ -122,8 +122,8 @@ STDAPI WindowsAppRuntime_VersionInfo_TestInitialize(
     const bool mainPackageFamilyNameIsEmpty{ !mainPackageFamilyName || (*mainPackageFamilyName == L'0') };
     if (MddCore::Win11::IsSupported())
     {
-        // Framework is optional but Main is never specified
-        FAIL_FAST_HR_IF(E_UNEXPECTED, !mainPackageFamilyNameIsEmpty);
+        // Framework is optional but Main is never used
+        mainPackageFamilyName = nullptr;
     }
     else
     {

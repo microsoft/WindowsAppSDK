@@ -13,13 +13,15 @@
 
 #include <../Detours/detours.h>
 
+static bool g_isDetoursInitialized{};
+
 static HRESULT DetoursInitialize()
 {
     // We only use Detours for downlevel support for RegFree WinRT,
     // Dynamic Dependencies and (some) Package Graph functionality.
     //
     // URFW is required where OS RegFree WinRT doesn't exist (RS5).
-    // 
+    //
     // Detours is required by Dynamic Dependency's polyfill implementation.
     // Unecessary when delegating to the OS Dynamic Dependency API
     // (discoverable via MddCore::Win11::IsSupported() in dev\DynamicDependency\API\MddWin11.h).
@@ -56,11 +58,18 @@ static HRESULT DetoursInitialize()
     FAIL_FAST_IF_FAILED(MddDetourPackageGraphInitialize());
     FAIL_FAST_IF_FAILED(UrfwInitialize());
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionCommit());
+    g_isDetoursInitialized = true;
     return S_OK;
 }
 
 static HRESULT DetoursShutdown()
 {
+    // Did we detour APIs?
+    if (!g_isDetoursInitialized)
+    {
+        return S_OK;
+    }
+
     // Only detour APIs for not-packaged processes
     if (AppModel::Identity::IsPackagedProcess())
     {
@@ -79,6 +88,7 @@ static HRESULT DetoursShutdown()
     UrfwShutdown();
     MddDetourPackageGraphShutdown();
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionCommit());
+    g_isDetoursInitialized = false;
     return S_OK;
 }
 
