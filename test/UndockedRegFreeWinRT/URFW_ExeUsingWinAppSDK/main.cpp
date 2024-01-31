@@ -72,19 +72,6 @@ wil::unique_hmodule Setup()
     LogComment(WEX::Common::String().Format(L"::TB::SetupBootstrap()..."));
     ::TB::SetupBootstrap();
     LogComment(WEX::Common::String().Format(L"::TB::SetupBootstrap(): Done"));
-#if 0 //DELETEME
-    const auto majorMinor{ ::Microsoft::WindowsAppSDK::Release::MajorMinor };
-    const auto versionTag{ ::Microsoft::WindowsAppSDK::Release::VersionTag };
-    const ::Microsoft::Windows::ApplicationModel::PackageVersion minVersion{ ::Microsoft::WindowsAppSDK::Runtime::Version::UInt64 };
-    const auto options{ MddBootstrap::InitializeOptions::OnError_FailFast |
-                        MddBootstrap::InitializeOptions::OnError_DebugBreak_IfDebuggerAttached };
-    const auto message{ WEX::Common::String().Format(L"Bootstrap.Initialize(0x%08X, '%s', %s, 0x%X)",
-                                                     majorMinor, !versionTag ? L"<null>" : versionTag, minVersion.ToString().c_str(), options) };
-    LogComment(message);
-    const auto hr{ MddBootstrap::InitializeNoThrow(majorMinor, versionTag, minVersion, options) };
-    LogComment(WEX::Common::String().Format(L"%s: 0x%X", static_cast<PCWSTR>(message), hr));
-    THROW_IF_FAILED_MSG(hr, "%ls", static_cast<PCWSTR>(message));
-#endif //DELETEME
 #endif
 
     const auto dllFilename{ L"Microsoft.WindowsAppRuntime.dll" };
@@ -179,13 +166,6 @@ HRESULT VerifyApiInformationIsContractPresent() try
 {
     LogComment(L"Verify:ApiInformation.IsContractPresent...");
 
-#if 0 //DELETEME
-    auto apiInformationStatics{
-        wil::GetActivationFactory<
-            ABI::Windows::Foundation::Metadata::IApiInformationStatics>(
-                RuntimeClass_Windows_Foundation_Metadata_ApiInformation) };
-#endif //DELETEME
-
     struct Contracts
     {
         PCWSTR name;
@@ -220,9 +200,6 @@ HRESULT VerifyApiInformationIsContractPresent() try
             {
                 LogError(WEX::Common::String().Format(L"  HRESULT: 0x%X  **NOT-FOUND**  IsContractPresent: %s v%hu", hr, contract.name, contract.majorVersion));
             }
-#if 0 //DELETEME
-            const auto hr{ apiInformationStatics->IsApiContractPresentByMajor(contractName.get(), contract.majorVersion, &found) };
-#endif //DELETEME
         }
         catch (winrt::hresult_error& e)
         {
@@ -241,13 +218,6 @@ CATCH_RETURN()
 HRESULT VerifyApiInformationIsTypePresent() try
 {
     LogComment(L"Verify:ApiInformation.IsTypePresent...");
-
-#if 0 //DELETEME
-    auto apiInformationStatics{
-        wil::GetActivationFactory<
-            ABI::Windows::Foundation::Metadata::IApiInformationStatics>(
-                RuntimeClass_Windows_Foundation_Metadata_ApiInformation) };
-#endif //DELETEME
 
     PCWSTR types[]{
         L"Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions",
@@ -271,9 +241,6 @@ HRESULT VerifyApiInformationIsTypePresent() try
             {
                 LogError(WEX::Common::String().Format(L"  HRESULT: 0x%X  **NOT-FOUND**  IsTypePresent: %s", hr, type));
             }
-#if 0 //DELETEME
-            const auto hr{ apiInformationStatics->IsTypePresent(htype.get(), &found) };
-#endif //DELETEME
         }
         catch (winrt::hresult_error& e)
         {
