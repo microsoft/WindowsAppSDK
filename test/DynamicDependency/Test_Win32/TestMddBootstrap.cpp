@@ -289,7 +289,7 @@ namespace Test::DynamicDependency
             const PACKAGE_VERSION c_minVersion3{};
             VERIFY_ARE_EQUAL(c_minVersion3.Version, c_minVersion1.Version);
             VERIFY_ARE_NOT_EQUAL(c_minVersion3.Version, c_minVersion2.Version);
-            VERIFY_ARE_EQUAL(E_INVALIDARG, MddBootstrapInitialize(c_Version_MajorMinor3, L"MakesPackageFamilyNameTooLong", c_minVersion3));
+            VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, MddBootstrapInitialize(c_Version_MajorMinor3, L"NoSuchShortVersionTagActuallUsedByAnyPackageAndEvenIfTherIsThePackageFamilyNameWouldBeTooLong", c_minVersion3));
             VERIFY_ARE_EQUAL(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, MddBootstrapInitialize(c_Version_MajorMinor3, L"Zathras", c_minVersion3));
 
             // Incompatible criteria. Verify Initialize+Shutdown brought us
