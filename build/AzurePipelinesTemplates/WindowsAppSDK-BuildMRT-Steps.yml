@@ -62,6 +62,13 @@ steps:
       setupCommandlines: '"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat"'
       msBuildCommandline: 'msbuild.exe /nologo /m /p:configuration=$(buildConfiguration) /p:platform=$(buildPlatform) $(Build.SourcesDirectory)\dev\MRTCore\mrt\MrtCore.sln'
     condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'release'))
+
+  - task: CopyFiles@2
+    displayName: Copy PREFast logs
+    condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'release'))
+    inputs:
+      SourceFolder: 'D:\a\_work\1\.gdn\.r\prefast'
+      TargetFolder: '$(ob_outputDirectory)'
   # alam end
 
 # component detection must happen *within* the build task
