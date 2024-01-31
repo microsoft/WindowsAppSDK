@@ -50,9 +50,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)DataStore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)MddWin11.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)MddWinRT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

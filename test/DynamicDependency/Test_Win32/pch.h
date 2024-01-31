@@ -40,10 +40,12 @@
 
 #include <appmodel.identity.h>
 #include <appmodel.packagegraph.h>
+#include <IsWindowsVersion.h>
 #include <security.integritylevel.h>
 
 #include "TestFilesystem.h"
 #include "TestPackages.h"
+#include <WindowsAppRuntime.Test.TAEF.h>
 
 #include <winrt/Microsoft.Test.DynamicDependency.Widgets.h>
 

@@ -261,8 +261,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.Process.Environme
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChangeTracker", "dev\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems", "{E15C3465-9D45-495D-92CE-B91EF45E8623}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppRuntime_MSIXInstallFromPath", "dev\WindowsAppRuntime_MSIXInstallFromPath\WindowsAppRuntime_MSIXInstallFromPath.vcxproj", "{D45D4170-E055-4926-8B03-04DAA5F02C6C}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework.Widgets", "test\DynamicDependency\data\Framework.Widgets\Framework.Widgets.vcxproj", "{09DDAE21-397F-4263-8561-7F2FF28127CF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependencyLifetimeManagerShadow", "dev\DynamicDependency\DynamicDependencyLifetimeManagerShadow\DynamicDependencyLifetimeManagerShadow.vcxproj", "{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}"
@@ -1324,20 +1322,6 @@ Global
 		{0B01DB78-F115-4C90-B28F-7819071303C6}.Release|x64.Build.0 = Release|x64
 		{0B01DB78-F115-4C90-B28F-7819071303C6}.Release|x86.ActiveCfg = Release|Win32
 		{0B01DB78-F115-4C90-B28F-7819071303C6}.Release|x86.Build.0 = Release|Win32
-		{D45D4170-E055-4926-8B03-04DAA5F02C6C}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{D45D4170-E055-4926-8B03-04DAA5F02C6C}.Debug|ARM64.ActiveCfg = Debug|ARM64
-		{D45D4170-E055-4926-8B03-04DAA5F02C6C}.Debug|ARM64.Build.0 = Debug|ARM64
-		{D45D4170-E055-4926-8B03-04DAA5F02C6C}.Debug|x64.ActiveCfg = Debug|x64
-		{D45D4170-E055-4926-8B03-04DAA5F02C6C}.Debug|x64.Build.0 = Debug|x64
-		{D45D4170-E055-4926-8B03-04DAA5F02C6C}.Debug|x86.ActiveCfg = Debug|Win32
-		{D45D4170-E055-4926-8B03-04DAA5F02C6C}.Debug|x86.Build.0 = Debug|Win32
-		{D45D4170-E055-4926-8B03-04DAA5F02C6C}.Release|Any CPU.ActiveCfg = Release|Win32
-		{D45D4170-E055-4926-8B03-04DAA5F02C6C}.Release|ARM64.ActiveCfg = Release|ARM64
-		{D45D4170-E055-4926-8B03-04DAA5F02C6C}.Release|ARM64.Build.0 = Release|ARM64
-		{D45D4170-E055-4926-8B03-04DAA5F02C6C}.Release|x64.ActiveCfg = Release|x64
-		{D45D4170-E055-4926-8B03-04DAA5F02C6C}.Release|x64.Build.0 = Release|x64
-		{D45D4170-E055-4926-8B03-04DAA5F02C6C}.Release|x86.ActiveCfg = Release|Win32
-		{D45D4170-E055-4926-8B03-04DAA5F02C6C}.Release|x86.Build.0 = Release|Win32
 		{09DDAE21-397F-4263-8561-7F2FF28127CF}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{09DDAE21-397F-4263-8561-7F2FF28127CF}.Debug|ARM64.ActiveCfg = Debug|ARM64
 		{09DDAE21-397F-4263-8561-7F2FF28127CF}.Debug|ARM64.Build.0 = Debug|ARM64
@@ -2495,7 +2479,6 @@ Global
 		{6967798A-AC07-4994-8FE9-DC9442F88E97} = {B4196B13-AB24-492E-9147-03CC7F2CAE59}
 		{2F3FAD1B-D3DF-4866-A3A3-C2C777D55638} = {8ABB3637-75DB-4DC3-BFB1-0933FFA4269B}
 		{E15C3465-9D45-495D-92CE-B91EF45E8623} = {6967798A-AC07-4994-8FE9-DC9442F88E97}
-		{D45D4170-E055-4926-8B03-04DAA5F02C6C} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{09DDAE21-397F-4263-8561-7F2FF28127CF} = {0C534F12-B076-47E5-A05B-2A711233AC6F}
 		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B} = {6CD01EF6-D4A4-4801-ADCF-344CF87FF942}
 		{4B30C685-8490-440F-9879-A75D45DAA361} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
@@ -2664,7 +2647,6 @@ Global
 		dev\DynamicDependency\API\DynamicDependency.vcxitems*{bf055a59-0919-4e34-9b76-dd055495cc5a}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
 		dev\AccessControl\AccessControl.vcxitems*{c91bcb93-9ed1-4acd-85f3-26f9f6ac52e3}*SharedItemsImports = 9
-		dev\Common\Common.vcxitems*{d45d4170-e055-4926-8b03-04daa5f02c6c}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{d5667df6-a151-4081-abc7-b93e8e5604ce}*SharedItemsImports = 4
 		dev\Deployment\Deployment.vcxitems*{db38fb4d-d04f-4c1d-93e0-f8ae259c5fd6}*SharedItemsImports = 9
 		dev\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems*{e15c3465-9d45-495d-92ce-b91ef45e8623}*SharedItemsImports = 9
