@@ -75,6 +75,9 @@ extends:
       policheck:
         enable: true
         break: true
+      binskim:
+        enabled: true
+        break: false
 
     stages:
     - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
