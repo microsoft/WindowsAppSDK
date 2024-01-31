@@ -52,6 +52,18 @@ steps:
       filePath: 'BuildAll.ps1'
       arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
 
+  # alam start
+  - task: SDLNativeRules@3
+    displayName: Run the PREfast SDL Native Rules 
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    continueOnError: true
+    inputs:
+      setupCommandlines: '"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat"'
+      msBuildCommandline: 'msbuild.exe /nologo /m /p:configuration=$(buildConfiguration) /p:platform=$(buildPlatform) $(Build.SourcesDirectory)\dev\MRTCore\mrt\MrtCore.sln"'
+    condition: and(eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'release'))
+  # alam end
+
 # component detection must happen *within* the build task
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 
