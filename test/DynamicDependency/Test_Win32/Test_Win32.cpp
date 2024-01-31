@@ -423,7 +423,7 @@ int Test::DynamicDependency::Test_Win32::FindPackageFullNameInPackageInfoArray(
     {
         if (CompareStringOrdinal(packageFullName.c_str(), -1, packageInfo->packageFullName, -1, TRUE) == CSTR_EQUAL)
         {
-            return true;
+            return index;
         }
     }
     return -1;
