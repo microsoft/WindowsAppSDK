@@ -21,7 +21,7 @@ namespace Test::PackageManager::Tests
 
         TEST_CLASS_SETUP(ClassSetup)
         {
-            if (MddCore::Win11::IsSupported())
+            if (!MddCore::Win11::IsSupported())
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageRuntimeManager requires Dynamic Dependencies delegating to OS Dynamic Dependencies. Skipping tests");
                 return true;
