@@ -95,7 +95,11 @@ namespace MddCore::Win11
 
     inline bool IsSupported()
     {
+#if defined(TODO_WindowsAppSDKAggregator_Test_Failures)
         return MddCore::Win11::details::g_isSupported;
+#else
+        return false;
+#endif
     }
 
     inline bool IsGetResolvedPackageFullNameForPackageDependency2Supported()
