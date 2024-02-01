@@ -41,7 +41,7 @@ struct __declspec(uuid(PR_DYNDEP_DATASTORE_CLSID_STRING)) DynamicDependencyDataS
 
         WCHAR fullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1]{};
         UINT32 fullNameLength = ARRAYSIZE(fullName);
-        RETURN_IF_FAILED(GetCurrentPackageFullName(&fullNameLength, fullName));
+        RETURN_IF_FAILED(::GetCurrentPackageFullName(&fullNameLength, fullName));
         auto fullNameCoTaskMem = wil::make_cotaskmem_string_nothrow(fullName);
         RETURN_IF_NULL_ALLOC(fullNameCoTaskMem);
 

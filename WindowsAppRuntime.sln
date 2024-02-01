@@ -707,6 +707,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workloads", "Workloads", "{
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Workloads", "dev\Workloads\Workloads.vcxitems", "{B5798CEB-4E60-4D2D-B456-7C406B5F5B67}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApplicationData", "ApplicationData", "{E3023618-8435-444B-988E-3F898BD17724}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ApplicationData", "dev\ApplicationData\ApplicationData.vcxitems", "{7CF52890-56FA-47E2-84FB-68EE274324B6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApplicationData", "ApplicationData", "{27C67ECD-0C3F-410A-AEF7-83AA257787E8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ApplicationDataTests", "test\ApplicationData\ApplicationDataTests.vcxproj", "{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9C1A6C58-52D6-4514-9120-5C339C5DF4BE} = {9C1A6C58-52D6-4514-9120-5C339C5DF4BE}
+		{B71E818A-882E-456A-87E5-4DE4A6602B99} = {B71E818A-882E-456A-87E5-4DE4A6602B99}
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.Management.Deployment", "dev\Projections\CS\Microsoft.Windows.Management.Deployment\Microsoft.Windows.Management.Deployment.csproj", "{57E6CCBE-EDEB-4300-8334-98A591D11B3F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
@@ -2402,6 +2413,22 @@ Global
 		{D0A1DFB8-8CEE-4CFC-B57B-B7C574B411C2}.Release|x64.Build.0 = Release|x64
 		{D0A1DFB8-8CEE-4CFC-B57B-B7C574B411C2}.Release|x86.ActiveCfg = Release|Win32
 		{D0A1DFB8-8CEE-4CFC-B57B-B7C574B411C2}.Release|x86.Build.0 = Release|Win32
+		{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3}.Debug|Any CPU.Build.0 = Debug|x64
+		{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3}.Debug|ARM64.Build.0 = Debug|ARM64
+		{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3}.Debug|x64.ActiveCfg = Debug|x64
+		{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3}.Debug|x64.Build.0 = Debug|x64
+		{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3}.Debug|x86.ActiveCfg = Debug|Win32
+		{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3}.Debug|x86.Build.0 = Debug|Win32
+		{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3}.Release|Any CPU.ActiveCfg = Release|x64
+		{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3}.Release|Any CPU.Build.0 = Release|x64
+		{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3}.Release|ARM64.ActiveCfg = Release|ARM64
+		{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3}.Release|ARM64.Build.0 = Release|ARM64
+		{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3}.Release|x64.ActiveCfg = Release|x64
+		{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3}.Release|x64.Build.0 = Release|x64
+		{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3}.Release|x86.ActiveCfg = Release|Win32
+		{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3}.Release|x86.Build.0 = Release|Win32
 		{57E6CCBE-EDEB-4300-8334-98A591D11B3F}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{57E6CCBE-EDEB-4300-8334-98A591D11B3F}.Debug|Any CPU.Build.0 = Debug|x64
 		{57E6CCBE-EDEB-4300-8334-98A591D11B3F}.Debug|ARM64.ActiveCfg = Debug|arm64
@@ -2628,6 +2655,10 @@ Global
 		{D0A1DFB8-8CEE-4CFC-B57B-B7C574B411C2} = {B6B68924-6A0B-457E-AD53-018696EC8889}
 		{48948EF9-8B91-4F7A-98AD-0F8FA3EFAA38} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{B5798CEB-4E60-4D2D-B456-7C406B5F5B67} = {48948EF9-8B91-4F7A-98AD-0F8FA3EFAA38}
+		{E3023618-8435-444B-988E-3F898BD17724} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{7CF52890-56FA-47E2-84FB-68EE274324B6} = {E3023618-8435-444B-988E-3F898BD17724}
+		{27C67ECD-0C3F-410A-AEF7-83AA257787E8} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
+		{F4CBBB7A-5575-45B7-B586-2C99D2BE81A3} = {27C67ECD-0C3F-410A-AEF7-83AA257787E8}
 		{57E6CCBE-EDEB-4300-8334-98A591D11B3F} = {716C26A0-E6B0-4981-8412-D14A4D410531}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
@@ -2644,6 +2675,7 @@ Global
 		test\inc\inc.vcxitems*{56a1d696-feda-4333-bf37-772ebececb10}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{5b2d17fe-c371-417f-860c-3d32397c2404}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{7c502995-59c3-483b-86ba-815985353633}*SharedItemsImports = 4
+		dev\ApplicationData\ApplicationData.vcxitems*{7cf52890-56fa-47e2-84fb-68ee274324b6}*SharedItemsImports = 9
 		dev\Kozani\Common\Common.vcxitems*{829cdb09-eefe-4188-a045-3fc6be7bd96b}*SharedItemsImports = 4
 		dev\Common\Common.vcxitems*{8828053c-d6ec-4744-8624-f8c676c2d4df}*SharedItemsImports = 9
 		dev\Licensing\Licensing.vcxitems*{885a43fa-052d-4b0d-a2dc-13ee15796435}*SharedItemsImports = 9
@@ -2653,6 +2685,7 @@ Global
 		dev\AppNotifications\AppNotifications.vcxitems*{b4824897-88e0-4927-8fb9-e60106f01ed9}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{b567fe2e-3a03-48d0-b2b5-760cdec35891}*SharedItemsImports = 9
 		dev\Workloads\Workloads.vcxitems*{b5798ceb-4e60-4d2d-b456-7c406b5f5b67}*SharedItemsImports = 9
+		dev\ApplicationData\ApplicationData.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\Common\Common.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\DynamicDependency\API\DynamicDependency.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\Licensing\Licensing.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4

@@ -1,0 +1,11 @@
+﻿{
+    "Tests": [
+        {
+            "Description": "ApplicationDataTests tests for feature ApplicationData (arm64 not currently enabled)",
+            "Filename": "ApplicationDataTests.dll",
+            "Parameters": "",
+            "Architectures": ["x86", "x64"],
+            "Status": "Enabled"
+        }
+    ]
+}

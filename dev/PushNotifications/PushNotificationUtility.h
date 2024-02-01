@@ -143,7 +143,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
     {
         WCHAR packageFullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1]{};
         UINT32 packageFullNameLength{ ARRAYSIZE(packageFullName) };
-        THROW_IF_FAILED(GetCurrentPackageFullName(&packageFullNameLength, packageFullName));
+        THROW_IF_FAILED(::GetCurrentPackageFullName(&packageFullNameLength, packageFullName));
 
         packagedFullName = wil::make_cotaskmem_string(packageFullName);
         THROW_IF_NULL_ALLOC(packagedFullName);

@@ -119,7 +119,7 @@ void LogArgs(int argc, PWSTR* argv)
 //     com.microsoft.kozani.localvariant.remoteapp.<Converted LVP package family name>
 // and the app extension Id is the package-relative application identifier (PRAID) of the LVP app being activated.
 // <Converted LVP package family name>: we replace the '_' character in the package family name with '-' as '_' is not allowed in the app extension name.
-// 
+//
 // For example:
 // <uap3:Extension Category="windows.appExtension">
 //   <uap3:AppExtension Name = "com.microsoft.kozani.localvariant.remoteapp.Calculator-fy70fzsv57rkp"
@@ -135,7 +135,7 @@ winrt::hstring GetRemoteAumid()
 {
     WCHAR lvpAumid[APPLICATION_USER_MODEL_ID_MAX_LENGTH + 1]{};
     UINT32 lvpAumidLength{ ARRAYSIZE(lvpAumid) };
-    THROW_IF_WIN32_ERROR(GetCurrentApplicationUserModelId(&lvpAumidLength, lvpAumid));
+    THROW_IF_WIN32_ERROR(::GetCurrentApplicationUserModelId(&lvpAumidLength, lvpAumid));
 
     WCHAR lvpFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
     WCHAR lvpPraid[PACKAGE_RELATIVE_APPLICATION_ID_MAX_LENGTH + 1]{};
@@ -243,7 +243,7 @@ int APIENTRY wWinMain(
         additionalSettingsFilePath.c_str());
 
     // Release the IManagerRuntimeManager object so the host runtime does not hold on to it while waiting for process termination event.
-    // In case this process is killed by the user (i.e., from Task Manager), holding the IManagerRuntimeManager object will leak the ref count 
+    // In case this process is killed by the user (i.e., from Task Manager), holding the IManagerRuntimeManager object will leak the ref count
     // and prevent KozaniManager.exe from exiting after all remote apps are closed.
     runtimeManager = nullptr;
 

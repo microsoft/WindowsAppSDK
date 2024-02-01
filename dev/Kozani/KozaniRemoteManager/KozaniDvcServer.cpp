@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -750,7 +750,7 @@ namespace Microsoft::Kozani::KozaniRemoteManager
         }
 
         m_errorFromDvcListener = errorCode;
-        LOG_HR_MSG(errorCode, "DVC listener thread exiting. Error message: %s", erroMessage);
+        LOG_HR_MSG(errorCode, "DVC listener thread exiting. Error message: %hs", erroMessage);
 
         m_dvcThreadExit.SetEvent();
 
