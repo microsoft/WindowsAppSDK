@@ -70,7 +70,7 @@ void WindowsAppRuntimeInstaller::Console::DisplayError(const HRESULT hr)
     }
 
     // Don't log redundant Hr information
-    if (installActivityContext.GetDeploymentErrorExtendedHResult() &&
+    if (installActivityContext.GetDeploymentErrorExtendedHResult() != S_OK &&
         installActivityContext.GetDeploymentErrorExtendedHResult() != hResult &&
         (installActivityContext.GetInstallStage() == InstallStage::StagePackage ||
             installActivityContext.GetInstallStage() == InstallStage::AddPackage ||
