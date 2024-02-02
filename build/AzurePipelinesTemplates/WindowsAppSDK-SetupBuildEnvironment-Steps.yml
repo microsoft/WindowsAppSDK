@@ -156,6 +156,22 @@ steps:
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2
+  displayName: 'Create Workloads TerminalVelocity features'
+  inputs:
+    targetType: filePath
+    filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-Workloads.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.System.Workloads -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-Workloads.h
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: powershell@2
+  displayName: 'Create PackageManager TerminalVelocity features'
+  inputs:
+    targetType: filePath
+    filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PackageManager.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.Management.Deployment -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PackageManager.h
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: powershell@2
   name: UpdateTraceloggingConfig
   inputs:
     targetType: 'inline'
