@@ -137,15 +137,6 @@
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
-        <Path>Microsoft.WindowsAppRuntime.dll</Path>
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Workloads.Workload" ThreadingModel="both" />
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Workloads.WorkloadProgress" ThreadingModel="both" />
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Workloads.WorkloadResult" ThreadingModel="both" />
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Workloads.WorkloadWorkload" ThreadingModel="both" />
-      </InProcessServer>
-    </Extension>
-    <Extension Category="windows.activatableClass.inProcessServer">
-      <InProcessServer>
         <Path>KozaniManagerRuntime.dll</Path>
         <ActivatableClass ActivatableClassId="Microsoft.Kozani.ManagerRuntime.ManagerRuntimeManager" ThreadingModel="both" />
       </InProcessServer>
