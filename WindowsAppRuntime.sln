@@ -703,7 +703,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PackageManager.Test.F.Redde
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PackageManager.Test.F.Redder.msix", "test\PackageManager\data\PackageManager.Test.F.Redder.msix\PackageManager.Test.F.Redder.msix.vcxproj", "{D0A1DFB8-8CEE-4CFC-B57B-B7C574B411C2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.Management.Deployment", "dev\Projections\CS\Microsoft.Windows.Management.Deployment\Microsoft.Windows.Management.Deployment.csproj", "{57E6CCBE-EDEB-4300-8334-98A591D11B3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.Management.Deployment.Projection", "dev\Projections\CS\Microsoft.Windows.Management.Deployment.Projection\Microsoft.Windows.Management.Deployment.Projection.csproj", "{57E6CCBE-EDEB-4300-8334-98A591D11B3F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
 	EndProjectSection
