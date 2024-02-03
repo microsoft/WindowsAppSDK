@@ -996,9 +996,9 @@ namespace Microsoft.Windows.Management.Deployment
         //-------------------------------------------------------------
         // IsRegistrationPending
 
-        Boolean IsPackageRegistrationPending(String packageFamilyName);
+        Boolean IsPackageRegistrationPending(String packageFullName);
 
-        Boolean IsPackageRegistrationPendingForUser(String userSecurityId, String packageFamilyName);
+        Boolean IsPackageRegistrationPendingForUser(String userSecurityId, String packageFullName);
     }
 
     [contract(PackageDeploymentContract, 1)]

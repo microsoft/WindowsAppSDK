@@ -42,8 +42,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> DeprovisionPackageAsync(hstring package);
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> DeprovisionPackageByUriAsync(winrt::Windows::Foundation::Uri packageUri);
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> DeprovisionPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet);
-        bool IsPackageRegistrationPending(hstring const& packageFamilyName);
-        bool IsPackageRegistrationPendingForUser(hstring const& userSecurityId, hstring const& packageFamilyName);
+        bool IsPackageRegistrationPending(hstring const& packageFullName);
+        bool IsPackageRegistrationPendingForUser(hstring const& userSecurityId, hstring const& packageFullName);
+
+    private:
+        bool IsPackageRegistrationPendingForUser(PSID userSid, PCWSTR packageFullName);
 
     private:
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> AddPackageByAppInstallerFileAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options);

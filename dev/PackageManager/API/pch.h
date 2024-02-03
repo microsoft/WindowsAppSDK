@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -7,6 +7,7 @@
 
 #include <unknwn.h>
 #include <appmodel.h>
+#include <sddl.h>
 
 #include <filesystem>
 #include <thread>
@@ -28,5 +29,6 @@
 
 #include <appmodel.identity.h>
 #include <appmodel.package.h>
+#include <security.user.h>
 
 #include "MsixPackageManager.h"

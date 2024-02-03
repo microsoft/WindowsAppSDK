@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #ifndef __SECURITY_USER_H
@@ -17,6 +17,32 @@ inline bool IsLocalSystem(HANDLE token = nullptr)
     PSID userSid{ user->User.Sid };
 
     return !!EqualSid(userSid, localSystemSid);
+}
+
+/// @return sid. Allocated via LocalAlloc; use LocalFree to deallocate
+inline PSID StringToSid(PCWSTR sidString)
+{
+    if (!sidString || (sidString[0] == L'\0'))
+    {
+        return nullptr;
+    }
+
+    PSID sid{};
+    THROW_IF_WIN32_BOOL_FALSE(::ConvertStringSidToSidW(sidString, &sid));
+    return sid;
+}
+
+/// @return sid as a string. Allocated via LocalAlloc; use LocalFree to deallocate
+inline PWSTR SidToString(PSID sid)
+{
+    if (!sid)
+    {
+        return nullptr;
+    }
+
+    PWSTR sidString{};
+    THROW_IF_WIN32_BOOL_FALSE(::ConvertSidToStringSidW(sid, &sidString));
+    return sidString;
 }
 }
 

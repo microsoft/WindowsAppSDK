@@ -11,6 +11,21 @@
 
 #include "PackageManagerTelemetry.h"
 
+#include <windows.foundation.h>
+#include <windows.management.deployment.h>
+#if !defined(TODO_UpdatedWindowsSDK_with_Windows_Management_Deployment_IRemovePackageOptions)
+// Until we have access to the updated Windows SDK we can't use RemovePackageOptions
+// but we need *something* to satisfy PackageManagement_RemovePackageByUriAsync() in the FrameworkUDK
+// so we'll make a placeholder definition to satisfy the compiler enough to let us call
+// PackageManagement_RemovePackageByUriAsync(uri, nullptr). Remove this once the updated
+// Windows SDK makes this unnecessary.
+namespace ABI::Windows::Management::Deployment
+{
+    typedef void * IRemovePackageOptions;
+}
+#endif
+#include <FrameworkUdk/PackageManagement.h>
+
 static_assert(static_cast<int>(winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::Default) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::Default),
               "winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::Default != winrt::Windows::Management::Deployment::StubPackageOption::Default");
 static_assert(static_cast<int>(winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::InstallFull) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::InstallFull),
@@ -652,14 +667,21 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         //TODO Awaiting FrameworkUdk update with Uup_SRFindPackageFullNamesByUupProductId()
         throw hresult_not_implemented();
     }
-    bool PackageDeploymentManager::IsPackageRegistrationPending(hstring const& packageFamilyName)
+    bool PackageDeploymentManager::IsPackageRegistrationPending(hstring const& packageFullName)
     {
-        return IsPackageRegistrationPendingForUser(hstring{}, packageFamilyName);
+        return IsPackageRegistrationPendingForUser(nullptr, packageFullName.c_str());
     }
-    bool PackageDeploymentManager::IsPackageRegistrationPendingForUser(hstring const& userSecurityId, hstring const& packageFamilyName)
+    bool PackageDeploymentManager::IsPackageRegistrationPendingForUser(hstring const& userSecurityId, hstring const& packageFullName)
     {
-        //TODO Awaiting FrameworkUdk update with PackageManagement_IsPackageRegistrationPending()
-        throw hresult_not_implemented();
+        wil::unique_any_psid userSid{ ::Security::User::StringToSid(userSecurityId.c_str()) };
+        return IsPackageRegistrationPendingForUser(userSid.get(), packageFullName.c_str());
+    }
+
+    bool PackageDeploymentManager::IsPackageRegistrationPendingForUser(PSID userSid, PCWSTR packageFullName)
+    {
+        BOOL isPending{};
+        THROW_IF_FAILED(::PackageManagement_IsPackageRegistrationPending(userSid, packageFullName, &isPending));
+        return !!isPending;
     }
 
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
