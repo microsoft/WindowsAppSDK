@@ -130,6 +130,15 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
+        HRESULT RemovePackageByFullName(
+            winrt::hstring const& packageFullName,
+            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions const& options,
+            winrt::Windows::Management::Deployment::RemovalOptions const& removeOptions,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
         winrt::Windows::Management::Deployment::PackageVolume ToPackageVolume(winrt::Microsoft::Windows::Management::Deployment::PackageVolume const& packageVolume) const;
         winrt::Windows::Management::Deployment::AddPackageOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions const& options) const;
         winrt::Windows::Management::Deployment::StagePackageOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions const& options) const;
