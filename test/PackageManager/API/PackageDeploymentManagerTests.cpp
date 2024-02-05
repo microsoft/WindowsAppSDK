@@ -799,7 +799,7 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.Items().Append(green);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
@@ -1345,7 +1345,7 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.Items().Append(green);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
@@ -2024,7 +2024,7 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.Items().Append(green);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
@@ -2355,7 +2355,7 @@ namespace Test::PackageManager::Tests
             packageSet.Id(c_packageSetId);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem_ForRegister(::TPF::Red::GetPackageFullName()) };
             packageSet.Items().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem_ForRegister(::TPF::Green::GetPackageFullName()) };
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem_ForRegister(::TPF::Blue::GetPackageFullName()) };
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
