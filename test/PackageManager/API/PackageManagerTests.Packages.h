@@ -96,19 +96,34 @@ namespace Test::PackageManager::Tests
     // Forward declarations
     void RemovePackageFamily_Redder();
 
-    inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem Make_PackageSetItem(
+    inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem _Make_PackageSetItem(
         PCWSTR packageFullName,
-        PCWSTR packageDirName)
+        winrt::Windows::Foundation::Uri const& packageUri)
     {
-        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageSetItem: PackageFullName:%s Path:%s", packageFullName, packageDirName));
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageSetItem: PackageFullName:%s Path:%s", packageFullName, packageUri.ToString().c_str()));
         const auto [packageName, packageVersion, packageArchitecture, packageResourceId, packagePublisherId, packageFamilyName]{ ::AppModel::Package::ParsePackageFullName(packageFullName) };
 
         winrt::Microsoft::Windows::Management::Deployment::PackageSetItem psi;
         psi.PackageFamilyName(packageFamilyName);
-        psi.PackageUri(TP::GetMsixPackageUri(packageDirName));
+        psi.PackageUri(packageUri);
         const ::AppModel::Identity::PackageVersion version{ packageVersion };
         psi.MinVersion(version.ToWinrtPackageVersion());
         return psi;
+    }
+
+    inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem Make_PackageSetItem(
+        PCWSTR packageFullName,
+        PCWSTR packageDirName)
+    {
+        const auto packageUri{ TP::GetMsixPackageUri(packageDirName) };
+        return _Make_PackageSetItem(packageFullName, packageUri);
+    }
+
+    inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem Make_PackageSetItem_ForRegister(
+        PCWSTR packageFullName)
+    {
+        const auto appxManifestUri{ TP::GetAppxManifestPackageUri(packageFullName) };
+        return _Make_PackageSetItem(packageFullName, appxManifestUri);
     }
 
     inline bool IsPackageRegistered_Red()
