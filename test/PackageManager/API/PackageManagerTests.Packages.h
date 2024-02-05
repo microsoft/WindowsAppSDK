@@ -127,6 +127,10 @@ namespace Test::PackageManager::Tests
     {
         TP::StagePackageIfNecessary(Test::Packages::Framework::Red::c_packageDirName, TPF::Red::GetPackageFullName());
     }
+    inline void RegisterPackage_Red()
+    {
+        TP::RegisterPackageIfNecessary(TPF::Red::GetPackageFullName());
+    }
     inline void RemovePackage_Red()
     {
         if (IsPackageRegistered_Red())
@@ -172,6 +176,10 @@ namespace Test::PackageManager::Tests
     inline void StagePackage_Redder()
     {
         TP::StagePackageIfNecessary(Test::Packages::Framework::Redder::c_packageDirName, TPF::Redder::GetPackageFullName());
+    }
+    inline void RegisterPackage_Redder()
+    {
+        TP::RegisterPackageIfNecessary(TPF::Redder::GetPackageFullName());
     }
     inline void RemovePackage_Redder()
     {
@@ -219,6 +227,10 @@ namespace Test::PackageManager::Tests
     {
         TP::StagePackageIfNecessary(Test::Packages::Framework::Green::c_packageDirName, TPF::Green::GetPackageFullName());
     }
+    inline void RegisterPackage_Green()
+    {
+        TP::RegisterPackageIfNecessary(TPF::Green::GetPackageFullName());
+    }
     inline void RemovePackage_Green()
     {
         if (IsPackageRegistered_Green())
@@ -262,6 +274,10 @@ namespace Test::PackageManager::Tests
     inline void StagePackage_Blue()
     {
         TP::StagePackageIfNecessary(Test::Packages::Framework::Blue::c_packageDirName, TPF::Blue::GetPackageFullName());
+    }
+    inline void RegisterPackage_Blue()
+    {
+        TP::RegisterPackageIfNecessary(TPF::Blue::GetPackageFullName());
     }
     inline void RemovePackage_Blue()
     {
