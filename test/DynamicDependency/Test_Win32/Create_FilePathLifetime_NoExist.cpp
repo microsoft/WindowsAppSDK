@@ -32,7 +32,7 @@ void Test::DynamicDependency::Test_Win32::Create_FilePathLifetime_NoExist()
     auto lifetimeArtifactFilename{ lifetimeArtifactPath / L"Test-MathAdd-LifetimeArtifact.tmp" };
     std::filesystem::remove(lifetimeArtifactFilename);
     auto packageDependencyId_FrameworkMathAdd{ Mdd_TryCreate_FrameworkMathAdd(HRESULT_FROM_WIN32(ERROR_CONTEXT_EXPIRED), MddPackageDependencyLifetimeKind::FilePath, lifetimeArtifactFilename.c_str()) };
-    VERIFY_IS_NULL(packageDependencyId_FrameworkMathAdd.get());
+    VERIFY_IS_NULL(packageDependencyId_FrameworkMathAdd.get(), WEX::Common::String().Format(L"PackageDependencyId=%s Expected=<null>", !packageDependencyId_FrameworkMathAdd ? L"<null>" : packageDependencyId_FrameworkMathAdd.get()));
 
     VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);

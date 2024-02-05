@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -109,9 +109,30 @@ HRESULT MddCore::PackageGraph::Add(
     return S_OK;
 }
 
-HRESULT MddCore::PackageGraph::ResolvePackageDependency(
+HRESULT MddCore::PackageGraph::GetResolvedPackageDependency(
     PCWSTR packageDependencyId,
-    MddAddPackageDependencyOptions options,
+    wil::unique_process_heap_string& packageFullName) noexcept try
+{
+    packageFullName.reset();
+
+    // Get the package dependency
+    auto foundPackageDependency{ MddCore::PackageDependencyManager::GetPackageDependency(packageDependencyId) };
+    if (foundPackageDependency)
+    {
+        // Is the package dependency already resolved?
+        const auto& packageDependency{ *foundPackageDependency };
+        if (!packageDependency.PackageFullName().empty())
+        {
+            // Gotcha!
+            packageFullName = wil::make_process_heap_string(packageDependency.PackageFullName().c_str());
+        }
+    }
+    return S_OK;
+}
+CATCH_RETURN();
+
+HRESULT MddCore::PackageGraph::GetResolvedPackageDependency2(
+    PCWSTR packageDependencyId,
     wil::unique_process_heap_string& packageFullName) noexcept try
 {
     packageFullName.reset();
@@ -124,11 +145,33 @@ HRESULT MddCore::PackageGraph::ResolvePackageDependency(
     const auto& packageDependency{ *foundPackageDependency };
     if (!packageDependency.PackageFullName().empty())
     {
+        // Gotcha!
+        packageFullName = wil::make_process_heap_string(packageDependency.PackageFullName().c_str());
+    }
+    return S_OK;
+}
+CATCH_RETURN();
+
+HRESULT MddCore::PackageGraph::ResolvePackageDependency(
+    PCWSTR packageDependencyId,
+    MddAddPackageDependencyOptions options,
+    wil::unique_process_heap_string& packageFullName) noexcept try
+{
+    packageFullName.reset();
+
+    // Get the package dependency
+    auto foundPackageDependency{ MddCore::PackageDependencyManager::GetPackageDependency(packageDependencyId) };
+    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !foundPackageDependency);
+
+    // Is the package dependency already resolved?
+    auto& packageDependency{ *foundPackageDependency };
+    if (!packageDependency.PackageFullName().empty())
+    {
         packageFullName = wil::make_process_heap_string(packageDependency.PackageFullName().c_str());
         return S_OK;
     }
 
-    // Rewsolve it
+    // Resolve it
     return ResolvePackageDependency(packageDependency, options, packageFullName);
 }
 CATCH_RETURN();
@@ -193,6 +236,7 @@ HRESULT MddCore::PackageGraph::ResolvePackageDependency(
     THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), bestFit.PackageFullName().empty());
 
     // We have a winner!
+    packageDependency.ResolvedPackageFullName(bestFit.PackageFullName());
     packageFullName = std::move(wil::make_process_heap_string(bestFit.PackageFullName().c_str()));
     return S_OK;
 }
