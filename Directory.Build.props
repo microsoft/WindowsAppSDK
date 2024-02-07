@@ -4,6 +4,7 @@
      Adding Sdk="Microsoft.NET.Sdk" to a project causes NuGet files to be generated very early on, so we need these defines to be here
      to ensure that all of our build output files end up in the same location. -->
 <Project InitialTargets="DirectoryBuildPropsInfo" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
   <Import Project="eng\Version.Dependencies.props" />
   <!-- Due to import ordering inconsistencies between different project types, we import this file from multiple places. -->
   <Import Project="$(MSBuildThisFileDirectory)build\EnsureOutputLayout.props" Condition="$(EnsureOutputLayoutPropsIncluded) == ''" />
@@ -22,6 +23,19 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(RepoRoot)\WasdkStrongNameSign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+
+  <!-- Import LKG VC Toolset, if enabled (LkgVcTools* env vars set)-->
+  <Import Project="$(NugetPackageDirectory)\$(LkgVcToolsName)\$(LkgVcToolsVersion)\build\native\$(LkgVcToolsName).props" 
+    Condition="'$(MSBuildProjectExtension)' == '.vcxproj' and '$(LkgVcToolsName)$(LkgVcToolsVersion)' != '' and
+      Exists('$(NugetPackageDirectory)\$(LkgVcToolsName)\$(LkgVcToolsVersion)\build\native\$(LkgVcToolsName).props')" />
+  <Target Name="LkgEnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild" 
+    Condition="'$(MSBuildProjectExtension)' == '.vcxproj' and '$(LkgVcToolsName)$(LkgVcToolsVersion)' != ''">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(NugetPackageDirectory)\$(LkgVcToolsName)\$(LkgVcToolsVersion)\build\native\$(LkgVcToolsName).props')" 
+      Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\$(LkgVcToolsName)\$(LkgVcToolsVersion)\build\native\$(LkgVcToolsName).props'))" />
+  </Target>
 
   <!-- Compilation differs for the build pipeline vs local development -->
   <PropertyGroup Condition="$(WindowsAppSDKBuildPipeline) != '1'">

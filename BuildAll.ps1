@@ -112,6 +112,14 @@ Try {
     # the code this way allows minimally diveraging the flow while supporting building the target both via this script and the VSBuild/MSBuild task.
     if (($AzureBuildStep -eq "all") -Or (($AzureBuildStep -eq "BuildBinaries") -Or ($AzureBuildStep -eq "BuildMRT") -Or ($AzureBuildStep -eq "PreFastSetup")))
     {
+        # Use LKG toolset for pipeline builds
+        if ($WindowsAppSDKBuildPipeline -eq "1")
+        {
+            $env:LkgVcToolsName = "DevDiv.rel.LKG16.VCTools"
+            $env:LkgVcToolsVersion = "19.38.33133100-v3"
+            & .\.nuget\nuget.exe install $env:LkgVcToolsName -version $env:LkgVcToolsVersion -source https://microsoft.pkgs.visualstudio.com/_packaging/OSClient/nuget/v3/index.json -configfile NuGet.config
+        }
+
         & .\.nuget\nuget.exe restore WindowsAppRuntime.sln -configfile NuGet.config
 
         if ($lastexitcode -ne 0)
