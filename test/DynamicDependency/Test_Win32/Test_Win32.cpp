@@ -10,6 +10,8 @@
 
 #include "Test_Win32.h"
 
+#include <MddWin11.h>
+
 namespace TF = ::Test::FileSystem;
 namespace TP = ::Test::Packages;
 
@@ -141,7 +143,7 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framewor
 
     wil::unique_process_heap_string packageFullName_FrameworkMathAdd;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext_FrameworkMathAdd{ Mdd_Add(packageDependencyId_FrameworkMathAdd.get(), packageFullName_FrameworkMathAdd) };
-    VERIFY_IS_NOT_NULL(packageFullName_FrameworkMathAdd.get());
+    VERIFY_IS_NOT_NULL(packageFullName_FrameworkMathAdd.get(), WEX::Common::String().Format(L"PackageFullName=%s Expected=not-<null>", !packageFullName_FrameworkMathAdd ? L"<null>" : packageFullName_FrameworkMathAdd.get()));
     std::wstring actualPackageFullName_FrameworkMathAdd{ packageFullName_FrameworkMathAdd.get() };
     VERIFY_ARE_EQUAL(actualPackageFullName_FrameworkMathAdd, expectedPackageFullName_FrameworkMathAdd);
 
@@ -168,7 +170,7 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framewor
 
     wil::unique_process_heap_string resolvedPackageFullName;
     VERIFY_ARE_EQUAL(S_OK, mddGetResolvedPackageFullNameForPackageDependency(packageDependencyId_FrameworkMathAdd.get(), &resolvedPackageFullName));
-    VERIFY_IS_NOT_NULL(resolvedPackageFullName.get());
+    VERIFY_IS_NOT_NULL(resolvedPackageFullName.get(), WEX::Common::String().Format(L"PackageFullName=%s Expected=not-<null>", !resolvedPackageFullName ? L"<null>" : resolvedPackageFullName.get()));
     std::wstring actualResolvedPackageFullName{ resolvedPackageFullName.get() };
     const auto& expectedResolvedPackageFullName{ expectedPackageFullName_FrameworkMathAdd };
     VERIFY_ARE_EQUAL(expectedResolvedPackageFullName, actualResolvedPackageFullName);
@@ -208,7 +210,8 @@ void Test::DynamicDependency::Test_Win32::GetResolvedPackageFullName_NotFound()
 {
     PCWSTR packageDependencyId{ L"This.Does.Not.Exist" };
     wil::unique_process_heap_string packageFullName;
-    VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), MddGetResolvedPackageFullNameForPackageDependency(packageDependencyId, &packageFullName));
+    VERIFY_SUCCEEDED(MddGetResolvedPackageFullNameForPackageDependency(packageDependencyId, &packageFullName));
+    VERIFY_IS_NULL(packageFullName, WEX::Common::String().Format(L"PackageFullName=%s Expected=<null>", !packageFullName ? L"<null>" : packageFullName.get()));
 }
 
 void Test::DynamicDependency::Test_Win32::GetIdForPackageDependencyContext_Null()
@@ -235,15 +238,43 @@ void Test::DynamicDependency::Test_Win32::VerifyPackageDependency(
     const HRESULT expectedHR,
     PCWSTR expectedPackageFullName)
 {
-    wil::unique_process_heap_string packageFullName;
-    VERIFY_ARE_EQUAL(expectedHR, MddGetResolvedPackageFullNameForPackageDependency(packageDependencyId, &packageFullName));
-    if (!expectedPackageFullName)
+    // Given an unknown/undefined packageDependencyId our caller specifies expectedHR=HRESULT_FROM_WIN32(ERROR_NOT_FOUND).
+    // Handle the condition appropriately:
+    //
+    // API                                                                | HRESULT                                 | packageFullName
+    // -------------------------------------------------------------------|-----------------------------------------|----------------
+    // MddGetResolvedPackageFullNameForPackageDependency                  | S_OK                                    | NULL
+    // MddGetResolvedPackageFullNameForPackageDependency2 (Supported)     | HRESULT_FROM_WIN32(ERROR_NOT_FOUND)     | NULL
+    // MddGetResolvedPackageFullNameForPackageDependency2 (not Supported) | HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) | NULL
+
+    const HRESULT expectedHR1{ (expectedHR == HRESULT_FROM_WIN32(ERROR_NOT_FOUND)) ? S_OK : expectedHR };
+    const HRESULT expectedHR2{
+        MddCore::Win11::IsSupported() && !MddCore::Win11::IsGetResolvedPackageFullNameForPackageDependency2Supported() ?
+            HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) :
+            expectedHR };
+
+    wil::unique_process_heap_string packageFullName1;
+    VERIFY_ARE_EQUAL(expectedHR1, MddGetResolvedPackageFullNameForPackageDependency(packageDependencyId, &packageFullName1));
+    if (FAILED(expectedHR1) || !expectedPackageFullName)
     {
-        VERIFY_IS_TRUE(!packageFullName);
+        VERIFY_IS_NULL(packageFullName1, WEX::Common::String().Format(L"PackageFullName=%s Expected=<null>", !packageFullName1 ? L"<null>" : packageFullName1.get()));
     }
     else
     {
-        VERIFY_ARE_EQUAL(std::wstring(packageFullName.get()), std::wstring(expectedPackageFullName));
+        VERIFY_IS_NOT_NULL(packageFullName1, WEX::Common::String().Format(L"PackageFullName=null Expected=%s", expectedPackageFullName));
+        VERIFY_ARE_EQUAL(std::wstring(packageFullName1.get()), std::wstring(expectedPackageFullName));
+    }
+
+    wil::unique_process_heap_string packageFullName2;
+    VERIFY_ARE_EQUAL(expectedHR2, MddGetResolvedPackageFullNameForPackageDependency2(packageDependencyId, &packageFullName2));
+    if (FAILED(expectedHR2) || !expectedPackageFullName)
+    {
+        VERIFY_IS_NULL(packageFullName2, WEX::Common::String().Format(L"PackageFullName=%s Expected=<null>", !packageFullName2 ? L"<null>" : packageFullName2.get()));
+    }
+    else
+    {
+        VERIFY_IS_NOT_NULL(packageFullName2, WEX::Common::String().Format(L"PackageFullName=null Expected=%s", expectedPackageFullName));
+        VERIFY_ARE_EQUAL(std::wstring(packageFullName2.get()), std::wstring(expectedPackageFullName));
     }
 }
 
@@ -257,6 +288,12 @@ void Test::DynamicDependency::Test_Win32::VerifyPackageDependency(
 
 void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(PCWSTR path)
 {
+    // N/A when DynamicDependency delegates to the Win11 OS API
+    if (MddCore::Win11::IsSupported())
+    {
+        return;
+    }
+
     std::wstring expectedPath{ path };
     std::wstring pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH").get() };
     VERIFY_ARE_EQUAL(expectedPath, pathEnvironmentVariable);
@@ -264,6 +301,12 @@ void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(PCWSTR p
 
 void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(PCWSTR path1, PCWSTR path)
 {
+    // N/A when DynamicDependency delegates to the Win11 OS API
+    if (MddCore::Win11::IsSupported())
+    {
+        return;
+    }
+
     std::wstring pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH").get() };
     std::wstring expectedPath{ std::wstring(path1) + L";" + path };
     VERIFY_ARE_EQUAL(expectedPath, pathEnvironmentVariable);
@@ -271,6 +314,12 @@ void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(PCWSTR p
 
 void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(PCWSTR path1, PCWSTR path2, PCWSTR path)
 {
+    // N/A when DynamicDependency delegates to the Win11 OS API
+    if (MddCore::Win11::IsSupported())
+    {
+        return;
+    }
+
     std::wstring pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH").get() };
     std::wstring expectedPath{ std::wstring(path1) + L";" + path2 + L";" + path };
     VERIFY_ARE_EQUAL(expectedPath, pathEnvironmentVariable);
@@ -278,6 +327,12 @@ void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(PCWSTR p
 
 void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(PCWSTR path1, PCWSTR path2, PCWSTR path3, PCWSTR path)
 {
+    // N/A when DynamicDependency delegates to the Win11 OS API
+    if (MddCore::Win11::IsSupported())
+    {
+        return;
+    }
+
     std::wstring pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH").get() };
     std::wstring expectedPath{ std::wstring(path1) + L";" + path2 + L";" + path3 + L";" + path };
     VERIFY_ARE_EQUAL(expectedPath, pathEnvironmentVariable);

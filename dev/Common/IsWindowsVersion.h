@@ -52,6 +52,11 @@ inline bool IsWindows11_22H2OrGreater()
     // GetPackageGraphRevisionId() added to kernelbase.dll in NTDDI_WIN10_NI (aka Windows 11 22H2)
     return IsExportPresent(L"kernelbase.dll", "GetPackageGraphRevisionId");
 }
+inline bool IsWindows11_23H1OrGreater()
+{
+    // TryCreatePackageDependency2() added to  in NTDDI_WIN10_GE (aka Windows 11 23H1)
+    return IsExportPresent(L"api-ms-win-appmodel-runtime-l1-1-7.dll", "TryCreatePackageDependency2");
+}
 }
 
 #endif // __ISWINDOWSVERSION_H
