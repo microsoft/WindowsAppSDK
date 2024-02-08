@@ -8,7 +8,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button x:Name="myButton" Click="myButton_Click">Click Me</Button>
+    <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Top">
+        <StackPanel Margin="20,5,0,0" Height="32" HorizontalAlignment="Stretch">
+            <TextBlock>$safeitemname$</TextBlock>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button x:Name="myButton" Click="myButton_Click">Click Me</Button>
+        </StackPanel>
     </StackPanel>
 </Window>

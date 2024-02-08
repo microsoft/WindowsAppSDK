@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -34,8 +34,6 @@ namespace $safeprojectname$
         public UnitTestApp()
         {
             this.InitializeComponent();
-            this.ExtendsContentIntoTitleBar = true; // provides default WinUI custom title bar experience
-
         }
 
         /// <summary>
