@@ -58,6 +58,9 @@
 .PARAMETER RemoveTestPfx
     Remove the MSIX Test signing certificate (i.e. undoc CheckTestPfx)
 
+.PARAMETER ShowSystemInfo
+    Display system information
+
 .PARAMETER StartTAEFService
     Start the TAEF service
 
@@ -109,6 +112,8 @@ Param(
 
     [Switch]$RemoveTestPfx=$false,
 
+    [Switch]$ShowSystemInfo=$false,
+
     [Switch]$StartTAEFService=$false,
 
     [Switch]$StopTAEFService=$false,
@@ -127,7 +132,10 @@ $global:issues = 0
 $global:isadmin = $null
 
 $remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
-if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAEFService -eq $false) -And ($StopTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And ($CheckDeveloperMode -eq $false))
+if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAEFService -eq $false) -And
+    ($StopTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And
+    ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And
+    ($CheckDeveloperMode -eq $false) -And ($ShowSystemInfo -eq $false))
 {
     $CheckAll = $true
 }
@@ -1280,6 +1288,39 @@ function Test-DeveloperMode
     }
 }
 
+function Get-SystemInfo
+{
+    $regkey = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
+    $productname = $(Get-Item -Path $regkey).GetValue('ProductName')
+    $displayversion = $(Get-Item -Path $regkey).GetValue('DisplayVersion')
+    $currentmajor = $(Get-Item -Path $regkey).GetValue('CurrentMajorVersionNumber')
+    $currentminor = $(Get-Item -Path $regkey).GetValue('CurrentMinorVersionNumber')
+    $currentbuild = $(Get-Item -Path $regkey).GetValue('CurrentBuild')
+    Write-Host "Product         : $($productname) $($displayversion) $($currentmajor).$($currentminor).$($currentbuild)"
+
+    $installationtype = $(Get-Item -Path $regkey).GetValue('InstallationType')
+    Write-Host "InstallationType: $($installationtype)"
+
+    $editionid = $(Get-Item -Path $regkey).GetValue('EditionId')
+    $compositioneditionid = $(Get-Item -Path $regkey).GetValue('CompositionEditionID')
+    if ($editionid -eq $compositioneditionid)
+    {
+        Write-Host "Edition         : $($editionid)"
+    }
+    else
+    {
+        Write-Host "Edition         : $($editionid) [$($compositioneditionid)]"
+    }
+
+    $buildlabex = $(Get-Item -Path $regkey).GetValue('BuildLabEx')
+    Write-Host "Build           : $($buildlabex)"
+
+    $lcuver = $(Get-Item -Path $regkey).GetValue('LCUVer')
+    Write-Host "LCU Version     : $($lcuver)"
+
+    Write-Host "Powershell      : $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)"
+}
+
 Write-Output "Checking developer environment..."
 
 $cpu = Get-CpuArchitecture
@@ -1287,6 +1328,11 @@ Write-Verbose("Processor...$cpu")
 
 $project_root = Get-ProjectRoot
 Write-Output "Windows App SDK location...$project_root"
+
+if (($CheckAll -ne $false) -Or ($ShowSystemInfo -ne $false))
+{
+    Get-SystemInfo
+}
 
 if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
 {

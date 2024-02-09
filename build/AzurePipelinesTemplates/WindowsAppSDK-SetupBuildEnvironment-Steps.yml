@@ -72,7 +72,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: eng\common\DevCheck.ps1
-    arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies
+    arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies -ShowSystemInfo
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: PowerShell@2
@@ -153,6 +153,14 @@ steps:
     targetType: filePath
     filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
     arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.System -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.h
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: powershell@2
+  displayName: 'Create PackageManager TerminalVelocity features'
+  inputs:
+    targetType: filePath
+    filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PackageManager.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.Management.Deployment -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PackageManager.h
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2
