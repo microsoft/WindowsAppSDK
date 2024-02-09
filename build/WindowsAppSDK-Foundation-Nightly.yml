@@ -31,10 +31,6 @@ parameters:
   type: boolean
   default: True
 
-variables:
-- template: WindowsAppSDK-Versions.yml
-- template: WindowsAppSDK-CommonVariables.yml
-
 resources:
   repositories:
     - repository: templates
