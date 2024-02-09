@@ -11,7 +11,7 @@ steps:
     inputs:
       targetType: filePath
       filePath: eng\common\DevCheck.ps1
-      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies
+      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies -ShowSystemInfo
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: DownloadPipelineArtifact@2
@@ -94,7 +94,7 @@ steps:
     inputs:
       targetType: filePath
       filePath: eng\common\DevCheck.ps1
-      arguments: -NoInteractive -Offline -Verbose -CheckTAEFService
+      arguments: -NoInteractive -Offline -Verbose -CheckTAEFService -ShowSystemInfo
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: VisualStudioTestPlatformInstaller@1
