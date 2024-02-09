@@ -26,7 +26,6 @@
 
   <PropertyGroup>
     <CSWinRTIncludes>Microsoft.Windows.Management.Deployment</CSWinRTIncludes>
-    <CSWinRTIncludes>Microsoft.Windows.ApplicationModel.DynamicDependency</CSWinRTIncludes>
     <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
     <WindowsSdkPackageVersion>10.0.17763.$(CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion)</WindowsSdkPackageVersion>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
@@ -55,6 +54,10 @@
       <HintPath>$(OutDir)..\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Management.Deployment.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Windows.ApplicationModel.DynamicDependency\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.csproj" />
   </ItemGroup>
 
 </Project>
