@@ -113,4 +113,11 @@ namespace Microsoft.Windows.ApplicationModel.Resources
         static String TargetSize { get; };
         static String Theme { get; };
     }
-} // namespace Microsoft.Windows.ApplicationModel.Resources
+
+    [contract(MrtCoreContract, 1)]
+    runtimeclass ApplicationLanguages
+    {
+        static String PrimaryLanguageOverride;
+    }
+
+} // namespace Microsoft.Windows.ApplicationModel. Resources
