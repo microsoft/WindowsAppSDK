@@ -73,7 +73,7 @@ steps:
   env:
     LIB: $(Build.SourcesDirectory)
 
-- ${{ if parameters.IsOneBranch }}:
+- ${{ if eq(parameters.IsOneBranch, 'true') }}:
   - task: PublishSymbols@2
     displayName: 'Publish symbols to public server (without source indexing) (OneBranch)'
     inputs:
