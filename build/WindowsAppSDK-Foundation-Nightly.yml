@@ -34,6 +34,7 @@ parameters:
 variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
+- group: PublicSymbols-Secrets
 
 resources:
   repositories:
