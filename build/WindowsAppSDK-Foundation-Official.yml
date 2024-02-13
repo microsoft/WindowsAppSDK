@@ -46,6 +46,7 @@ variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- group: PublicSymbols-Secrets
 
 extends:
   template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
@@ -77,6 +78,7 @@ extends:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         PublishPackage: true
+        IsOfficial: true
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Publish-Stage.yml@self
       parameters:
