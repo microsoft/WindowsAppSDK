@@ -20,7 +20,7 @@ steps:
     microsoftDropReadPat: $(System.AccessToken)
     compilerPackageName: $(compilerOverridePackageName)
     compilerPackageVersion: $(compilerOverridePackageVersion)
-    slnDirectory: $(Build.SourcesDirectory)\dev\MRTCore
+    slnDirectory: $(Build.SourcesDirectory)\dev\MRTCore\mrt
 
 - ${{ if parameters.RunPrefast }}:
   # PREFast scan is enabled in this pipeline run, so we pass PreFastSetup to BuildAll.ps1 to get it to do the commonn setup steps, but short of
