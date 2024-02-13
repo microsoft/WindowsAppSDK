@@ -17,7 +17,6 @@ parameters:
 
 stages:
 - stage: Pack
-  dependsOn: Build
   condition: not(failed())
   jobs:
   - job: NugetPackage
