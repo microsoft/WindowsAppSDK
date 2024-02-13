@@ -34,131 +34,23 @@ stages:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_artifactBaseName: "TransportPackage"
     steps:
-    - task: NuGetAuthenticate@1
-      inputs:
-        nuGetServiceConnections: 'ProjectReunionInternal'
 
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download Foundation x64'
-      inputs:
-        source: specific
-        runVersion: specific
-        project: $(System.TeamProjectId)
-        pipeline: $(_useBuildOutputFromPipeline)
-        pipelineId: $(_useBuildOutputFromBuildId)
-        artifactName: "FoundationBinaries_release_x64"
-        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
-
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download Foundation x86'
-      inputs:
-        source: specific
-        runVersion: specific
-        project: $(System.TeamProjectId)
-        pipeline: $(_useBuildOutputFromPipeline)
-        pipelineId: $(_useBuildOutputFromBuildId)
-        artifactName: "FoundationBinaries_release_x86"
-        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
-
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download Foundation arm64'
-      inputs:
-        source: specific
-        runVersion: specific
-        project: $(System.TeamProjectId)
-        pipeline: $(_useBuildOutputFromPipeline)
-        pipelineId: $(_useBuildOutputFromBuildId)
-        artifactName: "FoundationBinaries_release_arm64"
-        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
-
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download Foundation anycpu'
-      inputs:
-        source: specific
-        runVersion: specific
-        project: $(System.TeamProjectId)
-        pipeline: $(_useBuildOutputFromPipeline)
-        pipelineId: $(_useBuildOutputFromBuildId)
-        artifactName: "FoundationBinaries_release_anycpu"
-        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
-
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download MRT x64'
-      inputs:
-        source: specific
-        runVersion: specific
-        project: $(System.TeamProjectId)
-        pipeline: $(_useBuildOutputFromPipeline)
-        pipelineId: $(_useBuildOutputFromBuildId)
-        artifactName: "MrtBinaries_release_x64"
-        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
-
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download MRT x86'
-      inputs:
-        source: specific
-        runVersion: specific
-        project: $(System.TeamProjectId)
-        pipeline: $(_useBuildOutputFromPipeline)
-        pipelineId: $(_useBuildOutputFromBuildId)
-        artifactName: "MrtBinaries_release_x86"
-        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
-
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download MRT arm64'
-      inputs:
-        source: specific
-        runVersion: specific
-        project: $(System.TeamProjectId)
-        pipeline: $(_useBuildOutputFromPipeline)
-        pipelineId: $(_useBuildOutputFromBuildId)
-        artifactName: "MrtBinaries_release_arm64"
-        targetPath: '$(Build.SourcesDirectory)\BuildOutput'
-
-    - task: PowerShell@2
-      name: StageFiles
-      inputs:
-        filePath: 'BuildAll.ps1'
-        arguments: -Platform "x86,x64,arm64" -Configuration "release" -AzureBuildStep "StageFiles"
-
-    - task: CopyFiles@2
-      displayName: 'Copy symbols to artifact staging directory'
-      condition: always()
-      inputs:
-        sourceFolder: $(Build.SourcesDirectory)\BuildOutput\FullNuget
-        contents: |
-          **\*.pdb
-        targetFolder: $(Build.ArtifactStagingDirectory)\symbols
-
-    - task: PublishSymbols@2
-      displayName: 'Publish private symbols to internal server (without source indexing)'
-      inputs:
-        searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
-        symbolServerType: 'TeamServices'
-      # This ADO task does not support indexing of github sources currently :-(
-        indexSources: false
-        detailedLog: true
-      # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
-      # To work around this issue, we just force LIB to be any dir that we know exists.
-      env:
-        LIB: $(Build.SourcesDirectory)
-
-  - ${{ if eq(parameters.isOfficial, 'true') }}:
-    - task: PublishSymbols@2
-      displayName: 'Publish symbols to public server (without source indexing)'
-      inputs:
-        searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
-        symbolServerType: 'TeamServices'
-      # This ADO task does not support indexing of github sources currently :-(
-        indexSources: false
-        detailedLog: true
-      # # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
-      # # To work around this issue, we just force LIB to be any dir that we know exists.
-        Pat: $(WinAppSdkLabSymbolsPAT)
-      env:
-        LIB: $(Build.SourcesDirectory)
-        ArtifactServices_Symbol_AccountName: microsoftpublicsymbols
-      #   ArtifactServices_Symbol_PAT: $(WinSDKLab_microsoftpublicsymbols_PAT)
+    - ${{ if eq(parameters.isOfficial, 'true') }}:
+      - task: PublishSymbols@2
+        displayName: 'Publish symbols to public server (without source indexing)'
+        inputs:
+          searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+          symbolServerType: 'TeamServices'
+        # This ADO task does not support indexing of github sources currently :-(
+          indexSources: false
+          detailedLog: true
+        # # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
+        # # To work around this issue, we just force LIB to be any dir that we know exists.
+          Pat: $(WinAppSdkLabSymbolsPAT)
+        env:
+          LIB: $(Build.SourcesDirectory)
+          ArtifactServices_Symbol_AccountName: microsoftpublicsymbols
+        #   ArtifactServices_Symbol_PAT: $(WinSDKLab_microsoftpublicsymbols_PAT)
 
     - task: PowerShell@2
       name: SetVersion
