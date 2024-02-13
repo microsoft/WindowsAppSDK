@@ -8,6 +8,9 @@ parameters:
 - name: "IsOneBranch"
   type: boolean
   default: True
+- name: "IsOfficial"
+  type: boolean
+  default: False
 - name: "BuildMockWindowsAppSDK"
   type: boolean
   default: True
@@ -140,6 +143,7 @@ stages:
       env:
         LIB: $(Build.SourcesDirectory)
 
+  - ${{ if eq(parameters.isOfficial, 'true') }}:
     - task: PublishSymbols@2
       displayName: 'Publish symbols to public server (without source indexing)'
       inputs:
