@@ -158,7 +158,6 @@ stages:
         env:
           LIB: $(Build.SourcesDirectory)
           ArtifactServices_Symbol_AccountName: microsoftpublicsymbols
-        #   ArtifactServices_Symbol_PAT: $(WinSDKLab_microsoftpublicsymbols_PAT)
 
     - task: PowerShell@2
       name: SetVersion
