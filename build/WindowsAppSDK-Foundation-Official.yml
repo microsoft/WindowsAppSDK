@@ -68,3 +68,4 @@ extends:
         PublishToMaestro: ${{ parameters.PublishToMaestro }}
         IgnoreFailures: ${{ parameters.IgnoreFailures }}
         SignOutput: ${{ parameters.SignOutput }}
+        IsOfficial: true
