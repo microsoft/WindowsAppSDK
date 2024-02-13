@@ -76,7 +76,7 @@ steps:
   env:
     LIB: $(Build.SourcesDirectory)
 
-- ${{ if eq(parameters.isOfficial, 'true') }}:
+- ${{ if eq(parameters.IsOfficial, 'true') }}:
   - task: PublishSymbols@2
     displayName: 'Publish symbols to public server (without source indexing)'
     inputs:
