@@ -11,6 +11,9 @@ parameters:
 - name: "IsOneBranch"
   type: boolean
   default: True
+- name: "IsOfficial"
+  type: boolean
+  default: False
 
 stages:
 - stage: TransportPackage
@@ -163,6 +166,7 @@ stages:
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
         IsOneBranch: ${{ parameters.IsOneBranch }}
+        IsOfficial: ${{ parameters.IsOfficial }}
 
   # Build WinAppSDK and Run Integration Test from TestAll.ps1
   - job: WinAppSDKIntegrationBuildAndTest
