@@ -2,9 +2,17 @@
 # Prior to 1.4, this file was used to build official release builds. This role has been moved to WindowsAppSDK-Foundation-Release.yml
 trigger: none
 
+resources:
+  repositories:
+    - repository: WindowsAppSDKConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+
 variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
+- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - group: PublicSymbols-Secrets
 
 stages:
