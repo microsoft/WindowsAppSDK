@@ -46,6 +46,7 @@ variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- group: PublicSymbols-Secrets
 
 extends:
   template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
@@ -60,6 +61,8 @@ extends:
       tsa:
         enabled: $(TsaEnabled) # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
       isNativeCode: false #TODO turn back on when bug in CheckCFlags2.exe is fixed
+      asyncSdl: # https://aka.ms/obpipelines/asyncsdl
+        enabled: false
       psscriptanalyzer:
         enable: true
         break: true

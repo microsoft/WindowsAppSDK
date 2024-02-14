@@ -73,17 +73,8 @@
   <ItemGroup>
     <ProjectReference Include="..\$ext_projectname$\$ext_projectname$.csproj">
       <SkipGetTargetFrameworkProperties>True</SkipGetTargetFrameworkProperties>
-      <PublishProfile>Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
+      <PublishProfile>Properties\PublishProfiles\win-$(Platform).pubxml</PublishProfile>
     </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="[$ext_WindowsAppSDKNupkgVersion$]">
-      <IncludeAssets>build</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="[$ext_WindowsSDKBuildToolsNupkgVersion$]">
-      <IncludeAssets>build</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
