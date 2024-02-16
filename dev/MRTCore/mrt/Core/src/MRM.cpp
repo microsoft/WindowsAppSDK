@@ -993,7 +993,8 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
         if (SUCCEEDED(wil::TryGetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", baseDir)) && baseDir)
         {
             path.swap(baseDir);
-            RETURN_IF_FAILED(StringCchLengthW(path.get(), STRSAFE_MAX_CCH, &bufferCount));
+            RETURN_IF_FAILED(StringCchLengthW(path.get(), STRSAFE_MAX_CCH, &length));
+            RETURN_IF_FAILED(SizeTAdd(length, 1, &bufferCount));
         }
         filenameToUse = c_defaultPriFilename;
     }
