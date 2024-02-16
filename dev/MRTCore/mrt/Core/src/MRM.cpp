@@ -994,7 +994,6 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
         {
             path.swap(baseDir);
             RETURN_IF_FAILED(StringCchLengthW(path.get(), STRSAFE_MAX_CCH, &length));
-            size_t bufferCount;
             RETURN_IF_FAILED(SizeTAdd(length, 1, &bufferCount));
         }
         filenameToUse = c_defaultPriFilename;
