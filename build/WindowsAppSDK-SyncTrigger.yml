@@ -1,0 +1,12 @@
+name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+jobs:
+- job: TriggerSyncMirror
+  dependsOn: []
+  pool: 'ProjectReunionESPool-2022'
+  steps:
+  - task: powerShell@2
+    displayName: 'Shell task'
+    inputs:
+      targetType: 'inline'
+      script: |
+        Write-Host "Triggering Foundation-ES-SyncMirrorRepos"
