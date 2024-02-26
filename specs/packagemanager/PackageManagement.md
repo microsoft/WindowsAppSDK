@@ -12,6 +12,7 @@ but with additional functionality, improved developer experience and performance
   - [3.3. Is\*ReadyOrNewerAvailable()](#33-isreadyorneweravailable)
   - [3.4. Ensure\*Ready()](#34-ensureready)
     - [3.4.1. Why Is\*Ready() Given Ensure\*Ready()?](#341-why-isready-given-ensureready)
+    - [3.4.2. EnsureReadyOptions.RegisterNewerIfAvailable](#342-ensurereadyoptionsregisternewerifavailable)
   - [3.5. Repair](#35-repair)
   - [3.6. Reset](#36-reset)
   - [3.7. IsPackageRegistrationPending](#37-ispackageregistrationpending)
