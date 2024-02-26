@@ -9,15 +9,16 @@ but with additional functionality, improved developer experience and performance
 - [3. Description](#3-description)
   - [3.1. API Structure](#31-api-structure)
   - [3.2. Is\*Ready()](#32-isready)
-  - [3.3. Ensure\*Ready()](#33-ensureready)
-    - [3.3.1. Why Is\*Ready() Given Ensure\*Ready()?](#331-why-isready-given-ensureready)
-  - [3.4. Repair](#34-repair)
-  - [3.5. Reset](#35-reset)
-  - [3.6. IsPackageRegistrationPending](#36-ispackageregistrationpending)
-  - [3.7. PackageSet](#37-packageset)
-  - [3.8. PackageRuntimeManager](#38-packageruntimemanager)
-  - [3.9. PackageVolume Repair](#39-packagevolume-repair)
-  - [3.10. Usability](#310-usability)
+  - [3.3. Is\*ReadyOrNewerAvailable()](#33-isreadyorneweravailable)
+  - [3.4. Ensure\*Ready()](#34-ensureready)
+    - [3.4.1. Why Is\*Ready() Given Ensure\*Ready()?](#341-why-isready-given-ensureready)
+  - [3.5. Repair](#35-repair)
+  - [3.6. Reset](#36-reset)
+  - [3.7. IsPackageRegistrationPending](#37-ispackageregistrationpending)
+  - [3.8. PackageSet](#38-packageset)
+  - [3.9. PackageRuntimeManager](#39-packageruntimemanager)
+  - [3.10. PackageVolume Repair](#310-packagevolume-repair)
+  - [3.11. Usability](#311-usability)
 - [4. Examples](#4-examples)
   - [4.1. AddPackageAsync()](#41-addpackageasync)
   - [4.2. AddPackageByUriAsync()](#42-addpackagebyuriasync)
@@ -62,7 +63,7 @@ following scenarios:
 
 Additional functionality includes:
 
-* IsReady -- Is a package ready for use?
+* IsReady* -- Is a package ready for use?
 * EnsureReady -- Is a package ready for use and, if not, make it so
 * IsPackageRegistrationPending -- Is there an update waiting to register?
 * PackageSets -- Batch operations
@@ -77,7 +78,7 @@ Methods to drive deployment activity typically follow the pattern:
 
 The following verbs are supported:
 
-* Is...Ready
+* Is...Ready[OrNewerAvailable]
 * Ensure...Ready
 * Add
 * Stage
@@ -112,18 +113,19 @@ These methods accept options as a matching `<verb>Package[Set]Options` type, e.g
 
 The following table shows the supported permutations of verbs and targets:
 
-|Verb       | Path   | Filename | PackageFamilyName | PackageFullName | file:  | http(s): | ms-uup: | PackageSet |
-|-----------|:------:|:--------:|:-----------------:|:---------------:|:------:|:--------:|:-------:|:----------:|
-|IsReady    |   X    |    X     |       OS/WAS      |       WAS       |   X    |    X     |  WAS    |    WAS     |
-|EnsureReady|   X    |    X     |         X         |        X        |   X    |    X     |  WAS    |    WAS     |
-|Add        | OS/WAS |    X     |         X         |        X        | OS/WAS |  OS/WAS  | OS/WAS  |    WAS     |
-|Stage      | OS/WAS |    X     |         X         |        X        | OS/WAS |  OS/WAS  | OS/WAS  |    WAS     |
-|Register   |  WAS   |  OS/WAS  |       OS/WAS      |      OS/WAS     | OS/WAS |    X     | OS/WAS  |    WAS     |
-|Remove     |   X    |    X     |        WAS        |      OS/WAS     |   X    |    X     | OS/WAS  |    WAS     |
-|Repair     |   X    |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
-|Reset      |   X    |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
-|Provision  |   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
-|Deprovision|   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
+|Verb                    | Path   | Filename | PackageFamilyName | PackageFullName | file:  | http(s): | ms-uup: | PackageSet |
+|------------------------|:------:|:--------:|:-----------------:|:---------------:|:------:|:--------:|:-------:|:----------:|
+|IsReady                 |   X    |    X     |       OS/WAS      |       WAS       |   X    |    X     |  WAS    |    WAS     |
+|IsReadyOrNewerAvailable |   X    |    X     |       OS/WAS      |       WAS       |   X    |    X     |  WAS    |    WAS     |
+|EnsureReady             |   X    |    X     |         X         |        X        |   X    |    X     |  WAS    |    WAS     |
+|Add                     | OS/WAS |    X     |         X         |        X        | OS/WAS |  OS/WAS  | OS/WAS  |    WAS     |
+|Stage                   | OS/WAS |    X     |         X         |        X        | OS/WAS |  OS/WAS  | OS/WAS  |    WAS     |
+|Register                |  WAS   |  OS/WAS  |       OS/WAS      |      OS/WAS     | OS/WAS |    X     | OS/WAS  |    WAS     |
+|Remove                  |   X    |    X     |        WAS        |      OS/WAS     |   X    |    X     | OS/WAS  |    WAS     |
+|Repair                  |   X    |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
+|Reset                   |   X    |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
+|Provision               |   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
+|Deprovision             |   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
 
 Legend:
 
@@ -145,7 +147,23 @@ not ready can include:
 Is\*Ready() methods are a quick test to determine if more (costly) work is needed before the target
 can be used.
 
-## 3.3. Ensure\*Ready()
+## 3.3. Is\*ReadyOrNewerAvailable()
+
+Is\*Ready() methods determine if the target is installed and ready for use or a newer version is
+locally available. Reasons why a package is not ready can include:
+
+* The package is not present on the machine
+* The package is present on the machine but not registered for the user
+* The package is registered for the user but is not in a healthy status e.g. its
+  Package.Status=Tampered
+* The package is registered for the user but a newer version is available locally on the machine
+  e.g. a user has package v1 registered and Windows Update downloaded and staged v2 in the
+  background while app(s) are running using v1.
+
+Is\*ReadyOrNewerAvailable() methods are a quick test to determine if more (costly) work is needed
+before the target can be used.
+
+## 3.4. Ensure\*Ready()
 
 Ensure\*Ready() methods determine if the target is installed and ready for use and, if not, makes
 it so. This can include downloading the target, registering it for the user and remediating a
@@ -161,7 +179,7 @@ if (!pdm.IsPackageReady(pkg))
 }
 ```
 
-### 3.3.1. Why Is\*Ready() Given Ensure\*Ready()?
+### 3.4.1. Why Is\*Ready() Given Ensure\*Ready()?
 
 Ensure\*Ready() performs an 'is ready' check and returns if all is ready. There's no efficiency
 reasons to call Is\*Ready() before Ensure\*Ready() (in fact, it's less efficient as Is\*Ready() would
@@ -178,24 +196,53 @@ if (!pdm.IsPackageReady(pkg))
     bool ok = AskUserForConsent(pkg);
     if (ok)
     {
+        var options = new EnsureReadyOptions();
         var result = await pdm.EnsurePackageReadyAsync(pkg, options);
     }
 }
 ```
 
-## 3.4. Repair
+### 3.4.2. EnsureReadyOptions.RegisterNewerIfAvailable
+
+Ensure\*Ready() performs an 'is ready' check via Is*ReadyOrNewerAvailable() if
+`EnsureReadyOptions.RegisterNewerIfAvailable = true`.
+
+There's no efficiency reasons to call Is\*ReadyOrNewerAvailable() before
+Ensure\*Ready(...options.RegisterNewerIfAvailable=true) (in fact, it's
+less efficient as Is\*ReadyOrNewerAvailable() would occur twice).
+
+However, this can be useful if you need additional work before potentially performing deployment
+operations. For example, if you need to prompt the user for consent before registering
+('installing') or updating the package e.g.
+
+```c#
+var pdm = PackageDeploymentManager().GetDefault();
+var status = pdm.IsPackageReadyOrNewerAvailable(pkg);
+if (status != PackageReadyOrNewerAvailableStatus.Ready)
+{
+    bool ok = AskUserForConsent(pkg, status);
+    if (ok)
+    {
+        var options = new EnsureReadyOptions();
+        options.RegisterNewerIfAvailable = true;
+        var result = await pdm.EnsurePackageReadyAsync(pkg, options);
+    }
+}
+```
+
+## 3.5. Repair
 
 `PackageDeploymentManager` offers Repair APIs providing the same functionality as available
 interactively via Settings' `Repair` button on the detail page for an app (via Apps &gt; Installed
 Apps &gt; ... menu's Advanced options).
 
-## 3.5. Reset
+## 3.6. Reset
 
 `PackageDeploymentManager` offers Reset APIs providing the same functionality as available
 interactively via Settings' `Reset` button on the detail page for an app (via Apps &gt; Installed
 Apps &gt; ... menu's Advanced options).
 
-## 3.6. IsPackageRegistrationPending
+## 3.7. IsPackageRegistrationPending
 
 `IsPackageRegistrationPending()` detects if package registration is pending for the specified target. For
 example, if a package is in use and `AddPackageByUriAsync()` is called with a newer version and the
@@ -204,7 +251,7 @@ option
 then the registration is delayed until the package is no longer in use and can be updated. In such
 cases `IsPackageRegistrationPending()` returns `true`.
 
-##  3.7. PackageSet
+##  3.8. PackageSet
 
 A `PackageSet` is a group of packages to be operated on with one request. Package sets provide a
 convenient means to perform multiple operations.
@@ -228,14 +275,14 @@ foreach (PackageSetItem psi in ps.Items)
 return new PackageDeploymentResult(PackageDeploymentStatus.CompletedSuccess);
 ```
 
-## 3.8. PackageRuntimeManager
+## 3.9. PackageRuntimeManager
 
 The `PackageRuntimeManager` API provides Dynamic Dependency support for PackageSet operations,
 especially when the caller may not know the exact package(s) involved (for instance, when targeting
 packages via `ms-uup:`). `PackageRuntimeManager` determines the packages involved for a `PackageSet`
 and dynamically adds them to the caller's package graph.
 
-## 3.9. PackageVolume Repair
+## 3.10. PackageVolume Repair
 
 Packages are typically<sup>1</sup> installed to a
 [PackageVolume](https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume),
@@ -264,7 +311,7 @@ conditions and correct them.
 and other options canalter the typical behavior and install packages to a non-PackageVolume
 location.
 
-## 3.10. Usability
+## 3.11. Usability
 
 The package management API in Windows App SDK provides several quality-of-life enhancements over the
 package management APIs in Windows (e.g. Windows.Management.Deployment.PackageManager) including:
@@ -667,6 +714,15 @@ namespace Microsoft.Windows.Management.Deployment
         UsePreference,
     };
 
+    /// Defines the stub behavior for an app package that is being added or staged.
+    [contract(PackageDeploymentContract, 1)]
+    enum PackageReadyOrNewerAvailableStatus
+    {
+        NotReady             = 0,
+        Ready                = 1,
+        NewerAvailable       = 2,
+    };
+
     /// The progress status of the deployment request.
     /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress.state
     [contract(PackageDeploymentContract, 1)]
@@ -854,6 +910,8 @@ namespace Microsoft.Windows.Management.Deployment
         EnsureReadyOptions();
 
         AddPackageOptions AddPackageOptions { get; };
+
+        Boolean RegisterNewerIfAvailable { get; };
     }
 
     [contract(PackageDeploymentContract, 1)]
@@ -872,6 +930,17 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean IsPackageReadyByUri(Windows.Foundation.Uri packageUri);
 
         Boolean IsPackageSetReady(PackageSet packageSet);
+
+        //-------------------------------------------------------------
+        // IsReadyOrNewerAvailable
+
+        // Return true if the package(s) are present and available for use
+
+        PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailable(String package);
+
+        PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailableByUri(Windows.Foundation.Uri packageUri);
+
+        PackageReadyOrNewerAvailableStatus IsPackageSetReadyOrNewerAvailable(PackageSet packageSet);
 
         //-------------------------------------------------------------
         // EnsureReady
