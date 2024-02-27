@@ -81,7 +81,7 @@ Some tips:
 
 ## MSBuild Tips
 
-Build everything from the command line via msbuild e.g.
+### Build everything from the command line via msbuild e.g.
 
 | Goal | Command Line |
 |---|---|
@@ -95,6 +95,17 @@ See MSBuild documentation for more details.
 
 Troubleshoot build problems by enabling binary logging (e.g. `msbuild...-bl`) and use
 [MSBuild Binary and Structured Log Viewer](https://msbuildlog.com/) to review the log.
+
+### Common Build Errors
+
+PROBLEM 001: Expired Test Certificate
+SYMPTOMS:
+    VS ErrorList:
+        MSB3073 The command "signtool.exe sign ..." exited with code 1...\MakeMsix.targets...
+    Build Output:
+        Build Output: EXEC : SignTool error : No certificates were found that met all the given criteria.
+        ...\MakeMsix.targets...error MSB3073: The command "signtool.exe sign ..." exited with code 1.
+SOLUTION: Run DevCheck.cmd (from an admin prompt). This detects the expired certificate and prompts to create a new one.
 
 ## Testing Tips
 
