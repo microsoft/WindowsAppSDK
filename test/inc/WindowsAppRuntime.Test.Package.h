@@ -126,19 +126,36 @@ namespace DeploymentWindowsAppRuntimeSingleton
     constexpr PCWSTR c_PackageFullName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 
-inline std::wstring GetPackagePath(PCWSTR packageFullName)
+template <typename T=std::wstring>
+inline T GetPackagePath(PCWSTR packageFullName)
 {
     UINT32 pathLength{};
-    const auto rc{ GetPackagePathByFullName(packageFullName, &pathLength, nullptr) };
+    const auto rc{ ::GetPackagePathByFullName(packageFullName, &pathLength, nullptr) };
     if (rc == ERROR_NOT_FOUND)
     {
-        return std::wstring();
+        return T{};
     }
 
     VERIFY_ARE_EQUAL(ERROR_INSUFFICIENT_BUFFER, rc);
-    auto path = wil::make_process_heap_string(nullptr, pathLength);
+    auto path{ wil::make_process_heap_string(nullptr, pathLength) };
     VERIFY_ARE_EQUAL(ERROR_SUCCESS, GetPackagePathByFullName(packageFullName, &pathLength, path.get()));
-    return std::wstring(path.get());
+    return T{ path.get() };
+}
+
+template <typename T=std::wstring>
+inline T GetStagedPackagePath(PCWSTR packageFullName)
+{
+    UINT32 pathLength{};
+    const auto rc{ ::GetStagedPackagePathByFullName(packageFullName, &pathLength, nullptr) };
+    if (rc == ERROR_NOT_FOUND)
+    {
+        return T{};
+    }
+
+    VERIFY_ARE_EQUAL(ERROR_INSUFFICIENT_BUFFER, rc);
+    auto path{ wil::make_process_heap_string(nullptr, pathLength) };
+    VERIFY_ARE_EQUAL(ERROR_SUCCESS, ::GetStagedPackagePathByFullName(packageFullName, &pathLength, path.get()));
+    return T{ path.get() };
 }
 
 #if defined(__APPMODEL_IDENTITY_H)
@@ -188,19 +205,6 @@ inline bool IsPackageRegistered(PCWSTR packageFullName)
 
 inline bool IsPackageStaged(PCWSTR packageFullName)
 {
-#if 0
-    UINT32 pathLength{};
-    const auto rc{ ::GetStagedPackagePathByFullName(packageFullName, &pathLength, nullptr) };
-    if (rc == ERROR_INSUFFICIENT_BUFFER)
-    {
-        return true;
-    }
-    else if (rc == HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
-    {
-        return false;
-    }
-    THROW_WIN32(rc);
-#else
     // Check if the package is staged
     PackageOrigin packageOrigin{};
     const auto rc{ GetStagedPackageOrigin(packageFullName, &packageOrigin) };
@@ -213,7 +217,6 @@ inline bool IsPackageStaged(PCWSTR packageFullName)
         return false;
     }
     THROW_WIN32(rc);
-#endif
 }
 
 inline bool IsPackageAvailable(PCWSTR packageFullName)
@@ -229,7 +232,7 @@ inline std::filesystem::path GetMsixPackagePath(PCWSTR packageDirName)
 {
     // Build the target package's .msix filename. It's under the Solution's $(OutDir)
     // NOTE: It could live in ...\Something.msix\... or ...\Something\...
-    auto solutionOutDirPath = ::Test::FileSystem::GetSolutionOutDirPath();
+    auto solutionOutDirPath{ ::Test::FileSystem::GetSolutionOutDirPath() };
     //
     // Look in ...\Something.msix\...
     auto msix(solutionOutDirPath);
@@ -264,11 +267,22 @@ inline winrt::Windows::Foundation::Uri GetMsixPackageUri(PCWSTR packageDirName)
     return winrt::Windows::Foundation::Uri{ path.c_str() };
 }
 
+inline std::filesystem::path GetAppxManifestPackagePath(PCWSTR packageFullName)
+{
+    auto path{ GetStagedPackagePath<std::filesystem::path>(packageFullName) };
+    return path / L"AppxManifest.xml";
+}
+
+inline winrt::Windows::Foundation::Uri GetAppxManifestPackageUri(PCWSTR packageFullName)
+{
+    auto path{ GetAppxManifestPackagePath(packageFullName) };
+    return winrt::Windows::Foundation::Uri{ path.c_str() };
+}
+
 inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
 {
     auto msixUri{ GetMsixPackageUri(packageDirName) };
 
-    // Install the package
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
     auto deploymentResult{ packageManager.AddPackageAsync(msixUri, nullptr, options).get() };
@@ -292,7 +306,6 @@ inline void StagePackage(PCWSTR packageDirName, PCWSTR packageFullName)
 {
     auto msixUri{ GetMsixPackageUri(packageDirName) };
 
-    // Install the package
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
     auto deploymentResult{ packageManager.StagePackageAsync(msixUri, nullptr, options).get() };
@@ -309,6 +322,29 @@ inline void StagePackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullNam
     {
         WEX::Logging::Log::Comment(WEX::Common::String().Format(L"StagePackageIfNecessary: %s not staged, staging...", packageFullName));
         StagePackage(packageDirName, packageFullName);
+    }
+}
+
+inline void RegisterPackage(PCWSTR packageFullName)
+{
+    winrt::hstring mainPackageFullName{ packageFullName };
+
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
+    auto deploymentResult{ packageManager.RegisterPackageByFullNameAsync(mainPackageFullName, nullptr, options).get() };
+    VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"RegisterPackageByFullNameAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+}
+
+inline void RegisterPackageIfNecessary(PCWSTR packageFullName)
+{
+    if (IsPackageRegistered(packageFullName))
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"RegisterPackageIfNecessary: %s already registered", packageFullName));
+    }
+    else
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"RegisterPackageIfNecessary: %s not registered, adding...", packageFullName));
+        RegisterPackage(packageFullName);
     }
 }
 

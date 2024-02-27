@@ -13,6 +13,9 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         bool IsPackageReady(hstring const& package);
         bool IsPackageReadyByUri(winrt::Windows::Foundation::Uri const& packageUri);
         bool IsPackageSetReady(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet);
+        winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailable(hstring const& package);
+        winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailableByUri(winrt::Windows::Foundation::Uri const& packageUri);
+        winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus IsPackageSetReadyOrNewerAvailable(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet);
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> EnsurePackageReadyAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options);
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> EnsurePackageReadyByUriAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options);
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> EnsurePackageSetReadyAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options);
@@ -42,8 +45,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> DeprovisionPackageAsync(hstring package);
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> DeprovisionPackageByUriAsync(winrt::Windows::Foundation::Uri packageUri);
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> DeprovisionPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet);
-        bool IsPackageRegistrationPending(hstring const& packageFamilyName);
-        bool IsPackageRegistrationPendingForUser(hstring const& userSecurityId, hstring const& packageFamilyName);
+        bool IsPackageRegistrationPending(hstring const& packageFullName);
+        bool IsPackageRegistrationPendingForUser(hstring const& userSecurityId, hstring const& packageFullName);
+
+    private:
+        bool IsPackageRegistrationPendingForUser(PSID userSid, PCWSTR packageFullName);
 
     private:
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> AddPackageByAppInstallerFileAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options);
@@ -53,6 +59,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     private:
         bool IsReadyByPackageFullName(hstring const& packageFullName);
         bool IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSet);
+        bool IsNewerAvailableByPackageFullName(hstring const& packageFullName);
+        bool IsNewerAvailable(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSet);
         void Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet) const;
         void Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem) const;
         HRESULT EnsureReadyAsync(
@@ -122,6 +130,15 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         HRESULT RegisterPackageByPackageFullName(
             winrt::hstring const& packageFullName,
             winrt::Windows::Management::Deployment::RegisterPackageOptions const& registerOptions,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+        HRESULT RemovePackageByFullName(
+            winrt::hstring const& packageFullName,
+            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions const& options,
+            winrt::Windows::Management::Deployment::RemovalOptions const& removeOptions,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
             HRESULT& extendedError,

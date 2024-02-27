@@ -71,6 +71,15 @@ namespace Microsoft.Windows.Management.Deployment
         UsePreference,
     };
 
+    /// Defines the stub behavior for an app package that is being added or staged.
+    [contract(PackageDeploymentContract, 1)]
+    enum PackageReadyOrNewerAvailableStatus
+    {
+        NotReady             = 0,
+        Ready                = 1,
+        NewerAvailable       = 2,
+    };
+
     /// The progress status of the deployment request.
     /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.deploymentprogress.state
     [contract(PackageDeploymentContract, 1)]
@@ -258,6 +267,8 @@ namespace Microsoft.Windows.Management.Deployment
         EnsureReadyOptions();
 
         AddPackageOptions AddPackageOptions { get; };
+
+        Boolean RegisterNewerIfAvailable { get; };
     }
 
     [contract(PackageDeploymentContract, 1)]
@@ -276,6 +287,17 @@ namespace Microsoft.Windows.Management.Deployment
         Boolean IsPackageReadyByUri(Windows.Foundation.Uri packageUri);
 
         Boolean IsPackageSetReady(PackageSet packageSet);
+
+        //-------------------------------------------------------------
+        // IsReadyOrNewerAvailable
+
+        // Return true if the package(s) are present and available for use
+
+        PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailable(String package);
+
+        PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailableByUri(Windows.Foundation.Uri packageUri);
+
+        PackageReadyOrNewerAvailableStatus IsPackageSetReadyOrNewerAvailable(PackageSet packageSet);
 
         //-------------------------------------------------------------
         // EnsureReady
@@ -400,9 +422,9 @@ namespace Microsoft.Windows.Management.Deployment
         //-------------------------------------------------------------
         // IsRegistrationPending
 
-        Boolean IsPackageRegistrationPending(String packageFamilyName);
+        Boolean IsPackageRegistrationPending(String packageFullName);
 
-        Boolean IsPackageRegistrationPendingForUser(String userSecurityId, String packageFamilyName);
+        Boolean IsPackageRegistrationPendingForUser(String userSecurityId, String packageFullName);
     }
 
     [contract(PackageDeploymentContract, 1)]

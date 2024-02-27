@@ -7,6 +7,7 @@
 
 #include <unknwn.h>
 #include <appmodel.h>
+#include <sddl.h>
 
 #include <filesystem>
 #include <thread>
@@ -28,5 +29,8 @@
 
 #include <appmodel.identity.h>
 #include <appmodel.package.h>
+#include <security.user.h>
 
 #include "MsixPackageManager.h"
+
+#include <FrameworkUdk/PackageManagement.h>

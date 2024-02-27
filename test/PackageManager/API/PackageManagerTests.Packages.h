@@ -96,19 +96,34 @@ namespace Test::PackageManager::Tests
     // Forward declarations
     void RemovePackageFamily_Redder();
 
-    inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem Make_PackageSetItem(
+    inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem _Make_PackageSetItem(
         PCWSTR packageFullName,
-        PCWSTR packageDirName)
+        winrt::Windows::Foundation::Uri const& packageUri)
     {
-        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageSetItem: PackageFullName:%s Path:%s", packageFullName, packageDirName));
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageSetItem: PackageFullName:%s Path:%s", packageFullName, packageUri.ToString().c_str()));
         const auto [packageName, packageVersion, packageArchitecture, packageResourceId, packagePublisherId, packageFamilyName]{ ::AppModel::Package::ParsePackageFullName(packageFullName) };
 
         winrt::Microsoft::Windows::Management::Deployment::PackageSetItem psi;
         psi.PackageFamilyName(packageFamilyName);
-        psi.PackageUri(TP::GetMsixPackageUri(packageDirName));
+        psi.PackageUri(packageUri);
         const ::AppModel::Identity::PackageVersion version{ packageVersion };
         psi.MinVersion(version.ToWinrtPackageVersion());
         return psi;
+    }
+
+    inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem Make_PackageSetItem(
+        PCWSTR packageFullName,
+        PCWSTR packageDirName)
+    {
+        const auto packageUri{ TP::GetMsixPackageUri(packageDirName) };
+        return _Make_PackageSetItem(packageFullName, packageUri);
+    }
+
+    inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem Make_PackageSetItem_ForRegister(
+        PCWSTR packageFullName)
+    {
+        const auto appxManifestUri{ TP::GetAppxManifestPackageUri(packageFullName) };
+        return _Make_PackageSetItem(packageFullName, appxManifestUri);
     }
 
     inline bool IsPackageRegistered_Red()
@@ -126,6 +141,10 @@ namespace Test::PackageManager::Tests
     inline void StagePackage_Red()
     {
         TP::StagePackageIfNecessary(Test::Packages::Framework::Red::c_packageDirName, TPF::Red::GetPackageFullName());
+    }
+    inline void RegisterPackage_Red()
+    {
+        TP::RegisterPackageIfNecessary(TPF::Red::GetPackageFullName());
     }
     inline void RemovePackage_Red()
     {
@@ -173,6 +192,10 @@ namespace Test::PackageManager::Tests
     {
         TP::StagePackageIfNecessary(Test::Packages::Framework::Redder::c_packageDirName, TPF::Redder::GetPackageFullName());
     }
+    inline void RegisterPackage_Redder()
+    {
+        TP::RegisterPackageIfNecessary(TPF::Redder::GetPackageFullName());
+    }
     inline void RemovePackage_Redder()
     {
         if (IsPackageRegistered_Redder())
@@ -219,6 +242,10 @@ namespace Test::PackageManager::Tests
     {
         TP::StagePackageIfNecessary(Test::Packages::Framework::Green::c_packageDirName, TPF::Green::GetPackageFullName());
     }
+    inline void RegisterPackage_Green()
+    {
+        TP::RegisterPackageIfNecessary(TPF::Green::GetPackageFullName());
+    }
     inline void RemovePackage_Green()
     {
         if (IsPackageRegistered_Green())
@@ -262,6 +289,10 @@ namespace Test::PackageManager::Tests
     inline void StagePackage_Blue()
     {
         TP::StagePackageIfNecessary(Test::Packages::Framework::Blue::c_packageDirName, TPF::Blue::GetPackageFullName());
+    }
+    inline void RegisterPackage_Blue()
+    {
+        TP::RegisterPackageIfNecessary(TPF::Blue::GetPackageFullName());
     }
     inline void RemovePackage_Blue()
     {

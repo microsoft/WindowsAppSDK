@@ -11,6 +11,21 @@
 
 #include "PackageManagerTelemetry.h"
 
+#include <windows.foundation.h>
+#include <windows.management.deployment.h>
+#if !defined(TODO_UpdatedWindowsSDK_with_Windows_Management_Deployment_IRemovePackageOptions)
+// Until we have access to the updated Windows SDK we can't use RemovePackageOptions
+// but we need *something* to satisfy PackageManagement_RemovePackageByUriAsync() in the FrameworkUDK
+// so we'll make a placeholder definition to satisfy the compiler enough to let us call
+// PackageManagement_RemovePackageByUriAsync(uri, nullptr). Remove this once the updated
+// Windows SDK makes this unnecessary.
+namespace ABI::Windows::Management::Deployment
+{
+    typedef void * IRemovePackageOptions;
+}
+#endif
+#include <FrameworkUdk/PackageManagement.h>
+
 static_assert(static_cast<int>(winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::Default) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::Default),
               "winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::Default != winrt::Windows::Management::Deployment::StubPackageOption::Default");
 static_assert(static_cast<int>(winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::InstallFull) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::InstallFull),
@@ -67,6 +82,73 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
         }
         return true;
+    }
+    winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus PackageDeploymentManager::IsPackageReadyOrNewerAvailable(hstring const& package)
+    {
+        if (VerifyPackageFullName(package.c_str()) == ERROR_SUCCESS)
+        {
+            const auto isReady{ IsReadyByPackageFullName(package) };
+            if (!isReady)
+            {
+                return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
+            }
+            if (IsNewerAvailableByPackageFullName(package))
+            {
+                return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable;
+            }
+            return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready;
+        }
+
+        const winrt::Windows::Foundation::Uri packageUri{ package };
+        const auto packageAbsoluteUri{ packageUri.AbsoluteUri() };
+        if (!packageAbsoluteUri.empty())
+        {
+            return IsPackageReadyOrNewerAvailableByUri(packageUri);
+        }
+        THROW_HR_MSG(E_INVALIDARG, "%ls", package.c_str());
+    }
+    winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus PackageDeploymentManager::IsPackageReadyOrNewerAvailableByUri(winrt::Windows::Foundation::Uri const& packageUri)
+    {
+        //TODO Awaiting FrameworkUdk update with Uup_SRFindPackageFullNamesByUupProductId()
+        throw hresult_not_implemented();
+    }
+    winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus PackageDeploymentManager::IsPackageSetReadyOrNewerAvailable(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet)
+    {
+        Validate(packageSet);
+
+        bool newerAvailable{};
+        for (const winrt::Microsoft::Windows::Management::Deployment::PackageSetItem& packageSetItem : packageSet.Items())
+        {
+            if (!IsReady(packageSetItem))
+            {
+                (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED,
+                                 "Id=%ls PackageFamilyName=%ls MinVersion=%hu.%hu.%hu.%hu ArchitectureFilter:0x%X",
+                                 packageSetItem.Id().c_str(),
+                                 packageSetItem.PackageFamilyName().c_str(),
+                                 packageSetItem.MinVersion().Major,
+                                 packageSetItem.MinVersion().Minor,
+                                 packageSetItem.MinVersion().Build,
+                                 packageSetItem.MinVersion().Revision,
+                                 packageSetItem.ProcessorArchitectureFilter());
+                return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
+            }
+            if (!newerAvailable && IsNewerAvailable(packageSetItem))
+            {
+                (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_NEWER_AVAILABLE,
+                                 "Id=%ls PackageFamilyName=%ls MinVersion=%hu.%hu.%hu.%hu ArchitectureFilter:0x%X",
+                                 packageSetItem.Id().c_str(),
+                                 packageSetItem.PackageFamilyName().c_str(),
+                                 packageSetItem.MinVersion().Major,
+                                 packageSetItem.MinVersion().Minor,
+                                 packageSetItem.MinVersion().Build,
+                                 packageSetItem.MinVersion().Revision,
+                                 packageSetItem.ProcessorArchitectureFilter());
+                newerAvailable = true;
+            }
+        }
+        return newerAvailable ?
+            winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable :
+            winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready;
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::EnsurePackageReadyAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options)
@@ -559,14 +641,113 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageByFullNameAsync(hstring packageFullName, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
     {
-        //TODO Awaiting FrameworkUdk update with PackageManagement_RemovePackageByUriAsync()
-        throw hresult_not_implemented();
+        auto logTelemetry{ PackageManagementTelemetry::RemovePackageAsync::Start(packageFullName) };
+
+        auto strong{ get_strong() };
+
+        auto cancellation{ co_await winrt::get_cancellation_token() };
+        cancellation.enable_propagation(true);
+
+        logTelemetry.IgnoreCurrentThread();
+        co_await resume_background();   // Allow to register the progress and complete handler
+        auto logTelemetryContinuation{ logTelemetry.ContinueOnCurrentThread() };
+
+        auto progress{ co_await winrt::get_progress_token() };
+        auto packageDeploymentProgress{
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress{
+                PackageDeploymentProgressStatus::Queued, 0} };
+        progress(packageDeploymentProgress);
+
+        // Check parameter(s)
+        //TODO Validate(packageSet);
+
+        winrt::Windows::Management::Deployment::RemovalOptions removeOptions{ ToOptions(options) };
+        HRESULT error{};
+        HRESULT extendedError{};
+        winrt::hstring errorText;
+        winrt::guid activityId{};
+        try
+        {
+            error = LOG_IF_FAILED_MSG(RemovePackageByFullName(packageFullName, options, removeOptions, packageDeploymentProgress, progress, extendedError, errorText, activityId),
+                                      "ExtendedError:0x%08X PackageUri:%ls",
+                                      extendedError, packageFullName.c_str());
+        }
+        catch (...)
+        {
+            const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
+            error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageUri:%ls", extendedError, packageFullName.c_str());
+        }
+        if (FAILED(error))
+        {
+            co_return winrt::make<PackageDeploymentResult>(
+                PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
+        }
+
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
+
+        logTelemetry.Stop(packageFullName);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageByFamilyNameAsync(hstring packageFamilyName, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
     {
-        //TODO Awaiting FrameworkUdk update with PackageManagement_RemovePackageByUriAsync()
-        throw hresult_not_implemented();
+        auto logTelemetry{ PackageManagementTelemetry::RemovePackageAsync::Start(packageFamilyName) };
+
+        auto strong{ get_strong() };
+
+        auto cancellation{ co_await winrt::get_cancellation_token() };
+        cancellation.enable_propagation(true);
+
+        logTelemetry.IgnoreCurrentThread();
+        co_await resume_background();   // Allow to register the progress and complete handler
+        auto logTelemetryContinuation{ logTelemetry.ContinueOnCurrentThread() };
+
+        auto progress{ co_await winrt::get_progress_token() };
+        auto packageDeploymentProgress{
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress{
+                PackageDeploymentProgressStatus::Queued, 0} };
+        progress(packageDeploymentProgress);
+
+        // Check parameter(s)
+        //TODO Validate(packageSet);
+
+        winrt::hstring packageFullName{ packageFamilyName };
+        winrt::Windows::Management::Deployment::RemovalOptions removeOptions{ ToOptions(options) };
+        HRESULT error{};
+        HRESULT extendedError{};
+        winrt::hstring errorText;
+        winrt::guid activityId{};
+        try
+        {
+            // Resource packages are automagically removed when their associated Main|Optional package is removed
+            const auto packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Framework |
+                                     winrt::Windows::Management::Deployment::PackageTypes::Main |
+                                     winrt::Windows::Management::Deployment::PackageTypes::Optional };
+            auto packages{ m_packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
+            if (packages)
+            {
+                for (const winrt::Windows::ApplicationModel::Package& package : packages)
+                {
+                    packageFullName = package.Id().FullName();
+                    error = LOG_IF_FAILED_MSG(RemovePackageByFullName(packageFullName, options, removeOptions, packageDeploymentProgress, progress, extendedError, errorText, activityId),
+                                              "ExtendedError:0x%08X PackageUri:%ls",
+                                              extendedError, packageFullName.c_str());
+                }
+            }
+        }
+        catch (...)
+        {
+            const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
+            error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageUri:%ls", extendedError, packageFullName.c_str());
+        }
+        if (FAILED(error))
+        {
+            co_return winrt::make<PackageDeploymentResult>(
+                PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
+        }
+
+        co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
+
+        logTelemetry.Stop(packageFamilyName);
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageByUriAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
@@ -652,14 +833,21 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         //TODO Awaiting FrameworkUdk update with Uup_SRFindPackageFullNamesByUupProductId()
         throw hresult_not_implemented();
     }
-    bool PackageDeploymentManager::IsPackageRegistrationPending(hstring const& packageFamilyName)
+    bool PackageDeploymentManager::IsPackageRegistrationPending(hstring const& packageFullName)
     {
-        return IsPackageRegistrationPendingForUser(hstring{}, packageFamilyName);
+        return IsPackageRegistrationPendingForUser(nullptr, packageFullName.c_str());
     }
-    bool PackageDeploymentManager::IsPackageRegistrationPendingForUser(hstring const& userSecurityId, hstring const& packageFamilyName)
+    bool PackageDeploymentManager::IsPackageRegistrationPendingForUser(hstring const& userSecurityId, hstring const& packageFullName)
     {
-        //TODO Awaiting FrameworkUdk update with PackageManagement_IsPackageRegistrationPending()
-        throw hresult_not_implemented();
+        wil::unique_any_psid userSid{ ::Security::User::StringToSid(userSecurityId.c_str()) };
+        return IsPackageRegistrationPendingForUser(userSid.get(), packageFullName.c_str());
+    }
+
+    bool PackageDeploymentManager::IsPackageRegistrationPendingForUser(PSID userSid, PCWSTR packageFullName)
+    {
+        BOOL isPending{};
+        THROW_IF_FAILED(::PackageManagement_IsPackageRegistrationPending(userSid, packageFullName, &isPending));
+        return !!isPending;
     }
 
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
@@ -780,6 +968,18 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         const AppModel::Identity::PackageVersion minVersion{ packageSetItem.MinVersion() };
         const auto processorArchitectureFilter{ packageSetItem.ProcessorArchitectureFilter() };
         return ::Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::FindAny(m_packageManager, packageSetItem.PackageFamilyName(), minVersion, processorArchitectureFilter);
+    }
+
+    bool PackageDeploymentManager::IsNewerAvailableByPackageFullName(hstring const& packageFullName)
+    {
+        //TODO Awaiting FrameworkUdk update with PackageManagement_IsNewerAvailable*()
+        return false;
+    }
+
+    bool PackageDeploymentManager::IsNewerAvailable(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem)
+    {
+        //TODO Awaiting FrameworkUdk update with PackageManagement_IsNewerAvailable*()
+        return false;
     }
 
     void PackageDeploymentManager::Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet) const
@@ -1247,6 +1447,79 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                     extendedError = error;
                     errorText.clear();
                     return S_OK;
+                }
+                RETURN_IF_FAILED_MSG(error,
+                                     "ExtendedError:0x%08X PackageFullName:%ls : %ls",
+                                     extendedError, packageFullName.c_str(), errorText.c_str());
+
+                // Status=Error but SUCCEEDED(error) == This.Should.Never.Happen.
+                FAIL_FAST_HR_MSG(E_UNEXPECTED,
+                                 "ExtendedError:0x%08X PackageFullName:%ls : %ls",
+                                 extendedError, packageFullName.c_str(), errorText.c_str());
+            }
+            else if (status == winrt::Windows::Foundation::AsyncStatus::Canceled)
+            {
+                RETURN_WIN32_MSG(ERROR_CANCELLED, "%ls", packageFullName.c_str());
+            }
+            FAIL_FAST_HR_IF_MSG(E_UNEXPECTED, status != winrt::Windows::Foundation::AsyncStatus::Completed,
+                                "Status:%d PackageFullName:%ls : %ls", static_cast<int32_t>(status), packageFullName.c_str(), errorText.c_str());
+        }
+        catch (...)
+        {
+            auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
+            THROW_HR_MSG(exception.code(),
+                         "ExtendedError:0x%08X PackageFullName:%ls : %ls",
+                         extendedError, packageFullName.c_str(), errorText.c_str());
+        }
+        return S_OK;
+    }
+
+    HRESULT PackageDeploymentManager::RemovePackageByFullName(
+        winrt::hstring const& packageFullName,
+        winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions const& options,
+        winrt::Windows::Management::Deployment::RemovalOptions const& removeOptions,
+        winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+        wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+        HRESULT& extendedError,
+        winrt::hstring& errorText,
+        winrt::guid& activityId)
+    {
+        extendedError = S_OK;
+        errorText.clear();
+        activityId = winrt::guid{};
+
+        auto deploymentOperation{ m_packageManager.RemovePackageAsync(packageFullName, removeOptions) };
+        deploymentOperation.Progress([&](winrt::Windows::Foundation::IAsyncOperationWithProgress<
+                                            winrt::Windows::Management::Deployment::DeploymentResult,
+                                            winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
+                                         winrt::Windows::Management::Deployment::DeploymentProgress const& progressInfo)
+        {
+            packageDeploymentProgress.Progress = PercentageToProgress(progressInfo.percentage);
+            progress(packageDeploymentProgress);
+        });
+        deploymentOperation.get();
+        try
+        {
+            const auto deploymentResult{ deploymentOperation.GetResults() };
+            const HRESULT error{ static_cast<HRESULT>(deploymentOperation.ErrorCode()) };
+            extendedError = deploymentResult.ExtendedErrorCode();
+            errorText = deploymentResult.ErrorText();
+            activityId = deploymentResult.ActivityId();
+            const auto status{ deploymentOperation.Status() };
+            if (status == winrt::Windows::Foundation::AsyncStatus::Error)
+            {
+                if (error == HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_DOWNGRADE))
+                {
+                    if (!options.FailIfNotFound())
+                    {
+                        // Newer version already installed. Success!
+                        (void)LOG_HR_MSG(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_DOWNGRADE),
+                                         "ExtendedError:0x%08X PackageFullName:%ls : %ls",
+                                         extendedError, packageFullName.c_str(), errorText.c_str());
+                        extendedError = error;
+                        errorText.clear();
+                        return S_OK;
+                    }
                 }
                 RETURN_IF_FAILED_MSG(error,
                                      "ExtendedError:0x%08X PackageFullName:%ls : %ls",
