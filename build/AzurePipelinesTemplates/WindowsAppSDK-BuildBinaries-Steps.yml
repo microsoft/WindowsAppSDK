@@ -55,6 +55,14 @@ steps:
     flattenFolders: false
     overWrite: true
 
+- task: WinUndockNativeCompiler@1
+  displayName: 'Setup native compiler version override'
+  inputs:
+    microsoftDropReadPat: $(System.AccessToken)
+    compilerPackageName: $(compilerOverridePackageName)
+    compilerPackageVersion: $(compilerOverridePackageVersion)
+    slnDirectory: $(Build.SourcesDirectory)
+
 - task: PowerShell@2
   name: BuildBinaries
   inputs:

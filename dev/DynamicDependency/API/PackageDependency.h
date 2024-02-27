@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -58,7 +58,8 @@ public:
         m_lifetimeKind(other.m_lifetimeKind),
         m_lifetimeArtifact(other.m_lifetimeArtifact),
         m_options(other.m_options),
-        m_packageDependencyId(other.m_packageDependencyId)
+        m_packageDependencyId(other.m_packageDependencyId),
+        m_packageFullName(other.m_packageFullName)
     {
         User(other.m_user.get());
     }
@@ -71,7 +72,8 @@ public:
         m_lifetimeKind(std::move(other.m_lifetimeKind)),
         m_lifetimeArtifact(std::move(other.m_lifetimeArtifact)),
         m_options(std::move(other.m_options)),
-        m_packageDependencyId(std::move(other.m_packageDependencyId))
+        m_packageDependencyId(std::move(other.m_packageDependencyId)),
+        m_packageFullName(std::move(other.m_packageFullName))
     {
     }
 
@@ -88,6 +90,7 @@ public:
             m_lifetimeArtifact = other.m_lifetimeArtifact;
             m_options = other.m_options;
             m_packageDependencyId = other.m_packageDependencyId;
+            m_packageFullName = other.m_packageFullName;
         }
         return *this;
     }
@@ -105,6 +108,7 @@ public:
             m_lifetimeArtifact = std::move(other.m_lifetimeArtifact);
             m_options = std::move(other.m_options);
             m_packageDependencyId = std::move(other.m_packageDependencyId);
+            m_packageFullName = std::move(other.m_packageFullName);
         }
         return *this;
     }
@@ -119,6 +123,7 @@ public:
         m_lifetimeArtifact.clear();
         m_options = MddCreatePackageDependencyOptions::None;
         m_packageDependencyId.clear();
+        m_packageFullName.clear();
     }
 
     void GenerateId();
@@ -224,6 +229,16 @@ public:
         return m_packageFullName;
     }
 
+    void PackageFullName(const std::wstring& packageFullName)
+    {
+        m_packageFullName = packageFullName;
+    }
+
+    void ResolvedPackageFullName(const std::wstring& packageFullName) const
+    {
+        m_packageFullName = packageFullName;
+    }
+
     std::vector<std::wstring> FindPackagesByFamily() const;
 
     bool IsArchitectureInArchitectures(const MddCore::Architecture architecture) const
@@ -316,6 +331,6 @@ private:
     std::wstring m_lifetimeArtifact;
     MddCreatePackageDependencyOptions m_options = MddCreatePackageDependencyOptions::None;
     std::wstring m_packageDependencyId;
-    std::wstring m_packageFullName;
+    mutable std::wstring m_packageFullName;
 };
 }

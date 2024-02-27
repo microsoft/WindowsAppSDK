@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #if !defined(PACKAGEGRAPH_H)
@@ -33,6 +33,24 @@ private:
         MddAddPackageDependencyOptions options,
         _In_ PCWSTR packageDependencyId,
         MDD_PACKAGEDEPENDENCY_CONTEXT& context);
+
+public:
+    HRESULT GetResolvedPackageDependency(
+        PCWSTR packageDependencyId,
+        wil::unique_process_heap_string& packageFullName) noexcept;
+
+    static HRESULT GetResolvedPackageDependency(
+        const MddCore::PackageDependency& packageDependency,
+        wil::unique_process_heap_string& packageFullName);
+
+public:
+    HRESULT GetResolvedPackageDependency2(
+        PCWSTR packageDependencyId,
+        wil::unique_process_heap_string& packageFullName) noexcept;
+
+    static HRESULT GetResolvedPackageDependency2(
+        const MddCore::PackageDependency& packageDependency,
+        wil::unique_process_heap_string& packageFullName);
 
 public:
     HRESULT ResolvePackageDependency(

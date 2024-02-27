@@ -8,6 +8,9 @@ parameters:
 - name: "IsOneBranch"
   type: boolean
   default: True
+- name: "IsOfficial"
+  type: boolean
+  default: False
 - name: "BuildMockWindowsAppSDK"
   type: boolean
   default: True
@@ -140,20 +143,21 @@ stages:
       env:
         LIB: $(Build.SourcesDirectory)
 
-    - task: PublishSymbols@2
-      displayName: 'Publish symbols to public server (without source indexing)'
-      inputs:
-        searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
-        symbolServerType: 'TeamServices'
-      # This ADO task does not support indexing of github sources currently :-(
-        indexSources: false
-        detailedLog: true
-      # # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
-      # # To work around this issue, we just force LIB to be any dir that we know exists.
-      # env:
-      #   LIB: $(Build.SourcesDirectory)
-      #   ArtifactServices_Symbol_AccountName: microsoftpublicsymbols
-      #   ArtifactServices_Symbol_PAT: $(WinSDKLab_microsoftpublicsymbols_PAT)
+    - ${{ if eq(parameters.isOfficial, 'true') }}:
+      - task: PublishSymbols@2
+        displayName: 'Publish symbols to public server (without source indexing)'
+        inputs:
+          searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+          symbolServerType: 'TeamServices'
+        # This ADO task does not support indexing of github sources currently :-(
+          indexSources: false
+          detailedLog: true
+        # # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
+        # # To work around this issue, we just force LIB to be any dir that we know exists.
+          Pat: $(WinAppSdkLabSymbolsPAT)
+        env:
+          LIB: $(Build.SourcesDirectory)
+          ArtifactServices_Symbol_AccountName: microsoftpublicsymbols
 
     - task: PowerShell@2
       name: SetVersion
