@@ -137,8 +137,8 @@ Legend:
 
 ## 3.2. Is\*Ready()
 
-Is\*Ready() methods determine if the target is installed and ready for use. Reasons why a package is
-not ready can include:
+Is\*Ready() methods determine if the target is installed (registered) and ready for use. Reasons why
+a package is not ready can include:
 
 * The package is not present on the machine
 * The package is present on the machine but not registered for the user
@@ -150,19 +150,26 @@ can be used.
 
 ## 3.3. Is\*ReadyOrNewerAvailable()
 
-Is\*Ready() methods determine if the target is installed and ready for use or a newer version is
-locally available. Reasons why a package is not ready can include:
+Is\*ReadyOrNewerAvailable() methods determine if the target is installed (registered) and ready for
+use AND if a newer version is locally available. Reasons why a package is ready but a newer version
+is available can include:
 
-* The package is not present on the machine
-* The package is present on the machine but not registered for the user
-* The package is registered for the user but is not in a healthy status e.g. its
-  Package.Status=Tampered
 * The package is registered for the user but a newer version is available locally on the machine
   e.g. a user has package v1 registered and Windows Update downloaded and staged v2 in the
   background while app(s) are running using v1.
 
 Is\*ReadyOrNewerAvailable() methods are a quick test to determine if more (costly) work is needed
 before the target can be used.
+
+**NOTE:** Is\*ReadyOrNewerAvailable() can only determine a newer package is available than a package
+installed (registered) and ready for use. If Is\*Ready() returns `false` then
+Is\*ReadyOrNewerAvailable() will never return `NewerAvailable`.
+
+**NOTE:** Is\*ReadyOrNewerAvailable() does not require admin privilege.
+[PackageManager.FindPackages](https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.findpackages?view=winrt-22621)()
+and
+[PackageManager.FindPackagesForUser](https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.findpackagesforuser?view=winrt-22621)(user!=currentuser...)
+can enumerate packages regardless if staged or registered for the user but requires admin privilege.
 
 ## 3.4. Ensure\*Ready()
 
@@ -651,7 +658,7 @@ if (options.IsLimitToExistingPackagesSupported)
 ```c# (but really MIDL3)
 namespace Microsoft.Windows.Management.Deployment
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract PackageDeploymentContract{};
 
     /// Represents a package storage volume.
@@ -716,7 +723,7 @@ namespace Microsoft.Windows.Management.Deployment
     };
 
     /// Defines the stub behavior for an app package that is being added or staged.
-    [contract(PackageDeploymentContract, 1)]
+    [contract(PackageDeploymentContract, 2)]
     enum PackageReadyOrNewerAvailableStatus
     {
         NotReady             = 0,
@@ -912,7 +919,8 @@ namespace Microsoft.Windows.Management.Deployment
 
         AddPackageOptions AddPackageOptions { get; };
 
-        Boolean RegisterNewerIfAvailable { get; };
+        [contractversion(2)]
+        Boolean RegisterNewerIfAvailable;
     }
 
     [contract(PackageDeploymentContract, 1)]
@@ -937,10 +945,13 @@ namespace Microsoft.Windows.Management.Deployment
 
         // Return true if the package(s) are present and available for use
 
+        [contractversion(2)]
         PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailable(String package);
 
+        [contractversion(2)]
         PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailableByUri(Windows.Foundation.Uri packageUri);
 
+        [contractversion(2)]
         PackageReadyOrNewerAvailableStatus IsPackageSetReadyOrNewerAvailable(PackageSet packageSet);
 
         //-------------------------------------------------------------
