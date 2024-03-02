@@ -7,7 +7,7 @@ import "M.AM.DynamicDependency.idl";
 
 namespace Microsoft.Windows.Management.Deployment
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract PackageDeploymentContract{};
 
     /// Represents a package storage volume.
@@ -72,7 +72,7 @@ namespace Microsoft.Windows.Management.Deployment
     };
 
     /// Defines the stub behavior for an app package that is being added or staged.
-    [contract(PackageDeploymentContract, 1)]
+    [contract(PackageDeploymentContract, 2)]
     enum PackageReadyOrNewerAvailableStatus
     {
         NotReady             = 0,
@@ -268,7 +268,8 @@ namespace Microsoft.Windows.Management.Deployment
 
         AddPackageOptions AddPackageOptions { get; };
 
-        Boolean RegisterNewerIfAvailable { get; };
+        [contractversion(2)]
+        Boolean RegisterNewerIfAvailable;
     }
 
     [contract(PackageDeploymentContract, 1)]
@@ -293,10 +294,13 @@ namespace Microsoft.Windows.Management.Deployment
 
         // Return true if the package(s) are present and available for use
 
+        [contractversion(2)]
         PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailable(String package);
 
+        [contractversion(2)]
         PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailableByUri(Windows.Foundation.Uri packageUri);
 
+        [contractversion(2)]
         PackageReadyOrNewerAvailableStatus IsPackageSetReadyOrNewerAvailable(PackageSet packageSet);
 
         //-------------------------------------------------------------
