@@ -3,8 +3,3 @@ variables:
   major: "1"
   minor: "6"
   patch: "0"
-
-  # Native compiler version override for win undock. The two values below are for Ge, defined in:
-  # https://dev.azure.com/microsoft/OS/_git/UndockedES?path=/Pipelines/Config/CompilerToolsSettings.json
-  compilerOverridePackageName: "DevDiv.rel.LKG16.VCTools"    
-  compilerOverridePackageVersion: "19.38.3313310000+DevDivGIT.CI20231130.01-8BB7F026181F5D52D44CA519FF6A47BFA2763E45"
