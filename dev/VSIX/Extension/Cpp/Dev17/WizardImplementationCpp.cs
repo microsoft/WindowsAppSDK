@@ -80,6 +80,7 @@ namespace WindowsAppSDK.TemplateUtilities.Cpp
         }
         private void LogError(string message)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
