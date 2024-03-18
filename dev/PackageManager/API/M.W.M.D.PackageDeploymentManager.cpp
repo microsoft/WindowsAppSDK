@@ -6,10 +6,10 @@
 #include "Microsoft.Windows.Management.Deployment.PackageDeploymentManager.g.cpp"
 
 #include "M.W.M.D.PackageDeploymentResult.h"
-#include "MsixPackageManager.h"
 #include "PackageDeploymentResolver.h"
 
 #include "PackageManagerTelemetry.h"
+#include "logging.h"
 
 static_assert(static_cast<int>(winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::Default) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::Default),
               "winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::Default != winrt::Windows::Management::Deployment::StubPackageOption::Default");
@@ -54,15 +54,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             if (!IsReady(packageSetItem))
             {
-                (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED,
-                                 "Id=%ls PackageFamilyName=%ls MinVersion=%hu.%hu.%hu.%hu ArchitectureFilter:0x%X",
-                                 packageSetItem.Id().c_str(),
-                                 packageSetItem.PackageFamilyName().c_str(),
-                                 packageSetItem.MinVersion().Major,
-                                 packageSetItem.MinVersion().Minor,
-                                 packageSetItem.MinVersion().Build,
-                                 packageSetItem.MinVersion().Revision,
-                                 packageSetItem.ProcessorArchitectureFilter());
+                Common::Logging::DebugLog(std::format(L"Id={} PackageFamilyName={} MinVersion={}.{}.{}.{} ArchitectureFilter:0x{}",
+                            packageSetItem.Id().c_str(),
+                            packageSetItem.PackageFamilyName().c_str(),
+                            packageSetItem.MinVersion().Major,
+                            packageSetItem.MinVersion().Minor,
+                            packageSetItem.MinVersion().Build,
+                            packageSetItem.MinVersion().Revision,
+                            static_cast<std::uint32_t>(packageSetItem.ProcessorArchitectureFilter())));
                 return false;
             }
         }

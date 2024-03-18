@@ -8,8 +8,6 @@
 #include <source_location>
 #include <sstream>
 
-// #define DebugLog(msg) Common::Logging::LogToDebugFunction(msg, __FILE__, __LINE__)
-
 namespace Common::Logging
 {
 
@@ -28,6 +26,5 @@ namespace Common::Logging
         DebugLog(msg.c_str(), location);
     }
 }
-
 
 #endif
