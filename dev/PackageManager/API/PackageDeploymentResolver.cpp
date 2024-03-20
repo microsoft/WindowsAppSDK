@@ -161,7 +161,7 @@ bool Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::FindAny(
     winrt::hstring packageFullName{ Find(packageManager, packageFamilyName, minVersion, processorArchitectureFilter, true) };
     return !packageFullName.empty();
 }
-//TODO : this looks to be very similar to MddBootstrap.cpp FindDDLMViaEnumeration()
+//TODO : this looks to be very similar to MddBootstrap.cpp FindDDLMViaEnumeration(). Good candidate for refactoring.
 winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::Find(
     const winrt::Windows::Management::Deployment::PackageManager& packageManager,
     const winrt::hstring& packageFamilyName,
