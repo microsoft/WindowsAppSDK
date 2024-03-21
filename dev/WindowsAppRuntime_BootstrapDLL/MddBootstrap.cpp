@@ -14,9 +14,6 @@
 
 #include <filesystem>
 
-/// MSIX Dynamic Dependency: Bootstrap initialization found an applicable DynamicDependencyLifetimeManager (DDLM) best matching the criteria
-#define MDD_E_BOOTSTRAP_INITIALIZE_DDLM_FOUND           _HRESULT_TYPEDEF_(0x80040013L)
-
 /// MSIX Dynamic Dependency: Bootstrap initialization request is incompatible with current Bootstrap initialization state.
 #define MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE         _HRESULT_TYPEDEF_(0x80040014L)
 
@@ -1010,7 +1007,7 @@ void FindDDLMViaEnumeration(
         }
     }
     // if bestFitVersion is 0, the value we initialized it with,  then we didn't find a suitable candidate
-    THROW_HR_IF_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_FOUND, bestFitVersion.Version == 0, "No suitable version matching criteria is found. Criteria: %ls", criteria.get());
+    THROW_HR_IF_MSG(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, bestFitVersion.Version == 0, "No suitable version matching criteria is found. Criteria: %ls", criteria.get());
     {
         wchar_t printmsg[128];
         Common::Logging::DebugLog(std::format(L"Bootstrap.Intitialize: {} best matches the criteria ({}) of {} packages scanned",
