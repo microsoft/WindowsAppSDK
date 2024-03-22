@@ -1,8 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#if !defined(__LOGGING_H)
-#define __LOGGING_H
+#pragma once
 
 #include <Windows.h>
 #include <source_location>
@@ -27,5 +26,3 @@ namespace Common::Logging
         DebugLog(msg.c_str(), location);
     }
 }
-
-#endif
