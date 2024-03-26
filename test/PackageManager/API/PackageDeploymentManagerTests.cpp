@@ -41,6 +41,22 @@ namespace Test::PackageManager::Tests
             TPMT::ClearPackageStatusByPackageFamilyName(m_packageManager, packageFamilyName, status);
         }
 
+        winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult WaitForDeploymentOperation(
+            winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>& deploymentOperation)
+        {
+            using namespace winrt::Windows::Foundation;
+            using namespace winrt::Microsoft::Windows::Management::Deployment;
+            AsyncOperationProgressHandler<PackageDeploymentResult, PackageDeploymentProgress> progressCallback(
+                [&](const IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>&, PackageDeploymentProgress progress)
+            {
+                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%lf", static_cast<int>(progress.Status), progress.Progress));
+                }
+            );
+            deploymentOperation.Progress(progressCallback);
+            auto deploymentResult{ deploymentOperation.get() };
+            return deploymentResult;
+        }
+
     protected:
         winrt::Windows::Management::Deployment::PackageManager m_packageManager;
     };
@@ -557,14 +573,7 @@ namespace Test::PackageManager::Tests
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
             auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
-            winrt::Windows::Foundation::AsyncOperationProgressHandler<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> progressCallback(
-                [](const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>&, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress progress)
-                {
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%lf", static_cast<int>(progress.Status), progress.Progress));
-                }
-            );
-            deploymentOperation.Progress(progressCallback);
-            auto deploymentResult{ deploymentOperation.get() };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -717,14 +726,7 @@ namespace Test::PackageManager::Tests
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
             auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
-            winrt::Windows::Foundation::AsyncOperationProgressHandler<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> progressCallback(
-                [](const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>&, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress progress)
-                {
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%lf", static_cast<int>(progress.Status), progress.Progress));
-                }
-            );
-            deploymentOperation.Progress(progressCallback);
-            auto deploymentResult{ deploymentOperation.get() };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -863,14 +865,7 @@ namespace Test::PackageManager::Tests
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
             auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
-            winrt::Windows::Foundation::AsyncOperationProgressHandler<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> progressCallback(
-                [](const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>&, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress progress)
-                {
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%lf", static_cast<int>(progress.Status), progress.Progress));
-                }
-            );
-            deploymentOperation.Progress(progressCallback);
-            auto deploymentResult{ deploymentOperation.get() };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -955,14 +950,7 @@ namespace Test::PackageManager::Tests
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.AddPackageAsync(package, options) };
-            winrt::Windows::Foundation::AsyncOperationProgressHandler<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> progressCallback(
-                [](const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>&, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress progress)
-                {
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%lf", static_cast<int>(progress.Status), progress.Progress));
-                }
-            );
-            deploymentOperation.Progress(progressCallback);
-            auto deploymentResult{ deploymentOperation.get() };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1098,14 +1086,7 @@ namespace Test::PackageManager::Tests
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.AddPackageByUriAsync(packageUri, options) };
-            winrt::Windows::Foundation::AsyncOperationProgressHandler<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> progressCallback(
-                [](const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>&, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress progress)
-                {
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%lf", static_cast<int>(progress.Status), progress.Progress));
-                }
-            );
-            deploymentOperation.Progress(progressCallback);
-            auto deploymentResult{ deploymentOperation.get() };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1255,14 +1236,7 @@ namespace Test::PackageManager::Tests
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.AddPackageSetAsync(packageSet, options) };
-            winrt::Windows::Foundation::AsyncOperationProgressHandler<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> progressCallback(
-                [](const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>&, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress progress)
-                {
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%lf", static_cast<int>(progress.Status), progress.Progress));
-                }
-            );
-            deploymentOperation.Progress(progressCallback);
-            auto deploymentResult{ deploymentOperation.get() };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1415,14 +1389,7 @@ namespace Test::PackageManager::Tests
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.AddPackageSetAsync(packageSet, options) };
-            winrt::Windows::Foundation::AsyncOperationProgressHandler<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> progressCallback(
-                [](const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>&, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress progress)
-                {
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%lf", static_cast<int>(progress.Status), progress.Progress));
-                }
-            );
-            deploymentOperation.Progress(progressCallback);
-            auto deploymentResult{ deploymentOperation.get() };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1561,14 +1528,7 @@ namespace Test::PackageManager::Tests
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.AddPackageSetAsync(packageSet, options) };
-            winrt::Windows::Foundation::AsyncOperationProgressHandler<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> progressCallback(
-                [](const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>&, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress progress)
-                {
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%lf", static_cast<int>(progress.Status), progress.Progress));
-                }
-            );
-            deploymentOperation.Progress(progressCallback);
-            auto deploymentResult{ deploymentOperation.get() };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1660,14 +1620,7 @@ namespace Test::PackageManager::Tests
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.StagePackageAsync(package, options) };
-            winrt::Windows::Foundation::AsyncOperationProgressHandler<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> progressCallback(
-                [](const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>&, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress progress)
-            {
-                WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%lf", static_cast<int>(progress.Status), progress.Progress));
-            }
-            );
-            deploymentOperation.Progress(progressCallback);
-            auto deploymentResult{ deploymentOperation.get() };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1815,14 +1768,7 @@ namespace Test::PackageManager::Tests
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options) };
-            winrt::Windows::Foundation::AsyncOperationProgressHandler<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> progressCallback(
-                [](const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>&, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress progress)
-                {
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%lf", static_cast<int>(progress.Status), progress.Progress));
-                }
-            );
-            deploymentOperation.Progress(progressCallback);
-            auto deploymentResult{ deploymentOperation.get() };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1983,14 +1929,7 @@ namespace Test::PackageManager::Tests
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.StagePackageSetAsync(packageSet, options) };
-            winrt::Windows::Foundation::AsyncOperationProgressHandler<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> progressCallback(
-                [](const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>&, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress progress)
-                {
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%lf", static_cast<int>(progress.Status), progress.Progress));
-                }
-            );
-            deploymentOperation.Progress(progressCallback);
-            auto deploymentResult{ deploymentOperation.get() };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2196,14 +2135,7 @@ namespace Test::PackageManager::Tests
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.StagePackageSetAsync(packageSet, options) };
-            winrt::Windows::Foundation::AsyncOperationProgressHandler<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> progressCallback(
-                [](const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>&, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress progress)
-                {
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%lf", static_cast<int>(progress.Status), progress.Progress));
-                }
-            );
-            deploymentOperation.Progress(progressCallback);
-            auto deploymentResult{ deploymentOperation.get() };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2397,14 +2329,7 @@ namespace Test::PackageManager::Tests
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.StagePackageSetAsync(packageSet, options) };
-            winrt::Windows::Foundation::AsyncOperationProgressHandler<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> progressCallback(
-                [](const winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>&, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress progress)
-                {
-                    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"...State:%d Percentage:%lf", static_cast<int>(progress.Status), progress.Progress));
-                }
-            );
-            deploymentOperation.Progress(progressCallback);
-            auto deploymentResult{ deploymentOperation.get() };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
