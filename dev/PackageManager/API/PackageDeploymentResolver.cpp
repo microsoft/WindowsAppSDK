@@ -220,6 +220,7 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
                 const auto supportedArchitectures{ GetSystemSupportedArchitectures(nativeMachine) };
                 if (!IsArchitectureInArchitectures(candidateArchitecture, supportedArchitectures))
                 {
+                    // package arch didn't match anything from system supported architectures
                     continue;
                 }
             }
@@ -227,6 +228,7 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
             {
                 if (!IsArchitectureInArchitectures(candidateArchitecture, processorArchitectureFilter))
                 {
+                    // package arch doesn't match from specified arch list
                     continue;
                 }
             }
