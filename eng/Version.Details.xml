@@ -27,7 +27,7 @@
     -->
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.FrameworkUdk" Version="1.6.0-CI-26085.1000.240316-1111.0">
+    <Dependency Name="Microsoft.FrameworkUdk" Version="1.6.0-CI-26090.1000.240325-1038.0">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
       <Sha>c2021b41a2c423f3ab83d1de51218b9df521fb8f</Sha>
     </Dependency>
