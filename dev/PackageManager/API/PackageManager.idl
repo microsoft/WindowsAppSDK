@@ -268,7 +268,7 @@ namespace Microsoft.Windows.Management.Deployment
 
         AddPackageOptions AddPackageOptions { get; };
 
-        [contractversion(2)]
+        [contract(PackageDeploymentContract, 2)]
         Boolean RegisterNewerIfAvailable;
     }
 
@@ -294,13 +294,13 @@ namespace Microsoft.Windows.Management.Deployment
 
         // Return true if the package(s) are present and available for use
 
-        [contractversion(2)]
+        [contract(PackageDeploymentContract, 2)]
         PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailable(String package);
 
-        [contractversion(2)]
+        [contract(PackageDeploymentContract, 2)]
         PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailableByUri(Windows.Foundation.Uri packageUri);
 
-        [contractversion(2)]
+        [contract(PackageDeploymentContract, 2)]
         PackageReadyOrNewerAvailableStatus IsPackageSetReadyOrNewerAvailable(PackageSet packageSet);
 
         //-------------------------------------------------------------
