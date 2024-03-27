@@ -199,7 +199,7 @@ std::filesystem::path MddCore::DataStore::GetDataStorePathForUserViaApplicationD
             // folks (and our higher level logic before it even makes it to the caller!). So we'll
             // trap the ERROR_FILE_NOT_FOUND case and map it to our more expected ERROR_NOT_FOUND
             // (and log something so callers can understand).
-            Common::Logging::DebugLog(std::format(L"PackageFamily:{}", mainPackageFamilyName.c_str()));
+            THROW_HR_MSG(MDD_E_WINDOWSAPPRUNTIME_DATASTORE_NOT_FOUND, "PackageFamily:%ls", mainPackageFamilyName.c_str());
         }
         throw;
     }
