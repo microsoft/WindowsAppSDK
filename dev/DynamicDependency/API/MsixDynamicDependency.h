@@ -8,6 +8,9 @@
 
 #include <stdint.h>
 
+// MSIX Dynamic Dependency: Bootstrap initialization request is incompatible with current Bootstrap initialization state.
+#define MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE         _HRESULT_TYPEDEF_(0x80040014L)
+
 #if defined(__cplusplus)
 
 enum class MddCreatePackageDependencyOptions : uint32_t
