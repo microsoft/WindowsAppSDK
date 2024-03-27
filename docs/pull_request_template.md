@@ -4,6 +4,9 @@ WARNING:
 Comments made by azure-pipelines bot maybe inaccurate.
 Please see pipeline link to verify that the build is being ran.
 
+PullRequest from Forks will also fail to trigger validation.
+Please create your PullRequest directly on the repository.
+
 For status checks on the main branch, please use TransportPackage-Foundation-PR
 (https://microsoft.visualstudio.com/ProjectReunion/_build?definitionId=81063&_a=summary)
 and run the build against your PR branch with the default parameters.
