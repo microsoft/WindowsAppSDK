@@ -46,7 +46,7 @@ parameters:
 
 steps:
   - ${{ if ne(parameters.TransportPackageArtifactName, '') }}:
-    - task: DownloadPipelineArtifact@2
+    - task: DownloadBuildArtifacts@0
       inputs:
         artifactName: ${{ parameters.TransportPackageArtifactName }}
         downloadPath: '$(Build.SourcesDirectory)\localpackages'

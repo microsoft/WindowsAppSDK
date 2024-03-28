@@ -25,7 +25,7 @@ Param(
 $utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
 
 $scriptFullPath =  (Split-Path -Parent $MyInvocation.MyCommand.Definition)
-Write-Host "scriptFullPath: $scriptFullPath"
+Write-Verbose "scriptFullPath: $scriptFullPath"
 
 # Default values for CompanyName, ProductName, Copyright
 $companyName = "Microsoft Corporation"
@@ -46,9 +46,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("$ProductMajor.$ProductMinor")]
 "@
 
-Write-Host $assemblyInfoCs
+Write-Verbose $assemblyInfoCs
 $assemblyInfoCsPath = "$scriptFullPath/AssemblyInfo.cs"
-Write-Host "Writing $assemblyInfoCsPath..."
+Write-Verbose "Writing $assemblyInfoCsPath..."
 [System.IO.File]::WriteAllLines($assemblyInfoCsPath, $assemblyInfoCs, $utf8NoBomEncoding)
 
 # Generating AssemblyInfo.ver override
@@ -128,7 +128,7 @@ VS_VERSION_INFO VERSIONINFO
  END
 "@
 
-Write-Host $assemblyInfoVer
+Write-Verbose $assemblyInfoVer
 $assemblyInfoVerPath = "$scriptFullPath/AssemblyInfo.ver"
-Write-Host "Writing $assemblyInfoVerPath..."
+Write-Verbose "Writing $assemblyInfoVerPath..."
 [System.IO.File]::WriteAllLines($assemblyInfoVerPath, $assemblyInfoVer, $utf8NoBomEncoding)

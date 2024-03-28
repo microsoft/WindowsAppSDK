@@ -1,4 +1,4 @@
-﻿# Copyright (c) Microsoft Corporation and Contributors.
+# Copyright (c) Microsoft Corporation and Contributors.
 # Licensed under the MIT License.
 
 <#
@@ -318,30 +318,27 @@ $vswhere = ''
 $vswhere_url = ''
 function Get-VSWhere
 {
+    Write-Verbose "Detecting vswhere.exe..."
+    if ($OnlineVSWhere -eq $false)
+    {
+        $global:vswhere = Get-VSWhereOffline
+    }
     if ([string]::IsNullOrEmpty($global:vswhere))
     {
-        Write-Verbose "Detecting vswhere.exe..."
-        if ($OnlineVSWhere -eq $false)
+        if ($Offline -eq $false)
         {
-            $global:vswhere = Get-VSWhereOffline
+            $global:vswhere = Get-VSWhereOnline
         }
-        if ([string]::IsNullOrEmpty($global:vswhere))
-        {
-            if ($Offline -eq $false)
-            {
-                $global:vswhere = Get-VSWhereOnline
-            }
-        }
-        if ([string]::IsNullOrEmpty($global:vswhere))
-        {
-            Write-Host "ERROR: vswhere.exe not found" -ForegroundColor Red -BackgroundColor Black
-            $global:issues += 1
-            return $null
-        }
-
-        Write-Verbose "Using $vswhere"
-        $global:vswhere = $vswhere
     }
+    if ([string]::IsNullOrEmpty($global:vswhere))
+    {
+        Write-Host "ERROR: vswhere.exe not found" -ForegroundColor Red -BackgroundColor Black
+        $global:issues += 1
+        return $null
+    }
+
+    Write-Verbose "Using $vswhere"
+    $global:vswhere = $vswhere
     return $global:vswhere
 }
 
@@ -376,22 +373,18 @@ function Run-Process([string]$exe, [string]$arguments, [Ref][string]$stderr, [in
 $vspath = ''
 function Get-VisualStudio2022InstallPath
 {
-    if ([string]::IsNullOrEmpty($global:vspath))
+    Write-Verbose "Detecting VisualStudio 2022..."
+    $vswhere = Get-VSWhere
+    if ([string]::IsNullOrEmpty($global:vswhere))
     {
-        Write-Verbose "Detecting VisualStudio 2022..."
-        $vswhere = Get-VSWhere
-        if ([string]::IsNullOrEmpty($global:vswhere))
-        {
-            return $null
-        }
-        $args = " -latest -products * -version [17.0,18.0) -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath"
-        Write-Verbose "Executing $vswhere $args"
-        $path = Run-Process $vswhere $args
-        $path = $path -replace [environment]::NewLine, ''
-        Write-Verbose "Visual Studio 2022 detected at $path"
-        $global:vspath = $path
+        return $null
     }
-    return $global:vspath
+    $args = " -latest -products * -version [17.0,18.0) -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath"
+    Write-Verbose "Executing $vswhere $args"
+    $path = Run-Process $vswhere $args
+    $path = $path -replace [environment]::NewLine, ''
+    Write-Verbose "Visual Studio 2022 detected at $path"
+    $global:vspath = $path
 }
 
 function Test-VisualStudioComponent

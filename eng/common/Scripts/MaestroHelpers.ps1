@@ -53,7 +53,7 @@ function ConvertToMaestroFriendlyAzureDevOpUri([string]$buildRepositoryUri)
 
 function IsGitHubRepo([string]$buildRepositoryUri)
 {
-    $githubUrls = @("https://github.com", "https://www.github.com")
+    $githubUrls = @("https://github.com", "https://wwww.github.com")
     for ($i = 0; $i -le ($githubUrls.length); $i += 1)
     {
         if ($buildRepositoryUri.length -ge $githubUrls[$i].length)
