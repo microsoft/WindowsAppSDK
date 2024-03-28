@@ -31,19 +31,26 @@ parameters:
   type: boolean
   default: True
 
-variables:
-- template: WindowsAppSDK-Versions.yml
-- template: WindowsAppSDK-CommonVariables.yml
-
 resources:
   repositories:
     - repository: templates
       type: git
       name: OneBranch.Pipelines/GovernedTemplates
       ref: refs/heads/main
+    - repository: WindowsAppSDKConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+
+variables:
+- template: WindowsAppSDK-Versions.yml
+- template: WindowsAppSDK-CommonVariables.yml
+- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-GlobalVariables.yml
+- group: PublicSymbols-Secrets
 
 extends:
-  template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
+  template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates
   parameters:
     platform:
       name: 'windows_undocked' # windows undocked
@@ -55,6 +62,8 @@ extends:
       tsa:
         enabled: $(TsaEnabled) # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
       isNativeCode: false #TODO turn back on when bug in CheckCFlags2.exe is fixed
+      asyncSdl: # https://aka.ms/obpipelines/asyncsdl
+        enabled: false
       psscriptanalyzer:
         enable: true
         break: true
@@ -72,9 +81,18 @@ extends:
         break: true
 
     stages:
-    - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
+      parameters:
+        SignOutput: ${{ parameters.SignOutput }}
+        PublishPackage: true
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Publish-Stage.yml@self
       parameters:
         PublishToMaestro: ${{ parameters.PublishToMaestro }}
         IgnoreFailures: ${{ parameters.IgnoreFailures }}
-        SignOutput: ${{ parameters.SignOutput }}
-        PublishPackage: true

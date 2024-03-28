@@ -14,6 +14,14 @@ steps:
   parameters:
     IsOneBranch: ${{ parameters.IsOneBranch }}
 
+- task: WinUndockNativeCompiler@1
+  displayName: 'Setup native compiler version override'
+  inputs:
+    microsoftDropReadPat: $(System.AccessToken)
+    compilerPackageName: $(compilerOverridePackageName)
+    compilerPackageVersion: $(compilerOverridePackageVersion)
+    slnDirectory: $(Build.SourcesDirectory)\dev\MRTCore\mrt
+
 - ${{ if parameters.RunPrefast }}:
   # PREFast scan is enabled in this pipeline run, so we pass PreFastSetup to BuildAll.ps1 to get it to do the commonn setup steps, but short of
   # building the target via MSBuild.exe
@@ -103,6 +111,7 @@ steps:
 
 - task: CopyFiles@2
   displayName: MoveToOutputDirectory
+  condition: always()
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'

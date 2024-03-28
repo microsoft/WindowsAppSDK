@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -164,7 +164,7 @@ HRESULT MddCore::PackageGraph::ResolvePackageDependency(
     THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !foundPackageDependency);
 
     // Is the package dependency already resolved?
-    const auto& packageDependency{ *foundPackageDependency };
+    auto& packageDependency{ *foundPackageDependency };
     if (!packageDependency.PackageFullName().empty())
     {
         packageFullName = wil::make_process_heap_string(packageDependency.PackageFullName().c_str());
@@ -236,6 +236,7 @@ HRESULT MddCore::PackageGraph::ResolvePackageDependency(
     THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), bestFit.PackageFullName().empty());
 
     // We have a winner!
+    packageDependency.ResolvedPackageFullName(bestFit.PackageFullName());
     packageFullName = std::move(wil::make_process_heap_string(bestFit.PackageFullName().c_str()));
     return S_OK;
 }

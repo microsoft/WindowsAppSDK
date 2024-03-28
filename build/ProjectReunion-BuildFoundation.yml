@@ -2,14 +2,31 @@
 # Prior to 1.4, this file was used to build official release builds. This role has been moved to WindowsAppSDK-Foundation-Release.yml
 trigger: none
 
+resources:
+  repositories:
+    - repository: WindowsAppSDKConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+
 variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
+- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-GlobalVariables.yml
+- group: PublicSymbols-Secrets
 
 stages:
-- template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
+- template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
   parameters:
-    PublishToMaestro: False
     SignOutput: False
     IsOneBranch: False
+
+- template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
+
+- template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
+  parameters:
+    SignOutput: False
     PublishPackage: False
+    IsOneBranch: False
+    BuildMockWindowsAppSDK: False

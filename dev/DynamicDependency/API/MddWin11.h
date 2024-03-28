@@ -95,7 +95,11 @@ namespace MddCore::Win11
 
     inline bool IsSupported()
     {
+#if defined(TODO_WindowsAppSDKAggregator_Test_Failures)
         return MddCore::Win11::details::g_isSupported;
+#else
+        return false;
+#endif
     }
 
     inline bool IsGetResolvedPackageFullNameForPackageDependency2Supported()
@@ -129,9 +133,17 @@ namespace MddCore::Win11
         WI_SetFlagIf(win11Options, CreatePackageDependencyOptions_DoNotVerifyDependencyResolution, WI_IsFlagSet(options, MddCreatePackageDependencyOptions::DoNotVerifyDependencyResolution));
         WI_SetFlagIf(win11Options, CreatePackageDependencyOptions_ScopeIsSystem, WI_IsFlagSet(options, MddCreatePackageDependencyOptions::ScopeIsSystem));
 
-        RETURN_IF_FAILED(MddCore::Win11::details::g_win11TryCreatePackageDependency(user, packageFamilyName, win11MinVersion,
+        const auto hr{ MddCore::Win11::details::g_win11TryCreatePackageDependency(user, packageFamilyName, win11MinVersion,
             win11PackageDependencyProcessorArchitectures, win11LifetimeKind, lifetimeArtifact,
-            win11Options, packageDependencyId));
+            win11Options, packageDependencyId) };
+        if (FAILED(hr))
+        {
+            if (hr == STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED)
+            {
+                RETURN_HR_IF_MSG(E_INVALIDARG, ::VerifyPackageFamilyName(packageFamilyName) == HRESULT_FROM_WIN32(ERROR_INVALID_PARAMETER), "PackageFamilyName:%ls", packageFamilyName);
+            }
+            RETURN_HR_MSG(hr, "TryCreatePackageDependency(...packageFamilyName=%ls...)", packageFamilyName);
+        }
         return S_OK;
     }
 

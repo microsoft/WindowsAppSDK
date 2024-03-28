@@ -87,6 +87,10 @@
     <AppxGeneratePriEnabled Condition="'$(AppxGeneratePriEnabled)' == ''">true</AppxGeneratePriEnabled>
     <AppxGetPackagePropertiesEnabled Condition="'$(AppxGetPackagePropertiesEnabled)' == ''">true</AppxGetPackagePropertiesEnabled>
 
+    <!-- Only application projects should have the PRIs from references merged into the project's own PRI -->
+    <ShouldComputeInputPris Condition="'$(ShouldComputeInputPris)' == '' AND ('$(OutputType)' == 'WinExe' OR '$(OutputType)' == 'Exe')">true</ShouldComputeInputPris>
+    <ShouldComputeInputPris Condition="'$(ShouldComputeInputPris)' == ''">false</ShouldComputeInputPris>
+
     <!--
       For Centennial apps, we want the resources of the unpackaged app to appear in the root namespace of the app. So, set the value
       of PrependPriInitialPath to false.
@@ -119,7 +123,8 @@
 
   <PropertyGroup>
     <NuGetTargetFramework Condition="'$(NuGetTargetFramework)'==''">$(TargetPlatformIdentifierAdjusted),Version=v$(TargetPlatformMinVersion)</NuGetTargetFramework>
-    <RuntimeIdentifiers Condition="'$(RuntimeIdentifiers)'==''">win10-arm;win10-arm-aot;win10-arm64-aot;win10-x86;win10-x86-aot;win10-x64;win10-x64-aot</RuntimeIdentifiers>
+    <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)')) >= 8">win-x86;win-x64;win-arm64;win-arm</RuntimeIdentifiers>
+    <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)')) &lt; 8">win10-arm;win10-arm-aot;win10-arm64-aot;win10-x86;win10-x86-aot;win10-x64;win10-x64-aot</RuntimeIdentifiers>
     <ResolveAssemblyConflicts>true</ResolveAssemblyConflicts>
   </PropertyGroup>
 
@@ -650,9 +655,8 @@
 
   <!--
     Get list of PRI files from the payload.
-    In Microsoft.AppxPackage.Targets, this is run only if $(AppxPackage) is 'true' but here, of course, that shouldn't be the case.
   -->
-  <Target Name="_GetPriFilesFromPayload">
+  <Target Name="_GetPriFilesFromPayload" Condition="'$(ShouldComputeInputPris)' == 'true'">
 
     <ItemGroup>
       <_PriFilesFromPayloadRaw Include="@(PackagingOutputs)"
@@ -676,9 +680,8 @@
 
   <!--
     Compute final list of input PRI files.
-    In Microsoft.AppxPackage.Targets, this is run only if $(AppxPackage) is 'true' but here, of course, that shouldn't be the case.
   -->
-  <Target Name="_ComputeInputPriFiles">
+  <Target Name="_ComputeInputPriFiles" Condition="'$(ShouldComputeInputPris)' == 'true'">
 
     <ItemGroup>
       <_PriFile Include="@(_PriFilesFromPayload)" />

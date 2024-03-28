@@ -42,7 +42,7 @@ void Test::DynamicDependency::Test_WinRT::Create_DoNotVerifyDependencyResolution
     VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
-    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd, S_OK, winrt::hstring{});
 
     TP::AddPackage_FrameworkMathAdd();
 
@@ -85,7 +85,7 @@ void Test::DynamicDependency::Test_WinRT::Create_DoNotVerifyDependencyResolution
     VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
-    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd, S_OK, winrt::hstring());
+    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd, S_OK, expectedPackageFullName_FrameworkMathAdd);
 
     // -- Delete
 

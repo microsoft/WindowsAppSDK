@@ -22,7 +22,7 @@
     <LanguageTag>XAML</LanguageTag>
     <PlatformTag>windows</PlatformTag>
     <ProjectTypeTag>desktop</ProjectTypeTag>
-    <ProjectTypeTag>winui</ProjectTypeTag>
+    <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>
   <TemplateContent PreferedSolutionConfiguration="Debug|x86">
     <Project File="ProjectTemplate.csproj" ReplaceParameters="true">

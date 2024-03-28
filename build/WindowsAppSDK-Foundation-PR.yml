@@ -20,16 +20,23 @@
 # https://aka.ms/obpipelines/triggers
 trigger: none
 
-variables:
-- template: WindowsAppSDK-Versions.yml
-- template: WindowsAppSDK-CommonVariables.yml
-
 resources:
   repositories:
     - repository: templates
       type: git
       name: OneBranch.Pipelines/GovernedTemplates
       ref: refs/heads/main
+    - repository: WindowsAppSDKConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+
+variables:
+- template: WindowsAppSDK-Versions.yml
+- template: WindowsAppSDK-CommonVariables.yml
+- template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-GlobalVariables.yml
+- group: PublicSymbols-Secrets
 
 extends:
   template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates
@@ -49,8 +56,13 @@ extends:
         break: true
 
     stages:
-    - template: AzurePipelinesTemplates\WindowsAppSDK-BuildTransportPackage-Stage.yml@self
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
       parameters:
-        PublishToMaestro: false
+        SignOutput: false
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
+
+    - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
+      parameters:
         SignOutput: false
         PublishPackage: false

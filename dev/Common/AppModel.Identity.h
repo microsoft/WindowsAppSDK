@@ -328,7 +328,7 @@ public:
 
     ~PackageIdentity() = default;
 
-    PackageIdentity& operator=(PackageIdentity&& other)
+    PackageIdentity& operator=(PackageIdentity&& other) noexcept
     {
         if (this != &other)
         {

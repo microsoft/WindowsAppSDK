@@ -1096,6 +1096,12 @@ HRESULT MddBootstrapInitialize_Log(
     WCHAR formattedVersionTag[64]{};
     if (versionTag && (versionTag[0] != L'\0'))
     {
+        const auto versionTagLength{ wcslen(versionTag) };
+        if (versionTagLength > ARRAYSIZE(formattedVersionTag) - 1)
+        {
+            (void)LOG_HR(E_INVALIDARG, "MddBootstrapInitialize: VersionTag invalid (too long): %ls", versionTag);
+            versionTag = L"***InvalidVersionTag***";
+        }
         FAIL_FAST_IF_FAILED(StringCchPrintfW(formattedVersionTag, ARRAYSIZE(formattedVersionTag), L"-%s", versionTag));
     }
     FAIL_FAST_IF_FAILED(StringCchPrintfW(message2, ARRAYSIZE(message2), message2Format,

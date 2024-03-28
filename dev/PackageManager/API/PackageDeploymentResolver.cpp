@@ -113,18 +113,18 @@ static PCWSTR GetSystemSupportedArchitecturesAsString()
     return GetSystemSupportedArchitecturesAsString(nativeMachine);
 }
 
-static bool IsArchitectureSupporedByHostMachine(
+static bool IsArchitectureSupportedByHostMachine(
     const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures architecture)
 {
     const auto supportedArchitectures{ GetSystemSupportedArchitectures() };
     return WI_IsAnyFlagSet(supportedArchitectures, architecture);
 }
 
-static bool IsArchitectureSupporedByHostMachine(
+static bool IsArchitectureSupportedByHostMachine(
     const winrt::Windows::System::ProcessorArchitecture architecture)
 {
     const auto architectureAsPackageDependencyProcessorArchitectures{ ToPackageDependencyProcessorArchitectures(architecture) };
-    return IsArchitectureSupporedByHostMachine(architectureAsPackageDependencyProcessorArchitectures);
+    return IsArchitectureSupportedByHostMachine(architectureAsPackageDependencyProcessorArchitectures);
 }
 }
 
@@ -135,6 +135,22 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
     const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures processorArchitectureFilter)
 {
     return Find(packageManager, packageFamilyName, minVersion, processorArchitectureFilter, false);
+}
+
+bool Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::FindAny(
+    const winrt::Windows::Management::Deployment::PackageManager& packageManager,
+    const winrt::hstring& packageFullName)
+{
+    // Find the/any match
+    auto package{ packageManager.FindPackageForUser(winrt::hstring(), packageFullName) };
+    if (!package)
+    {
+        return false;
+    }
+
+    // Package status must be OK to use a package
+    auto status{ package.Status() };
+    return status.VerifyIsOK();
 }
 
 bool Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::FindAny(

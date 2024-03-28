@@ -11,18 +11,28 @@ steps:
     inputs:
       targetType: filePath
       filePath: eng\common\DevCheck.ps1
-      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies
+      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies -ShowSystemInfo
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: DownloadPipelineArtifact@2
     displayName: 'Download Foundation'
     inputs:
+      source: specific
+      runVersion: specific
+      project: $(System.TeamProjectId)
+      pipeline: $(_useBuildOutputFromPipeline)
+      pipelineId: $(_useBuildOutputFromBuildId)
       artifactName: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
       targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
   - task: DownloadPipelineArtifact@2
     displayName: 'Download Foundation'
     inputs:
+      source: specific
+      runVersion: specific
+      project: $(System.TeamProjectId)
+      pipeline: $(_useBuildOutputFromPipeline)
+      pipelineId: $(_useBuildOutputFromBuildId)
       artifactName: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
       targetPath: '$(Build.SourcesDirectory)\BuildOutput'
 
@@ -84,7 +94,7 @@ steps:
     inputs:
       targetType: filePath
       filePath: eng\common\DevCheck.ps1
-      arguments: -NoInteractive -Offline -Verbose -CheckTAEFService
+      arguments: -NoInteractive -Offline -Verbose -CheckTAEFService -ShowSystemInfo
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: VisualStudioTestPlatformInstaller@1
