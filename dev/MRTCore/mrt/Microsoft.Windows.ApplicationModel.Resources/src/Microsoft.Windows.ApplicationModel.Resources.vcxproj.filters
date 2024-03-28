@@ -29,6 +29,9 @@
     <ClCompile Include="KnownResourceQualifierName.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ApplicationLanguages.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -58,6 +61,9 @@
     <ClInclude Include="KnownResourceQualifierName.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ApplicationLanguages.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="Microsoft.Windows.ApplicationModel.Resources.idl" />
@@ -74,5 +80,8 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{54696afe-f42a-494a-bc24-3fd0d4192122}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Microsoft.Windows.ApplicationModel.Resources.rc" />
   </ItemGroup>
 </Project>
