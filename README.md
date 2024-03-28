@@ -56,10 +56,7 @@ points if there's a gist or existing repo we can look at with you.
    you might start a Discussion issue to see if others are interested in a cool new idea
    you've been thinking about that isn't quite ready to be filed as a more formal Feature Proposal.
 
-3. **[Vote on or suggest features](https://portal.productboard.com/winappsdk/1-windows-app-sdk)**<br>
-   What components or features do you want to see in the Windows App SDK? Tell us on our [productboard portal](https://portal.productboard.com/winappsdk/1-windows-app-sdk)!
-
-4. **[Code contributions](docs/contributor-guide.md)**<br>
+3. **[Code contributions](docs/contributor-guide.md)**<br>
    More information regarding [contributing and developer guidelines here](docs/contributor-guide.md).
 
 ## Data collection
