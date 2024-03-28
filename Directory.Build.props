@@ -22,6 +22,9 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(RepoRoot)\WasdkStrongNameSign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
 
   <!-- Compilation differs for the build pipeline vs local development -->
   <PropertyGroup Condition="$(WindowsAppSDKBuildPipeline) != '1'">
