@@ -68,6 +68,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions const& options,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            const double progressMaxPerPackageSetItem,
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
@@ -76,6 +77,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions const& options,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            const double progressMaxPerPackageSetItem,
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
@@ -84,6 +86,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             winrt::Windows::Management::Deployment::AddPackageOptions const& addOptions,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            const double progressMaxPerPackage,
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
@@ -92,6 +95,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions const& options,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            const double progressMaxPerPackageSetItem,
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
@@ -100,6 +104,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             winrt::Windows::Management::Deployment::StagePackageOptions const& stageOptions,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            const double progressMaxPerPackage,
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
@@ -108,6 +113,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions const& options,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            const double progressMaxPerPackageSetItem,
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
@@ -116,6 +122,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             winrt::Windows::Management::Deployment::RegisterPackageOptions const& registerOptions,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            const double progressMaxPerPackage,
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
@@ -151,7 +158,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Management::Deployment::RemovalOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions const& options) const;
         winrt::Windows::Management::Deployment::AddPackageOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions const& options) const;
         winrt::Windows::Management::Deployment::DeploymentOptions ToDeploymentOptions(winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions const& options) const;
-        static double PercentageToProgress(uint32_t percentage);
+        static double PercentageToProgress(uint32_t percentage, const double progressMaxPerItem);
         static bool IsUriEndsWith(winrt::Windows::Foundation::Uri const& packageUri, PCWSTR target);
 
     private:

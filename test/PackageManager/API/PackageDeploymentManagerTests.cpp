@@ -528,7 +528,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(packageSetItem);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
-            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_OPEN_PACKAGE_FAILED), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -538,28 +539,6 @@ namespace Test::PackageManager::Tests
         }
 
         TEST_METHOD(EnsurePackageSetReadyAsync_1_NotInstalled_Success)
-        {
-            RemovePackageFamily_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
-            PCWSTR c_packageSetId{ L"RGB" };
-            packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
-            packageSet.Items().Append(red);
-
-            winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
-            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options).get() };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
-        }
-
-        TEST_METHOD(EnsurePackageSetReadyAsync_1_NotInstalled_Success_Progress)
         {
             RemovePackageFamily_Red();
 
@@ -599,7 +578,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
-            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -621,7 +601,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
-            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -643,7 +624,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(redder);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
-            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -667,7 +649,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
-            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -679,34 +662,6 @@ namespace Test::PackageManager::Tests
         }
 
         TEST_METHOD(EnsurePackageSetReadyAsync_N_NotInstalled_Success)
-        {
-            RemovePackageFamily_Red();
-            RemovePackage_Green();
-            RemovePackage_Blue();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
-            PCWSTR c_packageSetId{ L"RGB" };
-            packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
-            packageSet.Items().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
-            packageSet.Items().Append(green);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
-            packageSet.Items().Append(blue);
-
-            winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
-            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options).get() };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
-        }
-
-        TEST_METHOD(EnsurePackageSetReadyAsync_N_NotInstalled_Success_Progress)
         {
             RemovePackageFamily_Red();
             RemovePackage_Green();
@@ -754,7 +709,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
-            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -782,7 +738,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
-            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -812,7 +769,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
-            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -824,31 +782,6 @@ namespace Test::PackageManager::Tests
         }
 
         TEST_METHOD(EnsurePackageSetReadyAsync_N_RegisteredAndNotInstalled_Success)
-        {
-            AddPackage_Red();
-            RemovePackage_Green();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
-            PCWSTR c_packageSetId{ L"RGB" };
-            packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
-            packageSet.Items().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
-            packageSet.Items().Append(green);
-
-            winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
-            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options).get() };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
-        }
-
-        TEST_METHOD(EnsurePackageSetReadyAsync_N_RegisteredAndNotInstalled_Success_Progress)
         {
             AddPackage_Red();
             RemovePackage_Green();
@@ -897,7 +830,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
-            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -921,25 +855,6 @@ namespace Test::PackageManager::Tests
         }
 
         TEST_METHOD(AddPackageAsync_NotInstalled_Success)
-        {
-            RemovePackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            const auto packagePath{ TP::GetMsixPackagePath(::TPF::Red::c_packageDirName) };
-            const winrt::hstring package{ packagePath.c_str() };
-
-            winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageAsync(package, options).get() };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_TRUE(IsPackageRegistered_Red());
-        }
-
-        TEST_METHOD(AddPackageAsync_NotInstalled_Success_Progress)
         {
             RemovePackage_Red();
 
@@ -973,7 +888,8 @@ namespace Test::PackageManager::Tests
             const winrt::hstring package{ packagePath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageAsync(package, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageAsync(package, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -992,7 +908,8 @@ namespace Test::PackageManager::Tests
             const winrt::hstring package{ packagePath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageAsync(package, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageAsync(package, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1011,7 +928,8 @@ namespace Test::PackageManager::Tests
             const winrt::hstring package{ packagePath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageAsync(package, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageAsync(package, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1032,7 +950,8 @@ namespace Test::PackageManager::Tests
             const winrt::hstring package{ packagePath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageAsync(package, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageAsync(package, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1067,24 +986,6 @@ namespace Test::PackageManager::Tests
             winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageByUriAsync(packageUri, options).get() };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_TRUE(IsPackageRegistered_Red());
-        }
-
-        TEST_METHOD(AddPackageByUriAsync_NotInstalled_Success_Progress)
-        {
-            RemovePackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
-
-            winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.AddPackageByUriAsync(packageUri, options) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
@@ -1108,7 +1009,8 @@ namespace Test::PackageManager::Tests
             winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageByUriAsync(packageUri, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageByUriAsync(packageUri, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1126,7 +1028,8 @@ namespace Test::PackageManager::Tests
             winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageByUriAsync(packageUri, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageByUriAsync(packageUri, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1144,7 +1047,8 @@ namespace Test::PackageManager::Tests
             winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageByUriAsync(packageUri, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageByUriAsync(packageUri, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1164,7 +1068,8 @@ namespace Test::PackageManager::Tests
             winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageByUriAsync(packageUri, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageByUriAsync(packageUri, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1213,28 +1118,6 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageSetAsync(packageSet, options).get() };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
-        }
-
-        TEST_METHOD(AddPackageSetAsync_1_NotInstalled_Success_Progress)
-        {
-            RemovePackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
-            PCWSTR c_packageSetId{ L"RGB" };
-            packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
-            packageSet.Items().Append(red);
-
-            winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.AddPackageSetAsync(packageSet, options) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
@@ -1262,7 +1145,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1284,7 +1168,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1306,7 +1191,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(redder);
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1330,7 +1216,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1342,34 +1229,6 @@ namespace Test::PackageManager::Tests
         }
 
         TEST_METHOD(AddPackageSetAsync_N_NotInstalled_Success)
-        {
-            RemovePackage_Red();
-            RemovePackage_Green();
-            RemovePackage_Blue();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
-            PCWSTR c_packageSetId{ L"RGB" };
-            packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
-            packageSet.Items().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
-            packageSet.Items().Append(green);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
-            packageSet.Items().Append(blue);
-
-            winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageSetAsync(packageSet, options).get() };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
-        }
-
-        TEST_METHOD(AddPackageSetAsync_N_NotInstalled_Success_Progress)
         {
             RemovePackage_Red();
             RemovePackage_Green();
@@ -1417,7 +1276,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1445,7 +1305,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1475,7 +1336,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1487,31 +1349,6 @@ namespace Test::PackageManager::Tests
         }
 
         TEST_METHOD(AddPackageSetAsync_N_RegisteredAndNotInstalled_Success)
-        {
-            AddPackage_Red();
-            RemovePackage_Green();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
-            PCWSTR c_packageSetId{ L"RGB" };
-            packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
-            packageSet.Items().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
-            packageSet.Items().Append(green);
-
-            winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageSetAsync(packageSet, options).get() };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
-        }
-
-        TEST_METHOD(AddPackageSetAsync_N_RegisteredAndNotInstalled_Success_Progress)
         {
             AddPackage_Red();
             RemovePackage_Green();
@@ -1560,7 +1397,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1598,27 +1436,6 @@ namespace Test::PackageManager::Tests
             const winrt::hstring package{ packagePath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageAsync(package, options).get() };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_TRUE(IsPackageStaged_Red());
-            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
-            VERIFY_IS_TRUE(IsPackageStaged_Red());
-        }
-
-        TEST_METHOD(StagePackageAsync_NotInstalled_Success_Progress)
-        {
-            RemovePackageFamily_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            const auto packagePath{ TP::GetMsixPackagePath(::TPF::Red::c_packageDirName) };
-            const winrt::hstring package{ packagePath.c_str() };
-
-            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.StagePackageAsync(package, options) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
@@ -1646,7 +1463,8 @@ namespace Test::PackageManager::Tests
             const winrt::hstring package{ packagePath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageAsync(package, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageAsync(package, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1666,7 +1484,8 @@ namespace Test::PackageManager::Tests
             const winrt::hstring package{ packagePath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageAsync(package, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageAsync(package, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1686,7 +1505,8 @@ namespace Test::PackageManager::Tests
             const winrt::hstring package{ packagePath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageAsync(package, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageAsync(package, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1709,7 +1529,8 @@ namespace Test::PackageManager::Tests
             const winrt::hstring package{ packagePath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageAsync(package, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageAsync(package, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1749,24 +1570,6 @@ namespace Test::PackageManager::Tests
             winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options).get() };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_TRUE(IsPackageStaged_Red());
-        }
-
-        TEST_METHOD(StagePackageByUriAsync_NotInstalled_Success_Progress)
-        {
-            RemovePackageFamily_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
-
-            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
@@ -1791,7 +1594,8 @@ namespace Test::PackageManager::Tests
             winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1810,7 +1614,8 @@ namespace Test::PackageManager::Tests
             winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1829,7 +1634,8 @@ namespace Test::PackageManager::Tests
             winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1851,7 +1657,8 @@ namespace Test::PackageManager::Tests
             winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1905,29 +1712,6 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_TRUE(IsPackageStaged_Red());
-            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
-        }
-
-        TEST_METHOD(StagePackageSetAsync_1_NotInstalled_Success_Progress)
-        {
-            RemovePackageFamily_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
-            PCWSTR c_packageSetId{ L"RGB" };
-            packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
-            packageSet.Items().Append(red);
-
-            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.StagePackageSetAsync(packageSet, options) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
@@ -1957,7 +1741,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -1981,7 +1766,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2005,7 +1791,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(redder);
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2032,7 +1819,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2103,37 +1891,6 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_TRUE(IsPackageStaged_Red());
-            VERIFY_IS_TRUE(IsPackageStaged_Green());
-            VERIFY_IS_TRUE(IsPackageStaged_Blue());
-            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
-        }
-
-        TEST_METHOD(StagePackageSetAsync_N_NotInstalled_Success_Progress)
-        {
-            RemovePackageFamily_Red();
-            RemovePackage_Green();
-            RemovePackage_Blue();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
-            PCWSTR c_packageSetId{ L"RGB" };
-            packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
-            packageSet.Items().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
-            packageSet.Items().Append(green);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
-            packageSet.Items().Append(blue);
-
-            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.StagePackageSetAsync(packageSet, options) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
@@ -2169,7 +1926,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2203,7 +1961,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2237,7 +1996,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2271,7 +2031,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2284,34 +2045,6 @@ namespace Test::PackageManager::Tests
         }
 
         TEST_METHOD(StagePackageSetAsync_N_StagedAndNotInstalled_Success)
-        {
-            RemovePackageFamily_Red();
-            RemovePackage_Green();
-            StagePackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
-            PCWSTR c_packageSetId{ L"RGB" };
-            packageSet.Id(c_packageSetId);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
-            packageSet.Items().Append(red);
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
-            packageSet.Items().Append(green);
-
-            winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_TRUE(IsPackageStaged_Red());
-            VERIFY_IS_TRUE(IsPackageStaged_Green());
-            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
-        }
-
-        TEST_METHOD(StagePackageSetAsync_N_StagedAndNotInstalled_Success_Progress)
         {
             RemovePackageFamily_Red();
             RemovePackage_Green();
@@ -2365,7 +2098,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2384,7 +2118,8 @@ namespace Test::PackageManager::Tests
             PCWSTR package{ L"c:\\does\\not\\exist\\appxmanifest.xml" };
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.RegisterPackageAsync(package, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageAsync(package, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_OPEN_PACKAGE_FAILED), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2405,7 +2140,8 @@ namespace Test::PackageManager::Tests
             const winrt::hstring package{ appxManifestPath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.RegisterPackageAsync(package, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageAsync(package, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2424,7 +2160,8 @@ namespace Test::PackageManager::Tests
             const winrt::hstring package{ appxManifestPath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.RegisterPackageAsync(package, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageAsync(package, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2444,7 +2181,8 @@ namespace Test::PackageManager::Tests
             const winrt::hstring package{ appxManifestPath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.RegisterPackageAsync(package, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageAsync(package, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2464,7 +2202,8 @@ namespace Test::PackageManager::Tests
             winrt::Windows::Foundation::Uri packageUri{ c_packageUriAsString };
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.RegisterPackageByUriAsync(packageUri, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageByUriAsync(packageUri, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_OPEN_PACKAGE_FAILED), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2486,7 +2225,8 @@ namespace Test::PackageManager::Tests
             winrt::Windows::Foundation::Uri packageUri{ package };
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.RegisterPackageByUriAsync(packageUri, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageByUriAsync(packageUri, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2506,7 +2246,8 @@ namespace Test::PackageManager::Tests
             winrt::Windows::Foundation::Uri packageUri{ package };
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.RegisterPackageByUriAsync(packageUri, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageByUriAsync(packageUri, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2527,7 +2268,8 @@ namespace Test::PackageManager::Tests
             winrt::Windows::Foundation::Uri packageUri{ package };
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.RegisterPackageByUriAsync(packageUri, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageByUriAsync(packageUri, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2556,7 +2298,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2578,7 +2321,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2601,7 +2345,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(redder);
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2634,7 +2379,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2663,7 +2409,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2696,7 +2443,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(blue);
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2794,7 +2542,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
-            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2826,7 +2575,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(green);
 
             winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions options;
-            auto deploymentResult{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.EnsurePackageSetReadyAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2852,7 +2602,8 @@ namespace Test::PackageManager::Tests
             const winrt::hstring package{ packagePath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageAsync(package, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageAsync(package, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2877,7 +2628,8 @@ namespace Test::PackageManager::Tests
             winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageByUriAsync(packageUri, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageByUriAsync(packageUri, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2906,7 +2658,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2938,7 +2691,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(green);
 
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.AddPackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.AddPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2965,7 +2719,8 @@ namespace Test::PackageManager::Tests
             const winrt::hstring package{ packagePath.c_str() };
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageAsync(package, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageAsync(package, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -2991,7 +2746,8 @@ namespace Test::PackageManager::Tests
             winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageByUriAsync(packageUri, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -3021,7 +2777,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -3055,7 +2812,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(green);
 
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions options;
-            auto deploymentResult{ packageDeploymentManager.StagePackageSetAsync(packageSet, options).get() };
+            auto deploymentOperation{ packageDeploymentManager.StagePackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
