@@ -84,6 +84,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.UnitTestAp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.CppWinRT.UnitTestApp", "ProjectTemplates\Desktop\CppWinRT\UnitTestApp\WinUI.Desktop.CppWinRT.UnitTestApp.csproj", "{DFA6B905-57A3-4B31-A74B-25BA2243389F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NugetInstaller", "NugetInstaller\NugetInstaller.csproj", "{8217E901-2D44-4B9B-88F5-EF5A0DB5100C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -178,6 +180,10 @@ Global
 		{DFA6B905-57A3-4B31-A74B-25BA2243389F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFA6B905-57A3-4B31-A74B-25BA2243389F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFA6B905-57A3-4B31-A74B-25BA2243389F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8217E901-2D44-4B9B-88F5-EF5A0DB5100C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8217E901-2D44-4B9B-88F5-EF5A0DB5100C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8217E901-2D44-4B9B-88F5-EF5A0DB5100C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8217E901-2D44-4B9B-88F5-EF5A0DB5100C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
