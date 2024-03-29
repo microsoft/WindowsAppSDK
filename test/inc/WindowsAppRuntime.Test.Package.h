@@ -233,20 +233,25 @@ inline std::filesystem::path GetMsixPackagePath(PCWSTR packageDirName)
     // Build the target package's .msix filename. It's under the Solution's $(OutDir)
     // NOTE: It could live in ...\Something.msix\... or ...\Something\...
     auto solutionOutDirPath{ ::Test::FileSystem::GetSolutionOutDirPath() };
-    //
+
+    // Filename is packagedirName plus .msix (if not already present)
+    std::filesystem::path filename{ packageDirName };
+    if (CompareStringOrdinal(filename.extension().c_str(), -1, L".msix", -1, TRUE) != CSTR_EQUAL)
+    {
+        filename += L".msix";
+    }
+
     // Look in ...\Something.msix\...
     auto msix(solutionOutDirPath);
     msix /= packageDirName;
     msix += L".msix";
-    msix /= packageDirName;
-    msix += L".msix";
+    msix /= filename;
     if (!std::filesystem::is_regular_file(msix))
     {
         // Look in ...\Something\...
         msix = solutionOutDirPath;
         msix /= packageDirName;
-        msix /= packageDirName;
-        msix += L".msix";
+        msix /= filename;
         WIN32_FILE_ATTRIBUTE_DATA data{};
         const auto ok{ GetFileAttributesExW(msix.c_str(), GetFileExInfoStandard, &data) };
         const auto lastError{ ::GetLastError() };
@@ -289,6 +294,17 @@ inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
     VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
 }
 
+inline void AddPackageDefer(PCWSTR packageDirName, PCWSTR packageFullName)
+{
+    auto msixUri{ GetMsixPackageUri(packageDirName) };
+
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    winrt::Windows::Management::Deployment::AddPackageOptions options;
+    options.DeferRegistrationWhenPackagesAreInUse(true);
+    auto deploymentResult{ packageManager.AddPackageByUriAsync(msixUri, options).get() };
+    VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageByUriAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+}
+
 inline void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
 {
     if (IsPackageRegistered(packageFullName))
@@ -299,6 +315,19 @@ inline void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
     {
         WEX::Logging::Log::Comment(WEX::Common::String().Format(L"AddPackageIfNecessary: %s not registered, adding...", packageFullName));
         AddPackage(packageDirName, packageFullName);
+    }
+}
+
+inline void AddPackageDeferIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
+{
+    if (IsPackageRegistered(packageFullName))
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"AddPackageDeferIfNecessary: %s already registered", packageFullName));
+    }
+    else
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"AddPackageDeferIfNecessary: %s not registered, adding...", packageFullName));
+        AddPackageDefer(packageDirName, packageFullName);
     }
 }
 

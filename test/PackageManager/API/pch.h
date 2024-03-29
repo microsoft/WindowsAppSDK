@@ -6,6 +6,9 @@
 
 #include <unknwn.h>
 
+#include <ShObjIdl.h>
+
+#include <wil/com.h>
 #include <wil/cppwinrt.h>
 
 #include <winrt/Windows.Foundation.h>
