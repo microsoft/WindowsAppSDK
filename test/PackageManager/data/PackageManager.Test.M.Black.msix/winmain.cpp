@@ -10,9 +10,13 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
     //     eventname = event name signaling we should quit.
 
     // Parse the command line
-    const auto eventName{ GetCommandLineW() };
-    if (eventName)
+    const auto commandLine{ GetCommandLineW() };
+    int argc{};
+    PWSTR* argv{ CommandLineToArgvW(commandLine, &argc) };
+    RETURN_HR_IF_NULL(E_INVALIDARG, argv);
+    if (argc >= 2)
     {
+        PCWSTR eventName{ argv[1] };
         wil::unique_event_nothrow endOfTheLine{ ::OpenEventW(SYNCHRONIZE, FALSE, eventName) };
         RETURN_LAST_ERROR_IF_NULL(endOfTheLine);
 
