@@ -57,6 +57,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> RegisterPackageByPackageFullNameAsync(winrt::hstring const& packageFullName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options);
 
     private:
+        winrt::hstring GetUupProductIdIfMsUup(winrt::Windows::Foundation::Uri const& uri) const;
+        wil::unique_cotaskmem_array_ptr<wil::unique_cotaskmem_string> GetPackageFullNamesFromUupProductUriIfMsUup(winrt::Windows::Foundation::Uri const& uri) const;
         bool IsReadyByPackageFullName(hstring const& packageFullName);
         bool IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSet);
         bool IsNewerAvailableByPackageFullName(hstring const& packageFullName);
@@ -160,6 +162,24 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Management::Deployment::DeploymentOptions ToDeploymentOptions(winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions const& options) const;
         static double PercentageToProgress(uint32_t percentage, const double progressMaxPerItem);
         static bool IsUriEndsWith(winrt::Windows::Foundation::Uri const& packageUri, PCWSTR target);
+
+    private:
+        static int StringCompareNoCase(PCWSTR left, PCWSTR right)
+        {
+            return CompareStringOrdinal(left, -1, right, -1, TRUE) - CSTR_EQUAL;
+        }
+        static bool StringEqualsNoCase(PCWSTR left, PCWSTR right)
+        {
+            return StringCompareNoCase(left, right) == 0;
+        }
+        static int StringCompareNoCase(PCWSTR left, const size_t leftLength, PCWSTR right, const size_t rightLength)
+        {
+            return CompareStringOrdinal(left, static_cast<int>(leftLength), right, static_cast<int>(rightLength), TRUE) - CSTR_EQUAL;
+        }
+        static int StringEqualsNoCase(PCWSTR left, const size_t leftLength, PCWSTR right, const size_t rightLength)
+        {
+            return StringCompareNoCase(left, leftLength, right, rightLength) == 0;
+        }
 
     private:
         winrt::Windows::Management::Deployment::PackageManager m_packageManager;

@@ -25,6 +25,7 @@ namespace ABI::Windows::Management::Deployment
 }
 #endif
 #include <FrameworkUdk/PackageManagement.h>
+#include <FrameworkUdk/UupStateRepository.h>
 
 static_assert(static_cast<int>(winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::Default) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::Default),
               "winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::Default != winrt::Windows::Management::Deployment::StubPackageOption::Default");
@@ -34,6 +35,21 @@ static_assert(static_cast<int>(winrt::Microsoft::Windows::Management::Deployment
               "winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::InstallStub != winrt::Windows::Management::Deployment::StubPackageOption::InstallStub");
 static_assert(static_cast<int>(winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::UsePreference) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::UsePreference),
               "winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::UsePreference != winrt::Windows::Management::Deployment::StubPackageOption::UsePreference");
+
+static PackageManagement_ArchitectureType ToArchitectureType(const winrt::Windows::System::ProcessorArchitecture architecture)
+{
+    switch (architecture)
+    {
+        case winrt::Windows::System::ProcessorArchitecture::X86:        return PackageManagement_ArchitectureType_X86;
+        case winrt::Windows::System::ProcessorArchitecture::Arm:        return PackageManagement_ArchitectureType_Arm;
+        case winrt::Windows::System::ProcessorArchitecture::X64:        return PackageManagement_ArchitectureType_X64;
+        case winrt::Windows::System::ProcessorArchitecture::Neutral:    return PackageManagement_ArchitectureType_Neutral;
+        case winrt::Windows::System::ProcessorArchitecture::Arm64:      return PackageManagement_ArchitectureType_Arm64;
+        case winrt::Windows::System::ProcessorArchitecture::X86OnArm64: return PackageManagement_ArchitectureType_X86A64;
+        case winrt::Windows::System::ProcessorArchitecture::Unknown:    return PackageManagement_ArchitectureType_Unknown;
+        default: THROW_HR_MSG(E_UNEXPECTED, "%d", static_cast<int>(architecture));
+    }
+}
 
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
@@ -58,8 +74,21 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
     bool PackageDeploymentManager::IsPackageReadyByUri(winrt::Windows::Foundation::Uri const& packageUri)
     {
-        //TODO Awaiting FrameworkUdk update with Uup_SRFindPackageFullNamesByUupProductId()
-        throw hresult_not_implemented();
+        // Currently supported URI schemes: ms-uup
+        const auto packageFullNames{ GetPackageFullNamesFromUupProductUriIfMsUup(packageUri) };
+        if (packageFullNames)
+        {
+            for (PCWSTR packageFullName : packageFullNames)
+            {
+                if (!IsReadyByPackageFullName(packageFullName))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        THROW_HR_MSG(E_INVALIDARG, "%ls", packageUri.ToString().c_str());
     }
     bool PackageDeploymentManager::IsPackageSetReady(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet)
     {
@@ -109,8 +138,46 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
     winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus PackageDeploymentManager::IsPackageReadyOrNewerAvailableByUri(winrt::Windows::Foundation::Uri const& packageUri)
     {
-        //TODO Awaiting FrameworkUdk update with Uup_SRFindPackageFullNamesByUupProductId()
-        throw hresult_not_implemented();
+        // Currently supported URI schemes: ms-uup
+        const auto schemeName{ packageUri.SchemeName() };
+        const auto uupProductId{ GetUupProductIdIfMsUup(packageUri) };
+        if (!uupProductId.empty())
+        {
+            wil::unique_cotaskmem_array_ptr<wil::unique_cotaskmem_string> packageFullNames;
+            THROW_IF_FAILED_MSG(Uup_SRFindPackageFullNamesByUupProductId(uupProductId.c_str(), packageFullNames.size_address<UINT32>(), packageFullNames.addressof()), "%s", uupProductId.c_str());
+
+            bool anyNewerAvailable{};
+            const auto packageUriAsString{ packageUri.ToString() };
+            for (PCWSTR packageFullName : packageFullNames)
+            {
+                const auto packageIdentity{ ::AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName) };
+                const auto packageFamilyName{ packageIdentity.PackageFamilyName() };
+                const auto minVersion{ packageIdentity.Version().Version };
+                const auto architectureType{ ToArchitectureType(packageIdentity.Architecture()) };
+                BOOL isRegistered{};
+                BOOL isNewerAvailable{};
+                THROW_IF_FAILED_MSG(PackageManagement_IsRegisteredOrNewerAvailable(nullptr, packageFamilyName.c_str(), minVersion, architectureType, &isRegistered, &isNewerAvailable), "%s", packageUriAsString.c_str(), packageFullName);
+                if (!isRegistered)
+                {
+                    // At least one package isn't ready so we have our answer
+                    return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
+                }
+                if (!anyNewerAvailable & !!isNewerAvailable)
+                {
+                    anyNewerAvailable = true;
+                }
+            }
+            if (anyNewerAvailable)
+            {
+                // All packages are registered but at least 1 has a newer version available
+                return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable;
+            }
+
+            // All packages are registered and none have anything newer avaiable
+            return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready;
+        }
+
+        THROW_HR_MSG(E_INVALIDARG, "%ls", packageUri.ToString().c_str());
     }
     winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus PackageDeploymentManager::IsPackageSetReadyOrNewerAvailable(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet)
     {
@@ -974,6 +1041,50 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, activityId);
 
         logTelemetry.Stop(packageFullName);
+    }
+
+    winrt::hstring PackageDeploymentManager::GetUupProductIdIfMsUup(winrt::Windows::Foundation::Uri const& uri) const
+    {
+        const auto schemeName{ uri.SchemeName() };
+        if (CompareStringOrdinal(schemeName.c_str(), -1, L"ms-uup", -1, TRUE) == CSTR_EQUAL)
+        {
+            // Support legacy behavior (for now)
+            //
+            // ms-uup://Product/id
+            const auto uriAsString{ uri.ToString() };
+            const std::wstring_view legacyPrefix{ L"ms-uup://Product/" };
+            if ((uriAsString.size() > legacyPrefix.length()) &&
+                StringEqualsNoCase(uriAsString.c_str(), legacyPrefix.length(), legacyPrefix.data(), legacyPrefix.length()))
+            {
+                return uriAsString.begin() + legacyPrefix.length();
+            }
+
+            // ms-uup:///Product/id
+            if (uri.Host().empty())
+            {
+                const auto path{ uri.Path() };
+                const std::wstring_view c_product{ L"/Product/" };
+                if ((path.size() > c_product.length()) &&
+                    StringEqualsNoCase(path.c_str(), c_product.length(), c_product.data(), c_product.length()))
+                {
+                    return path.begin() + c_product.length();
+                }
+            }
+        }
+        return winrt::hstring{};
+    }
+
+    wil::unique_cotaskmem_array_ptr<wil::unique_cotaskmem_string> PackageDeploymentManager::GetPackageFullNamesFromUupProductUriIfMsUup(winrt::Windows::Foundation::Uri const& uri) const
+    {
+        wil::unique_cotaskmem_array_ptr<wil::unique_cotaskmem_string> packageFullNames;
+
+        const auto schemeName{ uri.SchemeName() };
+        const auto uupProductId{ GetUupProductIdIfMsUup(uri) };
+        if (!uupProductId.empty())
+        {
+            THROW_IF_FAILED_MSG(Uup_SRFindPackageFullNamesByUupProductId(uupProductId.c_str(), packageFullNames.size_address<UINT32>(), packageFullNames.addressof()), "%s", uupProductId.c_str());
+        }
+        return packageFullNames;
     }
 
     bool PackageDeploymentManager::IsReadyByPackageFullName(hstring const& packageFullName)

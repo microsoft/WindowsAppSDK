@@ -34,3 +34,4 @@
 #include "MsixPackageManager.h"
 
 #include <FrameworkUdk/PackageManagement.h>
+#include <FrameworkUdk/UupStateRepository.h>
