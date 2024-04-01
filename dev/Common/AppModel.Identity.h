@@ -372,6 +372,14 @@ public:
         return m_packageId->publisherId;
     }
 
+    std::wstring PackageFamilyName() const
+    {
+        WCHAR packageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
+        UINT32 packageFamilyNameLength{ ARRAYSIZE(packageFamilyName) };
+        THROW_IF_WIN32_ERROR_MSG(::PackageFamilyNameFromId(&m_packageId, &packageFamilyNameLength, packageFamilyName), "%ls", packageFullName);
+        return packageFamilyName;
+    }
+
     explicit operator bool() const
     {
         return m_packageId != nullptr;
