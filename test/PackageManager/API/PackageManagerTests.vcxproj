@@ -110,7 +110,12 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PackageDeploymentManagerTests.cpp" />
+    <ClCompile Include="PackageDeploymentManagerTests_Add.cpp" />
+    <ClCompile Include="PackageDeploymentManagerTests_EnsureReady.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_IsPackageRegistrationPending.cpp" />
+    <ClCompile Include="PackageDeploymentManagerTests_IsReady.cpp" />
+    <ClCompile Include="PackageDeploymentManagerTests_Register.cpp" />
+    <ClCompile Include="PackageDeploymentManagerTests_Stage.cpp" />
     <ClCompile Include="PackageRuntimeManagerTests.cpp" />
   </ItemGroup>
   <ItemGroup>

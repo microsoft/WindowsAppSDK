@@ -21,7 +21,22 @@
     <ClCompile Include="PackageDeploymentManagerTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PackageDeploymentManagerTests_Add.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PackageDeploymentManagerTests_EnsureReady.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="PackageDeploymentManagerTests_IsPackageRegistrationPending.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PackageDeploymentManagerTests_IsReady.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PackageDeploymentManagerTests_Register.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PackageDeploymentManagerTests_Stage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PackageRuntimeManagerTests.cpp">
