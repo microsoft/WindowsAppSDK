@@ -10,6 +10,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     struct PackageDeploymentManager : PackageDeploymentManagerT<PackageDeploymentManager>
     {
         static winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager GetDefault();
+        static bool IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature feature);
         bool IsPackageReady(hstring const& package);
         bool IsPackageReadyByUri(winrt::Windows::Foundation::Uri const& packageUri);
         bool IsPackageSetReady(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet);

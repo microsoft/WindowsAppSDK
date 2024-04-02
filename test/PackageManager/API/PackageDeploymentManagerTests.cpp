@@ -48,6 +48,83 @@ namespace Test::PackageManager::Tests
             return true;
         }
 
+        TEST_METHOD(IsPackageDeploymentFeatureSupported_InvalidParameter)
+        {
+            const auto feature{ static_cast<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature>(0) };
+            VERIFY_IS_FALSE(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature));
+        }
+
+        TEST_METHOD(IsPackageReady_InvalidParameter)
+        {
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            try
+            {
+                PCWSTR packageFullName{ L"Not a valid Package Full Name" };
+                packageDeploymentManager.IsPackageReady(packageFullName);
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+            }
+        }
+
+        TEST_METHOD(IsPackageReady_NoSuchPackage_No)
+        {
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            PCWSTR c_packageFullName{ L"Does.Not.Exist_1.2.3.4_neutral__1234567890abc" };
+
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(c_packageFullName));
+        }
+
+        TEST_METHOD(IsPackageReady_NotInstalled_No)
+        {
+            RemovePackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            PCWSTR packageFullName{ ::TPF::Red::GetPackageFullName() };
+
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(packageFullName));
+        }
+
+        TEST_METHOD(IsPackageReady_Registered_Yes)
+        {
+            AddPackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            PCWSTR packageFullName{ ::TPF::Red::GetPackageFullName() };
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(packageFullName));
+        }
+
+        TEST_METHOD(IsPackageReady_OlderRegistered_No)
+        {
+            AddPackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            PCWSTR packageFullName{ ::TPF::Red::GetPackageFullName() };
+
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(packageFullName));
+        }
+
+        TEST_METHOD(IsPackageReady_NewerRegistered_Yes)
+        {
+            AddPackage_Redder();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            PCWSTR packageFullName{ ::TPF::Red::GetPackageFullName() };
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(packageFullName));
+
+            RemovePackage_Redder();
+        }
+
         TEST_METHOD(IsPackageSetReady_InvalidParameter)
         {
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };

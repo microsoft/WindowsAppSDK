@@ -10,6 +10,32 @@ namespace Microsoft.Windows.Management.Deployment
     [contractversion(2)]
     apicontract PackageDeploymentContract{};
 
+    /// Features can be queried if currently available/enabled.
+    /// @see PackageDeploymentManager.IsPackageDeploymentFeatureSupported()
+    [contract(PackageDeploymentContract, 2)]
+    enum PackageDeploymentFeature
+    {
+        IsPackageReadyByUri                 = 1,
+        IsPackageReadyOrNewerAvailable      = 2,
+        IsPackageReadyOrNewerAvailableByUri = 3,
+        IsPackageSetReadyOrNewerAvailable   = 4,
+        EnsurePackageReadyByUriAsync        = 5,
+        RemovePackageByUriAsync             = 6,
+        RemovePackageSetAsync               = 7,
+        ResetPackageAsync                   = 8,
+        ResetPackageByUriAsync              = 9,
+        ResetPackageSetAsync                = 10,
+        RepairPackageAsync                  = 11,
+        RepairPackageByUriAsync             = 12,
+        RepairPackageSetAsync               = 13,
+        ProvisionPackageAsync               = 14,
+        ProvisionPackageByUriAsync          = 15,
+        ProvisionPackageSetAsync            = 16,
+        DeprovisionPackageAsync             = 17,
+        DeprovisionPackageByUriAsync        = 18,
+        DeprovisionPackageSetAsync          = 19,
+    };
+
     /// Represents a package storage volume.
     /// @note A volume 'name' is the volume's media ID (you can treat 'Volume Name' == 'Volume Media ID').
     /// @see https://learn.microsoft.com/uwp/api/windows.management.deployment.packagevolume
@@ -277,6 +303,11 @@ namespace Microsoft.Windows.Management.Deployment
     {
         // Get an instance of the manager
         static PackageDeploymentManager GetDefault();
+
+        //-------------------------------------------------------------
+        // IsPackageDeploymentFeatureSupported
+
+        static Boolean IsPackageDeploymentFeatureSupported(PackageDeploymentFeature feature);
 
         //-------------------------------------------------------------
         // IsReady

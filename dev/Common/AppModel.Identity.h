@@ -376,7 +376,7 @@ public:
     {
         WCHAR packageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
         UINT32 packageFamilyNameLength{ ARRAYSIZE(packageFamilyName) };
-        THROW_IF_WIN32_ERROR_MSG(::PackageFamilyNameFromId(m_packageId, &packageFamilyNameLength, packageFamilyName), "%ls", m_packageFullName);
+        THROW_IF_WIN32_ERROR_MSG(::PackageFamilyNameFromId(m_packageId, &packageFamilyNameLength, packageFamilyName), "%ls", m_packageFullName.c_str());
         return packageFamilyName;
     }
 

@@ -24,6 +24,7 @@ namespace ABI::Windows::Management::Deployment
     typedef void * IRemovePackageOptions;
 }
 #endif
+//
 #include <FrameworkUdk/PackageManagement.h>
 #include <FrameworkUdk/UupStateRepository.h>
 
@@ -56,6 +57,110 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager PackageDeploymentManager::GetDefault()
     {
         return winrt::make<winrt::Microsoft::Windows::Management::Deployment::implementation::PackageDeploymentManager>();
+    }
+    bool PackageDeploymentManager::IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature feature)
+    {
+        switch (feature)
+        {
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable:
+            {
+                // Relies on PackageManagement_IsRegisteredOrNewerAvailable() exist in Microsoft.FrameworkUdk and enabled
+#define WINAPPSDK_CHANGEID_ISPACKAGEREADYORNEWERAVAILABLE   48914090    //TODO Move to FrameworkUdk
+                return ::WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_ISPACKAGEREADYORNEWERAVAILABLE>();
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailableByUri:
+            {
+                // Relies on PackageManagement_IsRegisteredOrNewerAvailable() exist in Microsoft.FrameworkUdk and enabled
+#define WINAPPSDK_CHANGEID_ISPACKAGEREADYORNEWERAVAILABLE   48914090    //TODO Move to FrameworkUdk
+                return ::WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_ISPACKAGEREADYORNEWERAVAILABLE>();
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageSetReadyOrNewerAvailable:
+            {
+                // Relies on PackageManagement_IsRegisteredOrNewerAvailable() exist in Microsoft.FrameworkUdk and enabled
+#define WINAPPSDK_CHANGEID_ISPACKAGEREADYORNEWERAVAILABLE   48914090    //TODO Move to FrameworkUdk
+                return ::WinAppSdk::Containment::IsChangeEnabled<WINAPPSDK_CHANGEID_ISPACKAGEREADYORNEWERAVAILABLE>();
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::EnsurePackageReadyByUriAsync:
+            {
+                //TODO Feature id lookup
+                return false;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageByUriAsync:
+            {
+                //TODO Feature id lookup
+                return false;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync:
+            {
+                //TODO Feature id lookup
+                return false;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageAsync:
+            {
+                //TODO Feature id lookup
+                return false;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageByUriAsync:
+            {
+                //TODO Feature id lookup
+                return false;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageSetAsync:
+            {
+                //TODO Feature id lookup
+                return false;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackageAsync:
+            {
+                //TODO Feature id lookup
+                return false;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackageByUriAsync:
+            {
+                //TODO Feature id lookup
+                return false;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackageSetAsync:
+            {
+                //TODO Feature id lookup
+                return false;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ProvisionPackageAsync:
+            {
+                //TODO Feature id lookup
+                return false;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ProvisionPackageByUriAsync:
+            {
+                //TODO Feature id lookup
+                return false;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ProvisionPackageSetAsync:
+            {
+                //TODO Feature id lookup
+                return false;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::DeprovisionPackageAsync:
+            {
+                //TODO Feature id lookup
+                return false;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::DeprovisionPackageByUriAsync:
+            {
+                //TODO Feature id lookup
+                return false;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::DeprovisionPackageSetAsync:
+            {
+                //TODO Feature id lookup
+                return false;
+            }
+            default:
+            {
+                (void)LOG_HR_MSG(E_UNEXPECTED, "Feature:%d", static_cast<int>(feature));
+                return false;
+            }
+        }
     }
     bool PackageDeploymentManager::IsPackageReady(hstring const& package)
     {
@@ -837,84 +942,112 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageByUriAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
     {
+        THROW_HR_IF(E_NOTIMPL, IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageByUriAsync));
+
         //TODO Awaiting FrameworkUdk update with PackageManagement_RemovePackageByUriAsync()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
     {
+        THROW_HR_IF(E_NOTIMPL, IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync));
+
         //TODO Awaiting FrameworkUdk update with PackageManagement_RemovePackageByUriAsync()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::ResetPackageAsync(hstring package)
     {
+        THROW_HR_IF(E_NOTIMPL, IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageAsync));
+
         //TODO Awaiting FrameworkUdk update with Uup_SRFindPackageFullNamesByUupProductId()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::ResetPackageByUriAsync(winrt::Windows::Foundation::Uri packageUri)
     {
+        THROW_HR_IF(E_NOTIMPL, IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageByUriAsync));
+
         //TODO Awaiting FrameworkUdk update with PackageManagement_ResetPackageAsync()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::ResetPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet)
     {
+        THROW_HR_IF(E_NOTIMPL, IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageSetAsync));
+
         //TODO Awaiting FrameworkUdk update with PackageManagement_ResetPackageAsync()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RepairPackageAsync(hstring package)
     {
+        THROW_HR_IF(E_NOTIMPL, IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackageAsync));
+
         //TODO Awaiting FrameworkUdk update with Uup_SRFindPackageFullNamesByUupProductId()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RepairPackageByUriAsync(winrt::Windows::Foundation::Uri packageUri)
     {
+        THROW_HR_IF(E_NOTIMPL, IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackageByUriAsync));
+
         //TODO Awaiting FrameworkUdk update with PackageManagement_RepairPackageAsync()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RepairPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet)
     {
+        THROW_HR_IF(E_NOTIMPL, IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackageSetAsync));
+
         //TODO Awaiting FrameworkUdk update with PackageManagement_RepairPackageAsync()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::ProvisionPackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions options)
     {
+        THROW_HR_IF(E_NOTIMPL, IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ProvisionPackageAsync));
+
         //TODO Awaiting FrameworkUdk update with Uup_SRFindPackageFullNamesByUupProductId()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::ProvisionPackageByUriAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions options)
     {
+        THROW_HR_IF(E_NOTIMPL, IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ProvisionPackageByUriAsync));
+
         //TODO Awaiting FrameworkUdk update with Uup_SRFindPackageFullNamesByUupProductId()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::ProvisionPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions options)
     {
+        THROW_HR_IF(E_NOTIMPL, IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ProvisionPackageSetAsync));
+
         //TODO Awaiting FrameworkUdk update with Uup_SRFindPackageFullNamesByUupProductId()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::DeprovisionPackageAsync(hstring package)
     {
+        THROW_HR_IF(E_NOTIMPL, IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::DeprovisionPackageAsync));
+
         //TODO Awaiting FrameworkUdk update with Uup_SRFindPackageFullNamesByUupProductId()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::DeprovisionPackageByUriAsync(winrt::Windows::Foundation::Uri packageUri)
     {
+        THROW_HR_IF(E_NOTIMPL, IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::DeprovisionPackageByUriAsync));
+
         //TODO Awaiting FrameworkUdk update with Uup_SRFindPackageFullNamesByUupProductId()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::DeprovisionPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet)
     {
+        THROW_HR_IF(E_NOTIMPL, IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::DeprovisionPackageSetAsync));
+
         //TODO Awaiting FrameworkUdk update with Uup_SRFindPackageFullNamesByUupProductId()
         throw hresult_not_implemented();
     }
