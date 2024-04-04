@@ -1800,12 +1800,12 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             const auto status{ deploymentOperation.Status() };
             if (status == winrt::Windows::Foundation::AsyncStatus::Error)
             {
-                if (error == HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_DOWNGRADE))
+                if (error == HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND))
                 {
                     if (!options.FailIfNotFound())
                     {
-                        // Newer version already installed. Success!
-                        (void)LOG_HR_MSG(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_DOWNGRADE),
+                        // Package not installed. Success!
+                        (void)LOG_HR_MSG(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND),
                                          "ExtendedError:0x%08X PackageFullName:%ls : %ls",
                                          extendedError, packageFullName.c_str(), errorText.c_str());
                         extendedError = error;
