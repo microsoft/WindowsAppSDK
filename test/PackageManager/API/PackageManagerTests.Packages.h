@@ -145,6 +145,48 @@ namespace Blacker
     }
     constexpr PCWSTR c_appUserModelId = L"Test.PackageManager.M.Black_8wekyb3d8bbwe!App";
 }
+namespace White
+{
+    constexpr PCWSTR c_packageDirName = L"PackageManager.Test.M.White.msix";
+    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.M.White_8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.M.White_1.2.3.4_x86__8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.M.White_1.2.3.4_x64__8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.M.White_1.2.3.4_arm64__8wekyb3d8bbwe";
+    constexpr inline PCWSTR GetPackageFullName()
+    {
+#if defined(_M_ARM64)
+        return c_packageFullName_arm64;
+#elif defined(_M_IX86)
+        return c_packageFullName_x86;
+#elif defined(_M_X64)
+        return c_packageFullName_x64;
+#else
+#   error "Unknown processor architecture"
+#endif
+    }
+    constexpr PCWSTR c_appUserModelId = L"Test.PackageManager.M.White_8wekyb3d8bbwe!App";
+}
+namespace Whiter
+{
+    constexpr PCWSTR c_packageDirName = L"PackageManager.Test.M.Whiter.msix";
+    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.M.White_8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.M.White_2.4.6.8_x86__8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.M.White_2.4.6.8_x64__8wekyb3d8bbwe";
+    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.M.White_2.4.6.8_arm64__8wekyb3d8bbwe";
+    constexpr inline PCWSTR GetPackageFullName()
+    {
+#if defined(_M_ARM64)
+        return c_packageFullName_arm64;
+#elif defined(_M_IX86)
+        return c_packageFullName_x86;
+#elif defined(_M_X64)
+        return c_packageFullName_x64;
+#else
+#   error "Unknown processor architecture"
+#endif
+    }
+    constexpr PCWSTR c_appUserModelId = L"Test.PackageManager.M.White_8wekyb3d8bbwe!App";
+}
 }
 }
 
@@ -428,6 +470,92 @@ namespace Test::PackageManager::Tests
     inline void RemovePackageFamily_Blacker()
     {
         RemovePackage_Blacker();
+    }
+
+    inline bool IsPackageRegistered_White()
+    {
+        return TP::IsPackageRegistered(TPM::White::GetPackageFullName());
+    }
+    inline bool IsPackageStaged_White()
+    {
+        return TP::IsPackageStaged(TPM::White::GetPackageFullName());
+    }
+    inline void AddPackage_White()
+    {
+        TP::AddPackageIfNecessary(TPM::White::c_packageDirName, TPM::White::GetPackageFullName());
+    }
+    inline void AddPackageDefer_White()
+    {
+        TP::AddPackageDeferIfNecessary(TPM::White::c_packageDirName, TPM::White::GetPackageFullName());
+    }
+    inline void StagePackage_White()
+    {
+        TP::StagePackageIfNecessary(TPM::White::c_packageDirName, TPM::White::GetPackageFullName());
+    }
+    inline void RegisterPackage_White()
+    {
+        TP::RegisterPackageIfNecessary(TPM::White::GetPackageFullName());
+    }
+    inline void RemovePackage_White()
+    {
+        if (IsPackageRegistered_White())
+        {
+            TP::RemovePackage(TPM::White::GetPackageFullName());
+        }
+        else if (IsPackageStaged_White())
+        {
+            // We can't directly remove a Stage package not registered for current user
+            // w/o admin privilege but we can add it to make it registered and then remove it.
+            AddPackage_White();
+            TP::RemovePackage(TPM::White::GetPackageFullName());
+        }
+    }
+    inline void RemovePackageFamily_White()
+    {
+        RemovePackage_White();
+    }
+
+    inline bool IsPackageRegistered_Whiter()
+    {
+        return TP::IsPackageRegistered(TPM::Whiter::GetPackageFullName());
+    }
+    inline bool IsPackageStaged_Whiter()
+    {
+        return TP::IsPackageStaged(TPM::Whiter::GetPackageFullName());
+    }
+    inline void AddPackage_Whiter()
+    {
+        TP::AddPackageIfNecessary(TPM::Whiter::c_packageDirName, TPM::Whiter::GetPackageFullName());
+    }
+    inline void AddPackageDefer_Whiter()
+    {
+        TP::AddPackageDeferIfNecessary(TPM::Whiter::c_packageDirName, TPM::Whiter::GetPackageFullName());
+    }
+    inline void StagePackage_Whiter()
+    {
+        TP::StagePackageIfNecessary(TPM::Whiter::c_packageDirName, TPM::Whiter::GetPackageFullName());
+    }
+    inline void RegisterPackage_Whiter()
+    {
+        TP::RegisterPackageIfNecessary(TPM::Whiter::GetPackageFullName());
+    }
+    inline void RemovePackage_Whiter()
+    {
+        if (IsPackageRegistered_Whiter())
+        {
+            TP::RemovePackage(TPM::Whiter::GetPackageFullName());
+        }
+        else if (IsPackageStaged_Whiter())
+        {
+            // We can't directly remove a Stage package not registered for current user
+            // w/o admin privilege but we can add it to make it registered and then remove it.
+            AddPackage_Whiter();
+            TP::RemovePackage(TPM::Whiter::GetPackageFullName());
+        }
+    }
+    inline void RemovePackageFamily_Whiter()
+    {
+        RemovePackage_Whiter();
     }
 
     inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFullName)

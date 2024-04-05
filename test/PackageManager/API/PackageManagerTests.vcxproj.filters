@@ -33,6 +33,9 @@
     <ClCompile Include="PackageDeploymentManagerTests_IsReady.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PackageDeploymentManagerTests_IsReadyOrNewerAvailable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="PackageDeploymentManagerTests_Register.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

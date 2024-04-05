@@ -62,8 +62,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         wil::unique_cotaskmem_array_ptr<wil::unique_cotaskmem_string> GetPackageFullNamesFromUupProductUriIfMsUup(winrt::Windows::Foundation::Uri const& uri) const;
         bool IsReadyByPackageFullName(hstring const& packageFullName);
         bool IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSet);
-        bool IsNewerAvailableByPackageFullName(hstring const& packageFullName);
-        bool IsNewerAvailable(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSet);
+        winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus IsReadyOrNewerAvailableByPackageFullName(hstring const& packageFullName);
+        winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus IsReadyOrNewerAvailable(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSet);
         void Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet) const;
         void Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem) const;
         HRESULT EnsureReadyAsync(

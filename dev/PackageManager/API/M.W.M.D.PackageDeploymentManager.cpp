@@ -52,6 +52,40 @@ static PackageManagement_ArchitectureType ToArchitectureType(const winrt::Window
     }
 }
 
+namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency
+{
+    DEFINE_ENUM_FLAG_OPERATORS(PackageDependencyProcessorArchitectures)
+}
+static PackageManagement_ArchitectureType ToArchitectureType(const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures processorArchitectureFilter)
+{
+    auto architectureType{ PackageManagement_ArchitectureType_None };
+    if (WI_IsFlagSet(processorArchitectureFilter, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Neutral))
+    {
+        architectureType |= PackageManagement_ArchitectureType_Neutral;
+    }
+    if (WI_IsFlagSet(processorArchitectureFilter, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::X86))
+    {
+        architectureType |= PackageManagement_ArchitectureType_X86;
+    }
+    if (WI_IsFlagSet(processorArchitectureFilter, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::X64))
+    {
+        architectureType |= PackageManagement_ArchitectureType_X64;
+    }
+    if (WI_IsFlagSet(processorArchitectureFilter, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Arm))
+    {
+        architectureType |= PackageManagement_ArchitectureType_Arm;
+    }
+    if (WI_IsFlagSet(processorArchitectureFilter, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Arm64))
+    {
+        architectureType |= PackageManagement_ArchitectureType_Arm64;
+    }
+    if (WI_IsFlagSet(processorArchitectureFilter, winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::X86OnArm64))
+    {
+        architectureType |= PackageManagement_ArchitectureType_X86A64;
+    }
+    return architectureType;
+}
+
 static winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures ToPackageDependencyProcessorArchitectures(const winrt::Windows::System::ProcessorArchitecture architecture)
 {
     switch (architecture)
@@ -234,18 +268,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
     winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus PackageDeploymentManager::IsPackageReadyOrNewerAvailable(hstring const& package)
     {
+        THROW_HR_IF(E_NOTIMPL, IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable));
+
         if (VerifyPackageFullName(package.c_str()) == ERROR_SUCCESS)
         {
-            const auto isReady{ IsReadyByPackageFullName(package) };
-            if (!isReady)
-            {
-                return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
-            }
-            if (IsNewerAvailableByPackageFullName(package))
-            {
-                return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable;
-            }
-            return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready;
+            return IsReadyOrNewerAvailableByPackageFullName(package.c_str());
         }
 
         const winrt::Windows::Foundation::Uri packageUri{ package };
@@ -258,6 +285,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
     winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus PackageDeploymentManager::IsPackageReadyOrNewerAvailableByUri(winrt::Windows::Foundation::Uri const& packageUri)
     {
+        THROW_HR_IF(E_NOTIMPL, IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailableByUri));
+
         // Currently supported URI schemes: ms-uup
         const auto schemeName{ packageUri.SchemeName() };
         const auto uupProductId{ GetUupProductIdIfMsUup(packageUri) };
@@ -276,7 +305,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 const auto architectureType{ ToArchitectureType(packageIdentity.Architecture()) };
                 BOOL isRegistered{};
                 BOOL isNewerAvailable{};
-                THROW_IF_FAILED_MSG(PackageManagement_IsRegisteredOrNewerAvailable(nullptr, packageFamilyName.c_str(), minVersion, architectureType, &isRegistered, &isNewerAvailable), "%s", packageUriAsString.c_str(), packageFullName);
+                THROW_IF_FAILED_MSG(PackageManagement_IsRegisteredOrNewerAvailable(nullptr, packageFamilyName.c_str(), minVersion, architectureType, &isRegistered, &isNewerAvailable), "%s", packageUriAsString.c_str());
                 if (!isRegistered)
                 {
                     // At least one package isn't ready so we have our answer
@@ -301,12 +330,15 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
     winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus PackageDeploymentManager::IsPackageSetReadyOrNewerAvailable(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet)
     {
+        THROW_HR_IF(E_NOTIMPL, IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageSetReadyOrNewerAvailable));
+
         Validate(packageSet);
 
         bool newerAvailable{};
         for (const winrt::Microsoft::Windows::Management::Deployment::PackageSetItem& packageSetItem : packageSet.Items())
         {
-            if (!IsReady(packageSetItem))
+            const auto status{ IsReadyOrNewerAvailable(packageSetItem) };
+            if (status == winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady)
             {
                 (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED,
                                  "Id=%ls PackageFamilyName=%ls MinVersion=%hu.%hu.%hu.%hu ArchitectureFilter:0x%X",
@@ -319,7 +351,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                                  packageSetItem.ProcessorArchitectureFilter());
                 return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
             }
-            if (!newerAvailable && IsNewerAvailable(packageSetItem))
+            if (!newerAvailable && (status == winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable))
             {
                 (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_NEWER_AVAILABLE,
                                  "Id=%ls PackageFamilyName=%ls MinVersion=%hu.%hu.%hu.%hu ArchitectureFilter:0x%X",
@@ -1251,16 +1283,49 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         return ::Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::FindAny(m_packageManager, packageSetItem.PackageFamilyName(), minVersion, processorArchitectureFilter);
     }
 
-    bool PackageDeploymentManager::IsNewerAvailableByPackageFullName(hstring const& packageFullName)
+    winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus PackageDeploymentManager::IsReadyOrNewerAvailableByPackageFullName(hstring const& packageFullName)
     {
-        //TODO Awaiting FrameworkUdk update with PackageManagement_IsNewerAvailable*()
-        return false;
+        const auto packageIdentity{ ::AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.c_str()) };
+        const auto packageFamilyName{ packageIdentity.PackageFamilyName() };
+        const auto minVersion{ packageIdentity.Version().Version };
+        const auto architectureType{ ToArchitectureType(packageIdentity.Architecture()) };
+        BOOL isRegistered{};
+        BOOL isNewerAvailable{};
+        THROW_IF_FAILED_MSG(PackageManagement_IsRegisteredOrNewerAvailable(nullptr, packageFamilyName.c_str(), minVersion, architectureType, &isRegistered, &isNewerAvailable), "%s", packageFullName.c_str());
+        if (!isRegistered)
+        {
+            return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
+        }
+        else if (!isNewerAvailable)
+        {
+            return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready;
+        }
+        else
+        {
+            return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable;
+        }
     }
 
-    bool PackageDeploymentManager::IsNewerAvailable(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem)
+    winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus PackageDeploymentManager::IsReadyOrNewerAvailable(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem)
     {
-        //TODO Awaiting FrameworkUdk update with PackageManagement_IsNewerAvailable*()
-        return false;
+        const auto packageFamilyName{ packageSetItem.PackageFamilyName().c_str() };
+        const AppModel::Identity::PackageVersion minVersion{ packageSetItem.MinVersion() };
+        const auto architectureType{ ToArchitectureType(packageSetItem.ProcessorArchitectureFilter()) };
+        BOOL isRegistered{};
+        BOOL isNewerAvailable{};
+        THROW_IF_FAILED_MSG(PackageManagement_IsRegisteredOrNewerAvailable(nullptr, packageFamilyName, minVersion.Version, architectureType, &isRegistered, &isNewerAvailable), "%ls", packageFamilyName);
+        if (!isRegistered)
+        {
+            return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
+        }
+        else if (!isNewerAvailable)
+        {
+            return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready;
+        }
+        else
+        {
+            return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable;
+        }
     }
 
     void PackageDeploymentManager::Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet) const

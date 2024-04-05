@@ -16,10 +16,10 @@ namespace TPMT = ::Test::PackageManager::Tests;
 
 namespace Test::PackageManager::Tests
 {
-    class PackageDeploymentManagerTests_Remove : PackageDeploymentManagerTests_Base
+    class PackageDeploymentManagerTests_Reset : PackageDeploymentManagerTests_Base
     {
     public:
-        BEGIN_TEST_CLASS(PackageDeploymentManagerTests_Remove)
+        BEGIN_TEST_CLASS(PackageDeploymentManagerTests_Reset)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
         END_TEST_CLASS()
 
@@ -48,362 +48,237 @@ namespace Test::PackageManager::Tests
             return true;
         }
 
-        TEST_METHOD(RemovePackageAsync_PackageFullName_NoSuchPackage_Fail)
+        TEST_METHOD(ResetPackageAsync_PackageFullName_NoSuchPackage_Fail)
         {
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            PCWSTR packageFullName{ L"Does.Not.Exist_0.0.0.0_neutral__1234567890abc" };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            VERIFY_IS_TRUE(options.FailIfNotFound());
-            auto deploymentResult{ packageDeploymentManager.RemovePackageAsync(packageFullName, options).get() };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_FALSE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-        }
-
-        TEST_METHOD(RemovePackageAsync_PackageFullName_NotInstalled_Fail)
-        {
-            RemovePackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            const winrt::hstring packageFullName{ ::TPF::Red::GetPackageFullName() };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            VERIFY_IS_TRUE(options.FailIfNotFound());
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageAsync(packageFullName, options) };
-            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_FALSE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-        }
-
-        TEST_METHOD(RemovePackageAsync_PackageFullName_NotInstalled_Success)
-        {
-            RemovePackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            const winrt::hstring packageFullName{ ::TPF::Red::GetPackageFullName() };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            options.FailIfNotFound(false);
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageAsync(packageFullName, options) };
-            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-        }
-
-        TEST_METHOD(RemovePackageAsync_PackageFullName_Staged_Success)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
-            END_TEST_METHOD_PROPERTIES()
-
-            StagePackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            const winrt::hstring packageFullName{ ::TPF::Red::GetPackageFullName() };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageAsync(packageFullName, options) };
-            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-        }
-
-        TEST_METHOD(RemovePackageAsync_PackageFullName_Registered_Success)
-        {
-            AddPackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            const winrt::hstring packageFullName{ ::TPF::Red::GetPackageFullName() };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageAsync(packageFullName, options) };
-            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-        }
-
-        TEST_METHOD(RemovePackageAsync_PackageFamilyName_NoSuchPackage_Success)
-        {
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            PCWSTR packageFamilyName{ L"Does.Not.Exist_1234567890abc" };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            VERIFY_IS_TRUE(options.FailIfNotFound());   // Ignored matter for PackageFamilyName
-            auto deploymentResult{ packageDeploymentManager.RemovePackageAsync(packageFamilyName, options).get() };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-        }
-
-        TEST_METHOD(RemovePackageAsync_PackageFamilyName_NotInstalled_Success)
-        {
-            RemovePackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            const winrt::hstring packageFamilyName{ ::TPF::Red::c_packageFamilyName };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            options.FailIfNotFound(false);
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageAsync(packageFamilyName, options) };
-            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-        }
-
-        TEST_METHOD(RemovePackageAsync_PackageFamilyName_Staged_Success)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
-            END_TEST_METHOD_PROPERTIES()
-
-            StagePackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            const winrt::hstring packageFamilyName{ ::TPF::Red::c_packageFamilyName };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageAsync(packageFamilyName, options) };
-            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-        }
-
-        TEST_METHOD(RemovePackageAsync_PackageFamilyName_Registered_Success)
-        {
-            AddPackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            const winrt::hstring packageFamilyName{ ::TPF::Red::c_packageFamilyName };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageAsync(packageFamilyName, options) };
-            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-        }
-
-        TEST_METHOD(RemovePackageByFullNameAsync_NoSuchPackage_Fail)
-        {
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            PCWSTR packageFullName{ L"Does.Not.Exist_0.0.0.0_neutral__1234567890abc" };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            VERIFY_IS_TRUE(options.FailIfNotFound());
-            auto deploymentResult{ packageDeploymentManager.RemovePackageByFullNameAsync(packageFullName, options).get() };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_FALSE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-        }
-
-        TEST_METHOD(RemovePackageByFullNameAsync_NotInstalled_Fail)
-        {
-            RemovePackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            const winrt::hstring packageFullName{ ::TPF::Red::GetPackageFullName() };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            VERIFY_IS_TRUE(options.FailIfNotFound());
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageByFullNameAsync(packageFullName, options) };
-            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_FALSE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-        }
-
-        TEST_METHOD(RemovePackageByFullNameAsync_NotInstalled_Success)
-        {
-            RemovePackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            const winrt::hstring packageFullName{ ::TPF::Red::GetPackageFullName() };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            options.FailIfNotFound(false);
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageByFullNameAsync(packageFullName, options) };
-            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-        }
-
-        TEST_METHOD(RemovePackageByFullNameAsync_Staged_Success)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
-            END_TEST_METHOD_PROPERTIES()
-
-            StagePackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            const winrt::hstring packageFullName{ ::TPF::Red::GetPackageFullName() };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageByFullNameAsync(packageFullName, options) };
-            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-        }
-
-        TEST_METHOD(RemovePackageByFullNameAsync_Registered_Success)
-        {
-            AddPackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            const winrt::hstring packageFullName{ ::TPF::Red::GetPackageFullName() };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageByFullNameAsync(packageFullName, options) };
-            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-        }
-
-        TEST_METHOD(RemovePackageByFamilyNameAsync_NoSuchPackage_Success)
-        {
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            PCWSTR packageFamilyName{ L"Does.Not.Exist_1234567890abc" };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            VERIFY_IS_TRUE(options.FailIfNotFound());   // Ignored matter for PackageFamilyName
-            auto deploymentResult{ packageDeploymentManager.RemovePackageByFamilyNameAsync(packageFamilyName, options).get() };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-        }
-
-        TEST_METHOD(RemovePackageByFamilyNameAsync_NotInstalled_Success)
-        {
-            RemovePackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            const winrt::hstring packageFamilyName{ ::TPF::Red::c_packageFamilyName };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            options.FailIfNotFound(false);
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageByFamilyNameAsync(packageFamilyName, options) };
-            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-        }
-
-        TEST_METHOD(RemovePackageByFamilyNameAsync_Staged_Success)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
-            END_TEST_METHOD_PROPERTIES()
-
-            StagePackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            const winrt::hstring packageFamilyName{ ::TPF::Red::c_packageFamilyName };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageByFamilyNameAsync(packageFamilyName, options) };
-            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-        }
-
-        TEST_METHOD(RemovePackageByFamilyNameAsync_Registered_Success)
-        {
-            AddPackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            const winrt::hstring packageFamilyName{ ::TPF::Red::c_packageFamilyName };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageByFamilyNameAsync(packageFamilyName, options) };
-            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-        }
-
-        TEST_METHOD(RemovePackageByUriAsync_NoSuchPackage_Fail)
-        {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageByUriAsync };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageByUriAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
+                return;
+            }
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            PCWSTR packageFullName{ L"Does.Not.Exist_0.0.0.0_neutral__1234567890abc" };
+
+            auto deploymentResult{ packageDeploymentManager.ResetPackageAsync(packageFullName).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_FALSE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+        }
+
+        TEST_METHOD(ResetPackageAsync_PackageFullName_NotInstalled_Fail)
+        {
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageAsync };
+            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
+                return;
+            }
+
+            RemovePackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const winrt::hstring packageFullName{ ::TPF::Red::GetPackageFullName() };
+
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageAsync(packageFullName) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_FALSE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Red());
+        }
+
+        TEST_METHOD(ResetPackageAsync_PackageFullName_NotInstalled_Success)
+        {
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageAsync };
+            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
+                return;
+            }
+
+            RemovePackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const winrt::hstring packageFullName{ ::TPF::Red::GetPackageFullName() };
+
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageAsync(packageFullName) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Red());
+        }
+
+        TEST_METHOD(ResetPackageAsync_PackageFullName_Staged_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageAsync };
+            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
+                return;
+            }
+
+            StagePackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const winrt::hstring packageFullName{ ::TPF::Red::GetPackageFullName() };
+
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageAsync(packageFullName) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Red());
+        }
+
+        TEST_METHOD(ResetPackageAsync_PackageFullName_Registered_Success)
+        {
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageAsync };
+            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
+                return;
+            }
+
+            AddPackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const winrt::hstring packageFullName{ ::TPF::Red::GetPackageFullName() };
+
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageAsync(packageFullName) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Red());
+        }
+
+        TEST_METHOD(ResetPackageAsync_PackageFamilyName_NoSuchPackage_Success)
+        {
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageAsync };
+            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
+                return;
+            }
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            PCWSTR packageFamilyName{ L"Does.Not.Exist_1234567890abc" };
+
+            auto deploymentResult{ packageDeploymentManager.ResetPackageAsync(packageFamilyName).get() };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Red());
+        }
+
+        TEST_METHOD(ResetPackageAsync_PackageFamilyName_NotInstalled_Success)
+        {
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageAsync };
+            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
+                return;
+            }
+
+            RemovePackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const winrt::hstring packageFamilyName{ ::TPF::Red::c_packageFamilyName };
+
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageAsync(packageFamilyName) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Red());
+        }
+
+        TEST_METHOD(ResetPackageAsync_PackageFamilyName_Staged_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageAsync };
+            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
+                return;
+            }
+
+            StagePackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const winrt::hstring packageFamilyName{ ::TPF::Red::c_packageFamilyName };
+
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageAsync(packageFamilyName) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Red());
+        }
+
+        TEST_METHOD(ResetPackageAsync_PackageFamilyName_Registered_Success)
+        {
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageAsync };
+            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
+                return;
+            }
+
+            AddPackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const winrt::hstring packageFamilyName{ ::TPF::Red::c_packageFamilyName };
+
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageAsync(packageFamilyName) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Red());
+        }
+
+        TEST_METHOD(ResetPackageByUriAsync_NoSuchPackage_Fail)
+        {
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageByUriAsync };
+            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageByUriAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -412,26 +287,24 @@ namespace Test::PackageManager::Tests
             PCWSTR c_packageUriAsString{ L"ms-uup://Product/does.not.exist" };
             winrt::Windows::Foundation::Uri packageUri{ c_packageUriAsString };
 
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            VERIFY_IS_TRUE(options.FailIfNotFound());
-            auto deploymentResult{ packageDeploymentManager.RemovePackageByUriAsync(packageUri, options).get() };
+            auto deploymentResult{ packageDeploymentManager.ResetPackageByUriAsync(packageUri).get() };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_IS_FALSE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
         }
 
-        TEST_METHOD(RemovePackageByUriAsync_NotInstalled_Fail)
+        TEST_METHOD(ResetPackageByUriAsync_NotInstalled_Fail)
         {
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
-        TEST_METHOD(RemovePackageByUriAsync_NotInstalled_Success)
+        TEST_METHOD(ResetPackageByUriAsync_NotInstalled_Success)
         {
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
-        TEST_METHOD(RemovePackageByUriAsync_Staged_Success)
+        TEST_METHOD(ResetPackageByUriAsync_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
@@ -440,17 +313,17 @@ namespace Test::PackageManager::Tests
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
-        TEST_METHOD(RemovePackageByUriAsync_Registered_Success)
+        TEST_METHOD(ResetPackageByUriAsync_Registered_Success)
         {
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
-        TEST_METHOD(RemovePackageSetAsync_1_NoSuchPackage_Fail)
+        TEST_METHOD(ResetPackageSetAsync_1_NoSuchPackage_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -467,9 +340,7 @@ namespace Test::PackageManager::Tests
             packageSetItem.PackageUri(packageUri);
             packageSet.Items().Append(packageSetItem);
 
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            VERIFY_IS_TRUE(options.FailIfNotFound());
-            auto deploymentResult{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options).get() };
+            auto deploymentResult{ packageDeploymentManager.ResetPackageSetAsync(packageSet).get() };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -478,12 +349,12 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
-        TEST_METHOD(RemovePackageSetAsync_1_NotInstalled_Fail)
+        TEST_METHOD(ResetPackageSetAsync_1_NotInstalled_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -497,9 +368,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.Items().Append(red);
 
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            VERIFY_IS_TRUE(options.FailIfNotFound());
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageSetAsync(packageSet) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -509,12 +378,12 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(IsPackageRegistered_Red());
         }
 
-        TEST_METHOD(RemovePackageSetAsync_1_NotInstalled_Success)
+        TEST_METHOD(ResetPackageSetAsync_1_NotInstalled_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -528,9 +397,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.Items().Append(red);
 
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            options.FailIfNotFound(false);
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageSetAsync(packageSet) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -540,16 +407,16 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
-        TEST_METHOD(RemovePackageSetAsync_1_Staged_Success)
+        TEST_METHOD(ResetPackageSetAsync_1_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -563,8 +430,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.Items().Append(red);
 
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageSetAsync(packageSet) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -574,12 +440,12 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
-        TEST_METHOD(RemovePackageSetAsync_1_Registered_Success)
+        TEST_METHOD(ResetPackageSetAsync_1_Registered_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -593,8 +459,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
             packageSet.Items().Append(red);
 
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageSetAsync(packageSet) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -604,12 +469,12 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
-        TEST_METHOD(RemovePackageSetAsync_N_NotInstalled_Fail)
+        TEST_METHOD(ResetPackageSetAsync_N_NotInstalled_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -629,9 +494,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
             packageSet.Items().Append(blue);
 
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            VERIFY_IS_TRUE(options.FailIfNotFound());
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageSetAsync(packageSet) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -641,12 +504,12 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(IsPackageRegistered_Red());
         }
 
-        TEST_METHOD(RemovePackageSetAsync_N_NotInstalled_Success)
+        TEST_METHOD(ResetPackageSetAsync_N_NotInstalled_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -666,9 +529,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
             packageSet.Items().Append(blue);
 
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            options.FailIfNotFound(false);
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageSetAsync(packageSet) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -678,12 +539,12 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
-        TEST_METHOD(RemovePackageSetAsync_N_Registered_Success)
+        TEST_METHOD(ResetPackageSetAsync_N_Registered_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -703,8 +564,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
             packageSet.Items().Append(blue);
 
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageSetAsync(packageSet) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -714,12 +574,12 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
-        TEST_METHOD(RemovePackageSetAsync_N_RegisteredAndNotInstalled_Success)
+        TEST_METHOD(ResetPackageSetAsync_N_RegisteredAndNotInstalled_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -736,8 +596,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
             packageSet.Items().Append(green);
 
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageSetAsync(packageSet) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
@@ -747,16 +606,16 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
-        TEST_METHOD(RemovePackageSetAsync_N_RegisteredAndNotInstalledAndStaged_Success)
+        TEST_METHOD(ResetPackageSetAsync_N_RegisteredAndNotInstalledAndStaged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -776,8 +635,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem(::TPF::Blue::GetPackageFullName(), ::TPF::Blue::c_packageDirName) };
             packageSet.Items().Append(blue);
 
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageSetAsync(packageSet) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
