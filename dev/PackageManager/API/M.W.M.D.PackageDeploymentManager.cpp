@@ -52,6 +52,21 @@ static PackageManagement_ArchitectureType ToArchitectureType(const winrt::Window
     }
 }
 
+static winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures ToPackageDependencyProcessorArchitectures(const winrt::Windows::System::ProcessorArchitecture architecture)
+{
+    switch (architecture)
+    {
+        case winrt::Windows::System::ProcessorArchitecture::X86:        return winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::X86;
+        case winrt::Windows::System::ProcessorArchitecture::X64:        return winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::X64;
+        case winrt::Windows::System::ProcessorArchitecture::Arm:        return winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Arm;
+        case winrt::Windows::System::ProcessorArchitecture::Arm64:      return winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Arm64;
+        case winrt::Windows::System::ProcessorArchitecture::X86OnArm64: return winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::X86OnArm64;
+        case winrt::Windows::System::ProcessorArchitecture::Neutral:    return winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Neutral;
+        case winrt::Windows::System::ProcessorArchitecture::Unknown:    THROW_HR_MSG(E_UNEXPECTED, "Unsupported architecture 0x%X", architecture);
+        default: THROW_HR_MSG(E_UNEXPECTED, "Unknown architecture 0x%X", architecture);
+    }
+}
+
 namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 {
     winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager PackageDeploymentManager::GetDefault()
@@ -1222,7 +1237,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
     bool PackageDeploymentManager::IsReadyByPackageFullName(hstring const& packageFullName)
     {
-        return ::Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::FindAny(m_packageManager, packageFullName);
+        const auto packageIdentity{ ::AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName.c_str()) };
+        const winrt::hstring packageFamilyName{ packageIdentity.PackageFamilyName().c_str()};
+        const AppModel::Identity::PackageVersion minVersion{ packageIdentity.Version() };
+        const auto processorArchitectureFilter{ ToPackageDependencyProcessorArchitectures(packageIdentity.Architecture()) };
+        return ::Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::FindAny(m_packageManager, packageFamilyName, minVersion, processorArchitectureFilter);
     }
 
     bool PackageDeploymentManager::IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem)

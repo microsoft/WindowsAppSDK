@@ -450,7 +450,7 @@ namespace Test::PackageManager::Tests
             const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageByUriAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -483,7 +483,7 @@ namespace Test::PackageManager::Tests
             const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageByUriAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -514,7 +514,7 @@ namespace Test::PackageManager::Tests
             const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageByUriAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -545,7 +545,7 @@ namespace Test::PackageManager::Tests
             const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageByUriAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -579,7 +579,7 @@ namespace Test::PackageManager::Tests
             const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageByUriAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -609,7 +609,7 @@ namespace Test::PackageManager::Tests
             const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageByUriAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -646,7 +646,7 @@ namespace Test::PackageManager::Tests
             const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageByUriAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -683,7 +683,7 @@ namespace Test::PackageManager::Tests
             const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageByUriAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -719,7 +719,7 @@ namespace Test::PackageManager::Tests
             const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageByUriAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -752,7 +752,7 @@ namespace Test::PackageManager::Tests
             const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageByUriAsync not supported on this platform. Skipping test");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 

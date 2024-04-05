@@ -101,7 +101,7 @@ namespace Test::PackageManager::Tests
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
-            PCWSTR packageFullName{ ::TPF::Red::GetPackageFullName() };
+            PCWSTR packageFullName{ ::TPF::Redder::GetPackageFullName() };
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(packageFullName));
         }

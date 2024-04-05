@@ -525,32 +525,18 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RemovePackageByUriAsync_RegisteredPackageStatusBad_Success)
         {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
-            END_TEST_METHOD_PROPERTIES()
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            AddPackage_Red();
-            SetPackageStatusByPackageFamilyName(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
-            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
-
-            winrt::Windows::Foundation::Uri packageUri{ TP::GetMsixPackageUri(::TPF::Red::c_packageDirName) };
-
-            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
-            auto deploymentOperation{ packageDeploymentManager.RemovePackageByUriAsync(packageUri, options) };
-            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
-            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
+            WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
         TEST_METHOD(RemovePackageSetAsync_1_RegisteredPackageStatusBad_Success)
         {
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
+            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
+                return;
+            }
+
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
@@ -581,6 +567,13 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RemovePackageSetAsync_N_RegisteredPackageStatusOkAndBad_Success)
         {
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
+            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
+                return;
+            }
+
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
@@ -610,6 +603,85 @@ namespace Test::PackageManager::Tests
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Green::GetPackageFullName()));
+        }
+
+        TEST_METHOD(ResetPackageAsync_PackageFullName_RegisteredPackageStatusBad_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageSetAsync };
+            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
+                return;
+            }
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            AddPackage_Red();
+            SetPackageStatusByPackageFamilyName(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
+
+            const winrt::hstring packageFullName{ ::TPF::Red::GetPackageFullName() };
+
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageAsync(packageFullName) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Red());
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
+        }
+
+        TEST_METHOD(ResetPackageAsync_PackageFamilyName_RegisteredPackageStatusBad_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackageSetAsync };
+            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
+                return;
+            }
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            AddPackage_Red();
+            SetPackageStatusByPackageFamilyName(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
+
+            const winrt::hstring packageFamilyName{ ::TPF::Red::c_packageFamilyName };
+
+            auto deploymentOperation{ packageDeploymentManager.ResetPackageAsync(packageFamilyName) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Red());
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
+        }
+
+        TEST_METHOD(ResetPackageByUriAsync_RegisteredPackageStatusBad_Success)
+        {
+            WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
+        }
+
+        TEST_METHOD(ResetPackageSetAsync_1_RegisteredPackageStatusBad_Success)
+        {
+            WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
+        }
+
+        TEST_METHOD(ResetPackageSetAsync_N_RegisteredPackageStatusOkAndBad_Success)
+        {
+            WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
     };
 }
