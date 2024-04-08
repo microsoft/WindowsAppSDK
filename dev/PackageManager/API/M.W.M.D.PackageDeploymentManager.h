@@ -64,9 +64,13 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         bool IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSet);
         winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus IsReadyOrNewerAvailableByPackageFullName(hstring const& packageFullName);
         winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus IsReadyOrNewerAvailable(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSet);
-        void Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet) const;
-        void Validate(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem) const;
+        void Validate(
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet) const;
+        void Validate(
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet,
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem) const;
         HRESULT EnsureReadyAsync(
+            winrt::Windows::Foundation::Uri const& packageUri,
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem,
             winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions const& options,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
@@ -76,7 +80,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             winrt::hstring& errorText,
             winrt::guid& activityId);
         HRESULT AddPackage(
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem,
+            winrt::Windows::Foundation::Uri const& packageUri,
             winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions const& options,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
@@ -94,7 +98,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             winrt::hstring& errorText,
             winrt::guid& activityId);
         HRESULT StagePackage(
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem,
+            winrt::Windows::Foundation::Uri const& packageUri,
             winrt::Microsoft::Windows::Management::Deployment::StagePackageOptions const& options,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
@@ -112,7 +116,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             winrt::hstring& errorText,
             winrt::guid& activityId);
         HRESULT RegisterPackage(
-            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem,
+            winrt::Windows::Foundation::Uri const& packageUri,
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions const& options,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
@@ -163,6 +167,9 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Management::Deployment::DeploymentOptions ToDeploymentOptions(winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions const& options) const;
         static double PercentageToProgress(uint32_t percentage, const double progressMaxPerItem);
         static bool IsUriEndsWith(winrt::Windows::Foundation::Uri const& packageUri, PCWSTR target);
+        static winrt::Windows::Foundation::Uri GetEffectivePackageUri(
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet,
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem);
 
     private:
         static int StringCompareNoCase(PCWSTR left, PCWSTR right)
