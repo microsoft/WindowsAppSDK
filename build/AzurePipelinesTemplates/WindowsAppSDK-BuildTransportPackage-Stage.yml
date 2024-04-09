@@ -178,7 +178,6 @@ stages:
       - template: ..\..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
         parameters:
           AzureSubscriptionServiceConnection: 'ProjectReunion Resource Manager'
-          NuGetServiceConnectionName: 'ProjectReunionInternal'
 
       - template: ..\..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
         parameters:
