@@ -24,7 +24,7 @@ namespace WindowsAppSDK.TemplateUtilities
             _componentModel = (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
 
             // Assuming package list is passed via a custom parameter in the .vstemplate file
-            if (replacementsDictionary.TryGetValue("NuGetPackages", out string packages))
+            if (replacementsDictionary.TryGetValue("$NuGetPackages$", out string packages))
             {
                 _nuGetPackages = packages.Split(';').Where(p => !string.IsNullOrEmpty(p));
             }
