@@ -275,6 +275,6 @@ lifecycle and state isolation help get your app ready to run wherever your custo
 # More documentation
 
 * [High level overview](https://github.com/microsoft/WindowsAppSDK/blob/master/README.md) - Why we're doing this.
-* [Roadmap + vote on features](https://portal.productboard.com/winappsdk/1-windows-app-sdk) - See what we're planning and influence what we build!
+* [Roadmap](roadmap.md) - See what we're planning and how to join in!
 * [Contributor guide](contributor-guide.md) - How to contribute to Windows App SDK.
 * [FAQ](faq.md) - frequently asked questions about Windows App SDK.
