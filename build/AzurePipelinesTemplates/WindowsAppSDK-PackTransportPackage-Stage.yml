@@ -35,8 +35,6 @@ stages:
       ob_artifactBaseName: "TransportPackage"
     steps:
     - task: NuGetAuthenticate@1
-      inputs:
-        nuGetServiceConnections: 'ProjectReunionInternal'
 
     - task: DownloadPipelineArtifact@2
       displayName: 'Download Foundation x64'
