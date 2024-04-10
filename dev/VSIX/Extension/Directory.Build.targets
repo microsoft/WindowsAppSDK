@@ -231,39 +231,6 @@
         <xsl:attribute name="Package">$(PackageGuidString)</xsl:attribute>
     </xsl:template>
 
-    <!-- Update .vstemplate's Nuget package repository ID with the extension ID -->
-    <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:packages/@repositoryId">
-        <xsl:attribute name="repositoryId">$(NugetRepositoryId)</xsl:attribute>
-    </xsl:template>
-
-    <!-- Update Packages section with actual Nuget package versions to restore -->
-    <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.Windows.CppWinRT']/@version">
-        <xsl:attribute name="version">$(CppWinRTVersion)</xsl:attribute>
-    </xsl:template>
-    <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.WindowsAppSDK']/@version">
-        <xsl:attribute name="version">$(WindowsAppSDKVersion)</xsl:attribute>
-    </xsl:template>
-    <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.Windows.SDK.BuildTools']/@version">
-        <xsl:attribute name="version">$(WindowsSDKBuildToolsVersion)</xsl:attribute>
-    </xsl:template>
-    <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.Windows.ImplementationLibrary']/@version">
-        <xsl:attribute name="version">$(WILVersion)</xsl:attribute>
-    </xsl:template>
-
-    <!-- Update Assets section with actual Nuget package filenames -->
-    <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.Windows.CppWinRT.nupkg']/@Path">
-        <xsl:attribute name="Path">Microsoft.Windows.CppWinRT.$(CppWinRTVersion).nupkg</xsl:attribute>
-    </xsl:template>
-    <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.WindowsAppSDK.nupkg']/@Path">
-        <xsl:attribute name="Path">Microsoft.WindowsAppSDK.$(WindowsAppSDKVersion).nupkg</xsl:attribute>
-    </xsl:template>
-    <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.Windows.SDK.BuildTools.nupkg']/@Path">
-        <xsl:attribute name="Path">Microsoft.Windows.SDK.BuildTools.$(WindowsSDKBuildToolsVersion).nupkg</xsl:attribute>
-    </xsl:template>
-    <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.Windows.ImplementationLibrary.nupkg']/@Path">
-        <xsl:attribute name="Path">Microsoft.Windows.ImplementationLibrary.$(WILVersion).nupkg</xsl:attribute>
-    </xsl:template>
-
     <!-- Update custom parameters passed into subtemplates -->
     <xsl:template match="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$CppWinRTVersion$']/@Value">
         <xsl:attribute name="Value">$(CppWinRTVersion)</xsl:attribute>
