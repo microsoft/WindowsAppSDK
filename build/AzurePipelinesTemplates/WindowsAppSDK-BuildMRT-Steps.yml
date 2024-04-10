@@ -5,9 +5,9 @@ parameters:
 - name: "IsOneBranch"
   type: boolean
   default: True
-- name: "RunPrefast"
+- name: runStaticAnalysis
   type: boolean
-  default: False
+  default: True
 
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
@@ -22,43 +22,44 @@ steps:
     compilerPackageVersion: $(compilerOverridePackageVersion)
     slnDirectory: $(Build.SourcesDirectory)\dev\MRTCore\mrt
 
-- ${{ if parameters.RunPrefast }}:
-  # PREFast scan is enabled in this pipeline run, so we pass PreFastSetup to BuildAll.ps1 to get it to do the commonn setup steps, but short of
-  # building the target via MSBuild.exe
-  - task: PowerShell@2
-    name: PreFastSetup
-    inputs:
-      filePath: 'BuildAll.ps1'
-      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "PreFastSetup"
+- task: PowerShell@2
+  name: BuildBinaries
+  retryCountOnTaskFailure: 10
+  inputs:
+    filePath: 'BuildAll.ps1'
+    arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
 
-  # The PREFast task below only supports the VSBuild/MSbuild task, _not_ a direct call to MSBuild.exe.
-  - task: MSBuild@1
-    displayName: 'build MrtCore with MSBuild'
-    inputs:
-      platform: '$(buildPlatform)'
-      solution: '$(Build.SourcesDirectory)\dev\MRTCore\mrt\MrtCore.sln'
-      configuration: '$(buildConfiguration)'
-      msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)\dev\MRTCore\mrt\mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
-
-  # ToDo: WindowsAppSDK-BinaryAnalysis-steps.yml below ultimately invokes SDLNativeRules@2, which is out of support.
-  # So for the time being, we explicitly call SDLNativeRules@3, which is currently supported. Consider eliminating this
-  # extra step when we run PREFast as part of WindowsAppSDK-BinaryAnalysis-steps.yml below.
+- ${{ if eq(parameters.runStaticAnalysis, 'True') }}:
   - task: SDLNativeRules@3
-    displayName: 'Guardian: PreFast@3'
+    displayName: Run PREfast SDL Native Rules 
+    condition: and(succeeded(), eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
+    inputs:
+      setupCommandlines: '"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat"'
+      msBuildArchitecture: amd64
+      msBuildCommandline: 'msbuild.exe /nologo /nr:false /p:configuration=Release /p:platform=x64 $(Build.SourcesDirectory)\dev\MRTCore\mrt\MrtCore.sln'
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     continueOnError: true
-    inputs:
-      userProvideBuildInfo: 'auto'
-      toolVersion: Latest
 
-- ${{ if not( parameters.RunPrefast ) }}:
-  - task: PowerShell@2
-    name: BuildBinaries
-    retryCountOnTaskFailure: 10
+  # Copy build output to folder APIScanTarget for APIScan to scan, in the mean time, exclude some folders/files.
+  - task: CopyFiles@2
+    displayName: Populate APIScanTarget
+    condition: and(succeeded(), eq(variables['ob_sdl_apiscan_enabled'], 'true'))
     inputs:
-      filePath: 'BuildAll.ps1'
-      arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
+      SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
+      TargetFolder: '$(build.SourcesDirectory)\APIScanTarget'
+      contents: |
+        **
+        !**\*test*\**
+        !**\*.binlog
+        !**\*.json
+    continueOnError: true
+
+  #- script: |
+  #    dir /s $(Build.SourcesDirectory)\APIScanTarget
+  #  displayName: 'DIAG: dir $(Build.SourcesDirectory)\APIScanTarget'
+  #  condition: and(succeededOrFailed(), eq(variables['ob_sdl_apiscan_enabled'], 'true'))
+  #  continueOnError: true
 
 # component detection must happen *within* the build task
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0

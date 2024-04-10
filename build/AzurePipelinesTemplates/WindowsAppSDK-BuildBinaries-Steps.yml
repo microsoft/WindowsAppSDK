@@ -5,6 +5,9 @@ parameters:
 - name: "IsOneBranch"
   type: boolean
   default: True
+- name: runStaticAnalysis
+  type: boolean
+  default: True
 
 steps:
 - task: NuGetToolInstaller@1
@@ -66,6 +69,46 @@ steps:
   inputs:
     filePath: 'BuildAll.ps1'
     arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildBinaries"
+
+- ${{ if eq(parameters.runStaticAnalysis, 'True') }}:
+  - task: SDLNativeRules@3
+    displayName: Run PREfast SDL Native Rules 
+    condition: and(succeeded(), eq(variables['buildConfiguration'], 'Release'), eq(variables['buildPlatform'], 'x64'))
+    inputs:
+      setupCommandlines: '"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat"'
+      msBuildArchitecture: amd64
+      msBuildCommandline: 'msbuild.exe /restore /nologo /nr:false /p:configuration=Release /p:platform=x64 $(Build.SourcesDirectory)\WindowsAppRuntime.sln'
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    continueOnError: true
+
+  # Copy build output to folder APIScanTarget for APIScan to scan later, in the mean time, exclude some folders/files.
+  - task: CopyFiles@2
+    displayName: Populate APIScanTarget
+    condition: and(succeeded(), eq(variables['ob_sdl_apiscan_enabled'], 'true'))
+    inputs:
+      SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
+      TargetFolder: '$(build.SourcesDirectory)\APIScanTarget'
+      contents: |
+        **
+        !**\*test*\**
+        !**\*Demoapp*\**
+        !**\*Demopackage\**
+        !**\*.json
+        !**\*.msix
+        !**\*.png
+        !**\*.binlog
+        !**\*.cs
+        !**\*.cpp
+        !**\*.idl
+        !**\*.h
+    continueOnError: true
+
+  #- script: |
+  #    dir /s $(Build.SourcesDirectory)\APIScanTarget
+  #  displayName: 'DIAG: dir $(Build.SourcesDirectory)\APIScanTarget'
+  #  condition: and(succeededOrFailed(), eq(variables['ob_sdl_apiscan_enabled'], 'true'))
+  #  continueOnError: true
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
   - task: EsrpCodeSigning@2
