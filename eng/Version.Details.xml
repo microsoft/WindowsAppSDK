@@ -37,9 +37,9 @@
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.6.240311">
+    <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.6.240410">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKAggregator</Uri>
-      <Sha>259b3ef482b64a309d7b094d9580f9de57b90893</Sha>
+      <Sha>bd9465e4d01724693e6806d168ce9fb94db24d3a</Sha>
     </Dependency>
     <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.0.3">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
