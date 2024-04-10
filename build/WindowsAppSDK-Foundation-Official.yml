@@ -30,6 +30,10 @@ parameters:
 - name: "SignOutput"
   type: boolean
   default: True
+- name: runStaticAnalysis
+  displayName: "Run Static Analysis (e.g., PREFast, APIScan)"
+  type: boolean
+  default: True
 
 resources:
   repositories:
@@ -66,12 +70,30 @@ extends:
         enabled: false
       binskim:
         enabled: true
+        break: true
+      prefast:
+        ${{ if eq(parameters.runStaticAnalysis, 'True') }}:
+          enabled: true
+        ${{ else }}:
+          enabled: false
+        # TODO: Once we've cleared away all existing errors, consider setting this to true.
+        break: true
+        # Use "severity: 'Warning'" to be more sensitive, break on Warnings+Errors.
+        # Use "severity: 'Note'" to be even more sensitive, break on Notes+Warnings+Errors.
+        # Use "severity: 'Default'" to get back to default, i.e., break on Errors. Can't get less sensitive than that.
+        severity: Default
+        # Use "exclusionsFile: <<FILE PATH>>" to apply a local exclusion file.
+      apiscan:
+        # We will enable APIScan on a per-job basis downstream as needed.
+        enabled: false
+        # TODO: Once we've cleared away all existing errors, consider setting this to true.
         break: false
 
     stages:
     - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
       parameters:
         SignOutput: ${{ parameters.SignOutput }}
+        runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
 
