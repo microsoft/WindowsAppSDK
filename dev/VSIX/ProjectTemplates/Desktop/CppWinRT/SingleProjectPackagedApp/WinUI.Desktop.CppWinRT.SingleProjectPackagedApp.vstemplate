@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
     <Name ID="1029" Package="FIXME-PACKAGEGUID" />
@@ -47,6 +47,9 @@
       </Folder>
       <ProjectItem ReplaceParameters="true" TargetFileName="readme.txt">readme.txt</ProjectItem>
     </Project>
+    <CustomParameters>
+      <CustomParameter Name="$NuGetPackages$" Value="Microsoft.WindowsAppSDK;Microsoft.Windows.CppWinRT;Microsoft.Windows.SDK.BuildTools;Microsoft.Windows.ImplementationLibrary"/>
+    </CustomParameters>
   </TemplateContent>
   <WizardExtension>
     <Assembly>NuGet.VisualStudio.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
