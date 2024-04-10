@@ -73,7 +73,7 @@ namespace WindowsAppSDK.TemplateUtilities
 			joinableTaskFactory.RunAsync(InstallNuGetPackageAsync);
 
 		}
-		private Task InstallNuGetPackageAsync()
+		private async Task<Task> InstallNuGetPackageAsync()
 		{
             if (string.IsNullOrEmpty(_packageId))
             {
@@ -82,10 +82,33 @@ namespace WindowsAppSDK.TemplateUtilities
                 LogError(message);
                 return Task.CompletedTask;
             }
-            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
+
+            IVsPackageInstaller2 installer2 = _componentModel.GetService<IVsPackageInstaller2>();
+            
             try
             {
-                installer.InstallPackage(null, _project, _packageId, "", false);
+                if (NugetClientHelper.IsInternetAvailable()) 
+                {
+                    // Get Latest Version from Nuget.org
+                    var packageMeta = await NugetClientHelper.GetPackageMetaDataAsync(_packageId);
+                    var isCacheAvailable = NugetClientHelper.IsCacheAvailableForPackage(_packageId, packageMeta.Identity.Version.ToString());
+
+                    if (isCacheAvailable)
+                    {
+                        // The latest version is available locally/cached and The latest version will be installed from Local/Cache
+                        installer2.InstallLatestPackage(NugetClientHelper.globalPackagesFolder, _project, _packageId, false, false);
+                    }
+                    else
+                    {
+                        // The latest version is not available locally/cached and The latest version will be installed from nuget.org
+                        installer2.InstallLatestPackage(null, _project, _packageId, false, false);
+                    }
+                }
+                else
+                {
+                    // Internet is not connected, the latest cached version will be installed
+                    installer2.InstallLatestPackage(NugetClientHelper.globalPackagesFolder, _project, _packageId, false, false);
+                }
             }
             catch (Exception ex)
             {
