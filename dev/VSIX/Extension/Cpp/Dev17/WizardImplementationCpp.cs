@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TemplateWizard;
 using NuGet.VisualStudio;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WindowsAppSDK.Cpp.Extension;
 
@@ -18,30 +19,34 @@ namespace WindowsAppSDK.TemplateUtilities.Cpp
     {
         private Project _project;
         private IComponentModel _componentModel;
+        private IEnumerable<string> _nuGetPackages;
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             _componentModel = (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
+            // Assuming package list is passed via a custom parameter in the .vstemplate file
+            if (replacementsDictionary.TryGetValue("$NuGetPackages$", out string packages))
+            {
+                _nuGetPackages = packages.Split(';').Where(p => !string.IsNullOrEmpty(p));
+            }
         }
         public void ProjectFinishedGenerating(Project project)
         {
             _project = project;
-
-            // Ensure we're on the main thread, as required by the ProjectFinishedGenerating method and DTE operations
-            ThreadHelper.JoinableTaskFactory.Run(async () =>
-            {
-                await InstallNuGetPackagesAsync(_project);
-            });
+            ThreadHelper.JoinableTaskFactory.Run(async () => await InstallNuGetPackagesAsync());
         }
-        private async Task InstallNuGetPackagesAsync(Project project)
+        // InstallNuGetPackagesAsync iterates over the package list and installs each
+        private async Task InstallNuGetPackagesAsync()
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            foreach (var packageId in NuGetPackageList.Packages)
+            var installer = _componentModel.GetService<IVsPackageInstaller>();
+
+            foreach (var packageId in _nuGetPackages)
             {
                 try
                 {
-                    // No version specified; it installs the latest stable version
-                    await InstallNuGetPackageAsync(packageId);
+                    // Install the latest stable version of each package
+                    installer.InstallPackage(null, _project, packageId, version: "", ignoreDependencies: false);
                 }
                 catch (Exception ex)
                 {
@@ -58,25 +63,6 @@ namespace WindowsAppSDK.TemplateUtilities.Cpp
         public void RunFinished()
         {
 
-        }
-        private async Task InstallNuGetPackageAsync(string packageId)
-        {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
-            if (installer == null)
-            {
-                LogError("Could not obtain IVsPackageInstaller service.");
-                return;
-            }
-
-            try
-            {
-                installer.InstallPackage(null, _project, packageId, "", false);
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error installing package {packageId}: {ex.Message}");
-            }
         }
         private void LogError(string message)
         {
