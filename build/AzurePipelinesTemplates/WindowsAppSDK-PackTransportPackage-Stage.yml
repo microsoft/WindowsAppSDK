@@ -161,6 +161,7 @@ stages:
           {
             Write-Host $value
           }
+          New-Item "$(ob_outputDirectory)\pdbs.txt"
           $pdbSet.Keys | Out-File "$(ob_outputDirectory)\pdbs.txt"
 
     # Publishing symbols publicly requires making an API call to the service and is handled by PublishPublicSymbols.ps1
