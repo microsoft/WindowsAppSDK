@@ -18,10 +18,13 @@ ResourceLoader::ResourceLoader()
     SetDefaultContext();
 }
 
-ResourceLoader::ResourceLoader(hstring const& fileName)
+ResourceLoader::ResourceLoader(hstring const& resourceMap)
 {
+    hstring fileName;
+    winrt::check_hresult(GetDefaultPriFile(fileName));
+
     winrt::check_hresult(MrmCreateResourceManager(fileName.c_str(), &m_resourceManager));
-    winrt::check_hresult(MrmGetChildResourceMap(m_resourceManager, nullptr, L"Resources", &m_currentResourceMap));
+    winrt::check_hresult(MrmGetChildResourceMap(m_resourceManager, nullptr, resourceMap.c_str(), &m_currentResourceMap));
     SetDefaultContext();
 }
 
