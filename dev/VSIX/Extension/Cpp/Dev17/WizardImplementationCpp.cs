@@ -6,12 +6,12 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TemplateWizard;
+using Microsoft.VisualStudio.Threading;
 using NuGet.VisualStudio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WindowsAppSDK.Cpp.Extension;
 
 namespace WindowsAppSDK.TemplateUtilities.Cpp
 {
@@ -20,10 +20,13 @@ namespace WindowsAppSDK.TemplateUtilities.Cpp
         private Project _project;
         private IComponentModel _componentModel;
         private IEnumerable<string> _nuGetPackages;
+        private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             _componentModel = (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
+            _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
+            _nugetProjectUpdateEvents.SolutionRestoreFinished += OnSolutionRestoreFinished;
             // Assuming package list is passed via a custom parameter in the .vstemplate file
             if (replacementsDictionary.TryGetValue("$NuGetPackages$", out string packages))
             {
@@ -33,7 +36,6 @@ namespace WindowsAppSDK.TemplateUtilities.Cpp
         public void ProjectFinishedGenerating(Project project)
         {
             _project = project;
-            ThreadHelper.JoinableTaskFactory.Run(async () => await InstallNuGetPackagesAsync());
         }
         // InstallNuGetPackagesAsync iterates over the package list and installs each
         private async Task InstallNuGetPackagesAsync()
@@ -62,6 +64,15 @@ namespace WindowsAppSDK.TemplateUtilities.Cpp
         }
         public void RunFinished()
         {
+
+        }
+        private void OnSolutionRestoreFinished(IReadOnlyList<string> projects)
+        {
+            // Debouncing prevents multiple rapid executions of 'InstallNuGetPackageAsync'
+            // during solution restore.
+            _nugetProjectUpdateEvents.SolutionRestoreFinished -= OnSolutionRestoreFinished;
+            var joinableTaskFactory = new JoinableTaskFactory(ThreadHelper.JoinableTaskContext);
+            _ = joinableTaskFactory.RunAsync(InstallNuGetPackagesAsync);
 
         }
         private void LogError(string message)
