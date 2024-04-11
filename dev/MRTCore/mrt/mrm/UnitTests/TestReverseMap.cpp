@@ -147,7 +147,7 @@ TestReverseFileMap::VerifyAllAgainstTestVars(
         for (unsigned iSpec = 0; iSpec < specs.GetSize(); iSpec++)
         {
             Log::Comment(tmp.Format(L"[ Candidate %d: %s ]", iSpec, (PCWSTR)specs[iSpec]));
-            if (FAILED(spec.InitFromList(specs[iSpec])))
+            if (!spec.InitFromList(specs[iSpec]))
             {
                 Log::Warning(tmp.Format(L"[ Error parsing spec %d in %sExpectedCandidateInfo ]", iSpec, pVarPrefix));
                 continue;

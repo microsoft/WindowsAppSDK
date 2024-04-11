@@ -23,6 +23,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
             // We store the head pointer at the beginning of the memory, and then items in the queue after.
             m_data.Open(name, (sizeof(QueueItem) * 4096) + sizeof(QueueItem*));
+#pragma warning(suppress: 6305) // C6305: PREFast does not know m_data.Get() is compatible with "sizeof(size_t)".
             m_dataStart = reinterpret_cast<QueueItem*>(m_data.Get() + sizeof(size_t));
         }
 
@@ -122,11 +123,14 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             QueueItem* upperBounds = reinterpret_cast<QueueItem*>(m_data.Get()) + m_data.Size();
             auto cur = m_dataStart;
 
+#pragma warning(suppress: 6305) // C6305: PREFast does not know upperBounds was also computed in byte count so it is compatible with "sizeof(QueueItem)".
             while (cur < (upperBounds - sizeof(QueueItem)) && cur->inUse)
             {
+#pragma warning(suppress: 6305) // C6305: PREFast does not know cur was also computed in byte count so it is compatible with "sizeof(QueueItem)".
                 cur += sizeof(QueueItem);
             }
 
+#pragma warning(suppress: 6305) // C6305: PREFast does not know upperBounds was also computed in byte count so it is compatible with "sizeof(QueueItem)".
             THROW_HR_IF(E_OUTOFMEMORY, cur >= (upperBounds - sizeof(QueueItem)));
             return cur;
         }

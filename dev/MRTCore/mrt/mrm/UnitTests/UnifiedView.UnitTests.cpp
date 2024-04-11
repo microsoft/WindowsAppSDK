@@ -1090,7 +1090,7 @@ void UnifiedResourceViewUnitTests::MapLookupTests()
     VERIFY(pView != NULL);
 
     // Load all of the files
-    if (FAILED(TestData::TryGetValue(L"FilesToLoad", filesSpec)) || FAILED(files.InitFromList(filesSpec)))
+    if (FAILED(TestData::TryGetValue(L"FilesToLoad", filesSpec)) || !files.InitFromList(filesSpec))
     {
         Log::Error(L"[ Couldn't load FilesToLoad ]");
         return;
@@ -1110,7 +1110,7 @@ void UnifiedResourceViewUnitTests::MapLookupTests()
     }
 
     // Now make sure that we find all of the names we're expecting
-    if (FAILED(TestData::TryGetValue(L"ExpectedMapNames", expectedMapsSpec)) || FAILED(expectedMaps.InitFromList(expectedMapsSpec)))
+    if (FAILED(TestData::TryGetValue(L"ExpectedMapNames", expectedMapsSpec)) || !expectedMaps.InitFromList(expectedMapsSpec))
     {
         Log::Warning(L"[ Couldn't load ExpectedMapNames ]");
     }
@@ -1126,7 +1126,7 @@ void UnifiedResourceViewUnitTests::MapLookupTests()
     }
 
     // Finally, make sure that we don't find any of the names that shouldn't be there
-    if (FAILED(TestData::TryGetValue(L"UnexpectedMapNames", unexpectedMapsSpec)) || FAILED(unexpectedMaps.InitFromList(unexpectedMapsSpec)))
+    if (FAILED(TestData::TryGetValue(L"UnexpectedMapNames", unexpectedMapsSpec)) || !unexpectedMaps.InitFromList(unexpectedMapsSpec))
     {
         Log::Warning(L"[ UnexpectedMapNames not specified ]");
     }
