@@ -414,8 +414,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                 deploymentResult.ActivityId());
         }
 
-        return !deploymentOperationHResult ? deploymentOperationHResult :
-            (deploymentOperationExtendedHResult ? deploymentOperationExtendedHResult : deploymentOperationHResult);
+        // If deploymentOperationHResult indicates success, take that, ignore deploymentOperationExtendedHResult.
+        // Otherwise, return deploymentOperationExtendedHResult if there is an error in it, if not, return deploymentOperationHResult.
+        return SUCCEEDED(deploymentOperationHResult) ? deploymentOperationHResult :
+            (FAILED(deploymentOperationExtendedHResult) ? deploymentOperationExtendedHResult : deploymentOperationHResult);
     }
     CATCH_RETURN()
 

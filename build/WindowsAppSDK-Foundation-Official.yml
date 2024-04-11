@@ -76,7 +76,6 @@ extends:
           enabled: true
         ${{ else }}:
           enabled: false
-        # TODO: Once we've cleared away all existing errors, consider setting this to true.
         break: true
         # Use "severity: 'Warning'" to be more sensitive, break on Warnings+Errors.
         # Use "severity: 'Note'" to be even more sensitive, break on Notes+Warnings+Errors.

@@ -146,7 +146,7 @@ bool TestHierarchicalSchema::TryVerifyScopes(__in const IHierarchicalSchema* pSc
             TestStringArray expected;
 
             Log::Comment(tmp.Format(L"[ %sExpectedScopes %d: %s ]", pVarPrefix, (int)i, (PCWSTR)specs[i]));
-            if (FAILED(expected.InitFromList(specs[i])) || (expected.GetNumStrings() < 1) || (expected.GetNumStrings() > 3))
+            if (!expected.InitFromList(specs[i]) || (expected.GetNumStrings() < 1) || (expected.GetNumStrings() > 3))
             {
                 Log::Error(L"Malformed ExpectedScopes value");
                 return false;
@@ -189,7 +189,7 @@ bool TestHierarchicalSchema::TryVerifyScopes(__in const IHierarchicalSchema* pSc
     else if (SUCCEEDED(TestData::TryGetValue(tmp.Format(L"%sExpectedScopesList", pVarPrefix), specListString)))
     {
         TestStringArray specList;
-        if (FAILED(specList.InitFromList(specListString)))
+        if (!specList.InitFromList(specListString))
         {
             Log::Warning(tmp.Format(L"[ Couldn't parse %sExpectedScopesList ]", pVarPrefix));
             return false;
@@ -213,7 +213,7 @@ bool TestHierarchicalSchema::TryVerifyScopes(__in const IHierarchicalSchema* pSc
         Log::Comment(tmp.Format(L"[ Found %sUnexpectedScopes ]", pVarPrefix));
 
         TestStringArray specList;
-        if (SUCCEEDED(specList.InitFromList((PCWSTR)unexpectedList)))
+        if (specList.InitFromList((PCWSTR)unexpectedList))
         {
             for (int i = 0; i < specList.GetNumStrings(); i++)
             {
@@ -265,7 +265,7 @@ bool TestHierarchicalSchema::TryVerifyItems(__in const IHierarchicalSchema* pSch
             TestStringArray expected;
 
             Log::Comment(tmp.Format(L"[ %sExpectedItems %d: %s ]", pVarPrefix, (int)i, (PCWSTR)specs[i]));
-            if (FAILED(expected.InitFromList(specs[i])) || (expected.GetNumStrings() < 1) || (expected.GetNumStrings() > 2))
+            if (!expected.InitFromList(specs[i]) || (expected.GetNumStrings() < 1) || (expected.GetNumStrings() > 2))
             {
                 Log::Error(L"Malformed ExpectedItems value");
                 return false;
@@ -293,7 +293,7 @@ bool TestHierarchicalSchema::TryVerifyItems(__in const IHierarchicalSchema* pSch
     else if (SUCCEEDED(TestData::TryGetValue(tmp.Format(L"%sExpectedItemsList", pVarPrefix), specListString)))
     {
         TestStringArray specList;
-        if (SUCCEEDED(specList.InitFromList(specListString)))
+        if (specList.InitFromList(specListString))
         {
             Log::Comment(tmp.Format(L"[ Found %d %sExpectedItemsList ]", specList.GetNumStrings(), pVarPrefix));
             for (int i = 0; i < specList.GetNumStrings(); i++)
@@ -317,7 +317,7 @@ bool TestHierarchicalSchema::TryVerifyItems(__in const IHierarchicalSchema* pSch
     if (SUCCEEDED(TestData::TryGetValue(tmp.Format(L"%sUnexpectedItems", pVarPrefix), unexpectedList)))
     {
         TestStringArray specList;
-        if (SUCCEEDED(specList.InitFromList((PCWSTR)unexpectedList)))
+        if (specList.InitFromList((PCWSTR)unexpectedList))
         {
             for (int i = 0; i < specList.GetNumStrings(); i++)
             {
@@ -410,7 +410,7 @@ TestHierarchicalSchema::CreateNewSchemaFromTestVars(
             Log::Error(tmp.Format(L"Test data for \"%s\" specifies baseline but test supplies no folder", pVarPrefix));
             return E_FAIL;
         }
-        else if (FAILED(baseline.InitFromList((PCWSTR)baselineList)) || (baseline.GetNumStrings() != 2))
+        else if (!baseline.InitFromList((PCWSTR)baselineList) || (baseline.GetNumStrings() != 2))
         {
             Log::Error(tmp.Format(L"Malformed baseline \"%s\" for \"%s\"", (PCWSTR)baselineList, pVarPrefix));
             return E_FAIL;

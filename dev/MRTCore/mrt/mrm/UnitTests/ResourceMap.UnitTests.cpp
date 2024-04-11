@@ -215,7 +215,7 @@ void ResourceMapUnitTests::SimpleSubtreeTests()
     }
     else
     {
-        if (FAILED(subtreeStrings.InitFromList(subtreeSpec)))
+        if (!subtreeStrings.InitFromList(subtreeSpec))
         {
             Log::Error(L"[ Couldn't parse subtree spec ]");
         }
