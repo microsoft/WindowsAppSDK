@@ -142,6 +142,27 @@ stages:
       env:
         LIB: $(Build.SourcesDirectory)
 
+  # In the "Publish symbols to SymWeb and MSDL" step, the symbols are automatically stripped in the API.
+  # However, since WindowsAppSDK is public, we don't need to strip them.
+  # So we need to send a list of pdbs to the symbols team that is not needed to be stripped
+  # This task facilitates this.
+  - task: PowerShell@2
+    name: ListUniquePDBs
+    displayName: 'List Unique PDBs and write to pdbs.txt'
+    inputs:
+      targetType: 'inline'
+      script: |
+        $pdbSet = @{}
+        $inputPath = "$(Build.ArtifactStagingDirectory)\symbols"
+        Get-ChildItem *.pdb -Path $inputPath -Recurse | foreach-object {
+          $pdbSet[$_.Name] = $true
+        }
+        foreach ($value in $pdbSet.Keys)
+        {
+          Write-Host $value
+        }
+        $pdbSet.Keys | Out-File "$(ob_outputDirectory)\pdbs.txt"
+
     # Publishing symbols publicly requires making an API call to the service and is handled by PublishPublicSymbols.ps1
     # in eng/common
     # See this page for more info:
