@@ -714,7 +714,7 @@ TestResourceMap::VerifyDescendentScopes(_In_ TestMapPrivate* pMap, _In_ PCWSTR p
 
     if (pMap->pSubtree == nullptr)
     {
-        Log::Warning(tmp.Format(L"[ VerifyDescendentScopess(\"%s\") requires subtree ]", pVarPrefix));
+        Log::Warning(tmp.Format(L"[ VerifyDescendentScopes(\"%s\") requires subtree ]", pVarPrefix));
         return E_FAIL;
     }
 
