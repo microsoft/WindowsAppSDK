@@ -48,7 +48,7 @@ void WindowsAppRuntimeInstaller::Console::DisplayError(const HRESULT hr)
 
     HRESULT hResult = hr;
 
-    if (FAILED(installActivityContext.GetDeploymentErrorHresult() &&
+    if (FAILED(installActivityContext.GetDeploymentErrorHresult()) &&
         (installActivityContext.GetInstallStage() == InstallStage::StagePackage ||
         installActivityContext.GetInstallStage() == InstallStage::AddPackage ||
         installActivityContext.GetInstallStage() == InstallStage::RegisterPackage))
@@ -70,7 +70,7 @@ void WindowsAppRuntimeInstaller::Console::DisplayError(const HRESULT hr)
     }
 
     // Don't log redundant Hr information
-    if (FAILED(installActivityContext.GetDeploymentErrorExtendedHResult() &&
+    if (FAILED(installActivityContext.GetDeploymentErrorExtendedHResult()) &&
         (installActivityContext.GetDeploymentErrorExtendedHResult() != hResult) &&
         (installActivityContext.GetInstallStage() == InstallStage::StagePackage ||
             installActivityContext.GetInstallStage() == InstallStage::AddPackage ||
