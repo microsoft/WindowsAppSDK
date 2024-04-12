@@ -13,6 +13,8 @@ variables:
 
   Codeql.Enabled: true #  CodeQL runs every 3 days on the default branch for all languages its applicable to in that pipeline.
 
+  symbolsArtifactName: "WinAppSDKSymbols_$(System.DefinitionId)_$(Build.BuildId)_$(System.StageName)_$(Agent.JobName)"
+
   channel: 'stable'
   rerunPassesRequiredToAvoidFailure: 5
   versionDate: $[format('{0:yyyyMMdd}', pipeline.startTime)]
