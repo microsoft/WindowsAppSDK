@@ -26,7 +26,7 @@ bool TestUtils::TryVerifyRemap(_In_ PCWSTR pVarName, _Inout_ const RemapUInt16* 
         int expectedValue;
         UINT16 gotValue;
 
-        if (FAILED(expectedStrings.InitFromList(varValue)))
+        if (!expectedStrings.InitFromList(varValue))
         {
             Log::Warning(tmp.Format(L"[ Couldn't parse \"%s\" ]", pVarName));
             return false;

@@ -21,6 +21,7 @@ namespace WindowsAppSDK.TemplateUtilities.Cpp
         private IComponentModel _componentModel;
         private IEnumerable<string> _nuGetPackages;
         private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
+        
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
@@ -32,11 +33,11 @@ namespace WindowsAppSDK.TemplateUtilities.Cpp
             {
                 _nuGetPackages = packages.Split(';').Where(p => !string.IsNullOrEmpty(p));
             }
-        }
+        }        
         public void ProjectFinishedGenerating(Project project)
         {
             _project = project;
-        }
+        }        
         // InstallNuGetPackagesAsync iterates over the package list and installs each
         private async Task InstallNuGetPackagesAsync()
         {
@@ -55,13 +56,13 @@ namespace WindowsAppSDK.TemplateUtilities.Cpp
                     LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
                 }
             }
-        }
+        }        
         public void BeforeOpeningFile(ProjectItem _)
         {
-        }
+        }        
         public void ProjectItemFinishedGenerating(ProjectItem _)
         {
-        }
+        }        
         public void RunFinished()
         {
 
@@ -73,7 +74,6 @@ namespace WindowsAppSDK.TemplateUtilities.Cpp
             _nugetProjectUpdateEvents.SolutionRestoreFinished -= OnSolutionRestoreFinished;
             var joinableTaskFactory = new JoinableTaskFactory(ThreadHelper.JoinableTaskContext);
             _ = joinableTaskFactory.RunAsync(InstallNuGetPackagesAsync);
-
         }
         private void LogError(string message)
         {

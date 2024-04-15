@@ -144,7 +144,7 @@ TestHPri::InitFromTestVars(
             Log::Error(tmp.Format(L"Test data for \"%s\" specifies baseline but test supplies no folder", varPrefix));
             return E_FAIL;
         }
-        else if (FAILED(baseline.InitFromList((PCWSTR)baselineList)) || (baseline.GetNumStrings() != 2))
+        else if (!baseline.InitFromList((PCWSTR)baselineList) || (baseline.GetNumStrings() != 2))
         {
             Log::Error(tmp.Format(L"Malformed baseline \"%s\" for \"%s\"", (PCWSTR)baselineList, varPrefix));
             return E_FAIL;
@@ -194,7 +194,7 @@ TestHPri::InitFromTestVars(
     TestStringArray mapNamesLocal;
     TestStringArray* mapNames = ((mapNamesOut == nullptr) ? &mapNamesLocal : mapNamesOut);
     if (FAILED(TestData::TryGetValue(tmp.Format(L"%sMapNames", varPrefix), mapNameList)) ||
-        FAILED(mapNames->InitFromList((PCWSTR)mapNameList)))
+        !mapNames->InitFromList((PCWSTR)mapNameList))
     {
         Log::Comment(tmp.Format(L"[ Couldn't get %sMapNames - assuming one map with no prefix ]", varPrefix));
     }
@@ -226,9 +226,9 @@ TestHPri::InitFromTestVars(
         TestStringArray extraSectionNames;
         TestStringArray extraSectionTypes;
 
-        if (FAILED(extraSectionNames.InitFromList(extraSectionNamesString)) ||
+        if (!extraSectionNames.InitFromList(extraSectionNamesString) ||
             (FAILED(TestData::TryGetValue(tmp.Format(L"%s_OtherSectionTypes", varPrefix), extraSectionTypesString))) ||
-            FAILED(extraSectionTypes.InitFromList(extraSectionTypesString)) ||
+            !extraSectionTypes.InitFromList(extraSectionTypesString) ||
             (extraSectionNames.GetNumStrings() != extraSectionTypes.GetNumStrings()))
         {
             Log::Error(tmp.Format(L"%s: OtherSectionNames exists but OtherSectionTypes is missing or inconsistent", varPrefix));
@@ -375,7 +375,7 @@ TestHPri::BuildMultiplePriFilesFromTestVars(
 
     String fileNamesString;
     if (FAILED(TestData::TryGetValue(tmp.Format(L"%sFileNames", varPrefix), fileNamesString)) ||
-        FAILED(mapNamesOut->InitFromList(fileNamesString)))
+        !mapNamesOut->InitFromList(fileNamesString))
     {
         Log::Comment(tmp.Format(L"[ Unable to get file names from %sFileNames, assuming one file with no prefix ]", varPrefix));
         mapNamesOut->InitFromList(L"");
@@ -399,7 +399,7 @@ TestHPri::GetPriFileMapNamesFromTestVars(_In_ PCWSTR varPrefix, _In_ PCWSTR file
     TestStringArray mapVarNames;
 
     if (FAILED(TestData::TryGetValue(tmp.Format(L"%s%sMapNames", varPrefix, fileName), mapVarNamesList)) ||
-        FAILED(mapVarNames.InitFromList((PCWSTR)mapVarNamesList)))
+        !mapVarNames.InitFromList((PCWSTR)mapVarNamesList))
     {
         Log::Comment(tmp.Format(L"[ Couldn't get %s%sMapNames, assuming one map with no prefix ]", varPrefix, fileName));
     }
@@ -432,7 +432,7 @@ TestHPri::GetPriFileMapNamesFromTestVars(_In_ PCWSTR varPrefix, _In_ PCWSTR file
         }
     }
 
-    ok = ok && SUCCEEDED(mapNamesOut->InitFromArray(initStrings, numStrings));
+    ok = ok && mapNamesOut->InitFromArray(initStrings, numStrings);
 
     delete[] initStrings;
 
