@@ -12,130 +12,85 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace WindowsAppSDK.TemplateUtilities
 {
-	public class NuGetPackageInstaller : IWizard
-	{
-        private string _packageId;
+    public class NuGetPackageInstaller : IWizard
+    {
         private Project _project;
         private IComponentModel _componentModel;
+        private IEnumerable<string> _nuGetPackages;
         private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
-
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-
-            _packageId = ExtractPackageId(replacementsDictionary);
             _componentModel = (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
             _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
             _nugetProjectUpdateEvents.SolutionRestoreFinished += OnSolutionRestoreFinished;
-        }
-        private string ExtractPackageId(Dictionary<string, string> replacementsDictionary)
-        {
-            if (replacementsDictionary.TryGetValue("$wizarddata$", out string wizardDataXml))
+            // Assuming package list is passed via a custom parameter in the .vstemplate file
+            if (replacementsDictionary.TryGetValue("$NuGetPackages$", out string packages))
             {
-                XDocument xDoc = XDocument.Parse(wizardDataXml);
-                XNamespace ns = xDoc.Root.GetDefaultNamespace();
-                string packageId = xDoc.Descendants(ns + "package")
-                                      .Attributes("id")
-                                      .Select(attr => attr.Value)
-                                      .FirstOrDefault();
-
-                if (!string.IsNullOrEmpty(packageId))
-                {
-                    return packageId;
-                }
+                _nuGetPackages = packages.Split(';').Where(p => !string.IsNullOrEmpty(p));
             }
-            return null;
         }
         public void ProjectFinishedGenerating(Project project)
-		{
-			_project = project;
-		}
-		public void BeforeOpeningFile(ProjectItem _)
-		{
-		}
-		public void ProjectItemFinishedGenerating(ProjectItem _)
-		{
-		}
-		public void RunFinished()
-		{
-
-		}
-		private void OnSolutionRestoreFinished(IReadOnlyList<string> projects)
-		{
-			// Debouncing prevents multiple rapid executions of 'InstallNuGetPackageAsync'
-			// during solution restore.
-			_nugetProjectUpdateEvents.SolutionRestoreFinished -= OnSolutionRestoreFinished;
-			var joinableTaskFactory = new JoinableTaskFactory(ThreadHelper.JoinableTaskContext);
-			joinableTaskFactory.RunAsync(InstallNuGetPackageAsync);
-
-		}
-		private Task InstallNuGetPackageAsync()
-		{
-            if (string.IsNullOrEmpty(_packageId))
-            {
-                string message = "Failed to install the NuGet package. The package ID provided in the template configuration is either missing or invalid. Please ensure the template is correctly configured with a valid package ID.";
-                DisplayMessageToUser(message, "Error", OLEMSGICON.OLEMSGICON_CRITICAL);
-                LogError(message);
-                return Task.CompletedTask;
-            }
-            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
-            try
-            {
-                installer.InstallPackage(null, _project, _packageId, "", false);
-            }
-            catch (Exception ex)
-            {
-                string errorMessage = "Failed to install the Microsoft.WindowsAppSDK package. You can try installing it manually from: https://www.nuget.org/packages/Microsoft.WindowsAppSDK";
-                DisplayMessageToUser(errorMessage, "Installation Error", OLEMSGICON.OLEMSGICON_CRITICAL);
-
-                string logMessage = $"Failed to install Microsoft.WindowsAppSDK package. Exception details: \n" +
-                                    $"Message: {ex.Message}\n" +
-                                    $"Source: {ex.Source}\n" +
-                                    $"Stack Trace: {ex.StackTrace}\n" +
-                                    $"Target Site: {ex.TargetSite}\n";
-
-                if (ex.InnerException != null)
-                {
-                    logMessage += $"Inner Exception Message: {ex.InnerException.Message}\n" +
-                                  $"Inner Exception Stack Trace: {ex.InnerException.StackTrace}\n";
-                }
-                LogError(logMessage);
-            }
-
-            return Task.CompletedTask;
-		}
-        private void DisplayMessageToUser(string message, string title, OLEMSGICON icon)
         {
-            ThreadHelper.JoinableTaskFactory.Run(async delegate
+            _project = project;
+        }
+        // InstallNuGetPackagesAsync iterates over the package list and installs each
+        private async Task InstallNuGetPackagesAsync()
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            var installer = _componentModel.GetService<IVsPackageInstaller>();
+
+            foreach (var packageId in _nuGetPackages)
             {
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                VsShellUtilities.ShowMessageBox(
-                    ServiceProvider.GlobalProvider,
-                    message,
-                    title,
-                    icon,
-                    OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-            });
+                try
+                {
+                    // Install the latest stable version of each package
+                    installer.InstallPackage(null, _project, packageId, version: "", ignoreDependencies: false);
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
+                }
+            }
+        }
+        public void BeforeOpeningFile(ProjectItem _)
+        {
+        }
+        public void ProjectItemFinishedGenerating(ProjectItem _)
+        {
+        }
+        public void RunFinished()
+        {
+
+        }
+        private void OnSolutionRestoreFinished(IReadOnlyList<string> projects)
+        {
+            // Debouncing prevents multiple rapid executions of 'InstallNuGetPackageAsync'
+            // during solution restore.
+            _nugetProjectUpdateEvents.SolutionRestoreFinished -= OnSolutionRestoreFinished;
+            var joinableTaskFactory = new JoinableTaskFactory(ThreadHelper.JoinableTaskContext);
+            _ = joinableTaskFactory.RunAsync(InstallNuGetPackagesAsync);
+
         }
         private void LogError(string message)
         {
-            IVsActivityLog log = ServiceProvider.GlobalProvider.GetService(typeof(SVsActivityLog)) as IVsActivityLog;
-            if (log != null)
+            ThreadHelper.ThrowIfNotOnUIThread();
+            ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
-                log.LogEntry(
-                    (UInt32)__ACTIVITYLOG_ENTRYTYPE.ALE_ERROR,
-                    "WindowsAppSDK.TemplateUtilities",
-                    message);
-            }
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                IVsActivityLog log = ServiceProvider.GlobalProvider.GetService(typeof(SVsActivityLog)) as IVsActivityLog;
+                if (log != null)
+                {
+                    int hr = log.LogEntry((uint)__ACTIVITYLOG_ENTRYTYPE.ALE_ERROR, ToString(), message);
+                }
+            });
         }
         public bool ShouldAddProjectItem(string _)
-		{
-			return true;
-		}
-	}
+        {
+            return true;
+        }
+    }
 }
