@@ -6,11 +6,12 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TemplateWizard;
+using Microsoft.VisualStudio.Threading;
 using NuGet.VisualStudio;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using WindowsAppSDK.Cpp.Extension;
 
 namespace WindowsAppSDK.TemplateUtilities.Cpp
 {
@@ -18,65 +19,61 @@ namespace WindowsAppSDK.TemplateUtilities.Cpp
     {
         private Project _project;
         private IComponentModel _componentModel;
+        private IEnumerable<string> _nuGetPackages;
+        private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
+        
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             _componentModel = (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
-        }
+            _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
+            _nugetProjectUpdateEvents.SolutionRestoreFinished += OnSolutionRestoreFinished;
+            // Assuming package list is passed via a custom parameter in the .vstemplate file
+            if (replacementsDictionary.TryGetValue("$NuGetPackages$", out string packages))
+            {
+                _nuGetPackages = packages.Split(';').Where(p => !string.IsNullOrEmpty(p));
+            }
+        }        
         public void ProjectFinishedGenerating(Project project)
         {
             _project = project;
-
-            // Ensure we're on the main thread, as required by the ProjectFinishedGenerating method and DTE operations
-            ThreadHelper.JoinableTaskFactory.Run(async () =>
-            {
-                await InstallNuGetPackagesAsync(_project);
-            });
-        }
-        private async Task InstallNuGetPackagesAsync(Project project)
+        }        
+        // InstallNuGetPackagesAsync iterates over the package list and installs each
+        private async Task InstallNuGetPackagesAsync()
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            foreach (var packageId in NuGetPackageList.Packages)
+            var installer = _componentModel.GetService<IVsPackageInstaller>();
+
+            foreach (var packageId in _nuGetPackages)
             {
                 try
                 {
-                    // No version specified; it installs the latest stable version
-                    await InstallNuGetPackageAsync(packageId);
+                    // Install the latest stable version of each package
+                    installer.InstallPackage(null, _project, packageId, version: "", ignoreDependencies: false);
                 }
                 catch (Exception ex)
                 {
                     LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
                 }
             }
-        }
+        }        
         public void BeforeOpeningFile(ProjectItem _)
         {
-        }
+        }        
         public void ProjectItemFinishedGenerating(ProjectItem _)
         {
-        }
+        }        
         public void RunFinished()
         {
 
         }
-        private async Task InstallNuGetPackageAsync(string packageId)
+        private void OnSolutionRestoreFinished(IReadOnlyList<string> projects)
         {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
-            if (installer == null)
-            {
-                LogError("Could not obtain IVsPackageInstaller service.");
-                return;
-            }
-
-            try
-            {
-                installer.InstallPackage(null, _project, packageId, "", false);
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error installing package {packageId}: {ex.Message}");
-            }
+            // Debouncing prevents multiple rapid executions of 'InstallNuGetPackageAsync'
+            // during solution restore.
+            _nugetProjectUpdateEvents.SolutionRestoreFinished -= OnSolutionRestoreFinished;
+            var joinableTaskFactory = new JoinableTaskFactory(ThreadHelper.JoinableTaskContext);
+            _ = joinableTaskFactory.RunAsync(InstallNuGetPackagesAsync);
         }
         private void LogError(string message)
         {
