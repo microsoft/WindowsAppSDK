@@ -26,8 +26,14 @@ namespace WindowsAppSDK.TemplateUtilities.Cpp
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             _componentModel = (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
-            _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
-            _nugetProjectUpdateEvents.SolutionRestoreFinished += OnSolutionRestoreFinished;
+            if (_componentModel != null)
+            {
+                _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
+                if (_nugetProjectUpdateEvents != null)
+                {
+                    _nugetProjectUpdateEvents.SolutionRestoreFinished += OnSolutionRestoreFinished;
+                }
+            }
             // Assuming package list is passed via a custom parameter in the .vstemplate file
             if (replacementsDictionary.TryGetValue("$NuGetPackages$", out string packages))
             {
@@ -41,6 +47,10 @@ namespace WindowsAppSDK.TemplateUtilities.Cpp
         // InstallNuGetPackagesAsync iterates over the package list and installs each
         private async Task InstallNuGetPackagesAsync()
         {
+            if(_componentModel == null)
+            {
+                return;
+            }
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             var installer = _componentModel.GetService<IVsPackageInstaller>();
 
@@ -71,6 +81,10 @@ namespace WindowsAppSDK.TemplateUtilities.Cpp
         {
             // Debouncing prevents multiple rapid executions of 'InstallNuGetPackageAsync'
             // during solution restore.
+            if (_nugetProjectUpdateEvents == null)
+            {
+                return;
+            }
             _nugetProjectUpdateEvents.SolutionRestoreFinished -= OnSolutionRestoreFinished;
             var joinableTaskFactory = new JoinableTaskFactory(ThreadHelper.JoinableTaskContext);
             _ = joinableTaskFactory.RunAsync(InstallNuGetPackagesAsync);
