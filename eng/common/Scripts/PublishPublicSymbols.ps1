@@ -72,7 +72,7 @@ $publishToMSDLSucceeded = (-not $PublishToMSDL)
 $callCount = 1
 $timeBetweenAPICalls = 20
 $maxCallCount = 20
-while (-not $publishToSymWebSucceeded -and -not $publishToMSDLSucceeded)
+while (-not $publishToSymWebSucceeded -or -not $publishToMSDLSucceeded)
 {
   Write-Host "Publishing result is pending"
   Start-Sleep -Seconds $timeBetweenAPICalls
