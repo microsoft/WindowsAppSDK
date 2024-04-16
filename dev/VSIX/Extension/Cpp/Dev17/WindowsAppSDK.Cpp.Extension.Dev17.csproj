@@ -76,7 +76,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ExtensionDependencies Include="$(PkgNuget_VisualStudio)\**\NuGet.VisualStudio.dll" />
+    <ExtensionDependencies Condition=" '$(ExcludeRestorePackageImports)' != 'true' " Include="$(PkgNuget_VisualStudio)\**\NuGet.VisualStudio.dll" />
     <Content Include="@(ExtensionDependencies)">
       <VSIXSubPath>.</VSIXSubPath>
       <IncludeInVSIX>true</IncludeInVSIX>
