@@ -16,5 +16,6 @@
 #include "framework.h"
 #include "MddBootstrapActivity.h"
 #include "MddBootstrapTracelogging.h"
+#include "logging.h"
 
 #endif //PCH_H
