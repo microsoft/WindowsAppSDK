@@ -41,7 +41,7 @@ namespace WindowsAppSDK.TemplateUtilities
         private async Task InstallNuGetPackagesAsync()
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            installer2 = _componentModel.GetService<IVsPackageInstaller2>();
+            var installer2 = _componentModel.GetService<IVsPackageInstaller2>();
 
             foreach (var packageId in _nuGetPackages)
             {
