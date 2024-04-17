@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="ProjectGroup">
   <TemplateData>
     <Name ID="1025" Package="FIXME-PACKAGEGUID" />
@@ -32,6 +32,6 @@
     <ProjectCollection>
       <ProjectTemplateLink ProjectName="$projectname$ (Package)" CopyParameters="true">WapProj\WinUI.Desktop.CppWinRT.WapProj.vstemplate</ProjectTemplateLink>
       <ProjectTemplateLink ProjectName="$projectname$" CopyParameters="true">BlankApp\WinUI.Desktop.CppWinRT.BlankApp.vstemplate</ProjectTemplateLink>
-    </ProjectCollection>
-  </TemplateContent>
+    </ProjectCollection> 
+  </TemplateContent>   
 </VSTemplate>
