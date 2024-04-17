@@ -41,14 +41,34 @@ namespace WindowsAppSDK.TemplateUtilities
         private async Task InstallNuGetPackagesAsync()
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            var installer = _componentModel.GetService<IVsPackageInstaller>();
+            installer2 = _componentModel.GetService<IVsPackageInstaller2>();
 
             foreach (var packageId in _nuGetPackages)
             {
                 try
                 {
-                    // Install the latest stable version of each package
-                    installer.InstallPackage(null, _project, packageId, version: "", ignoreDependencies: false);
+                    if (NugetClientHelper.IsInternetAvailable())
+                    {
+                        // Get Latest Version from Nuget.org
+                        var packageMeta = await NugetClientHelper.GetPackageMetaDataAsync(_packageId);
+                        var isCacheAvailable = NugetClientHelper.IsCacheAvailableForPackage(_packageId, packageMeta.Identity.Version.ToString());
+
+                        if (isCacheAvailable)
+                        {
+                            // The latest version is available locally/cached and The latest version will be installed from Local/Cache
+                            installer2.InstallLatestPackage(NugetClientHelper.globalPackagesFolder, _project, _packageId, false, false);
+                        }
+                        else
+                        {
+                            // The latest version is not available locally/cached and The latest version will be installed from nuget.org
+                            installer2.InstallLatestPackage(null, _project, _packageId, false, false);
+                        }
+                    }
+                    else
+                    {
+                        // Internet is not connected, the latest cached version will be installed
+                        installer2.InstallLatestPackage(NugetClientHelper.globalPackagesFolder, _project, _packageId, false, false);
+                    }
                 }
                 catch (Exception ex)
                 {
