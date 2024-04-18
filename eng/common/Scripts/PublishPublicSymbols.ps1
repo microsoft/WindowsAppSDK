@@ -80,9 +80,9 @@ while (-not $publishToSymWebSucceeded -or -not $publishToMSDLSucceeded)
   $callCount += 1
 
   Write-Host "MSDL Publishing Server Status: " $result.publishToPublicServerStatus
-  Write-Host "MSDL Publishing Servert Result: " $result.publishToPublicServerResult
+  Write-Host "MSDL Publishing Server Result: " $result.publishToPublicServerResult
   Write-Host "SymWeb Publishing Server Status: " $result.publishToInternalServerStatus
-  Write-Host "SymWeb Publishing Servert Result: " $result.publishToInternalServerResult
+  Write-Host "SymWeb Publishing Server Result: " $result.publishToInternalServerResult
 
   if ($result.publishToPublicServerResult -eq 1)
   {
@@ -95,6 +95,16 @@ while (-not $publishToSymWebSucceeded -or -not $publishToMSDLSucceeded)
     $publishToSymWebSucceeded = $true
   }
 
+  if ($result.publishToInternalServerResult -eq 2)
+  {
+    Write-Host "SymWeb Publishing result did not succeed"
+    exit 1
+  }
+  if ($result.publishToInternalServerResult -eq 2)
+  {
+    Write-Host "MSDL Publishing result did not succeed"
+    exit 1
+  }
   if ($callCount -eq $maxCallCount)
   {
     Write-Host "Timeout reached"
