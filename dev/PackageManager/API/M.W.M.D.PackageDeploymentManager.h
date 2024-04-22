@@ -149,10 +149,57 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
+        HRESULT RemovePackage(
+            winrt::Windows::Foundation::Uri const& packageUri,
+            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions const& options,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            const double progressMaxPerPackageSetItem,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+        HRESULT RemovePackage(
+            winrt::Windows::Foundation::Uri const& packageUri,
+            winrt::Windows::Management::Deployment::RemovalOptions const& removeOptions,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            const double progressMaxPerPackage,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
         HRESULT RemovePackageByFullName(
             winrt::hstring const& packageFullName,
             winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions const& options,
             winrt::Windows::Management::Deployment::RemovalOptions const& removeOptions,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> RepairPackageByFullNameAsync(
+            hstring packageFullName);
+        HRESULT RepairPackageByFullName(
+            winrt::hstring const& packageFullName,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> ProvisionPackageByFamilyNameAsync(
+            hstring packageFamilyName,
+            winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions const& options);
+        HRESULT ProvisionPackageByFamilyName(
+            winrt::hstring const& packageFamilyName,
+            winrt::Windows::Management::Deployment::PackageAllUserProvisioningOptions const& options,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> DeprovisionPackageByFamilyNameAsync(
+            hstring packageFamilyName);
+        HRESULT DeprovisionPackageByFamilyName(
+            winrt::hstring const& packageFamilyName,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
             HRESULT& extendedError,
@@ -165,11 +212,13 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Management::Deployment::RemovalOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions const& options) const;
         winrt::Windows::Management::Deployment::AddPackageOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::EnsureReadyOptions const& options) const;
         winrt::Windows::Management::Deployment::DeploymentOptions ToDeploymentOptions(winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions const& options) const;
+        winrt::Windows::Management::Deployment::PackageAllUserProvisioningOptions ToOptions(winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions const& options) const;
         static double PercentageToProgress(uint32_t percentage, const double progressMaxPerItem);
         static bool IsUriEndsWith(winrt::Windows::Foundation::Uri const& packageUri, PCWSTR target);
         static winrt::Windows::Foundation::Uri GetEffectivePackageUri(
             winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet,
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem);
+        static bool IsUriScheme_MsUup(winrt::Windows::Foundation::Uri const& packageUri);
 
     private:
         static int StringCompareNoCase(PCWSTR left, PCWSTR right)

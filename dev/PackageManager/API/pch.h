@@ -16,6 +16,7 @@
 #include <wil/cppwinrt.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
+#include <wil/winrt.h>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
@@ -33,6 +34,5 @@
 
 #include "MsixPackageManager.h"
 
-#include <FrameworkUdk/Containment.h>
 #include <FrameworkUdk/PackageManagement.h>
 #include <FrameworkUdk/UupStateRepository.h>
