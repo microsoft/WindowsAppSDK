@@ -388,7 +388,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_InvalidParameter)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageSetReadyOrNewerAvailable };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
@@ -496,7 +496,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_1_NoSuchPackage_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageSetReadyOrNewerAvailable };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
@@ -521,7 +521,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_1_NotInstalled_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageSetReadyOrNewerAvailable };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
@@ -543,7 +543,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_1_Registered_Ready)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageSetReadyOrNewerAvailable };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
@@ -565,7 +565,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_1_OlderRegistered_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageSetReadyOrNewerAvailable };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
@@ -587,7 +587,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_1_NewerRegistered_Ready)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageSetReadyOrNewerAvailable };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
@@ -611,7 +611,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_1_NewerAvailable)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageSetReadyOrNewerAvailable };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
@@ -635,7 +635,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_N_NotInstalled_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageSetReadyOrNewerAvailable };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
@@ -663,7 +663,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_N_Registered_Ready)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageSetReadyOrNewerAvailable };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
@@ -691,7 +691,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_N_OlderRegistered_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageSetReadyOrNewerAvailable };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
@@ -719,7 +719,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_N_NewerRegistered_Ready)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageSetReadyOrNewerAvailable };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
@@ -749,7 +749,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_N_RegisteredAndNotInstalled_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageSetReadyOrNewerAvailable };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
@@ -774,7 +774,7 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_N_RegisteredAndNewerAvailable_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageSetReadyOrNewerAvailable };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
@@ -807,7 +807,7 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageSetReadyOrNewerAvailable };
+            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
             if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");

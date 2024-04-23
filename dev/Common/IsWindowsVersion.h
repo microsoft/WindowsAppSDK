@@ -55,7 +55,7 @@ inline bool IsWindows11_22H2OrGreater()
 inline bool IsWindows11_23H1OrGreater()
 {
     // TryCreatePackageDependency2() added to  in NTDDI_WIN10_GE (aka Windows 11 23H1)
-    return IsExportPresent(L"api-ms-win-appmodel-runtime-l1-1-7.dll", "TryCreatePackageDependency2");
+    return IsExportPresent(L"appxdeploymentserver.dll", "TryCreatePackageDependency2");
 }
 }
 

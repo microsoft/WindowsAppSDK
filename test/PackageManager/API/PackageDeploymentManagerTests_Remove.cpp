@@ -400,13 +400,6 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RemovePackageByUriAsync_NoSuchPackage_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageByUriAsync };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
-            {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageByUriAsync not supported on this platform. Skipping test");
-                return;
-            }
-
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
             PCWSTR c_packageUriAsString{ L"ms-uup://Product/does.not.exist" };
@@ -447,13 +440,6 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RemovePackageSetAsync_1_NoSuchPackage_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
-            {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
-                return;
-            }
-
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
@@ -480,13 +466,6 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RemovePackageSetAsync_1_NotInstalled_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
-            {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
-                return;
-            }
-
             RemovePackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -511,13 +490,6 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RemovePackageSetAsync_1_NotInstalled_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
-            {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
-                return;
-            }
-
             RemovePackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -546,13 +518,6 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
-            {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
-                return;
-            }
-
             StagePackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -576,13 +541,6 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RemovePackageSetAsync_1_Registered_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
-            {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
-                return;
-            }
-
             AddPackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -606,13 +564,6 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RemovePackageSetAsync_N_NotInstalled_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
-            {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
-                return;
-            }
-
             RemovePackage_Red();
             RemovePackage_Green();
             RemovePackage_Blue();
@@ -643,13 +594,6 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RemovePackageSetAsync_N_NotInstalled_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
-            {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
-                return;
-            }
-
             RemovePackage_Red();
             RemovePackage_Green();
             RemovePackage_Blue();
@@ -680,13 +624,6 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RemovePackageSetAsync_N_Registered_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
-            {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
-                return;
-            }
-
             AddPackage_Red();
             AddPackage_Green();
             AddPackage_Blue();
@@ -716,13 +653,6 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RemovePackageSetAsync_N_RegisteredAndNotInstalled_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
-            {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
-                return;
-            }
-
             AddPackage_Red();
             RemovePackage_Green();
 
@@ -752,13 +682,6 @@ namespace Test::PackageManager::Tests
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
-
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageSetAsync };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
-            {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RemovePackageSetAsync not supported on this platform. Skipping test");
-                return;
-            }
 
             AddPackage_Red();
             RemovePackage_Green();

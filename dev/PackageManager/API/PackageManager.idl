@@ -15,25 +15,10 @@ namespace Microsoft.Windows.Management.Deployment
     [contract(PackageDeploymentContract, 2)]
     enum PackageDeploymentFeature
     {
-        IsPackageReadyByUri                 = 1,
+        PackageUriScheme_ms_uup             = 1,
         IsPackageReadyOrNewerAvailable      = 2,
-        IsPackageReadyOrNewerAvailableByUri = 3,
-        IsPackageSetReadyOrNewerAvailable   = 4,
-        EnsurePackageReadyByUriAsync        = 5,
-        RemovePackageByUriAsync             = 6,
-        RemovePackageSetAsync               = 7,
-        ResetPackageAsync                   = 8,
-        ResetPackageByUriAsync              = 9,
-        ResetPackageSetAsync                = 10,
-        RepairPackageAsync                  = 11,
-        RepairPackageByUriAsync             = 12,
-        RepairPackageSetAsync               = 13,
-        ProvisionPackageAsync               = 14,
-        ProvisionPackageByUriAsync          = 15,
-        ProvisionPackageSetAsync            = 16,
-        DeprovisionPackageAsync             = 17,
-        DeprovisionPackageByUriAsync        = 18,
-        DeprovisionPackageSetAsync          = 19,
+        ResetPackage                        = 3,
+        RepairPackage                       = 4,
     };
 
     /// Represents a package storage volume.
