@@ -108,9 +108,9 @@ class MrmEnvironment : public IEnvironment
 {
 protected:
     const ENVIRONMENT_INITIALIZER* m_pEnvironmentInitializer;
-    const QUALIFIER_INFO* m_pQualifierInfo;
+    const QUALIFIER_INFO* m_pQualifierInfo =nullptr;
 
-    AtomPoolGroup* m_pAtoms;
+    AtomPoolGroup* m_pAtoms = nullptr;
     IAtomPool* m_pQualifierTypeNames;
     IAtomPool* m_pQualifierNames;
     IAtomPool* m_pItemTypeNames;
@@ -730,7 +730,7 @@ public:
 protected:
     HRESULT Init(_In_ AtomPoolGroup* pAtoms);
 
-    AtomPoolGroup* m_pAtoms;
+    AtomPoolGroup* m_pAtoms = nullptr;
     DynamicArray<const IEnvironment*>* m_pEnvironments;
 };
 
