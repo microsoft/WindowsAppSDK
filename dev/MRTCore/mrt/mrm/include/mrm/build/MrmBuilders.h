@@ -712,7 +712,7 @@ protected:
 
     int m_numFinalizedLargeDirEntries{ 0 };
     int m_numFinalizedLargeRanges{ 0 };
-    int m_numFinalizedLargeItem{ 0 };
+    int m_numFinalizedLargeItems{ 0 };
 
     UINT32 m_cbFinalizedLargeData{ 0 };
     PriBuildType m_priBuildType{ PriBuildFromScratch };
