@@ -1771,8 +1771,8 @@ private:
     PriMapMerger* m_pPriMapMerger{ nullptr };
     PriBuilderPhase m_priBuilderPhase{ PriUninitialized };
     CoreProfile* m_pProfile{ nullptr };
-    static const int CLEANUP_MIN_DAYS{ 0 };
-    static const int CLEANUP_MAX_FILES{ 0 };
+    static const int CLEANUP_MIN_DAYS;
+    static const int CLEANUP_MAX_FILES;
 };
 
 DEFINE_ENUM_FLAG_OPERATORS(PriFileMerger::PriMergeFlags);
