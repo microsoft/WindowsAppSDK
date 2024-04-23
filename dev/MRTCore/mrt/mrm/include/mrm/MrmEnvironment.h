@@ -33,8 +33,8 @@ struct ResourceQualifier
      * relative to other resource qualifiers defined
      * in the Environment.
      */
-    int defaultRuntimePriority;
-    int defaultBuildPriority;
+    int defaultRuntimePriority = 0;
+    int defaultBuildPriority = 0;
 
     static const int MinPriority = MRM_MIN_QUALIFIER_PRIORITY;
     static const int MaxPriority = MRM_MAX_QUALIFIER_PRIORITY;
@@ -731,7 +731,7 @@ protected:
     HRESULT Init(_In_ AtomPoolGroup* pAtoms);
 
     AtomPoolGroup* m_pAtoms = nullptr;
-    DynamicArray<const IEnvironment*>* m_pEnvironments;
+    DynamicArray<const IEnvironment*>* m_pEnvironments = nullptr;
 };
 
 class EnvironmentMapping : DefObject
