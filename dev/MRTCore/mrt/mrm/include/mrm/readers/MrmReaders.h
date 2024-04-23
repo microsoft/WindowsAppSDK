@@ -313,17 +313,17 @@ private:
 
     StringResult m_simpleName;
     StringResult m_uniqueName;
-    UINT16 m_majorVersion;
-    UINT16 m_minorVersion;
+    UINT16 m_majorVersion = 0;
+    UINT16 m_minorVersion = 0;
 
-    int m_numScopeNames;
-    PWSTR* m_ppMyScopeNames;
+    int m_numScopeNames = 0;
+    PWSTR* m_ppMyScopeNames = nullptr;
 
-    int m_numItemNames;
-    PWSTR* m_ppMyItemNames;
+    int m_numItemNames = 0;
+    PWSTR* m_ppMyItemNames = nullptr;
 
-    StaticAtomPool* m_pScopeNames;
-    StaticAtomPool* m_pItemNames;
+    StaticAtomPool* m_pScopeNames = nullptr;
+    StaticAtomPool* m_pItemNames = nullptr;
 };
 
 class HierarchicalSchema : public FileSectionBase, public IHierarchicalSchema
@@ -919,10 +919,10 @@ public:
         _Out_ UINT32* linksToResourceIndex) const;
 
 protected:
-    const IFileSectionResolver* m_pSections;
-    const IHierarchicalSchema* m_pSchema;
-    const IDecisionInfo* m_pDecisionInfo;
-    const IResourceLinks* m_links;
+    const IFileSectionResolver* m_pSections = nullptr;
+    const IHierarchicalSchema* m_pSchema = nullptr;
+    const IDecisionInfo* m_pDecisionInfo = nullptr;
+    const IResourceLinks* m_links = nullptr;
 
     ResourceMapFileData* m_pFileData;
 
@@ -1664,11 +1664,11 @@ protected:
 
     HRESULT InitStandalonePriFile(_In_opt_ const ISchemaCollection* overrideSchemas);
 
-    CoreProfile* m_pProfile;
-    const ISchemaCollection* m_overrideSchemas;
-    AtomPoolGroup* m_pAtoms;
-    UnifiedEnvironment* m_pEnvironment;
-    UnifiedDecisionInfo* m_pDecisions;
+    CoreProfile* m_pProfile = nullptr;
+    const ISchemaCollection* m_overrideSchemas = nullptr;
+    AtomPoolGroup* m_pAtoms = nullptr;
+    UnifiedEnvironment* m_pEnvironment = nullptr;
+    UnifiedDecisionInfo* m_pDecisions = nullptr;
 };
 
 } // namespace Microsoft::Resources
