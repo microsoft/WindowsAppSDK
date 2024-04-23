@@ -10,7 +10,7 @@ extern "C"
 {
 #endif
 
-    /*! \defgroup MrmFile_Base MrmFile_Base: 
+    /*! \defgroup MrmFile_Base MrmFile_Base:
      * Create or manipulate base MRM files
      */
     /*@{*/
@@ -184,12 +184,12 @@ extern "C"
      */
     typedef struct _MRMFILE_ENVIRONMENT_MAPPING_HEADER
     {
-        DEF_CHECKSUM baseEnvironmentChecksum;
-        DEF_CHECKSUM currentEnvironmentChecksum;
-        UINT16 currentMinorVersion;
-        UINT16 numNewQualifiers;
-        UINT16 namesPoolSizeInChars;
-        UINT16 pad;
+        DEF_CHECKSUM baseEnvironmentChecksum = 0;
+        DEF_CHECKSUM currentEnvironmentChecksum = 0;
+        UINT16 currentMinorVersion = 0;
+        UINT16 numNewQualifiers = 0;
+        UINT16 namesPoolSizeInChars = 0;
+        UINT16 pad = 0;
     } MRMFILE_ENVIRONMENT_MAPPING_HEADER;
 
     /*!
@@ -228,7 +228,7 @@ extern "C"
      * Global reference to a hierarchical schema at a specific version.  Layout in memory is:
      *      HSCHEMA_REF                 hdr
      *      WCHAR                       uniqueId[hdr.cchUniqueId]
-     * A block of multiple schema references consists of an array of MRMFILE_HSCHEMA_REF 
+     * A block of multiple schema references consists of an array of MRMFILE_HSCHEMA_REF
      * followed by an array of WCHAR containing all names.
      */
     typedef struct _MRMFILE_HSCHEMA_REF
@@ -646,8 +646,8 @@ extern "C"
      *      DEFFILE_SECTION_INDEX       environments[hdr.numEnvironments]
      *      DEFFILE_SECTION_INDEX       schemas[hdr.numSchemas]
      *      DEFFILE_SECTION_INDEX       conditionInfos[hdr.numConditionInfos]
-     *      DEFFILE_SECTION_INDEX       indexes[hdr.numIndexes]     
-     *      UINT16                      defaultResourceIndex  
+     *      DEFFILE_SECTION_INDEX       indexes[hdr.numIndexes]
+     *      UINT16                      defaultResourceIndex
      *      WCHAR                       literals[hdr.cchLiterals];
      *      BYTE                        pad[*]
      */

@@ -973,7 +973,7 @@ protected:
     HRESULT InitDefaultContents();
 
     DecisionInfoBuilderData* m_pData;
-    UINT32 m_flags;
+    UINT32 m_flags = 0;
 };
 
 class DecisionInfoSectionBuilder : public ISectionBuilder, public DecisionInfoBuilder
