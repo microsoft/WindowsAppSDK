@@ -14,7 +14,7 @@ using System.Deployment.Internal;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WindowsAppSDK.TemplateUtilities.Cpp
+namespace WindowsAppSDK.TemplateUtilities
 {
 
     public class NuGetPackageInstaller : IWizard

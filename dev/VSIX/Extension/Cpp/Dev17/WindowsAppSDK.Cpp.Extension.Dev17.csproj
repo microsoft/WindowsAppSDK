@@ -55,7 +55,7 @@
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="NuGet.VisualStudio" Version="17.6.1" GeneratePathProperty="true"  />
+    <PackageReference Include="NuGet.VisualStudio" Version="17.6.1" GeneratePathProperty="true" />
     <PackageReference Include="Microsoft.VisualStudio.TemplateWizardInterface" Version="17.5.33428.366" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.4.2118">
@@ -77,6 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <ExtensionDependencies Condition=" '$(ExcludeRestorePackageImports)' != 'true' " Include="$(PkgNuget_VisualStudio)\**\NuGet.VisualStudio.dll" />
+    <Compile Include="..\..\..\Shared\WizardImplementation.cs" Link="WizardImplementation.cs" />
     <Content Include="@(ExtensionDependencies)">
       <VSIXSubPath>.</VSIXSubPath>
       <IncludeInVSIX>true</IncludeInVSIX>
