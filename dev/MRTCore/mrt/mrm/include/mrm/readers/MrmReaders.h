@@ -514,8 +514,8 @@ public:
 private:
     const MRMFILE_REVERSEFILEMAP_HEADER* m_pHeader = nullptr;
     const MRMFILE_REVERSEFILEMAP_ENTRY* m_pEntries = nullptr;
-    const HierarchicalNames* m_pNames;
-    int m_cbSection;
+    const HierarchicalNames* m_pNames = nullptr;
+    int m_cbSection = 0;
 
     ReverseFileMap();
 
@@ -1129,15 +1129,15 @@ public:
     GetTargetOsVersion(_In_ CoreProfile* pProfile, _Inout_opt_ StringResult* pPlatformOut, _Inout_opt_ StringResult* pVersionOut) const;
 
 protected:
-    const IFileSectionResolver* m_pSections;
-    const ISchemaCollection* m_pSchemaCollection;
+    const IFileSectionResolver* m_pSections = nullptr;
+    const ISchemaCollection* m_pSchemaCollection = nullptr;
 
-    const MRMFILE_PRI_DESCRIPTOR_EX* m_pHeader;
-    const DEFFILE_SECTION_INDEX* m_pSchemaSectionIndices;
-    const DEFFILE_SECTION_INDEX* m_pDecisionInfoSectionIndices;
-    const DEFFILE_SECTION_INDEX* m_pResourceMapSectionIndices;
-    const DEFFILE_SECTION_INDEX* m_pReferencedFileSectionIndices;
-    const DEFFILE_SECTION_INDEX* m_pDataItemSectionIndices;
+    const MRMFILE_PRI_DESCRIPTOR_EX* m_pHeader = nullptr;
+    const DEFFILE_SECTION_INDEX* m_pSchemaSectionIndices = nullptr;
+    const DEFFILE_SECTION_INDEX* m_pDecisionInfoSectionIndices = nullptr;
+    const DEFFILE_SECTION_INDEX* m_pResourceMapSectionIndices = nullptr;
+    const DEFFILE_SECTION_INDEX* m_pReferencedFileSectionIndices = nullptr;
+    const DEFFILE_SECTION_INDEX* m_pDataItemSectionIndices = nullptr;
 
     HRESULT Init(
         _In_ const IFileSectionResolver* pSections,

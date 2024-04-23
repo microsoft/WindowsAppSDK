@@ -239,37 +239,37 @@ private:
 
     HRESULT ReadSchemaDescription(_In_ const IHierarchicalSchemaDescription* pDescription);
 
-    bool m_finalized;
-    int m_numFinalizedScopes;
-    int m_numFinalizedItems;
-    int m_cchUniqueId;
-    int m_cchSimpleId;
-    int m_cbNamesBlob;
+    bool m_finalized{ false };
+    int m_numFinalizedScopes{ 0 };
+    int m_numFinalizedItems{ 0 };
+    int m_cchUniqueId{ 0 };
+    int m_cchSimpleId{ 0 };
+    int m_cbNamesBlob{ 0 };
 
-    BaseFile::SectionIndex m_sectionIndex = 0;
+    BaseFile::SectionIndex m_sectionIndex{ 0 };
 
-    mutable HierarchicalSchemaVersionInfoBuilder* m_pVersionInfo;
+    mutable HierarchicalSchemaVersionInfoBuilder* m_pVersionInfo{ nullptr };
 
-    PriSectionBuilder* m_pPriBuilder;
+    PriSectionBuilder* m_pPriBuilder{ nullptr };
 
-    int m_numPreviousScopes;
-    int m_numPreviousItems;
-    int m_numPreviousMinorVersion;
+    int m_numPreviousScopes{ 0 };
+    int m_numPreviousItems{ 0 };
+    int m_numPreviousMinorVersion{ 0 };
 
-    PWSTR m_pSimpleId;
-    PWSTR m_pUniqueId;
+    PWSTR m_pSimpleId{ nullptr };
+    PWSTR m_pUniqueId{ nullptr };
 
-    PriBuildType m_priBuildType;
-    bool m_bIsVersionUpdated;
-    UINT16 m_majorVersion;
-    UINT16 m_minorVersion;
+    PriBuildType m_priBuildType{ PriBuildFromScratch };
+    bool m_bIsVersionUpdated{ false };
+    UINT16 m_majorVersion{ 0 };
+    UINT16 m_minorVersion{ 0 };
 
-    HierarchicalNamesBuilder* m_pNames;
-    const IAtomPool* m_pScopeNames;
-    const IAtomPool* m_pItemNames;
-    const IHierarchicalSchema* m_pPreviousSchema;
+    HierarchicalNamesBuilder* m_pNames{ nullptr };
+    const IAtomPool* m_pScopeNames{ nullptr };
+    const IAtomPool* m_pItemNames{ nullptr };
+    const IHierarchicalSchema* m_pPreviousSchema{ nullptr };
 
-    UINT32 m_buildFlags;
+    UINT32 m_buildFlags{ 0 };
 
     HierarchicalSchemaSectionBuilder();
 
@@ -536,8 +536,8 @@ public:
     int GetItemIndex() const;
 
 private:
-    BUILDER_CANDIDATE m_builderCandidate;
-    DecisionInfoSectionBuilder* m_pDecisionInfo;
+    BUILDER_CANDIDATE m_builderCandidate = {};
+    DecisionInfoSectionBuilder* m_pDecisionInfo = nullptr;
     Atom m_instanceValueType;
 };
 
@@ -679,43 +679,43 @@ protected:
 
     HRESULT GetOrAddResourceValueTypeIndex(_In_ MrmEnvironment::ResourceValueType valueType, _Out_ int* pIndexOut);
 
-    BaseFile::SectionIndex m_sectionIndex = 0;
-    bool m_finalized;
+    BaseFile::SectionIndex m_sectionIndex{ 0 };
+    bool m_finalized{ false };
 
-    PriSectionBuilder* m_pPriBuilder;
-    HierarchicalSchemaSectionBuilder* m_pSchema;
-    HierarchicalSchemaReferenceSectionBuilder* m_schemaReferenceBuilder;
+    PriSectionBuilder* m_pPriBuilder{ nullptr };
+    HierarchicalSchemaSectionBuilder* m_pSchema{ nullptr };
+    HierarchicalSchemaReferenceSectionBuilder* m_schemaReferenceBuilder{ nullptr };
 
-    DecisionInfoSectionBuilder* m_pDecisionInfo;
-    const UnifiedEnvironment* m_pEnvironment;
+    DecisionInfoSectionBuilder* m_pDecisionInfo{ nullptr };
+    const UnifiedEnvironment* m_pEnvironment{ nullptr };
 
-    ResourceLinkSectionBuilder* m_links;
+    ResourceLinkSectionBuilder* m_links{ nullptr };
 
-    DynamicArray<Atom>* m_pValueTypes;
-    DataBlobBuilder* m_pDataBuilder;
+    DynamicArray<Atom>* m_pValueTypes{ nullptr };
+    DataBlobBuilder* m_pDataBuilder{ nullptr };
 
-    MapBuilderItemData* m_pItems;
+    MapBuilderItemData* m_pItems{ nullptr };
 
-    DynamicArray<BuilderDirEntry>* m_pFinalizedDir;
-    int m_cbFinalizedSchemaRef;
+    DynamicArray<BuilderDirEntry>* m_pFinalizedDir{ nullptr };
+    int m_cbFinalizedSchemaRef{ 0 };
 
-    int m_cbFinalizedEnvironmentRefs;
+    int m_cbFinalizedEnvironmentRefs{ 0 };
 
-    int m_numFinalizedTotalRanges;
-    int m_numFinalizedTotalItems;
-    int m_numFinalizedValues;
-    bool m_hasLargeValues;
+    int m_numFinalizedTotalRanges{ 0 };
+    int m_numFinalizedTotalItems{ 0 };
+    int m_numFinalizedValues{ 0 };
+    bool m_hasLargeValues{ false };
 
-    int m_numFinalizedStandardDirEntries;
-    int m_numFinalizedStandardRanges;
-    int m_numFinalizedStandardItems;
+    int m_numFinalizedStandardDirEntries{ 0 };
+    int m_numFinalizedStandardRanges{ 0 };
+    int m_numFinalizedStandardItems{ 0 };
 
-    int m_numFinalizedLargeDirEntries;
-    int m_numFinalizedLargeRanges;
-    int m_numFinalizedLargeItems;
+    int m_numFinalizedLargeDirEntries{ 0 };
+    int m_numFinalizedLargeRanges{ 0 };
+    int m_numFinalizedLargeItem{ 0 };
 
-    UINT32 m_cbFinalizedLargeData;
-    PriBuildType m_priBuildType;
+    UINT32 m_cbFinalizedLargeData{ 0 };
+    PriBuildType m_priBuildType{ PriBuildFromScratch };
 };
 
 class IBuildInstanceReference : public DefObject
@@ -972,8 +972,8 @@ protected:
 
     HRESULT InitDefaultContents();
 
-    DecisionInfoBuilderData* m_pData;
-    UINT32 m_flags = 0;
+    DecisionInfoBuilderData* m_pData{ nullptr };
+    UINT32 m_flags{ 0 };
 };
 
 class DecisionInfoSectionBuilder : public ISectionBuilder, public DecisionInfoBuilder
@@ -1006,8 +1006,8 @@ private:
 
     HRESULT Init(_In_ FileBuilder* pFileBuilder, _In_ const UnifiedEnvironment* pEnvironment);
 
-    FileBuilder* m_pFileBuilder;
-    BaseFile::SectionIndex m_sectionIndex = 0;
+    FileBuilder* m_pFileBuilder{ nullptr };
+    BaseFile::SectionIndex m_sectionIndex{ 0 };
     bool m_finalized;
 };
 
@@ -1524,38 +1524,38 @@ private:
     HRESULT GetMapBuilderForAddCandidate(_In_opt_ PCWSTR schemaName, _Out_ ResourceMapSectionBuilder** result);
 
 private:
-    FileBuilder* m_pFileBuilder;
-    AtomPoolGroup* m_pAtoms;
+    FileBuilder* m_pFileBuilder{ nullptr };
+    AtomPoolGroup* m_pAtoms{ nullptr };
 
-    UnifiedEnvironment* m_pUnifiedEnvironment;
-    DecisionInfoSectionBuilder* m_pDecisionInfo;
-    DynamicArray<HierarchicalSchemaSectionBuilder*>* m_pSchemas;
-    DynamicArray<ResourceMapSectionBuilder*>* m_pMaps;
+    UnifiedEnvironment* m_pUnifiedEnvironment{ nullptr };
+    DecisionInfoSectionBuilder* m_pDecisionInfo{ nullptr };
+    DynamicArray<HierarchicalSchemaSectionBuilder*>* m_pSchemas{ nullptr };
+    DynamicArray<ResourceMapSectionBuilder*>* m_pMaps{ nullptr };
 
-    EnvironmentMappingSectionBuilder* m_environmentMapping;
-    IEnvironment* m_environmentBaseline;
+    EnvironmentMappingSectionBuilder* m_environmentMapping{ nullptr };
+    IEnvironment* m_environmentBaseline{ nullptr };
 
-    PWSTR m_pPrimarySchemaName;
-    HierarchicalSchemaSectionBuilder* m_pPrimarySchema;
-    ResourceMapSectionBuilder* m_pPrimaryMap;
+    PWSTR m_pPrimarySchemaName{ nullptr };
+    HierarchicalSchemaSectionBuilder* m_pPrimarySchema{ nullptr };
+    ResourceMapSectionBuilder* m_pPrimaryMap{ nullptr };
 
-    PWSTR m_pAlternateSchemaName;
-    HierarchicalSchemaSectionBuilder* m_pAlternateSchema;
-    ResourceMapSectionBuilder* m_pAlternateMap;
+    PWSTR m_pAlternateSchemaName{ nullptr };
+    HierarchicalSchemaSectionBuilder* m_pAlternateSchema;{ nullptr }
+    ResourceMapSectionBuilder* m_pAlternateMap{ nullptr };
 
-    BaseFile::SectionIndex m_sectionIndex = 0;
-    PriBuilderPhase m_priBuilderPhase;
-    PriBuildType m_priBuildType;
+    BaseFile::SectionIndex m_sectionIndex{ 0 };
+    PriBuilderPhase m_priBuilderPhase{ PriUninitialized };
+    PriBuildType m_priBuildType{ PriBuildFromScratch };
 
-    bool m_bAllocFileBuilder;
-    UINT32 m_nFlags;
+    bool m_bAllocFileBuilder{ false };
+    UINT32 m_nFlags{ 0 };
 
-    DataItemOrchestrator* m_dataItems;
-    FileListBuilder* m_pFileListBuilder;
+    DataItemOrchestrator* m_dataItems{ nullptr };
+    FileListBuilder* m_pFileListBuilder{ nullptr };
 
-    DynamicArray<ResourceLinkSectionBuilder*>* m_linkBuilders;
+    DynamicArray<ResourceLinkSectionBuilder*>* m_linkBuilders{ nullptr };
 
-    MrmBuildConfiguration* m_pBuilderConfiguration; // do not delete this here
+    MrmBuildConfiguration* m_pBuilderConfiguration{ nullptr }; // do not delete this here
 };
 
 class PriFileBuilder : public FileBuilder
@@ -1767,12 +1767,12 @@ protected:
         _In_ PCWSTR pszFilePathNotToDelete);
 
 private:
-    PriFileBuilder* m_pPriFileBuilder;
-    PriMapMerger* m_pPriMapMerger;
-    PriBuilderPhase m_priBuilderPhase;
-    CoreProfile* m_pProfile;
-    static const int CLEANUP_MIN_DAYS;
-    static const int CLEANUP_MAX_FILES;
+    PriFileBuilder* m_pPriFileBuilder{ nullptr };
+    PriMapMerger* m_pPriMapMerger{ nullptr };
+    PriBuilderPhase m_priBuilderPhase{ PriUninitialized };
+    CoreProfile* m_pProfile{ nullptr };
+    static const int CLEANUP_MIN_DAYS{ 0 };
+    static const int CLEANUP_MAX_FILES{ 0 };
 };
 
 DEFINE_ENUM_FLAG_OPERATORS(PriFileMerger::PriMergeFlags);
