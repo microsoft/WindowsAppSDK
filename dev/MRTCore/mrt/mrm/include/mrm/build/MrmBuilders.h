@@ -79,7 +79,7 @@ private:
     _Field_size_(m_header.namesPoolSizeInChars) PWSTR m_namesPool;
 
     UINT32 m_finalizedSizeInBytes;
-    BaseFile::SectionIndex m_sectionIndex;
+    BaseFile::SectionIndex m_sectionIndex = 0;
 
     EnvironmentMappingSectionBuilder() : m_names(nullptr), m_namesPool(nullptr), m_finalizedSizeInBytes(0) {}
 
@@ -246,7 +246,7 @@ private:
     int m_cchSimpleId;
     int m_cbNamesBlob;
 
-    BaseFile::SectionIndex m_sectionIndex;
+    BaseFile::SectionIndex m_sectionIndex = 0;
 
     mutable HierarchicalSchemaVersionInfoBuilder* m_pVersionInfo;
 
@@ -308,8 +308,8 @@ private:
 
     UINT32 GetUniqueIdLength() const;
 
-    IHierarchicalSchema* m_schemaToReference;
-    BaseFile::SectionIndex m_sectionIndex;
+    IHierarchicalSchema* m_schemaToReference = nullptr;
+    BaseFile::SectionIndex m_sectionIndex = 0;
 };
 
 class ResourceMapSectionBuilder;
@@ -366,7 +366,7 @@ private:
     int m_numFinalizedItems;
     UINT32 m_cbNamesBlob;
 
-    BaseFile::SectionIndex m_sectionIndex;
+    BaseFile::SectionIndex m_sectionIndex = 0;
 
     PriSectionBuilder* m_pPriSectionBuilder;
     HierarchicalSchemaSectionBuilder* m_pSchema;
@@ -481,7 +481,7 @@ private:
     static bool IsResolved(_In_ const ItemRef* item) { return (item->linksToResourceIndex >= 0); }
 
     bool m_finalized;
-    BaseFile::SectionIndex m_sectionIndex;
+    BaseFile::SectionIndex m_sectionIndex = 0;
 
     HierarchicalSchemaSectionBuilder* m_schema;
     DefList<SchemaRef> m_schemas;
@@ -679,7 +679,7 @@ protected:
 
     HRESULT GetOrAddResourceValueTypeIndex(_In_ MrmEnvironment::ResourceValueType valueType, _Out_ int* pIndexOut);
 
-    BaseFile::SectionIndex m_sectionIndex;
+    BaseFile::SectionIndex m_sectionIndex = 0;
     bool m_finalized;
 
     PriSectionBuilder* m_pPriBuilder;
@@ -1007,7 +1007,7 @@ private:
     HRESULT Init(_In_ FileBuilder* pFileBuilder, _In_ const UnifiedEnvironment* pEnvironment);
 
     FileBuilder* m_pFileBuilder;
-    BaseFile::SectionIndex m_sectionIndex;
+    BaseFile::SectionIndex m_sectionIndex = 0;
     bool m_finalized;
 };
 
@@ -1543,7 +1543,7 @@ private:
     HierarchicalSchemaSectionBuilder* m_pAlternateSchema;
     ResourceMapSectionBuilder* m_pAlternateMap;
 
-    BaseFile::SectionIndex m_sectionIndex;
+    BaseFile::SectionIndex m_sectionIndex = 0;
     PriBuilderPhase m_priBuilderPhase;
     PriBuildType m_priBuildType;
 
