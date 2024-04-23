@@ -536,7 +536,7 @@ private:
         ManagedFile* pFile;
     } FileManagerFileInfo;
 
-    UINT32 m_defaultFileFlags;
+    UINT32 m_defaultFileFlags = 0;
     mutable DynamicArray<FileManagerFileInfo>* m_pFiles;
     mutable MrmFileResolver* m_pFileResolver;
 
@@ -666,7 +666,7 @@ private:
 
     UINT64 m_generation;
     const IHierarchicalSchema* m_pCurrentSchema;
-    const ManagedFile* m_pCurrentFile;
+    const ManagedFile* m_pCurrentFile = nullptr;
 
     typedef struct _SchemaPerFileInfo
     {
@@ -760,7 +760,7 @@ private:
 
     mutable UINT64 m_generation;
 
-    mutable const ManagedFile* m_pCurrentFile;
+    mutable const ManagedFile* m_pCurrentFile = nullptr;
     mutable const IResourceMapBase* m_pCurrentMap;
 
     const ManagedSchema* m_pSchema;
