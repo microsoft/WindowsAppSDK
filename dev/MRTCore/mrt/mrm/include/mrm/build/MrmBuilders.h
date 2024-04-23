@@ -1540,7 +1540,7 @@ private:
     ResourceMapSectionBuilder* m_pPrimaryMap{ nullptr };
 
     PWSTR m_pAlternateSchemaName{ nullptr };
-    HierarchicalSchemaSectionBuilder* m_pAlternateSchema;{ nullptr }
+    HierarchicalSchemaSectionBuilder* m_pAlternateSchema{ nullptr };
     ResourceMapSectionBuilder* m_pAlternateMap{ nullptr };
 
     BaseFile::SectionIndex m_sectionIndex{ 0 };
