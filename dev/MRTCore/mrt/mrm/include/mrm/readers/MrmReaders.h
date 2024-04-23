@@ -68,8 +68,8 @@ public:
 protected:
     SchemaCollectionSchemaWrapper(_In_ const IHierarchicalSchema* schema, _In_ bool assumeOwnership);
 
-    const IHierarchicalSchema* m_mySchema;
-    const IHierarchicalSchema* m_schema;
+    const IHierarchicalSchema* m_mySchema = nullptr;
+    const IHierarchicalSchema* m_schema = nullptr;
 };
 
 class IResourceMapBase;
@@ -124,8 +124,8 @@ public:
     int GetNumItems() const { return m_pHeader->numItems; }
 
 protected:
-    const MRMFILE_HSCHEMA_VERSION_INFO* m_pHeader;
-    PCWSTR m_pUniqueId;
+    const MRMFILE_HSCHEMA_VERSION_INFO* m_pHeader = nullptr;
+    PCWSTR m_pUniqueId = nullptr;
 
     HRESULT Init(_In_reads_bytes_(cbData) const void* pData, _In_ size_t cbData);
 
@@ -160,7 +160,7 @@ public:
 
 protected:
     const MRMFILE_HSCHEMA_REF* m_pHdr;
-    PCWSTR m_pUniqueId;
+    PCWSTR m_pUniqueId = nullptr;
     const IHierarchicalSchemaVersionInfo* m_pVersion;
 
     HierarchicalSchemaReference() : m_pHdr(nullptr), m_pUniqueId(nullptr), m_pVersion(nullptr) {}
@@ -467,20 +467,20 @@ public:
         _Inout_opt_ BlobResult* pBlobResult) const;
 
 private:
-    BYTE* m_pMyBuffer;
+    BYTE* m_pMyBuffer = nullptr;
 
     MRMFILE_HSCHEMA_HEADER_EX m_header;
 
-    _Field_size_(m_header.numVersions) const MRMFILE_HSCHEMA_VERSION_INFO* m_pFileVersions;
+    _Field_size_(m_header.numVersions) const MRMFILE_HSCHEMA_VERSION_INFO* m_pFileVersions = nullptr;
 
-    PCWSTR m_pUniqueId;
-    PCWSTR m_pSimpleId;
+    PCWSTR m_pUniqueId = nullptr;
+    PCWSTR m_pSimpleId = nullptr;
 
-    _Field_size_(m_header.numVersions) mutable HierarchicalSchemaVersionInfo** m_pVersions;
-    const HierarchicalNames* m_pNames;
+    _Field_size_(m_header.numVersions) mutable HierarchicalSchemaVersionInfo** m_pVersions = nullptr;
+    const HierarchicalNames* m_pNames  = nullptr;
 
-    const void* m_pSectionData;
-    int m_cbSection;
+    const void* m_pSectionData = nullptr;
+    int m_cbSection = 0;
 
     HierarchicalSchema();
 
@@ -512,8 +512,8 @@ public:
     static const DEFFILE_SECTION_TYPEID GetSectionTypeId();
 
 private:
-    const MRMFILE_REVERSEFILEMAP_HEADER* m_pHeader;
-    const MRMFILE_REVERSEFILEMAP_ENTRY* m_pEntries;
+    const MRMFILE_REVERSEFILEMAP_HEADER* m_pHeader = nullptr;
+    const MRMFILE_REVERSEFILEMAP_ENTRY* m_pEntries = nullptr;
     const HierarchicalNames* m_pNames;
     int m_cbSection;
 
@@ -1048,22 +1048,22 @@ public:
 private:
     bool IsValidResourceLinkIndex(_In_ int index) const { return ((index >= 0) && (index < GetNumTotalLinks())); }
 
-    _Field_size_(1) const MRMFILE_RESOURCE_LINK_HEADER* m_header;
-    _Field_size_(m_header->numSchemas) const MRMFILE_LINK_SCHEMA_MAP* m_schemaMap;
-    _Field_size_(m_header->schemaDataSizeInBytes) const BYTE* m_schemaData;
+    _Field_size_(1) const MRMFILE_RESOURCE_LINK_HEADER* m_header = nullptr;
+    _Field_size_(m_header->numSchemas) const MRMFILE_LINK_SCHEMA_MAP* m_schemaMap = nullptr;
+    _Field_size_(m_header->schemaDataSizeInBytes) const BYTE* m_schemaData = nullptr;
 
-    _Field_size_(m_header->firstLargeInternalLink) const UINT16* m_internalLinks;
-    _Field_size_(m_header->numInternalLinks - m_header->firstLargeInternalLink) const UINT32* m_largeInternalLinks;
+    _Field_size_(m_header->firstLargeInternalLink) const UINT16* m_internalLinks = nullptr;
+    _Field_size_(m_header->numInternalLinks - m_header->firstLargeInternalLink) const UINT32* m_largeInternalLinks = nullptr;
 
-    _Field_size_(m_header->firstLargeFullLink) const MRMFILE_FULL_LINK* m_fullLinks;
-    _Field_size_(m_header->numFullLinks - m_header->firstLargeFullLink) const MRMFILE_LARGE_FULL_LINK* m_largeFullLinks;
+    _Field_size_(m_header->firstLargeFullLink) const MRMFILE_FULL_LINK* m_fullLinks = nullptr;
+    _Field_size_(m_header->numFullLinks - m_header->firstLargeFullLink) const MRMFILE_LARGE_FULL_LINK* m_largeFullLinks = nullptr;
 
-    _Field_size_(m_header->firstLargeLinkById) const MRMFILE_LINK_BY_ID* m_linksById;
-    _Field_size_(m_header->numLinksById - m_header->firstLargeLinkById) const MRMFILE_LARGE_LINK_BY_ID* m_largeLinksById;
+    _Field_size_(m_header->firstLargeLinkById) const MRMFILE_LINK_BY_ID* m_linksById = nullptr;
+    _Field_size_(m_header->numLinksById - m_header->firstLargeLinkById) const MRMFILE_LARGE_LINK_BY_ID* m_largeLinksById = nullptr;
 
-    _Field_size_(m_header->numSchemas) const IHierarchicalSchema** m_schemas;
+    _Field_size_(m_header->numSchemas) const IHierarchicalSchema** m_schemas = nullptr;
 
-    const IHierarchicalSchema* m_schema;
+    const IHierarchicalSchema* m_schema = nullptr;
 
     ResourceLinkSection() {}
 
@@ -1152,7 +1152,7 @@ private:
 
 /*!
      * Gets a structured representation of a file section from some
-     * file, specified by its index in the local file list of the 
+     * file, specified by its index in the local file list of the
      * IFileSectionResolver itself.
      */
 
