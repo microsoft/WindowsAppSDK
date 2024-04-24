@@ -72,8 +72,6 @@ namespace WindowsAppSDK.TemplateUtilities
                 }
                 catch (Exception ex)
                 {
-                    // Handle any exceptions that occurred during the installation.
-                    // Note: If you need to interact with the UI here, you will need to marshal this back to the UI thread.
                     LogError($"Error installing package {packageId}: {ex.Message}");
                 }
             });
@@ -117,7 +115,7 @@ namespace WindowsAppSDK.TemplateUtilities
         }
         private void SaveAllProjects()
         {
-            ThreadHelper.ThrowIfNotOnUIThread("DteUtilities.SaveAllProjects must be called on the UI thread.");
+            ThreadHelper.ThrowIfNotOnUIThread("SaveAllProjects must be called on the UI thread.");
 
             var dte = Package.GetGlobalService(typeof(DTE)) as DTE;
             if (dte != null && dte.Solution != null && dte.Solution.Projects != null)
