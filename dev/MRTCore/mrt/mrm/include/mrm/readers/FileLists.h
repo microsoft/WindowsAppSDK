@@ -335,14 +335,14 @@ protected:
 class FileFileList : public FileSectionBase, public IFileList
 {
 private:
-    DEFFILE_FILELIST_HEADER_EX m_header;
-    const DEFFILE_FILELIST_HEADER_EX* m_pHeader;
-    const DEFFILE_FILELIST_FOLDER_ENTRY* m_pFolders;
-    const DEFFILE_FILELIST_FILE_ENTRY* m_pFiles;
+    DEFFILE_FILELIST_HEADER_EX m_header{};
+    const DEFFILE_FILELIST_HEADER_EX* m_pHeader{ nullptr };
+    const DEFFILE_FILELIST_FOLDER_ENTRY* m_pFolders{ nullptr };
+    const DEFFILE_FILELIST_FILE_ENTRY* m_pFiles{ nullptr };
 
     // Not null-terminated
-    const char* m_pAsciiNames;
-    const WCHAR* m_pUtf16Names;
+    const char* m_pAsciiNames{ nullptr };
+    const WCHAR* m_pUtf16Names{ nullptr };
 
     // It simplifies a lot of code to have a hidden
     // root folder.

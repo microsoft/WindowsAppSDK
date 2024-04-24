@@ -751,7 +751,7 @@ public:
     }
 
 protected:
-    AtomPoolGroup* m_pPoolGroup;
+    AtomPoolGroup* m_pPoolGroup { nullptr };
     Atom::Index m_poolIndex{ DEF_ATOM_INDEX_NONE };
     const HierarchicalNamesBuilder* m_pBuilder;
 

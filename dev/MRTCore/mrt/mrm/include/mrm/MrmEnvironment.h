@@ -108,9 +108,9 @@ class MrmEnvironment : public IEnvironment
 {
 protected:
     const ENVIRONMENT_INITIALIZER* m_pEnvironmentInitializer;
-    const QUALIFIER_INFO* m_pQualifierInfo =nullptr;
+    const QUALIFIER_INFO* m_pQualifierInfo;
 
-    AtomPoolGroup* m_pAtoms = nullptr;
+    AtomPoolGroup* m_pAtoms;
     IAtomPool* m_pQualifierTypeNames;
     IAtomPool* m_pQualifierNames;
     IAtomPool* m_pItemTypeNames;
@@ -126,6 +126,8 @@ protected:
 
     MrmEnvironment() :
         m_pEnvironmentInitializer(nullptr),
+        m_pQualifierInfo(nullptr),
+        m_pAtoms(nullptr),
         m_pQualifierTypeNames(nullptr),
         m_pQualifierNames(nullptr),
         m_pItemTypeNames(nullptr),
