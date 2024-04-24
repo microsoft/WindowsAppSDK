@@ -59,28 +59,31 @@ namespace WindowsAppSDK.TemplateUtilities
         }
         private async Task InstallNuGetPackageAsync(string packageId)
         {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
             if (installer == null)
             {
                 LogError("Could not obtain IVsPackageInstaller service.");
                 return;
             }
-
-            try
+            await Task.Run(() =>
             {
-                installer.InstallPackage(null, _project, packageId, "", false);
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error installing package {packageId}: {ex.Message}");
-            }
+                try
+                {
+                    installer.InstallPackage(null, _project, packageId, "", false);
+                    // If there's any CPU-bound work, it will be done on the background thread.
+                }
+                catch (Exception ex)
+                {
+                    // Handle any exceptions that occurred during the installation.
+                    // Note: If you need to interact with the UI here, you will need to marshal this back to the UI thread.
+                    LogError($"Error installing package {packageId}: {ex.Message}");
+                }
+            });
         }
         // InstallNuGetPackagesAsync iterates over the package list and installs each
         private async Task InstallNuGetPackagesAsync()
         {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
+            //await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             foreach (var packageId in _nuGetPackages)
             {
                 try
