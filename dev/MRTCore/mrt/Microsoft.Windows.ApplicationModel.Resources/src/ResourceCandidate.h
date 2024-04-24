@@ -33,7 +33,7 @@ private:
     Microsoft::Windows::ApplicationModel::Resources::ResourceContext m_resourceContext = nullptr;
     MrmMapHandle m_resourceMapHandle = nullptr;
     uint32_t m_resourceIndex = static_cast<uint32_t>(-1);
-    hstring m_resourceId{};
+    hstring m_resourceId;
 };
 
 } // namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
