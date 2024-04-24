@@ -294,21 +294,21 @@ class CDetourDis
     static BOOL             s_fLimitReferencesToModule;
 
   protected:
-    BOOL                m_bOperandOverride{ false };
-    BOOL                m_bAddressOverride{ false };
-    BOOL                m_bRaxOverride{ false }; // AMD64 only
-    BOOL                m_bVex{ false };
-    BOOL                m_bEvex{ false };
-    BOOL                m_bF2{ false };
-    BOOL                m_bF3{ false }; // x86 only
-    BYTE                m_nSegmentOverride{ 0 };
+    BOOL                m_bOperandOverride;
+    BOOL                m_bAddressOverride;
+    BOOL                m_bRaxOverride; // AMD64 only
+    BOOL                m_bVex;
+    BOOL                m_bEvex;
+    BOOL                m_bF2;
+    BOOL                m_bF3; // x86 only
+    BYTE                m_nSegmentOverride;
 
-    PBYTE *             m_ppbTarget{ nullptr };
-    LONG *              m_plExtra{ nullptr };
+    PBYTE *             m_ppbTarget;
+    LONG *              m_plExtra;
 
-    LONG                m_lScratchExtra{ 0 };
-    PBYTE               m_pbScratchTarget{ nullptr };
-    BYTE                m_rbScratchDst[64]{}; // matches or exceeds rbCode
+    LONG                m_lScratchExtra;
+    PBYTE               m_pbScratchTarget;
+    BYTE                m_rbScratchDst[64]; // matches or exceeds rbCode
 };
 
 PVOID WINAPI DetourCopyInstruction(_In_opt_ PVOID pDst,
