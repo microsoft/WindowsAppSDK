@@ -244,40 +244,40 @@ protected:
     CImageImportFile *      NewByway(_In_ LPCSTR pszName);
 
 private:
-    DWORD                   m_dwValidSignature;
-    CImageData *            m_pImageData;               // Read & Write
+    DWORD                   m_dwValidSignature{ 0 };
+    CImageData *            m_pImageData{ nullptr };               // Read & Write
 
-    HANDLE                  m_hMap;                     // Read & Write
-    PBYTE                   m_pMap;                     // Read & Write
+    HANDLE                  m_hMap{ nullptr };                     // Read & Write
+    PBYTE                   m_pMap{ nullptr };                     // Read & Write
 
-    DWORD                   m_nNextFileAddr;            // Write
-    DWORD                   m_nNextVirtAddr;            // Write
+    DWORD                   m_nNextFileAddr{ 0 };            // Write
+    DWORD                   m_nNextVirtAddr{ 0 };            // Write
 
-    IMAGE_DOS_HEADER        m_DosHeader;                // Read & Write
-    IMAGE_NT_HEADERS        m_NtHeader;                 // Read & Write
-    IMAGE_SECTION_HEADER    m_SectionHeaders[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
+    IMAGE_DOS_HEADER        m_DosHeader{};                // Read & Write
+    IMAGE_NT_HEADERS        m_NtHeader{};                 // Read & Write
+    IMAGE_SECTION_HEADER    m_SectionHeaders[IMAGE_NUMBEROF_DIRECTORY_ENTRIES]{};
 
-    DWORD                   m_nPrePE;
-    DWORD                   m_cbPrePE;
-    DWORD                   m_cbPostPE;
+    DWORD                   m_nPrePE{ 0 };
+    DWORD                   m_cbPrePE{ 0 };
+    DWORD                   m_cbPostPE{ 0 };
 
-    DWORD                   m_nPeOffset;
-    DWORD                   m_nSectionsOffset;
-    DWORD                   m_nExtraOffset;
-    DWORD                   m_nFileSize;
+    DWORD                   m_nPeOffset{ 0 };
+    DWORD                   m_nSectionsOffset{ 0 };
+    DWORD                   m_nExtraOffset{ 0 };
+    DWORD                   m_nFileSize{ 0 };
 
-    DWORD                   m_nOutputVirtAddr;
-    DWORD                   m_nOutputVirtSize;
-    DWORD                   m_nOutputFileAddr;
+    DWORD                   m_nOutputVirtAddr{ 0 };
+    DWORD                   m_nOutputVirtSize{ 0 };
+    DWORD                   m_nOutputFileAddr{ 0 };
 
     _Field_size_(m_cbOutputBuffer)
-    PBYTE                   m_pbOutputBuffer;
-    DWORD                   m_cbOutputBuffer;
+    PBYTE                   m_pbOutputBuffer{ 0 };
+    DWORD                   m_cbOutputBuffer{ 0 };
 
     CImageImportFile *      m_pImportFiles;
-    DWORD                   m_nImportFiles;
+    DWORD                   m_nImportFiles{ 0 };
 
-    BOOL                    m_fHadDetourSection;
+    BOOL                    m_fHadDetourSection{ false };
 
 private:
     enum {
