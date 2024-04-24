@@ -27,7 +27,7 @@ class SectionCopier : public ISectionBuilder
 protected:
     const IFileSection* m_pFileSection;
     RemapInfo* m_pRemap;
-    BaseFile::SectionIndex m_sectionIndex;
+    BaseFile::SectionIndex m_sectionIndex{ DEFFILE_SECTION_INDEX_NONE };
 
     SectionCopier();
 

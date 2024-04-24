@@ -441,7 +441,7 @@ public:
 
         // An arbitrary but high limit. We want it to be high enough to never hit it
         // but also low enough to ensure we don't use too much stack space.
-        QualifierEntry _entries[50];
+        QualifierEntry _entries[50]{};
         UINT16 _nextFreeEntry = 0;
     };
 

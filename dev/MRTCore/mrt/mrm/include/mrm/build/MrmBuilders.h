@@ -821,7 +821,7 @@ private:
 
     HRESULT Init();
 
-    MRMFILE_INDEX_INSTANCE m_mrmIndexInstance;
+    MRMFILE_INDEX_INSTANCE m_mrmIndexInstance{};
     const FileInfo* m_pFileInfo;
     ResourceCandidateResult m_resourceCandidateResult;
 };
@@ -1178,7 +1178,7 @@ private:
 
     DEF_CHECKSUM m_valueHash;
     BlobResult m_actualDataBlob;
-    DynamicArray<UINT>* m_metadata;
+    DynamicArray<UINT>* m_metadata{ nullptr };
 };
 
 class OrchestratorHashNode : public DefObject

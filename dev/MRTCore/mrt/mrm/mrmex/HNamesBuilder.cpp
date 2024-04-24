@@ -752,7 +752,7 @@ public:
 
 protected:
     AtomPoolGroup* m_pPoolGroup;
-    Atom::Index m_poolIndex;
+    Atom::Index m_poolIndex{ DEF_ATOM_INDEX_NONE };
     const HierarchicalNamesBuilder* m_pBuilder;
 
     HNamesNodeAtomPool(__in const HierarchicalNamesBuilder* pBuilder) : m_pBuilder(pBuilder) {}
@@ -1393,9 +1393,9 @@ HRESULT HierarchicalNamesBuilder::BuildNameNode(
     return S_OK;
 }
 
-/*! 
+/*!
  * Serializes the file list into the provided buffer.
- * 
+ *
  * \param pBuffer
  * The buffer into which the file list is generated.
  *

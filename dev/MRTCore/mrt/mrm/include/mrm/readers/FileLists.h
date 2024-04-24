@@ -35,7 +35,7 @@ public:
     //! Gets the length in characters of the longest absolute path stored in this file list.
     virtual int GetLongestPath() const = 0;
 
-    /*! 
+    /*!
          * Determines if a supplied file index is valid.
          *
          * \param indexIn
@@ -46,14 +46,14 @@ public:
          *
          * \return bool
          * Returns true if supplied index refers to a valid file
-         * in this file list, false otherwise or if an error 
+         * in this file list, false otherwise or if an error
          * occurs.
          */
     virtual bool IsValidFileIndex(__inout int indexIn) const;
 
-    /*! 
+    /*!
          * Determines if a supplied folder index is valid.
-         * 
+         *
          * \param indexIn
          * The index to be tested.
          *
@@ -62,7 +62,7 @@ public:
          *
          * \return bool
          * Returns true if supplied index refers to a valid folder
-         * in this file list, false otherwise or if an error 
+         * in this file list, false otherwise or if an error
          * occurs.
          */
     virtual bool IsValidFolderIndex(__inout int indexIn) const;
@@ -72,7 +72,7 @@ public:
          *
          * \param folderIndex
          * Index of the folder to be queried.
-         * 
+         *
          * \param pStatus
          * Reports extended status if an error occurs.
          *
@@ -81,11 +81,11 @@ public:
          */
     virtual HRESULT GetFolderName(__in int folderIndex, __inout StringResult* pNameOut) const = 0;
 
-    /*! 
+    /*!
          * Gets the name of a file specified by index.
          * \param fileIndex
          * Index of the file to be queried.
-         * 
+         *
          * \param pStatus
          * Reports extended status if an error occurs.
          *
@@ -105,7 +105,7 @@ public:
          *
          * \param pStatus
          * Reports extended status if an error occurs.
-         * 
+         *
          * \param pFirstSubfolderOut
          * Returns the index of the first subfolder, or -1 if the specified
          * folder has no subfolders.
@@ -127,7 +127,7 @@ public:
          *
          * \param pStatus
          * Reports extended status if an error occurs.
-         * 
+         *
          * \param pFirstFileOut
          * Returns the index of the first file, or -1 if the specified
          * folder contains no files.
@@ -141,7 +141,7 @@ public:
          */
     virtual HRESULT GetFiles(__in int folderIndex, __out_opt int* pFirstFileOut, __out_opt int* pNumFilesOut) const = 0;
 
-    /*! 
+    /*!
          * Gets the parent of a folder.  Both the folder and the parent
          * are specified by index.
          *
@@ -149,14 +149,14 @@ public:
          * Index of the folder to be queried.
          *
          * \param pStatus
-         * Reports extended status if an error occurs.  Does not 
+         * Reports extended status if an error occurs.  Does not
          * report an error if the folder in question is a root
          * folder with an absolute path.
          *
          * \param pParentFolderIndexOut
          * Returns the index of the parent folder, or -1 if the folder
          * in question is a root folder.
-         * 
+         *
          * \return bool
          * Returns true if a valid parent is returned.  Returns false if
          * the folder in question is a root folder or if an error occurs.
@@ -175,14 +175,14 @@ public:
          *
          * \param pParentFolderIndexOut
          * Returns the index of the parent folder.
-         * 
+         *
          * \return bool
          * Returns true if a valid parent is returned, or false
          * if an error occurs.
          */
     virtual HRESULT GetFileParentFolderIndex(__in int fileIndex, __out int* pParentFolderIndexOut) const = 0;
 
-    /*! 
+    /*!
          * Gets the full, absolute path of a file specified by index.
          *
          * \param fileIndex
@@ -193,13 +193,13 @@ public:
          *
          * \param pPathOut
          * Returns the path of the file.
-         * 
+         *
          * \return bool
          * Returns true on success, false if an error occurs.
          */
     virtual HRESULT GetFilePath(__in int fileIndex, __inout StringResult* pPathOut) const = 0;
 
-    /*! 
+    /*!
          * Gets the full, absolute path of a file specified by index.
          *
          * \param fileIndex
@@ -210,10 +210,10 @@ public:
          *
          * \param pPathOut
          * Returns the path of the file.
-         * 
+         *
          * \param pFlag
          * Returns the flag info of the returned file
-         * 
+         *
          * \return bool
          * Returns true on success, false if an error occurs.
          */
@@ -230,7 +230,7 @@ public:
          *
          * \param pPathOut
          * Returns the path of the folder.
-         * 
+         *
          * \return bool
          * Returns true on success, false if an error occurs.
          */
@@ -240,7 +240,7 @@ public:
          * Tries to get the file index corresponding to a supplied absolute path.
          *
          * Does not report an error if no matching file is found.
-         * 
+         *
          * \param pPath
          * The path to be searched for.
          *
@@ -250,7 +250,7 @@ public:
          * \param pIndexOut
          * Returns the index of the matching file, or -1 if no
          * matching file is found.
-         * 
+         *
          * \return bool
          * Returns true if a matching file is found, or false
          * if an error occurs or if no matching file is found.
@@ -260,7 +260,7 @@ public:
     /*!
          * Tries to get the folder index corresponding to a supplied absolute path.
          * Does not report an error if no matching folder is found.
-         * 
+         *
          * \param pPath
          * The path to be searched for.
          *
@@ -270,7 +270,7 @@ public:
          * \param pIndexOut
          * Returns the index of the matching folder, or -1 if no
          * matching folder is found.
-         * 
+         *
          * \return bool
          * Returns true if a matching folder is found, or false
          * if an error occurs or if no matching folder is found.
@@ -283,11 +283,11 @@ public:
          * of characters matched.
          *
          * Matches _only_ subfolders (i.e. requires a trailing slash), so:
-         *     "\\this\that\other\dir" 
+         *     "\\this\that\other\dir"
          * Matches "\\this\that\other\", even if "dir" is a valid subdirectory.
          * Add a trailing slash or use \ref TryGetFolderIndex (without a slash)
          * to match the full folder path.
-         * 
+         *
          * \param pFullPath
          * The full path to be matched.
          *
@@ -302,7 +302,7 @@ public:
          * \param pcchUsedOut
          * If non-NULL, returns the number of characters from \ref pFullPath that were
          * used by the match.
-         * 
+         *
          * \return bool
          * Returns true on success, false if no matching folder is found or if an error
          * occurred.
@@ -346,7 +346,7 @@ private:
 
     // It simplifies a lot of code to have a hidden
     // root folder.
-    DEFFILE_FILELIST_FOLDER_ENTRY m_root;
+    DEFFILE_FILELIST_FOLDER_ENTRY m_root{};
 
 public:
     /*!
@@ -368,7 +368,7 @@ public:
     static HRESULT CreateInstance(__in_bcount(cbData) const BYTE* pData, __in int cbData, _Outptr_ FileFileList** result);
 
     /*!
-         * Allocates and initializes a \ref FileFileList from a 
+         * Allocates and initializes a \ref FileFileList from a
          * supplied \ref IFileSection.
          *
          * \param IFileSection
@@ -383,7 +383,7 @@ public:
          */
     static HRESULT CreateInstance(__in IFileSection* pSection, _Outptr_ FileFileList** result);
 
-    /*! 
+    /*!
          * Delete a \ref FileFileList.
          */
     virtual ~FileFileList() {}
