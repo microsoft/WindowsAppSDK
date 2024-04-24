@@ -835,4 +835,68 @@ namespace Test::PackageManager::Tests
             ClearPackageStatusByPackageFamilyName(::TPF::Green::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
         }
     };
+
+    class PackageDeploymentManagerTests_IsReadyOrNewerAvailable_Elevated : PackageDeploymentManagerTests_Base
+    {
+    public:
+        BEGIN_TEST_CLASS(PackageDeploymentManagerTests_IsReadyOrNewerAvailable_Elevated)
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(ClassSetup)
+        {
+            if (!::WindowsVersion::IsWindows10_20H1OrGreater())
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
+                return true;
+            }
+
+            TD::DumpExecutionContext();
+
+            RemovePackage_Blue();
+            RemovePackage_Green();
+            RemovePackage_Redder();
+            RemovePackage_Red();
+            AddPackage_Red();
+            ::TB::Setup();
+            return true;
+        }
+
+        TEST_CLASS_CLEANUP(ClassCleanup)
+        {
+            TD::DumpExecutionContext();
+
+            RemovePackage_Blue();
+            RemovePackage_Green();
+            RemovePackage_Redder();
+            RemovePackage_Red();
+            ::TB::Cleanup();
+            return true;
+        }
+
+        TEST_METHOD(IsPackageSetReady_1_RegisteredPackageStatusBad_No)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            AddPackage_Red();
+            SetPackageStatusByPackageFamilyName(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
+            VERIFY_IS_TRUE(IsPackageRegistered_Red());
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
+            packageSet.Items().Append(red);
+
+            VERIFY_IS_TRUE(IsPackageRegistered_Red());
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            ClearPackageStatusByPackageFamilyName(::TPF::Red::c_packageFamilyName, winrt::Windows::Management::Deployment::PackageStatus::Modified);
+        }
+    };
 }
