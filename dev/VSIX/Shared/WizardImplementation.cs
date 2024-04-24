@@ -48,14 +48,18 @@ namespace WindowsAppSDK.TemplateUtilities
             ThreadHelper.ThrowIfNotOnUIThread();
             _project = project;
             Guid _projectGuid;
-            Guid.TryParse(project.Kind, out _projectGuid);
-            if (_projectGuid.Equals(SolutionVCProjectGuid))
+            if (project != null)
             {
-                ThreadHelper.JoinableTaskFactory.Run(async () =>
+                Guid.TryParse(project.Kind, out _projectGuid);
+
+                if (_projectGuid.Equals(SolutionVCProjectGuid))
                 {
-                    await InstallNuGetPackagesAsync();
-                });
-            }            
+                    ThreadHelper.JoinableTaskFactory.Run(async () =>
+                    {
+                        await InstallNuGetPackagesAsync();
+                    });
+                }
+            }
         }
         private async Task InstallNuGetPackageAsync(IVsPackageInstaller installer, string packageId)
         {
