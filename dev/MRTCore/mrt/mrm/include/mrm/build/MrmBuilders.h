@@ -359,22 +359,22 @@ private:
         _In_ DynamicArray<ResourceMapSectionBuilder*>* pResourceMapBuilders,
         _In_ ScopeInfo* pScopeInfo);
 
-    bool m_mapGenerated;
-    bool m_finalized;
+    bool m_mapGenerated{ false };
+    bool m_finalized{ false };
 
-    int m_numFileCandidates;
-    int m_numFinalizedItems;
-    UINT32 m_cbNamesBlob;
+    int m_numFileCandidates{ 0 };
+    int m_numFinalizedItems{ 0 };
+    UINT32 m_cbNamesBlob{ 0 };
 
-    BaseFile::SectionIndex m_sectionIndex = 0;
+    BaseFile::SectionIndex m_sectionIndex{ 0 };
 
-    PriSectionBuilder* m_pPriSectionBuilder;
-    HierarchicalSchemaSectionBuilder* m_pSchema;
-    const UnifiedEnvironment* m_pEnvironment;
-    HierarchicalNamesBuilder* m_pNames;
-    DynamicArray<MRMFILE_REVERSEFILEMAP_ENTRY>* m_pEntries;
+    PriSectionBuilder* m_pPriSectionBuilder{ nullptr };
+    HierarchicalSchemaSectionBuilder* m_pSchema{ nullptr };
+    const UnifiedEnvironment* m_pEnvironment{ nullptr };
+    HierarchicalNamesBuilder* m_pNames{ nullptr };
+    DynamicArray<MRMFILE_REVERSEFILEMAP_ENTRY>* m_pEntries{ nullptr };
 
-    UINT32 m_buildFlags;
+    UINT32 m_buildFlags{ 0 };
 
     ReverseFileMapSectionBuilder(_In_ PriSectionBuilder* pPriBuilder, _In_ const UnifiedEnvironment* pEnvironment);
 

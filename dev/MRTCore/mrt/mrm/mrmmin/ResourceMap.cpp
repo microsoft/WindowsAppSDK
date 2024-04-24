@@ -463,7 +463,7 @@ protected:
     const IDecisionInfo* m_pDecisionInfo;
 
     mutable StringResult m_packageRootPath;
-    mutable size_t m_cchPackageRootPath;
+    mutable size_t m_cchPackageRootPath{ 0 };
 
     mutable const IDecisionInfo* m_pOverrideDecisionInfo;
     mutable RemapUInt16* m_pOverrideDecisionMap;

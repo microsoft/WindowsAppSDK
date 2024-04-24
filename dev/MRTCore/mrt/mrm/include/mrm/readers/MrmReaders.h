@@ -557,10 +557,10 @@ public:
     HRESULT GetSourceFileIndex(_Inout_ int* pIndexOut) const;
 
 protected:
-    const IRawResourceMap* m_pRawMap;
-    int m_valueGlobalIndex;
-    int m_decisionIndex;
-    int m_candidateIndexInDecision;
+    const IRawResourceMap* m_pRawMap{ nullptr };
+    int m_valueGlobalIndex{ 0 };
+    int m_decisionIndex{ 0 };
+    int m_candidateIndexInDecision{ 0 };
 };
 
 class NamedResourceResult : public DefObject
@@ -791,8 +791,8 @@ protected:
     mutable _Field_size_(m_numDescendentResources) int* m_pDescendentResources;
     mutable _Field_size_(m_numDescendentScopes) int* m_pDescendentScopes;
 
-    UINT64 m_initGeneration;
-    mutable UINT16 m_currentMinorVersion;
+    UINT64 m_initGeneration{ 0 };
+    mutable UINT16 m_currentMinorVersion{ 0 };
 };
 
 class IFileSectionResolver;
@@ -924,7 +924,7 @@ protected:
     const IDecisionInfo* m_pDecisionInfo = nullptr;
     const IResourceLinks* m_links = nullptr;
 
-    ResourceMapFileData* m_pFileData;
+    ResourceMapFileData* m_pFileData{ nullptr };
 
     bool HaveLinks() const { return (m_links != nullptr); }
 
@@ -982,7 +982,7 @@ protected:
         _In_ int cbData,
         _In_opt_ const RemapAtomPool* pQualifierMapping);
 
-    DecisionInfoFileData* m_pFileData;
+    DecisionInfoFileData* m_pFileData{ nullptr };
 };
 
 class ResourceLinkSection : public FileSectionBase, public IResourceLinks
