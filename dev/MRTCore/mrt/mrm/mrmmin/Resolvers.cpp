@@ -1540,12 +1540,12 @@ public:
 protected:
     const IAtomPool* m_pPool;
 
-    mutable DynamicArray<IQualifierValueProvider*>* m_pProviders = nullptr;
+    mutable DynamicArray<IQualifierValueProvider*>* m_pProviders;
     UINT32 m_ownedProviders;
 
     int m_cacheSize;
     __ecount(m_cacheSize) mutable StringResult* m_pCachedValues;
-    UINT32 m_attemptedValues = 0;
+    UINT32 m_attemptedValues;
     UINT32 m_presentValues;
     SRWLOCK m_srwLock;
 
@@ -1847,16 +1847,16 @@ public:
     }
 
 protected:
-    const IAtomPool* m_pPool = nullptr;
+    const IAtomPool* m_pPool{ nullptr };
 
-    int m_cacheSize = 0;
-    __ecount(m_cacheSize) mutable StringResult* m_pCachedValues = nullptr;
-    UINT32 m_presentValues = 0;
+    int m_cacheSize{ 0 };
+    __ecount(m_cacheSize) mutable StringResult* m_pCachedValues{ nullptr };
+    UINT32 m_presentValues{ 0 };
     SRWLOCK m_srwLock = { nullptr };
-    mutable DynamicArray<IQualifierValueProvider*>* m_pProviders = nullptr;
-    UINT32 m_ownedProviders = 0;
-    UINT32 m_attemptedValues = 0;
-    PerThreadQualifier* m_pPerThreadQualifier = nullptr;
+    mutable DynamicArray<IQualifierValueProvider*>* m_pProviders{ nullptr };
+    UINT32 m_ownedProviders{ 0 };
+    UINT32 m_attemptedValues{ 0 };
+    PerThreadQualifier* m_pPerThreadQualifier{ nullptr };
     PerQualifierPoolInfo(_In_ const IAtomPool* pPool, _In_opt_ PerThreadQualifier* pPerThreadQualifier) :
         m_pPool(pPool),
         m_cacheSize(pPool->GetNumAtoms()),

@@ -732,8 +732,8 @@ public:
 protected:
     HRESULT Init(_In_ AtomPoolGroup* pAtoms);
 
-    AtomPoolGroup* m_pAtoms = nullptr;
-    DynamicArray<const IEnvironment*>* m_pEnvironments = nullptr;
+    AtomPoolGroup* m_pAtoms{ nullptr };
+    DynamicArray<const IEnvironment*>* m_pEnvironmentss{ nullptr };
 };
 
 class EnvironmentMapping : DefObject
@@ -764,7 +764,7 @@ public:
         _Outptr_result_buffer_maybenull_(*numMappedQualifiers) const Atom::SmallIndex** qualifierMappings) const;
 
 private:
-    EnvironmentMapping() : m_qualifierMappings(nullptr), m_qualifierNames(nullptr) {}
+    EnvironmentMapping() : m_header(nullptr), m_qualifierMappings(nullptr), m_qualifierNames(nullptr), m_namesPool(nullptr) {}
 
     HRESULT Init(
         _In_ const CoreProfile* coreProfile,
@@ -773,11 +773,11 @@ private:
         _In_ size_t dataSizeInBytes);
 
     MRMFILE_ENVIRONMENT_VERSION_INFO m_version{};
-    const MRMFILE_ENVIRONMENT_MAPPING_HEADER* m_header = nullptr;
+    const MRMFILE_ENVIRONMENT_MAPPING_HEADER* m_header;
     _Field_size_(m_version.numQualifiers) Atom::SmallIndex* m_qualifierMappings;
     _Field_size_(m_version.numQualifiers) PCWSTR* m_qualifierNames;
 
-    _Field_size_(m_header->namesPoolSizeInChars) PCWSTR m_namesPool = nullptr;
+    _Field_size_(m_header->namesPoolSizeInChars) PCWSTR m_namesPool;
 
     StringResult m_uniqueName;
 };

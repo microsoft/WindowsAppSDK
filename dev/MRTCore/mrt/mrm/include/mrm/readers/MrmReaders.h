@@ -68,8 +68,8 @@ public:
 protected:
     SchemaCollectionSchemaWrapper(_In_ const IHierarchicalSchema* schema, _In_ bool assumeOwnership);
 
-    const IHierarchicalSchema* m_mySchema = nullptr;
-    const IHierarchicalSchema* m_schema = nullptr;
+    const IHierarchicalSchema* m_mySchema{ nullptr };
+    const IHierarchicalSchema* m_schema{ nullptr };
 };
 
 class IResourceMapBase;
@@ -124,8 +124,8 @@ public:
     int GetNumItems() const { return m_pHeader->numItems; }
 
 protected:
-    const MRMFILE_HSCHEMA_VERSION_INFO* m_pHeader = nullptr;
-    PCWSTR m_pUniqueId = nullptr;
+    const MRMFILE_HSCHEMA_VERSION_INFO* m_pHeader{ nullptr };
+    PCWSTR m_pUniqueId{ nullptr };
 
     HRESULT Init(_In_reads_bytes_(cbData) const void* pData, _In_ size_t cbData);
 
@@ -160,7 +160,7 @@ public:
 
 protected:
     const MRMFILE_HSCHEMA_REF* m_pHdr;
-    PCWSTR m_pUniqueId = nullptr;
+    PCWSTR m_pUniqueId;
     const IHierarchicalSchemaVersionInfo* m_pVersion;
 
     HierarchicalSchemaReference() : m_pHdr(nullptr), m_pUniqueId(nullptr), m_pVersion(nullptr) {}
@@ -313,17 +313,17 @@ private:
 
     StringResult m_simpleName;
     StringResult m_uniqueName;
-    UINT16 m_majorVersion = 0;
-    UINT16 m_minorVersion = 0;
+    UINT16 m_majorVersion{ 0 };
+    UINT16 m_minorVersion{ 0 };
 
-    int m_numScopeNames = 0;
-    PWSTR* m_ppMyScopeNames = nullptr;
+    int m_numScopeNames{ 0 };
+    PWSTR* m_ppMyScopeNames{ nullptr };
 
-    int m_numItemNames = 0;
-    PWSTR* m_ppMyItemNames = nullptr;
+    int m_numItemNames{ 0 };
+    PWSTR* m_ppMyItemNames{ nullptr };
 
-    StaticAtomPool* m_pScopeNames = nullptr;
-    StaticAtomPool* m_pItemNames = nullptr;
+    StaticAtomPool* m_pScopeNames{ nullptr };
+    StaticAtomPool* m_pItemNames{ nullptr };
 };
 
 class HierarchicalSchema : public FileSectionBase, public IHierarchicalSchema
@@ -467,20 +467,20 @@ public:
         _Inout_opt_ BlobResult* pBlobResult) const;
 
 private:
-    BYTE* m_pMyBuffer = nullptr;
+    BYTE* m_pMyBuffer{ nullptr };
 
     MRMFILE_HSCHEMA_HEADER_EX m_header;
 
-    _Field_size_(m_header.numVersions) const MRMFILE_HSCHEMA_VERSION_INFO* m_pFileVersions = nullptr;
+    _Field_size_(m_header.numVersions) const MRMFILE_HSCHEMA_VERSION_INFO* m_pFileVersions{ nullptr };
 
-    PCWSTR m_pUniqueId = nullptr;
-    PCWSTR m_pSimpleId = nullptr;
+    PCWSTR m_pUniqueId{ nullptr };
+    PCWSTR m_pSimpleId{ nullptr };
 
-    _Field_size_(m_header.numVersions) mutable HierarchicalSchemaVersionInfo** m_pVersions = nullptr;
-    const HierarchicalNames* m_pNames  = nullptr;
+    _Field_size_(m_header.numVersions) mutable HierarchicalSchemaVersionInfo** m_pVersions{ nullptr };
+    const HierarchicalNames* m_pNames { nullptr };
 
-    const void* m_pSectionData = nullptr;
-    int m_cbSection = 0;
+    const void* m_pSectionData{ nullptr };
+    int m_cbSection{ 0 };
 
     HierarchicalSchema();
 
@@ -512,10 +512,10 @@ public:
     static const DEFFILE_SECTION_TYPEID GetSectionTypeId();
 
 private:
-    const MRMFILE_REVERSEFILEMAP_HEADER* m_pHeader = nullptr;
-    const MRMFILE_REVERSEFILEMAP_ENTRY* m_pEntries = nullptr;
-    const HierarchicalNames* m_pNames = nullptr;
-    int m_cbSection = 0;
+    const MRMFILE_REVERSEFILEMAP_HEADER* m_pHeader{ nullptr };
+    const MRMFILE_REVERSEFILEMAP_ENTRY* m_pEntries{ nullptr };
+    const HierarchicalNames* m_pNames{ nullptr };
+    int m_cbSection{ 0 };
 
     ReverseFileMap();
 
@@ -919,10 +919,10 @@ public:
         _Out_ UINT32* linksToResourceIndex) const;
 
 protected:
-    const IFileSectionResolver* m_pSections = nullptr;
-    const IHierarchicalSchema* m_pSchema = nullptr;
-    const IDecisionInfo* m_pDecisionInfo = nullptr;
-    const IResourceLinks* m_links = nullptr;
+    const IFileSectionResolver* m_pSections{ nullptr };
+    const IHierarchicalSchema* m_pSchema{ nullptr };
+    const IDecisionInfo* m_pDecisionInfo{ nullptr };
+    const IResourceLinks* m_links{ nullptr };
 
     ResourceMapFileData* m_pFileData{ nullptr };
 
@@ -1048,22 +1048,22 @@ public:
 private:
     bool IsValidResourceLinkIndex(_In_ int index) const { return ((index >= 0) && (index < GetNumTotalLinks())); }
 
-    _Field_size_(1) const MRMFILE_RESOURCE_LINK_HEADER* m_header = nullptr;
-    _Field_size_(m_header->numSchemas) const MRMFILE_LINK_SCHEMA_MAP* m_schemaMap = nullptr;
-    _Field_size_(m_header->schemaDataSizeInBytes) const BYTE* m_schemaData = nullptr;
+    _Field_size_(1) const MRMFILE_RESOURCE_LINK_HEADER* m_header{ nullptr };
+    _Field_size_(m_header->numSchemas) const MRMFILE_LINK_SCHEMA_MAP* m_schemaMap{ nullptr };
+    _Field_size_(m_header->schemaDataSizeInBytes) const BYTE* m_schemaData{ nullptr };
 
-    _Field_size_(m_header->firstLargeInternalLink) const UINT16* m_internalLinks = nullptr;
-    _Field_size_(m_header->numInternalLinks - m_header->firstLargeInternalLink) const UINT32* m_largeInternalLinks = nullptr;
+    _Field_size_(m_header->firstLargeInternalLink) const UINT16* m_internalLinks{ nullptr };
+    _Field_size_(m_header->numInternalLinks - m_header->firstLargeInternalLink) const UINT32* m_largeInternalLinks{ nullptr };
 
-    _Field_size_(m_header->firstLargeFullLink) const MRMFILE_FULL_LINK* m_fullLinks = nullptr;
-    _Field_size_(m_header->numFullLinks - m_header->firstLargeFullLink) const MRMFILE_LARGE_FULL_LINK* m_largeFullLinks = nullptr;
+    _Field_size_(m_header->firstLargeFullLink) const MRMFILE_FULL_LINK* m_fullLinks{ nullptr };
+    _Field_size_(m_header->numFullLinks - m_header->firstLargeFullLink) const MRMFILE_LARGE_FULL_LINK* m_largeFullLinks{ nullptr };
 
-    _Field_size_(m_header->firstLargeLinkById) const MRMFILE_LINK_BY_ID* m_linksById = nullptr;
-    _Field_size_(m_header->numLinksById - m_header->firstLargeLinkById) const MRMFILE_LARGE_LINK_BY_ID* m_largeLinksById = nullptr;
+    _Field_size_(m_header->firstLargeLinkById) const MRMFILE_LINK_BY_ID* m_linksById{ nullptr };
+    _Field_size_(m_header->numLinksById - m_header->firstLargeLinkById) const MRMFILE_LARGE_LINK_BY_ID* m_largeLinksById{ nullptr };
 
-    _Field_size_(m_header->numSchemas) const IHierarchicalSchema** m_schemas = nullptr;
+    _Field_size_(m_header->numSchemas) const IHierarchicalSchema** m_schemas{ nullptr };
 
-    const IHierarchicalSchema* m_schema = nullptr;
+    const IHierarchicalSchema* m_schema{ nullptr };
 
     ResourceLinkSection() {}
 
@@ -1129,15 +1129,15 @@ public:
     GetTargetOsVersion(_In_ CoreProfile* pProfile, _Inout_opt_ StringResult* pPlatformOut, _Inout_opt_ StringResult* pVersionOut) const;
 
 protected:
-    const IFileSectionResolver* m_pSections = nullptr;
-    const ISchemaCollection* m_pSchemaCollection = nullptr;
+    const IFileSectionResolver* m_pSections{ nullptr };
+    const ISchemaCollection* m_pSchemaCollection{ nullptr };
 
-    const MRMFILE_PRI_DESCRIPTOR_EX* m_pHeader = nullptr;
-    const DEFFILE_SECTION_INDEX* m_pSchemaSectionIndices = nullptr;
-    const DEFFILE_SECTION_INDEX* m_pDecisionInfoSectionIndices = nullptr;
-    const DEFFILE_SECTION_INDEX* m_pResourceMapSectionIndices = nullptr;
-    const DEFFILE_SECTION_INDEX* m_pReferencedFileSectionIndices = nullptr;
-    const DEFFILE_SECTION_INDEX* m_pDataItemSectionIndices = nullptr;
+    const MRMFILE_PRI_DESCRIPTOR_EX* m_pHeader{ nullptr };
+    const DEFFILE_SECTION_INDEX* m_pSchemaSectionIndices{ nullptr };
+    const DEFFILE_SECTION_INDEX* m_pDecisionInfoSectionIndices{ nullptr };
+    const DEFFILE_SECTION_INDEX* m_pResourceMapSectionIndices{ nullptr };
+    const DEFFILE_SECTION_INDEX* m_pReferencedFileSectionIndices{ nullptr };
+    const DEFFILE_SECTION_INDEX* m_pDataItemSectionIndices{ nullptr };
 
     HRESULT Init(
         _In_ const IFileSectionResolver* pSections,
@@ -1664,11 +1664,11 @@ protected:
 
     HRESULT InitStandalonePriFile(_In_opt_ const ISchemaCollection* overrideSchemas);
 
-    CoreProfile* m_pProfile = nullptr;
-    const ISchemaCollection* m_overrideSchemas = nullptr;
-    AtomPoolGroup* m_pAtoms = nullptr;
-    UnifiedEnvironment* m_pEnvironment = nullptr;
-    UnifiedDecisionInfo* m_pDecisions = nullptr;
+    CoreProfile* m_pProfile{ nullptr };
+    const ISchemaCollection* m_overrideSchemas{ nullptr };
+    AtomPoolGroup* m_pAtoms{ nullptr };
+    UnifiedEnvironment* m_pEnvironment{ nullptr };
+    UnifiedDecisionInfo* m_pDecisions{ nullptr };
 };
 
 } // namespace Microsoft::Resources

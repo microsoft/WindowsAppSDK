@@ -79,9 +79,9 @@ private:
     _Field_size_(m_header.namesPoolSizeInChars) PWSTR m_namesPool;
 
     UINT32 m_finalizedSizeInBytes;
-    BaseFile::SectionIndex m_sectionIndex = 0;
+    BaseFile::SectionIndex m_sectionIndex;
 
-    EnvironmentMappingSectionBuilder() : m_names(nullptr), m_namesPool(nullptr), m_finalizedSizeInBytes(0) {}
+    EnvironmentMappingSectionBuilder() : m_names(nullptr), m_namesPool(nullptr), m_finalizedSizeInBytes(0), m_sectionIndex(0) {}
 
     HRESULT Init(_In_ const IEnvironment* pSourceEnvironment, _In_ const IEnvironment* pTargetEnvironment);
 };
@@ -537,7 +537,7 @@ public:
 
 private:
     BUILDER_CANDIDATE m_builderCandidate = {};
-    DecisionInfoSectionBuilder* m_pDecisionInfo = nullptr;
+    DecisionInfoSectionBuilder* m_pDecisionInfo{ nullptr };
     Atom m_instanceValueType;
 };
 

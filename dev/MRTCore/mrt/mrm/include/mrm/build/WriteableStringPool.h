@@ -51,12 +51,12 @@ template<typename TSW, typename TSC, typename TCH>
 class TWriteableStringPool : public DefObject
 {
 private:
-    UINT32 m_flags = 0;
-    DEFCOMPAREOPTIONS m_comparison = DefCompare_Default;
+    UINT32 m_flags{ 0 };
+    DEFCOMPAREOPTIONS m_comparison{ DefCompare_Default };
 
-    UINT32 m_numChars = 0;
-    UINT m_sizeChars = 0;
-    TCH* m_pChars = nullptr;
+    UINT32 m_numChars{ 0 };
+    UINT m_sizeChars{ 0 };
+    TCH* m_pChars{ nullptr };
 
 protected:
     typedef PoolStringOps<TSC, TCH> StringOps;

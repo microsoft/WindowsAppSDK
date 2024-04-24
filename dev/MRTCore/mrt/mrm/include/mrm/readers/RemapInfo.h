@@ -78,9 +78,9 @@ protected:
         _In_ int numMappedAtomIndexes,
         _In_reads_(numMappedAtomIndexes) const Atom::SmallIndex* mappedAtomIndexes);
 
-    int m_sourcePoolIndex = 0;
-    int m_targetPoolIndex = 0;
-    int m_numMappedAtomIndexes = 0;
+    int m_sourcePoolIndex{ 0 };
+    int m_targetPoolIndex{ 0 };
+    int m_numMappedAtomIndexes{ 0 };
 
     _Field_size_(m_numMappedAtomIndexes) Atom::SmallIndex* m_mappedAtomIndexes;
 };
