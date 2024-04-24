@@ -8,7 +8,7 @@ namespace Microsoft::Resources
 
 class IDecisionInfo;
 
-/*!
+/*! 
      * An ICondition represents a single comparison operation, typically used
      * to evaluate the relevance of some item for a specific context.  It consists
      * of an operator and one or two operands.
@@ -75,7 +75,7 @@ public:
 static const double MinQualifierScore = 0.0;
 static const double MaxQualifierScore = 1.0;
 
-/*!
+/*! 
      * An IQualifier represents a single comparison operation, with an
      * associated priority which indicates the importance of this qualifier relative
      * to any other qualifiers in consideration, for both normal and fallback
@@ -206,13 +206,13 @@ public:
     HRESULT GetBaseQualifierIndex(_Out_ int* index) const;
 
 protected:
-    const IRawDecisionInfo* m_pRaw{ nullptr };
+    const IRawDecisionInfo* m_pRaw;
 
-    MRMFILE_BASE_QUALIFIER m_baseQualifier{};
-    MRMFILE_QUALIFIER m_qualifier{};
+    MRMFILE_BASE_QUALIFIER m_baseQualifier;
+    MRMFILE_QUALIFIER m_qualifier;
 
-    int m_baseIndex{ 0 };
-    int m_index{ 0 };
+    int m_baseIndex;
+    int m_index;
 };
 
 class QualifierSetResult : public IQualifierSet
@@ -238,10 +238,10 @@ public:
     const IDecisionInfo* GetPool() const;
 
 protected:
-    const IRawDecisionInfo* m_pRaw{ nullptr };
+    const IRawDecisionInfo* m_pRaw;
 
-    MRMFILE_QUALIFIER_SET m_qualifierSet{};
-    int m_index{ 0 };
+    MRMFILE_QUALIFIER_SET m_qualifierSet;
+    int m_index;
 };
 
 class DecisionResult : public IDecision
@@ -270,10 +270,10 @@ public:
     const IDecisionInfo* GetPool() const;
 
 protected:
-    const IRawDecisionInfo* m_pRaw{ nullptr };
+    const IRawDecisionInfo* m_pRaw;
 
-    MRMFILE_DECISION m_decision{};
-    int m_index{ 0 };
+    MRMFILE_DECISION m_decision;
+    int m_index;
 };
 
 class IEnvironment;

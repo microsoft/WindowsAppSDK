@@ -21,10 +21,10 @@ namespace Microsoft::Resources::Build
 
 class FolderInfo;
 
-/*!
+/*! 
      * Base class for per-file private data.  Must be subclassed and
      * cannot be instantiated directly.
-     *
+     * 
      * Per-file private data is identified by the object that
      * owns it and a data index.  The data index is used to enforce uniqueness
      * when appropriate and cannot be negative.  Otherwise the interpretation
@@ -47,30 +47,30 @@ public:
          */
     virtual ~FileInfoPrivateData();
 
-    /*!
+    /*! 
          * Gets the owner of this private data.
-         *
+         * 
          * \return const IFileSection*
          * Returns a pointer to the object that owns this private
          * data.
          */
     const void* GetOwner() const { return m_pOwner; }
 
-    /*!
+    /*! 
          * Gets the index of this private data.
-         *
+         * 
          * \return const int
          * Returns the owner-supplied index of this private data.
          */
     const int GetIndex() const { return m_index; }
 
-    /*!
+    /*! 
          * Determines if a this \ref FileInfoPrivateData object matches
          * a supplied owner and index.
-         *
+         * 
          * \param pOwner
-         * Pointer to the desired owner, or NULL to accept any owner.
-         *
+         * Pointer to the desired owner, or NULL to accept any owner. 
+         * 
          * \param index
          * Specifies the \ref index to be matched, or a value less than 0
          * to accept any index.
@@ -78,7 +78,7 @@ public:
          * \return bool
          * Returns true if the owner and index match, false otherwise
          * or if an error occurs.
-         *
+         * 
          * If pOwner is NULL, index _must_ be less than 0, or an
          * INVALID_ARG error results.
          */
@@ -91,14 +91,14 @@ public:
         return ((!pOwner) || (pOwner == m_pOwner)) && ((index < 0) || (index == m_index));
     }
 
-    /*!
+    /*! 
          * Determines if a this object matches a supplied \ref FileInfoPrivateData.
          * A \ref FileInfePrivateData matches if both the owner and index are
-         * equal to that of this object.
-         *
+         * equal to that of this object. 
+         * 
          * \param pOther
          * Pointer to \ref FileInfoPrivateData to be matched.
-         *
+         * 
          * \return bool
          * Returns true if the supplied \ref FileInfoPrivate data matches this
          * one, false otherwise or if an error occurs.
@@ -112,12 +112,12 @@ public:
         return pOther->Matches(m_pOwner, m_index);
     }
 
-    /*!
+    /*! 
          * Sets the next chained private element for this object.
-         *
+         * 
          * \param pNext
          * Pointer to the \ref FileInfoPrivateData to be added.
-         *
+         * 
          * \return HRESULT
          * Returns S_OK if the private data was added, failure if an
          * error occurred.
@@ -127,22 +127,22 @@ public:
          */
     HRESULT SetNext(__in_opt FileInfoPrivateData* pNext);
 
-    /*!
+    /*! 
          * Gets the next chained \ref FileInfoPrivateData.
-         *
+         * 
          * \return FileInfoPrivateData*
          * Returns a pointer to the next chained \ref FileInfoPrivateData,
          * or NULL if no chained elements are present.
          */
     FileInfoPrivateData* GetNext() const { return m_pNext; }
 
-    /*!
+    /*! 
          * Gets the next chained private \ref FileInfoPrivateData element
          * that matches the supplied criteria.
-         *
+         * 
          * \param pOwner
          * Specifies the owner to be matched, or NULL to match any owner.
-         *
+         * 
          * \param index
          * Specifies the private data index to be matched, or a value less than
          * zero to match any index.
@@ -161,10 +161,10 @@ public:
          */
     bool TryGetNext(__in_opt const void* pOwner, __in int index, __out FileInfoPrivateData** ppDataOut) const;
 
-    /*!
+    /*! 
          * Gets the next chained private \ref FileInfoPrivateData element
          * with the specified owner.
-         *
+         * 
          * \param pOwner
          * Specifies the owner to be matched, or NULL to match any owner.
          *
@@ -184,12 +184,12 @@ public:
 class FileInfo : public DefObject
 {
 protected:
-    PWSTR m_pName{ nullptr };
-    FolderInfo* m_pParentFolder{ nullptr };
-    int m_index{ 0 };
-    FileInfoPrivateData* m_pPrivates{ nullptr };
-    UINT16 m_flags{ 0 };
-    bool m_nameIsAscii{ false };
+    PWSTR m_pName;
+    FolderInfo* m_pParentFolder;
+    int m_index;
+    FileInfoPrivateData* m_pPrivates;
+    UINT16 m_flags;
+    bool m_nameIsAscii;
 
     FileInfo(__in FolderInfo* pParent);
 
@@ -205,17 +205,17 @@ public:
          * add add it to the parent folder.   To ensure proper
          * semantics and consistency, use FolderInfo::GetOrAddFile
          * to create new files.
-         *
+         * 
          * \param pName
          * The name of the file to be added.
-         *
+         * 
          * \param pParent
          * Parent folder that will contain the new file.
          *
          * \param result
          * Returns a pointer to the new FileInfo, or NULL if an error
          * occurs.
-         *
+         * 
          * \return HRESULT
          */
     static HRESULT CreateInstance(__in PCWSTR pName, __in FolderInfo* pParent, _Outptr_ FileInfo** result);
@@ -225,7 +225,7 @@ public:
          *
          * \param pNameOut
          * Returns the name of the file.
-         *
+         * 
          * \return HRESULT
          * Returns S_OK for success, failure if an error occurs.
          */
@@ -241,7 +241,7 @@ public:
          */
     FolderInfo* GetParentFolder() const { return m_pParentFolder; }
 
-    /*!
+    /*! 
          * Gets the full path of a file.
          *
          * \param pStatus
@@ -249,13 +249,13 @@ public:
          *
          * \param pPathOut
          * Returns the full (absolute) path of the referenced file.
-         *
+         * 
          * \return bool
          * Returns true for success, false if an error occurs.
          */
     HRESULT GetFullPath(__inout StringResult* pPathOut) const;
 
-    /*!
+    /*! 
          * Gets the index of this file in the generated file list section.
          * Note that the file index is typically undefined (-1) until the file
          * list section is finalized.
@@ -274,23 +274,23 @@ public:
          */
     void SetIndex(int index) { m_index = index; }
 
-    /*!
+    /*! 
          * Gets the head of the list of private data associated with this
          * file entry.
-         *
+         * 
          * \return const FileInfoPrivateData*
          * The first element in the list of private data associated with this
          * file entry.
          */
     FileInfoPrivateData* GetPrivateData() const { return m_pPrivates; }
 
-    /*!
-         * Gets the first element associated with a specified owner from the
+    /*! 
+         * Gets the first element associated with a specified owner from the 
          * private data list for this file element.
-         *
+         * 
          * \param pOwner
          * Pointer to the desired owner, or NULL to match any owner.
-         *
+         * 
          * \param ppDataOut
          * Returns a pointer to the requested private data structure.  Returns
          * NULL if no matching private data is found or if an error occurs.
@@ -306,17 +306,17 @@ public:
         return TryGetPrivateData(pOwner, -1, ppDataOut);
     }
 
-    /*!
-         * Gets the first element with a specified owner and index from the
+    /*! 
+         * Gets the first element with a specified owner and index from the 
          * private data list for this file element.
-         *
+         * 
          * \param pOwner
          * Pointer to the desired owner, or NULL to accept any owner.
          *
          * \param index
          * Index of the private data to be found, or a negative value to
          * accept any index.
-         *
+         * 
          * \param ppDataOut
          * Returns a pointer to the requested private data structure.  Returns
          * NULL if no matching private data is found or if an error occurs.
@@ -329,27 +329,27 @@ public:
          */
     bool TryGetPrivateData(__in_opt const void* pOwner, __in int index, __out FileInfoPrivateData** ppDataOut) const;
 
-    /*!
+    /*! 
          * Adds a supplied \ref FileInfoPrivateData to the chain
          * of private data associated with this file.
-         *
+         * 
          * \param pPrivate
          * The \ref FileInfoPrivateData to be added.
          *
          * \param allowDuplicates
-         * If true, the private data will be added even if data already
+         * If true, the private data will be added even if data already 
          * exists with the same parent and index.  If false, adding duplicate
          * private data yields an E_DEF_ENTRY_ALREADY_EXISTS error.
-         *
+         * 
          * \return HRESULT
          * Returns S_OK if the private data was successfully added, failure
          * otherwise.
          */
     HRESULT AddPrivateData(__in FileInfoPrivateData* pPrivate, __in bool allowDuplicates);
 
-    /*!
+    /*! 
          * Get the flag information that can have preload set
-         *
+         * 
          * \return bool
          * Returns UINT16 flags, it always return success
          */
@@ -370,23 +370,23 @@ public:
 class FolderInfo : public DefObject
 {
 protected:
-    PWSTR m_pName{ nullptr };
-    FolderInfo* m_pParentFolder{ nullptr };
+    PWSTR m_pName;
+    FolderInfo* m_pParentFolder;
 
-    int m_numSubfolders{ 0 };
-    int m_sizeSubfolders{ 0 };
-    FolderInfo** m_pSubfolders{ nullptr };
+    int m_numSubfolders;
+    int m_sizeSubfolders;
+    FolderInfo** m_pSubfolders;
 
-    int m_numFiles{ 0 };
-    int m_sizeFiles{ 0 };
-    FileInfo** m_pFiles{ nullptr };
+    int m_numFiles;
+    int m_sizeFiles;
+    FileInfo** m_pFiles;
 
-    int m_totalNumFiles{ 0 };
-    int m_totalNumFolders{ 0 };
+    int m_totalNumFiles;
+    int m_totalNumFolders;
 
-    int m_index{ 0 };
+    int m_index;
 
-    bool m_nameIsAscii{ false };
+    bool m_nameIsAscii;
 
     FolderInfo(__in PCWSTR pName, __in_opt FolderInfo* pParent);
 
@@ -409,17 +409,17 @@ public:
          * add add it to the parent folder.   To ensure proper
          * semantics and consistency, use FolderInfo::GetOrAddSubfolder
          * to create new subfolders.
-         *
+         * 
          * \param pName
          * The name of the folder to be added.
-         *
+         * 
          * \param pParent
          * Parent folder that will contain the new subfolder.
          *
          * \param result
          * Returns a pointer to the new FolderInfo, or NULL if an error
          * occurs.
-         *
+         * 
          * \return HRESULT
          */
     static HRESULT CreateInstance(__in PCWSTR pName, __in FolderInfo* pParent, _Outptr_ FolderInfo** result);
@@ -430,14 +430,14 @@ public:
          * \param result
          * Returns a pointer to the new FolderInfo, or NULL if an error
          * occurs.
-         *
+         * 
          * \return HRESULT
          */
     static HRESULT NewRootFolder(_Outptr_ FolderInfo** result);
 
     /*!
          * Gets the base name of the folder.
-         *
+         * 
          * \param pNameOut
          * Returns the base name of the referenced folder.
          *
@@ -449,10 +449,10 @@ public:
     //! Gets the base name of the folder.
     PCWSTR GetFolderName() const { return m_pName; }
 
-    /*!
+    /*! 
          * Gets the number of immediate subfolders.
          * Does not include children of subfolders of the referenced folder.
-         *
+         * 
          * \return int
          * Returns the number of referenced subfolders.
          */
@@ -461,19 +461,19 @@ public:
     /*!
          * Gets the number of files contained in the referenced folder itself.
          * Does not include files contained in subfolders.
-         *
+         * 
          * \return int
          * Returns the number of referenced files.
          */
     int GetNumFiles() const { return m_numFiles; }
 
-    /*!
+    /*! 
          * Gets the total number of referenced folders at or below the supplied folder.
          * Includes the folder itself, plus all children of subfolders.
-         *
+         * 
          * \return int
          * Returns the total number of referenced folders at or below the
-         * supplied folder.
+         * supplied folder. 
          */
     int GetTotalNumFolders() const { return m_totalNumFolders; }
 
@@ -482,7 +482,7 @@ public:
          *
          * Includes referenced files in the folder itself, plus any referenced files
          * contained in subfolders of any depth.
-         *
+         * 
          * \return int
          * Returns the total number of referenced files at or below the
          * supplied folder.
@@ -492,12 +492,12 @@ public:
     //! Gets the parent of this folder, if defined.
     FolderInfo* GetParentFolder() const { return m_pParentFolder; }
 
-    /*!
+    /*! 
          * Gets the full absolute path of the supplied folder.
          *
          * \param pPathOut
          * Returns the full absolute path of the supplied folder.
-         *
+         * 
          * \return HRESULT
          * Returns S_OK on success, failure if an error occurs.
          */
@@ -510,7 +510,7 @@ public:
          * Index of the folder to be returned.
          *
          * \param result
-         * Returns a pointer to an IFolderInfo describing
+         * Returns a pointer to an IFolderInfo describing 
          * the requested subdirectory, or NULL if an error occurs.
          *
          * \return HRESULT
@@ -527,7 +527,7 @@ public:
          * \param result
          * Returns a pointer to an IFolderInfo describing
          * the requested subdirectory, or NULL if an error occurs.
-         *
+         * 
          * \return HRESULT
          * Returns E_DEF_FOLDER_NOT_FOUND if no matching folder is found.
          */
@@ -538,13 +538,13 @@ public:
          *
          * Returns false but doesn not set an error if no matching
          * folder is found.
-         *
+         * 
          * \param pName
          * The name of the subfolder to be returned.
          *
          * \param ppFolderOut
          * Returns the matching folder, or NULL if no matching folder
-         * is found.
+         * is found. 
          *
          * \return bool
          * Returns true if a matching folder was found, false if no match
@@ -552,13 +552,13 @@ public:
          */
     bool TryGetSubfolder(__in PCWSTR pName, __inout FolderInfo** ppFolderOut) const;
 
-    /*!
+    /*! 
          * Gets the index of a subfolder by name.
          * Reports an error if no matching folder is found.
-         *
+         * 
          * \param pName
          * The name of the subfolder to be returned.
-         *
+         * 
          * \return int
          * Returns the integer index of the requested subdirectory,
          * or -1 if an error occurs or if the subdirectory is not found.
@@ -570,13 +570,13 @@ public:
          *
          * Returns false but does not report an error if no matching
          * folder is found.
-         *
+         * 
          * \param pName
          * The name of the subfolder to be returned.
          *
          * \param ppIndexOut
          * Returns the index of the matching folder, or NULL if no matching folder
-         * is found.
+         * is found. 
          *
          * \return bool
          * Returns true if a matching folder was found, false if no match
@@ -585,19 +585,19 @@ public:
     bool TryGetSubfolderIndex(__in PCWSTR pName, __out int* pIndexOut) const;
 
     /*!
-         * Gets or adds a named subfolder to a FolderInfo.
+         * Gets or adds a named subfolder to a FolderInfo. 
          *
          * If a subfolder with a matching name already exists, returns
          * the existing subfolder.  If no matching subfolder exists,
          * adds a new subfolder and returns a pointer to it.
-         *
+         * 
          * \param pName
          * Name of the new subfolder.
          *
          * \param result
          * Returns a pointer to a FolderInfo describing the
          * requested subfolder.
-         *
+         * 
          * \return HRESULT
          */
     HRESULT GetOrAddSubfolder(_In_ PCWSTR pName, _Out_ FolderInfo** result);
@@ -611,7 +611,7 @@ public:
          * \param result
          * Returns a pointer to an IFileInfo describing
          * the requested file.
-         *
+         * 
          * \return HRESULT
          */
     HRESULT GetFile(_In_ int index, _Out_ FileInfo** result) const;
@@ -619,14 +619,14 @@ public:
     /*!
          * Gets a file by name.
          * Reports an error if no matching file is found.
-         *
+         * 
          * \param pName
          * The name of the file to be returned.
          *
          * \param result
          * Returns a pointer to an IFileInfo describing
          * the requested file, or NULL if an error occurs.
-         *
+         * 
          * \return HRESULT
          */
     HRESULT GetFile(_In_ PCWSTR index, _Out_ FileInfo** result) const;
@@ -635,13 +635,13 @@ public:
          * Tries to get a file by name.
          * Returns false but does not set an error if no matching
          * file is found.
-         *
+         * 
          * \param pName
          * The name of the file to be returned.
          *
          * \param ppFileOut
          * Returns the matching file, or NULL if no matching file
-         * is found.
+         * is found. 
          *
          * \return bool
          * Returns true if a matching file was found, false if no match
@@ -652,10 +652,10 @@ public:
     /*!
          * Gets the index of a file by name.
          * Reports an error if no matching file is found.
-         *
+         * 
          * \param pName
          * The name of the file to be returned.
-         *
+         * 
          * \return int
          * Returns the integer index of the requested file,
          * or -1 if an error occurs or if the file is not found.
@@ -666,13 +666,13 @@ public:
          * Tries to get the index of a file by name.
          * Returns false but does not report an error if no matching
          * file is found.
-         *
+         * 
          * \param pName
          * The name of the file to be returned.
          *
          * \param ppIndexOut
          * Returns the index of the matching file, or NULL if no matching file
-         * is found.
+         * is found. 
          *
          * \return bool
          * Returns true if a matching file was found, false if no match
@@ -685,19 +685,19 @@ public:
          * If a file with a matching name already exists, returns a
          * pointer to the existing FileInfo.  If no matching file exists,
          * adds a new FileInfo and returns a pointer to it.
-         *
+         * 
          * \param pName
          * Name of the new file.
          *
          * \param result
          * Returns a pointer to a FileInfo describing the
          * requested file.
-         *
+         * 
          * \return HRESULT
          */
     HRESULT GetOrAddFile(_In_ PCWSTR pName, _Out_ FileInfo** result);
 
-    /*!
+    /*! 
          * Gets the index of this folder in the generated file list section.
          * Note that the folder index is typically undefined (-1) until the file
          * list section is finalized.
@@ -708,9 +708,9 @@ public:
          */
     int GetIndex() const { return m_index; }
 
-    /*!
+    /*! 
          * Sets the index of this folder in the generated file list section.
-         *
+         * 
          * \param index
          * The index to be assigned.
          */
@@ -721,27 +721,27 @@ public:
 
 /*!
      * Class used to construct a file list section.
-     * The builder holds one or more "root" folders, specified as an
+     * The builder holds one or more "root" folders, specified as an 
      * absolute path, and any number of subfolders or files.  Subfolders
      * and files are specified by name, relative to one of the folders.
      */
 class FileListBuilder : public ISectionBuilder
 {
 private:
-    FileBuilder* m_pParentFile{ nullptr };
-    BaseFile::SectionIndex m_sectionIndex{ 0 };
+    FileBuilder* m_pParentFile;
+    BaseFile::SectionIndex m_sectionIndex;
 
-    FolderInfo* m_pRootFolder{ nullptr };
+    FolderInfo* m_pRootFolder;
 
-    UINT32 m_flags{ 0 };
+    UINT32 m_flags;
 
     class FinalizedBuilder;
 
-    int m_numFinalizedFolders{ 0 };
-    int m_numFinalizedFiles{ 0 };
-    size_t m_cchFinalizedAsciiNames{ 0 };
-    size_t m_cchFinalizedUtf16Names{ 0 };
-    mutable FinalizedBuilder* m_pFinalized{ nullptr };
+    int m_numFinalizedFolders;
+    int m_numFinalizedFiles;
+    size_t m_cchFinalizedAsciiNames;
+    size_t m_cchFinalizedUtf16Names;
+    mutable FinalizedBuilder* m_pFinalized;
     /*
         mutable FolderInfo**            m_pAllFolders;
         mutable FileInfo**              m_pAllFiles;
@@ -757,10 +757,10 @@ protected:
          * A string pool containing all of the strings from a specified folder
          * and all of its contents might need fewer characters than reported
          * by this function, but it will not require more.
-         *
+         * 
          * \param pFolder
          * The folder to be checked.
-         *
+         * 
          * \return int
          * The total size in bytes needed to hold the strings.
          */
@@ -772,10 +772,10 @@ protected:
          * A string pool containing all of the strings from a specified folder
          * and all of its contents might need fewer characters than reported
          * by this function, but it will not require more.
-         *
+         * 
          * \param pFolder
          * The folder to be checked.
-         *
+         * 
          * \return HRESULT
          */
 
@@ -789,10 +789,10 @@ protected:
          * Assigns indices to a folder and its contents.
          * Updates the folder itself, all of its contents, and recursively
          * updates all children. Once assigned, file and folder indices are immutable.
-         *
+         * 
          * \param pFolderInfo
          * The folder to which indices will be assigned.
-         *
+         * 
          * \param index
          * The index to be assigned to pFolder.
          *
@@ -807,7 +807,7 @@ protected:
          *
          * \param sizeFiles
          * The total size in elements of the files array.
-         *
+         * 
          * \return HRESULT
          * Returns S_OK on success, failure if an error occurs.
          */
@@ -830,7 +830,7 @@ protected:
          *
          * \param parentIndex
          * The index of the folder's parent.
-         *
+         * 
          * \return HRESULT
          * Return S_OK on success, failure if an error occurs.
          */
@@ -859,14 +859,14 @@ public:
     /*!
          * Creates a new FileListBuilder.
          * Builds a file list section as part of a supplied FileBuilder.
-         *
+         * 
          * \param pParentFile
          * The FileBuilder to which the section will belong.
          *
          * \param result
          * Returns a pointer to the newe FileListBuilder, or NULL
          * if an error occurs.
-         *
+         * 
          * \return HRESULT
          */
     static HRESULT CreateInstance(_In_ FileBuilder* pParentFile, _In_ UINT32 flags, _Outptr_ FileListBuilder** result);
@@ -884,7 +884,7 @@ public:
     //! Gets the total number of files referenced by this builder.
     int GetTotalNumFiles() const;
 
-    /*!
+    /*! 
          * Gets a root folder specified by index.
          *
          * \param index
@@ -893,7 +893,7 @@ public:
          * \param result
          * A FolderInfo describing the requested root
          * folder, or NULL if an error occurs.
-         *
+         * 
          * \return HRESULT
          */
     HRESULT GetRootFolder(_In_ int index, _Out_ FolderInfo** result) const;
@@ -901,14 +901,14 @@ public:
     /*!
          * Gets a root folder specified by name.
          * Reports an error if no matching folder is found.
-         *
+         * 
          * \param pPath
          * Name of the root folder to be returned.
          *
          * \param result
-         * A FolderInfo describing the requested root
+         * A FolderInfo describing the requested root 
          * folder, or NULL if an error occurs.
-         *
+         * 
          * \return HRESULT
          */
     HRESULT GetRootFolder(_In_ PCWSTR pPath, _Out_ FolderInfo** result) const;
@@ -917,15 +917,15 @@ public:
          * Tries to get a root folder specified by name.
          * Returns false but does not report an error if no
          * matching folder is found.
-         *
+         * 
          * \param pPath
          * Name of the root folder to be returned.
-         *
+         * 
          * \param ppFolderOut
          * Returns a pointer to a FolderInfo describing the
          * requested root folder, or NULL if no match is found
          * or if an error occurs.
-         *
+         * 
          * \return bool
          * Returns true if a matching folder is found, false
          * if no match is found or if an error occurs.
@@ -938,25 +938,25 @@ public:
          * returns a pointer to the existing IFolderInfo.
          * If no matching folder exists, adds a new IFolderInfo
          * and returns a pointer to it.
-         *
+         * 
          * \param pPath
          * Name of the new root folder.
          *
          * \param result
          * Returns a pointer to an IFileInfo describing the
          * requested file.
-         *
+         * 
          * \return HRESULT
          */
     HRESULT GetOrAddRootFolder(_In_ PCWSTR pPath, _Out_ FolderInfo** result);
 
-    /*!
+    /*! 
          * Gets a folder by index.  Can only be called once the
          * builder has been finalized.
-         *
+         * 
          * \param index
          * The index of the folder to be returned.
-         *
+         * 
          * \param ppFolderOut
          * Returns the requested \ref FolderInfo, or NULL if an
          * error occurs.
@@ -967,13 +967,13 @@ public:
          */
     bool TryGetFolderByIndex(__in int index, __out FolderInfo** ppFolderOut) const;
 
-    /*!
+    /*! 
          * Gets a file by index.  Can only be called once the
          * builder has been finalized.
-         *
+         * 
          * \param index
          * The index of the file to be returned.
-         *
+         * 
          * \param ppFileOut
          * Returns the requested \ref FileInfo, or NULL if an
          * error occurs.
@@ -984,54 +984,54 @@ public:
          */
     bool TryGetFileByIndex(__in int index, __out FileInfo** ppFileOut) const;
 
-    /*!
-         * Gets an \ref IFileList that represents the contents of
-         * this builder.  The return \ref IFileList is owned by
+    /*! 
+         * Gets an \ref IFileList that represents the contents of 
+         * this builder.  The return \ref IFileList is owned by 
          * the builder and should not be deleted.
-         *
+         * 
          * Can only be called once this \ref FileListBuilder
-         * has been finalized. Reports a NOT_READY error if
+         * has been finalized. Reports a NOT_READY error if 
          * the builder has not been finalized.
          *
          * \param ppFileListOut
          * Returns a pointer to an \ref IFileList that represents
          * this file list.
-         *
+         * 
          * \return HRESULT
          * Returns S_OK on success, failure if an error occurs.
          */
     HRESULT GetFileList(__out IFileList** ppFileListOut) const;
 
-    /*!
+    /*! 
          * Determines if a supplied file index is valid.
          *
          * Can only be called once this \ref FileListBuilder
-         * has been finalized. Reports a NOT_READY error if
+         * has been finalized. Reports a NOT_READY error if 
          * the builder has not been finalized.
-         *
+         * 
          * \param indexIn
          * The index to be tested.
          *
          * \return bool
          * Returns true if the builder has been finalized and the
-         * supplied index refers to a valid file in this file
+         * supplied index refers to a valid file in this file 
          * list, false otherwise.
          */
     bool IsValidFileIndex(__inout int indexIn) const;
 
-    /*!
+    /*! 
          * Determines if a supplied folder index is valid.
          *
          * Can only be called once this \ref FileListBuilder
-         * has been finalized. Reports a NOT_READY error if
+         * has been finalized. Reports a NOT_READY error if 
          * the builder has not been finalized.
-         *
+         * 
          * \param indexIn
          * The index to be tested.
          *
          * \return bool
          * Returns true if the builder has been finalized and the
-         * supplied index refers to a valid folder in this file
+         * supplied index refers to a valid folder in this file 
          * list, false otherwise.
          */
     bool IsValidFolderIndex(__inout int indexIn) const;

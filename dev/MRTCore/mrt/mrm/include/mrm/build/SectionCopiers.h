@@ -17,7 +17,7 @@ namespace Microsoft::Resources::Build
      * @{
      */
 
-/*!
+/*! 
      * The SectionCopier is an \see ISectionBuilder that copies data from
      * an existing file into a new section, possibly remapping section and
      * atom pools in the process.
@@ -25,9 +25,9 @@ namespace Microsoft::Resources::Build
 class SectionCopier : public ISectionBuilder
 {
 protected:
-    const IFileSection* m_pFileSection{ nullptr };
-    RemapInfo* m_pRemap{ nullptr };
-    BaseFile::SectionIndex m_sectionIndex{ DEFFILE_SECTION_INDEX_NONE };
+    const IFileSection* m_pFileSection;
+    RemapInfo* m_pRemap;
+    BaseFile::SectionIndex m_sectionIndex;
 
     SectionCopier();
 
@@ -39,9 +39,9 @@ public:
          * @{
          */
 
-    /*!
+    /*! 
          * Constructs a new section copier for an existing file section.
-         *
+         * 
          * \param pFileSection
          * The \ref IFileSection "file section" to be copied.
          *
@@ -50,7 +50,7 @@ public:
          *
          * \param result
          * Returns the new SectionCopier, or NULL if an error occurs.
-         *
+         * 
          * \return HRESULT
          */
     static HRESULT CreateInstance(_In_ const IFileSection* const pFileSection, _In_ RemapInfo* pRemap, _Outptr_ SectionCopier** result);
@@ -95,11 +95,11 @@ public:
 
     /*!@}*/
 protected:
-    /*!
+    /*! 
          * Applies any appropriate mappings to the section data.  The
-         * base implemenation does no remapping, but derived classes
+         * base implemenation does no remapping, but derived classes 
          * can override this method to provide type-specific remapping
-         * behavior.
+         * behavior.  
          *
          * \param pHeader
          * Pointer to the destination section header.  Derived classes are
@@ -112,7 +112,7 @@ protected:
          *
          * \param cbSectionData
          * Size of the destination section data, in bytes.
-         *
+         * 
          * \return HRESULT
          * Returns S_OK on success, failure if an error occurs.
          */
@@ -123,7 +123,7 @@ protected:
 /*!@}*/
 /*!@}*/
 
-/*!
+/*! 
      * \addtogroup DefBuild
      * @{
      * \addtogroup DefBuild_SectionCopiers
@@ -146,7 +146,7 @@ public:
         _Outptr_ SectionCopier** result);
 };
 
-/*!
+/*! 
      * \addtogroup DefBuild
      * @{
      * \addtogroup DefBuild_SectionCopiers
@@ -157,7 +157,7 @@ public:
 class FileAtomPoolCopier : public SectionCopier
 {
 protected:
-    Atom::PoolIndex m_originalIndex{ DEF_ATOM_NULL_POOL_INDEX };
+    Atom::PoolIndex m_originalIndex;
 
     FileAtomPoolCopier() {}
 
@@ -179,7 +179,7 @@ public:
     virtual ~FileAtomPoolCopier() {}
 
 protected:
-    /*!
+    /*! 
          * Applies pool mappings to the file atom pool.  Remaps the atom pool's
          * own index and the corresponding qualifier.
          *
@@ -194,7 +194,7 @@ protected:
          *
          * \param cbSectionData
          * Size of the destination section data, in bytes.
-         *
+         * 
          * \return HRESULT
          * Returns S_OK on success, failure if an error occurs.
          */

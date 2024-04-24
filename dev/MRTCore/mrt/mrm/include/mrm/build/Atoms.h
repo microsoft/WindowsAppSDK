@@ -22,21 +22,21 @@ private:
         fStringPoolIsOwned = 0x0100
     };
 
-    bool m_finalized{ false };
+    bool m_finalized;
 
-    UINT32 m_flags{ 0 };
-    Atom::HashMethod m_hashMethod{ DEF_HASH_DEFAULT };
+    UINT32 m_flags;
+    Atom::HashMethod m_hashMethod;
 
-    AtomPoolGroup* m_group{ nullptr };
-    Atom::PoolIndex m_poolIndex { DEF_ATOM_POOL_INDEX_NONE };
+    AtomPoolGroup* m_group;
+    Atom::PoolIndex m_poolIndex;
 
-    Atom::AtomCount m_numAtoms{ DEF_ATOM_MAX_COUNT_SMALL };
-    Atom::AtomCount m_sizeAtoms{ DEF_ATOM_MAX_COUNT_SMALL };
-    DEFFILE_ATOMPOOL_HASHINDEX* m_hash { nullptr };
-    UINT32* m_offset{ nullptr };
-    WriteableStringPool* m_pStrings{ nullptr };
-    WCHAR m_description[FileAtomPool::DescriptionLength]{ 0 };
-    BaseFile::SectionIndex m_sectionIndex{ DEFFILE_SECTION_INDEX_NONE };
+    Atom::AtomCount m_numAtoms;
+    Atom::AtomCount m_sizeAtoms;
+    DEFFILE_ATOMPOOL_HASHINDEX* m_hash;
+    UINT32* m_offset;
+    WriteableStringPool* m_pStrings;
+    WCHAR m_description[FileAtomPool::DescriptionLength];
+    BaseFile::SectionIndex m_sectionIndex;
 
 protected:
     static const int DefaultInitialSize = 10;
