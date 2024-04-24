@@ -30,7 +30,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         ActivatedEventArgsBase() = default;
 
         ActivationKind m_kind = ActivationKind::Launch;
-        ApplicationExecutionState m_previousState = ApplicationExecutionState::NotRunning;
+        ApplicationExecutionState m_previousState;
         winrt::Windows::ApplicationModel::Activation::SplashScreen m_splashScreen{ nullptr };
     };
 }
+

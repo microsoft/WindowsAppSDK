@@ -42,10 +42,10 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContextId PackageDependencyContextId();
 
     private:
-        hstring m_packageSetItemId{};
-        hstring m_packageFullName{};
-        hstring m_packageDependencyId{};
-        winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContextId m_packageDependencyContextId{};
+        hstring m_packageSetItemId;
+        hstring m_packageFullName;
+        hstring m_packageDependencyId;
+        winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContextId m_packageDependencyContextId;
     };
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation

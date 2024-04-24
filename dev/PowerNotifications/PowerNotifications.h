@@ -107,21 +107,21 @@ namespace winrt::Microsoft::Windows::System::Power
         {
             std::mutex m_mutex;
             int m_batteryChargePercent{ 100 };
-            int m_oldBatteryChargePercent = 0;
-            DWORD m_cachedDisplayStatus = 0;
-            DWORD m_cachedUserPresenceStatus = 0;
-            DWORD m_cachedSystemAwayModeStatus = 0;
-            DWORD m_cachedPowerSourceKind = 0;
-            EFFECTIVE_POWER_MODE m_cachedPowerMode = EffectivePowerModeBatterySaver;
-            ULONGLONG m_cachedDischargeTime = 0;
+            int m_oldBatteryChargePercent;
+            DWORD m_cachedDisplayStatus;
+            DWORD m_cachedUserPresenceStatus;
+            DWORD m_cachedSystemAwayModeStatus;
+            DWORD m_cachedPowerSourceKind;
+            EFFECTIVE_POWER_MODE m_cachedPowerMode;
+            ULONGLONG m_cachedDischargeTime;
             std::atomic<ULONG> m_powerModeVersion;
-            Power::SystemSuspendStatus m_systemSuspendStatus{ SystemSuspendStatus::Uninitialized };
-            ::EnergySaverStatus m_cachedEnergySaverStatus{ Uninitalized };
+            Power::SystemSuspendStatus m_systemSuspendStatus;
+            ::EnergySaverStatus m_cachedEnergySaverStatus;
             CompositeBatteryStatus m_cachedCompositeBatteryStatus{};
             Power::BatteryStatus m_batteryStatus{ Power::BatteryStatus::NotPresent };
-            Power::BatteryStatus m_oldBatteryStatus{ Power::BatteryStatus::NotPresent };
+            Power::BatteryStatus m_oldBatteryStatus;
             Power::PowerSupplyStatus m_powerSupplyStatus{ Power::PowerSupplyStatus::Adequate };
-            Power::PowerSupplyStatus m_oldPowerSupplyStatus{ Power::PowerSupplyStatus::Adequate };
+            Power::PowerSupplyStatus m_oldPowerSupplyStatus;
 
             EventType m_energySaverStatusChangedEvent;
             EventType m_batteryStatusChangedEvent;

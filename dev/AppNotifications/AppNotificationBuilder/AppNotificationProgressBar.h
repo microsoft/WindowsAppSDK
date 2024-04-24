@@ -48,7 +48,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         BindMode m_statusBindMode;
         winrt::hstring m_status;
         BindMode m_valueBindMode;
-        double m_value{ 0.0 };
+        double m_value;
         BindMode m_valueStringOverrideBindMode;
         winrt::hstring m_valueStringOverride;
     };
