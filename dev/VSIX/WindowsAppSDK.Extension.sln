@@ -84,6 +84,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.Cs.UnitTestAp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinUI.Desktop.CppWinRT.UnitTestApp", "ProjectTemplates\Desktop\CppWinRT\UnitTestApp\WinUI.Desktop.CppWinRT.UnitTestApp.csproj", "{DFA6B905-57A3-4B31-A74B-25BA2243389F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{96699B60-67B5-4186-9FEC-3963ED811FF0}"
+	ProjectSection(SolutionItems) = preProject
+		Shared\WizardImplementation.cs = Shared\WizardImplementation.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

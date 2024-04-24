@@ -14,7 +14,7 @@ using System.Deployment.Internal;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WindowsAppSDK.TemplateUtilities.Cpp
+namespace WindowsAppSDK.TemplateUtilities
 {
 
     public class NuGetPackageInstaller : IWizard
@@ -48,52 +48,61 @@ namespace WindowsAppSDK.TemplateUtilities.Cpp
             ThreadHelper.ThrowIfNotOnUIThread();
             _project = project;
             Guid _projectGuid;
-            Guid.TryParse(project.Kind, out _projectGuid);
-            if (_projectGuid.Equals(SolutionVCProjectGuid))
+            if (project != null)
             {
-                ThreadHelper.JoinableTaskFactory.Run(async () =>
-                {
-                    await InstallNuGetPackagesAsync();
-                });
-            }            
-        }
-        private async Task InstallNuGetPackageAsync(string packageId)
-        {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
-            if (installer == null)
-            {
-                LogError("Could not obtain IVsPackageInstaller service.");
-                return;
-            }
+                Guid.TryParse(project.Kind, out _projectGuid);
 
-            try
-            {
-                installer.InstallPackage(null, _project, packageId, "", false);
+                if (_projectGuid.Equals(SolutionVCProjectGuid))
+                {
+                    ThreadHelper.JoinableTaskFactory.Run(async () =>
+                    {
+                        await InstallNuGetPackagesAsync();
+                    });
+                }
             }
-            catch (Exception ex)
+        }
+        private async Task InstallNuGetPackageAsync(IVsPackageInstaller installer, string packageId)
+        {
+            await Task.Run(() =>
             {
-                LogError($"Error installing package {packageId}: {ex.Message}");
-            }
+                try
+                {
+                    installer.InstallPackage(null, _project, packageId, "", false);
+                    // If there's any CPU-bound work, it will be done on the background thread.
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error installing package {packageId}: {ex.Message}");
+                }
+            });
         }
         // InstallNuGetPackagesAsync iterates over the package list and installs each
         private async Task InstallNuGetPackagesAsync()
         {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
+            if (installer == null)
+            {
+                LogError("Could not obtain IVsPackageInstaller service.");
 
+            }
+            //await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             foreach (var packageId in _nuGetPackages)
             {
                 try
                 {
                     // No version specified; it installs the latest stable version
-                    await InstallNuGetPackageAsync(packageId);
+                    await InstallNuGetPackageAsync(installer, packageId);
                 }
                 catch (Exception ex)
                 {
                     LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
                 }
             }
-        }        
+    
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            SaveAllProjects();
+
+        }
         public void BeforeOpeningFile(ProjectItem _)
         {
         }        
@@ -103,6 +112,22 @@ namespace WindowsAppSDK.TemplateUtilities.Cpp
         public void RunFinished()
         {
 
+        }
+        private void SaveAllProjects()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread("SaveAllProjects must be called on the UI thread.");
+
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE;
+            if (dte != null && dte.Solution != null && dte.Solution.Projects != null)
+            {
+                foreach (Project project in dte.Solution.Projects)
+                {
+                    if (project != null)
+                    {
+                        project.Save();
+                    }
+                }
+            }
         }
         private void OnSolutionRestoreFinished(IReadOnlyList<string> projects)
         {
