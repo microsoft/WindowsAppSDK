@@ -733,7 +733,7 @@ protected:
     HRESULT Init(_In_ AtomPoolGroup* pAtoms);
 
     AtomPoolGroup* m_pAtoms{ nullptr };
-    DynamicArray<const IEnvironment*>* m_pEnvironmentss{ nullptr };
+    DynamicArray<const IEnvironment*>* m_pEnvironments{ nullptr };
 };
 
 class EnvironmentMapping : DefObject
