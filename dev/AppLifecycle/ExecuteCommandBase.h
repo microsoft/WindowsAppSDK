@@ -80,12 +80,12 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
 
     protected:
-        winrt::com_ptr<IUnknown> m_site{ nullptr };
-        winrt::com_ptr<IShellItemArray> m_selection{ nullptr };
-        std::wstring m_directory{ nullptr };
+        winrt::com_ptr<IUnknown> m_site;
+        winrt::com_ptr<IShellItemArray> m_selection;
+        std::wstring m_directory;
         DWORD m_keyState{ 0 };
         BOOL m_noShowUI{ false };
-        std::wstring m_parameters{ nullptr };
+        std::wstring m_parameters;
         POINT m_pos{};
         int m_showWindowState{ 0 };
     };
