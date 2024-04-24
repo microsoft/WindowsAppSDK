@@ -23,7 +23,7 @@ struct ResourceCandidate : ResourceCandidateT<ResourceCandidate>
     void SetQualifierValuesFromContext(Microsoft::Windows::ApplicationModel::Resources::ResourceContext context);
 
 private:
-    hstring m_stringData{};
+    hstring m_stringData;
     com_array<uint8_t> m_blobData;
     ResourceCandidateKind m_kind = ResourceCandidateKind::Unknown;
     winrt::Windows::Foundation::Collections::IMap<hstring, hstring> m_qualifierValueMap = nullptr;

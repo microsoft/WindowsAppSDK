@@ -505,7 +505,7 @@ public:
 class EnvironmentVersionInfo : public IEnvironmentVersionInfo
 {
 protected:
-    MRMFILE_ENVIRONMENT_VERSION_INFO m_version = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    MRMFILE_ENVIRONMENT_VERSION_INFO m_version{};
 
     EnvironmentVersionInfo(_In_opt_ const MRMFILE_ENVIRONMENT_VERSION_INFO* version)
     {
@@ -546,7 +546,7 @@ public:
 class EnvironmentReference : public IEnvironmentVersionInfo
 {
 protected:
-    MRMFILE_ENVIRONMENT_REF m_ref = {0, 0, 0, 0, 0, 0, 0, 0};;
+    MRMFILE_ENVIRONMENT_REF m_ref{};
 
     EnvironmentReference() {}
 
@@ -772,7 +772,7 @@ private:
         _In_reads_bytes_(dataSizeInBytes) const void* rawData,
         _In_ size_t dataSizeInBytes);
 
-    MRMFILE_ENVIRONMENT_VERSION_INFO m_version = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    MRMFILE_ENVIRONMENT_VERSION_INFO m_version{};
     const MRMFILE_ENVIRONMENT_MAPPING_HEADER* m_header = nullptr;
     _Field_size_(m_version.numQualifiers) Atom::SmallIndex* m_qualifierMappings;
     _Field_size_(m_version.numQualifiers) PCWSTR* m_qualifierNames;
