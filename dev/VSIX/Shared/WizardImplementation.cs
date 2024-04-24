@@ -57,14 +57,8 @@ namespace WindowsAppSDK.TemplateUtilities
                 });
             }            
         }
-        private async Task InstallNuGetPackageAsync(string packageId)
+        private async Task InstallNuGetPackageAsync(IVsPackageInstaller installer, string packageId)
         {
-            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
-            if (installer == null)
-            {
-                LogError("Could not obtain IVsPackageInstaller service.");
-                return;
-            }
             await Task.Run(() =>
             {
                 try
@@ -83,20 +77,30 @@ namespace WindowsAppSDK.TemplateUtilities
         // InstallNuGetPackagesAsync iterates over the package list and installs each
         private async Task InstallNuGetPackagesAsync()
         {
+            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
+            if (installer == null)
+            {
+                LogError("Could not obtain IVsPackageInstaller service.");
+
+            }
             //await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             foreach (var packageId in _nuGetPackages)
             {
                 try
                 {
                     // No version specified; it installs the latest stable version
-                    await InstallNuGetPackageAsync(packageId);
+                    await InstallNuGetPackageAsync(installer, packageId);
                 }
                 catch (Exception ex)
                 {
                     LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
                 }
             }
-        }        
+    
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            SaveAllProjects();
+
+        }
         public void BeforeOpeningFile(ProjectItem _)
         {
         }        
@@ -106,6 +110,22 @@ namespace WindowsAppSDK.TemplateUtilities
         public void RunFinished()
         {
 
+        }
+        private void SaveAllProjects()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread("DteUtilities.SaveAllProjects must be called on the UI thread.");
+
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE;
+            if (dte != null && dte.Solution != null && dte.Solution.Projects != null)
+            {
+                foreach (Project project in dte.Solution.Projects)
+                {
+                    if (project != null)
+                    {
+                        project.Save();
+                    }
+                }
+            }
         }
         private void OnSolutionRestoreFinished(IReadOnlyList<string> projects)
         {
