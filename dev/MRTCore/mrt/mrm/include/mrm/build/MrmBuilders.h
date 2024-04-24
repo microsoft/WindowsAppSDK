@@ -791,8 +791,8 @@ public:
 private:
     FileSectionBuildInstanceReference(_In_ FileListBuilder* pBuilder, _In_ FileInfo* pFileInfo);
 
-    FileListBuilder* m_pFileListBuilder;
-    FileInfo* m_pFileInfo;
+    FileListBuilder* m_pFileListBuilder{ nullptr };
+    FileInfo* m_pFileInfo{ nullptr };
 };
 
 class ExternalFileStaticDataInstanceReference : public IBuildInstanceReference
@@ -1229,10 +1229,10 @@ private:
 
     HRESULT Init(int initCapacity);
 
-    int m_nodeCount;
-    int m_currentSize;
-    float m_loadFactor;
-    DynamicArray<OrchestratorHashNode*>* m_entries;
+    int m_nodeCount{ 0 };
+    int m_currentSize{ 0 };
+    float m_loadFactor{ 0.0 };
+    DynamicArray<OrchestratorHashNode*>* m_entries{ nullptr };
 };
 
 class DataItemOrchestrator : public DefObject

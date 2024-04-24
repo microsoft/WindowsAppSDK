@@ -187,10 +187,10 @@ private:
         return S_OK;
     }
 
-    const UnifiedEnvironment* m_Environment;
-    const CoreProfile* m_pProfile;
-    const IResolver* m_pParentResolver;
-    DynamicArray<StringResult*>* m_qualifierCaches;
+    const UnifiedEnvironment* m_Environment{ nullptr };
+    const CoreProfile* m_pProfile{ nullptr };
+    const IResolver* m_pParentResolver{ nullptr };
+    DynamicArray<StringResult*>* m_qualifierCaches{ nullptr };
 };
 
 class ResolverBase::DecisionInfoCache : public DefObject
