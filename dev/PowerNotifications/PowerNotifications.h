@@ -107,13 +107,13 @@ namespace winrt::Microsoft::Windows::System::Power
         {
             std::mutex m_mutex;
             int m_batteryChargePercent{ 100 };
-            int m_oldBatteryChargePercent = 0;
-            DWORD m_cachedDisplayStatus = 0;
-            DWORD m_cachedUserPresenceStatus = 0;
-            DWORD m_cachedSystemAwayModeStatus = 0;
-            DWORD m_cachedPowerSourceKind = 0;
+            int m_oldBatteryChargePercent{ 0 };
+            DWORD m_cachedDisplayStatus{ 0 };
+            DWORD m_cachedUserPresenceStatus{ 0 };
+            DWORD m_cachedSystemAwayModeStatus{ 0 };
+            DWORD m_cachedPowerSourceKind{ 0 };
             EFFECTIVE_POWER_MODE m_cachedPowerMode = EffectivePowerModeBatterySaver;
-            ULONGLONG m_cachedDischargeTime = 0;
+            ULONGLONG m_cachedDischargeTime{ 0 };
             std::atomic<ULONG> m_powerModeVersion;
             Power::SystemSuspendStatus m_systemSuspendStatus{ SystemSuspendStatus::Uninitialized };
             ::EnergySaverStatus m_cachedEnergySaverStatus{ Uninitalized };
