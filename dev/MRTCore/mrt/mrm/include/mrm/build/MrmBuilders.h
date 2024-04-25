@@ -72,7 +72,7 @@ public:
     BaseFile::SectionIndex GetSectionIndex() const { return m_sectionIndex; }
 
 private:
-    MRMFILE_ENVIRONMENT_MAPPING_HEADER m_header;
+    MRMFILE_ENVIRONMENT_MAPPING_HEADER m_header{};
 
     _Field_size_(m_header.numNewQualifiers) PCWSTR* m_names;
 

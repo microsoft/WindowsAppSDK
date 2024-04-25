@@ -184,12 +184,12 @@ extern "C"
      */
     typedef struct _MRMFILE_ENVIRONMENT_MAPPING_HEADER
     {
-        DEF_CHECKSUM baseEnvironmentChecksum = 0;
-        DEF_CHECKSUM currentEnvironmentChecksum = 0;
-        UINT16 currentMinorVersion = 0;
-        UINT16 numNewQualifiers = 0;
-        UINT16 namesPoolSizeInChars = 0;
-        UINT16 pad = 0;
+        DEF_CHECKSUM baseEnvironmentChecksum;
+        DEF_CHECKSUM currentEnvironmentChecksum;
+        UINT16 currentMinorVersion;
+        UINT16 numNewQualifiers;
+        UINT16 namesPoolSizeInChars;
+        UINT16 pad;
     } MRMFILE_ENVIRONMENT_MAPPING_HEADER;
 
     /*!
