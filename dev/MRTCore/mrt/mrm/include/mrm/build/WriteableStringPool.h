@@ -42,7 +42,7 @@ public:
 };
 
 /*!
-     * A simple string pool for sharing like strings at build time. 
+     * A simple string pool for sharing like strings at build time.
      * TSW = Writable string type (e.g. PWSTR)
      * TSC = Constant string type (e.g. PCWSTR)
      * TCH = Character type (e.g. WCHAR)
@@ -51,12 +51,12 @@ template<typename TSW, typename TSC, typename TCH>
 class TWriteableStringPool : public DefObject
 {
 private:
-    UINT32 m_flags;
-    DEFCOMPAREOPTIONS m_comparison;
+    UINT32 m_flags{ 0 };
+    DEFCOMPAREOPTIONS m_comparison{ DefCompare_Default };
 
-    UINT32 m_numChars;
-    UINT m_sizeChars;
-    TCH* m_pChars;
+    UINT32 m_numChars{ 0 };
+    UINT m_sizeChars{ 0 };
+    TCH* m_pChars{ nullptr };
 
 protected:
     typedef PoolStringOps<TSC, TCH> StringOps;
@@ -64,15 +64,15 @@ protected:
 protected:
     TWriteableStringPool() {}
 
-    /*! 
+    /*!
          * Protected constructor for \ref TWriteableStringPool that initializes
          * the string pool to use a supplied, static buffer.
-         * 
+         *
          * \param comparison
          * Specifies the rules used to compare and unify strings.
          *
          * \param pBuffer
-         * The buffer into which the string pool will be generated. 
+         * The buffer into which the string pool will be generated.
          *
          * \param cchPool
          * The size of the string pool supplied by \ref pBuffer, in characters.
@@ -93,10 +93,10 @@ protected:
         return S_OK;
     }
 
-    /*! 
+    /*!
          * Protected constructor for \ref TWriteableStringPool that allocates
          * a resizable buffer with a supplied initial size.
-         * 
+         *
          * \param comparison
          * Specifies the rules used to compare and unify strings.
          *
@@ -123,13 +123,13 @@ protected:
         return S_OK;
     }
 
-    /*! 
+    /*!
          * Extends the string pool at least enough to accomodate a string
          * of a specified length.
-         * 
+         *
          * \param cchNeeded
          * Specifies the amount of space needed, in characters.
-         * 
+         *
          * \return HRESULT
          * Returns S_OK on success, failure if an error occurs.
          */
@@ -181,16 +181,16 @@ public:
         return S_OK;
     }
 
-    /*! 
+    /*!
          * Protected constructor for \ref TWriteableStringPool that allocates
          * a resizable buffer with a supplied initial size.
-         * 
+         *
          * \param comparison
          * Specifies the rules used to compare and unify strings.
          *
          * \param cchInitial
          * Specifies the initial size of the buffer, in characters.
-         * 
+         *
          * \param result
          * Returns a new instance
          */
@@ -223,21 +223,21 @@ public:
 
     /*!@}*/
 
-    /*! 
+    /*!
          * Gets the number of characters currently in use in the string pool.
          * \return UINT32
          * The number of characters in use in the string pool.
          */
     UINT32 GetNumCharsInPool() const { return m_numChars; }
 
-    /*! 
+    /*!
          * Gets the offset of a specified string in the string pool.  If the string
-         * is not already present, adds the string and returns the offset of the 
+         * is not already present, adds the string and returns the offset of the
          * new string.
-         * 
+         *
          * \param pString
          * The string to be added.
-         * 
+         *
          * \return UINT32
          * Returns the offset of the string that matches \ref pString
          * in the string pool, or -1 if an error occurs.
@@ -274,22 +274,22 @@ public:
         return offset;
     }
 
-    /*! 
+    /*!
          * Reports whether the string pool uses case-insensitive comparison.
-         * 
+         *
          * \return bool
-         * Returns true if the string pool uses case-insensitive comparison, 
+         * Returns true if the string pool uses case-insensitive comparison,
          * false otherwise.
          */
     bool GetIsCaseInsensitive() const { return ((m_comparison & fCompareCaseInsensitive) != 0); }
 
-    /*! 
+    /*!
          * Gets the offset of a specified string in the string pool, reporting an error
          * if no matching string is found.
-         * 
+         *
          * \param pString
          * The string to be retrieved.
-         * 
+         *
          * \return int
          * Returns the offset of the matching string in the string pool, or
          * -1 if an error occurs or if no matching string is found.
@@ -305,17 +305,17 @@ public:
         return offset;
     }
 
-    /*! 
+    /*!
          * Tries to get the offset of a specified string in the string pool.  Does
          * not report an error if no matching string is found.
-         * 
+         *
          * \param pString
          * The string to be retrieved.
          *
          * \param pOffsetOut
          * Returns the offset of a matching string in the string pool, or -1 if
          * no matching string is found.
-         * 
+         *
          * \return bool
          * Returns true if a matching string is found, false if an error occurs or
          * if no matching string is found.
@@ -370,7 +370,7 @@ public:
         return &m_pChars[offset];
     }
 
-    /*! 
+    /*!
          * Gets the string at a specified offset in the string pool.
          * Reports an error if the offset is out of range.
          *
@@ -380,7 +380,7 @@ public:
          * \param pStringOut
          * A _ref StringResult in which the requested string is
          * returned.
-         * 
+         *
          * \return HRESULT
          * Returns S_OK on success, failure if an error occurs.
          */
@@ -396,11 +396,11 @@ public:
         return S_OK;
     }
 
-    /*! 
+    /*!
          * Determines if a supplied string matches a specified
-         * location in the string pool, using the comparison 
+         * location in the string pool, using the comparison
          * rules in effect for this pool.
-         * 
+         *
          * \param offset
          * The offset in the string buffer to be compared.
          *
@@ -426,9 +426,9 @@ public:
         return StringOps::StringsMatch(&m_pChars[offset], pString, m_comparison);
     }
 
-    /*! 
+    /*!
          * Returns a read-only pointer to the buffer used by the string pool.
-         * 
+         *
          * \return PCWSTR
          * The buffer used by the string pool.
          */
@@ -440,16 +440,16 @@ class WriteableStringPool : public TWriteableStringPool<PWSTR, PCWSTR, WCHAR>
 public:
     static HRESULT CreateInstance(_Outptr_ WriteableStringPool** result) { return CreateInstance(DefaultInitialSize, false, result); }
 
-    /*! 
+    /*!
          * Creates a resizable \ref WriteableStringPool with the default size and
          * the specified comparison method.
-         * 
+         *
          * \param comparison
          * Specifies the comparison method to be used.
-         * 
+         *
          * \param result
          * Returns a pointer to the new pool, or NULL if an error occurs.
-         * 
+         *
          * \return HRESULT
          */
     static HRESULT CreateInstance(_In_ UINT32 comparison, _Outptr_ WriteableStringPool** result)
@@ -457,19 +457,19 @@ public:
         return CreateInstance(DefaultInitialSize, comparison, result);
     }
 
-    /*! 
+    /*!
          * Creates a resizable \ref WriteableStringPool with the specified size and
-         * the comparison method.         
-         * 
+         * the comparison method.
+         *
          * \param cchInitial
          * Specifies the initial size for the buffer, in characters.
          *
          * \param comparison
          * Specifies the comparison method to be used.
-         * 
+         *
          * \param result
          * Returns a pointer to the new pool, or NULL if an error occurs.
-         * 
+         *
          * \return HRESULT
          */
     static HRESULT CreateInstance(_In_ UINT32 cchInitial, _In_ UINT32 comparison, _Outptr_ WriteableStringPool** result)
@@ -482,10 +482,10 @@ public:
         return S_OK;
     }
 
-    /*! 
+    /*!
          * Creates a static \ref WriteableStringPool using a supplied static
          * buffer and the default comparison method.
-         * 
+         *
          * \param pBuffer
          * The static buffer into which strings will be generated
          *
@@ -494,7 +494,7 @@ public:
          *
          * \param result
          * Returns a pointer to the new pool, or NULL if an error occurs.
-         * 
+         *
          * \return HRESULT
          */
     static HRESULT CreateInstance(_In_reads_(cchBuffer) WCHAR* pBuffer, _In_ UINT32 cchBuffer, _Outptr_ WriteableStringPool** result)
@@ -502,10 +502,10 @@ public:
         return CreateInstance(pBuffer, cchBuffer, fCompareDefault, result);
     }
 
-    /*! 
+    /*!
          * Creates a static \ref WriteableStringPool using a supplied static
          * buffer and specified comparison method.
-         * 
+         *
          * \param pBuffer
          * The static buffer into which strings will be generated
          *
@@ -514,10 +514,10 @@ public:
          *
          * \param comparison
          * Specifies the comparison method to be used.
-         * 
+         *
          * \param result
          * Returns a pointer to the new pool, or NULL if an error occurs.
-         * 
+         *
          * \return HRESULT
          */
     static HRESULT CreateInstance(

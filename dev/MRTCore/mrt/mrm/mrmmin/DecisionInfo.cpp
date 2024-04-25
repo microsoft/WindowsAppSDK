@@ -134,16 +134,16 @@ public:
     const IDecisionInfo* GetPool() const { return m_pDecisionInfo; }
 
 private:
-    const RemapAtomPool* m_pQualifierMapping;
-    const DecisionInfoFileSection* m_pDecisionInfo;
+    const RemapAtomPool* m_pQualifierMapping{ nullptr };
+    const DecisionInfoFileSection* m_pDecisionInfo{ nullptr };
 
-    const MRMFILE_DECISION_INFO_HEADER* m_pHeader;
-    _Field_size_(m_pHeader->numDecisions) const MRMFILE_DECISION* m_pDecisions;
-    _Field_size_(m_pHeader->numQualifierSets) const MRMFILE_QUALIFIER_SET* m_pQualifierSets;
-    _Field_size_(m_pHeader->numQualifiers) const MRMFILE_QUALIFIER* m_pQualifiers;
-    _Field_size_(m_pHeader->numBaseQualifiers) const MRMFILE_BASE_QUALIFIER* m_pBaseQualifiers;
-    _Field_size_(m_pHeader->numReferences) const UINT16* m_pReferences;
-    _Field_size_(m_pHeader->cchLiterals) PCWSTR m_pLiterals;
+    const MRMFILE_DECISION_INFO_HEADER* m_pHeader{ nullptr };
+    _Field_size_(m_pHeader->numDecisions) const MRMFILE_DECISION* m_pDecisions{ nullptr };
+    _Field_size_(m_pHeader->numQualifierSets) const MRMFILE_QUALIFIER_SET* m_pQualifierSets{ nullptr };
+    _Field_size_(m_pHeader->numQualifiers) const MRMFILE_QUALIFIER* m_pQualifiers{ nullptr };
+    _Field_size_(m_pHeader->numBaseQualifiers) const MRMFILE_BASE_QUALIFIER* m_pBaseQualifiers{ nullptr };
+    _Field_size_(m_pHeader->numReferences) const UINT16* m_pReferences{ nullptr };
+    _Field_size_(m_pHeader->cchLiterals) PCWSTR m_pLiterals{ nullptr };
 
     DecisionInfoFileData() :
         m_pHeader(nullptr),

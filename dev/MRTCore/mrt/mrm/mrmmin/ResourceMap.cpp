@@ -463,7 +463,7 @@ protected:
     const IDecisionInfo* m_pDecisionInfo;
 
     mutable StringResult m_packageRootPath;
-    mutable size_t m_cchPackageRootPath;
+    mutable size_t m_cchPackageRootPath{ 0 };
 
     mutable const IDecisionInfo* m_pOverrideDecisionInfo;
     mutable RemapUInt16* m_pOverrideDecisionMap;
@@ -472,7 +472,7 @@ protected:
     mutable const IResourceLinks* m_links;
 
     _Field_size_(1) const MRMFILE_RESOURCE_MAP_HEADER* m_pHeader;
-    _Field_size_(m_pHeader->cbSchemaRef) const BYTE* m_pSchemaRefData;
+    _Field_size_(m_pHeader->cbSchemaRef) const BYTE* m_pSchemaRefData{ nullptr };
     _Field_size_(m_pHeader->cbEnvironmentRefs) const BYTE* m_pEnvironmentRefData;
     _Field_size_(m_pHeader->numEnvironmentRefs) const MRMFILE_ENVIRONMENT_REF* m_pFileEnvironmentRefs;
     _Field_size_(m_pHeader->numResourceValueTypes) const DEF_ATOM* m_pResourceValueTypes;

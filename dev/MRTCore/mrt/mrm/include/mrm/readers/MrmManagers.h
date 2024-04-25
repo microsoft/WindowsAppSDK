@@ -536,7 +536,7 @@ private:
         ManagedFile* pFile;
     } FileManagerFileInfo;
 
-    UINT32 m_defaultFileFlags;
+    UINT32 m_defaultFileFlags = 0;
     mutable DynamicArray<FileManagerFileInfo>* m_pFiles;
     mutable MrmFileResolver* m_pFileResolver;
 
@@ -664,9 +664,9 @@ public:
 private:
     ManagedSchema(_In_ const ManagedFile* pInitialFile, _In_ const IHierarchicalSchema* pInitialMap);
 
-    UINT64 m_generation;
-    const IHierarchicalSchema* m_pCurrentSchema;
-    const ManagedFile* m_pCurrentFile;
+    UINT64 m_generation{ 0 };
+    const IHierarchicalSchema* m_pCurrentSchema{ nullptr };
+    const ManagedFile* m_pCurrentFile{ nullptr };
 
     typedef struct _SchemaPerFileInfo
     {
@@ -740,6 +740,7 @@ private:
     ManagedResourceMap() :
         m_generation(0),
         m_pCurrentMap(nullptr),
+        m_pCurrentFile(nullptr),
         m_pSchema(nullptr),
         m_pDecisions(nullptr),
         m_pUnifiedResourceView(nullptr),
@@ -906,20 +907,20 @@ public:
     bool TryGetReverseFileMap(_Outptr_opt_ const ReverseFileMap** ppMapOut) const;
 
 protected:
-    CoreProfile* m_pProfile;
+    CoreProfile* m_pProfile{ nullptr };
 
-    PriFileManager* m_pFileManager;
-    AtomPoolGroup* m_pAtoms;
-    UnifiedEnvironment* m_pEnvironment;
-    UnifiedDecisionInfo* m_pDecisions;
-    ProviderResolver* m_pResolver;
+    PriFileManager* m_pFileManager{ nullptr };
+    AtomPoolGroup* m_pAtoms{ nullptr };
+    UnifiedEnvironment* m_pEnvironment{ nullptr };
+    UnifiedDecisionInfo* m_pDecisions{ nullptr };
+    ProviderResolver* m_pResolver{ nullptr };
 
-    DynamicArray<UnifiedViewFileInfo*>* m_pReferencedFiles;
+    DynamicArray<UnifiedViewFileInfo*>* m_pReferencedFiles{ nullptr };
 
-    DynamicArray<ManagedSchema*>* m_pSchemas;
-    DynamicArray<ManagedResourceMap*>* m_pMaps;
+    DynamicArray<ManagedSchema*>* m_pSchemas{ nullptr };
+    DynamicArray<ManagedResourceMap*>* m_pMaps{ nullptr };
 
-    UnifiedViewFileInfo* m_pAppFile;
+    UnifiedViewFileInfo* m_pAppFile{ nullptr };
 
     UnifiedResourceView(_In_ CoreProfile* pProfile);
 
@@ -1042,14 +1043,14 @@ protected:
 
     class DecisionInfoCache;
 
-    const UnifiedEnvironment* m_pEnvironment;
-    const IDecisionInfo* m_pDecisions;
-    UINT64 m_generation;
+    const UnifiedEnvironment* m_pEnvironment{ nullptr };
+    const IDecisionInfo* m_pDecisions{ nullptr };
+    UINT64 m_generation = 0;
 
-    mutable DecisionInfoCache* m_pCache;
-    mutable SRWLOCK m_srwLock;
-    mutable SRWLOCK m_srwQualifierSetLock;
-    mutable SRWLOCK m_srwQualifierLock;
+    mutable DecisionInfoCache* m_pCache{ nullptr };
+    mutable SRWLOCK m_srwLock{ nullptr };
+    mutable SRWLOCK m_srwQualifierSetLock{ nullptr };
+    mutable SRWLOCK m_srwQualifierLock{ nullptr };
 };
 
 class ProviderResolver : public ResolverBase
@@ -1092,8 +1093,8 @@ protected:
 
     class PerQualifierPoolInfo;
 
-    mutable IProviderDataSources* m_pDataSources;
-    mutable PerQualifierPoolInfo* m_pQualifiers;
+    mutable IProviderDataSources* m_pDataSources{ nullptr };
+    mutable PerQualifierPoolInfo* m_pQualifiers{ nullptr };
 };
 
 class PerThreadQualifier;
@@ -1162,13 +1163,13 @@ public:
 protected:
     class PerQualifierPoolInfo;
 
-    const IResolver* m_pParent;
-    mutable PerQualifierPoolInfo* m_pQualifiers;
-    bool m_bHasScoreCache;
-    bool m_bIsDifferentQualifierValueFromParent;
-    PerThreadQualifier* m_pPerThreadQualifier;
-    bool m_bClonedResolver;
-    mutable SRWLOCK m_srwQualifierValuesLock;
+    const IResolver* m_pParent{ nullptr };
+    mutable PerQualifierPoolInfo* m_pQualifiers{ nullptr };
+    bool m_bHasScoreCache{ false };
+    bool m_bIsDifferentQualifierValueFromParent{ false };
+    PerThreadQualifier* m_pPerThreadQualifier{ nullptr };
+    bool m_bClonedResolver{ false };
+    mutable SRWLOCK m_srwQualifierValuesLock{ nullptr };
 
     OverrideResolver(_In_ const IResolver* pParent);
 

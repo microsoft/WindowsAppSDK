@@ -54,7 +54,7 @@ private:
 
     CallBackCompareFunc m_pFnComparer;
     CallbackHashFunc m_pFnHash;
-    bool m_fSorted;
+    bool m_fSorted{ false };
 
     HASH_KEY* m_pHashTable;
 
