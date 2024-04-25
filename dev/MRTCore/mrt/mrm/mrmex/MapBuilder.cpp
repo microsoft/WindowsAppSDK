@@ -95,6 +95,7 @@ public:
         return S_OK;
     }
 
+    _Success_(return)
     bool TryFindCandidateForQualifierSet(_In_ int qualifierSetIndex, _Out_ const BUILDER_CANDIDATE** ppCandidateOut) const
     {
         if (m_pCandidates != NULL)
@@ -423,6 +424,7 @@ public:
         return S_OK;
     }
 
+    _Success_(return)
     HRESULT
     InitDataLocator(_In_ DataBlobBuilder* pDataBuilder, _In_ PCWSTR pString, _In_ int typeIndex, _Out_ MRMFILE_MAP_VALUE_LARGE* pValueOut)
     {
@@ -1006,6 +1008,7 @@ int ResourceMapSectionBuilder::GetTotalNumFinalizedValues() const
     return -1;
 }
 
+_Success_(return)
 bool ResourceMapSectionBuilder::TryGetResourceInfo(
     _In_ int indexInSchema,
     __inout_opt StringResult* pNameOut,
@@ -1040,10 +1043,15 @@ bool ResourceMapSectionBuilder::TryGetResourceInfo(
     return true;
 }
 
+_Success_(return)
 bool ResourceMapSectionBuilder::TryGetResourceInfo(_In_ PCWSTR pResourceName, _Out_opt_ int* pIndexOut, _Out_opt_ int* pNumCandidatesOut)
     const
 {
     int index = -1;
+    if (pIndexOut != NULL)
+    {
+        *pIndexOut = index;
+    }
 
     if (!m_pSchema->ContainsItem(pResourceName, &index))
     {
@@ -1063,6 +1071,7 @@ bool ResourceMapSectionBuilder::TryGetResourceInfo(_In_ PCWSTR pResourceName, _O
     return true;
 }
 
+_Success_(return)
 bool ResourceMapSectionBuilder::TryGetCandidateInfo(
     _In_ int itemIndex,
     _In_ int candidateIndex,
@@ -1142,6 +1151,7 @@ bool ResourceMapSectionBuilder::TryGetCandidateInfo(
     return true;
 }
 
+_Success_(return)
 bool ResourceMapSectionBuilder::TryGetCandidateInfo(
     _In_ PCWSTR pItemName,
     _In_ int candidateIndex,
@@ -1151,7 +1161,6 @@ bool ResourceMapSectionBuilder::TryGetCandidateInfo(
     _Out_opt_ int* pItemIndexOut) const
 {
     int itemIndex = -1;
-
     if (!m_pSchema->ContainsItem(pItemName, &itemIndex))
     {
         return false;
