@@ -840,7 +840,8 @@ void FindDDLMViaEnumeration(
     std::wstring& ddlmPackageFullName)
 {
     // Find the best fit
-    PACKAGE_VERSION bestFitVersion{0}; //setting everything to 0
+    bool foundAny{};
+    PACKAGE_VERSION bestFitVersion{};
     winrt::hstring bestFitPackageFamilyName{};
     winrt::hstring bestFitPackageFullName{};
 
@@ -894,6 +895,7 @@ void FindDDLMViaEnumeration(
     winrt::hstring currentUser;
     const auto c_packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Main };
     auto packages{ packageManager.FindPackagesForUserWithPackageTypes(currentUser, c_packageTypes) };
+    (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_SCAN_FOR_DDLM, "Bootstrap.Intitialize: Scanning packages for %ls", criteria.get());
     int packagesScanned{};
     for (auto package : packages)
     {
@@ -980,6 +982,9 @@ void FindDDLMViaEnumeration(
         version.Revision = packageVersion.Revision;
         if (version.Version < minVersion.Version)
         {
+            (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_NO_MATCH,
+                             "Bootstrap.Intitialize: %ls not applicable. Version doesn't match MinVersion criteria (%ls)",
+                             packageFullName.c_str(), criteria.get());
             continue;
         }
 
@@ -988,28 +993,41 @@ void FindDDLMViaEnumeration(
         const auto currentArchitecture{ AppModel::Identity::GetCurrentArchitecture() };
         if (architecture != currentArchitecture)
         {
+            (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_NO_MATCH,
+                             "Bootstrap.Intitialize: %ls not applicable. Architecture doesn't match current architecture %ls (%ls)",
+                             packageFullName.c_str(), ::AppModel::Identity::GetCurrentArchitectureAsString(), criteria.get());
+            continue;
+        }
+
+        // Do we have a package under consideration?
+        if (!foundAny)
+        {
+            (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_MATCH,
+                             "Bootstrap.Intitialize: %ls is applicable (%ls)",
+                             packageFullName.c_str(), criteria.get());
+            bestFitVersion = version;
+            bestFitPackageFamilyName = packageId.FamilyName();
+            bestFitPackageFullName = packageId.FullName();
+            foundAny = true;
             continue;
         }
 
         // Do we already have a higher version under consideration?
-        // this works for both cases :
-        // 1. find the first package which matches the criteria (because we initiailizue bestfit with 0 version)
-        // 2. find a better match than previously matched best fit
         if (bestFitVersion.Version < version.Version)
         {
+            (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_MATCH,
+                             "Bootstrap.Intitialize: %ls is more applicable (%ls)",
+                             packageFullName.c_str(), criteria.get());
             bestFitVersion = version;
             bestFitPackageFamilyName = packageId.FamilyName();
             bestFitPackageFullName = packageId.FullName();
             continue;
         }
     }
-    // if bestFitVersion is 0, the value we initialized it with,  then we didn't find a suitable candidate
-    THROW_HR_IF_MSG(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, bestFitVersion.Version == 0, "No suitable version matching criteria is found. Criteria: %ls", criteria.get());
-    {
-        wchar_t printmsg[128];
-        Common::Logging::DebugLog(std::format(L"Bootstrap.Intitialize: {} best matches the criteria ({}) of {} packages scanned",
-                                        bestFitPackageFullName.c_str(), criteria.get(), packagesScanned));
-    }
+    THROW_HR_IF_MSG(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, !foundAny, "Enumeration: %ls", criteria.get());
+    (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_FOUND,
+                     "Bootstrap.Intitialize: %ls best matches the criteria (%ls) of %d packages scanned",
+                     bestFitPackageFullName.c_str(), criteria.get(), packagesScanned);
     ddlmPackageFamilyName = bestFitPackageFamilyName.c_str();
     ddlmPackageFullName = bestFitPackageFullName.c_str();
 }

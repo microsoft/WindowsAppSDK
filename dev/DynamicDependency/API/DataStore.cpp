@@ -2,11 +2,12 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
+
 #include "DataStore.h"
-#include "Logging.h"
 
 #include "DynamicDependencyDataStore_h.h"
 #include "winrt_WindowsAppRuntime.h"
+
 #include <wil/winrt.h>
 
 #include <shlobj.h>

@@ -6,7 +6,8 @@
 #include <winrt/Microsoft.Windows.ApplicationModel.DynamicDependency.h>
 
 #include "PackageDeploymentResolver.h"
-#include "logging.h"
+
+#include "MsixPackageManager.h"
 
 namespace Microsoft::Windows::ApplicationModel::PackageDeploymentResolver
 {
@@ -161,7 +162,7 @@ bool Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::FindAny(
     winrt::hstring packageFullName{ Find(packageManager, packageFamilyName, minVersion, processorArchitectureFilter, true) };
     return !packageFullName.empty();
 }
-//TODO : this looks to be very similar to MddBootstrap.cpp FindDDLMViaEnumeration(). Good candidate for refactoring.
+
 winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::Find(
     const winrt::Windows::Management::Deployment::PackageManager& packageManager,
     const winrt::hstring& packageFamilyName,
@@ -184,7 +185,9 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
                                                                  minVersion.Major, minVersion.Minor,
                                                                  minVersion.Build, minVersion.Revision,
                                                                  static_cast<std::uint32_t>(processorArchitectureFilter)) };
-    Common::Logging::DebugLog(std::format(L"PackageDeploymentResolver: Scanning packages ({})", criteria.get()));
+    (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN,
+                     "PackageDeploymentResolver: Scanning packages (%ls)",
+                     criteria.get());
     if (packages)
     {
         for (const winrt::Windows::ApplicationModel::Package& candidate : packages)
@@ -201,6 +204,9 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
             auto candidateFullName{ packageId.FullName() };
             if (candidateVersion < minVersion)
             {
+                (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_NOT_MATCH,
+                                 "PackageDeploymentResolver: %ls not applicable. Version doesn't match MinVersion criteria (%ls)",
+                                 candidateFullName.c_str(), criteria.get());
                 continue;
             }
 
@@ -220,7 +226,10 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
                 const auto supportedArchitectures{ GetSystemSupportedArchitectures(nativeMachine) };
                 if (!IsArchitectureInArchitectures(candidateArchitecture, supportedArchitectures))
                 {
-                    // package arch didn't match anything from system supported architectures
+                    (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_NOT_MATCH,
+                                     "PackageDeploymentResolver: %ls not applicable. Architecture (%ls) doesn't match system supported architectures (0x%X %ls)",
+                                     candidateFullName.c_str(), ::AppModel::Identity::GetArchitectureAsString(candidateArchitecture),
+                                     static_cast<std::uint32_t>(supportedArchitectures), GetSystemSupportedArchitecturesAsString(nativeMachine));
                     continue;
                 }
             }
@@ -228,7 +237,10 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
             {
                 if (!IsArchitectureInArchitectures(candidateArchitecture, processorArchitectureFilter))
                 {
-                    // package arch doesn't match from specified arch list
+                    (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_NOT_MATCH,
+                                     "PackageDeploymentResolver: %ls not applicable. Architecture (%ls) doesn't match specified architectures (0x%X)",
+                                     candidateFullName.c_str(), ::AppModel::Identity::GetArchitectureAsString(candidateArchitecture),
+                                     static_cast<std::uint32_t>(processorArchitectureFilter));
                     continue;
                 }
             }
@@ -238,16 +250,18 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
             auto status{ candidate.Status() };
             if (!status.VerifyIsOK())
             {
-                Common::Logging::DebugLog(std::format(L"PackageDeploymentResolver: {} not applicable. Status not OK ({})",
-                                                        candidateFullName.c_str(), criteria.get()));
+                (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_NOT_MATCH,
+                                 "PackageDeploymentResolver: %ls not applicable. Status not OK (%ls)",
+                                 candidateFullName.c_str(), criteria.get());
                 continue;
             }
 
             // Are we looking for any match?
             if (stopOnFirstMatch)
             {
-                Common::Logging::DebugLog(std::format(L"PackageDeploymentResolver: Stopping on 1st match {} ({})",
-                                 candidateFullName.c_str(), criteria.get()));
+                (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED,
+                                 "PackageDeploymentResolver: Stopping on 1st match %ls (%ls)",
+                                 candidateFullName.c_str(), criteria.get());
                 return candidateFullName;
             }
 
@@ -260,13 +274,15 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
     // Did we find what we're looking for?
     if (bestFitPackageFullName.empty())
     {
-        Common::Logging::DebugLog(std::format(L"PackageDeploymentResolver: No match ({})",
-                         criteria.get()));
+        (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED,
+                         "PackageDeploymentResolver: No match (%ls)",
+                         criteria.get());
     }
     else
     {
-        Common::Logging::DebugLog(std::format(L"PackageDeploymentResolver: {} is applicable ({})",
-                         bestFitPackageFullName.c_str(), criteria.get()));
+        (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_MATCH,
+                         "PackageDeploymentResolver: %ls is applicable (%ls)",
+                         bestFitPackageFullName.c_str(), criteria.get());
     }
     return bestFitPackageFullName;
 }
