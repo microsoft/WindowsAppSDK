@@ -786,7 +786,10 @@ public:
         int index = -1;
         if (m_pBuilder->Contains(pString, &index))
         {
-            *pIndexOut = static_cast<Atom::Index>(index);
+            if (pIndexOut != nullptr)
+            {
+                *pIndexOut = static_cast<Atom::Index>(index);
+            }
             return true;
         }
         return false;
