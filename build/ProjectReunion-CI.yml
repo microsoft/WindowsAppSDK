@@ -101,11 +101,9 @@ jobs:
       SourceFolder: '$(build.SourcesDirectory)\packages'
       TargetFolder: '$(build.SourcesDirectory)\BuildOutput\packages'
 
-  - task: PublishBuildArtifacts@1
+  - publish: $(build.SourcesDirectory)\BuildOutput
     displayName: 'Publish artifact: Full Nuget'
-    inputs:
-      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
-      artifactName: 'FoundationBinaries_$(buildConfiguration)_$(buildPlatform)'
+    artifact: 'FoundationBinaries_$(buildConfiguration)_$(buildPlatform)'
 
 - job: BuildBinaries_release_anycpu
   pool:
@@ -123,11 +121,9 @@ jobs:
       filePath: 'BuildAll.ps1'
       arguments: -AzureBuildStep "BuildAnyCPU"
 
-  - task: PublishBuildArtifacts@1
+  - publish: $(build.SourcesDirectory)\BuildOutput
     displayName: 'Publish artifact: Full Nuget'
-    inputs:
-      PathtoPublish: '$(build.SourcesDirectory)\BuildOutput'
-      artifactName: 'FoundationBinaries_Release_AnyCPU'
+    artifact: 'FoundationBinaries_Release_AnyCPU'
 
 - job: BuildMRT
   pool:
