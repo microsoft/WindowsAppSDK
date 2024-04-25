@@ -779,6 +779,10 @@ public:
 
     bool TryGetIndex(__in PCWSTR pString, __out_opt Atom::Index* pIndexOut) const
     {
+        if (pIndexOut != nullptr)
+        {
+            *pIndexOut = static_cast<Atom::Index>(DEF_ATOM_INDEX_NONE);
+        }
         int index = -1;
         if (m_pBuilder->Contains(pString, &index))
         {
@@ -817,6 +821,10 @@ public:
 
     bool TryGetIndex(__in PCWSTR pString, __out_opt Atom::Index* pIndexOut) const
     {
+        if (pIndexOut != nullptr)
+        {
+            *pIndexOut = static_cast<Atom::Index>(DEF_ATOM_INDEX_NONE);
+        }
         int index = -1;
         if (m_pBuilder->Contains(pString, nullptr, &index))
         {
@@ -1393,9 +1401,9 @@ HRESULT HierarchicalNamesBuilder::BuildNameNode(
     return S_OK;
 }
 
-/*! 
+/*!
  * Serializes the file list into the provided buffer.
- * 
+ *
  * \param pBuffer
  * The buffer into which the file list is generated.
  *
