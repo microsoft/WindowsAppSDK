@@ -30,8 +30,8 @@ private:
     AtomPoolGroup* m_group{ nullptr };
     Atom::PoolIndex m_poolIndex { DEF_ATOM_POOL_INDEX_NONE };
 
-    Atom::AtomCount m_numAtoms{ DEF_ATOM_MAX_COUNT_SMALL };
-    Atom::AtomCount m_sizeAtoms{ DEF_ATOM_MAX_COUNT_SMALL };
+    Atom::AtomCount m_numAtoms{ 0 };
+    Atom::AtomCount m_sizeAtoms{ 0 };
     DEFFILE_ATOMPOOL_HASHINDEX* m_hash { nullptr };
     UINT32* m_offset{ nullptr };
     WriteableStringPool* m_pStrings{ nullptr };
