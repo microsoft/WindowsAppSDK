@@ -289,6 +289,7 @@ bool ScopeInfo::TryGetChild(_In_ const HierarchicalNameSegment* pName, _Outptr_o
     return false;
 }
 
+_Success_(return == true)
 bool ScopeInfo::TryGetDescendent(_In_ PCWSTR pFullName, _Outptr_opt_result_maybenull_ HNamesNode** ppChildOut) const
 {
     if (DefString_IsEmpty(pFullName))
@@ -777,19 +778,13 @@ public:
         return S_OK;
     }
 
+    _Success_(return == true)
     bool TryGetIndex(__in PCWSTR pString, __out_opt Atom::Index* pIndexOut) const
     {
-        if (pIndexOut != nullptr)
-        {
-            *pIndexOut = static_cast<Atom::Index>(DEF_ATOM_INDEX_NONE);
-        }
         int index = -1;
         if (m_pBuilder->Contains(pString, &index))
         {
-            if (pIndexOut != nullptr)
-            {
-                *pIndexOut = static_cast<Atom::Index>(index);
-            }
+            *pIndexOut = static_cast<Atom::Index>(index);
             return true;
         }
         return false;
@@ -822,12 +817,9 @@ public:
         return S_OK;
     }
 
+    _Success_(return == true)
     bool TryGetIndex(__in PCWSTR pString, __out_opt Atom::Index* pIndexOut) const
     {
-        if (pIndexOut != nullptr)
-        {
-            *pIndexOut = static_cast<Atom::Index>(DEF_ATOM_INDEX_NONE);
-        }
         int index = -1;
         if (m_pBuilder->Contains(pString, nullptr, &index))
         {

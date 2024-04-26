@@ -83,6 +83,7 @@ public:
         return S_OK;
     }
 
+    _Success_(return == true)
     bool TryGet(_In_ UINT ind, _Out_ T* pValueOut) const
     {
         _Analysis_assume_(m_szData >= m_nData);
