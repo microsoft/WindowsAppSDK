@@ -72,7 +72,7 @@ steps:
 
 - ${{ if eq(parameters.runStaticAnalysis, 'True') }}:
   - task: SDLNativeRules@3
-    displayName: Run PREfast SDL Native Rules 
+    displayName: Run PREfast SDL Native Rules
     condition: and(succeeded(), eq(variables['buildConfiguration'], 'Release'), eq(variables['buildPlatform'], 'x64'))
     inputs:
       setupCommandlines: '"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat"'
@@ -92,6 +92,7 @@ steps:
       contents: |
         **
         !**\*test*\**
+        !**\*packages*\**
         !**\*Demoapp*\**
         !**\*Demopackage\**
         !**\*.json

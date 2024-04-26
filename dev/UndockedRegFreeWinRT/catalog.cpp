@@ -32,8 +32,8 @@ struct component
     wstring module_name;
     wstring xmlns;
     HMODULE handle = nullptr;
-    activation_factory_type get_activation_factory;
-    ABI::Windows::Foundation::ThreadingType threading_model;
+    activation_factory_type get_activation_factory{};
+    ABI::Windows::Foundation::ThreadingType threading_model{ ABI::Windows::Foundation::ThreadingType::ThreadingType_BOTH };
 
     ~component()
     {

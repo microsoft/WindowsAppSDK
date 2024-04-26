@@ -185,12 +185,12 @@ public:
 class FileInfo : public DefObject
 {
 protected:
-    PWSTR m_pName;
-    FolderInfo* m_pParentFolder;
-    int m_index;
-    FileInfoPrivateData* m_pPrivates;
-    UINT16 m_flags;
-    bool m_nameIsAscii;
+    PWSTR m_pName{ nullptr };
+    FolderInfo* m_pParentFolder{ nullptr };
+    int m_index{ 0 };
+    FileInfoPrivateData* m_pPrivates{ nullptr };
+    UINT16 m_flags{ 0 };
+    bool m_nameIsAscii{ false };
 
     FileInfo(__in FolderInfo* pParent);
 
@@ -371,23 +371,23 @@ public:
 class FolderInfo : public DefObject
 {
 protected:
-    PWSTR m_pName;
-    FolderInfo* m_pParentFolder;
+    PWSTR m_pName{ nullptr };
+    FolderInfo* m_pParentFolder{ nullptr };
 
-    int m_numSubfolders;
-    int m_sizeSubfolders;
-    FolderInfo** m_pSubfolders;
+    int m_numSubfolders{ 0 };
+    int m_sizeSubfolders{ 0 };
+    FolderInfo** m_pSubfolders{ nullptr };
 
-    int m_numFiles;
-    int m_sizeFiles;
-    FileInfo** m_pFiles;
+    int m_numFiles{ 0 };
+    int m_sizeFiles{ 0 };
+    FileInfo** m_pFiles{ nullptr };
 
-    int m_totalNumFiles;
-    int m_totalNumFolders;
+    int m_totalNumFiles{ 0 };
+    int m_totalNumFolders{ 0 };
 
-    int m_index;
+    int m_index{ 0 };
 
-    bool m_nameIsAscii;
+    bool m_nameIsAscii{ false };
 
     FolderInfo(__in PCWSTR pName, __in_opt FolderInfo* pParent);
 
@@ -729,20 +729,20 @@ public:
 class FileListBuilder : public ISectionBuilder
 {
 private:
-    FileBuilder* m_pParentFile;
-    BaseFile::SectionIndex m_sectionIndex;
+    FileBuilder* m_pParentFile{ nullptr };
+    BaseFile::SectionIndex m_sectionIndex{ 0 };
 
-    FolderInfo* m_pRootFolder;
+    FolderInfo* m_pRootFolder{ nullptr };
 
-    UINT32 m_flags;
+    UINT32 m_flags{ 0 };
 
     class FinalizedBuilder;
 
-    int m_numFinalizedFolders;
-    int m_numFinalizedFiles;
-    size_t m_cchFinalizedAsciiNames;
-    size_t m_cchFinalizedUtf16Names;
-    mutable FinalizedBuilder* m_pFinalized;
+    int m_numFinalizedFolders{ 0 };
+    int m_numFinalizedFiles{ 0 };
+    size_t m_cchFinalizedAsciiNames{ 0 };
+    size_t m_cchFinalizedUtf16Names{ 0 };
+    mutable FinalizedBuilder* m_pFinalized{ nullptr };
     /*
         mutable FolderInfo**            m_pAllFolders;
         mutable FileInfo**              m_pAllFiles;

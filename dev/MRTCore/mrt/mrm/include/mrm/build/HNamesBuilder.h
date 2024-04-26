@@ -750,10 +750,10 @@ private:
     IAtomPool* m_pScopeNames;
     IAtomPool* m_pItemNames;
 
-    int m_numFinalizedNames;
-    int m_cchFinalizedAsciiNames;
-    int m_cchFinalizedUtf16Names;
-    int m_cchLongestFinalizedName;
+    int m_numFinalizedNames{ 0 };
+    int m_cchFinalizedAsciiNames{ 0 };
+    int m_cchFinalizedUtf16Names{ 0 };
+    int m_cchLongestFinalizedName{ 0 };
 
 protected:
     HierarchicalNamesBuilder(_In_ UINT32 flags);
