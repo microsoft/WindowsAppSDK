@@ -612,10 +612,13 @@ public:
 
     int GetTotalNumFinalizedValues() const;
 
+    _Success_(return == true)
     bool TryGetResourceInfo(_In_ int itemIndex, _Inout_opt_ StringResult* pNameOut, _Out_opt_ int* numCandidatesOut) const;
 
+    _Success_(return == true)
     bool TryGetResourceInfo(_In_ PCWSTR pResourceName, _Out_opt_ int* pIndexOut, _Out_opt_ int* numCandidatesOut) const;
 
+    _Success_(return == true)
     bool TryGetCandidateInfo(
         _In_ int itemIndex,
         _In_ int candidateIndex,
@@ -623,6 +626,7 @@ public:
         _Out_opt_ MrmEnvironment::ResourceValueType* pTypeOut,
         _Inout_opt_ StringResult* pValueOut) const;
 
+    _Success_(return == true)
     bool TryGetCandidateInfo(
         _In_ PCWSTR pItemName,
         _In_ int candidateIndex,
