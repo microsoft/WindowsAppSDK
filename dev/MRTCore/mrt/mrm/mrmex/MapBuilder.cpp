@@ -424,13 +424,10 @@ public:
         return S_OK;
     }
 
+    _Success_(return == true)
     HRESULT
     InitDataLocator(_In_ DataBlobBuilder* pDataBuilder, _In_ PCWSTR pString, _In_ int typeIndex, _Out_ MRMFILE_MAP_VALUE_LARGE* pValueOut)
     {
-        if (pValueOut = nullptr)
-        {
-            *pValueOut = {};
-        }
         // Add our string to the internal data and note the offset
         size_t cbString = (wcslen(pString) + 1) * sizeof(WCHAR);
         UINT32 stringOffset = 0;
