@@ -895,7 +895,12 @@ void FindDDLMViaEnumeration(
     winrt::hstring currentUser;
     const auto c_packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Main };
     auto packages{ packageManager.FindPackagesForUserWithPackageTypes(currentUser, c_packageTypes) };
-    (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_SCAN_FOR_DDLM, "Bootstrap.Intitialize: Scanning packages for %ls", criteria.get());
+    TraceLoggingWrite(
+        WindowsAppRuntimeBootstrap_TraceLogger::Provider(),
+        "Bootstrap.Initialize.DDLM.Scan",
+        TraceLoggingWideString(criteria.get(), "Criteria"),
+        TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
+        TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
     int packagesScanned{};
     for (auto package : packages)
     {
@@ -982,9 +987,13 @@ void FindDDLMViaEnumeration(
         version.Revision = packageVersion.Revision;
         if (version.Version < minVersion.Version)
         {
-            (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_NO_MATCH,
-                             "Bootstrap.Intitialize: %ls not applicable. Version doesn't match MinVersion criteria (%ls)",
-                             packageFullName.c_str(), criteria.get());
+            TraceLoggingWrite(
+                WindowsAppRuntimeBootstrap_TraceLogger::Provider(),
+                "Bootstrap.Initialize.DDLM.Scan.NoMatch.Version",
+                TraceLoggingWideString(packageFullName.c_str(), "PackageFullName"),
+                TraceLoggingWideString(criteria.get(), "Criteria"),
+                TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
             continue;
         }
 
@@ -993,18 +1002,27 @@ void FindDDLMViaEnumeration(
         const auto currentArchitecture{ AppModel::Identity::GetCurrentArchitecture() };
         if (architecture != currentArchitecture)
         {
-            (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_NO_MATCH,
-                             "Bootstrap.Intitialize: %ls not applicable. Architecture doesn't match current architecture %ls (%ls)",
-                             packageFullName.c_str(), ::AppModel::Identity::GetCurrentArchitectureAsString(), criteria.get());
+            TraceLoggingWrite(
+                WindowsAppRuntimeBootstrap_TraceLogger::Provider(),
+                "Bootstrap.Initialize.DDLM.Scan.NoMatch.Architecture",
+                TraceLoggingWideString(packageFullName.c_str(), "PackageFullName"),
+                TraceLoggingWideString(criteria.get(), "Criteria"),
+                TraceLoggingWideString(::AppModel::Identity::GetCurrentArchitectureAsString(), "CurrentArchitecture"),
+                TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
             continue;
         }
 
         // Do we have a package under consideration?
         if (!foundAny)
         {
-            (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_MATCH,
-                             "Bootstrap.Intitialize: %ls is applicable (%ls)",
-                             packageFullName.c_str(), criteria.get());
+            TraceLoggingWrite(
+                WindowsAppRuntimeBootstrap_TraceLogger::Provider(),
+                "Bootstrap.Initialize.DDLM.Scan.Match",
+                TraceLoggingWideString(packageFullName.c_str(), "PackageFullName"),
+                TraceLoggingWideString(criteria.get(), "Criteria"),
+                TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
             bestFitVersion = version;
             bestFitPackageFamilyName = packageId.FamilyName();
             bestFitPackageFullName = packageId.FullName();
@@ -1015,9 +1033,13 @@ void FindDDLMViaEnumeration(
         // Do we already have a higher version under consideration?
         if (bestFitVersion.Version < version.Version)
         {
-            (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_SCAN_MATCH,
-                             "Bootstrap.Intitialize: %ls is more applicable (%ls)",
-                             packageFullName.c_str(), criteria.get());
+            TraceLoggingWrite(
+                WindowsAppRuntimeBootstrap_TraceLogger::Provider(),
+                "Bootstrap.Initialize.DDLM.Scan.Match",
+                TraceLoggingWideString(packageFullName.c_str(), "PackageFullName"),
+                TraceLoggingWideString(criteria.get(), "Criteria"),
+                TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
+                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
             bestFitVersion = version;
             bestFitPackageFamilyName = packageId.FamilyName();
             bestFitPackageFullName = packageId.FullName();
@@ -1025,9 +1047,16 @@ void FindDDLMViaEnumeration(
         }
     }
     THROW_HR_IF_MSG(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, !foundAny, "Enumeration: %ls", criteria.get());
-    (void)LOG_HR_MSG(MDD_E_BOOTSTRAP_INITIALIZE_DDLM_FOUND,
-                     "Bootstrap.Intitialize: %ls best matches the criteria (%ls) of %d packages scanned",
-                     bestFitPackageFullName.c_str(), criteria.get(), packagesScanned);
+
+    // Success!
+    TraceLoggingWrite(
+        WindowsAppRuntimeBootstrap_TraceLogger::Provider(),
+        "Bootstrap.Initialize.DDLM.Found",
+        TraceLoggingWideString(bestFitPackageFullName.c_str(), "PackageFullName"),
+        TraceLoggingWideString(criteria.get(), "Criteria"),
+        TraceLoggingInt32(packagesScanned, "PackagesScanned"),
+        TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
+        TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
     ddlmPackageFamilyName = bestFitPackageFamilyName.c_str();
     ddlmPackageFullName = bestFitPackageFullName.c_str();
 }
@@ -1099,7 +1128,7 @@ HRESULT MddBootstrapInitialize_Log(
         const auto versionTagLength{ wcslen(versionTag) };
         if (versionTagLength > ARRAYSIZE(formattedVersionTag) - 1)
         {
-            (void)LOG_HR(E_INVALIDARG, "MddBootstrapInitialize: VersionTag invalid (too long): %ls", versionTag);
+            (void)LOG_HR_MSG(E_INVALIDARG, "MddBootstrapInitialize: VersionTag invalid (too long): %ls", versionTag);
             versionTag = L"***InvalidVersionTag***";
         }
         FAIL_FAST_IF_FAILED(StringCchPrintfW(formattedVersionTag, ARRAYSIZE(formattedVersionTag), L"-%s", versionTag));

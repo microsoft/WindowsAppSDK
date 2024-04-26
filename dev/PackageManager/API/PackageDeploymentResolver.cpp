@@ -8,6 +8,7 @@
 #include "PackageDeploymentResolver.h"
 
 #include "MsixPackageManager.h"
+#include "PackageManagerTelemetry.h"
 
 namespace Microsoft::Windows::ApplicationModel::PackageDeploymentResolver
 {
@@ -185,9 +186,12 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
                                                                  minVersion.Major, minVersion.Minor,
                                                                  minVersion.Build, minVersion.Revision,
                                                                  static_cast<std::uint32_t>(processorArchitectureFilter)) };
-    (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN,
-                     "PackageDeploymentResolver: Scanning packages (%ls)",
-                     criteria.get());
+    TraceLoggingWrite(
+        PackageManagementTelemetryProvider::Provider(),
+        "PackageDeployment.Resolver.Scan",
+        TraceLoggingWideString(criteria.get(), "Criteria"),
+        TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
+        TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
     if (packages)
     {
         for (const winrt::Windows::ApplicationModel::Package& candidate : packages)
@@ -204,9 +208,13 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
             auto candidateFullName{ packageId.FullName() };
             if (candidateVersion < minVersion)
             {
-                (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_NOT_MATCH,
-                                 "PackageDeploymentResolver: %ls not applicable. Version doesn't match MinVersion criteria (%ls)",
-                                 candidateFullName.c_str(), criteria.get());
+                TraceLoggingWrite(
+                    PackageManagementTelemetryProvider::Provider(),
+                    "PackageDeployment.Resolver.Scan.NoMatch.Version",
+                    TraceLoggingWideString(candidateFullName.c_str(), "PackageFullName"),
+                    TraceLoggingWideString(criteria.get(), "Criteria"),
+                    TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
+                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                 continue;
             }
 
@@ -226,10 +234,16 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
                 const auto supportedArchitectures{ GetSystemSupportedArchitectures(nativeMachine) };
                 if (!IsArchitectureInArchitectures(candidateArchitecture, supportedArchitectures))
                 {
-                    (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_NOT_MATCH,
-                                     "PackageDeploymentResolver: %ls not applicable. Architecture (%ls) doesn't match system supported architectures (0x%X %ls)",
-                                     candidateFullName.c_str(), ::AppModel::Identity::GetArchitectureAsString(candidateArchitecture),
-                                     static_cast<std::uint32_t>(supportedArchitectures), GetSystemSupportedArchitecturesAsString(nativeMachine));
+                    TraceLoggingWrite(
+                        PackageManagementTelemetryProvider::Provider(),
+                        "PackageDeployment.Resolver.Scan.NoMatch.Architecture",
+                        TraceLoggingWideString(candidateFullName.c_str(), "PackageFullName"),
+                        TraceLoggingWideString(criteria.get(), "Criteria"),
+                        TraceLoggingInt32(static_cast<std::int32_t>(candidateArchitecture), "Architecture"),
+                        TraceLoggingHexInt32(static_cast<std::int32_t>(supportedArchitectures), "SupportedArchitectures"),
+                        TraceLoggingUInt16(static_cast<std::uint32_t>(nativeMachine), "NativeMachineArchitecture"),
+                        TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
+                        TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                     continue;
                 }
             }
@@ -237,10 +251,15 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
             {
                 if (!IsArchitectureInArchitectures(candidateArchitecture, processorArchitectureFilter))
                 {
-                    (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_NOT_MATCH,
-                                     "PackageDeploymentResolver: %ls not applicable. Architecture (%ls) doesn't match specified architectures (0x%X)",
-                                     candidateFullName.c_str(), ::AppModel::Identity::GetArchitectureAsString(candidateArchitecture),
-                                     static_cast<std::uint32_t>(processorArchitectureFilter));
+                    TraceLoggingWrite(
+                        PackageManagementTelemetryProvider::Provider(),
+                        "PackageDeployment.Resolver.Scan.NoMatch.Architecture",
+                        TraceLoggingWideString(candidateFullName.c_str(), "PackageFullName"),
+                        TraceLoggingWideString(criteria.get(), "Criteria"),
+                        TraceLoggingInt32(static_cast<std::int32_t>(candidateArchitecture), "Architecture"),
+                        TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "ArchitectureFilter"),
+                        TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
+                        TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                     continue;
                 }
             }
@@ -250,18 +269,26 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
             auto status{ candidate.Status() };
             if (!status.VerifyIsOK())
             {
-                (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_NOT_MATCH,
-                                 "PackageDeploymentResolver: %ls not applicable. Status not OK (%ls)",
-                                 candidateFullName.c_str(), criteria.get());
+                TraceLoggingWrite(
+                    PackageManagementTelemetryProvider::Provider(),
+                    "PackageDeployment.Resolver.Scan.NoMatch.Status",
+                    TraceLoggingWideString(candidateFullName.c_str(), "PackageFullName"),
+                    TraceLoggingWideString(criteria.get(), "Criteria"),
+                    TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
+                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                 continue;
             }
 
             // Are we looking for any match?
             if (stopOnFirstMatch)
             {
-                (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED,
-                                 "PackageDeploymentResolver: Stopping on 1st match %ls (%ls)",
-                                 candidateFullName.c_str(), criteria.get());
+                TraceLoggingWrite(
+                    PackageManagementTelemetryProvider::Provider(),
+                    "PackageDeployment.Resolver.Found.StopOnFirst",
+                    TraceLoggingWideString(candidateFullName.c_str(), "PackageFullName"),
+                    TraceLoggingWideString(criteria.get(), "Criteria"),
+                    TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
+                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                 return candidateFullName;
             }
 
@@ -280,9 +307,13 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
     }
     else
     {
-        (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_MATCH,
-                         "PackageDeploymentResolver: %ls is applicable (%ls)",
-                         bestFitPackageFullName.c_str(), criteria.get());
+        TraceLoggingWrite(
+            PackageManagementTelemetryProvider::Provider(),
+            "PackageDeployment.Resolver.Found",
+            TraceLoggingWideString(bestFitPackageFullName.c_str(), "PackageFullName"),
+            TraceLoggingWideString(criteria.get(), "Criteria"),
+            TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
+            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
     }
     return bestFitPackageFullName;
 }
