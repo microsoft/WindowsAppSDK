@@ -61,13 +61,13 @@ namespace WindowsAppSDK.TemplateUtilities
                 }
             }
         }
-        private async Task InstallNuGetPackageAsync(IVsPackageInstaller installer, string packageId)
+        private async Task InstallNuGetPackageAsync(IVsPackageInstaller2 installer, string packageId, string source)
         {
             await Task.Run(() =>
             {
                 try
                 {
-                    installer.InstallPackage(null, _project, packageId, "", false);
+                    installer.InstallLatestPackage(source, _project, packageId, false, false);
                     // If there's any CPU-bound work, it will be done on the background thread.
                 }
                 catch (Exception ex)
@@ -79,19 +79,35 @@ namespace WindowsAppSDK.TemplateUtilities
         // InstallNuGetPackagesAsync iterates over the package list and installs each
         private async Task InstallNuGetPackagesAsync()
         {
-            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
+            IVsPackageInstaller2 installer = _componentModel.GetService<IVsPackageInstaller2>();
             if (installer == null)
             {
                 LogError("Could not obtain IVsPackageInstaller service.");
 
             }
-            //await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            
             foreach (var packageId in _nuGetPackages)
             {
                 try
                 {
-                    // No version specified; it installs the latest stable version
-                    await InstallNuGetPackageAsync(installer, packageId);
+                    if (NugetClientHelper.IsInternetAvailable())
+                    {
+                        var packageMeta = await NugetClientHelper.GetPackageMetaDataAsync(packageId);
+                        var isCacheAvailable = NugetClientHelper.IsCacheAvailableForPackage(packageId, packageMeta.Identity.Version.ToString());
+
+                        if (isCacheAvailable)
+                        {
+                            await InstallNuGetPackageAsync(installer, packageId, NugetClientHelper.globalPackagesFolder);
+                        }
+                        else
+                        {
+                            await InstallNuGetPackageAsync(installer, packageId, null);
+                        }
+                    }
+                    else
+                    {
+                        await InstallNuGetPackageAsync(installer, packageId, NugetClientHelper.globalPackagesFolder);
+                    }
                 }
                 catch (Exception ex)
                 {
