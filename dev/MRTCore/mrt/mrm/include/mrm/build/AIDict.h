@@ -822,6 +822,7 @@ public:
          * Returns true if data was found for the element.  Returns false
          * if no data was found or if an error occurs.
          */
+    _Success_(return == true)
     bool TryGetItemData(_In_ PCWSTR pName, _Out_opt_ TELEM* pElemOut) const
     {
         int internalIndex = -1;
@@ -851,6 +852,7 @@ public:
          * Returns true if data was found for the element.  Returns false
          * if no data was found or if an error occurs.
          */
+    _Success_(return == true)
     bool TryGetItemData(_In_ Atom name, _Out_opt_ TELEM* pElemOut) const
     {
         int internalIndex = -1;

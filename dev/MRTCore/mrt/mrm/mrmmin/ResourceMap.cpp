@@ -400,6 +400,7 @@ public:
     const IResourceLinks* GetLinks() const { return m_links; }
     void SetLinks(_In_ const IResourceLinks* links) { m_links = links; }
 
+    _Success_(return == true)
     bool TryGetResourceLinkForResourceIndex(
         _In_ UINT32 linksFromResourceIndex,
         _Out_ const IHierarchicalSchema** linksToSchema,
@@ -912,13 +913,17 @@ HRESULT NamedResourceResult::GetCandidate(_In_ int index, _Inout_ ResourceCandid
     return S_OK;
 }
 
+_Success_(return == true)
 bool NamedResourceResult::TryGetResourceLink(_Out_ const IHierarchicalSchema** linksToSchema, _Out_ UINT32* linksToResourceIndex) const
 {
     if (m_pRawMap == nullptr)
     {
         return false;
     }
-
+    if (linksToSchema != nullptr)
+    {
+        *linksToSchema = nullptr;
+    }
     return m_pRawMap->TryGetResourceLinkForResourceIndex(m_resourceIndexInSchema, linksToSchema, linksToResourceIndex);
 }
 
@@ -1543,6 +1548,7 @@ HRESULT ResourceMapBase::GetResourceLinkById(
     return HRESULT_FROM_WIN32(ERROR_RANGE_NOT_FOUND);
 }
 
+_Success_(return == true)
 bool ResourceMapBase::TryGetResourceLinkForResourceIndex(
     _In_ UINT32 linksFromResourceIndex,
     _Out_ const IHierarchicalSchema** linksToSchema,

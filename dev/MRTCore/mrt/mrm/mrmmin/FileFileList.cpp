@@ -9,6 +9,7 @@ namespace Microsoft::Resources
 bool IFileList::IsValidFileIndex(__inout int indexIn) const { return ((indexIn >= 0) && (indexIn < GetTotalNumFiles())); }
 bool IFileList::IsValidFolderIndex(__inout int indexIn) const { return ((indexIn >= 0) && (indexIn < GetTotalNumFolders())); }
 
+_Success_(return == true)
 bool IFileList::TryGetFileIndex(__in PCWSTR pFilePath, __out int* pIndexOut) const
 {
     if ((pFilePath == nullptr) || (pIndexOut == nullptr))
@@ -53,6 +54,7 @@ bool IFileList::TryGetFileIndex(__in PCWSTR pFilePath, __out int* pIndexOut) con
     return ((*pIndexOut) >= 0);
 }
 
+_Success_(return == true)
 bool IFileList::TryGetFolderIndex(__in PCWSTR pPath, __out int* pIndexOut) const
 {
     if ((pPath == nullptr) || (pIndexOut == nullptr))

@@ -552,6 +552,7 @@ HRESULT MrmEnvironment::FindInfoForCurrentVersion(
     return S_OK;
 }
 
+_Success_(return == true)
 bool MrmEnvironment::TryFindInfoByChecksum(
     _In_ const ENVIRONMENT_DESCRIPTION* description,
     _In_opt_ DefChecksum::Checksum checksum,
@@ -667,10 +668,10 @@ HRESULT EnvironmentVersionInfo::ComputeNew(
     return S_OK;
 }
 
-/*! 
+/*!
      * Computes the checksum that would apply to a supplied environment at
      * a specific previous version.
-     * 
+     *
      * \param pEnvironment
      * The environment for which the checksum is to be computed.
      *
@@ -686,7 +687,7 @@ HRESULT EnvironmentVersionInfo::ComputeNew(
      *
      * \param pChecksumOut
      * Returns the checksum of pEnvironment at the sizes specified in pVersion.
-     * 
+     *
      * \return bool
      * Returns true on success, false if an error occurs.
      */
@@ -744,14 +745,14 @@ HRESULT ComputeEnvironmentVersionChecksum(
     return S_OK;
 }
 
-/*! 
+/*!
      * Constructs an IEnvironmentVersionInfo from a supplied IEnvironment,
      * without referring to the existing environment version info.  Uses
      * the supplied major & minor versions and computes rather than copies
-     * the version checksum.  
-     * 
+     * the version checksum.
+     *
      * The caller is responsible for deleting the returned object.
-     * 
+     *
      * \param pEnvironment
      * The environment for which the version is to be computed.
      *
@@ -771,7 +772,7 @@ HRESULT ComputeEnvironmentVersionInfo(
     return EnvironmentVersionInfo::ComputeNew(pEnvironment, pDesiredVersionInfo, (EnvironmentVersionInfo**)info);
 }
 
-/*! 
+/*!
      * Determines if two IEnvironmentVersionInfo are identical.
      *
      * \param pVersion1
@@ -779,7 +780,7 @@ HRESULT ComputeEnvironmentVersionInfo(
      *
      * \param pVersion2
      * The second version info object to be compared.
-     * 
+     *
      * \param pStatus
      * CheckEnvironmentVersionIsIdentical returns false immediately and
      * without reporting extended status if pStatus is NULL.  Otherwise,
@@ -787,8 +788,8 @@ HRESULT ComputeEnvironmentVersionInfo(
      * - INVALID_ARG if either parameter is NULL
      *
      * \return bool
-     * Returns true if the versions are identical, false otherwise or if 
-     * an error occurs. 
+     * Returns true if the versions are identical, false otherwise or if
+     * an error occurs.
      */
 bool CheckEnvironmentVersionIsIdentical(_In_ const IEnvironmentVersionInfo* pVersion1, _In_ const IEnvironmentVersionInfo* pVersion2)
 {
@@ -811,14 +812,14 @@ bool CheckEnvironmentVersionIsIdentical(_In_ const IEnvironmentVersionInfo* pVer
     return true;
 }
 
-/*! 
+/*!
      * Determines if a desired IEnvironmentVersionInfo is compatible with
      * an available IEnvironment.
      *
      * \param pHaveEnvironment
-     * A version info object describing the environment that 
+     * A version info object describing the environment that
      * is actually present.
-     * 
+     *
      * \param pWantVersion
      * A version info object describing the desired environment version.
      *
@@ -829,8 +830,8 @@ bool CheckEnvironmentVersionIsIdentical(_In_ const IEnvironmentVersionInfo* pVer
      * - INVALID_ARG if either parameter is NULL
      *
      * \return bool
-     * Returns true if the versions are compatible, false otherwise or if 
-     * an error occurs. 
+     * Returns true if the versions are compatible, false otherwise or if
+     * an error occurs.
      */
 bool CheckEnvironmentVersionIsCompatible(_In_ const IEnvironment* pHaveEnvironment, _In_ const IEnvironmentVersionInfo* pWantVersion)
 {
@@ -855,10 +856,10 @@ bool CheckEnvironmentVersionIsCompatible(_In_ const IEnvironment* pHaveEnvironme
         SUCCEEDED(ComputeEnvironmentVersionChecksum(pHaveEnvironment, pWantVersion, &cs)) && (cs == pWantVersion->GetVersionChecksum()));
 }
 
-/*! 
-     * Computes the atom pool mappings from the environment we want to the environment 
+/*!
+     * Computes the atom pool mappings from the environment we want to the environment
      * we actually have.
-     * 
+     *
      * \param pHaveEnvironment
      * The environment we have.
      *
@@ -870,7 +871,7 @@ bool CheckEnvironmentVersionIsCompatible(_In_ const IEnvironment* pHaveEnvironme
      *
      * \param pPoolMappingsOut
      * Remap info to be initialized with the appropriate mappings.
-     * 
+     *
      * \return bool
      * Returns true on success, false if an error occurs.
      */
@@ -909,10 +910,10 @@ HRESULT ComputeEnvironmentPoolMappings(
     return S_OK;
 }
 
-/*! 
-     * Computes the atom pool mappings from the environment we want to the environment 
+/*!
+     * Computes the atom pool mappings from the environment we want to the environment
      * we actually have.
-     * 
+     *
      * \param pHaveEnvironment
      * The environment we have.
      *
@@ -924,7 +925,7 @@ HRESULT ComputeEnvironmentPoolMappings(
      *
      * \param pPoolMappingsOut
      * UInt16Remap to be initialized with the appropriate mappings.
-     * 
+     *
      * \return HRESULT
      * Returns S_OK on success, a failure HRESULT if an error occurs.
      */
@@ -1300,12 +1301,12 @@ HRESULT EnvironmentMapping::Init(
 bool EnvironmentCollectionBase::TryFindEnvironment(_In_ const IEnvironmentVersionInfo* pRef, _Out_ const IEnvironment** pEnvironmentOut)
     const
 {
+    *pEnvironmentOut = nullptr;
+
     if ((pRef == nullptr) || (pEnvironmentOut == nullptr))
     {
         return false;
     }
-
-    *pEnvironmentOut = nullptr;
 
     const IEnvironment* pCandidate;
     for (int i = 0; i < GetNumEnvironments(); i++)
@@ -1324,14 +1325,15 @@ bool EnvironmentCollectionBase::TryFindEnvironment(_In_ const IEnvironmentVersio
     return false;
 }
 
+_Success_(return == true)
 bool EnvironmentCollectionBase::TryFindEnvironment(_In_ PCWSTR pUniqueName, _Out_ const IEnvironment** ppEnvironmentOut) const
 {
+    *ppEnvironmentOut = nullptr;
+
     if ((pUniqueName == nullptr) || DefString_IsEmpty(pUniqueName))
     {
         return false;
     }
-
-    *ppEnvironmentOut = nullptr;
 
     const IEnvironment* pBest = nullptr;
     const IEnvironment* pCandidate = nullptr;
@@ -1363,6 +1365,7 @@ bool EnvironmentCollectionBase::TryFindEnvironment(_In_ PCWSTR pUniqueName, _Out
     return (pBest != nullptr);
 }
 
+_Success_(return == true)
 bool EnvironmentCollectionBase::TryFindCompatibleEnvironment(
     _In_ PCWSTR pUniqueName,
     _In_ int major,
@@ -1374,7 +1377,10 @@ bool EnvironmentCollectionBase::TryFindCompatibleEnvironment(
         return false;
     }
 
-    *pEnvironmentOut = NULL;
+    if (pEnvironmentOut != NULL)
+    {
+        *pEnvironmentOut = NULL;
+    }
 
     const IEnvironment* pBest = NULL;
     const IEnvironment* pCandidate = NULL;
@@ -1401,11 +1407,14 @@ bool EnvironmentCollectionBase::TryFindCompatibleEnvironment(
         }
     }
 
-    *pEnvironmentOut = pBest;
-
+    if (pEnvironmentOut != NULL)
+    {
+        *pEnvironmentOut = pBest;
+    }
     return (pBest != NULL);
 }
 
+_Success_(return == true)
 bool EnvironmentCollectionBase::TryFindCompatibleEnvironment(
     _In_ const EnvironmentReference* pWantRef,
     _Outptr_opt_result_maybenull_ const IEnvironment** ppEnvironmentOut,

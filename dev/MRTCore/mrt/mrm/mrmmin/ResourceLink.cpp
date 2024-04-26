@@ -237,6 +237,7 @@ HRESULT ResourceLinkSection::GetResourceLinkById(
     return S_OK;
 }
 
+_Success_(return == true)
 bool ResourceLinkSection::TryGetResourceLinkForResourceIndex(
     _In_ UINT32 linksFromResourceIndex,
     _Outptr_opt_result_maybenull_ const IHierarchicalSchema** linksToSchema,

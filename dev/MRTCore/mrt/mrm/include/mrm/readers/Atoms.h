@@ -99,6 +99,7 @@ public:
          * pool.   Sets pAtomOut to DEF_ATOM_NULL and returns FALSE if no
          * matching string is found.
          */
+     _Success_(return == true)
     bool TryGetAtom(__in PCWSTR pString, __out_opt Atom* pAtomOut) const;
 
     /*!
@@ -106,6 +107,7 @@ public:
          * pool.   Sets pIndexOut to Atom::NullAtomIndex and returns FALSE if
          * no matching string is found.
          */
+     _Success_(return == true)
     bool TryGetIndex(__in PCWSTR pString, __out_opt Atom::Index* pIndexOut) const;
 
     /*!
@@ -147,6 +149,8 @@ public:
 
 protected:
     static HashIndex* HashIndex_Init(__inout HashIndex* pSelf, __in Atom::Hash hash, __in Atom::Index index);
+
+    _Success_(return == true)
     bool TryGetHashIndex(__in PCWSTR pString, __out_opt HashIndex* pIndexOut) const;
 
     DEFCOMPARISON CompareAtIndex(__in Atom::Index index, __in PCWSTR pString) const;

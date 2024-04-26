@@ -429,6 +429,7 @@ public:
          */
     HRESULT ExtendPools(_In_ Atom::PoolIndex newMaxIndex);
 
+    _Success_(return == true)
     bool TryGetAtomPool(_In_ Atom::PoolIndex index, _Out_opt_ IAtomPool** resultPool) const;
 
     IAtomPool* GetAtomPool(_In_ Atom::PoolIndex index) const;
@@ -571,6 +572,7 @@ public:
 
     void SetPoolIndex(_In_ Atom::PoolIndex index);
 
+    _Success_(return == true)
     bool TryGetAtom(_In_ PCWSTR str, _Out_opt_ Atom* resultAtom) const;
 
     bool TryGetIndex(_In_ PCWSTR str, _Out_opt_ Atom::Index* resultIndex) const;

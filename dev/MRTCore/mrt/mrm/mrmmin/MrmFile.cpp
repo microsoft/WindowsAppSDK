@@ -583,6 +583,7 @@ HRESULT MrmFile::GetSection(
     return S_OK;
 }
 
+_Success_(return == true)
 const bool MrmFile::TryGetSectionIndexByType(
     _In_ const DEFFILE_SECTION_TYPEID& sectionType,
     _In_ int fileIndex,
