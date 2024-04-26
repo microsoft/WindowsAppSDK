@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Item">
   <TemplateData>
     <DefaultName>CustomControl.cpp</DefaultName>
@@ -21,6 +21,9 @@
     <ProjectItem SubType="Code" TargetFileName="$fileinputname$.cpp" ReplaceParameters="true">TemplatedControl.cpp</ProjectItem>
     <ProjectItem SubType="Code" TargetFileName="$fileinputname$.cpp\$fileinputname$.h" ReplaceParameters="true">TemplatedControl.h</ProjectItem>
     <ProjectItem SubType="Code" TargetFileName="$fileinputname$.cpp\$fileinputname$.idl" ReplaceParameters="true">TemplatedControl.idl</ProjectItem>
+    <CustomParameters>
+      <CustomParameter Name="$NuGetPackages$" Value="Microsoft.WindowsAppSDK;Microsoft.Windows.CppWinRT;Microsoft.Windows.ImplementationLibrary"/>
+    </CustomParameters>
   </TemplateContent>
   <WizardExtension>
     <Assembly>NuGet.VisualStudio.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
@@ -30,11 +33,8 @@
     <Assembly>Microsoft.VisualStudio.WinRT.TemplateWizards, Version=16.0.0.0, Culture=Neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
     <FullClassName>Microsoft.VisualStudio.WinRT.TemplateWizards.TemplatedControl.Wizard</FullClassName>
   </WizardExtension>
-  <WizardData>
-    <packages repository="extension" repositoryId="Microsoft.WindowsAppSDK.Cpp">
-      <package id="Microsoft.Windows.CppWinRT" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <package id="Microsoft.WindowsAppSDK" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <package id="Microsoft.Windows.ImplementationLibrary" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-    </packages>
-  </WizardData>
+  <WizardExtension>
+    <Assembly>WindowsAppSDK.Cpp.Extension.Dev17, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>WindowsAppSDK.TemplateUtilities.NuGetPackageInstaller</FullClassName>
+  </WizardExtension>
 </VSTemplate>
