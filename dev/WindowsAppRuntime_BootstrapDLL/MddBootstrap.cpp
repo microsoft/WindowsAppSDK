@@ -743,7 +743,7 @@ CLSID FindDDLMViaAppExtension(
     PACKAGE_VERSION minVersion)
 {
     // Find the best fit
-    bool foundAny{};
+    // NOTE: DDLM packages ALWAYS have a version > 0.0.0.0 so we can use version=0 as a proxy for 'no match found (so far)'
     PACKAGE_VERSION bestFitVersion{};
     CLSID bestFitClsid{};
 
@@ -809,15 +809,6 @@ CLSID FindDDLMViaAppExtension(
             continue;
         }
 
-        // Do we have a package under consideration?
-        if (!foundAny)
-        {
-            bestFitVersion = version;
-            bestFitClsid = GetClsid(appExtension);
-            foundAny = true;
-            continue;
-        }
-
         // Do we already have a higher version under consideration?
         if (bestFitVersion.Version < version.Version)
         {
@@ -826,7 +817,8 @@ CLSID FindDDLMViaAppExtension(
             continue;
         }
     }
-    THROW_HR_IF_MSG(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, !foundAny, "AppExtension.Name=%ls, Major=%hu, Minor=%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
+    THROW_HR_IF_MSG(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, bestFitVersion.Version == 0,
+                    "AppExtension.Name=%ls, Major=%hu, Minor=%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
                     appExtensionName.c_str(), majorVersion, minorVersion, (!versionTag ? L"" : versionTag),
                     minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
     return bestFitClsid;
@@ -840,7 +832,7 @@ void FindDDLMViaEnumeration(
     std::wstring& ddlmPackageFullName)
 {
     // Find the best fit
-    bool foundAny{};
+    // NOTE: DDLM packages ALWAYS have a version > 0.0.0.0 so we can use version=0 as a proxy for 'no match found (so far)'
     PACKAGE_VERSION bestFitVersion{};
     winrt::hstring bestFitPackageFamilyName{};
     winrt::hstring bestFitPackageFullName{};
@@ -887,10 +879,6 @@ void FindDDLMViaEnumeration(
         expectedPublisherId = g_test_ddlmPackagePublisherId.c_str();
     }
 
-    auto criteria{ wil::str_printf<wil::unique_cotaskmem_string>(L"Major.Minor=%hu.%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
-                                                                 majorVersion, minorVersion, (!versionTag ? L"" : versionTag),
-                                                                 minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision) };
-
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     winrt::hstring currentUser;
     const auto c_packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Main };
@@ -898,7 +886,9 @@ void FindDDLMViaEnumeration(
     TraceLoggingWrite(
         WindowsAppRuntimeBootstrap_TraceLogger::Provider(),
         "Bootstrap.Initialize.DDLM.Scan",
-        TraceLoggingWideString(criteria.get(), "Criteria"),
+        TraceLoggingHexUInt32(majorMinorVersion, "Criteria.MajorMinorVersion"),
+        TraceLoggingWideString(!versionTag ? L"" : versionTag, "Criteria.VersionTag"),
+        TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
         TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
         TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
     int packagesScanned{};
@@ -991,7 +981,9 @@ void FindDDLMViaEnumeration(
                 WindowsAppRuntimeBootstrap_TraceLogger::Provider(),
                 "Bootstrap.Initialize.DDLM.Scan.NoMatch.Version",
                 TraceLoggingWideString(packageFullName.c_str(), "PackageFullName"),
-                TraceLoggingWideString(criteria.get(), "Criteria"),
+                TraceLoggingHexUInt32(majorMinorVersion, "Criteria.MajorMinorVersion"),
+                TraceLoggingWideString(!versionTag ? L"" : versionTag, "Criteria.VersionTag"),
+                TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
                 TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
             continue;
@@ -1006,27 +998,12 @@ void FindDDLMViaEnumeration(
                 WindowsAppRuntimeBootstrap_TraceLogger::Provider(),
                 "Bootstrap.Initialize.DDLM.Scan.NoMatch.Architecture",
                 TraceLoggingWideString(packageFullName.c_str(), "PackageFullName"),
-                TraceLoggingWideString(criteria.get(), "Criteria"),
+                TraceLoggingHexUInt32(majorMinorVersion, "Criteria.MajorMinorVersion"),
+                TraceLoggingWideString(!versionTag ? L"" : versionTag, "Criteria.VersionTag"),
+                TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
                 TraceLoggingWideString(::AppModel::Identity::GetCurrentArchitectureAsString(), "CurrentArchitecture"),
                 TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
-            continue;
-        }
-
-        // Do we have a package under consideration?
-        if (!foundAny)
-        {
-            TraceLoggingWrite(
-                WindowsAppRuntimeBootstrap_TraceLogger::Provider(),
-                "Bootstrap.Initialize.DDLM.Scan.Match",
-                TraceLoggingWideString(packageFullName.c_str(), "PackageFullName"),
-                TraceLoggingWideString(criteria.get(), "Criteria"),
-                TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
-                TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
-            bestFitVersion = version;
-            bestFitPackageFamilyName = packageId.FamilyName();
-            bestFitPackageFullName = packageId.FullName();
-            foundAny = true;
             continue;
         }
 
@@ -1037,7 +1014,9 @@ void FindDDLMViaEnumeration(
                 WindowsAppRuntimeBootstrap_TraceLogger::Provider(),
                 "Bootstrap.Initialize.DDLM.Scan.Match",
                 TraceLoggingWideString(packageFullName.c_str(), "PackageFullName"),
-                TraceLoggingWideString(criteria.get(), "Criteria"),
+                TraceLoggingHexUInt32(majorMinorVersion, "Criteria.MajorMinorVersion"),
+                TraceLoggingWideString(!versionTag ? L"" : versionTag, "Criteria.VersionTag"),
+                TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
                 TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
             bestFitVersion = version;
@@ -1046,14 +1025,20 @@ void FindDDLMViaEnumeration(
             continue;
         }
     }
-    THROW_HR_IF_MSG(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, !foundAny, "Enumeration: %ls", criteria.get());
+
+    THROW_HR_IF_MSG(STATEREPOSITORY_E_DEPENDENCY_NOT_RESOLVED, bestFitVersion.Version == 0,
+                    "Major.Minor=%hu.%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
+                    majorVersion, minorVersion, (!versionTag ? L"" : versionTag),
+                    minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
 
     // Success!
     TraceLoggingWrite(
         WindowsAppRuntimeBootstrap_TraceLogger::Provider(),
         "Bootstrap.Initialize.DDLM.Found",
         TraceLoggingWideString(bestFitPackageFullName.c_str(), "PackageFullName"),
-        TraceLoggingWideString(criteria.get(), "Criteria"),
+        TraceLoggingHexUInt32(majorMinorVersion, "Criteria.MajorMinorVersion"),
+        TraceLoggingWideString(!versionTag ? L"" : versionTag, "Criteria.VersionTag"),
+        TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
         TraceLoggingInt32(packagesScanned, "PackagesScanned"),
         TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
         TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));

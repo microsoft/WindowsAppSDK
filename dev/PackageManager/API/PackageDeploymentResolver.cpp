@@ -181,15 +181,12 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
     auto packages{ packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
 
     // Find the/any match
-    auto criteria{ wil::str_printf<wil::unique_cotaskmem_string>(L"PackageFamilyName=%ls MinVersion=%hu.%hu.%hu.%hu ArchitectureFilter:0x%X",
-                                                                 packageFamilyName.c_str(),
-                                                                 minVersion.Major, minVersion.Minor,
-                                                                 minVersion.Build, minVersion.Revision,
-                                                                 static_cast<std::uint32_t>(processorArchitectureFilter)) };
     TraceLoggingWrite(
         PackageManagementTelemetryProvider::Provider(),
         "PackageDeployment.Resolver.Scan",
-        TraceLoggingWideString(criteria.get(), "Criteria"),
+        TraceLoggingWideString(packageFamilyName.c_str(), "Criteria.PackageFamilyName"),
+        TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
+        TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "Criteria.ArchitectureFilter"),
         TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
         TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
     if (packages)
@@ -212,7 +209,9 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
                     PackageManagementTelemetryProvider::Provider(),
                     "PackageDeployment.Resolver.Scan.NoMatch.Version",
                     TraceLoggingWideString(candidateFullName.c_str(), "PackageFullName"),
-                    TraceLoggingWideString(criteria.get(), "Criteria"),
+                    TraceLoggingWideString(packageFamilyName.c_str(), "Criteria.PackageFamilyName"),
+                    TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
+                    TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "Criteria.ArchitectureFilter"),
                     TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
                     TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                 continue;
@@ -238,7 +237,9 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
                         PackageManagementTelemetryProvider::Provider(),
                         "PackageDeployment.Resolver.Scan.NoMatch.Architecture",
                         TraceLoggingWideString(candidateFullName.c_str(), "PackageFullName"),
-                        TraceLoggingWideString(criteria.get(), "Criteria"),
+                        TraceLoggingWideString(packageFamilyName.c_str(), "Criteria.PackageFamilyName"),
+                        TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
+                        TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "Criteria.ArchitectureFilter"),
                         TraceLoggingInt32(static_cast<std::int32_t>(candidateArchitecture), "Architecture"),
                         TraceLoggingHexInt32(static_cast<std::int32_t>(supportedArchitectures), "SupportedArchitectures"),
                         TraceLoggingUInt16(static_cast<std::uint32_t>(nativeMachine), "NativeMachineArchitecture"),
@@ -255,9 +256,10 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
                         PackageManagementTelemetryProvider::Provider(),
                         "PackageDeployment.Resolver.Scan.NoMatch.Architecture",
                         TraceLoggingWideString(candidateFullName.c_str(), "PackageFullName"),
-                        TraceLoggingWideString(criteria.get(), "Criteria"),
+                        TraceLoggingWideString(packageFamilyName.c_str(), "Criteria.PackageFamilyName"),
+                        TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
+                        TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "Criteria.ArchitectureFilter"),
                         TraceLoggingInt32(static_cast<std::int32_t>(candidateArchitecture), "Architecture"),
-                        TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "ArchitectureFilter"),
                         TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
                         TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                     continue;
@@ -273,7 +275,9 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
                     PackageManagementTelemetryProvider::Provider(),
                     "PackageDeployment.Resolver.Scan.NoMatch.Status",
                     TraceLoggingWideString(candidateFullName.c_str(), "PackageFullName"),
-                    TraceLoggingWideString(criteria.get(), "Criteria"),
+                    TraceLoggingWideString(packageFamilyName.c_str(), "Criteria.PackageFamilyName"),
+                    TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
+                    TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "Criteria.ArchitectureFilter"),
                     TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
                     TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                 continue;
@@ -286,7 +290,9 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
                     PackageManagementTelemetryProvider::Provider(),
                     "PackageDeployment.Resolver.Found.StopOnFirst",
                     TraceLoggingWideString(candidateFullName.c_str(), "PackageFullName"),
-                    TraceLoggingWideString(criteria.get(), "Criteria"),
+                    TraceLoggingWideString(packageFamilyName.c_str(), "Criteria.PackageFamilyName"),
+                    TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
+                    TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "Criteria.ArchitectureFilter"),
                     TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
                     TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                 return candidateFullName;
@@ -302,8 +308,9 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
     if (bestFitPackageFullName.empty())
     {
         (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED,
-                         "PackageDeploymentResolver: No match (%ls)",
-                         criteria.get());
+                         "PackageDeploymentResolver: No match (PackageFamilyName=%ls MinVersion=%hu.%hu.%hu.%hu ArchitectureFilter:0x%X)",
+                         packageFamilyName.c_str(), minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision,
+                         static_cast<std::uint32_t>(processorArchitectureFilter));
     }
     else
     {
@@ -311,7 +318,9 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
             PackageManagementTelemetryProvider::Provider(),
             "PackageDeployment.Resolver.Found",
             TraceLoggingWideString(bestFitPackageFullName.c_str(), "PackageFullName"),
-            TraceLoggingWideString(criteria.get(), "Criteria"),
+            TraceLoggingWideString(packageFamilyName.c_str(), "Criteria.PackageFamilyName"),
+            TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
+            TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "Criteria.ArchitectureFilter"),
             TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
             TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
     }
