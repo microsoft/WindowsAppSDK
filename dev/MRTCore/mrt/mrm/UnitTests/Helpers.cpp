@@ -553,7 +553,6 @@ bool TestBlob::Init(__in size_t cbBuffer, __in size_t cbBlob, __in UINT32 buffer
     return true;
 }
 
-_Success_(return == false)
 bool TestBlob::CheckBlobInitialized(__out_opt int* pOffsetOut)
 {
     if (pOffsetOut != nullptr)
@@ -576,7 +575,6 @@ bool TestBlob::CheckBlobInitialized(__out_opt int* pOffsetOut)
     return true;
 }
 
-_Success_(return == false)
 bool TestBlob::CheckBufferUndamaged(__out_opt int* pOffsetOut)
 {
     if (pOffsetOut != nullptr)
