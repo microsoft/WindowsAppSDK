@@ -234,14 +234,6 @@ void TestUtils::ValidateReturnAndStatus(_In_ bool returnValue, _In_ PCWSTR expec
 
 void TestUtils::TryGetExpectedResult(_In_ PCWSTR varName, _Out_ DEFRESULT* result, _Out_opt_ bool* returnValue)
 {
-    if (result != nullptr)
-    {
-        *result = E_DEF_INVALID_QUALIFIER_NAME;
-    }
-    if (returnValue != nullptr)
-    {
-        *returnValue = false;
-    }
     String tmp;
     String expectedResultString;
     if (SUCCEEDED(TestData::TryGetValue(varName, expectedResultString)))
