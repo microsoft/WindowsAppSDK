@@ -150,8 +150,8 @@ public:
     UINT32 GetBufferFill() const { return m_bufferFill.ui32; }
     BYTE GetBufferFill(__in size_t offset) const { return m_bufferFill.b[(offset % 4)]; }
 
-    _Success_(return == true) bool CheckBlobInitialized(__out_opt int* pOffsetOut = NULL);
-    _Success_(return == true) bool CheckBufferUndamaged(__out_opt int* pOffsetOut = NULL);
+    bool CheckBlobInitialized(__out_opt int* pOffsetOut = NULL);
+    bool CheckBufferUndamaged(__out_opt int* pOffsetOut = NULL);
     bool CheckCopy(
         __in_bcount(cbCopy) const BYTE* pCopy,
         __in size_t cbCopy,

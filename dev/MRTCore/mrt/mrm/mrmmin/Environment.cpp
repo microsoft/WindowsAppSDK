@@ -1372,14 +1372,13 @@ bool EnvironmentCollectionBase::TryFindCompatibleEnvironment(
     _In_ int minor,
     _Outptr_opt_result_maybenull_ const IEnvironment** pEnvironmentOut) const
 {
+    if (pEnvironmentOut != nullptr)
+    {
+        *pEnvironmentOut = NULL;
+    }
     if ((pUniqueName == nullptr) || DefString_IsEmpty(pUniqueName))
     {
         return false;
-    }
-
-    if (pEnvironmentOut != NULL)
-    {
-        *pEnvironmentOut = NULL;
     }
 
     const IEnvironment* pBest = NULL;

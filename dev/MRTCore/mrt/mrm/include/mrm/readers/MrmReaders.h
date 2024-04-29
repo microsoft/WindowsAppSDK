@@ -594,6 +594,7 @@ public:
 
     HRESULT GetCandidate(_In_ int index, _Inout_ ResourceCandidateResult* pCandidateOut) const;
 
+    _Success_(return == true)
     virtual bool TryGetResourceLink(_Out_ const IHierarchicalSchema** linksToSchema, _Out_ UINT32* linksToResourceIndex) const;
 
 protected:

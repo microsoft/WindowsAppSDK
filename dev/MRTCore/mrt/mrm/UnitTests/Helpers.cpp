@@ -556,6 +556,10 @@ bool TestBlob::Init(__in size_t cbBuffer, __in size_t cbBlob, __in UINT32 buffer
 _Success_(return == false)
 bool TestBlob::CheckBlobInitialized(__out_opt int* pOffsetOut)
 {
+    if (pOffsetOut != nullptr)
+    {
+        *pOffsetOut = 0;
+    }
     BYTE* pData = GetBlob();
 
     for (size_t i = 0; i < m_cbBlob; i++)
@@ -575,6 +579,10 @@ bool TestBlob::CheckBlobInitialized(__out_opt int* pOffsetOut)
 _Success_(return == false)
 bool TestBlob::CheckBufferUndamaged(__out_opt int* pOffsetOut)
 {
+    if (pOffsetOut != nullptr)
+    {
+        *pOffsetOut = 0;
+    }
     BYTE* pData = GetBuffer();
 
     // check before the blob

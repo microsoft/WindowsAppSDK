@@ -916,13 +916,17 @@ HRESULT NamedResourceResult::GetCandidate(_In_ int index, _Inout_ ResourceCandid
 _Success_(return == true)
 bool NamedResourceResult::TryGetResourceLink(_Out_ const IHierarchicalSchema** linksToSchema, _Out_ UINT32* linksToResourceIndex) const
 {
-    if (m_pRawMap == nullptr)
-    {
-        return false;
-    }
     if (linksToSchema != nullptr)
     {
         *linksToSchema = nullptr;
+    }
+    if (linksToResourceIndex != nullptr)
+    {
+        *linksToResourceIndex = 0;
+    }
+    if (m_pRawMap == nullptr)
+    {
+        return false;
     }
     return m_pRawMap->TryGetResourceLinkForResourceIndex(m_resourceIndexInSchema, linksToSchema, linksToResourceIndex);
 }
