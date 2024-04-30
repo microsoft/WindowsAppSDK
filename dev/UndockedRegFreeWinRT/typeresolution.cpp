@@ -231,9 +231,8 @@ namespace UndockedRegFreeWinRT
         }
 
         wchar_t szCandidateFileName[MAX_PATH + 1]{};
+        RETURN_IF_FAILED(WindowsCreateString(L"", 0, phstrMetaDataFilePath));
         HRESULT hr{ StringCchCopy(szCandidateFileName, ARRAYSIZE(szCandidateFileName), pszFullName) };
-        hr = WindowsCreateString(L"", 0, phstrMetaDataFilePath);
-
         if (SUCCEEDED(hr))
         {
             // To resolve type SomeNamespace.B.C, first check if SomeNamespace.B.C is a type or
