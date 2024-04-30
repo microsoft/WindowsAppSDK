@@ -130,7 +130,7 @@ public:
 
     HRESULT SetDescriptorIndex(__in BaseFile::SectionIndex index);
 
-    HRESULT GetSectionData(__in INT32 sectionIndex, _Out_ const BYTE** data, __out UINT32* pcbSectionData);
+    HRESULT GetSectionData(__in INT32 sectionIndex, _Out_ const BYTE** data, _Out_ UINT32* pcbSectionData);
 
     HRESULT GenerateFileContents(__deref_out void** ppBufferOut, __out_opt UINT32* pBufferLenOut);
 
