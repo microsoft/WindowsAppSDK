@@ -319,6 +319,7 @@ public:
         _In_ BaseFile::SectionIndex sectionIndex,
         _Out_ const IFileSection** result) const;
 
+    _Success_(return == true)
     const bool TryGetSectionIndexByType(
         _In_ const DEFFILE_SECTION_TYPEID& sectionType,
         _In_ int fileIndex,
@@ -473,6 +474,7 @@ public:
         _In_ BaseFile::SectionIndex sectionIndex,
         _Out_ const IFileSection** result) const;
 
+    _Success_(return == true)
     const bool TryGetSectionIndexByType(
         _In_ const DEFFILE_SECTION_TYPEID& sectionType,
         _In_ int fileIndex,

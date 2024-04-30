@@ -594,6 +594,7 @@ public:
 
     HRESULT GetCandidate(_In_ int index, _Inout_ ResourceCandidateResult* pCandidateOut) const;
 
+    _Success_(return == true)
     virtual bool TryGetResourceLink(_Out_ const IHierarchicalSchema** linksToSchema, _Out_ UINT32* linksToResourceIndex) const;
 
 protected:
@@ -913,6 +914,7 @@ public:
         _Out_ const IHierarchicalSchema** mapsToSchema,
         _Out_ UINT32* linksToResourceIndex) const;
 
+    _Success_(return == true)
     bool TryGetResourceLinkForResourceIndex(
         _In_ UINT32 linksFromResourceIndex,
         _Out_ const IHierarchicalSchema** linksToSchema,
@@ -1038,6 +1040,7 @@ public:
         _Outptr_opt_result_maybenull_ const IHierarchicalSchema** mapsToSchema,
         _Out_opt_ UINT32* linksToResourceIndex) const;
 
+    _Success_(return == true)
     bool TryGetResourceLinkForResourceIndex(
         _In_ UINT32 linksFromResourceIndex,
         _Outptr_opt_result_maybenull_ const IHierarchicalSchema** linksToSchema,
@@ -1407,6 +1410,7 @@ public:
         _In_ BaseFile::SectionIndex sectionIndex,
         _Out_ const IFileSection** result) const;
 
+    _Success_(return == true)
     virtual const bool TryGetSectionIndexByType(
         _In_ const DEFFILE_SECTION_TYPEID& sectionType,
         _In_ int fileIndex,

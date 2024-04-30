@@ -319,7 +319,8 @@ HRESULT HierarchicalSchemaSectionBuilder::GetOrAddItem(PCWSTR pItemName, int* in
     return S_OK;
 }
 
-bool HierarchicalSchemaSectionBuilder::TryGetScopeInfo(int scopeIndex, StringResult* pNameOut, int* pNumChildrenOut) const
+_Success_(return == true)
+bool HierarchicalSchemaSectionBuilder::TryGetScopeInfo(_In_ int scopeIndex, _Out_ StringResult* pNameOut, _Out_opt_ int* pNumChildrenOut) const
 {
     if (m_pPreviousSchema != nullptr)
     {
@@ -340,7 +341,8 @@ bool HierarchicalSchemaSectionBuilder::TryGetScopeInfo(int scopeIndex, StringRes
     return SUCCEEDED(pScope->GetFullPath(pNameOut));
 }
 
-bool HierarchicalSchemaSectionBuilder::TryGetScopeChild(int scopeIndex, int childIndex, int* pChildScopeIndexOut, int* pChildItemIndexOut)
+_Success_(return == true)
+bool HierarchicalSchemaSectionBuilder::TryGetScopeChild(_In_ int scopeIndex, _In_ int childIndex, _Out_opt_ int* pChildScopeIndexOut, _Out_opt_ int* pChildItemIndexOut)
     const
 {
     if (m_pPreviousSchema != nullptr)

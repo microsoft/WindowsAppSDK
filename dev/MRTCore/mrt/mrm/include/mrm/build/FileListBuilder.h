@@ -159,6 +159,7 @@ public:
          * If pParentSection is NULL, index must be less than 0 or an
          * INVALID_ARG results.
          */
+    _Success_(return == true)
     bool TryGetNext(__in_opt const void* pOwner, __in int index, __out FileInfoPrivateData** ppDataOut) const;
 
     /*!
@@ -965,6 +966,7 @@ public:
          * Returns true if the requested folder is found.  Returns
          * false if an error occurs.
          */
+    _Success_(return == true)
     bool TryGetFolderByIndex(__in int index, __out FolderInfo** ppFolderOut) const;
 
     /*!
@@ -982,6 +984,7 @@ public:
          * Returns true if the requested folder is found.  Returns
          * false if an error occurs.
          */
+    _Success_(return == true)
     bool TryGetFileByIndex(__in int index, __out FileInfo** ppFileOut) const;
 
     /*!

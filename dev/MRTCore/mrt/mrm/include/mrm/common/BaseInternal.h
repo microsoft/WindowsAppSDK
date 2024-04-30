@@ -27,14 +27,14 @@ extern "C"
         _In_ size_t numNewElems,
         _Outptr_result_bytebuffer_(numNewElems* elemSizeInBytes) void** result);
 
-    _Success_(return ) _Check_return_ extern BOOLEAN _DefArray_TryEnsureSizeByElemSize(
+    _Success_(return == true) extern BOOLEAN _DefArray_TryEnsureSizeByElemSize(
         _In_reads_bytes_opt_(elemSizeInBytes* numOldElems) void* existingPtr,
         _In_ size_t elemSizeInBytes,
         _In_ size_t numOldElems,
         _In_ size_t numNewElems,
         _Outptr_result_bytebuffer_(elemSizeInBytes* numNewElems) void** newPtr);
 
-    _Success_(return ) _Check_return_ extern BOOLEAN _DefArray_TryExpandAndRelocate(
+    _Success_(return == true) extern BOOLEAN _DefArray_TryExpandAndRelocate(
         _In_reads_bytes_opt_(elemSizeInBytes* oldSize) void* existingPtr,
         _In_ size_t elemSizeInBytes,
         _In_ size_t oldSize,
@@ -74,7 +74,7 @@ extern "C"
      * (Wrappers for) platform-independent string operations.
      */
 
-    /*! 
+    /*!
      * Test if string is null or empty.
      */
     BOOLEAN DefString_IsEmpty(_In_ PCWSTR pSelf);
