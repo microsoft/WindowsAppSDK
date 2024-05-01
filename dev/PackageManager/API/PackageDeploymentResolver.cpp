@@ -307,10 +307,14 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
     // Did we find what we're looking for?
     if (bestFitPackageFullName.empty())
     {
-        (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED,
-                         "PackageDeploymentResolver: No match (PackageFamilyName=%ls MinVersion=%hu.%hu.%hu.%hu ArchitectureFilter:0x%X)",
-                         packageFamilyName.c_str(), minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision,
-                         static_cast<std::uint32_t>(processorArchitectureFilter));
+        TraceLoggingWrite(
+            PackageManagementTelemetryProvider::Provider(),
+            "PackageDeployment.Resolver.NotFound",
+            TraceLoggingWideString(packageFamilyName.c_str(), "Criteria.PackageFamilyName"),
+            TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
+            TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "Criteria.ArchitectureFilter"),
+            TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
+            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
     }
     else
     {

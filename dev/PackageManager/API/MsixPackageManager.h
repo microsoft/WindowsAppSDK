@@ -7,8 +7,6 @@
 // Reserved: _HRESULT_TYPEDEF_(0x80040301L)
 // Reserved: _HRESULT_TYPEDEF_(0x80040302L)
 // Reserved: _HRESULT_TYPEDEF_(0x80040303L)
-
-/// MSIX Package Manager: Found no applicable package matching the criteria
-#define MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED    _HRESULT_TYPEDEF_(0x80040304L)
+// Reserved: _HRESULT_TYPEDEF_(0x80040304L)
 
 #endif // MSIXPACKAGEMANAGER_H
