@@ -81,16 +81,50 @@ namespace WindowsAppSDK.TemplateUtilities
         {
             using (var progressDialog = new ProgressForm())
             {
-                // Start the installation task but do not await it here
-                var installationTask = StartInstallationAsync();
+                // Start the installation asynchronously
+                var installationTask = StartInstallationAsync(progressDialog);
 
-                // Show the dialog which blocks the UI until closed
+                // Show the dialog modally, which will block until progressDialog.Close() is called
                 progressDialog.ShowDialog();
+            }
+        }
 
-                // Now wait for the installation to complete if still running
-                await installationTask;
+        private async Task StartInstallationAsync(ProgressForm progressDialog)
+        {
+            try
+            {
+                IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
+                if (installer == null)
+                {
+                    LogError("Could not obtain IVsPackageInstaller service.");
+                    progressDialog.Invoke(new Action(progressDialog.Close));  // Close on error
+                    return;
+                }
 
-                // Ensure the UI thread is used to save all projects
+                foreach (var packageId in _nuGetPackages)
+                {
+                    try
+                    {
+                        await InstallNuGetPackageAsync(installer, packageId);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
+                    }
+                }
+
+                // Once all packages are installed, close the dialog on the UI thread
+                progressDialog.Invoke(new Action(progressDialog.Close));
+            }
+            finally
+            {
+                if (progressDialog.Visible)
+                {
+                    // Ensure the dialog is closed if still open for any reason
+                    progressDialog.Invoke(new Action(progressDialog.Close));
+                }
+
+                // Ensure the UI thread is used to save all projects after the dialog is closed
                 await ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
                 {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -98,27 +132,7 @@ namespace WindowsAppSDK.TemplateUtilities
                 });
             }
         }
-        private async Task StartInstallationAsync()
-        {
-            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
-            if (installer == null)
-            {
-                LogError("Could not obtain IVsPackageInstaller service.");
-                return;
-            }
 
-            foreach (var packageId in _nuGetPackages)
-            {
-                try
-                {
-                    await InstallNuGetPackageAsync(installer, packageId); // Now this truly runs asynchronously
-                }
-                catch (Exception ex)
-                {
-                    LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
-                }
-            }
-        }
         public void BeforeOpeningFile(ProjectItem _)
         {
         }        
