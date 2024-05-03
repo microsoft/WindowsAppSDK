@@ -4,40 +4,55 @@ using System.Windows.Forms;
 public class ProgressForm : Form
 {
     private PictureBox spinner;
+    private Label messageLabel;
+    private FlowLayoutPanel layoutPanel;
 
     public ProgressForm()
     {
         InitializeComponent();
-        TopMost = true;  // Ensures it stays on top
+        TopMost = true; // Ensures it stays on top of the main application window
     }
 
     private void InitializeComponent()
     {
-        spinner = new System.Windows.Forms.PictureBox();
+        spinner = new PictureBox();
+        messageLabel = new Label();
+        layoutPanel = new FlowLayoutPanel();
+
         ((System.ComponentModel.ISupportInitialize)(spinner)).BeginInit();
 
+        // Panel setup
+        layoutPanel.FlowDirection = FlowDirection.LeftToRight;
+        layoutPanel.Dock = DockStyle.Fill;
+        layoutPanel.Padding = new Padding(40, 20, 40, 20); // Increased padding
+
         // Spinner setup
-        spinner.Dock = System.Windows.Forms.DockStyle.Fill;
-        spinner.Image = Image.FromFile(@"C:\Users\shasnayak\WindowsAppSDK\dev\VSIX\Shared\fidget.gif");
-        // Ensure the path points to a valid spinner GIF
-        spinner.Location = new System.Drawing.Point(0, 0);
-        spinner.Name = "spinner";
-        spinner.Size = new System.Drawing.Size(284, 262);
-        spinner.SizeMode = PictureBoxSizeMode.CenterImage;
-        Controls.Add(spinner);
+        spinner.Image = Image.FromFile(@"C:\Users\shasnayak\WindowsAppSDK\dev\VSIX\Shared\spinner.gif");
+        spinner.SizeMode = PictureBoxSizeMode.Zoom;
+        spinner.Size = new Size(100, 100);
+        spinner.Margin = new Padding(0, 0, 10, 0); // Adjusted margin for proper alignment
+
+        // Message Label setup
+        messageLabel.Font = new Font("Segoe UI", 10F, FontStyle.Regular);
+        messageLabel.ForeColor = Color.Black;
+        messageLabel.Text = "Installing NuGet packages to your project, please wait...";
+        messageLabel.AutoSize = true;
+        messageLabel.TextAlign = ContentAlignment.MiddleLeft;
+
+        // Add controls to panel
+        layoutPanel.Controls.Add(spinner);
+        layoutPanel.Controls.Add(messageLabel);
 
         // Form setup
-        AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-        AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        ClientSize = new System.Drawing.Size(284, 262);
-        FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-        StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+        ClientSize = new Size(600, 200); // Adjust size to better fit contents
+        Controls.Add(layoutPanel);
+        FormBorderStyle = FormBorderStyle.FixedDialog;
+        StartPosition = FormStartPosition.CenterScreen;
         MaximizeBox = false;
         MinimizeBox = false;
         Name = "ProgressForm";
         ShowIcon = false;
         ShowInTaskbar = false;
-        Text = "Processing...";
 
         ((System.ComponentModel.ISupportInitialize)(spinner)).EndInit();
     }
