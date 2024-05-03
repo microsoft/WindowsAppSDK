@@ -18,7 +18,7 @@ public class ProgressForm : Form
 
         // Spinner setup
         spinner.Dock = System.Windows.Forms.DockStyle.Fill;
-        spinner.Image = Image.FromFile(@"C:\Users\shasnayak\WindowsAppSDK\dev\VSIX\Shared\loading-buffering.gif");
+        spinner.Image = Image.FromFile(@"C:\Users\shasnayak\WindowsAppSDK\dev\VSIX\Shared\fidget.gif");
         // Ensure the path points to a valid spinner GIF
         spinner.Location = new System.Drawing.Point(0, 0);
         spinner.Name = "spinner";

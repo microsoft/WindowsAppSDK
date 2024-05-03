@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Deployment.Internal;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace WindowsAppSDK.TemplateUtilities
 {
@@ -24,6 +25,7 @@ namespace WindowsAppSDK.TemplateUtilities
         private IComponentModel _componentModel;
         private IEnumerable<string> _nuGetPackages;
         private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
+
         
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
@@ -79,13 +81,18 @@ namespace WindowsAppSDK.TemplateUtilities
         // InstallNuGetPackagesAsync iterates over the package list and installs each
         private async Task InstallNuGetPackagesAsync()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            DTE dte = ServiceProvider.GlobalProvider.GetService(typeof(DTE)) as DTE;
+            IntPtr mainWindowHandle = new IntPtr((int)dte.MainWindow.HWnd);
+            Form mainVsWindow = Control.FromHandle(mainWindowHandle) as Form;
+
             using (var progressDialog = new ProgressForm())
             {
                 // Start the installation asynchronously
                 var installationTask = StartInstallationAsync(progressDialog);
 
                 // Show the dialog modally, which will block until progressDialog.Close() is called
-                progressDialog.ShowDialog();
+                progressDialog.ShowDialog(mainVsWindow);
             }
         }
 
