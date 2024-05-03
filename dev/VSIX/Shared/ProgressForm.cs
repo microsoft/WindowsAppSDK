@@ -5,7 +5,7 @@ public class ProgressForm : Form
 {
     private PictureBox spinner;
     private Label messageLabel;
-    private FlowLayoutPanel layoutPanel;
+    private TableLayoutPanel tableLayoutPanel;
 
     public ProgressForm()
     {
@@ -17,35 +17,38 @@ public class ProgressForm : Form
     {
         spinner = new PictureBox();
         messageLabel = new Label();
-        layoutPanel = new FlowLayoutPanel();
+        tableLayoutPanel = new TableLayoutPanel();
 
         ((System.ComponentModel.ISupportInitialize)(spinner)).BeginInit();
 
-        // Panel setup
-        layoutPanel.FlowDirection = FlowDirection.LeftToRight;
-        layoutPanel.Dock = DockStyle.Fill;
-        layoutPanel.Padding = new Padding(40, 20, 40, 20); // Increased padding
+        // TableLayoutPanel setup
+        tableLayoutPanel.RowCount = 1; // One row
+        tableLayoutPanel.ColumnCount = 2; // Two columns
+        tableLayoutPanel.Dock = DockStyle.Fill;
+        tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 100F)); // Fixed size for spinner
+        tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); // Remaining space for text
+        tableLayoutPanel.BackColor = Color.White;
 
         // Spinner setup
-        spinner.Image = Image.FromFile(@"C:\Users\shasnayak\WindowsAppSDK\dev\VSIX\Shared\spinner.gif");
+        spinner.Image = Image.FromFile(@"C:\Users\shasnayak\WindowsAppSDK\dev\VSIX\Shared\pacman.gif");
         spinner.SizeMode = PictureBoxSizeMode.Zoom;
         spinner.Size = new Size(100, 100);
-        spinner.Margin = new Padding(0, 0, 10, 0); // Adjusted margin for proper alignment
+        spinner.Anchor = AnchorStyles.None; // Center in table cell
 
         // Message Label setup
-        messageLabel.Font = new Font("Segoe UI", 10F, FontStyle.Regular);
-        messageLabel.ForeColor = Color.Black;
         messageLabel.Text = "Installing NuGet packages to your project, please wait...";
-        messageLabel.AutoSize = true;
+        messageLabel.Font = new Font("Segoe UI", 10F);
+        messageLabel.Dock = DockStyle.Fill;
         messageLabel.TextAlign = ContentAlignment.MiddleLeft;
+        messageLabel.AutoSize = true;
 
-        // Add controls to panel
-        layoutPanel.Controls.Add(spinner);
-        layoutPanel.Controls.Add(messageLabel);
+        // Add controls to the table
+        tableLayoutPanel.Controls.Add(spinner, 0, 0);
+        tableLayoutPanel.Controls.Add(messageLabel, 1, 0);
 
         // Form setup
-        ClientSize = new Size(600, 200); // Adjust size to better fit contents
-        Controls.Add(layoutPanel);
+        ClientSize = new Size(700, 150); // Increased width to prevent wrapping
+        Controls.Add(tableLayoutPanel);
         FormBorderStyle = FormBorderStyle.FixedDialog;
         StartPosition = FormStartPosition.CenterScreen;
         MaximizeBox = false;
@@ -53,6 +56,7 @@ public class ProgressForm : Form
         Name = "ProgressForm";
         ShowIcon = false;
         ShowInTaskbar = false;
+        BackColor = Color.White;
 
         ((System.ComponentModel.ISupportInitialize)(spinner)).EndInit();
     }
