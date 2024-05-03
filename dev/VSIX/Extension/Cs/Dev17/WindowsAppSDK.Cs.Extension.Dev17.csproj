@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <ExtensionDependencies Condition=" '$(ExcludeRestorePackageImports)' != 'true' " Include="$(PkgNuget_VisualStudio)\**\NuGet.VisualStudio.dll" />
+    <Compile Include="..\..\..\Shared\ProgressForm.cs" Link="ProgressForm.cs" />
     <Compile Include="..\..\..\Shared\WizardImplementation.cs" Link="WizardImplementation.cs" />
     <Content Include="@(ExtensionDependencies)">
       <VSIXSubPath>.</VSIXSubPath>
@@ -73,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(ItemTemplatesDir)Desktop\CSharp\BlankWindow\WinUI.Desktop.Cs.BlankWindow.csproj">

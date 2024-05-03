@@ -79,29 +79,39 @@ namespace WindowsAppSDK.TemplateUtilities
         // InstallNuGetPackagesAsync iterates over the package list and installs each
         private async Task InstallNuGetPackagesAsync()
         {
-            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
-            if (installer == null)
-            {
-                LogError("Could not obtain IVsPackageInstaller service.");
+            ProgressForm progressDialog = new ProgressForm();
 
-            }
-            //await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            foreach (var packageId in _nuGetPackages)
-            {
-                try
+            // Run the blocking operation in a separate task
+            var task = Task.Run(() => {
+                IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
+                if (installer == null)
                 {
-                    // No version specified; it installs the latest stable version
-                    await InstallNuGetPackageAsync(installer, packageId);
+                    LogError("Could not obtain IVsPackageInstaller service.");
+                    return;
                 }
-                catch (Exception ex)
-                {
-                    LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
-                }
-            }
-    
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            SaveAllProjects();
 
+                foreach (var packageId in _nuGetPackages)
+                {
+                    try
+                    {
+                        InstallNuGetPackageAsync(installer, packageId).Wait(); // Block on this task
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
+                    }
+                }
+
+                ThreadHelper.JoinableTaskFactory.Run(async () => {
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    SaveAllProjects();
+                });
+            });
+
+            progressDialog.ShowDialog();  // This will block until the dialog is closed manually or programmatically
+
+            await task; // Ensure all tasks are completed before closing the dialog
+            progressDialog.Close();
         }
         public void BeforeOpeningFile(ProjectItem _)
         {
@@ -144,7 +154,7 @@ namespace WindowsAppSDK.TemplateUtilities
         private void LogError(string message)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            ThreadHelper.JoinableTaskFactory.Run(async delegate
+            ThreadHelper.JoinableTaskFactory.   Run(async delegate
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 IVsActivityLog log = ServiceProvider.GlobalProvider.GetService(typeof(SVsActivityLog)) as IVsActivityLog;
