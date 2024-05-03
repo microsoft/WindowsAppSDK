@@ -79,39 +79,45 @@ namespace WindowsAppSDK.TemplateUtilities
         // InstallNuGetPackagesAsync iterates over the package list and installs each
         private async Task InstallNuGetPackagesAsync()
         {
-            ProgressForm progressDialog = new ProgressForm();
+            using (var progressDialog = new ProgressForm())
+            {
+                // Start the installation task but do not await it here
+                var installationTask = StartInstallationAsync();
 
-            // Run the blocking operation in a separate task
-            var task = Task.Run(() => {
-                IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
-                if (installer == null)
+                // Show the dialog which blocks the UI until closed
+                progressDialog.ShowDialog();
+
+                // Now wait for the installation to complete if still running
+                await installationTask;
+
+                // Ensure the UI thread is used to save all projects
+                await ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
                 {
-                    LogError("Could not obtain IVsPackageInstaller service.");
-                    return;
-                }
-
-                foreach (var packageId in _nuGetPackages)
-                {
-                    try
-                    {
-                        InstallNuGetPackageAsync(installer, packageId).Wait(); // Block on this task
-                    }
-                    catch (Exception ex)
-                    {
-                        LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
-                    }
-                }
-
-                ThreadHelper.JoinableTaskFactory.Run(async () => {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                     SaveAllProjects();
                 });
-            });
+            }
+        }
+        private async Task StartInstallationAsync()
+        {
+            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
+            if (installer == null)
+            {
+                LogError("Could not obtain IVsPackageInstaller service.");
+                return;
+            }
 
-            progressDialog.ShowDialog();  // This will block until the dialog is closed manually or programmatically
-
-            await task; // Ensure all tasks are completed before closing the dialog
-            progressDialog.Close();
+            foreach (var packageId in _nuGetPackages)
+            {
+                try
+                {
+                    await InstallNuGetPackageAsync(installer, packageId); // Now this truly runs asynchronously
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
+                }
+            }
         }
         public void BeforeOpeningFile(ProjectItem _)
         {
