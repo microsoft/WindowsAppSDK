@@ -64,98 +64,66 @@ namespace WindowsAppSDK.TemplateUtilities
                 }
             }
         }
-        private async Task InstallNuGetPackageAsync(IVsPackageInstaller installer, string packageId)
-        {
-            await Task.Run(() =>
-            {
-                try
-                {
-                    installer.InstallPackage(null, _project, packageId, "", false);
-                    // If there's any CPU-bound work, it will be done on the background thread.
-                }
-                catch (Exception ex)
-                {
-                    LogError($"Error installing package {packageId}: {ex.Message}");
-                }
-            });
-        }
-        // InstallNuGetPackagesAsync iterates over the package list and installs each
         private async Task InstallNuGetPackagesAsync()
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            int canceled;  // Changed from bool to int
-            _waitDialog.StartWaitDialog("Installing NuGet packages", "Please wait while NuGet packages are being installed to your project...", null, null, "Operation in progress...", 0, true, true);
-            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
+            int canceled; // This variable will store the status after the dialog is closed
 
+            // Start the package installation task but do not await it here
+            var installationTask = StartInstallationAsync();
+
+            // Start the threaded wait dialog
+            _waitDialog.StartWaitDialog("Installing NuGet packages", "Please wait while NuGet packages are being installed to your project...", null, null, "Operation in progress...", 0, false, true);
+
+            // Now await the installation task to complete
+            await installationTask;
+
+            // Once the installation is complete, end the wait dialog
+            _waitDialog.EndWaitDialog(out canceled);
+
+            // Check if the process was canceled before proceeding
+            if (canceled == 0) // If not canceled, finalize the process
+            {
+                await ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
+                {
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    SaveAllProjects();
+                });
+            }
+        }
+
+        private async Task StartInstallationAsync()
+        {
+            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
             if (installer == null)
             {
                 LogError("Could not obtain IVsPackageInstaller service.");
                 return;
             }
 
-            try
+            foreach (var packageId in _nuGetPackages)
             {
-                foreach (var packageId in _nuGetPackages)
+                try
                 {
                     await InstallNuGetPackageAsync(installer, packageId);
                 }
-            }
-            finally
-            {
-                _waitDialog.EndWaitDialog(out canceled);
-                if (canceled == 0)  // Check if the dialog was not canceled; 0 means not canceled
+                catch (Exception ex)
                 {
-                    await ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
-                    {
-                        await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                        SaveAllProjects();
-                    });
+                    LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
                 }
             }
         }
 
-
-        private async Task StartInstallationAsync(ProgressForm progressDialog)
+        private async Task InstallNuGetPackageAsync(IVsPackageInstaller installer, string packageId)
         {
             try
             {
-                IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
-                if (installer == null)
-                {
-                    LogError("Could not obtain IVsPackageInstaller service.");
-                    progressDialog.Invoke(new Action(progressDialog.Close));  // Close on error
-                    return;
-                }
-
-                foreach (var packageId in _nuGetPackages)
-                {
-                    try
-                    {
-                        await InstallNuGetPackageAsync(installer, packageId);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
-                    }
-                }
-
-                // Once all packages are installed, close the dialog on the UI thread
-                progressDialog.Invoke(new Action(progressDialog.Close));
+                // Simulate or perform package installation, which might be CPU-bound
+                await Task.Run(() => installer.InstallPackage(null, _project, packageId, "", false));
             }
-            finally
+            catch (Exception ex)
             {
-                if (progressDialog.Visible)
-                {
-                    // Ensure the dialog is closed if still open for any reason
-                    progressDialog.Invoke(new Action(progressDialog.Close));
-                }
-
-                // Ensure the UI thread is used to save all projects after the dialog is closed
-                await ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
-                {
-                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                    SaveAllProjects();
-                });
+                LogError($"Error installing package {packageId}: {ex.Message}");
             }
         }
 
