@@ -66,30 +66,32 @@ namespace WindowsAppSDK.TemplateUtilities
         }
         private async Task InstallNuGetPackagesAsync()
         {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            int canceled; // This variable will store the status after the dialog is closed
 
-            // Start the package installation task but do not await it here
-            var installationTask = StartInstallationAsync();
-
-            // Start the threaded wait dialog
-            _waitDialog.StartWaitDialog("Installing NuGet packages", "Please wait while NuGet packages are being installed to your project...", null, null, "Operation in progress...", 0, false, true);
-
-            // Now await the installation task to complete
-            await installationTask;
-
-            // Once the installation is complete, end the wait dialog
-            _waitDialog.EndWaitDialog(out canceled);
-
-            // Check if the process was canceled before proceeding
-            if (canceled == 0) // If not canceled, finalize the process
+            await ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
             {
-                await ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                int canceled; // This variable will store the status after the dialog is closed
+
+                // Start the package installation task but do not await it here
+                var installationTask = StartInstallationAsync();
+
+                // Start the threaded wait dialog
+                _waitDialog.StartWaitDialog("Installing NuGet packages", "Please wait while NuGet packages are being installed to your project...", null, null, "Operation in progress...", 0, false, true);
+
+                // Now await the installation task to complete
+                await installationTask;
+
+                // Once the installation is complete, end the wait dialog
+                _waitDialog.EndWaitDialog(out canceled);
+                // Check if the process was canceled before proceeding
+                if (canceled == 0) // If not canceled, finalize the process
                 {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                     SaveAllProjects();
-                });
-            }
+                }
+            });
+
+
         }
 
         private async Task StartInstallationAsync()
