@@ -25,12 +25,13 @@ namespace WindowsAppSDK.TemplateUtilities
         private IComponentModel _componentModel;
         private IEnumerable<string> _nuGetPackages;
         private IVsNuGetProjectUpdateEvents _nugetProjectUpdateEvents;
+        private IVsThreadedWaitDialog2 _waitDialog;
 
-        
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             _componentModel = (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
+            _waitDialog = ServiceProvider.GlobalProvider.GetService(typeof(SVsThreadedWaitDialog)) as IVsThreadedWaitDialog2;
             if (_componentModel != null)
             {
                 _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
@@ -82,19 +83,37 @@ namespace WindowsAppSDK.TemplateUtilities
         private async Task InstallNuGetPackagesAsync()
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            DTE dte = ServiceProvider.GlobalProvider.GetService(typeof(DTE)) as DTE;
-            IntPtr mainWindowHandle = new IntPtr((int)dte.MainWindow.HWnd);
-            Form mainVsWindow = Control.FromHandle(mainWindowHandle) as Form;
+            int canceled;  // Changed from bool to int
+            _waitDialog.StartWaitDialog("Installing NuGet packages", "Please wait while NuGet packages are being installed to your project...", null, null, "Operation in progress...", 0, true, true);
+            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
 
-            using (var progressDialog = new ProgressForm())
+            if (installer == null)
             {
-                // Start the installation asynchronously
-                var installationTask = StartInstallationAsync(progressDialog);
+                LogError("Could not obtain IVsPackageInstaller service.");
+                return;
+            }
 
-                // Show the dialog modally, which will block until progressDialog.Close() is called
-                progressDialog.ShowDialog(mainVsWindow);
+            try
+            {
+                foreach (var packageId in _nuGetPackages)
+                {
+                    await InstallNuGetPackageAsync(installer, packageId);
+                }
+            }
+            finally
+            {
+                _waitDialog.EndWaitDialog(out canceled);
+                if (canceled == 0)  // Check if the dialog was not canceled; 0 means not canceled
+                {
+                    await ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
+                    {
+                        await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                        SaveAllProjects();
+                    });
+                }
             }
         }
+
 
         private async Task StartInstallationAsync(ProgressForm progressDialog)
         {
