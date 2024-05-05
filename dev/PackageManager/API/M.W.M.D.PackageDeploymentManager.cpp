@@ -180,15 +180,16 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             if (!IsReady(packageSetItem))
             {
-                (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED,
-                                 "Id=%ls PackageFamilyName=%ls MinVersion=%hu.%hu.%hu.%hu ArchitectureFilter:0x%X",
-                                 packageSetItem.Id().c_str(),
-                                 packageSetItem.PackageFamilyName().c_str(),
-                                 packageSetItem.MinVersion().Major,
-                                 packageSetItem.MinVersion().Minor,
-                                 packageSetItem.MinVersion().Build,
-                                 packageSetItem.MinVersion().Revision,
-                                 packageSetItem.ProcessorArchitectureFilter());
+                const ::AppModel::Identity::PackageVersion minVersion{ packageSetItem.MinVersion() };
+                TraceLoggingWrite(
+                    PackageManagementTelemetryProvider::Provider(),
+                    "PackageDeployment.Resolver.Scan.NoMatch.Version",
+                    TraceLoggingWideString(packageSetItem.Id().c_str(), "Criteria.Id"),
+                    TraceLoggingWideString(packageSetItem.PackageFamilyName().c_str(), "Criteria.PackageFamilyName"),
+                    TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
+                    TraceLoggingHexInt32(static_cast<std::int32_t>(packageSetItem.ProcessorArchitectureFilter()), "Criteria.ArchitectureFilter"),
+                    TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
+                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                 return false;
             }
         }

@@ -19,17 +19,17 @@ public:
     static const int DescriptionLength = DEFFILE_ATOMPOOL_DESC_LENGTH;
 
 protected:
-    UINT32 m_flags;
-    Atom::PoolIndex m_poolIndex;
-    AtomPoolGroup* m_pAll;
+    UINT32 m_flags{ 0 };
+    Atom::PoolIndex m_poolIndex{ DEF_ATOM_NULL_POOL_INDEX };
+    AtomPoolGroup* m_pAll{ nullptr };
 
-    UINT32 m_cbTotalSize;
+    UINT32 m_cbTotalSize{ 0 };
 
-    const DEFFILE_ATOMPOOL_HEADER* m_pHeader;
-    const HashIndex* m_pHashes;
-    const UINT32* m_pOffsets;
-    const WCHAR* m_pPool;
-    const WCHAR* m_pPoolGroup;
+    const DEFFILE_ATOMPOOL_HEADER* m_pHeader{ nullptr };
+    const HashIndex* m_pHashes{ nullptr };
+    const UINT32* m_pOffsets{ nullptr };
+    const WCHAR* m_pPool{ nullptr };
+    const WCHAR* m_pPoolGroup{ nullptr };
 
     static const DEFFILE_SECTION_TYPEID gAtomPoolSectionType;
 
@@ -90,15 +90,16 @@ public:
     /*!
          * Retrieves a string from an atom pool by index.  Returns NULL
          * if the index is out of range.
-         * 
+         *
          */
     bool TryGetString(Atom::Index index, __inout_opt StringResult* pStringOut) const;
 
     /*!
          * Gets an atom that corresponds to a specified string from an atom
-         * pool.   Sets pAtomOut to DEF_ATOM_NULL and returns FALSE if no 
+         * pool.   Sets pAtomOut to DEF_ATOM_NULL and returns FALSE if no
          * matching string is found.
          */
+     _Success_(return == true)
     bool TryGetAtom(__in PCWSTR pString, __out_opt Atom* pAtomOut) const;
 
     /*!
@@ -106,6 +107,7 @@ public:
          * pool.   Sets pIndexOut to Atom::NullAtomIndex and returns FALSE if
          * no matching string is found.
          */
+     _Success_(return == true)
     bool TryGetIndex(__in PCWSTR pString, __out_opt Atom::Index* pIndexOut) const;
 
     /*!
@@ -134,7 +136,7 @@ public:
     static const DEFFILE_SECTION_TYPEID GetSectionTypeId();
 
     /*!
-         * Reports the size needed to hold an atom pool with the 
+         * Reports the size needed to hold an atom pool with the
          * specified number of atoms and pool characters.
          */
     static UINT32 GetSizeInBytes(__in UINT32 nAtoms, __in UINT32 cchPool);
@@ -147,6 +149,8 @@ public:
 
 protected:
     static HashIndex* HashIndex_Init(__inout HashIndex* pSelf, __in Atom::Hash hash, __in Atom::Index index);
+
+    _Success_(return == true)
     bool TryGetHashIndex(__in PCWSTR pString, __out_opt HashIndex* pIndexOut) const;
 
     DEFCOMPARISON CompareAtIndex(__in Atom::Index index, __in PCWSTR pString) const;
@@ -164,7 +168,7 @@ public:
     static HRESULT CreateAtomPoolGroupFromFile(__in const BaseFile* pFile, _Outptr_ AtomPoolGroup** result);
 
     /*!
-         * Extracts all atom pools from DEF file into a 
+         * Extracts all atom pools from DEF file into a
          * supplied DEFFILE_ATOMS.
          */
     static HRESULT InitFromFile(__inout AtomPoolGroup* pAtoms, __in const BaseFile* pFile);

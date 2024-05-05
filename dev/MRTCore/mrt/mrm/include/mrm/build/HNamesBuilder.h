@@ -318,7 +318,7 @@ public:
          * add add it to the parent scope.   To ensure proper
          * semantics and consistency, use ScopeInfo::GetOrAddItem
          * to create new items.
-         * 
+         *
          * \param pName
          * The name of the item to be added.
          *
@@ -328,7 +328,7 @@ public:
          * \param result
          * Returns a pointer to the new ItemInfo, or NULL if an error
          * occurs.
-         * 
+         *
          * \return HRESULT
          */
 
@@ -360,10 +360,10 @@ public:
          * add add it to the parent scope.   To ensure proper
          * semantics and consistency, use ScopeInfo::GetOrAddScope
          * to create new child scopes.
-         * 
+         *
          * \param pName
          * The name of the scope to be added.
-         * 
+         *
          * \param pParent
          * Parent scope that will contain the new scope
          *
@@ -373,7 +373,7 @@ public:
          * \param result
          * Returns a pointer to the new ScopeInfo, or NULL if an error
          * occurs.
-         * 
+         *
          * \return HRESULT
          */
     static HRESULT CreateInstance(_In_ const HierarchicalNameSegment* pName, _In_ ScopeInfo* pParent, _Outptr_ ScopeInfo** result);
@@ -386,11 +386,11 @@ public:
 
     HRESULT AddToGlobal(_In_ ScopeInfo* parent);
 
-    /*! 
+    /*!
          * Gets the number of immediate children
          * Does not include further descendents of child scopes
          * of the referenced scope.
-         * 
+         *
          * \return int
          * Returns the number of children
          */
@@ -399,13 +399,13 @@ public:
     int GetNumChildScopes() const { return m_numChildScopes; }
     int GetNumChildItems() const { return m_numChildItems; }
 
-    /*! 
+    /*!
          * Gets the total number of referenced scopes at or below the supplied scope.
          * Includes the scope itself, plus all descendents.
-         * 
+         *
          * \return int
          * Returns the total number of referenced scopes at or below the
-         * supplied scope. 
+         * supplied scope.
          */
     int GetTotalNumScopes() const { return m_totalNumScopes; }
 
@@ -414,7 +414,7 @@ public:
          *
          * Includes referenced items in the scope itself, plus any referenced items
          * contained in subscopes of any depth.
-         * 
+         *
          * \return int
          * Returns the total number of referenced items at or below the
          * supplied scope.
@@ -433,7 +433,7 @@ public:
          * Reports an error if no matching child is found.
          * \param pName
          * The name of the immediate child to be returned.
-         * 
+         *
          * \return HNamesNode*
          * Returns a pointer to an HNamesNode describing
          * the requested child, or NULL if an error occurs.
@@ -443,17 +443,18 @@ public:
     bool TryGetChild(_In_ const HierarchicalNameSegment* pName, _Outptr_opt_result_maybenull_ HNamesNode** ppChildOut) const;
 
     /*!
-         * Gets an descendent node by name, parsing path 
+         * Gets an descendent node by name, parsing path
          * separators as appropriate.
          *
          * Reports an error if no matching descendent is found.
          * \param pName
          * The name of the descendent to be returned.
-         * 
+         *
          * \return HNamesNode*
          * Returns a pointer to an HNamesNode describing
          * the requested descendent, or NULL if an error occurs.
          */
+    _Success_(return == true)
     bool TryGetDescendent(_In_ PCWSTR pName, _Outptr_opt_result_maybenull_ HNamesNode** pChildOut) const;
 
     /*!
@@ -463,14 +464,14 @@ public:
          * If a child scope with a matching name already exists, returns
          * the existing scope.  If no matching child scope exists,
          * adds a new scope and returns a pointer to it.
-         * 
+         *
          * \param pName
          * Name of the new child scope.
          *
          * \param result
          * Returns a pointer to a ScopeInfo describing the
          * requested child scope.
-         * 
+         *
          * \return HRESULT
          */
     HRESULT GetOrAddScope(_In_ PCWSTR pName, _Out_ ScopeInfo** result);
@@ -482,14 +483,14 @@ public:
          * If a item with a matching name already exists, returns a
          * pointer to the existing ItemInfo.  If no matching item exists,
          * adds a new ItemInfo and returns a pointer to it.
-         * 
+         *
          * \param pName
          * Name of the new item.
          *
          * \param result
          * Returns a pointer to a ItemInfo describing the
          * requested item.
-         * 
+         *
          * \return HRESULT
          */
     HRESULT GetOrAddItem(_In_ PCWSTR pName, _Out_ ItemInfo** result);
@@ -517,21 +518,21 @@ protected:
 
     /*!
          * _INTERNAL ONLY_
-         * Gets or adds a specific named scope to a ScopeInfo. 
-         * Does _not_ look for separators or validate the 
+         * Gets or adds a specific named scope to a ScopeInfo.
+         * Does _not_ look for separators or validate the
          * requested path.
          *
          * If a child scope with a matching name already exists, returns
          * the existing scope.  If no matching child scope exists,
          * adds a new scope and returns a pointer to it.
-         * 
+         *
          * \param pName
          * Name of the new child scope.
          *
          * \param result
          * Returns a pointer to a ScopeInfo describing the
          * requested child scope.
-         * 
+         *
          * \return HRESULT
          */
     HRESULT GetOrAddChildScope(_In_ const HierarchicalNameSegment* pName, _Out_ ScopeInfo** result);
@@ -542,16 +543,16 @@ protected:
          * If a item with a matching name already exists, returns a
          * pointer to the existing ItemInfo.  If no matching item exists,
          * adds a new ItemInfo and returns a pointer to it.
-         * 
+         *
          * Does _not_ look for separators or validate the requested path.
-         * 
+         *
          * \param pName
          * Name of the new item.
          *
          * \param result
          * Returns a pointer to a ItemInfo describing the
          * requested item.
-         * 
+         *
          * \return HRESULT
          */
     HRESULT GetOrAddChildItem(_In_ const HierarchicalNameSegment* pName, _Out_ ItemInfo** result);
@@ -607,14 +608,14 @@ public:
     /*!
          * Gets a root scope specified by name.
          * Reports an error if no matching scope is found.
-         * 
+         *
          * \param pPath
          * Name of the root scope to be returned.
          *
          * \param result
-         * A ScopeInfo describing the requested root 
+         * A ScopeInfo describing the requested root
          * folder, or NULL if an error occurs.
-         * 
+         *
          * \return HRESULT
          */
     HRESULT GetRootScope(_In_ PCWSTR pPath, _Out_ ScopeInfo** result) const;
@@ -623,15 +624,15 @@ public:
          * Tries to get a root scope specified by name.
          * Returns false but does not report an error if no
          * matching scope is found.
-         * 
+         *
          * \param pPath
          * Name of the root scope to be returned.
-         * 
+         *
          * \param ppScopeOut
          * Returns a pointer to a ScopeInfo describing the
          * requested root scope, or NULL if no match is found
          * or if an error occurs.
-         * 
+         *
          * \return bool
          * Returns true if a matching scope is found, false
          * if no match is found or if an error occurs.
@@ -645,14 +646,14 @@ public:
          * returns a pointer to the existing ScopeInfo.
          * If no matching scope exists, adds a new ScopeInfo
          * and returns a pointer to it.
-         * 
+         *
          * \param pPath
          * Name of the new root scope.
          *
          * \param result
          * Returns a pointer to an ItemInfo describing the
          * requested file.
-         * 
+         *
          * \return HRESULT
          */
     HRESULT GetOrAddRootScope(_In_ PCWSTR pPath, _Out_ ScopeInfo** result);
@@ -661,12 +662,12 @@ public:
 
     HRESULT GetOrAddItem(_In_ PCWSTR pPath, _Out_ ItemInfo** result);
 
-    /*! 
+    /*!
          * Gets a scope by index.
-         * 
+         *
          * \param index
          * The index of the scope to be returned.
-         * 
+         *
          * \param ppScopeOut
          * Returns the requested \ref ScopeInfo, or NULL if an
          * error occurs.
@@ -677,12 +678,12 @@ public:
          */
     bool TryGetScopeByIndex(_In_ int index, _Outptr_result_maybenull_ ScopeInfo** ppScopeOut) const;
 
-    /*! 
+    /*!
          * Gets an item by index.
-         * 
+         *
          * \param index
          * The index of the item to be returned.
-         * 
+         *
          * \param ppItemOut
          * Returns the requested \ref ItemInfo, or NULL if an
          * error occurs.
@@ -693,7 +694,7 @@ public:
          */
     bool TryGetItemByIndex(_In_ int index, _Outptr_result_maybenull_ ItemInfo** ppItemOut) const;
 
-    /*! 
+    /*!
          * Determines if a supplied item index is valid.
          *
          * \param indexIn
@@ -705,7 +706,7 @@ public:
          */
     bool IsValidItemIndex(__in int indexIn) const;
 
-    /*! 
+    /*!
          * Determines if a supplied scope index is valid.
          *
          * \param indexIn
@@ -749,10 +750,10 @@ private:
     IAtomPool* m_pScopeNames;
     IAtomPool* m_pItemNames;
 
-    int m_numFinalizedNames;
-    int m_cchFinalizedAsciiNames;
-    int m_cchFinalizedUtf16Names;
-    int m_cchLongestFinalizedName;
+    int m_numFinalizedNames{ 0 };
+    int m_cchFinalizedAsciiNames{ 0 };
+    int m_cchFinalizedUtf16Names{ 0 };
+    int m_cchLongestFinalizedName{ 0 };
 
 protected:
     HierarchicalNamesBuilder(_In_ UINT32 flags);
@@ -764,21 +765,21 @@ protected:
          * A string pool containing all of the strings from a specified scope
          * and all of its contents might need fewer characters than reported
          * by this function, but it will not require more.
-         * 
+         *
          * \param pScopeInfo
          * The scope to be checked.
          *
          * \param pCchAsciiStringsOut
          * The unpadded size in char required to hold any ascii strings in the this
          * scope and below.
-         * 
+         *
          * \param pCchUtf16StringsOut
-         * The unpadded size in WCHAR required to hold any UTF-16 strings in this 
+         * The unpadded size in WCHAR required to hold any UTF-16 strings in this
          * scope and below.
          *
          * \param pCchLongestPathOut
          * The length of the longest path below this scope, in characters.
-         * 
+         *
          * \return HRESULT
          * S_OK on success, failure if an error occurs.
          */

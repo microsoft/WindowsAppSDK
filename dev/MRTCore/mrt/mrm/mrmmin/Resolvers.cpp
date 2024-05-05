@@ -187,10 +187,10 @@ private:
         return S_OK;
     }
 
-    const UnifiedEnvironment* m_Environment;
-    const CoreProfile* m_pProfile;
-    const IResolver* m_pParentResolver;
-    DynamicArray<StringResult*>* m_qualifierCaches;
+    const UnifiedEnvironment* m_Environment{ nullptr };
+    const CoreProfile* m_pProfile{ nullptr };
+    const IResolver* m_pParentResolver{ nullptr };
+    DynamicArray<StringResult*>* m_qualifierCaches{ nullptr };
 };
 
 class ResolverBase::DecisionInfoCache : public DefObject
@@ -441,7 +441,7 @@ public:
 
         // An arbitrary but high limit. We want it to be high enough to never hit it
         // but also low enough to ensure we don't use too much stack space.
-        QualifierEntry _entries[50];
+        QualifierEntry _entries[50]{};
         UINT16 _nextFreeEntry = 0;
     };
 
@@ -1847,16 +1847,16 @@ public:
     }
 
 protected:
-    const IAtomPool* m_pPool;
+    const IAtomPool* m_pPool{ nullptr };
 
-    int m_cacheSize;
-    __ecount(m_cacheSize) mutable StringResult* m_pCachedValues;
-    UINT32 m_presentValues;
-    SRWLOCK m_srwLock;
-    mutable DynamicArray<IQualifierValueProvider*>* m_pProviders;
-    UINT32 m_ownedProviders;
-    UINT32 m_attemptedValues;
-    PerThreadQualifier* m_pPerThreadQualifier;
+    int m_cacheSize{ 0 };
+    __ecount(m_cacheSize) mutable StringResult* m_pCachedValues{ nullptr };
+    UINT32 m_presentValues{ 0 };
+    SRWLOCK m_srwLock = { nullptr };
+    mutable DynamicArray<IQualifierValueProvider*>* m_pProviders{ nullptr };
+    UINT32 m_ownedProviders{ 0 };
+    UINT32 m_attemptedValues{ 0 };
+    PerThreadQualifier* m_pPerThreadQualifier{ nullptr };
     PerQualifierPoolInfo(_In_ const IAtomPool* pPool, _In_opt_ PerThreadQualifier* pPerThreadQualifier) :
         m_pPool(pPool),
         m_cacheSize(pPool->GetNumAtoms()),

@@ -249,7 +249,7 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
         // Needs to get a temporary subscription to get most recent value
 
         struct notify_callback {
-            EFFECTIVE_POWER_MODE mode;
+            EFFECTIVE_POWER_MODE mode{ EffectivePowerModeBatterySaver };
             wil::slim_event done;
         } context;
 

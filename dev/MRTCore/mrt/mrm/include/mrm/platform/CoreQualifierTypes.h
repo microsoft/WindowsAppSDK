@@ -60,7 +60,7 @@ public:
 
     virtual ~DXFeatureLevelQualifierType() {}
 
-    HRESULT Evaluate(_In_ const IQualifier* pQualifier, _In_ PCWSTR pValue, _Outptr_ double* score) const;
+    HRESULT Evaluate(_In_ const IQualifier* pQualifier, _In_ PCWSTR pValue, _Out_ double* score) const;
 
     inline IBuildQualifierType::PackagingFlags GetDefaultPackagingFlags() const
     {
@@ -82,7 +82,7 @@ public:
 
     virtual ~DeviceFamilyQualifierType() {}
 
-    virtual HRESULT Evaluate(_In_ const IQualifier* pQualifier, _In_ PCWSTR pValue, _Outptr_ double* score) const;
+    virtual HRESULT Evaluate(_In_ const IQualifier* pQualifier, _In_ PCWSTR pValue, _Out_ double* score) const;
 
 protected:
     DeviceFamilyQualifierType() :

@@ -86,7 +86,7 @@ bool TestResourceLinks::TryAddLinksFromTestVars(_In_ IResourceLinkBuilder* linkB
             for (unsigned i = 0; i < links.GetSize(); i++)
             {
                 Log::Comment(tmp.Format(L"[ link %d: \"%s\" ]", i, (PCWSTR)links[i]));
-                if (FAILED(link.InitFromList(links[i])) || ((link.GetNumStrings() < 2) || (link.GetNumStrings() > 3)))
+                if (!link.InitFromList(links[i]) || ((link.GetNumStrings() < 2) || (link.GetNumStrings() > 3)))
                 {
                     Log::Warning(L"  [ Couldn't parse link string ]");
                     continue;
@@ -155,7 +155,7 @@ TestResourceLinks::VerifyAgainstTestVars(_In_ IResourceLinks* links, _In_ PCWSTR
     if (SUCCEEDED(TestData::TryGetValue(tmp.Format(L"%sExpectedInternalLinks", varPrefix), specString)))
     {
         TestStringArray spec;
-        if (SUCCEEDED(spec.InitFromList(specString)))
+        if (spec.InitFromList(specString))
         {
             int expectedIndex;
 
@@ -203,7 +203,7 @@ TestResourceLinks::VerifyAgainstTestVars(_In_ IResourceLinks* links, _In_ PCWSTR
             int linkIndex;
 
             Log::Comment(tmp.Format(L"[     %d: %s ]", i, (PCWSTR)specs[i]));
-            if (SUCCEEDED(spec.InitFromList(specs[i])) && spec.TryGetStringAsInt(0, &linkIndex))
+            if (spec.InitFromList(specs[i]) && spec.TryGetStringAsInt(0, &linkIndex))
             {
                 PCWSTR linkType = spec.GetString(1);
 
@@ -249,7 +249,7 @@ TestResourceLinks::VerifyAgainstTestVars(_In_ IResourceLinks* links, _In_ PCWSTR
         Log::Comment(tmp.Format(L"[ %sExpectedLinksById not defined ]", varPrefix));
     }
 
-    return true;
+    return S_OK;
 }
 
 } // namespace UnitTests
