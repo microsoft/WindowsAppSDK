@@ -10,10 +10,8 @@ using Microsoft.VisualStudio.Threading;
 using NuGet.VisualStudio;
 using System;
 using System.Collections.Generic;
-using System.Deployment.Internal;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace WindowsAppSDK.TemplateUtilities
 {
@@ -66,7 +64,6 @@ namespace WindowsAppSDK.TemplateUtilities
         }
         private async Task InstallNuGetPackagesAsync()
         {
-
             await ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -90,8 +87,6 @@ namespace WindowsAppSDK.TemplateUtilities
                     SaveAllProjects();
                 }
             });
-
-
         }
 
         private async Task StartInstallationAsync()
@@ -116,19 +111,6 @@ namespace WindowsAppSDK.TemplateUtilities
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                     LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
                 }
-            }
-        }
-
-        private async Task InstallNuGetPackageAsync(IVsPackageInstaller installer, string packageId)
-        {
-            try
-            {
-                // Simulate or perform package installation, which might be CPU-bound
-                await Task.Run(() => installer.InstallPackage(null, _project, packageId, "", false));
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error installing package {packageId}: {ex.Message}");
             }
         }
 
@@ -173,7 +155,7 @@ namespace WindowsAppSDK.TemplateUtilities
         private void LogError(string message)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            ThreadHelper.JoinableTaskFactory.   Run(async delegate
+            ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 IVsActivityLog log = ServiceProvider.GlobalProvider.GetService(typeof(SVsActivityLog)) as IVsActivityLog;
