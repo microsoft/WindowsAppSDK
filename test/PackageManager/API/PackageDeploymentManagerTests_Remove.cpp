@@ -400,6 +400,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RemovePackageByUriAsync_NoSuchPackage_Fail)
         {
+            if (TPMT::SkipIfFeatureNotSupported_RemovePackageByUri() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
+            {
+                return;
+            }
+
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
             PCWSTR c_packageUriAsString{ L"ms-uup://Product/does.not.exist" };
@@ -416,11 +421,21 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RemovePackageByUriAsync_NotInstalled_Fail)
         {
+            if (TPMT::SkipIfFeatureNotSupported_RemovePackageByUri() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
+            {
+                return;
+            }
+
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
         TEST_METHOD(RemovePackageByUriAsync_NotInstalled_Success)
         {
+            if (TPMT::SkipIfFeatureNotSupported_RemovePackageByUri() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
+            {
+                return;
+            }
+
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
@@ -430,11 +445,21 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            if (TPMT::SkipIfFeatureNotSupported_RemovePackageByUri() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
+            {
+                return;
+            }
+
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
         TEST_METHOD(RemovePackageByUriAsync_Registered_Success)
         {
+            if (TPMT::SkipIfFeatureNotSupported_RemovePackageByUri() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
+            {
+                return;
+            }
+
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
@@ -856,6 +881,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RemovePackageByUriAsync_RegisteredPackageStatusBad_Success)
         {
+            if (TPMT::SkipIfFeatureNotSupported_RemovePackageByUri() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
+            {
+                return;
+            }
+
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 

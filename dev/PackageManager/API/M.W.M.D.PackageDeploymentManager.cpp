@@ -116,6 +116,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::PackageUriScheme_ms_uup:
             {
+                //TODO Feature lookup
+                // Relies on PackageManagement_IsFeatureSupported(L"PackageUriScheme.ms-uup") exist in Microsoft.FrameworkUdk and enabled
                 return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixRemovePackageByUriAsync");
             }
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable:
@@ -123,6 +125,10 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 //TODO Feature lookup
                 // Relies on PackageManagement_IsFeatureSupported(L"IsPackageReadyOrNewerAvailable") exist in Microsoft.FrameworkUdk and enabled
                 return false;
+            }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageByUri:
+            {
+                return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixRemovePackageByUriAsync");
             }
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage:
             {
@@ -269,28 +275,30 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             const auto status{ IsReadyOrNewerAvailable(packageSetItem) };
             if (status == winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady)
             {
-                (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_FAILED,
-                                 "Id=%ls PackageFamilyName=%ls MinVersion=%hu.%hu.%hu.%hu ArchitectureFilter:0x%X",
-                                 packageSetItem.Id().c_str(),
-                                 packageSetItem.PackageFamilyName().c_str(),
-                                 packageSetItem.MinVersion().Major,
-                                 packageSetItem.MinVersion().Minor,
-                                 packageSetItem.MinVersion().Build,
-                                 packageSetItem.MinVersion().Revision,
-                                 packageSetItem.ProcessorArchitectureFilter());
+                const ::AppModel::Identity::PackageVersion minVersion{ packageSetItem.MinVersion() };
+                TraceLoggingWrite(
+                    PackageManagementTelemetryProvider::Provider(),
+                    "PackageDeployment.Resolver.NotFound",
+                    TraceLoggingWideString(packageSetItem.Id().c_str(), "Criteria.Id"),
+                    TraceLoggingWideString(packageSetItem.PackageFamilyName().c_str(), "Criteria.PackageFamilyName"),
+                    TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
+                    TraceLoggingHexInt32(static_cast<std::int32_t>(packageSetItem.ProcessorArchitectureFilter()), "Criteria.ArchitectureFilter"),
+                    TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
+                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                 return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
             }
             if (!newerAvailable && (status == winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable))
             {
-                (void)LOG_HR_MSG(MSIXPACKAGEMANAGER_E_PACKAGE_SCAN_NEWER_AVAILABLE,
-                                 "Id=%ls PackageFamilyName=%ls MinVersion=%hu.%hu.%hu.%hu ArchitectureFilter:0x%X",
-                                 packageSetItem.Id().c_str(),
-                                 packageSetItem.PackageFamilyName().c_str(),
-                                 packageSetItem.MinVersion().Major,
-                                 packageSetItem.MinVersion().Minor,
-                                 packageSetItem.MinVersion().Build,
-                                 packageSetItem.MinVersion().Revision,
-                                 packageSetItem.ProcessorArchitectureFilter());
+                const ::AppModel::Identity::PackageVersion minVersion{ packageSetItem.MinVersion() };
+                TraceLoggingWrite(
+                    PackageManagementTelemetryProvider::Provider(),
+                    "PackageDeployment.Resolver.NewerAvailable",
+                    TraceLoggingWideString(packageSetItem.Id().c_str(), "Criteria.Id"),
+                    TraceLoggingWideString(packageSetItem.PackageFamilyName().c_str(), "Criteria.PackageFamilyName"),
+                    TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
+                    TraceLoggingHexInt32(static_cast<std::int32_t>(packageSetItem.ProcessorArchitectureFilter()), "Criteria.ArchitectureFilter"),
+                    TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
+                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                 newerAvailable = true;
             }
         }
@@ -921,6 +929,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::RemovePackageByUriAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options)
     {
+        THROW_HR_IF(E_NOTIMPL, !IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageByUri));
+
         const winrt::hstring packageUriAsString{ packageUri.ToString() };
         auto logTelemetry{ PackageManagementTelemetry::RemovePackageByUriAsync::Start(packageUriAsString) };
 
@@ -951,7 +961,15 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         progress(packageDeploymentProgress);
 
         // Check parameter(s)
-        THROW_HR_IF_MSG(E_INVALIDARG, !IsUriScheme_MsUup(packageUri), "%ls", packageUri.ToString().c_str());
+        if (IsUriScheme_MsUup(packageUri))
+        {
+            THROW_HR_IF(E_NOTIMPL, !IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::PackageUriScheme_ms_uup));
+        }
+        else
+        {
+            // Other URI schemes not supported
+            THROW_HR_MSG(E_INVALIDARG, "%ls", packageUri.ToString().c_str());
+        }
 
         winrt::Windows::Management::Deployment::RemovalOptions removeOptions{ ToOptions(options) };
         const double progressMaxPerPackage{ 1.0 };

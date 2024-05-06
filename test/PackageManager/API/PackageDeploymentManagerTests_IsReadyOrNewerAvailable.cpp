@@ -50,10 +50,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFullName_InvalidParameter)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -73,10 +71,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFullName_NoSuchPackage_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -89,10 +85,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFullName_NotInstalled_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -107,10 +101,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFullName_Registered_Ready)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -125,10 +117,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFullName_OlderRegistered_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -143,10 +133,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFullName_NewerRegistered_Ready)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -163,10 +151,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFullName_NewerAvailable)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -183,10 +169,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFamilyName_InvalidParameter)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -206,10 +190,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFamilyName_NoSuchPackage_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -222,10 +204,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFamilyName_NotInstalled_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -240,10 +220,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFamilyName_Registered_Ready)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -258,10 +236,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFamilyName_OlderRegistered_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -276,10 +252,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFamilyName_NewerRegistered_Ready)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -296,10 +270,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFamilyName_NewerAvailable)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -316,10 +288,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailableByUri_InvalidParameter)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -328,10 +298,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailableByUri_NoSuchPackage_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -340,10 +308,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailableByUri_NotInstalled_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -352,10 +318,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailableByUri_Registered_Ready)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -364,10 +328,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailableByUri_OlderRegistered_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -376,10 +338,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageReadyOrNewerAvailableByUri_NewerRegistered_Ready)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -388,10 +348,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_InvalidParameter)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -496,10 +454,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_1_NoSuchPackage_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -521,10 +477,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_1_NotInstalled_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -543,10 +497,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_1_Registered_Ready)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -565,10 +517,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_1_OlderRegistered_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -587,10 +537,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_1_NewerRegistered_Ready)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -611,10 +559,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_1_NewerAvailable)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -635,10 +581,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_N_NotInstalled_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -663,10 +607,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_N_Registered_Ready)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -691,10 +633,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_N_OlderRegistered_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -719,10 +659,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_N_NewerRegistered_Ready)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -749,10 +687,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_N_RegisteredAndNotInstalled_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -774,10 +710,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_N_RegisteredAndNewerAvailable_NotReady)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 
@@ -807,10 +741,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageSetReadyOrNewerAvailable not supported on this platform. Skipping test");
                 return;
             }
 

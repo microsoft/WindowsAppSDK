@@ -50,10 +50,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RepairPackageAsync_PackageFullName_NoSuchPackage_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -70,10 +68,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RepairPackageAsync_PackageFullName_NotInstalled_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -95,10 +91,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RepairPackageAsync_PackageFullName_NotInstalled_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -124,10 +118,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -149,10 +141,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RepairPackageAsync_PackageFullName_Registered_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -174,10 +164,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RepairPackageAsync_PackageFamilyName_NoSuchPackage_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -196,10 +184,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RepairPackageAsync_PackageFamilyName_NotInstalled_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -225,10 +211,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -250,10 +234,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RepairPackageAsync_PackageFamilyName_Registered_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -275,10 +257,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RepairPackageByUriAsync_NoSuchPackage_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageByUriAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -296,11 +276,21 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RepairPackageByUriAsync_NotInstalled_Fail)
         {
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
+            {
+                return;
+            }
+
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
         TEST_METHOD(RepairPackageByUriAsync_NotInstalled_Success)
         {
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
+            {
+                return;
+            }
+
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
@@ -310,20 +300,28 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
+            {
+                return;
+            }
+
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
         TEST_METHOD(RepairPackageByUriAsync_Registered_Success)
         {
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
+            {
+                return;
+            }
+
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
         TEST_METHOD(RepairPackageSetAsync_1_NoSuchPackage_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -351,10 +349,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RepairPackageSetAsync_1_NotInstalled_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -380,10 +376,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RepairPackageSetAsync_1_NotInstalled_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -413,10 +407,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -442,10 +434,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RepairPackageSetAsync_1_Registered_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -471,10 +461,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RepairPackageSetAsync_N_NotInstalled_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -506,10 +494,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RepairPackageSetAsync_N_NotInstalled_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -541,10 +527,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RepairPackageSetAsync_N_Registered_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -576,10 +560,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RepairPackageSetAsync_N_RegisteredAndNotInstalled_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -612,10 +594,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_RepairPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"RepairPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 

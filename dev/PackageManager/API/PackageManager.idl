@@ -17,8 +17,9 @@ namespace Microsoft.Windows.Management.Deployment
     {
         PackageUriScheme_ms_uup             = 1,
         IsPackageReadyOrNewerAvailable      = 2,
-        ResetPackage                        = 3,
-        RepairPackage                       = 4,
+        RemovePackageByUri                  = 3,
+        ResetPackage                        = 4,
+        RepairPackage                       = 5,
     };
 
     /// Represents a package storage volume.

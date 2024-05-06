@@ -10,6 +10,53 @@ namespace TPMT = ::Test::PackageManager::Tests;
 
 namespace Test::PackageManager::Tests
 {
+    inline bool SkipIfFeatureNotSupported(
+        const winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature feature,
+        PCWSTR message)
+    {
+        const bool isSupported{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature) };
+        if (!isSupported)
+        {
+            WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, message);
+        }
+        return !isSupported;
+    }
+
+    inline bool SkipIfFeatureNotSupported_PackageUriScheme_ms_uup()
+    {
+        const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::PackageUriScheme_ms_uup };
+        PCWSTR message{ L"ms-uup: not supported on this system. Skipping test" };
+        return TPMT::SkipIfFeatureNotSupported(feature, message);
+    }
+
+    inline bool SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable()
+    {
+        const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable };
+        PCWSTR message{ L"IsPackageReadyOrNewerAvailable not supported on this system. Skipping test" };
+        return TPMT::SkipIfFeatureNotSupported(feature, message);
+    }
+
+    inline bool SkipIfFeatureNotSupported_RemovePackageByUri()
+    {
+        const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageByUri };
+        PCWSTR message{ L"RemovePackageByUri not supported on this system. Skipping test" };
+        return TPMT::SkipIfFeatureNotSupported(feature, message);
+    }
+
+    inline bool SkipIfFeatureNotSupported_ResetPackage()
+    {
+        const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
+        PCWSTR message{ L"ResetPackage not supported on this system. Skipping test" };
+        return TPMT::SkipIfFeatureNotSupported(feature, message);
+    }
+
+    inline bool SkipIfFeatureNotSupported_RepairPackage()
+    {
+        const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage };
+        PCWSTR message{ L"RepairPackage not supported on this system. Skipping test" };
+        return TPMT::SkipIfFeatureNotSupported(feature, message);
+    }
+
     class PackageDeploymentManagerTests_Base
     {
     protected:

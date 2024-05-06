@@ -31,11 +31,13 @@ namespace Test::PackageManager::Tests
                 return true;
             }
 
+            ::TB::Setup();
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassCleanup)
         {
+            ::TB::Cleanup();
             return true;
         }
 

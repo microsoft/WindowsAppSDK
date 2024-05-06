@@ -50,10 +50,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(ResetPackageAsync_PackageFullName_NoSuchPackage_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -70,10 +68,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(ResetPackageAsync_PackageFullName_NotInstalled_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -95,10 +91,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(ResetPackageAsync_PackageFullName_NotInstalled_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -124,10 +118,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -149,10 +141,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(ResetPackageAsync_PackageFullName_Registered_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -174,10 +164,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(ResetPackageAsync_PackageFamilyName_NoSuchPackage_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -196,10 +184,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(ResetPackageAsync_PackageFamilyName_NotInstalled_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -225,10 +211,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -250,10 +234,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(ResetPackageAsync_PackageFamilyName_Registered_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -275,10 +257,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(ResetPackageByUriAsync_NoSuchPackage_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageByUriAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -296,11 +276,21 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(ResetPackageByUriAsync_NotInstalled_Fail)
         {
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
+            {
+                return;
+            }
+
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
         TEST_METHOD(ResetPackageByUriAsync_NotInstalled_Success)
         {
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
+            {
+                return;
+            }
+
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
@@ -310,20 +300,28 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
+            {
+                return;
+            }
+
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
         TEST_METHOD(ResetPackageByUriAsync_Registered_Success)
         {
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
+            {
+                return;
+            }
+
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
         TEST_METHOD(ResetPackageSetAsync_1_NoSuchPackage_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -351,10 +349,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(ResetPackageSetAsync_1_NotInstalled_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -380,10 +376,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(ResetPackageSetAsync_1_NotInstalled_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -413,10 +407,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -442,10 +434,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(ResetPackageSetAsync_1_Registered_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -471,10 +461,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(ResetPackageSetAsync_N_NotInstalled_Fail)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -506,10 +494,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(ResetPackageSetAsync_N_NotInstalled_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -541,10 +527,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(ResetPackageSetAsync_N_Registered_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -576,10 +560,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(ResetPackageSetAsync_N_RegisteredAndNotInstalled_Success)
         {
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -612,10 +594,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageSetAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -691,10 +671,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -723,10 +701,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage };
-            if (!winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::IsPackageDeploymentFeatureSupported(feature))
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ResetPackageAsync not supported on this platform. Skipping test");
                 return;
             }
 
@@ -751,16 +727,31 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(ResetPackageByUriAsync_RegisteredPackageStatusBad_Success)
         {
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
+            {
+                return;
+            }
+
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
         TEST_METHOD(ResetPackageSetAsync_1_RegisteredPackageStatusBad_Success)
         {
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
+            {
+                return;
+            }
+
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
 
         TEST_METHOD(ResetPackageSetAsync_N_RegisteredPackageStatusOkAndBad_Success)
         {
+            if (TPMT::SkipIfFeatureNotSupported_ResetPackage() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
+            {
+                return;
+            }
+
             WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Cannot test ms-uup: URIs here. Skipping test");
         }
     };
