@@ -158,7 +158,7 @@ void DefBlobResult_Clear(_Inout_ DEFBLOBRESULT* pSelf)
     pSelf->cbBuf = 0;
 }
 
-void DefBlobResult_Delete(_Inout_ DEFBLOBRESULT* pSelf)
+void DefBlobResult_Delete(_In_ DEFBLOBRESULT* pSelf)
 {
     if (pSelf == nullptr)
     {

@@ -49,11 +49,14 @@ bool TestUtils::TryVerifyRemap(_In_ PCWSTR pVarName, _Inout_ const RemapUInt16* 
     return false;
 }
 
-_Success_(return ) bool TestUtils::ParsePlatformString(_In_ PCWSTR pPlatformString, _Out_ MrmPlatformVersionInternal* pPlatformOut)
+_Success_(return == true) bool TestUtils::ParsePlatformString(_In_ PCWSTR pPlatformString, _Out_ MrmPlatformVersionInternal* pPlatformOut)
 {
     String tmp;
     TestStringArray platformDef;
-
+    if (pPlatformOut == nullptr)
+    {
+        return false;
+    }
     if (DefString_ICompare(pPlatformString, L"Default") == Def_Equal)
     {
         *pPlatformOut = MrmPlatformVersionInternal::DefaultPlatformVersion;
@@ -159,6 +162,7 @@ _Success_(
     return succeeded;
 }
 
+_Success_(return == true)
 bool TestUtils::ParseDefResult(_In_ PCWSTR resultString, _Out_ DEFRESULT* result, _Out_opt_ bool* returnValue)
 {
     bool expectedReturn = false;
@@ -232,7 +236,6 @@ void TestUtils::TryGetExpectedResult(_In_ PCWSTR varName, _Out_ DEFRESULT* resul
 {
     String tmp;
     String expectedResultString;
-
     if (SUCCEEDED(TestData::TryGetValue(varName, expectedResultString)))
     {
         if (TestUtils::ParseDefResult((PCWSTR)expectedResultString, result, returnValue))

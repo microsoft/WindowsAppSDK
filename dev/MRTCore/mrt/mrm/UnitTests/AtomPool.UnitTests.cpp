@@ -17,18 +17,19 @@ using namespace Microsoft::Resources::Build;
 namespace UnitTests
 {
 
-/*! 
+/*!
      * AtomPool Unit Test helpers
      */
 class AtomPoolUnitTest
 {
 protected:
     static bool ParseAtomSpec(__in const String& spec, __inout String& keyOut, __inout int& indexOut);
-    static bool GetTestSetup(__out bool& isCaseInsensitiveOut, __out int& poolIndexOut, __out TestDataArray<String>& initSpecsOut);
+    _Success_(return == true) static bool GetTestSetup(__out bool& isCaseInsensitiveOut, __out int& poolIndexOut, __out TestDataArray<String>& initSpecsOut);
     static void CheckAtomPoolGetMethods(__in const IAtomPool* pPool);
     static void CheckUnexpectedStrings(__in const IAtomPool* pPool);
 };
 
+_Success_(return == true)
 bool AtomPoolUnitTest::GetTestSetup(__out bool& bIsCaseInsensitiveOut, __out int& poolIndexOut, __out TestDataArray<String>& initSpecsOut)
 {
     // pool index & case-sensitivity must be specified

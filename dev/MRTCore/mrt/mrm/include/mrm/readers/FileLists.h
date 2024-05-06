@@ -255,6 +255,7 @@ public:
          * Returns true if a matching file is found, or false
          * if an error occurs or if no matching file is found.
          */
+    _Success_(return == true)
     virtual bool TryGetFileIndex(__in PCWSTR pPath, __out int* pIndexOut) const;
 
     /*!
@@ -275,6 +276,7 @@ public:
          * Returns true if a matching folder is found, or false
          * if an error occurs or if no matching folder is found.
          */
+    _Success_(return == true)
     virtual bool TryGetFolderIndex(__in PCWSTR pPath, __out int* pIndexOut) const;
 
     /*!

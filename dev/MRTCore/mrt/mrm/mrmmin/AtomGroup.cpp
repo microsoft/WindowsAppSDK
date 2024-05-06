@@ -71,6 +71,7 @@ HRESULT AtomPoolGroup::ExtendPools(__in Atom::PoolIndex newMaxIndex)
     return S_OK;
 }
 
+_Success_(return == true)
 bool AtomPoolGroup::TryGetAtomPool(__in Atom::PoolIndex index, __out_opt IAtomPool** ppPoolOut) const
 {
     if (ppPoolOut == nullptr)
@@ -124,7 +125,7 @@ AtomPoolGroup::RemoveAtomPool(__inout IAtomPool* pPool)
 }
 
 /*
-         *  AtomPoolGroup takes responsibility of deleting pPool passed here if 
+         *  AtomPoolGroup takes responsibility of deleting pPool passed here if
          *  and only if bAssumeOwnership is given as true by the caller.
          */
 HRESULT

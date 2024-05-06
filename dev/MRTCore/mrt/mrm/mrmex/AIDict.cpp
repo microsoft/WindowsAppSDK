@@ -110,6 +110,7 @@ AtomIndexedDictionaryBase::~AtomIndexedDictionaryBase()
     m_numItems = m_sizeItems = 0;
 }
 
+_Success_(return == true)
 bool AtomIndexedDictionaryBase::TryGetInternalIndex(_In_ Atom::Index nameIndex, _Out_opt_ int* pInternalIndexOut) const
 {
     if (!m_pNames->Contains(nameIndex))
@@ -156,6 +157,7 @@ bool AtomIndexedDictionaryBase::TryGetInternalIndex(_In_ Atom::Index nameIndex, 
     return true;
 }
 
+_Success_(return == true)
 bool AtomIndexedDictionaryBase::TryGetInternalIndex(_In_ PCWSTR pName, _Out_opt_ int* pInternalIndexOut) const
 {
     Atom::Index atomIndex = Atom::NullAtomIndex;
@@ -166,6 +168,7 @@ bool AtomIndexedDictionaryBase::TryGetInternalIndex(_In_ PCWSTR pName, _Out_opt_
     return TryGetInternalIndex(atomIndex, pInternalIndexOut);
 }
 
+_Success_(return == true)
 bool AtomIndexedDictionaryBase::TryGetInternalIndex(_In_ Atom name, _Out_opt_ int* pInternalIndexOut) const
 {
     Atom::Index nameIndex = Atom::NullAtomIndex;

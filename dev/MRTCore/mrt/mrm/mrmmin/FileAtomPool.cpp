@@ -176,6 +176,7 @@ bool FileAtomPool::TryGetString(Atom::Index index, __inout_opt StringResult* pSt
      * TODO: review conditions under which TryGetAtom sets an
      * error in pStatus, to make sure they're reasonable.
      */
+_Success_(return == true)
 bool FileAtomPool::TryGetAtom(__in PCWSTR pString, __out_opt Atom* pAtomOut) const
 {
     Atom::Index i;
@@ -205,6 +206,7 @@ bool FileAtomPool::TryGetAtom(__in PCWSTR pString, __out_opt Atom* pAtomOut) con
     return found;
 }
 
+_Success_(return == true)
 bool FileAtomPool::TryGetHashIndex(__in PCWSTR pString, __out_opt HashIndex* pIndexOut) const
 {
     if (m_pHeader->flags & DEFFILE_ATOMPOOL_HASH_NONE)
@@ -226,7 +228,7 @@ bool FileAtomPool::TryGetHashIndex(__in PCWSTR pString, __out_opt HashIndex* pIn
 }
 
 /*
-     * TODO: These implementations of contains and equals are 
+     * TODO: These implementations of contains and equals are
      * generic enough that they should be moved to a shared
      * base class for atom pool implementations.
      * Get/SetAtomPoolGroup and Get/SetPoolIndex are probably
@@ -253,6 +255,7 @@ bool FileAtomPool::Equals(__in Atom atom, __in PCWSTR pString) const
     return false;
 }
 
+_Success_(return == true)
 bool FileAtomPool::TryGetIndex(__in PCWSTR pString, __out_opt Atom::Index* pIndexOut) const
 {
     bool found = false;

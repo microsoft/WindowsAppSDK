@@ -312,6 +312,7 @@ HRESULT PriFileManager::GetSection(
     return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 }
 
+_Success_(return == true)
 const bool PriFileManager::TryGetSectionIndexByType(
     _In_ const DEFFILE_SECTION_TYPEID& sectionType,
     _In_ int fileIndex,

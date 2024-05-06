@@ -414,6 +414,7 @@ public:
         _Inout_opt_ StringResult* pUniqueNameOut,
         _Inout_opt_ StringResult* pSimpleNameOut);
 
+    _Success_(return == true)
     static bool TryFindInfoByChecksum(
         _In_ const ENVIRONMENT_DESCRIPTION* description,
         _In_opt_ DefChecksum::Checksum checksum,
@@ -660,6 +661,7 @@ public:
 
     virtual bool TryFindEnvironment(_In_ const IEnvironmentVersionInfo* pRef, _Out_ const IEnvironment** pEnvironmentOut) const = 0;
 
+    _Success_(return == true)
     virtual bool TryFindEnvironment(_In_ PCWSTR pUniqueName, _Out_ const IEnvironment** pEnvironmentOut) const = 0;
 
     virtual bool TryFindCompatibleEnvironment(

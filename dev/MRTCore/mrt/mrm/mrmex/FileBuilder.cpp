@@ -99,7 +99,7 @@ HRESULT FileBuilder::AddSection(__in ISectionBuilder* pSectionBuilder)
     return S_OK;
 }
 
-HRESULT FileBuilder::GetSectionData(__in INT32 sectionIndex, _Out_ const BYTE** data, __out UINT32* pcbSectionData)
+HRESULT FileBuilder::GetSectionData(__in INT32 sectionIndex, _Out_ const BYTE** data, _Out_ UINT32* pcbSectionData)
 {
     *data = nullptr;
     RETURN_HR_IF(E_INVALIDARG, sectionIndex >= m_nSections);

@@ -555,6 +555,10 @@ bool TestBlob::Init(__in size_t cbBuffer, __in size_t cbBlob, __in UINT32 buffer
 
 bool TestBlob::CheckBlobInitialized(__out_opt int* pOffsetOut)
 {
+    if (pOffsetOut != nullptr)
+    {
+        *pOffsetOut = 0;
+    }
     BYTE* pData = GetBlob();
 
     for (size_t i = 0; i < m_cbBlob; i++)
@@ -573,6 +577,10 @@ bool TestBlob::CheckBlobInitialized(__out_opt int* pOffsetOut)
 
 bool TestBlob::CheckBufferUndamaged(__out_opt int* pOffsetOut)
 {
+    if (pOffsetOut != nullptr)
+    {
+        *pOffsetOut = 0;
+    }
     BYTE* pData = GetBuffer();
 
     // check before the blob
@@ -728,6 +736,10 @@ bool TestBlob::InitFromTestVars(__in PCWSTR pVarPrefix)
 
 TestBlob** TestBlob::CreateBlobsFromTestVars(__in PCWSTR pVarPrefix, __out int* pNumBlobsOut)
 {
+    if (pNumBlobsOut != nullptr)
+    {
+        *pNumBlobsOut = -1;
+    }
     String tmp;
     int numBlobs;
     if ((!SUCCEEDED(TestData::TryGetValue(tmp.Format(L"%s_Count", pVarPrefix), numBlobs))) || (numBlobs < 1))

@@ -6,7 +6,7 @@
 namespace Microsoft::Resources
 {
 
-/*! 
+/*!
      * An atom pool initialized directly from an array of static strings.
      * Uses the supplied strings directly, so they must remain valid for
      * the life of the pool.
@@ -82,10 +82,11 @@ Atom::Index StaticAtomPool::GetNumAtoms() const { return m_numStrings; }
 
 Atom::PoolIndex StaticAtomPool::GetPoolIndex() const { return m_poolIndex; }
 
-void StaticAtomPool::SetAtomPoolGroup(AtomPoolGroup* pGroup) { m_pAtoms = pGroup; }
+void StaticAtomPool::SetAtomPoolGroup(_In_ AtomPoolGroup* pGroup) { m_pAtoms = pGroup; }
 
-void StaticAtomPool::SetPoolIndex(Atom::PoolIndex index) { m_poolIndex = index; }
+void StaticAtomPool::SetPoolIndex(_In_ Atom::PoolIndex index) { m_poolIndex = index; }
 
+_Success_(return == true)
 bool StaticAtomPool::TryGetAtom(__in PCWSTR pString, __out_opt Atom* pAtomOut) const
 {
     Atom::Index index = Atom::NullAtomIndex;

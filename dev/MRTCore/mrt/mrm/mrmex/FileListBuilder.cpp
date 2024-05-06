@@ -26,6 +26,7 @@ HRESULT FileInfoPrivateData::SetNext(__in_opt FileInfoPrivateData* pNext)
     return S_OK;
 }
 
+_Success_(return == true)
 bool FileInfoPrivateData::TryGetNext(__in_opt const void* pOwner, __in int index, __out FileInfoPrivateData** ppDataOut) const
 {
     if ((ppDataOut == nullptr) || ((pOwner == nullptr) && (index >= 0)))
@@ -787,6 +788,7 @@ public:
     HRESULT GetFilePath(__in int fileIndex, __inout StringResult* pPathOut) const { return GetFilePath(fileIndex, pPathOut, nullptr); }
 
     //! \see IFileList::GetFilePath
+    _Success_(return == true)
     HRESULT GetFilePath(_In_ int fileIndex, _Inout_ StringResult* pPathOut, _Out_ UINT16* /*pFlags*/) const
     {
         RETURN_HR_IF(E_INVALIDARG, (fileIndex < 0) || (fileIndex > m_numFiles - 1) || (pPathOut == nullptr));
@@ -879,6 +881,7 @@ HRESULT FileListBuilder::GetOrAddRootFolder(__in PCWSTR pPath, _Out_ FolderInfo*
     return m_pRootFolder->GetOrAddSubfolder(pPath, result);
 }
 
+_Success_(return == true)
 bool FileListBuilder::TryGetFolderByIndex(__in int index, __out FolderInfo** ppFolderOut) const
 {
     if ((ppFolderOut == nullptr) || (m_numFinalizedFolders < 0) || (index < 0) || (index > m_numFinalizedFolders - 1))
@@ -894,6 +897,7 @@ bool FileListBuilder::TryGetFolderByIndex(__in int index, __out FolderInfo** ppF
     return SUCCEEDED(m_pFinalized->GetFolder(index, ppFolderOut));
 }
 
+_Success_(return == true)
 bool FileListBuilder::TryGetFileByIndex(__in int index, __out FileInfo** ppFileOut) const
 {
     if ((ppFileOut == nullptr) || (m_numFinalizedFiles < 0) || (index < 0) || (index > m_numFinalizedFiles - 1))
@@ -1255,9 +1259,9 @@ HRESULT FileListBuilder::Finalize()
     return S_OK;
 }
 
-/*! 
+/*!
  * Serializes the file list into the provided buffer.
- * 
+ *
  * \param pBuffer
  * The buffer into which the file list is generated.
  *

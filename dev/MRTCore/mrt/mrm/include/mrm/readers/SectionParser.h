@@ -47,10 +47,10 @@ public:
     const size_t RemainingBufferSizeInBytes() const { return m_cbLeft; }
     const size_t UsedBufferSizeInBytes() const { return m_cbData - m_cbLeft; }
 
-    /*! 
+    /*!
          * Returns a pointer to the next block of data, if
          * there's enough space in the buffer, and moves the
-         * cursor over the returned data. 
+         * cursor over the returned data.
          *
          * Returns NULL without modifying pStatus or the buffer
          * if pStatus is NULL or if pStatus already contains
@@ -62,19 +62,19 @@ public:
          * Returns NULL and sets an appropriate status if
          * any arguments are invalid or if the requested
          * data would overflow the buffer.
-         * 
+         *
          * \param numItems
          * Specifies the number of items to be returned.
          *
          * \param cbItem
          * Specifies the size of a single item, in bytes.
-         * 
+         *
          * \param pStatus
          * Reports current status.  Reports updated status if
          * an error occurs.
-         *  
+         *
          * \return RETURN_TYPE*
-         * Returns a pointer to the requested buffer, or NULL 
+         * Returns a pointer to the requested buffer, or NULL
          * if an error occurs or has already occurred.
          */
     _Success_(return != nullptr)
@@ -98,15 +98,15 @@ public:
         return pRtrn;
     }
 
-    /*! 
+    /*!
          * Returns a pointer to the next block of data, if
-         * there's enough space in the buffer, without 
-         * moving the cursor. 
+         * there's enough space in the buffer, without
+         * moving the cursor.
          *
-         * Returns NULL without modifying pStatus if 
+         * Returns NULL without modifying pStatus if
          * pStatus is NULL or if pStatus already contains
          * an error.
-         * 
+         *
          * Returns NULL but reports success if cbNeeded is 0.
          *
          * Returns NULL and sets an appropriate status if
@@ -115,13 +115,13 @@ public:
          *
          * \param cbNeeded
          * Specifies the size of of the data to be read, in bytes.
-         * 
+         *
          * \param pStatus
          * Reports current status.  Reports updated status if
          * an error occurs.
-         *  
+         *
          * \return const void*
-         * Returns a pointer to the requested buffer, or NULL 
+         * Returns a pointer to the requested buffer, or NULL
          * if an error occurs or has already occurred.
          */
     _Success_(return != nullptr) _Post_readable_byte_size_(cbNeeded) RETURN_TYPE* GetNext(_In_ size_t cbNeeded, _Inout_ HRESULT* hr)
@@ -129,12 +129,12 @@ public:
         return GetNext(static_cast<UINT32>(cbNeeded), sizeof(BYTE), hr);
     }
 
-    /*! 
+    /*!
          * Returns a pointer to the next block of data, if
-         * there's enough space in the buffer, without 
+         * there's enough space in the buffer, without
          * moving the cursor.
          *
-         * Returns NULL without modifying pStatus if 
+         * Returns NULL without modifying pStatus if
          * pStatus is NULL or if pStatus already contains
          * an error status.
          *
@@ -144,19 +144,19 @@ public:
          * Returns NULL and sets an appropriate status if
          * any arguments are invalid or if the requested
          * data would overflow the buffer.
-         * 
+         *
          * \param numItems
          * Specifies the number of items to be returned.
          *
          * \param cbItem
          * Specifies the size of a single item, in bytes.
-         * 
+         *
          * \param pStatus
          * Reports current status.  Reports updated status if
          * an error occurs.
-         *  
+         *
          * \return const void*
-         * Returns a pointer to the requested buffer, or NULL 
+         * Returns a pointer to the requested buffer, or NULL
          * if an error occurs or has already occurred.
          */
     _Success_(return != nullptr)
@@ -194,28 +194,28 @@ public:
         return m_pNext;
     }
 
-    /*! 
+    /*!
          * Returns a pointer to the next block of data, if
-         * there's enough space in the buffer, without 
-         * moving the cursor. 
+         * there's enough space in the buffer, without
+         * moving the cursor.
          *
          * Returns NULL and sets an appropriate status if
          * any arguments are invalid or if the requested
          * data would overflow the buffer.
          *
-         * Returns NULL without modifying pStatus if 
+         * Returns NULL without modifying pStatus if
          * pStatus is NULL or if pStatus already contains
          * an error status.
-         * 
+         *
          * \param cbNeeded
          * Specifies the size the requested data, in bytes.
-         * 
+         *
          * \param pStatus
          * Reports current status.  Reports updated status if
          * an error occurs.
-         *  
+         *
          * \return const void*
-         * Returns a pointer to the requested buffer, or NULL 
+         * Returns a pointer to the requested buffer, or NULL
          * if an error occurs or has already occurred.
          */
     _Success_(return != nullptr) _Post_readable_byte_size_(cbNeeded) RETURN_TYPE* PeekNext(_In_ size_t cbNeeded, _Inout_ HRESULT* hr) const
@@ -223,12 +223,12 @@ public:
         return PeekNext(static_cast<UINT32>(cbNeeded), sizeof(BYTE), hr);
     }
 
-    /*! 
+    /*!
          * Moves the cursor to a specified alignment boundary and returns
          * a pointer to the bytes that were skipped.  Returns NULL and succeess
          * if no padding is necessary.  Optionally returns the number of bytes
          * of padding.
-         * 
+         *
          * \param align
          * Specifies the alignment to which the parser should jump.  Must be
          * 2, 4 or 8.
@@ -238,7 +238,7 @@ public:
          *
          * \param pNumPadBytesOut
          * If non-NULL, used to return the number of pad bytes skipped.
-         * 
+         *
          * \return UNIT_TYPE*
          * Returns a pointer to the padding bytes.  Returns NULL if no
          * padding is necessary or if an error occurs.
@@ -246,6 +246,10 @@ public:
     _Post_readable_byte_size_(
         *pNumPadBytesOut) UNIT_TYPE* GetPadBytes(_In_ size_t align, _Inout_ HRESULT* hr, _Out_opt_ size_t* pNumPadBytesOut)
     {
+        if (pNumPadBytesOut != nullptr)
+        {
+            *pNumPadBytesOut = 0;
+        }
         if (FAILED(*hr))
         {
             return nullptr;
@@ -267,18 +271,18 @@ public:
         return (UNIT_TYPE*)GetNext(static_cast<UINT32>(cbPad), sizeof(BYTE), hr);
     }
 
-    /*! 
+    /*!
          * Moves the cursor to the default alignment boundary and returns
          * a pointer to the bytes that were skipped.  Returns NULL and succeess
          * if no padding is necessary.  Optionally returns the number of bytes
          * of padding.
-         * 
+         *
          * \param pStatus
          * Reports optional status if an error occurs.
          *
          * \param pNumPadBytesOut
          * If non-NULL, used to return the number of pad bytes skipped.
-         * 
+         *
          * \return UNIT_TYPE*
          * Returns a pointer to the padding bytes.  Returns NULL if no
          * padding is necessary or if an error occurs.

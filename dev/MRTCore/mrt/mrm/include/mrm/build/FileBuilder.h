@@ -27,10 +27,10 @@ public:
             */
     virtual bool IsValid() const = 0;
 
-    /*! 
+    /*!
              * Finalizes the object in preparation for generating.  Once finalized,
              * objects are read-only and any generated indices must be stable.
-             * 
+             *
              * \return HRESULT
              * Returns S_OK on success, failure if an error occurs.
              */
@@ -120,7 +120,7 @@ protected:
     UINT32 GetDataSize() { return m_cbData; }
 
 public:
-    static HRESULT CreateInstance(DEFFILE_MAGIC magic, BaseFile::SectionCount sizeSections, _Outptr_ FileBuilder** result);
+    static HRESULT CreateInstance(__in DEFFILE_MAGIC magic, __in BaseFile::SectionCount sizeSections, _Outptr_ FileBuilder** result);
 
     virtual ~FileBuilder();
 
@@ -130,7 +130,7 @@ public:
 
     HRESULT SetDescriptorIndex(__in BaseFile::SectionIndex index);
 
-    HRESULT GetSectionData(INT32 sectionIndex, _Out_ const BYTE** data, _Out_ UINT32* pcbSectionData);
+    HRESULT GetSectionData(__in INT32 sectionIndex, _Out_ const BYTE** data, _Out_ UINT32* pcbSectionData);
 
     HRESULT GenerateFileContents(__deref_out void** ppBufferOut, __out_opt UINT32* pBufferLenOut);
 
@@ -180,9 +180,9 @@ public:
     virtual HRESULT FinalizeAllSections();
 
 private:
-    virtual HRESULT StartGenerating(__out_bcount(cbDataOut) VOID* pDataOut, UINT32 cbDataOut);
+    virtual HRESULT StartGenerating(__out_bcount(cbDataOut) VOID* pDataOut, __in UINT32 cbDataOut);
 
-    virtual HRESULT StartSection(BaseFile::SectionIndex sectionIndex, _Out_ SectionInfo** result);
+    virtual HRESULT StartSection(__in BaseFile::SectionIndex sectionIndex, _Out_ SectionInfo** result);
 
     virtual HRESULT FinishSection(BaseFile::SectionIndex sectionIndex, UINT32 cbGenerated);
 

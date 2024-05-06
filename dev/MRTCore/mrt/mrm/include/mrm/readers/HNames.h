@@ -142,6 +142,7 @@ public:
         __out_opt int* pItemIndexOut = NULL,
         __out_opt int* pNameIndexOut = NULL) const;
 
+    _Success_(return == true)
     bool Contains(
         __in PCWSTR path,
         __in int relativeToScope,

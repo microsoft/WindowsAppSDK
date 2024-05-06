@@ -123,8 +123,8 @@
 
   <PropertyGroup>
     <NuGetTargetFramework Condition="'$(NuGetTargetFramework)'==''">$(TargetPlatformIdentifierAdjusted),Version=v$(TargetPlatformMinVersion)</NuGetTargetFramework>
-    <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)')) >= 8">win-x86;win-x64;win-arm64;win-arm</RuntimeIdentifiers>
-    <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)')) &lt; 8">win10-arm;win10-arm-aot;win10-arm64-aot;win10-x86;win10-x86-aot;win10-x64;win10-x64-aot</RuntimeIdentifiers>
+    <RuntimeIdentifiers Condition="'$(RuntimeIdentifiers)'=='' and $([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)')) >= 8">win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifiers Condition="'$(RuntimeIdentifiers)'=='' and $([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)')) &lt; 8">win10-arm64;win10-arm;win10-arm-aot;win10-arm64-aot;win10-x86;win10-x86-aot;win10-x64;win10-x64-aot</RuntimeIdentifiers>
     <ResolveAssemblyConflicts>true</ResolveAssemblyConflicts>
   </PropertyGroup>
 
@@ -187,7 +187,7 @@
     <IntermediateUploadOutputPath Condition="'$(IntermediateUploadOutputPath)' == ''">$(IntermediateOutputPath)Upload\</IntermediateUploadOutputPath>
     <AppxLayoutDir Condition="'$(AppxLayoutDir)' == ''">$(IntermediateOutputPath)$(AppxLayoutFolderName)\</AppxLayoutDir>
     <AppxBundleAutoResourcePackageQualifiers Condition="'$(AppxBundleAutoResourcePackageQualifiers)' == ''">Language|Scale|DXFeatureLevel</AppxBundleAutoResourcePackageQualifiers>
-    
+
     <PlatformSpecificBundleArtifactsListDir Condition="'$(PlatformSpecificBundleArtifactsListDir)' == '' and '$(OutDirWasSpecified)' == 'true'">$(OutDir)$(PlatformSpecificBundleArtifactsListDirName)\</PlatformSpecificBundleArtifactsListDir>
     <PlatformSpecificBundleArtifactsListDir Condition="'$(PlatformSpecificBundleArtifactsListDir)' == ''">$(PlatformSpecificBundleArtifactsListDirInProjectDir)</PlatformSpecificBundleArtifactsListDir>
 
@@ -717,7 +717,7 @@
     <ItemGroup>
       <_PRIResourceFiltered Include="@(PRIResource)" Condition="'%(PRIResource.ExcludedFromBuild)' != 'true'" />
     </ItemGroup>
-    
+
     <GeneratePriConfigurationFiles
           UnfilteredLayoutResfilesPath="$(_UnfilteredLayoutResfilesPath)"
           FilteredLayoutResfilesPath="$(_FilteredLayoutResfilesPath)"
@@ -912,7 +912,7 @@
     </ItemGroup>
 
     <ExpandPriContent Condition="'$(MakePriExeFullPath)' != ''"
-                      Inputs="@(_PriFilesToExpandFromReference)" 
+                      Inputs="@(_PriFilesToExpandFromReference)"
                       MakePriExeFullPath="$(MakePriExeFullPath)"
                       MakePriExtensionPath="$(OutOfProcessMakePriExtensionPath)"
                       IntermediateDirectory="$(IntermediateOutputPath)"
@@ -1332,7 +1332,7 @@
       Targets="GetOptionalProjectOutputs"
       BuildInParallel="$(BuildInParallel)"
       Properties="%(OptionalProjectBuildReferences.SetConfiguration); %(OptionalProjectBuildReferences.SetPlatform); %(OptionalProjectBuildReferences.SetTargetFramework)"
-      ContinueOnError="$(_ContinueOnError)"      
+      ContinueOnError="$(_ContinueOnError)"
       RemoveProperties="%(OptionalProjectBuildReferences.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)">
       <Output TaskParameter="TargetOutputs" ItemName="_OptionalProjectOutputsFromOtherProjects"/>
     </MSBuild>
@@ -1442,7 +1442,7 @@
     <!-- Sometimes, we get duplicate entries here from NuGet packages which are not normalized -->
     <!-- i.e., one entry will have ..\..-style paths embedded, and other will not.             -->
     <!-- Remove those duplicates first before proceeding to look for WINMD implementations.    -->
-    
+
     <RemovePayloadDuplicates Inputs="@(_CopyLocalFilesOutputGroupOutputFromReferences)"
                              ProjectName="$(ProjectName)"
                              Platform="$(Platform)"
@@ -1476,7 +1476,7 @@
 
     <!-- If a WINMD is coming from a NuGet package, the implementation DLL may not be delivered along with WINMD, but as       -->
     <!-- a separate item through CopyLocal or other packaging group. If DLL is not present on constructed location, remove it. -->
-   
+
     <ItemGroup>
       <CopyLocalFilesOutputGroupOutput Include="%(_WinmdWithImplementation.RootDir)%(_WinmdWithImplementation.Directory)%(_WinmdWithImplementation.Implementation)"
                                        Condition="Exists('%(_WinmdWithImplementation.RootDir)%(_WinmdWithImplementation.Directory)%(_WinmdWithImplementation.Implementation)')">
@@ -1485,7 +1485,7 @@
     </ItemGroup>
 
   </Target>
-  
+
   <!-- ================================================================================= -->
   <!-- Output group including CopyLocal files from target GetCopyToOutputDirectoryItems. -->
   <!-- ================================================================================= -->
@@ -1624,7 +1624,7 @@
 
   <!-- Inform the fast up-to-date check of the inputs for PRI generation. -->
   <Target Name="_MrtCoreUpToDateCheckInput" DependsOnTargets="$(_MrtCoreUpToDateCheckInputDependsOn)" BeforeTargets="CollectUpToDateCheckInputDesignTime">
-        <!-- 
+        <!--
         Copied from the target _GenerateProjectPriConfigurationFiles. @(_LayoutFile),  @(_EmbedFile), and @(_PRIResourceFiltered) are ultimately inputs to
         the MRT Core indexer, but they're populated by _GenerateProjectPriConfigurationFiles which does work (runs a tool to generate the indexer
         configuration files) that we don't need during a design-time build, so we hoist them out to avoid calling the target.

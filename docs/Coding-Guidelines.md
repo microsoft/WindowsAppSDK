@@ -12,6 +12,7 @@ languages used in implementation or testing.
 - Git
   - [Checkin-to-main/develop Policy](Coding-Guidelines/GitCheckinToMainPolicy.md)
   - [Branches: main vs develop](Coding-Guidelines/develop-branch.md)
+- [Error Handling and Logging](Coding-Guidelines/ErrorHandlingAndLogging.md)
 - [Experimental](Coding-Guidelines/Experimental.md)-only features
   - Use [TerminalVelocity](Coding-Guidelines/TerminalVelocity.md) tag and disable features
 - [Hybrid CRT](Coding-Guidelines/HybridCRT.md)

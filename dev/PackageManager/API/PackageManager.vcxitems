@@ -45,6 +45,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.RegisterPackageOptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.RemovePackageOptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.StagePackageOptions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MsixPackageManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageDeploymentResolver.h" />
   </ItemGroup>
   <ItemGroup>
@@ -52,5 +53,7 @@
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(RepoRoot)\dev\DynamicDependency\API;%(OutDir)</AdditionalIncludeDirectories>
     </Midl>
   </ItemGroup>
- 
+  <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)MsixPackageManager.h" />
+  </ItemGroup>
 </Project>

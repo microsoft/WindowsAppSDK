@@ -192,9 +192,13 @@ public:
     HRESULT GetOrAddScope(_In_ PCWSTR pItemName, _Out_ int* index);
     HRESULT GetOrAddItem(_In_ PCWSTR pItemName, _Out_ int* index);
 
+    _Success_(return == true)
     bool TryGetScopeInfo(_In_ int scopeIndex, _Out_ StringResult* pNameOut, _Out_opt_ int* pNumChildrenOut = nullptr) const;
+
+    _Success_(return == true)
     bool TryGetScopeChild(_In_ int scopeIndex, _In_ int childIndex, _Out_opt_ int* pChildScopeIndexOut, _Out_opt_ int* pChildItemIndexOut)
         const;
+
     bool TryGetScopeChildName(_In_ int scopeIndex, _In_ int childIndex, _Inout_opt_ StringResult* pNameOut) const;
     bool TryGetItemInfo(_In_ int itemIndex, _Inout_ StringResult* pNameOut) const;
     bool TryGetItemLocalName(_In_ int itemIndex, _Inout_ StringResult* pNameOut) const;
@@ -408,8 +412,10 @@ public:
 
     virtual ~ResourceLinkSectionBuilder();
 
+    _Success_(return == true)
     bool TryGetResourceIndex(_In_ int schemaIndex, _In_ PCWSTR resourceName, _Out_ Atom::Index* resourceIndex) const;
 
+    _Success_(return == true)
     bool TryGetResourceLinkByResourceIndex(
         _In_ int resourceIndexInSchema,
         _Out_opt_ int* linksToSchemaIndex,
@@ -612,10 +618,13 @@ public:
 
     int GetTotalNumFinalizedValues() const;
 
+    _Success_(return == true)
     bool TryGetResourceInfo(_In_ int itemIndex, _Inout_opt_ StringResult* pNameOut, _Out_opt_ int* numCandidatesOut) const;
 
+    _Success_(return == true)
     bool TryGetResourceInfo(_In_ PCWSTR pResourceName, _Out_opt_ int* pIndexOut, _Out_opt_ int* numCandidatesOut) const;
 
+    _Success_(return == true)
     bool TryGetCandidateInfo(
         _In_ int itemIndex,
         _In_ int candidateIndex,
@@ -623,6 +632,7 @@ public:
         _Out_opt_ MrmEnvironment::ResourceValueType* pTypeOut,
         _Inout_opt_ StringResult* pValueOut) const;
 
+    _Success_(return == true)
     bool TryGetCandidateInfo(
         _In_ PCWSTR pItemName,
         _In_ int candidateIndex,

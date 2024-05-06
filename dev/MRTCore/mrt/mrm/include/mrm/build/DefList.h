@@ -270,6 +270,7 @@ public:
         return false;
     }
 
+    _Success_(return == true)
     bool TryGetValue(__in UINT32 index, __out VALUE* pValueOut) const
     {
 

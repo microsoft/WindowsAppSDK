@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Item">
   <TemplateData>
     <DefaultName>UserControl.xaml</DefaultName>
@@ -23,15 +23,4 @@
     <ProjectItem SubType="Code" TargetFileName="$fileinputname$.xaml\$fileinputname$.xaml.h" ReplaceParameters="true">UserControl.h</ProjectItem>
     <ProjectItem SubType="Code" TargetFileName="$fileinputname$.xaml\$fileinputname$.idl" ReplaceParameters="true">UserControl.idl</ProjectItem>
   </TemplateContent>
-  <WizardExtension>
-    <Assembly>NuGet.VisualStudio.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
-    <FullClassName>NuGet.VisualStudio.TemplateWizard</FullClassName>
-  </WizardExtension>
-  <WizardData>
-    <packages repository="extension" repositoryId="Microsoft.WindowsAppSDK.Cpp">
-      <package id="Microsoft.Windows.CppWinRT" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <package id="Microsoft.WindowsAppSDK" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <package id="Microsoft.Windows.ImplementationLibrary" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-    </packages>
-  </WizardData>
 </VSTemplate>

@@ -290,6 +290,7 @@ HRESULT ManagedFile::GetSection(
     return S_OK;
 }
 
+_Success_(return == true)
 const bool ManagedFile::TryGetSectionIndexByType(
     _In_ const DEFFILE_SECTION_TYPEID& sectionType,
     _In_ int fileIndex,

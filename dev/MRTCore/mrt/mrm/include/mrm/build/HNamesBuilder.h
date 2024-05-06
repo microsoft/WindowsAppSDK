@@ -454,6 +454,7 @@ public:
          * Returns a pointer to an HNamesNode describing
          * the requested descendent, or NULL if an error occurs.
          */
+    _Success_(return == true)
     bool TryGetDescendent(_In_ PCWSTR pName, _Outptr_opt_result_maybenull_ HNamesNode** pChildOut) const;
 
     /*!

@@ -28,4 +28,5 @@
 
 #include <appmodel.identity.h>
 #include <appmodel.package.h>
-#include "Logging.h"
+
+#include "MsixPackageManager.h"
