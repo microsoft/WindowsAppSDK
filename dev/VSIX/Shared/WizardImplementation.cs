@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 
 namespace WindowsAppSDK.TemplateUtilities
 {
-
     public class NuGetPackageInstaller : IWizard
     {
         internal static Guid SolutionVCProjectGuid = new Guid("8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942");
@@ -91,7 +90,7 @@ namespace WindowsAppSDK.TemplateUtilities
 
         private async Task StartInstallationAsync()
         {
-            IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
+            IVsPackageInstaller2 installer = _componentModel.GetService<IVsPackageInstaller2>();
             if (installer == null)
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -104,7 +103,24 @@ namespace WindowsAppSDK.TemplateUtilities
             {
                 try
                 {
-                    await Task.Run(() => installer.InstallPackage(null, _project, packageId, "", false));
+                    if (NugetClientHelper.IsInternetAvailable())
+                    {
+                        var packageMeta = await NugetClientHelper.GetPackageMetaDataAsync(packageId);
+                        var isCacheAvailable = NugetClientHelper.IsCacheAvailableForPackage(packageId, packageMeta.Identity.Version.ToString());
+
+                        if (isCacheAvailable)
+                        {
+                            await Task.Run(() => installer.InstallLatestPackage(NugetClientHelper.globalPackagesFolder, _project, packageId, false, false));
+                        }
+                        else
+                        {
+                            await Task.Run(() => installer.InstallLatestPackage(null, _project, packageId, false, false));
+                        }
+                    }
+                    else
+                    {
+                        await Task.Run(() => installer.InstallLatestPackage(NugetClientHelper.globalPackagesFolder, _project, packageId, false, false));
+                    }
                 }
                 catch (Exception ex)
                 {

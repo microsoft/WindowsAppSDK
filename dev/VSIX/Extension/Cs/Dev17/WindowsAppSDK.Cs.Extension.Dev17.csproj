@@ -52,6 +52,9 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="[$(WindowsSDKBuildToolsVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
+    <PackageReference Include="NuGet.Protocol">
+      <Version>6.9.1</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ExtensionDependencies Condition=" '$(ExcludeRestorePackageImports)' != 'true' " Include="$(PkgNuget_VisualStudio)\**\NuGet.VisualStudio.dll" />
