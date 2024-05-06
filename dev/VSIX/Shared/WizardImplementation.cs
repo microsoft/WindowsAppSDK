@@ -99,18 +99,21 @@ namespace WindowsAppSDK.TemplateUtilities
             IVsPackageInstaller installer = _componentModel.GetService<IVsPackageInstaller>();
             if (installer == null)
             {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 LogError("Could not obtain IVsPackageInstaller service.");
                 return;
             }
 
+            // Process each package installation
             foreach (var packageId in _nuGetPackages)
             {
                 try
                 {
-                    await InstallNuGetPackageAsync(installer, packageId);
+                    await Task.Run(() => installer.InstallPackage(null, _project, packageId, "", false));
                 }
                 catch (Exception ex)
                 {
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                     LogError($"Failed to install NuGet package: {packageId}. Error: {ex.Message}");
                 }
             }
