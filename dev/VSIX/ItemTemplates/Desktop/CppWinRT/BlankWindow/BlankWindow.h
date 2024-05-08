@@ -10,7 +10,6 @@ namespace winrt::$rootnamespace$::implementation
         {
             // Xaml objects should not call InitializeComponent during construction.
             // See https://github.com/microsoft/cppwinrt/tree/master/nuget#initializecomponent
-            ExtendsContentIntoTitleBar(true); // provides default WinUI custom title bar experience
         }
 
         int32_t MyProperty();
