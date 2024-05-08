@@ -326,9 +326,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
 
     HRESULT DeploymentManager::VerifyPackage(const std::wstring& packageFamilyName, const PACKAGE_VERSION targetVersion,
-        __out std::wstring& packageIdentifier) try
+        const std::wstring& packageIdentifier) try
     {
-        packageIdentifier = L"";
         auto packageFullNames{ FindPackagesByFamily(packageFamilyName) };
         bool match{};
         for (const auto& packageFullName : packageFullNames)
