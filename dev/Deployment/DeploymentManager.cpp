@@ -107,7 +107,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         // (i.e. if any of the target packages is not installed, GetStatus should return PackageInstallRequired).
         HRESULT verifyResult{};
 
-        for (auto package : c_targetPackages)
+        for (const auto package : c_targetPackages)
         {
             // Build package family name based on the framework naming scheme.
             std::wstring packageFamilyName{};
