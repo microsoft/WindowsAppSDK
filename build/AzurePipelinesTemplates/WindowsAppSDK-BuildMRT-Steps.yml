@@ -40,6 +40,9 @@ steps:
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     continueOnError: true
+    # Generally speaking, we leave it to the external repos to scan the bits in their packages.
+    excludedPaths: |
+      $(Build.SourcesDirectory)\packages
 
   # Copy build output to folder APIScanTarget for APIScan to scan, in the mean time, exclude some folders/files.
   - task: CopyFiles@2
