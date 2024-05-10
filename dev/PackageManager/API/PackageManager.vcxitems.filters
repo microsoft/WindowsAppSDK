@@ -97,9 +97,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.W.M.D.StagePackageOptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)MsixPackageManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageDeploymentResolver.h">
       <Filter>Header Files</Filter>
     </ClInclude>

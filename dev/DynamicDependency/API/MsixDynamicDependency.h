@@ -8,18 +8,10 @@
 
 #include <stdint.h>
 
-/// MSIX Dynamic Dependency HRESULT: Windows App Runtime is not in the package graph.
-#define MDD_E_WINDOWSAPPRUNTIME_NOT_IN_PACKAGE_GRAPH    _HRESULT_TYPEDEF_(0x80040001L)
-
-/// MSIX Dynamic Dependency HRESULT: Data Store not found (Windows App Runtime's Main package not registered?)
+// MSIX Dynamic Dependency HRESULT: Data Store not found (Windows App Runtime's Main package not registered?)
 #define MDD_E_WINDOWSAPPRUNTIME_DATASTORE_NOT_FOUND     _HRESULT_TYPEDEF_(0x80040002L)
 
-// Reserved: _HRESULT_TYPEDEF_(0x80040010L)
-// Reserved: _HRESULT_TYPEDEF_(0x80040011L)
-// Reserved: _HRESULT_TYPEDEF_(0x80040012L)
-// Reserved: _HRESULT_TYPEDEF_(0x80040013L)
-
-/// MSIX Dynamic Dependency: Bootstrap initialization request is incompatible with current Bootstrap initialization state.
+// MSIX Dynamic Dependency: Bootstrap initialization request is incompatible with current Bootstrap initialization state.
 #define MDD_E_BOOTSTRAP_INITIALIZE_INCOMPATIBLE         _HRESULT_TYPEDEF_(0x80040014L)
 
 #if defined(__cplusplus)

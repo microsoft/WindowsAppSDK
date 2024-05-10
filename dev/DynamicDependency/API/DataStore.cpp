@@ -2,12 +2,11 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-
 #include "DataStore.h"
+#include "Logging.h"
 
 #include "DynamicDependencyDataStore_h.h"
 #include "winrt_WindowsAppRuntime.h"
-
 #include <wil/winrt.h>
 
 #include <shlobj.h>
@@ -208,5 +207,48 @@ std::filesystem::path MddCore::DataStore::GetDataStorePathForUserViaApplicationD
 
 std::wstring MddCore::DataStore::GetWindowsAppRuntimeMainPackageFamilyName()
 {
+#if 1
     return ::WindowsAppRuntime::VersionInfo::Main::GetPackageFamilyName();
+#else
+    const UINT32 flags{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC | PACKAGE_INFORMATION_BASIC };
+    uint32_t packageInfosCount{};
+    const PACKAGE_INFO* packageInfos{};
+    wil::unique_cotaskmem_ptr<BYTE[]> buffer;
+    THROW_IF_FAILED(::AppModel::PackageGraph::GetCurrentPackageGraph(flags, packageInfosCount, packageInfos, buffer));
+    for (uint32_t index=0; index < packageInfosCount; ++index)
+    {
+        // Check the PublisherId
+        const auto& packageInfo{ packageInfos[index] };
+        const auto& packageId{ packageInfo.packageId };
+        const auto packagePublisherId{ packageId.publisherId };
+        PCWSTR c_windowsAppRuntimePublisherId{ L"8wekyb3d8bbwe" };
+        if (CompareStringOrdinal(packagePublisherId, -1, c_windowsAppRuntimePublisherId, -1, TRUE) != CSTR_EQUAL)
+        {
+            continue;
+        }
+
+        // Framework package's name in the package graph is Microsoft.WindowsAppRuntime.<major>.<minor>
+        const auto packageName{ packageId.name };
+        const auto packageNameLength{ wcslen(packageName) };
+        PCWSTR c_windowsAppRuntimeNamePrefix{ L"Microsoft.WindowsAppRuntime." };
+        const auto c_windowsAppRuntimeNamePrefixLength{ ARRAYSIZE(L"Microsoft.WindowsAppRuntime.") - 1 };
+        if (packageNameLength < c_windowsAppRuntimeNamePrefixLength)
+        {
+            continue;
+        }
+        if (CompareStringOrdinal(packageName, c_windowsAppRuntimeNamePrefixLength, c_windowsAppRuntimeNamePrefix, c_windowsAppRuntimeNamePrefixLength, TRUE) != CSTR_EQUAL)
+        {
+            continue;
+        }
+        PCWSTR packageNameSuffix{ packageName + c_windowsAppRuntimeNamePrefixLength };
+
+        // Gotcha!
+        WCHAR mainPackageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
+        wsprintf(mainPackageFamilyName, L"MicrosoftCorporationII.WinAppRuntime.Main.%s_8wekyb3d8bbwe", packageNameSuffix);
+        return std::wstring(mainPackageFamilyName);
+    }
+
+    // Didn't find the Windows App SDK framework package in the package graph. Can't determine the package identity!
+    THROW_HR(MDD_E_WINDOWSAPPRUNTIME_NOT_IN_PACKAGE_GRAPH);
+#endif
 }

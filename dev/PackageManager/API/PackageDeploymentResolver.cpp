@@ -6,9 +6,7 @@
 #include <winrt/Microsoft.Windows.ApplicationModel.DynamicDependency.h>
 
 #include "PackageDeploymentResolver.h"
-
-#include "MsixPackageManager.h"
-#include "PackageManagerTelemetry.h"
+#include "logging.h"
 
 namespace Microsoft::Windows::ApplicationModel::PackageDeploymentResolver
 {
@@ -163,7 +161,7 @@ bool Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::FindAny(
     winrt::hstring packageFullName{ Find(packageManager, packageFamilyName, minVersion, processorArchitectureFilter, true) };
     return !packageFullName.empty();
 }
-
+//TODO : this looks to be very similar to MddBootstrap.cpp FindDDLMViaEnumeration(). Good candidate for refactoring.
 winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::Find(
     const winrt::Windows::Management::Deployment::PackageManager& packageManager,
     const winrt::hstring& packageFamilyName,
@@ -181,14 +179,12 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
     auto packages{ packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
 
     // Find the/any match
-    TraceLoggingWrite(
-        PackageManagementTelemetryProvider::Provider(),
-        "PackageDeployment.Resolver.Scan",
-        TraceLoggingWideString(packageFamilyName.c_str(), "Criteria.PackageFamilyName"),
-        TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
-        TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "Criteria.ArchitectureFilter"),
-        TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
-        TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
+    auto criteria{ wil::str_printf<wil::unique_cotaskmem_string>(L"PackageFamilyName=%ls MinVersion=%hu.%hu.%hu.%hu ArchitectureFilter:0x%X",
+                                                                 packageFamilyName.c_str(),
+                                                                 minVersion.Major, minVersion.Minor,
+                                                                 minVersion.Build, minVersion.Revision,
+                                                                 static_cast<std::uint32_t>(processorArchitectureFilter)) };
+    Common::Logging::DebugLog(std::format(L"PackageDeploymentResolver: Scanning packages ({})", criteria.get()));
     if (packages)
     {
         for (const winrt::Windows::ApplicationModel::Package& candidate : packages)
@@ -205,15 +201,6 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
             auto candidateFullName{ packageId.FullName() };
             if (candidateVersion < minVersion)
             {
-                TraceLoggingWrite(
-                    PackageManagementTelemetryProvider::Provider(),
-                    "PackageDeployment.Resolver.Scan.NoMatch.Version",
-                    TraceLoggingWideString(candidateFullName.c_str(), "PackageFullName"),
-                    TraceLoggingWideString(packageFamilyName.c_str(), "Criteria.PackageFamilyName"),
-                    TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
-                    TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "Criteria.ArchitectureFilter"),
-                    TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
-                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
                 continue;
             }
 
@@ -233,18 +220,7 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
                 const auto supportedArchitectures{ GetSystemSupportedArchitectures(nativeMachine) };
                 if (!IsArchitectureInArchitectures(candidateArchitecture, supportedArchitectures))
                 {
-                    TraceLoggingWrite(
-                        PackageManagementTelemetryProvider::Provider(),
-                        "PackageDeployment.Resolver.Scan.NoMatch.Architecture",
-                        TraceLoggingWideString(candidateFullName.c_str(), "PackageFullName"),
-                        TraceLoggingWideString(packageFamilyName.c_str(), "Criteria.PackageFamilyName"),
-                        TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
-                        TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "Criteria.ArchitectureFilter"),
-                        TraceLoggingInt32(static_cast<std::int32_t>(candidateArchitecture), "Architecture"),
-                        TraceLoggingHexInt32(static_cast<std::int32_t>(supportedArchitectures), "SupportedArchitectures"),
-                        TraceLoggingUInt16(static_cast<std::uint32_t>(nativeMachine), "NativeMachineArchitecture"),
-                        TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
-                        TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
+                    // package arch didn't match anything from system supported architectures
                     continue;
                 }
             }
@@ -252,16 +228,7 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
             {
                 if (!IsArchitectureInArchitectures(candidateArchitecture, processorArchitectureFilter))
                 {
-                    TraceLoggingWrite(
-                        PackageManagementTelemetryProvider::Provider(),
-                        "PackageDeployment.Resolver.Scan.NoMatch.Architecture",
-                        TraceLoggingWideString(candidateFullName.c_str(), "PackageFullName"),
-                        TraceLoggingWideString(packageFamilyName.c_str(), "Criteria.PackageFamilyName"),
-                        TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
-                        TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "Criteria.ArchitectureFilter"),
-                        TraceLoggingInt32(static_cast<std::int32_t>(candidateArchitecture), "Architecture"),
-                        TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
-                        TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
+                    // package arch doesn't match from specified arch list
                     continue;
                 }
             }
@@ -271,30 +238,16 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
             auto status{ candidate.Status() };
             if (!status.VerifyIsOK())
             {
-                TraceLoggingWrite(
-                    PackageManagementTelemetryProvider::Provider(),
-                    "PackageDeployment.Resolver.Scan.NoMatch.Status",
-                    TraceLoggingWideString(candidateFullName.c_str(), "PackageFullName"),
-                    TraceLoggingWideString(packageFamilyName.c_str(), "Criteria.PackageFamilyName"),
-                    TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
-                    TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "Criteria.ArchitectureFilter"),
-                    TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
-                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
+                Common::Logging::DebugLog(std::format(L"PackageDeploymentResolver: {} not applicable. Status not OK ({})",
+                                                        candidateFullName.c_str(), criteria.get()));
                 continue;
             }
 
             // Are we looking for any match?
             if (stopOnFirstMatch)
             {
-                TraceLoggingWrite(
-                    PackageManagementTelemetryProvider::Provider(),
-                    "PackageDeployment.Resolver.Found.StopOnFirst",
-                    TraceLoggingWideString(candidateFullName.c_str(), "PackageFullName"),
-                    TraceLoggingWideString(packageFamilyName.c_str(), "Criteria.PackageFamilyName"),
-                    TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
-                    TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "Criteria.ArchitectureFilter"),
-                    TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
-                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
+                Common::Logging::DebugLog(std::format(L"PackageDeploymentResolver: Stopping on 1st match {} ({})",
+                                 candidateFullName.c_str(), criteria.get()));
                 return candidateFullName;
             }
 
@@ -307,26 +260,13 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
     // Did we find what we're looking for?
     if (bestFitPackageFullName.empty())
     {
-        TraceLoggingWrite(
-            PackageManagementTelemetryProvider::Provider(),
-            "PackageDeployment.Resolver.NotFound",
-            TraceLoggingWideString(packageFamilyName.c_str(), "Criteria.PackageFamilyName"),
-            TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
-            TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "Criteria.ArchitectureFilter"),
-            TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
-            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
+        Common::Logging::DebugLog(std::format(L"PackageDeploymentResolver: No match ({})",
+                         criteria.get()));
     }
     else
     {
-        TraceLoggingWrite(
-            PackageManagementTelemetryProvider::Provider(),
-            "PackageDeployment.Resolver.Found",
-            TraceLoggingWideString(bestFitPackageFullName.c_str(), "PackageFullName"),
-            TraceLoggingWideString(packageFamilyName.c_str(), "Criteria.PackageFamilyName"),
-            TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
-            TraceLoggingHexInt32(static_cast<std::int32_t>(processorArchitectureFilter), "Criteria.ArchitectureFilter"),
-            TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
-            TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
+        Common::Logging::DebugLog(std::format(L"PackageDeploymentResolver: {} is applicable ({})",
+                         bestFitPackageFullName.c_str(), criteria.get()));
     }
     return bestFitPackageFullName;
 }

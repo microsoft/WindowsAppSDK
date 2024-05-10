@@ -6,10 +6,10 @@
 #include "Microsoft.Windows.Management.Deployment.PackageDeploymentManager.g.cpp"
 
 #include "M.W.M.D.PackageDeploymentResult.h"
-#include "MsixPackageManager.h"
 #include "PackageDeploymentResolver.h"
 
 #include "PackageManagerTelemetry.h"
+#include "logging.h"
 
 static_assert(static_cast<int>(winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::Default) == static_cast<int>(winrt::Windows::Management::Deployment::StubPackageOption::Default),
               "winrt::Microsoft::Windows::Management::Deployment::StubPackageOption::Default != winrt::Windows::Management::Deployment::StubPackageOption::Default");
@@ -54,16 +54,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             if (!IsReady(packageSetItem))
             {
-                const ::AppModel::Identity::PackageVersion minVersion{ packageSetItem.MinVersion() };
-                TraceLoggingWrite(
-                    PackageManagementTelemetryProvider::Provider(),
-                    "PackageDeployment.Resolver.Scan.NoMatch.Version",
-                    TraceLoggingWideString(packageSetItem.Id().c_str(), "Criteria.Id"),
-                    TraceLoggingWideString(packageSetItem.PackageFamilyName().c_str(), "Criteria.PackageFamilyName"),
-                    TraceLoggingHexUInt64(minVersion.Version, "Criteria.MinVersion"),
-                    TraceLoggingHexInt32(static_cast<std::int32_t>(packageSetItem.ProcessorArchitectureFilter()), "Criteria.ArchitectureFilter"),
-                    TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
-                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance));
+                Common::Logging::DebugLog(std::format(L"Id={} PackageFamilyName={} MinVersion={}.{}.{}.{} ArchitectureFilter:0x{}",
+                            packageSetItem.Id().c_str(),
+                            packageSetItem.PackageFamilyName().c_str(),
+                            packageSetItem.MinVersion().Major,
+                            packageSetItem.MinVersion().Minor,
+                            packageSetItem.MinVersion().Build,
+                            packageSetItem.MinVersion().Revision,
+                            static_cast<std::uint32_t>(packageSetItem.ProcessorArchitectureFilter())));
                 return false;
             }
         }
