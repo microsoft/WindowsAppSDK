@@ -29,6 +29,7 @@
     </Project>
     <CustomParameters>
       <CustomParameter Name="$NuGetPackages$" Value="Microsoft.WindowsAppSDK;Microsoft.Windows.SDK.BuildTools"/>
+      <CustomParameter Name="$DotNetVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries"/>        
     </CustomParameters>
   </TemplateContent>
   <WizardExtension>
