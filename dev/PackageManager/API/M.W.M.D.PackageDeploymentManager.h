@@ -64,9 +64,20 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         bool IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSet);
         winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus IsReadyOrNewerAvailableByPackageFullName(hstring const& packageFullName);
         winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus IsReadyOrNewerAvailable(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSet);
-        void Validate(
+        void Validate_PackageUriIsRequired(
             winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet) const;
-        void Validate(
+        void Validate_PackageUriIsOptional(
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet) const;
+        void _Validate(
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet,
+            const bool packageUriIsRequired) const;
+        void _Validate(
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet,
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem,
+            const bool packageUriIsRequired) const;
+        void Validate_PackageUriOrFamilyName(
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet) const;
+        void Validate_PackageUriOrFamilyName(
             winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet,
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem) const;
         HRESULT EnsureReadyAsync(
@@ -173,6 +184,26 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             winrt::Windows::Management::Deployment::RemovalOptions const& removeOptions,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            const double progressMaxPerPackage,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+        HRESULT RemovePackageByFamilyName(
+            winrt::hstring const& packageFamilyName,
+            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions const& options,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            const double progressMaxPerPackageFamily,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
+        HRESULT RemovePackageByFamilyName(
+            winrt::hstring const& packageFamilyName,
+            winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions const& options,
+            winrt::Windows::Management::Deployment::RemovalOptions const& removeOptions,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            const double progressMaxPerPackageFamily,
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
@@ -219,6 +250,25 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet,
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem);
         static bool IsUriScheme_MsUup(winrt::Windows::Foundation::Uri const& packageUri);
+
+    private:
+        static size_t Count(winrt::Windows::Foundation::Collections::IIterable<winrt::Windows::ApplicationModel::Package> packages)
+        {
+            size_t count{};
+            if (packages)
+            {
+                const auto iterator{ packages.First() };
+                if (iterator.HasCurrent())
+                {
+                    ++count;
+                    while (iterator.MoveNext())
+                    {
+                        ++count;
+                    }
+                }
+            }
+            return count;
+        }
 
     private:
         static int StringCompareNoCase(PCWSTR left, PCWSTR right)

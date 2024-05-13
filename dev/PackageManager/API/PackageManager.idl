@@ -304,6 +304,7 @@ namespace Microsoft.Windows.Management.Deployment
 
         Boolean IsPackageReadyByUri(Windows.Foundation.Uri packageUri);
 
+        /// @note packageSet[Item].PackageUri is optional
         Boolean IsPackageSetReady(PackageSet packageSet);
 
         //-------------------------------------------------------------
@@ -317,6 +318,7 @@ namespace Microsoft.Windows.Management.Deployment
         [contract(PackageDeploymentContract, 2)]
         PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailableByUri(Windows.Foundation.Uri packageUri);
 
+        /// @note packageSet[Item].PackageUri is optional
         [contract(PackageDeploymentContract, 2)]
         PackageReadyOrNewerAvailableStatus IsPackageSetReadyOrNewerAvailable(PackageSet packageSet);
 
@@ -335,6 +337,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         EnsurePackageReadyByUriAsync(Windows.Foundation.Uri packageUri, EnsureReadyOptions options);
 
+        /// @note packageSet[Item].PackageUri is required
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         EnsurePackageSetReadyAsync(PackageSet packageSet, EnsureReadyOptions options);
 
@@ -347,6 +350,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         AddPackageByUriAsync(Windows.Foundation.Uri packageUri, AddPackageOptions options);
 
+        /// @note packageSet[Item].PackageUri is required
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         AddPackageSetAsync(PackageSet packageSet, AddPackageOptions options);
 
@@ -359,6 +363,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         StagePackageByUriAsync(Windows.Foundation.Uri packageUri, StagePackageOptions options);
 
+        /// @note packageSet[Item].PackageUri is required
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         StagePackageSetAsync(PackageSet packageSet, StagePackageOptions options);
 
@@ -371,6 +376,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RegisterPackageByUriAsync(Windows.Foundation.Uri packageUri, RegisterPackageOptions options);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RegisterPackageSetAsync(PackageSet packageSet, RegisterPackageOptions options);
 
@@ -389,6 +395,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RemovePackageByUriAsync(Windows.Foundation.Uri packageUri, RemovePackageOptions options);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RemovePackageSetAsync(PackageSet packageSet, RemovePackageOptions options);
 
@@ -401,6 +408,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         ResetPackageByUriAsync(Windows.Foundation.Uri packageUri);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         ResetPackageSetAsync(PackageSet packageSet);
 
@@ -413,6 +421,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RepairPackageByUriAsync(Windows.Foundation.Uri packageUri);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RepairPackageSetAsync(PackageSet packageSet);
 
@@ -425,6 +434,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         ProvisionPackageByUriAsync(Windows.Foundation.Uri packageUri, ProvisionPackageOptions options);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         ProvisionPackageSetAsync(PackageSet packageSet, ProvisionPackageOptions options);
 
@@ -437,6 +447,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         DeprovisionPackageByUriAsync(Windows.Foundation.Uri packageUri);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         DeprovisionPackageSetAsync(PackageSet packageSet);
 

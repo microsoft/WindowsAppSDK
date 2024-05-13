@@ -17,6 +17,7 @@ but with additional functionality, improved developer experience and performance
   - [3.6. Reset](#36-reset)
   - [3.7. IsPackageRegistrationPending](#37-ispackageregistrationpending)
   - [3.8. PackageSet](#38-packageset)
+    - [3.8.1. PackageSetItem: URI is for Acquisition](#381-packagesetitem-uri-is-for-acquisition)
   - [3.9. PackageRuntimeManager](#39-packageruntimemanager)
   - [3.10. PackageVolume Repair](#310-packagevolume-repair)
   - [3.11. Usability](#311-usability)
@@ -282,6 +283,27 @@ foreach (PackageSetItem psi in ps.Items)
 }
 return new PackageDeploymentResult(PackageDeploymentStatus.CompletedSuccess);
 ```
+
+###  3.8.1. PackageSetItem: URI is for Acquisition
+
+ The `PackageUri` property of `PackageSet` and `PackageSetItem` is only used by some operations:
+
+|Verb                    | PackageURI | PackageFamilyName |
+|------------------------|:----------:|:-----------------:|
+|IsReady                 |     &#x274C;      |     &#x2705;      |
+|IsReadyOrNewerAvailable |     &#x274C;      |     &#x2705;      |
+|EnsureReady             |     &#x2705;      |     &#x2705;      |
+|Add                     |     &#x2705;      |     &#x2705;      |
+|Stage                   |     &#x2705;      |     &#x2705;      |
+|Register                |     &#x2705;      |     &#x2705;      |
+|Remove                  |     &#9888;&#65039;<sup>1</sup>      |&#9888;&#65039;<sup>2</sup>      |
+|Repair                  |     &#9888;&#65039;<sup>1</sup>      |&#9888;&#65039;<sup>2</sup>      |
+|Reset                   |     &#9888;&#65039;<sup>1</sup>      |&#9888;&#65039;<sup>2</sup>      |
+|Provision               |     &#x274C;      |     &#x2705;      |
+|Deprovision             |     &#x274C;      |     &#x2705;      |
+
+<sup>1</sup> `PackageUri` is used if specified.<br>
+<sup>2</sup> `PackageFamilyName` is required if `PackageUri` is not specified.
 
 ## 3.9. PackageRuntimeManager
 
