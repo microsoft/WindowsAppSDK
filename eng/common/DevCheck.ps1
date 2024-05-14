@@ -131,6 +131,9 @@ $global:issues = 0
 
 $global:isadmin = $null
 
+$global:vswhere = ''
+$global:vswhere_url = ''
+
 $remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
 if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAEFService -eq $false) -And
     ($StopTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And
@@ -300,10 +303,10 @@ function Get-VSWhereOnline
         {
             return $null
         }
-        $vswhere_url = 'https://github.com/microsoft/vswhere/releases/download/3.1.1/vswhere.exe'
-        Write-Host "Downloading $vswhere from $vswhere_url..."
-        Write-Verbose "Executing: curl.exe --output $vswhere -L -# $vswhere_url"
-        $null = Start-Process curl.exe -ArgumentList "--output $vswhere -L -# $vswhere_url" -Wait -NoNewWindow -PassThru
+        $global:vswhere_url = 'https://github.com/microsoft/vswhere/releases/download/3.1.7/vswhere.exe'
+        Write-Host "Downloading $global:vswhere from $global:vswhere_url..."
+        Write-Verbose "Executing: curl.exe --output $path -L -# $global:vswhere_url"
+        $null = Start-Process curl.exe -ArgumentList "--output $path -L -# $global:vswhere_url" -Wait -NoNewWindow -PassThru
 
     }
     if (-not(Test-Path -Path $path -PathType Leaf))
@@ -314,8 +317,6 @@ function Get-VSWhereOnline
 }
 
 # Home of vswhere.exe: https://github.com/microsoft/vswhere
-$vswhere = ''
-$vswhere_url = ''
 function Get-VSWhere
 {
     Write-Verbose "Detecting vswhere.exe..."
@@ -337,8 +338,7 @@ function Get-VSWhere
         return $null
     }
 
-    Write-Verbose "Using $vswhere"
-    $global:vswhere = $vswhere
+    Write-Verbose "Using $global:vswhere"
     return $global:vswhere
 }
 
@@ -370,18 +370,18 @@ function Run-Process([string]$exe, [string]$arguments, [Ref][string]$stderr, [in
     return $stdout
 }
 
-$vspath = ''
+$global:vspath = ''
 function Get-VisualStudio2022InstallPath
 {
     Write-Verbose "Detecting VisualStudio 2022..."
-    $vswhere = Get-VSWhere
-    if ([string]::IsNullOrEmpty($global:vswhere))
+    $vswhere_exe = Get-VSWhere
+    if ([string]::IsNullOrEmpty($vswhere_exe))
     {
         return $null
     }
     $args = " -latest -products * -version [17.0,18.0) -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath"
-    Write-Verbose "Executing $vswhere $args"
-    $path = Run-Process $vswhere $args
+    Write-Verbose "Executing $vswhere_exe $args"
+    $path = Run-Process $vswhere_exe $args
     $path = $path -replace [environment]::NewLine, ''
     Write-Verbose "Visual Studio 2022 detected at $path"
     $global:vspath = $path
@@ -394,16 +394,16 @@ function Test-VisualStudioComponent
         [String]$versionRange
     )
 
-    $vswhere = Get-VSWhere
+    $vswhere_exe = Get-VSWhere
     if ([string]::IsNullOrEmpty($global:vswhere))
     {
         return 0
     }
     $args = " -latest -products * -version $versionRange -requires $component -property productDisplayVersion"
-    Write-Verbose "Executing $vswhere $args"
+    Write-Verbose "Executing $vswhere_exe $args"
     try
     {
-        $value = Run-Process $vswhere $args -throwIfExitCodeIsFailure $true
+        $value = Run-Process $vswhere_exe $args -throwIfExitCodeIsFailure $true
         $path = $path -replace [environment]::NewLine, ''
         Write-Verbose "Visual Studio component $($component) = $($value)"
         return 0
