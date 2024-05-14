@@ -470,7 +470,7 @@ function Test-WindowsSDKInstall
     }
     else
     {
-        Write-Host "...ERROR: Windows SDK $($version) not found or valid" -ForegroundColor Red -BackgroundColor Black
+        Write-Host "...ERROR: Windows SDK $($version) not found or valid. See [Getting Started doc's Tooling Prerequisites](https://github.com/microsoft/WindowsAppSDK/blob/main/docs/Coding-Guidelines/GettingStarted.md#tooling-prerequisites)" -ForegroundColor Red -BackgroundColor Black
         $global:issues++
     }
     return $found
