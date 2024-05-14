@@ -6,14 +6,10 @@
     xmlns:local="using:$safeprojectname$"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    Title="$projectname$">
 
-    <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Top">
-        <StackPanel Margin="20,5,0,0" Height="32" HorizontalAlignment="Stretch">
-            <TextBlock>$safeitemname$</TextBlock>
-        </StackPanel>
-        <StackPanel Margin="0,10,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Button x:Name="myButton" Click="myButton_Click">Click Me</Button>
-        </StackPanel>
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Button x:Name="myButton" Click="myButton_Click">Click Me</Button>
     </StackPanel>
 </Window>

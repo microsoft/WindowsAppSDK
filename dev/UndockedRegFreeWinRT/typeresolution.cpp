@@ -64,14 +64,6 @@ namespace UndockedRegFreeWinRT
         _COM_Outptr_opt_result_maybenull_ IMetaDataImport2** ppMetaDataImport,
         _Out_opt_ mdTypeDef* pmdTypeDef)
     {
-        if (ppMetaDataImport != nullptr)
-        {
-            *ppMetaDataImport = nullptr;
-        }
-        if (pmdTypeDef != nullptr)
-        {
-            *pmdTypeDef = 0;
-        }
         HRESULT hr = S_OK;
         Microsoft::WRL::ComPtr<IMetaDataImport2> spMetaDataImport;
         MetaDataImportersLRUCache* pMetaDataImporterCache = MetaDataImportersLRUCache::GetMetaDataImportersLRUCacheInstance();
@@ -221,17 +213,7 @@ namespace UndockedRegFreeWinRT
         _COM_Outptr_opt_result_maybenull_ IMetaDataImport2** ppMetaDataImport,
         _Out_opt_ mdTypeDef* pmdTypeDef)
     {
-        if (ppMetaDataImport != nullptr)
-        {
-            *ppMetaDataImport = nullptr;
-        }
-        if (pmdTypeDef != nullptr)
-        {
-            *pmdTypeDef = 0;
-        }
-
         wchar_t szCandidateFileName[MAX_PATH + 1]{};
-        RETURN_IF_FAILED(WindowsCreateString(L"", 0, phstrMetaDataFilePath));
         HRESULT hr{ StringCchCopy(szCandidateFileName, ARRAYSIZE(szCandidateFileName), pszFullName) };
         if (SUCCEEDED(hr))
         {
