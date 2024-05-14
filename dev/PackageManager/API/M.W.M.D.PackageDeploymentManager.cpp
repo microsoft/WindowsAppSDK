@@ -18,7 +18,7 @@
 // Until we have access to the updated Windows SDK we can't use RemovePackageOptions
 // but we need *something* to satisfy PackageManagement_RemovePackageByUriAsync() in the FrameworkUDK
 // so we'll make a placeholder definition to satisfy the compiler enough to let us call
-// PackageManagement_RemovePackageByUriAsync(uri, nullptr). Remove this once the updated
+// PackageManagement_RemovePackageByUriAsync2(uri, nullptr). Remove this once the updated
 // Windows SDK makes this unnecessary.
 namespace ABI::Windows::Management::Deployment
 {
@@ -1061,7 +1061,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         THROW_HR_IF(E_NOTIMPL, !IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage));
 
-        //TODO Awaiting FrameworkUdk update with PackageManagement_ResetPackageAsync()
+        //TODO Awaiting FrameworkUdk update with PackageManagement_ResetPackageAsync2()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
@@ -1069,7 +1069,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         THROW_HR_IF(E_NOTIMPL, !IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage));
 
-        //TODO Awaiting FrameworkUdk update with PackageManagement_ResetPackageAsync()
+        //TODO Awaiting FrameworkUdk update with PackageManagement_ResetPackageAsync2()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
@@ -1095,7 +1095,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         THROW_HR_IF(E_NOTIMPL, !IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage));
 
-        //TODO Awaiting FrameworkUdk update with PackageManagement_RepairPackageAsync()
+        //TODO Awaiting FrameworkUdk update with PackageManagement_RepairPackageAsync2()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
@@ -1103,7 +1103,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         THROW_HR_IF(E_NOTIMPL, !IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage));
 
-        //TODO Awaiting FrameworkUdk update with PackageManagement_RepairPackageAsync()
+        //TODO Awaiting FrameworkUdk update with PackageManagement_RepairPackageAsync2()
         throw hresult_not_implemented();
     }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
@@ -1979,7 +1979,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::hstring& /*errorText*/,
         winrt::guid& /*activityId*/)
     {
-        //TODO Awaiting FrameworkUdk update with PackageManagement_RemovePackageByUriAsync()
+        //TODO Awaiting FrameworkUdk update with PackageManagement_RemovePackageByUriAsync2()
         //TODO Awaiting Platform SDK defining RemovePackageOptions
         throw hresult_not_implemented();
     }
@@ -2199,7 +2199,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 #endif
 
         //winrt::com_ptr<::ABI::Windows::Foundation::IAsyncOperationWithProgress<::ABI::Windows::Management::Deployment::DeploymentResult*, ::ABI::Windows::Management::Deployment::DeploymentProgress*>> abiDeploymentOperation{};
-        RETURN_IF_FAILED(PackageManagement_RepairPackageAsync(packageFullName.c_str(), &abiDeploymentOperation));
+        RETURN_IF_FAILED(PackageManagement_RepairPackageAsync2(packageFullName.c_str(), &abiDeploymentOperation));
         //winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> deploymentOperation;
         //winrt::attach_abi(deploymentOperation, abiDeploymentOperation);
         //auto deploymentOperation{ abiDeploymentOperation };
