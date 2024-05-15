@@ -5,9 +5,16 @@
 Development requires the following installed tools...
 
 1. Windows 10 SDK 10.0.17763.0 (RS5)
-   a. Browse to https://go.microsoft.com/fwlink/p/?LinkID=2033908
-   b. Save the offered download `winsdksetup.exe`
-   c. Run winsdksetup.exe
+
+The SDK can be installed via winget:
+
+    winget install Microsoft.WindowsSDK.10.0.17736
+
+or via the browser:
+
+* Browse to https://go.microsoft.com/fwlink/p/?LinkID=2033908
+* Save the offered download `winsdksetup.exe`
+* Run winsdksetup.exe
 
 **NOTE:** Visual Studio 2022 doesn't include this SDK but will use it if installed on the machine.
 
