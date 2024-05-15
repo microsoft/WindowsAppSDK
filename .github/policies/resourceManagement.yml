@@ -8,7 +8,7 @@ where:
 configuration:
   resourceManagementConfiguration:
     scheduledSearches:
-    - description: 
+    - description: Close needs-author-feedback issue with no-recent-activity after 7 days
       frequencies:
       - hourly:
           hour: 6
@@ -16,14 +16,15 @@ configuration:
       - isIssue
       - isOpen
       - hasLabel:
-          label: needs-author feedback
+          label: needs-author-feedback
       - hasLabel:
-          label: status-no recent activity
+          label: no-recent-activity
       - noActivitySince:
-          days: 10
+          days: 7
       actions:
       - closeIssue
-    - description: 
+
+    - description: Add no-recent-activity to issue with needs-author-feedback after 7 days
       frequencies:
       - hourly:
           hour: 6
@@ -31,17 +32,18 @@ configuration:
       - isIssue
       - isOpen
       - hasLabel:
-          label: needs-author feedback
+          label: needs-author-feedback
       - noActivitySince:
-          days: 10
+          days: 7
       - isNotLabeledWith:
-          label: status-no recent activity
+          label: no-recent-activity
       actions:
       - addLabel:
-          label: status-no recent activity
+          label: no-recent-activity
       - addReply:
-          reply: This issue has been automatically marked as stale because it has been marked as requiring author feedback but has not had any activity for **10 days**. It will be closed if no further activity occurs **within 10 days of this comment**.
-    - description: 
+          reply: This issue has been automatically marked as stale because it has been marked as requiring author feedback but has not had any activity for **7 days**. It will be closed if no further activity occurs **within 7 days of this comment**.
+
+    - description: Close duplicates after 3 days
       frequencies:
       - hourly:
           hour: 6
@@ -56,105 +58,92 @@ configuration:
       - addReply:
           reply: This issue has been marked as duplicate and has not had any activity for **3 days**. It will be closed for housekeeping purposes.
       - closeIssue
-    - description: 
-      frequencies: []
-      filters:
-      - isOpen
-      - isIssue
-      - noActivitySince:
-          days: 14
-      - isNotLabeledWith:
-          label: feature proposal
-      - isNotLabeledWith:
-          label: discussion
-      - isNotLabeledWith:
-          label: status-no recent activity
-      - isNotLabeledWith:
-          label: needs-author-feedback
-      - isNotLabeledWith:
-          label: 'needs-triage :mag:'
-      actions:
-      - addLabel:
-          label: 'needs-attention :wave:'
+
+
     eventResponderTasks:
-    - if:
+
+    - description: working on it
+      if:
+      - payloadType: Pull_Request
+      then:
+      - inPrLabel:
+          label: 'Status: In PR'
+
+
+    - description: Add needs-triage to new or reopened Issue
+      if:
       - payloadType: Issues
       - or:
         - isAction:
+            action: Opened
+        - isAction:
             action: Reopened
-        - and:
-          - isAction:
-              action: Opened
-          - not: isLabeled
-          - activitySenderHasPermission:
-              permission: Write
       then:
       - addLabel:
-          label: 'needs-triage :mag:'
-      description: 
-    - if:
+          label: needs-triage
+
+
+    - description: Remove needs-triage from Closed items
+      if:
+      - payloadType: Issues
+      - isAction:
+          action: Closed
+      then:
+      - removeLabel:
+          label: needs-triage
+
+
+      description: Add needs-triage to closed item if commented on by external user
+    - if: 
+      - payloadType: Issue_Comment
+      - not: isOpen
+      - not:
+          or:
+          - activitySenderHasPermission:
+              permission: Write
+          - activitySenderHasPermission:
+              permission: Admin
+      then:
+      - addLabel:
+          label: needs-triage
+
+
+    - description: Remove needs-author-feedback after comment from author and add needs-assignee-attention (if issue is assigned)
+      if:
       - payloadType: Issue_Comment
       - isAction:
           action: Created
       - isActivitySender:
           issueAuthor: True
       - hasLabel:
-          label: needs-author feedback
-      - isOpen
+          label: needs-author-feedback
+      - isAssignedToSomeone
       then:
       - addLabel:
-          label: 'needs-attention :wave:'
+          label: needs-assignee-attention
       - removeLabel:
-          label: needs-author feedback
-      description: 
-    - if:
-      - payloadType: Issues
-      - not:
-          isAction:
-            action: Closed
-      - hasLabel:
-          label: status-no recent activity
-      then:
-      - removeLabel:
-          label: status-no recent activity
-      description: 
-    - if:
+          label: needs-author-feedback
+      
+
+    - description: Remove needs-author-feedback after comment from author and add needs-triage (if issue is unassigned)
+      if:
       - payloadType: Issue_Comment
-      - hasLabel:
-          label: status-no recent activity
-      then:
-      - removeLabel:
-          label: status-no recent activity
-      description: 
-    - if:
-      - payloadType: Pull_Request
-      then:
-      - inPrLabel:
-          label: 'Status: In PR'
-      description: 
-    - if:
-      - payloadType: Issues
       - isAction:
-          action: Closed
-      then:
-      - removeLabel:
-          label: 'needs-triage :mag:'
-      description: 
-    - if:
-      - payloadType: Issue_Comment
-      - not: isOpen
+          action: Created
+      - isActivitySender:
+          issueAuthor: True
       - hasLabel:
-          label: 'needs-triage :mag:'
-      - or:
-        - activitySenderHasPermission:
-            permission: Write
-        - activitySenderHasPermission:
-            permission: Admin
+          label: needs-author-feedback
+      - not: isAssignedToSomeone
       then:
+      - addLabel:
+          label: needs-triage
       - removeLabel:
-          label: 'needs-triage :mag:'
-      description: 
-    - if:
+          label: needs-author-feedback
+      
+
+    - description: Add needs-triage to new PR
+      if:
       - payloadType: Pull_Request
       - or:
         - isAction:
@@ -163,16 +152,49 @@ configuration:
             action: Reopened
       then:
       - addLabel:
-          label: 'needs-triage :mag:'
-      description: 
-    - if:
-      - payloadType: Issues
+          label: needs-triage
+
+
+    - description: Remove needs-author-feedback after comment from author and add needs-triage
+      if:
+      - payloadType: Issue_Comment
+      - isAction:
+          action: Created
+      - isActivitySender:
+          issueAuthor: True
       - hasLabel:
-          label: feature proposal
-      - and:
-        - isAction:
-            action: Opened
-      then: []
-      description: 
+          label: needs-author-feedback
+      - isOpen
+      then:
+      - addLabel:
+          label: needs-triage
+      - removeLabel:
+          label: needs-author-feedback
+
+
+    - description: Remove no-recent-activity from issue
+      if:
+      - payloadType: Issues
+      - not:
+          isAction:
+            action: Closed
+      - hasLabel:
+          label: no-recent-activity
+      then:
+      - removeLabel:
+          label: no-recent-activity
+      
+
+    - description: Remove no-recent-activity from issue after comment
+      if:
+      - payloadType: Issue_Comment
+      - hasLabel:
+          label: no-recent-activity
+      then:
+      - removeLabel:
+          label: no-recent-activity
+
+
+
 onFailure: 
 onSuccess: 
