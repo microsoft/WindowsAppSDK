@@ -87,7 +87,7 @@ private:
     bool bFinalized;
     CoreProfile* m_pProfile;
     mutable const IHierarchicalSchema* m_pFirstEntrySchema;
-    FileListBuilder* m_pFileListBuilder;
+    FileListBuilder* m_pFileListBuilder{ nullptr };
     DynamicArray<PriFile*>* m_pPriFileList;
 };
 

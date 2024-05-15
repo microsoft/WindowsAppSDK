@@ -142,6 +142,7 @@ public:
         __out_opt int* pItemIndexOut = NULL,
         __out_opt int* pNameIndexOut = NULL) const;
 
+    _Success_(return == true)
     bool Contains(
         __in PCWSTR path,
         __in int relativeToScope,
@@ -192,7 +193,7 @@ public:
 
 private:
     bool m_largeNode;
-    DEFFILE_HNAMES_HEADER_EX m_header;
+    DEFFILE_HNAMES_HEADER_EX m_header{};
     const DEFFILE_HNAMES_HEADER_EX* m_pHeader;
     __field_ecount(m_pHeader->numNodes) const DEFFILE_HNAMES_NODE* m_pNodes;
     __field_ecount(m_pHeader->numScopes) const DEFFILE_HNAMES_SCOPE* m_pScopes;

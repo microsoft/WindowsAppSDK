@@ -518,6 +518,11 @@ _DefArray_TryEnsureSizeByElemSize(
     __in size_t nNewElems,
     __deref_out_bcount(cbElem* nNewElems) void** ppNewOut)
 {
+    if (ppNewOut != nullptr)
+    {
+        *ppNewOut = nullptr;
+    }
+
     if ((cbElem == 0) || (nNewElems == 0))
     {
         *ppNewOut = pOld;
@@ -539,6 +544,7 @@ _DefArray_TryEnsureSizeByElemSize(
     return FALSE;
 }
 
+_Success_(return == true)
 BOOLEAN
 _DefArray_TryExpandAndRelocate(
     __in_bcount(cbElem* oldSize) void* pOld,

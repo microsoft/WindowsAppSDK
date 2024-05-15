@@ -19,10 +19,10 @@ namespace WindowsAppRuntime::Deployment::Activity
 
     struct WilFailure
     {
-        wil::FailureType type;
-        HRESULT hr;
+        wil::FailureType type { wil::FailureType::Exception };
+        HRESULT hr { S_OK };
         std::string file;
-        unsigned int lineNumber;
+        unsigned int lineNumber{ 0 };
         std::wstring message;
         std::string module;
     };

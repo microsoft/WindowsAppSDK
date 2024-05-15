@@ -38,7 +38,7 @@ class DataBlobBuilder : public DefObject
 {
 protected:
     MEM_LINKED_DATABLOB* m_pHeadDataList;
-    mutable MEM_LINKED_DATABLOB* m_pCurDataList;
+    mutable MEM_LINKED_DATABLOB* m_pCurDataList{ nullptr };
     UINT32 m_offset;
     static const UINT32 maxListBufferSize = 1024 * 1024; // 1M
 
@@ -75,7 +75,7 @@ public:
     virtual HRESULT AddDataAsReference(__in_bcount(cbData) const BYTE* pData, __in UINT32 cbData, __out UINT32* pWrittenOffset);
 
     /*!
-         * Iterates through the data list entries and returns true if the given pData with size cbData 
+         * Iterates through the data list entries and returns true if the given pData with size cbData
          * is present at offset dataBlobBuilderOffset.
          * Returns false otherwise.
          */
@@ -241,7 +241,7 @@ public:
          */
     HRESULT AddDataString(__in PCWSTR pString, __out PrebuildItemReference* pRefOut);
 
-    /*! 
+    /*!
          * Copies the specified string to the data segment (including
          * null-terminator), to a supplied maximum length.  Fails
          * if the string exceeds the supplied length.
@@ -253,18 +253,18 @@ public:
          */
     HRESULT AddDataString(__in_ecount(cchString) PCWSTR pString, __in int cchString, __out PrebuildItemReference* pRefOut);
 
-    /*! 
+    /*!
          * Turns a PrebuildItemReference into a BuiltItemReference
          * that can be used to construct an instance locator.
-         * 
+         *
          * \return HRESULT
          */
     HRESULT GetBuiltItemInfo(__in const PrebuildItemReference* pPrebuildReference, __out BuiltItemReference* pRefOut) const;
 
-    /*! 
-         * Return string by its item index. It ignore large index or not since the item index 
+    /*!
+         * Return string by its item index. It ignore large index or not since the item index
          * indicate whether it is large or not.
-         * 
+         *
          * \return HRESULT
          */
 

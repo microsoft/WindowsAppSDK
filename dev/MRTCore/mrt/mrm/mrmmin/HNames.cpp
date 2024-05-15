@@ -685,6 +685,7 @@ bool HierarchicalNames::Contains(
     return Contains(pPath, 0, pScopeIndexOut, pItemIndexOut, pNameIndexOut);
 }
 
+_Success_(return == true)
 bool HierarchicalNames::Contains(
     __in PCWSTR pPath,
     __in int relativeToScope,

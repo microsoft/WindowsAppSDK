@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
     <Name ID="1033" Package="FIXME-PACKAGEGUID" />
@@ -33,6 +33,9 @@
       <ProjectItem ReplaceParameters="false" TargetFileName="$safeprojectname$.def">RuntimeComponent.def</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="readme.txt">readme.txt</ProjectItem>
     </Project>
+    <CustomParameters>
+      <CustomParameter Name="$NuGetPackages$" Value="Microsoft.WindowsAppSDK;Microsoft.Windows.CppWinRT;Microsoft.Windows.SDK.BuildTools;Microsoft.Windows.ImplementationLibrary"/>
+    </CustomParameters>
   </TemplateContent>
   <WizardExtension>
     <Assembly>Microsoft.VisualStudio.WinRT.TemplateWizards, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
@@ -46,19 +49,8 @@
     <Assembly>NuGet.VisualStudio.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
     <FullClassName>NuGet.VisualStudio.TemplateWizard</FullClassName>
   </WizardExtension>
-  <WizardData>
-    <MinSupportedVersion>10.0.17763.0</MinSupportedVersion>
-    <packages repository="extension" repositoryId="Microsoft.WindowsAppSDK.Cpp">
-      <package id="Microsoft.Windows.CppWinRT" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <package id="Microsoft.Windows.SDK.BuildTools" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <package id="Microsoft.WindowsAppSDK" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <package id="Microsoft.Windows.ImplementationLibrary" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-    </packages>
-    <Assets>
-      <Asset Type="Microsoft.Windows.CppWinRT.nupkg" Source="File" Path="Microsoft.Windows.CppWinRT.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
-      <Asset Type="Microsoft.Windows.SDK.BuildTools.nupkg" Source="File" Path="Microsoft.Windows.SDK.BuildTools.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
-      <Asset Type="Microsoft.WindowsAppSDK.nupkg" Source="File" Path="Microsoft.WindowsAppSDK.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
-      <Asset Type="Microsoft.Windows.ImplementationLibrary.nupkg" Source="File" Path="Microsoft.Windows.ImplementationLibrary.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
-    </Assets>
-  </WizardData>
+  <WizardExtension>
+    <Assembly>WindowsAppSDK.Cpp.Extension.Dev17, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>WindowsAppSDK.TemplateUtilities.NuGetPackageInstaller</FullClassName>
+  </WizardExtension>
 </VSTemplate>

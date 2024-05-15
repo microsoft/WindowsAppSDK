@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
   <TemplateData>
     <Hidden>true</Hidden>
@@ -24,10 +24,6 @@
     <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>
   <TemplateContent>
-    <CustomParameters>
-      <CustomParameter Name="$WindowsAppSDKNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <CustomParameter Name="$WindowsSDKBuildToolsNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-    </CustomParameters>
     <Project File="WapProjTemplate.wapproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" TargetFileName="Package.appxmanifest">Package-managed.appxmanifest</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="Images\SplashScreen.scale-200.png">SplashScreen.scale-200.png</ProjectItem>
@@ -37,7 +33,10 @@
       <ProjectItem ReplaceParameters="false" TargetFileName="Images\Square44x44Logo.targetsize-24_altform-unplated.png">Square44x44Logo.targetsize-24_altform-unplated.png</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="Images\StoreLogo.png">StoreLogo.png</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="Images\Wide310x150Logo.scale-200.png">Wide310x150Logo.scale-200.png</ProjectItem>
-    </Project>
+    </Project>      
+    <CustomParameters>
+      <CustomParameter Name="$NuGetPackages$" Value="Microsoft.WindowsAppSDK;Microsoft.Windows.SDK.BuildTools"/>
+    </CustomParameters>
   </TemplateContent>
   <WizardExtension>
     <Assembly>Microsoft.VisualStudio.Universal.TemplateWizards, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
@@ -47,6 +46,10 @@
     <!-- Generates Publisher name for appxmanifest -->
     <Assembly>Microsoft.VisualStudio.WinRT.TemplateWizards, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
     <FullClassName>Microsoft.VisualStudio.WinRT.TemplateWizards.UpdatePublisherInManifestWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>WindowsAppSDK.Cpp.Extension.Dev17, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>WindowsAppSDK.TemplateUtilities.NuGetPackageInstaller</FullClassName>
   </WizardExtension>
   <WizardData>
     <MinSupportedVersion>10.0.17763.0</MinSupportedVersion>

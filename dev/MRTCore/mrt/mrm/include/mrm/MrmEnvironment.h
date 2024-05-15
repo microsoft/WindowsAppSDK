@@ -6,35 +6,35 @@
 namespace Microsoft::Resources
 {
 
-/*! 
+/*!
  * Describes a single resource qualifier.
  */
 struct ResourceQualifier
 {
-    /*! 
+    /*!
      * Gets the name of the qualifier, specified as an Atom.
      * \return Atom
      */
     Atom name;
 
-    /*! 
+    /*!
      * Gets the type of the qualifier, specified as an Atom.
      * \return Atom
      */
     Atom qualifierType;
 
-    /*! 
+    /*!
      * Gets the priority of the qualifier as an integer
      * in the range 0-1000.
-     * 
+     *
      * \return int
      * Returns an integer in the range 0-1000 which
      * represents the default priority of this qualifier
      * relative to other resource qualifiers defined
      * in the Environment.
      */
-    int defaultRuntimePriority;
-    int defaultBuildPriority;
+    int defaultRuntimePriority = 0;
+    int defaultBuildPriority = 0;
 
     static const int MinPriority = MRM_MIN_QUALIFIER_PRIORITY;
     static const int MaxPriority = MRM_MAX_QUALIFIER_PRIORITY;
@@ -42,7 +42,7 @@ struct ResourceQualifier
 
 class IBuildQualifierType;
 
-/*! 
+/*!
  * The QualifierBuildInfo struct encapsulates both runtime and build-time information
  * about a single attribute.
  */
@@ -58,12 +58,12 @@ struct QualifierBuildInfo
 
 class IEnvironmentVersionInfo;
 
-/*! 
+/*!
  * An IEnvironment is a named and versioned description of a specific
  * runtime environment in which a particular set of MRM content is
  * expected to be consumed.
- * 
- * It defines the context attributes available in the runtime, as 
+ *
+ * It defines the context attributes available in the runtime, as
  * well as the supported condition operators and the names of the
  * available implementations of the various types used by the modern
  * resource runtime itself.
@@ -126,6 +126,8 @@ protected:
 
     MrmEnvironment() :
         m_pEnvironmentInitializer(nullptr),
+        m_pQualifierInfo(nullptr),
+        m_pAtoms(nullptr),
         m_pQualifierTypeNames(nullptr),
         m_pQualifierNames(nullptr),
         m_pItemTypeNames(nullptr),
@@ -412,6 +414,7 @@ public:
         _Inout_opt_ StringResult* pUniqueNameOut,
         _Inout_opt_ StringResult* pSimpleNameOut);
 
+    _Success_(return == true)
     static bool TryFindInfoByChecksum(
         _In_ const ENVIRONMENT_DESCRIPTION* description,
         _In_opt_ DefChecksum::Checksum checksum,
@@ -427,63 +430,63 @@ public:
 class IEnvironmentVersionInfo : public DefObject
 {
 public:
-    /*! 
+    /*!
      * Gets the major version of this Environment description.
      * \return int
      */
     virtual UINT16 GetMajorVersion() const = 0;
 
-    /*! 
+    /*!
      * Gets the minor version of this Environment description.
      * \return int
      */
     virtual UINT16 GetMinorVersion() const = 0;
 
-    /*! 
-     * Gets the checksum of a specific version of an Environment description. 
+    /*!
+     * Gets the checksum of a specific version of an Environment description.
      * The version checksum is computed from all names and descriptions present
      * in a specific version of the Environment.
-     * 
+     *
      * \return DEF_CHECKSUM
      */
     virtual DEF_CHECKSUM GetVersionChecksum() const = 0;
 
-    /*! 
+    /*!
      * Gets the number of qualifier types present in the specified version
      * of the Environment.
      * \return int
      */
     virtual int GetNumQualifierTypes() const = 0;
 
-    /*! 
+    /*!
      * Gets the number of qualifiers present in the specified version
      * of the Environment.
      * \return int
      */
     virtual int GetNumQualifiers() const = 0;
 
-    /*! 
+    /*!
      * Gets the number of item types present in the specified version
      * of the Environment.
      * \return int
      */
     virtual int GetNumItemTypes() const = 0;
 
-    /*! 
+    /*!
      * Gets the number of resource value types present in the specified version
      * of the Environment.
      * \return int
      */
     virtual int GetNumResourceValueTypes() const = 0;
 
-    /*! 
+    /*!
      * Gets the number of resource value locators present in the specified version
      * of the Environment.
      * \return int
      */
     virtual int GetNumResourceValueLocators() const = 0;
 
-    /*! 
+    /*!
      * Gets the number of condition operators present in the specified version
      * of the Environment.
      * \return int
@@ -503,7 +506,7 @@ public:
 class EnvironmentVersionInfo : public IEnvironmentVersionInfo
 {
 protected:
-    MRMFILE_ENVIRONMENT_VERSION_INFO m_version;
+    MRMFILE_ENVIRONMENT_VERSION_INFO m_version{};
 
     EnvironmentVersionInfo(_In_opt_ const MRMFILE_ENVIRONMENT_VERSION_INFO* version)
     {
@@ -544,7 +547,7 @@ public:
 class EnvironmentReference : public IEnvironmentVersionInfo
 {
 protected:
-    MRMFILE_ENVIRONMENT_REF m_ref;
+    MRMFILE_ENVIRONMENT_REF m_ref{};
 
     EnvironmentReference() {}
 
@@ -658,6 +661,7 @@ public:
 
     virtual bool TryFindEnvironment(_In_ const IEnvironmentVersionInfo* pRef, _Out_ const IEnvironment** pEnvironmentOut) const = 0;
 
+    _Success_(return == true)
     virtual bool TryFindEnvironment(_In_ PCWSTR pUniqueName, _Out_ const IEnvironment** pEnvironmentOut) const = 0;
 
     virtual bool TryFindCompatibleEnvironment(
@@ -730,8 +734,8 @@ public:
 protected:
     HRESULT Init(_In_ AtomPoolGroup* pAtoms);
 
-    AtomPoolGroup* m_pAtoms;
-    DynamicArray<const IEnvironment*>* m_pEnvironments;
+    AtomPoolGroup* m_pAtoms{ nullptr };
+    DynamicArray<const IEnvironment*>* m_pEnvironments{ nullptr };
 };
 
 class EnvironmentMapping : DefObject
@@ -762,7 +766,7 @@ public:
         _Outptr_result_buffer_maybenull_(*numMappedQualifiers) const Atom::SmallIndex** qualifierMappings) const;
 
 private:
-    EnvironmentMapping() : m_qualifierMappings(nullptr), m_qualifierNames(nullptr) {}
+    EnvironmentMapping() : m_header(nullptr), m_qualifierMappings(nullptr), m_qualifierNames(nullptr), m_namesPool(nullptr) {}
 
     HRESULT Init(
         _In_ const CoreProfile* coreProfile,
@@ -770,7 +774,7 @@ private:
         _In_reads_bytes_(dataSizeInBytes) const void* rawData,
         _In_ size_t dataSizeInBytes);
 
-    MRMFILE_ENVIRONMENT_VERSION_INFO m_version;
+    MRMFILE_ENVIRONMENT_VERSION_INFO m_version{};
     const MRMFILE_ENVIRONMENT_MAPPING_HEADER* m_header;
     _Field_size_(m_version.numQualifiers) Atom::SmallIndex* m_qualifierMappings;
     _Field_size_(m_version.numQualifiers) PCWSTR* m_qualifierNames;

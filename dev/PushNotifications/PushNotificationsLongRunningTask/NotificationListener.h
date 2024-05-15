@@ -27,6 +27,6 @@ private:
 
     std::wstring m_appId;
     std::wstring m_processName;
-    winrt::guid m_comServerClsid;
+    winrt::guid m_comServerClsid{};
     wil::srwlock m_lock;
 };

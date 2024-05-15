@@ -50,7 +50,7 @@ public:
     {
         SetStopResult(hresult);
 
-        if (hresult)
+        if (FAILED(hresult))
         {
             TraceLoggingClassWriteStop(Initialize,
                 _GENERIC_PARTB_FIELDS_ENABLED,
@@ -99,7 +99,7 @@ public:
     {
         SetStopResult(hresult);
 
-        if (hresult)
+        if (FAILED(hresult))
         {
             TraceLoggingClassWriteStop(Shutdown,
                 _GENERIC_PARTB_FIELDS_ENABLED,

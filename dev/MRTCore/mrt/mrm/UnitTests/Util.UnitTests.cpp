@@ -40,7 +40,7 @@ private:
 
     void InsertCharacterIntoWideStringWithoutTerminating(
         _In_ unsigned int codePoint,
-        _Out_writes_to_(cchBuffer, *cchWriten) wchar_t* psBuffer,
+        _Out_writes_to_(cchBuffer, *cchWritten) wchar_t* psBuffer,
         _In_range_(>=, 2) unsigned int cchBuffer,
         _Deref_out_range_(1, 2) unsigned int* cchWritten);
 

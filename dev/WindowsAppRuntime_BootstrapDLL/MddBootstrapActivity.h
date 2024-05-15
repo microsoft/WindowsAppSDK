@@ -43,7 +43,7 @@ namespace WindowsAppRuntime::MddBootstrap::Activity
         wil::unique_cotaskmem_string m_initializationPackageFullName;
         WindowsAppRuntimeBootstrap_TraceLogger::Shutdown m_bootstrapShutdownActivity;
         GUID m_bootstrapShutdownActivityId{};
-        WilFailure m_lastFailure;
+        WilFailure m_lastFailure{};
         bool m_stopActivityForWilReturnHR{};
 
     public:
