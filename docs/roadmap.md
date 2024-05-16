@@ -27,7 +27,7 @@ Headline areas of work and features for the 1.6 timeframe include:
     - TableView control
     - Inking control
     - Cross-process Islands
-    - Smooth app recize
+    - Smooth app resize
 
 ## Join in and stay connected!
 
