@@ -1981,7 +1981,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         //TODO Awaiting FrameworkUdk update with PackageManagement_RemovePackageByUriAsync2()
         //TODO Awaiting Platform SDK defining RemovePackageOptions
-        throw hresult_not_implemented();
+        RETURN_HR(E_NOTIMPL);
     }
 
     HRESULT PackageDeploymentManager::RemovePackageByFullName(

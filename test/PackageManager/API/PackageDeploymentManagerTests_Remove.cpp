@@ -507,9 +507,15 @@ namespace Test::PackageManager::Tests
             options.FailIfNotFound(true);
             auto deploymentResult{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options).get() };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
+#if defined(TODO_use_Platform_SDK_defining_RemovePackageOptions)
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_IS_FALSE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+#else
+            VERIFY_ARE_EQUAL(E_NOTIMPL, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+#endif
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
@@ -531,9 +537,15 @@ namespace Test::PackageManager::Tests
             auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
+#if defined(TODO_use_Platform_SDK_defining_RemovePackageOptions)
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_IS_FALSE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+#else
+            VERIFY_ARE_EQUAL(E_NOTIMPL, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+#endif
 
             VERIFY_IS_FALSE(IsPackageRegistered_Red());
         }
@@ -554,10 +566,17 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(options.FailIfNotFound());
             auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+#if defined(TODO_use_Platform_SDK_defining_RemovePackageOptions)
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+#else
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(E_NOTIMPL, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+#endif
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
@@ -582,10 +601,17 @@ namespace Test::PackageManager::Tests
             options.FailIfNotFound(true);
             auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+#if defined(TODO_use_Platform_SDK_defining_RemovePackageOptions)
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+#else
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(E_NOTIMPL, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+#endif
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
@@ -606,12 +632,21 @@ namespace Test::PackageManager::Tests
             options.FailIfNotFound(true);
             auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+#if defined(TODO_use_Platform_SDK_defining_RemovePackageOptions)
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
+#else
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(E_NOTIMPL, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+#endif
         }
 
         TEST_METHOD(RemovePackageSetAsync_Uri_N_NotInstalled_Fail)
@@ -637,9 +672,15 @@ namespace Test::PackageManager::Tests
             auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
+#if defined(TODO_use_Platform_SDK_defining_RemovePackageOptions)
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_IS_FALSE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+#else
+            VERIFY_ARE_EQUAL(E_NOTIMPL, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+#endif
 
             VERIFY_IS_FALSE(IsPackageRegistered_Red());
         }
@@ -666,12 +707,21 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(options.FailIfNotFound());
             auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+#if defined(TODO_use_Platform_SDK_defining_RemovePackageOptions)
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
+#else
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(E_NOTIMPL, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+
+            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
+#endif
         }
 
         TEST_METHOD(RemovePackageSetAsync_Uri_N_Registered_Success)
@@ -696,12 +746,21 @@ namespace Test::PackageManager::Tests
             options.FailIfNotFound(true);
             auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+#if defined(TODO_use_Platform_SDK_defining_RemovePackageOptions)
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
+#else
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(E_NOTIMPL, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+#endif
         }
 
         TEST_METHOD(RemovePackageSetAsync_Uri_N_RegisteredAndNotInstalled_Success)
@@ -723,10 +782,17 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(options.FailIfNotFound());
             auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+#if defined(TODO_use_Platform_SDK_defining_RemovePackageOptions)
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+#else
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(E_NOTIMPL, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+#endif
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
@@ -757,10 +823,17 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(options.FailIfNotFound());
             auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+#if defined(TODO_use_Platform_SDK_defining_RemovePackageOptions)
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+#else
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(E_NOTIMPL, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+#endif
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
@@ -1239,10 +1312,17 @@ namespace Test::PackageManager::Tests
             options.FailIfNotFound(true);
             auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+#if defined(TODO_use_Platform_SDK_defining_RemovePackageOptions)
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+#else
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(E_NOTIMPL, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+#endif
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
@@ -1273,13 +1353,17 @@ namespace Test::PackageManager::Tests
             options.FailIfNotFound(true);
             auto deploymentOperation{ packageDeploymentManager.RemovePackageSetAsync(packageSet, options) };
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+#if defined(TODO_use_Platform_SDK_defining_RemovePackageOptions)
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess, deploymentResult.Status());
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
-
-            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
-            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Green::GetPackageFullName()));
+#else
+            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
+            VERIFY_ARE_EQUAL(E_NOTIMPL, deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
+            VERIFY_IS_TRUE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
+#endif
         }
 
         TEST_METHOD(RemovePackageSetAsync_NoUri_1_RegisteredPackageStatusBad_Success)
@@ -1298,6 +1382,8 @@ namespace Test::PackageManager::Tests
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
+            winrt::Windows::Foundation::Uri packageUri{ nullptr };
+            red.PackageUri(packageUri);
             packageSet.Items().Append(red);
 
             winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
@@ -1330,8 +1416,11 @@ namespace Test::PackageManager::Tests
             PCWSTR c_packageSetId{ L"RGB" };
             packageSet.Id(c_packageSetId);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem(::TPF::Red::GetPackageFullName(), ::TPF::Red::c_packageDirName) };
+            winrt::Windows::Foundation::Uri packageUri{ nullptr };
+            red.PackageUri(packageUri);
             packageSet.Items().Append(red);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem(::TPF::Green::GetPackageFullName(), ::TPF::Green::c_packageDirName) };
+            green.PackageUri(packageUri);
             packageSet.Items().Append(green);
 
             winrt::Microsoft::Windows::Management::Deployment::RemovePackageOptions options;
