@@ -1327,6 +1327,57 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
         logTelemetry.Stop(packageSet.Id());
     }
+    bool PackageDeploymentManager::IsPackageProvisioned(hstring const& package)
+    {
+        if (VerifyPackageFamilyName(package.c_str()) == ERROR_SUCCESS)
+        {
+            return IsProvisionedByPackageFamilyName(package);
+        }
+        else if (VerifyPackageFullName(package.c_str()) == ERROR_SUCCESS)
+        {
+            return IsProvisionedByPackageFullName(package);
+        }
+
+        const winrt::Windows::Foundation::Uri packageUri{ package };
+        const auto packageAbsoluteUri{ packageUri.AbsoluteUri() };
+        if (!packageAbsoluteUri.empty())
+        {
+            return IsPackageProvisionedByUri(packageUri);
+        }
+        THROW_HR_MSG(E_INVALIDARG, "%ls", package.c_str());
+    }
+    bool PackageDeploymentManager::IsPackageProvisionedByUri(winrt::Windows::Foundation::Uri const& packageUri)
+    {
+        // Currently supported URI schemes: ms-uup
+        const auto packageFullNames{ GetPackageFullNamesFromUupProductUriIfMsUup(packageUri) };
+        if (packageFullNames)
+        {
+            for (PCWSTR packageFullName : packageFullNames)
+            {
+                if (!IsProvisionedByPackageFullName(packageFullName))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        THROW_HR_MSG(E_INVALIDARG, "%ls", packageUri.ToString().c_str());
+    }
+    bool PackageDeploymentManager::IsPackageSetProvisioned(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet)
+    {
+        Validate_PackageUriIsOptional(packageSet);
+
+        const auto provisionedPackages{ m_packageManager.FindProvisionedPackages() };
+        for (const winrt::Microsoft::Windows::Management::Deployment::PackageSetItem& packageSetItem : packageSet.Items())
+        {
+            if (!IsProvisioned(provisionedPackages, packageSetItem))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
     PackageDeploymentManager::ProvisionPackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions options)
     {
@@ -2751,6 +2802,46 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                          extendedError, packageFullName.c_str(), errorText.c_str());
         }
         return S_OK;
+    }
+
+    bool PackageDeploymentManager::IsProvisionedByPackageFamilyName(hstring const& packageFamilyName)
+    {
+        const auto provisionedPackages{ m_packageManager.FindProvisionedPackages() };
+        return IsProvisionedByPackageFamilyName(provisionedPackages, packageFamilyName);
+    }
+
+    bool PackageDeploymentManager::IsProvisionedByPackageFamilyName(
+        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::ApplicationModel::Package> const& provisionedPackages,
+        hstring const& packageFamilyName)
+    {
+        for (const winrt::Windows::ApplicationModel::Package& provisionedPackage: provisionedPackages)
+        {
+            if (!StringEqualsNoCase(packageFamilyName, provisionedPackage.Id().FamilyName()))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool PackageDeploymentManager::IsProvisionedByPackageFullName(hstring const& packageFullName)
+    {
+        const auto packages{ m_packageManager.FindProvisionedPackages() };
+        for (const winrt::Windows::ApplicationModel::Package& package : packages)
+        {
+            if (!StringEqualsNoCase(packageFullName, package.Id().FullName()))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool PackageDeploymentManager::IsProvisioned(
+        winrt::Windows::Foundation::Collections::IVector<winrt::Windows::ApplicationModel::Package> const& provisionedPackages,
+        winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem)
+    {
+        return IsProvisionedByPackageFamilyName(provisionedPackages, packageSetItem.PackageFamilyName());
     }
 
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>

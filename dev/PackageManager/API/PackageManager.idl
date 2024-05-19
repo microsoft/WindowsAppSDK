@@ -426,6 +426,18 @@ namespace Microsoft.Windows.Management.Deployment
         RepairPackageSetAsync(PackageSet packageSet);
 
         //-------------------------------------------------------------
+        // IsProvisioned
+
+        // Return true if the package(s) are provisioned
+
+        Boolean IsPackageProvisioned(String package);
+
+        Boolean IsPackageProvisionedByUri(Windows.Foundation.Uri packageUri);
+
+        /// @note packageSet[Item].PackageUri is optional
+        Boolean IsPackageSetProvisioned(PackageSet packageSet);
+
+        //-------------------------------------------------------------
         // Provision packages
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>

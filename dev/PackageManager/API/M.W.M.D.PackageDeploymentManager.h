@@ -40,6 +40,9 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> RepairPackageAsync(hstring package);
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> RepairPackageByUriAsync(winrt::Windows::Foundation::Uri packageUri);
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> RepairPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet);
+        bool IsPackageProvisioned(hstring const& package);
+        bool IsPackageProvisionedByUri(winrt::Windows::Foundation::Uri const& packageUri);
+        bool IsPackageSetProvisioned(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet);
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> ProvisionPackageAsync(hstring package, winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions options);
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> ProvisionPackageByUriAsync(winrt::Windows::Foundation::Uri packageUri, winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions options);
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> ProvisionPackageSetAsync(winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet, winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions options);
@@ -61,9 +64,9 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::hstring GetUupProductIdIfMsUup(winrt::Windows::Foundation::Uri const& uri) const;
         wil::unique_cotaskmem_array_ptr<wil::unique_cotaskmem_string> GetPackageFullNamesFromUupProductUriIfMsUup(winrt::Windows::Foundation::Uri const& uri) const;
         bool IsReadyByPackageFullName(hstring const& packageFullName);
-        bool IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSet);
+        bool IsReady(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem);
         winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus IsReadyOrNewerAvailableByPackageFullName(hstring const& packageFullName);
-        winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus IsReadyOrNewerAvailable(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSet);
+        winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus IsReadyOrNewerAvailable(winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem);
         void Validate_PackageUriIsRequired(
             winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet) const;
         void Validate_PackageUriIsOptional(
@@ -247,6 +250,16 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
+        bool IsProvisionedByPackageFamilyName(
+            hstring const& packageFamilyName);
+        bool IsProvisionedByPackageFamilyName(
+            winrt::Windows::Foundation::Collections::IVector<winrt::Windows::ApplicationModel::Package> const& provisionedPackages,
+            hstring const& packageFamilyName);
+        bool IsProvisionedByPackageFullName(
+            hstring const& packageFullName);
+        bool IsProvisioned(
+            winrt::Windows::Foundation::Collections::IVector<winrt::Windows::ApplicationModel::Package> const& provisionedPackages,
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem);
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> ProvisionPackageByFamilyNameAsync(
             hstring packageFamilyName,
             winrt::Microsoft::Windows::Management::Deployment::ProvisionPackageOptions const& options);
@@ -300,6 +313,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
             return count;
         }
+    private:
+        static bool Any(winrt::Windows::Foundation::Collections::IIterable<winrt::Windows::ApplicationModel::Package> packages)
+        {
+            return packages ? packages.First().HasCurrent() : false;
+        }
 
     private:
         static int StringCompareNoCase(PCWSTR left, PCWSTR right)
@@ -317,6 +335,15 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         static int StringEqualsNoCase(PCWSTR left, const size_t leftLength, PCWSTR right, const size_t rightLength)
         {
             return StringCompareNoCase(left, leftLength, right, rightLength) == 0;
+        }
+    private:
+        static int StringCompareNoCase(const winrt::hstring& left, const winrt::hstring& right)
+        {
+            return StringCompareNoCase(left.c_str(), right.c_str());
+        }
+        static bool StringEqualsNoCase(const winrt::hstring& left, const winrt::hstring& right)
+        {
+            return StringEqualsNoCase(left.c_str(), right.c_str());
         }
 
     private:
