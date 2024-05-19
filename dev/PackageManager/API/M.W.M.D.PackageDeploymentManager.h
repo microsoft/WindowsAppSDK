@@ -207,12 +207,23 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> RepairPackageByFamilyNameAsync(
+            hstring packageFamilyName);
+        HRESULT RepairPackageByFamilyName(
+            winrt::hstring const& packageFamilyName,
+            winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
+            wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            const double progressMaxPerPackageFamily,
+            HRESULT& extendedError,
+            winrt::hstring& errorText,
+            winrt::guid& activityId);
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress> RepairPackageByFullNameAsync(
             hstring packageFullName);
         HRESULT RepairPackageByFullName(
             winrt::hstring const& packageFullName,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+            const double progressMaxPerPackage,
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);

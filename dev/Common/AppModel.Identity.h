@@ -392,6 +392,15 @@ private:
                                         PACKAGE_RESOURCEID_MAX_LENGTH + 1 +
                                         PACKAGE_PUBLISHERID_MAX_LENGTH + 1) * sizeof(WCHAR)]{};
 };
+
+template<typename T>
+T ToPackageFamilyName(PCWSTR packageFullName)
+{
+    WCHAR packageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
+    UINT32 packageFamilyNameLength{ ARRAYSIZE(packageFamilyName) };
+    THROW_IF_WIN32_ERROR_MSG(::PackageFamilyNameFromFullName(packageFullName, &packageFamilyNameLength, packageFamilyName), "%ls", packageFullName);
+    T{ packageFamilyName };
+}
 }
 
 #endif // __APPMODEL_IDENTITY_H
