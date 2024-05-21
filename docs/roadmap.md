@@ -8,32 +8,26 @@ Empower developers to create the richest & most engaging native apps & surfaces 
 
 ## Road to the next release
 
-Our next WinAppSDK release will be version 1.5, expected to arrive in the first half of 2024 (24H1). 
-In the last quarter of 2023 and going into the first half of 2024, the WinAppSDK's main goals are to become leaner and more efficient in our engineering processes and begin on an exciting new long-term journey towards supporting Cross-process Islands.
+Our next WinAppSDK release will be version 1.6, expected to arrive in the second half of 2024 (24H2). In this release, the WinAppSDK's main goals are to focus on quality, performance, and a smoother overall user and developer experience.
 
-### Upcoming features for the Windows App SDK 1.5
+### Upcoming features for the Windows App SDK 1.6
 
-Headline areas of work and features for the 1.5 timeframe include:
+Headline areas of work and features for the 1.6 timeframe include:
 
 - **Windows App SDK** 
-  - Upgrading our internal processes and infrastructure, allowing for more flexibility in shipping so we can speed up feature development and improve our undocked architecture
-  - Improving support for the next Visual Studio and .NET MAUI
+  - Addressing top issues related to the WinAppSDK installer
 - **WinUI 3**
-  - Getting started on a multi-release effort to support Cross-process Islands, including fundamental input and rendering support for Content Islands
-  - Continuing to support File Explorer enhancements that we started in the 1.4 release
-  - Adding controls to close the WinUI 2 to WinUI 3 gap for developers interested in porting their apps, including but not limited to the following:
-    - Segmented control
-    - Labels in the command bar flyout top bar items
-    - Maps control
-    - Investigations into the table view and ink controls
-      - *Update: Although we are continuing to investigate the table view and ink controls, they aren't likely to fully land in the 1.5 timeline at this time.*
-  - Supporting highly functional tabbed windows that work with touch, snapping, and other OS features
-  - Drag and drop support in WebView2
-  - Improved screen reader support, text scaling support, and other accessibility features
-  - Fixes, documentation, and recommendations on how to test WinUI apps
-  - Stability and performance improvements based on the prioritized GitHub bug backlog
-- **Dynamic Lighting**
-  - Onboarding new and exciting APIs to the Windows App SDK
+  - Addressing top control issues
+  - Adding support for C# Native AOT
+  - Fixing some general performance issues
+  - Upgrading the default TitleBar and beginning on a new TitleBar control
+  - A better tab dragging experience
+  - Enhancing the developer experience including IntelliSense and x:Bind improvements
+  - Progressing on the following work that is expected to finish in 1.7+:
+    - TableView control
+    - Inking control
+    - Cross-process Islands
+    - Smooth app resize
 
 ## Join in and stay connected!
 
