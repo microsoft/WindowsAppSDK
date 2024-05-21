@@ -50,10 +50,7 @@ No.
 
 Windows App SDK is a set of libraries and content you add to your existing app
 [within its app model](https://docs.microsoft.com/windows/apps/desktop/choose-your-platform)
-and start coding. Some parts of the Windows App SDK work _better_ if your app is
-[a UWP app](https://docs.microsoft.com/windows/uwp/get-started/), or
-[Desktop Bridge](https://docs.microsoft.com/windows/apps/desktop/modernize/desktop-to-uwp-extensions),
-or [has identity](https://aka.ms/sparsepkgblog).
+and start coding. For example, some parts of the Windows App SDK work _better_ if your app is a [Desktop Bridge](https://docs.microsoft.com/windows/apps/desktop/modernize/desktop-to-uwp-extensions) or [has identity](https://aka.ms/sparsepkgblog).
 
 Your existing app model's activation, deployment, lifecycle, and presentation
 will continue to work as you bring in more Windows App SDK functionality. The
