@@ -8,6 +8,7 @@
 
 #include <WindowsAppRuntime.Test.FileSystem.h>
 #include <winrt/Windows.Management.Deployment.h>
+#include <winrt/Windows.ApplicationModel.h>
 #include <WexTestClass.h>
 
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION            0x0004000107AF014DLLu
@@ -392,6 +393,63 @@ inline void RemovePackageIfNecessary(PCWSTR packageFullName)
     if (IsPackageRegistered(packageFullName))
     {
         RemovePackage(packageFullName);
+    }
+}
+
+inline bool IsPackageProvisioned(PCWSTR packageFamilyName)
+{
+    // We have no random access check for a specific package family
+    // so we'll have to brute force it by scanning the list of all
+    // provisioned packages for the one we're interested in
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    const auto provisionedPackages{ packageManager.FindProvisionedPackages() };
+    for (const winrt::Windows::ApplicationModel::Package& provisionedPackage: provisionedPackages)
+    {
+        if (CompareStringOrdinal(packageFamilyName, -1, provisionedPackage.Id().FamilyName().c_str(), -1, TRUE) == CSTR_EQUAL)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+inline void ProvisionPackage(PCWSTR packageFamilyName)
+{
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    auto deploymentResult{ packageManager.ProvisionPackageForAllUsersAsync(packageFamilyName).get() };
+    VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"ProvisionPackageForAllUsersAsync('%s') = 0x%0X %s", packageFamilyName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+}
+
+inline void ProvisionPackageIfNecessary(PCWSTR packageFamilyName)
+{
+    if (IsPackageProvisioned(packageFamilyName))
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ProvisionPackageIfNecessary: %s already provisioned", packageFamilyName));
+    }
+    else
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ProvisionPackageIfNecessary: %s not provisioned, provisioning...", packageFamilyName));
+        ProvisionPackage(packageFamilyName);
+    }
+}
+
+inline void DeprovisionPackage(PCWSTR packageFamilyName)
+{
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    auto deploymentResult{ packageManager.DeprovisionPackageForAllUsersAsync(packageFamilyName).get() };
+    VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"DeprovisionPackageForAllUsersAsync('%s') = 0x%0X %s", packageFamilyName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+}
+
+inline void DeprovisionPackageIfNecessary(PCWSTR packageFamilyName)
+{
+    if (IsPackageProvisioned(packageFamilyName))
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"DeprovisionPackageIfNecessary: %s is provisioned, deprovisioning...", packageFamilyName));
+        DeprovisionPackage(packageFamilyName);
+    }
+    else
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"DeprovisionPackageIfNecessary: %s not provisioned", packageFamilyName));
     }
 }
 

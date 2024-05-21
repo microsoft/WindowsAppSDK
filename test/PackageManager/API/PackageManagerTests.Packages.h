@@ -267,6 +267,18 @@ namespace Test::PackageManager::Tests
         // Same as RemovePackageFamily_Redder
         RemovePackageFamily_Redder();
     }
+    inline bool IsPackageProvisioned_Red()
+    {
+        return TP::IsPackageProvisioned(TPF::Red::c_packageFamilyName);
+    }
+    inline void ProvisionPackage_Red()
+    {
+        TP::ProvisionPackage(TPF::Red::c_packageFamilyName);
+    }
+    inline void DeprovisionPackage_Red()
+    {
+        TP::DeprovisionPackage(TPF::Red::c_packageFamilyName);
+    }
 
     inline bool IsPackageRegistered_Redder()
     {
@@ -307,6 +319,18 @@ namespace Test::PackageManager::Tests
         RemovePackage_Redder();
         RemovePackage_Red();
     }
+    inline bool IsPackageProvisioned_Redder()
+    {
+        return TP::IsPackageProvisioned(TPF::Redder::c_packageFamilyName);
+    }
+    inline void ProvisionPackage_Redder()
+    {
+        TP::ProvisionPackage(TPF::Redder::c_packageFamilyName);
+    }
+    inline void DeprovisionPackage_Redder()
+    {
+        TP::DeprovisionPackage(TPF::Redder::c_packageFamilyName);
+    }
 
     inline bool IsPackageRegistered_Green()
     {
@@ -346,6 +370,18 @@ namespace Test::PackageManager::Tests
     {
         RemovePackage_Green();
     }
+    inline bool IsPackageProvisioned_Green()
+    {
+        return TP::IsPackageProvisioned(TPF::Green::c_packageFamilyName);
+    }
+    inline void ProvisionPackage_Green()
+    {
+        TP::ProvisionPackage(TPF::Green::c_packageFamilyName);
+    }
+    inline void DeprovisionPackage_Green()
+    {
+        TP::DeprovisionPackage(TPF::Green::c_packageFamilyName);
+    }
 
     inline bool IsPackageRegistered_Blue()
     {
@@ -384,6 +420,18 @@ namespace Test::PackageManager::Tests
     inline void RemovePackageFamily_Blue()
     {
         RemovePackage_Blue();
+    }
+    inline bool IsPackageProvisioned_Blue()
+    {
+        return TP::IsPackageProvisioned(TPF::Blue::c_packageFamilyName);
+    }
+    inline void ProvisionPackage_Blue()
+    {
+        TP::ProvisionPackage(TPF::Blue::c_packageFamilyName);
+    }
+    inline void DeprovisionPackage_Blue()
+    {
+        TP::DeprovisionPackage(TPF::Blue::c_packageFamilyName);
     }
 
     inline bool IsPackageRegistered_Black()
@@ -428,6 +476,18 @@ namespace Test::PackageManager::Tests
     {
         RemovePackage_Black();
     }
+    inline bool IsPackageProvisioned_Black()
+    {
+        return TP::IsPackageProvisioned(TPM::Black::c_packageFamilyName);
+    }
+    inline void ProvisionPackage_Black()
+    {
+        TP::ProvisionPackage(TPM::Black::c_packageFamilyName);
+    }
+    inline void DeprovisionPackage_Black()
+    {
+        TP::DeprovisionPackage(TPM::Black::c_packageFamilyName);
+    }
 
     inline bool IsPackageRegistered_Blacker()
     {
@@ -470,6 +530,18 @@ namespace Test::PackageManager::Tests
     inline void RemovePackageFamily_Blacker()
     {
         RemovePackage_Blacker();
+    }
+    inline bool IsPackageProvisioned_Blacker()
+    {
+        return TP::IsPackageProvisioned(TPM::Blacker::c_packageFamilyName);
+    }
+    inline void ProvisionPackage_Blacker()
+    {
+        TP::ProvisionPackage(TPM::Blacker::c_packageFamilyName);
+    }
+    inline void DeprovisionPackage_Blacker()
+    {
+        TP::DeprovisionPackage(TPM::Blacker::c_packageFamilyName);
     }
 
     inline bool IsPackageRegistered_White()
@@ -514,6 +586,18 @@ namespace Test::PackageManager::Tests
     {
         RemovePackage_White();
     }
+    inline bool IsPackageProvisioned_White()
+    {
+        return TP::IsPackageProvisioned(TPM::White::c_packageFamilyName);
+    }
+    inline void ProvisionPackage_White()
+    {
+        TP::ProvisionPackage(TPM::White::c_packageFamilyName);
+    }
+    inline void DeprovisionPackage_White()
+    {
+        TP::DeprovisionPackage(TPM::White::c_packageFamilyName);
+    }
 
     inline bool IsPackageRegistered_Whiter()
     {
@@ -556,6 +640,18 @@ namespace Test::PackageManager::Tests
     inline void RemovePackageFamily_Whiter()
     {
         RemovePackage_Whiter();
+    }
+    inline bool IsPackageProvisioned_Whiter()
+    {
+        return TP::IsPackageProvisioned(TPM::Whiter::c_packageFamilyName);
+    }
+    inline void ProvisionPackage_Whiter()
+    {
+        TP::ProvisionPackage(TPM::Whiter::c_packageFamilyName);
+    }
+    inline void DeprovisionPackage_Whiter()
+    {
+        TP::DeprovisionPackage(TPM::Whiter::c_packageFamilyName);
     }
 
     inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFullName)

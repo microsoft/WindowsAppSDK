@@ -2816,12 +2816,12 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         for (const winrt::Windows::ApplicationModel::Package& provisionedPackage: provisionedPackages)
         {
-            if (!StringEqualsNoCase(packageFamilyName, provisionedPackage.Id().FamilyName()))
+            if (StringEqualsNoCase(packageFamilyName, provisionedPackage.Id().FamilyName()))
             {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     bool PackageDeploymentManager::IsProvisionedByPackageFullName(hstring const& packageFullName)
@@ -2829,12 +2829,12 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         const auto packages{ m_packageManager.FindProvisionedPackages() };
         for (const winrt::Windows::ApplicationModel::Package& package : packages)
         {
-            if (!StringEqualsNoCase(packageFullName, package.Id().FullName()))
+            if (StringEqualsNoCase(packageFullName, package.Id().FullName()))
             {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     bool PackageDeploymentManager::IsProvisioned(
