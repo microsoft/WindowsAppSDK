@@ -493,6 +493,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.Managemen
 		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Interop", "Interop", "{EF70D1F3-07C7-4327-8772-7C127948DC5A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Interop", "Interop\Interop.vcxitems", "{B3FBA49A-9AAA-445E-883C-971A1935C6F5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CameraCaptureUI", "CameraCaptureUI", "{99C2E54F-5F87-4E44-BAC2-A6F80FBCCB73}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CameraCaptureUITests", "test\CameraCaptureUI\CameraCaptureUITests\CameraCaptureUITests.vcxproj", "{653D0B57-9EC7-4655-882E-0108E3DECEF7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1739,6 +1747,22 @@ Global
 		{57E6CCBE-EDEB-4300-8334-98A591D11B3F}.Release|x64.Build.0 = Release|x64
 		{57E6CCBE-EDEB-4300-8334-98A591D11B3F}.Release|x86.ActiveCfg = Release|x86
 		{57E6CCBE-EDEB-4300-8334-98A591D11B3F}.Release|x86.Build.0 = Release|x86
+		{653D0B57-9EC7-4655-882E-0108E3DECEF7}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{653D0B57-9EC7-4655-882E-0108E3DECEF7}.Debug|Any CPU.Build.0 = Debug|x64
+		{653D0B57-9EC7-4655-882E-0108E3DECEF7}.Debug|ARM64.ActiveCfg = Debug|x64
+		{653D0B57-9EC7-4655-882E-0108E3DECEF7}.Debug|ARM64.Build.0 = Debug|x64
+		{653D0B57-9EC7-4655-882E-0108E3DECEF7}.Debug|x64.ActiveCfg = Debug|x64
+		{653D0B57-9EC7-4655-882E-0108E3DECEF7}.Debug|x64.Build.0 = Debug|x64
+		{653D0B57-9EC7-4655-882E-0108E3DECEF7}.Debug|x86.ActiveCfg = Debug|Win32
+		{653D0B57-9EC7-4655-882E-0108E3DECEF7}.Debug|x86.Build.0 = Debug|Win32
+		{653D0B57-9EC7-4655-882E-0108E3DECEF7}.Release|Any CPU.ActiveCfg = Release|x64
+		{653D0B57-9EC7-4655-882E-0108E3DECEF7}.Release|Any CPU.Build.0 = Release|x64
+		{653D0B57-9EC7-4655-882E-0108E3DECEF7}.Release|ARM64.ActiveCfg = Release|x64
+		{653D0B57-9EC7-4655-882E-0108E3DECEF7}.Release|ARM64.Build.0 = Release|x64
+		{653D0B57-9EC7-4655-882E-0108E3DECEF7}.Release|x64.ActiveCfg = Release|x64
+		{653D0B57-9EC7-4655-882E-0108E3DECEF7}.Release|x64.Build.0 = Release|x64
+		{653D0B57-9EC7-4655-882E-0108E3DECEF7}.Release|x86.ActiveCfg = Release|Win32
+		{653D0B57-9EC7-4655-882E-0108E3DECEF7}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1888,6 +1912,10 @@ Global
 		{B6B68924-6A0B-457E-AD53-018696EC8889} = {B03C7C69-0A52-4553-B465-04C995161E42}
 		{D0A1DFB8-8CEE-4CFC-B57B-B7C574B411C2} = {B6B68924-6A0B-457E-AD53-018696EC8889}
 		{57E6CCBE-EDEB-4300-8334-98A591D11B3F} = {716C26A0-E6B0-4981-8412-D14A4D410531}
+		{EF70D1F3-07C7-4327-8772-7C127948DC5A} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{B3FBA49A-9AAA-445E-883C-971A1935C6F5} = {EF70D1F3-07C7-4327-8772-7C127948DC5A}
+		{99C2E54F-5F87-4E44-BAC2-A6F80FBCCB73} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
+		{653D0B57-9EC7-4655-882E-0108E3DECEF7} = {99C2E54F-5F87-4E44-BAC2-A6F80FBCCB73}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
@@ -1906,6 +1934,7 @@ Global
 		dev\Licensing\Licensing.vcxitems*{885a43fa-052d-4b0d-a2dc-13ee15796435}*SharedItemsImports = 9
 		dev\PackageManager\API\PackageManager.vcxitems*{8a9a0c85-65a8-4bca-a49e-45fc4fdbc7d2}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{8e52d7ea-a200-4a6b-ba74-8efb49468caf}*SharedItemsImports = 4
+		Interop\Interop.vcxitems*{b3fba49a-9aaa-445e-883c-971a1935c6f5}*SharedItemsImports = 9
 		dev\AppNotifications\AppNotifications.vcxitems*{b4824897-88e0-4927-8fb9-e60106f01ed9}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{b567fe2e-3a03-48d0-b2b5-760cdec35891}*SharedItemsImports = 9
 		dev\Common\Common.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
