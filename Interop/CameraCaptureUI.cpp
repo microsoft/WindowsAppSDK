@@ -18,7 +18,7 @@ using namespace Windows::ApplicationModel::DataTransfer;
 
 namespace winrt::Microsoft::Windows::Media::Capture::implementation
 {
-    IAsyncOperation<hstring> LaunchCameraForResultToken(Microsoft::UI::WindowId const& targetWindow, ValueSet const& properties)
+    IAsyncOperation<hstring> LaunchCameraForResultToken(Microsoft::Windows::Media::Capture::WindowId const& targetWindow, ValueSet const& properties)
     {
         LauncherOptions options;
         if (targetWindow.Value)

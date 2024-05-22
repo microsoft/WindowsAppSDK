@@ -31,7 +31,7 @@ namespace Test::CameraCaptureUI
             TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_CLASS()
 
-        TEST_CLASS_SETUP(ClassInit)
+            TEST_CLASS_SETUP(ClassInit)
         {
             return true;
         }

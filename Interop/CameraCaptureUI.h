@@ -15,7 +15,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
 
     struct CameraCaptureUI : CameraCaptureUIT<CameraCaptureUI>
     {
-        CameraCaptureUI(Microsoft::UI::WindowId const& window) :
+        CameraCaptureUI(Microsoft::Windows::Media::Capture::WindowId const& window) :
             m_windowId(window)
         {
         }
@@ -33,7 +33,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> CaptureFileAsync(winrt::Windows::Media::Capture::CameraCaptureUIMode mode);
 
     private:
-        Microsoft::UI::WindowId m_windowId;
+        Microsoft::Windows::Media::Capture::WindowId m_windowId;
         token_and_path m_photoTokenFile;
         token_and_path m_videoTokenFile;
         com_ptr<CameraCaptureUIVideoSettings> m_videoSettings = make_self<CameraCaptureUIVideoSettings>();
