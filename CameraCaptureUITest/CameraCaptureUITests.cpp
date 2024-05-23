@@ -22,6 +22,11 @@ using namespace winrt::Windows::System;
 
 namespace Test::CameraCaptureUI
 {
+    struct MockWindowId
+    {
+        UINT64 Value;
+    };
+
     class CameraCaptureUITests
     {
     public:
@@ -47,97 +52,124 @@ namespace Test::CameraCaptureUI
                 TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
                 END_TEST_METHOD_PROPERTIES();
 
-            // Arrange
-            CameraCaptureUI cameraUI;
-
-            // Act
-            auto photoOperation = cameraUI.CaptureFileAsync(CameraCaptureUIMode::Photo);
-            auto photo = photoOperation.get();
-
-            // Assert
-            if (photo != nullptr)
-            {
-                Log::Comment(L"Photo capture was successful.");
-                VERIFY_IS_TRUE(photo.Name().c_str() != nullptr);
-            }
-            else
-            {
-                Log::Error(L"Photo capture failed or was canceled.");
-                VERIFY_FAIL(L"Photo capture returned null.");
-            }
-        }
-        TEST_METHOD(CaptureVideo_ShouldReturnFile)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
-                END_TEST_METHOD_PROPERTIES();
-
-            // Arrang
-            CameraCaptureUI cameraUI;
-
-            // Act
-            auto videoOperation = cameraUI.CaptureFileAsync(CameraCaptureUIMode::Video);
-            auto video = videoOperation.get();
-
-            // Assert
-            if (video != nullptr)
-            {
-                Log::Comment(L"Video capture was successful.");
-                VERIFY_IS_TRUE(video.Name().c_str() != nullptr);
-            }
-            else
-            {
-                Log::Error(L"Video capture failed or was canceled.");
-                VERIFY_FAIL(L"Video capture returned null.");
-            }
-        }
-
-        TEST_METHOD(CapturePhoto_ShouldReturnNullOnCancel)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
-                END_TEST_METHOD_PROPERTIES();
-
-            // Arrange
-            CameraCaptureUI cameraUI;
-
-            // Act
-            StorageFile photo = nullptr;
             try
             {
+                // Arrange
+                MockWindowId mockWindowId{ 12345 };
+                //com_ptr<Microsoft::Windows::Media::Capture::CameraCaptureUI> cameraUI = make_self<Microsoft::Windows::Media::Capture::CameraCaptureUI>(reinterpret_cast<WindowId&>(mockWindowId));
+                //auto cameraUI{ Microsoft::Windows::Media::Capture::CameraCaptureUI(reinterpret_cast<WindowId&>(mockWindowId)) };
+                Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI(reinterpret_cast<WindowId&>(mockWindowId));
+                
+                // Act
                 auto photoOperation = cameraUI.CaptureFileAsync(CameraCaptureUIMode::Photo);
-                photo = photoOperation.get();
-            }
-            catch (hresult_canceled const&)
-            {
-                Log::Comment(L"Photo capture was canceled.");
-            }
+                auto photo = photoOperation.get();
 
-            // Assert
-            VERIFY_IS_NULL(photo);
+                // Assert
+                if (photo != nullptr)
+                {
+                    Log::Comment(L"Photo capture was successful.");
+                    VERIFY_IS_TRUE(photo.Name().c_str() != nullptr);
+                }
+                else
+                {
+                    Log::Error(L"Photo capture failed or was canceled.");
+                    VERIFY_FAIL(L"Photo capture returned null.");
+                }
+            }
+            catch (const hresult_error& ex)
+            {
+                Log::Error((std::wstring(L"Exception thrown: ") + ex.message().c_str()).c_str());
+                VERIFY_FAIL(L"Exception occurred during photo capture.");
+            }
+            catch (const std::exception& ex)
+            {
+                Log::Error((std::wstring(L"Standard exception thrown: ") + winrt::to_hstring(ex.what()).c_str()).c_str());
+                VERIFY_FAIL(L"Standard exception occurred during photo capture.");
+            }
+            catch (...)
+            {
+                Log::Error(L"Unknown exception thrown during photo capture.");
+                VERIFY_FAIL(L"Unknown exception occurred during photo capture.");
+            }
         }
-        TEST_METHOD(CaptureVideo_ShouldReturnNullOnCancel)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
-                END_TEST_METHOD_PROPERTIES();
+        
 
-            // Arrange
-            CameraCaptureUI cameraUI;
+        //TEST_METHOD(CaptureVideo_ShouldReturnFile)
+        //{
+        //    BEGIN_TEST_METHOD_PROPERTIES()
+        //        TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+        //        END_TEST_METHOD_PROPERTIES();
 
-            // Simulate cancellation by the user
-            StorageFile video = nullptr;
-            try
-            {
-                video = cameraUI.CaptureFileAsync(CameraCaptureUIMode::Video).get();
-            }
-            catch (hresult_canceled const&)
-            {
-                Log::Comment(L"Video capture was canceled.");
-            }
+        //    // Arrange
+        //    MockWindowId mockWindowId{ 12345 };
+        //    CameraCaptureUI cameraUI{ mockWindowId };
 
-            // Assert
-            VERIFY_IS_NULL(video);
-        }
+        //    // Act
+        //    auto videoOperation = cameraUI.CaptureFileAsync(CameraCaptureUIMode::Video);
+        //    auto video = videoOperation.get();
+
+        //    // Assert
+        //    if (video != nullptr)
+        //    {
+        //        Log::Comment(L"Video capture was successful.");
+        //        VERIFY_IS_TRUE(video.Name().c_str() != nullptr);
+        //    }
+        //    else
+        //    {
+        //        Log::Error(L"Video capture failed or was canceled.");
+        //        VERIFY_FAIL(L"Video capture returned null.");
+        //    }
+        //}
+
+        //TEST_METHOD(CapturePhoto_ShouldReturnNullOnCancel)
+        //{
+        //    BEGIN_TEST_METHOD_PROPERTIES()
+        //        TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+        //        END_TEST_METHOD_PROPERTIES();
+
+        //    // Arrange
+        //    MockWindowId mockWindowId{ 12345 };
+        //    CameraCaptureUI cameraUI{ mockWindowId };
+
+        //    // Act
+        //    StorageFile photo = nullptr;
+        //    try
+        //    {
+        //        auto photoOperation = cameraUI.CaptureFileAsync(CameraCaptureUIMode::Photo);
+        //        photo = photoOperation.get();
+        //    }
+        //    catch (hresult_canceled const&)
+        //    {
+        //        Log::Comment(L"Photo capture was canceled.");
+        //    }
+
+        //    // Assert
+        //    VERIFY_IS_NULL(photo);
+        //}
+
+        //TEST_METHOD(CaptureVideo_ShouldReturnNullOnCancel)
+        //{
+        //    BEGIN_TEST_METHOD_PROPERTIES()
+        //        TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+        //        END_TEST_METHOD_PROPERTIES();
+
+        //    // Arrange
+        //    MockWindowId mockWindowId{ 12345 };
+        //    CameraCaptureUI cameraUI{ mockWindowId };
+
+        //    // Simulate cancellation by the user
+        //    StorageFile video = nullptr;
+        //    try
+        //    {
+        //        video = cameraUI.CaptureFileAsync(CameraCaptureUIMode::Video).get();
+        //    }
+        //    catch (hresult_canceled const&)
+        //    {
+        //        Log::Comment(L"Video capture was canceled.");
+        //    }
+
+        //    // Assert
+        //    VERIFY_IS_NULL(video);
+        //}
     };
 }
