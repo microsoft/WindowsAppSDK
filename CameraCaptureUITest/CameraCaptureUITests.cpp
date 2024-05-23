@@ -55,10 +55,10 @@ namespace Test::CameraCaptureUI
             try
             {
                 // Arrange
-                MockWindowId mockWindowId{ 12345 };
+                //MockWindowId mockWindowId{ 12345 };
                 //com_ptr<Microsoft::Windows::Media::Capture::CameraCaptureUI> cameraUI = make_self<Microsoft::Windows::Media::Capture::CameraCaptureUI>(reinterpret_cast<WindowId&>(mockWindowId));
                 //auto cameraUI{ Microsoft::Windows::Media::Capture::CameraCaptureUI(reinterpret_cast<WindowId&>(mockWindowId)) };
-                Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI(reinterpret_cast<WindowId&>(mockWindowId));
+                Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI({12345});
                 
                 // Act
                 auto photoOperation = cameraUI.CaptureFileAsync(CameraCaptureUIMode::Photo);
