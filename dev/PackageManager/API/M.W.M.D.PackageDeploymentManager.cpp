@@ -2866,7 +2866,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentProgressStatus::Queued, 0} };
         progress(packageDeploymentProgress);
 
-        winrt::Windows::Management::Deployment::PackageAllUserProvisioningOptions  provisionOptions{ ToOptions(options) };
+        winrt::Windows::Management::Deployment::PackageAllUserProvisioningOptions provisionOptions{ ToOptions(options) };
         HRESULT error{};
         HRESULT extendedError{};
         winrt::hstring errorText;

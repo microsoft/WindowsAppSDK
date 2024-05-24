@@ -430,11 +430,14 @@ namespace Microsoft.Windows.Management.Deployment
 
         // Return true if the package(s) are provisioned
 
+        [contract(PackageDeploymentContract, 2)]
         Boolean IsPackageProvisioned(String package);
 
+        [contract(PackageDeploymentContract, 2)]
         Boolean IsPackageProvisionedByUri(Windows.Foundation.Uri packageUri);
 
         /// @note packageSet[Item].PackageUri is optional
+        [contract(PackageDeploymentContract, 2)]
         Boolean IsPackageSetProvisioned(PackageSet packageSet);
 
         //-------------------------------------------------------------

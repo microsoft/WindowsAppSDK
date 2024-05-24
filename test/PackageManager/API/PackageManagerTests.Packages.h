@@ -277,7 +277,7 @@ namespace Test::PackageManager::Tests
     }
     inline void DeprovisionPackage_Red()
     {
-        TP::DeprovisionPackage(TPF::Red::c_packageFamilyName);
+        TP::DeprovisionPackageIfNecessary(TPF::Red::c_packageFamilyName);
     }
 
     inline bool IsPackageRegistered_Redder()
@@ -329,7 +329,7 @@ namespace Test::PackageManager::Tests
     }
     inline void DeprovisionPackage_Redder()
     {
-        TP::DeprovisionPackage(TPF::Redder::c_packageFamilyName);
+        TP::DeprovisionPackageIfNecessary(TPF::Redder::c_packageFamilyName);
     }
 
     inline bool IsPackageRegistered_Green()
@@ -380,7 +380,7 @@ namespace Test::PackageManager::Tests
     }
     inline void DeprovisionPackage_Green()
     {
-        TP::DeprovisionPackage(TPF::Green::c_packageFamilyName);
+        TP::DeprovisionPackageIfNecessary(TPF::Green::c_packageFamilyName);
     }
 
     inline bool IsPackageRegistered_Blue()
@@ -431,7 +431,7 @@ namespace Test::PackageManager::Tests
     }
     inline void DeprovisionPackage_Blue()
     {
-        TP::DeprovisionPackage(TPF::Blue::c_packageFamilyName);
+        TP::DeprovisionPackageIfNecessary(TPF::Blue::c_packageFamilyName);
     }
 
     inline bool IsPackageRegistered_Black()
@@ -486,7 +486,7 @@ namespace Test::PackageManager::Tests
     }
     inline void DeprovisionPackage_Black()
     {
-        TP::DeprovisionPackage(TPM::Black::c_packageFamilyName);
+        TP::DeprovisionPackageIfNecessary(TPM::Black::c_packageFamilyName);
     }
 
     inline bool IsPackageRegistered_Blacker()
@@ -541,7 +541,7 @@ namespace Test::PackageManager::Tests
     }
     inline void DeprovisionPackage_Blacker()
     {
-        TP::DeprovisionPackage(TPM::Blacker::c_packageFamilyName);
+        TP::DeprovisionPackageIfNecessary(TPM::Blacker::c_packageFamilyName);
     }
 
     inline bool IsPackageRegistered_White()
@@ -596,7 +596,7 @@ namespace Test::PackageManager::Tests
     }
     inline void DeprovisionPackage_White()
     {
-        TP::DeprovisionPackage(TPM::White::c_packageFamilyName);
+        TP::DeprovisionPackageIfNecessary(TPM::White::c_packageFamilyName);
     }
 
     inline bool IsPackageRegistered_Whiter()
@@ -651,7 +651,7 @@ namespace Test::PackageManager::Tests
     }
     inline void DeprovisionPackage_Whiter()
     {
-        TP::DeprovisionPackage(TPM::Whiter::c_packageFamilyName);
+        TP::DeprovisionPackageIfNecessary(TPM::Whiter::c_packageFamilyName);
     }
 
     inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFullName)

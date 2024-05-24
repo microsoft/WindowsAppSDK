@@ -25,6 +25,10 @@ namespace Test::PackageManager::Tests
 
         TEST_CLASS_SETUP(ClassSetup)
         {
+#if !defined(TODO_Not_Latest_Platform_SDK)
+            WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Provision* requires latest platform SDK. Skipping tests");
+            return true;
+#else
             if (!::WindowsVersion::IsWindows10_20H1OrGreater())
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
@@ -33,13 +37,19 @@ namespace Test::PackageManager::Tests
             RemovePackage_Red();
             ::TB::Setup();
             return true;
+#endif
         }
 
         TEST_CLASS_CLEANUP(ClassCleanup)
         {
+#if !defined(TODO_Not_Latest_Platform_SDK)
+            WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Provision* requires latest platform SDK. Skipping tests");
+            return true;
+#else
             RemovePackage_Red();
             ::TB::Cleanup();
             return true;
+#endif
         }
 
         TEST_METHOD(ProvisionPackageAsync_Registered_AccessDenied)
@@ -70,10 +80,15 @@ namespace Test::PackageManager::Tests
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
             TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs", L"ElevatedUser")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)
         {
+#if !defined(TODO_Not_Latest_Platform_SDK)
+            WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Provision* requires latest platform SDK. Skipping tests");
+            return true;
+#else
             if (!::WindowsVersion::IsWindows10_20H1OrGreater())
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
@@ -91,10 +106,15 @@ namespace Test::PackageManager::Tests
             RemovePackage_Red();
             ::TB::Setup();
             return true;
+#endif
         }
 
         TEST_CLASS_CLEANUP(ClassCleanup)
         {
+#if !defined(TODO_Not_Latest_Platform_SDK)
+            WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Provision* requires latest platform SDK. Skipping tests");
+            return true;
+#else
             TD::DumpExecutionContext();
 
             DeprovisionPackage_Blue();
@@ -106,6 +126,7 @@ namespace Test::PackageManager::Tests
             RemovePackage_Red();
             ::TB::Cleanup();
             return true;
+#endif
         }
 
         TEST_METHOD(ProvisionPackageAsync_NoSuchPackage_Fail)
