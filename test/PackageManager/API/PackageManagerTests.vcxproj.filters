@@ -24,6 +24,12 @@
     <ClCompile Include="PackageDeploymentManagerTests_Add.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PackageDeploymentManagerTests_Deprovision_Framework.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PackageDeploymentManagerTests_Deprovision_Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="PackageDeploymentManagerTests_EnsureReady.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -34,6 +40,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PackageDeploymentManagerTests_IsReadyOrNewerAvailable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PackageDeploymentManagerTests_Provision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PackageDeploymentManagerTests_Register.cpp">
@@ -52,9 +61,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PackageRuntimeManagerTests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PackageDeploymentManagerTests_Provision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

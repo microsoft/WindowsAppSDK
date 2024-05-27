@@ -106,16 +106,18 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="PackageDeploymentManagerTests_Provision.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PackageDeploymentManagerTests.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_Add.cpp" />
+    <ClCompile Include="PackageDeploymentManagerTests_Deprovision_Framework.cpp" />
+    <ClCompile Include="PackageDeploymentManagerTests_Deprovision_Main.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_EnsureReady.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_IsPackageRegistrationPending.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_IsReady.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_IsReadyOrNewerAvailable.cpp" />
+    <ClCompile Include="PackageDeploymentManagerTests_Provision.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_Register.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_Remove.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_Repair.cpp" />

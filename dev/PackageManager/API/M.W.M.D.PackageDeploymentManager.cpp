@@ -138,12 +138,24 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             {
                 return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixRemovePackageByUriAsync");
             }
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ProvisionPackage_Framework:
+            {
+                //TODO Awaiting ProvisionPackageForAllUsersAsync() support for Framework packages
+                //return IsPackageDeploymentFeatureSupported(L"ProvisionPackage.Framework");
+                return false;
+            }
             default:
             {
                 (void)LOG_HR_MSG(E_UNEXPECTED, "Feature:%d", static_cast<int>(feature));
                 return false;
             }
         }
+    }
+    bool PackageDeploymentManager::IsPackageDeploymentFeatureSupported(PCWSTR feature)
+    {
+        BOOL isSupported{};
+        THROW_IF_FAILED_MSG(PackageManagement_IsFeatureSupported(feature, &isSupported), "%s", feature);
+        return !!isSupported;
     }
     bool PackageDeploymentManager::IsPackageReady(hstring const& package)
     {
@@ -2906,7 +2918,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         errorText.clear();
         activityId = winrt::guid{};
 
-        // PackageManagerProvisionPackageForAllUsersAsync(String, PackageAllUserProvisioningOptions) requires Windows >= 10.0.22000.0 (aka Win11 21H2)
+        // PackageManager.ProvisionPackageForAllUsersAsync(String, PackageAllUserProvisioningOptions) requires Windows >= 10.0.22000.0 (aka Win11 21H2)
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Windows::Management::Deployment::DeploymentResult, winrt::Windows::Management::Deployment::DeploymentProgress> deploymentOperation;
         if (WindowsVersion::IsWindows11_21H2OrGreater())
         {

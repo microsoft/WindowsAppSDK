@@ -57,6 +57,13 @@ namespace Test::PackageManager::Tests
         return TPMT::SkipIfFeatureNotSupported(feature, message);
     }
 
+    inline bool SkipIfFeatureNotSupported_ProvisionPackage_Framework()
+    {
+        const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ProvisionPackage_Framework };
+        PCWSTR message{ L"ProvisionPackage.Framework not supported on this system. Skipping test" };
+        return TPMT::SkipIfFeatureNotSupported(feature, message);
+    }
+
     class PackageDeploymentManagerTests_Base
     {
     protected:

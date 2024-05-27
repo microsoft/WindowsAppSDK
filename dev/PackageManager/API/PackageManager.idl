@@ -20,6 +20,7 @@ namespace Microsoft.Windows.Management.Deployment
         RemovePackageByUri                  = 3,
         ResetPackage                        = 4,
         RepairPackage                       = 5,
+        ProvisionPackage_Framework          = 6,
     };
 
     /// Represents a package storage volume.
