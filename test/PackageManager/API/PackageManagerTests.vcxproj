@@ -88,6 +88,7 @@
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -167,6 +168,7 @@
     <Import Project="$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets')" />
     <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" />
     <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
+    <Import Project="$(NugetPackageDirectory)\Microsoft.FrameworkUdk\$(MicrosoftFrameworkUdkPackageVersion)\build\native\Microsoft.FrameworkUdk.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.FrameworkUdk\$(MicrosoftFrameworkUdkPackageVersion)\build\native\Microsoft.FrameworkUdk.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -182,5 +184,6 @@
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets'))" />
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
+    <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.FrameworkUdk\$(MicrosoftFrameworkUdkPackageVersion)\build\native\Microsoft.FrameworkUdk.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.FrameworkUdk\$(MicrosoftFrameworkUdkPackageVersion)\build\native\Microsoft.FrameworkUdk.targets'))" />
   </Target>
 </Project>

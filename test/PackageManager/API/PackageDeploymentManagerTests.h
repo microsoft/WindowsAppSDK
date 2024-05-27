@@ -64,8 +64,55 @@ namespace Test::PackageManager::Tests
         return TPMT::SkipIfFeatureNotSupported(feature, message);
     }
 
+    inline bool PreBootstrap_SkipIfFeatureNotSupported(
+        const winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature feature,
+        PCWSTR message)
+    {
+        // NOTE: Some tests can't use winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature
+        //       due to chicken/egg dependencies (can't use it before Bootstrapper's initialized but need access
+        //       before Bootstrapper's initialized...). So we'll handle them by directly calling the FrameworkUdk
+        //
+        // NOTE: Only support necessary features here.
+        switch (feature)
+        {
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ProvisionPackage_Framework:
+            {
+                //TODO Awaiting ProvisionPackageForAllUsersAsync() support for Framework packages
+                //return IsPackageDeploymentFeatureSupported(L"ProvisionPackage.Framework");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, message);
+                return true;
+            }
+            default:
+            {
+                // Unsupported pre-Bootstrap feature check
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Blocked, message);
+                VERIFY_FAIL(WEX::Common::String().Format(L"Feature:%d", static_cast<int>(feature)));
+                return true;
+            }
+        }
+    }
+
+    inline bool PreBootstrap_SkipIfFeatureNotSupported_ProvisionPackage_Framework()
+    {
+        const auto feature{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ProvisionPackage_Framework };
+        PCWSTR message{ L"ProvisionPackage.Framework not supported on this system. Skipping test" };
+        return TPMT::PreBootstrap_SkipIfFeatureNotSupported(feature, message);
+    }
+
     class PackageDeploymentManagerTests_Base
     {
+    protected:
+        inline bool DoNotExecuteTestMethod() const
+        {
+            return m_doNotExecuteTestMethod;
+        }
+        inline void DoNotExecuteTestMethod(const bool doNotExecuteTestMethod)
+        {
+            m_doNotExecuteTestMethod = doNotExecuteTestMethod;
+        }
+    private:
+        bool m_doNotExecuteTestMethod{};
+
     protected:
         winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus(PCWSTR packageFullName)
         {

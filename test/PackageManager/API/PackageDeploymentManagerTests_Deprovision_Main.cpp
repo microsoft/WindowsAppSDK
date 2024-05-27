@@ -29,10 +29,13 @@ namespace Test::PackageManager::Tests
             if (!::WindowsVersion::IsWindows10_20H1OrGreater())
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
+                DoNotExecuteTestMethod(true);
                 return true;
             }
-            if (TPMT::SkipIfFeatureNotSupported_ProvisionPackage_Framework())
+
+            if (TPMT::PreBootstrap_SkipIfFeatureNotSupported_ProvisionPackage_Framework())
             {
+                DoNotExecuteTestMethod(true);
                 return true;
             }
 
@@ -53,6 +56,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageAsync_Registered_AccessDenied)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             AddPackage_Black();
 
             VERIFY_IS_TRUE(IsPackageRegistered_Black());
@@ -68,7 +76,6 @@ namespace Test::PackageManager::Tests
             VERIFY_ARE_EQUAL(S_OK, deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_IS_FALSE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
         }
-
     };
 
     class PackageDeploymentManagerTests_Deprovision_Main_Elevated : PackageDeploymentManagerTests_Base
@@ -86,11 +93,13 @@ namespace Test::PackageManager::Tests
             if (!::WindowsVersion::IsWindows10_20H1OrGreater())
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
+                DoNotExecuteTestMethod(true);
                 return true;
             }
 
-            if (TPMT::SkipIfFeatureNotSupported_ProvisionPackage_Framework())
+            if (TPMT::PreBootstrap_SkipIfFeatureNotSupported_ProvisionPackage_Framework())
             {
+                DoNotExecuteTestMethod(true);
                 return true;
             }
 
@@ -120,6 +129,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageAsync_NoSuchPackage_Fail)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
             PCWSTR packageFamilyName{ L"Does.Not.Exist_1234567890abc" };
@@ -133,6 +147,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageAsync_Staged_Success)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             DeprovisionPackage_Black();
             StagePackage_Black();
 
@@ -158,6 +177,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageAsync_Registered_Success)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             DeprovisionPackage_Black();
             AddPackage_Black();
 
@@ -181,6 +205,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageAsync_StagedProvisioned_Success)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             DeprovisionPackage_Black();
             StagePackage_Black();
             ProvisionPackage_Black();
@@ -207,6 +236,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageAsync_RegisteredProvisioned_Success)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             AddPackage_Black();
             ProvisionPackage_Black();
 
@@ -230,6 +264,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageAsync_RegisteredPackageStatusBad_Success)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
             DeprovisionPackage_Black();
@@ -314,6 +353,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageSetAsync_1_NoSuchPackage_Fail)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
             winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
@@ -333,6 +377,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageSetAsync_1_Staged_Success)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             DeprovisionPackage_Black();
             StagePackage_Black();
 
@@ -362,6 +411,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageSetAsync_1_Registered_Success)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             DeprovisionPackage_Black();
             AddPackage_Black();
 
@@ -391,6 +445,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageSetAsync_1_StagedProvisioned_Success)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             DeprovisionPackage_Black();
             StagePackage_Black();
             ProvisionPackage_Black();
@@ -421,6 +480,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageSetAsync_1_RegisteredProvisioned_Success)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             DeprovisionPackage_Black();
             AddPackage_Black();
             ProvisionPackage_Black();
@@ -451,6 +515,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageSetAsync_N_Staged_Success)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             DeprovisionPackage_Black();
             DeprovisionPackage_White();
             StagePackage_Black();
@@ -482,6 +551,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageSetAsync_N_Registered_Success)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             DeprovisionPackage_Black();
             DeprovisionPackage_White();
             AddPackage_Black();
@@ -513,6 +587,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageSetAsync_N_StagedProvisioned_Success)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             DeprovisionPackage_Black();
             DeprovisionPackage_White();
             StagePackage_Black();
@@ -546,6 +625,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageSetAsync_N_RegisteredProvisioned_Success)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             DeprovisionPackage_Black();
             DeprovisionPackage_White();
             AddPackage_Black();
@@ -579,6 +663,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageSetAsync_N_RegisteredAndNoSuchPackage_Fail)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             DeprovisionPackage_White();
             DeprovisionPackage_Black();
             AddPackage_Black();
@@ -614,6 +703,11 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(DeprovisionPackageSetAsync_N_RegisteredAndNoSuchPackageAndStaged_Fail)
         {
+            if (DoNotExecuteTestMethod())
+            {
+                return;
+            }
+
             DeprovisionPackage_White();
             DeprovisionPackage_Black();
             AddPackage_Black();

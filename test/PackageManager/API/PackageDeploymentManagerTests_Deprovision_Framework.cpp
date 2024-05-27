@@ -31,7 +31,8 @@ namespace Test::PackageManager::Tests
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
                 return true;
             }
-            if (TPMT::SkipIfFeatureNotSupported_ProvisionPackage_Framework())
+
+            if (TPMT::PreBootstrap_SkipIfFeatureNotSupported_ProvisionPackage_Framework())
             {
                 return true;
             }
@@ -89,7 +90,7 @@ namespace Test::PackageManager::Tests
                 return true;
             }
 
-            if (TPMT::SkipIfFeatureNotSupported_ProvisionPackage_Framework())
+            if (TPMT::PreBootstrap_SkipIfFeatureNotSupported_ProvisionPackage_Framework())
             {
                 return true;
             }
