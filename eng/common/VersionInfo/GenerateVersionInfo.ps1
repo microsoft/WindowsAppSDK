@@ -44,6 +44,8 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyVersion("$ProductMajor.$ProductMinor")]
 [assembly: AssemblyFileVersion("$ProductMajor.$ProductMinor")]
+
+[assembly: AssemblyMetadata("IsTrimmable", "True")]
 "@
 
 Write-Verbose $assemblyInfoCs
