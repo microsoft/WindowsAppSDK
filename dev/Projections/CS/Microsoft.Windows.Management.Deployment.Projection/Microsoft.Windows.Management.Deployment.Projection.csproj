@@ -27,7 +27,6 @@
   <PropertyGroup>
     <CSWinRTIncludes>Microsoft.Windows.Management.Deployment</CSWinRTIncludes>
     <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
-    <WindowsSdkPackageVersion>10.0.17763.$(CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion)</WindowsSdkPackageVersion>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
   </PropertyGroup>
 
