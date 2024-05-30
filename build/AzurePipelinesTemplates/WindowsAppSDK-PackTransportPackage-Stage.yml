@@ -169,11 +169,7 @@ stages:
         script: |
           $packageVersion = '$(version)'
           $pipelineType = '$(PipelineType)'
-          $sourceBranchName = '$(Build.SourceBranchName)'
-          if ($sourceBranchName -eq 'main' -or $sourceBranchName -eq 'develop')
-          {
-            $packageVersion = $packageVersion + '.' + $sourceBranchName + '.' + $pipelineType
-          }
+          $packageVersion = $packageVersion + '.' + $pipelineType
           Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
           Write-Host "##vso[task.setvariable variable=packageVersion;isOutput=true;]$packageVersion"
 
