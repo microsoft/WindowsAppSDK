@@ -14,7 +14,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         float durationInMs = MaxDurationInSeconds * 1000.0f;
         if ((durationInMs < 0.0f) || (durationInMs > UINT32_MAX))
         {
-            throw hresult_invalid_argument(L"VideoSettings.MaxDurationInSeconds must be greater than zero seconds");
+            throw hresult_invalid_argument(L"VideoSettings.MaxDurationInSeconds must be valid");
         }
 
         if (!AllowTrimming && MaxDurationInSeconds != 0)
