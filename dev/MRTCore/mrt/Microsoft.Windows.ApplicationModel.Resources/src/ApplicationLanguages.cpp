@@ -9,14 +9,13 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 {
     hstring ApplicationLanguages::m_language;
 
-    void ApplicationLanguages::PrimaryLanguageOverride(hstring language)
-    {
-        m_language = language;
-    }
-
     hstring ApplicationLanguages::PrimaryLanguageOverride()
     {
         return m_language;
     }
 
+    void ApplicationLanguages::PrimaryLanguageOverride(hstring const& language)
+    {
+        m_language = language;
+    }
 } // namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation

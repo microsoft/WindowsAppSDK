@@ -6,18 +6,16 @@
 
 namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 {
+    struct ApplicationLanguages
+    {
+        ApplicationLanguages() = delete;
 
-struct ApplicationLanguages
-{
-    ApplicationLanguages() = delete;
+        static hstring PrimaryLanguageOverride();
+        static void PrimaryLanguageOverride(hstring const& language);
 
-    static void PrimaryLanguageOverride(hstring language);
-    static hstring PrimaryLanguageOverride();
-
-private:
-    static hstring m_language;
-};
-
+    private:
+        static hstring m_language;
+    };
 } // namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 
 namespace winrt::Microsoft::Windows::ApplicationModel::Resources::factory_implementation
@@ -25,5 +23,4 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Resources::factory_implem
     struct ApplicationLanguages : ApplicationLanguagesT<ApplicationLanguages, implementation::ApplicationLanguages>
     {
     };
-}
-// namespace winrt::Microsoft::Windows::ApplicationModel::Resources::factory_implementation
+} // winrt::Microsoft::Windows::ApplicationModel::Resources::factory_implementation
