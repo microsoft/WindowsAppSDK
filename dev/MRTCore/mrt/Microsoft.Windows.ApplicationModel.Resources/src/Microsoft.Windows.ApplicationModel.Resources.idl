@@ -114,7 +114,7 @@ namespace Microsoft.Windows.ApplicationModel.Resources
         static String Theme { get; };
     }
 
-    [contract(MrtCoreContract, 1)]
+    [contract(MrtCoreContract, 2)]
     runtimeclass ApplicationLanguages
     {
         static String PrimaryLanguageOverride;
