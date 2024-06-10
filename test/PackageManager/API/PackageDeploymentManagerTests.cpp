@@ -48,3 +48,24 @@ namespace Test::PackageManager::Tests
         }
     };
 }
+
+void Test::PackageManager::Tests::VerifyDeploymentSucceeded(
+    const winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult& deploymentResult,
+    PCSTR filename,
+    int line,
+    PCSTR function)
+{
+    WEX::Common::String source;
+    source.Format(L"File: %hs, Function: %hs, Line: %d", filename, function, line);
+    PCWSTR message{ static_cast<PCWSTR>(source) };
+
+    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"VERIFY Deployment Suceeded: %ls", message));
+
+    const bool ok{ (deploymentResult.Status() == winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedSuccess) &&
+                   (deploymentResult.Error() == S_OK) &&
+                   (deploymentResult.ExtendedError() == S_OK) &&
+                   deploymentResult.ErrorText().empty() };
+    VERIFY_IS_TRUE(ok, WEX::Common::String().Format(L"Status:%d Error:0x%X ExtendedError:0x%X ErrorText:%ls %ls",
+                   deploymentResult.Status(), deploymentResult.Error(), deploymentResult.ExtendedError(),
+                   deploymentResult.ErrorText().c_str(), message));
+}

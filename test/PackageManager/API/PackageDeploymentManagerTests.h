@@ -99,6 +99,12 @@ namespace Test::PackageManager::Tests
         return TPMT::PreBootstrap_SkipIfFeatureNotSupported(feature, message);
     }
 
+    void VerifyDeploymentSucceeded(
+        const winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult& deploymentResult,
+        PCSTR filename,
+        int line,
+        PCSTR function);
+
     class PackageDeploymentManagerTests_Base
     {
     protected:
