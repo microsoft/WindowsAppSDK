@@ -1259,8 +1259,8 @@ function Get-DeveloperMode
     $regkey = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock'
     if (Test-Path -Path $regkey -PathType Container)
     {
-        $value = Get-ItemProperty -Path $regkey -Name AllowDevelopmentWithoutDevLicense
-        return $value.AllowDevelopmentWithoutDevLicense -eq 1
+        $value = $(Get-Item -Path $regkey).GetValue('AllowDevelopmentWithoutDevLicense')
+        return $value -eq 1
     }
 
     return $false
@@ -1277,7 +1277,6 @@ function Test-DeveloperMode
     {
         Write-Host "ERROR: Developer mode is not enabled. Enable it via Settings" -ForegroundColor Red -BackgroundColor Black
         $global:issues++
-        $fatal_errors++
     }
 }
 
