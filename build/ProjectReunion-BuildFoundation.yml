@@ -14,7 +14,6 @@ variables:
 - template: WindowsAppSDK-CommonVariables.yml
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
 - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-GlobalVariables.yml
-- group: PublicSymbols-Secrets
 
 stages:
 - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
