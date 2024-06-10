@@ -44,8 +44,9 @@ Note that these extensions can affect the numeral system or calendar used by glo
 ## ApplicationLanguages.PrimaryLanguageOverride property
 
 Gets or sets an override for the app's preferred language, expressed as a
-[BCP-47 language tag](https://tools.ietf.org/html/bcp47). This setting is global for the running
-process and is not persisted.
+[BCP-47 language tag](https://tools.ietf.org/html/bcp47). Unlike
+[Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.primarylanguageoverride),
+this setting is global for the running process and is not persisted.
 
 ```c#
 public static string PrimaryLanguageOverride { get; set; }
@@ -82,9 +83,9 @@ change may not take effect immediately on resources already loaded in the app UI
 app responds to such changes, actions may be needed to reload resources. Those requirements may vary
 depending on the UI framework used by the app, and it may be necessary to restart the app.
 
-This property overrides the behavior of
-[PrimaryLanguageOverride](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.primarylanguageoverride)
-property from Windows.Globalization.ApplicationLanguages namespace property.
+This property (Microsoft.Windows.ApplicationModel.Resources.PrimaryLanguageOverride) takes
+precedence over the existing one
+[Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.primarylanguageoverride).
 
 Example:
 
@@ -99,6 +100,9 @@ public partial class App : Application
         // Both resources loaded manually with ResourceLoader and XAML resources fetched with x:Uid
         // will be German (Germany)
         Microsoft.Windows.ApplicationModel.Resources.ApplicationLanguages.PrimaryLanguageOverride = "de-DE";
+
+        Microsoft.Windows.ApplicationModel.Resources.ResourceLoader resourceLoader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader();
+        var resourceString = resourceLoader.GetString("SampleString");
 
         this.InitializeComponent();
     }
