@@ -44,9 +44,10 @@ Note that these extensions can affect the numeral system or calendar used by glo
 ## ApplicationLanguages.PrimaryLanguageOverride property
 
 Gets or sets an override for the app's preferred language, expressed as a
-[BCP-47 language tag](https://tools.ietf.org/html/bcp47). Unlike
+[BCP-47 language tag](https://tools.ietf.org/html/bcp47). This setting is global for the running
+process. Unlike
 [Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.primarylanguageoverride),
-this setting is global for the running process and is not persisted.
+this setting is not persisted between app sessions.
 
 ```c#
 public static string PrimaryLanguageOverride { get; set; }
