@@ -1354,6 +1354,7 @@ if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
         $null = Test-VisualStudioComponents
     }
     $null = Test-WindowsSDKInstall '10.0.17763.0'
+    $null = Test-WindowsSDKInstall '10.0.26100.0'
 }
 
 if (($CheckAll -ne $false) -Or ($CheckTestPfx -ne $false))
