@@ -14,6 +14,6 @@ namespace winrt::$safeprojectname$::implementation
 {
     MainWindow::MainWindow()
     {
-        ExtendsContentIntoTitleBar(true); // provides default WinUI custom title bar experience
+        
     }
 }

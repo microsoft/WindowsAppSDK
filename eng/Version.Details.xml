@@ -31,9 +31,9 @@
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
       <Sha>5190f048458d3dd446318391385a832e081e4e9e</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.6.0-main.20240417.0">
+    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.7.0-main.20240513.0">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
-      <Sha>f8fb6f96944590cd5f53a5d7835ea1a1f089acf0</Sha>
+      <Sha>2c1c46a69150a164073a76607be58f10c5a3b94c</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
@@ -41,7 +41,7 @@
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKAggregator</Uri>
       <Sha>1b726bba007f2b3817b320693a1267f8b1c620b1</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.0.3">
+    <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.1.0-prerelease.240517.1">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>

@@ -26,7 +26,6 @@ namespace $safeprojectname$
         public MainWindow()
         {
             this.InitializeComponent();
-            this.ExtendsContentIntoTitleBar = true; // provides default WinUI custom title bar experience
         }
 
         private void myButton_Click(object sender, RoutedEventArgs e)

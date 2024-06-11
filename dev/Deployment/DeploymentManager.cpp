@@ -107,7 +107,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         // (i.e. if any of the target packages is not installed, GetStatus should return PackageInstallRequired).
         HRESULT verifyResult{};
 
-        for (auto package : c_targetPackages)
+        for (const auto package : c_targetPackages)
         {
             // Build package family name based on the framework naming scheme.
             std::wstring packageFamilyName{};
@@ -260,7 +260,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
         else
         {
-            if ((::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentRepair::IsEnabled()) &&
+            if ((::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentRepair::IsEnabled()) && 
                 (isRepair))
             {
                 status = DeploymentStatus::PackageRepairFailed;
@@ -326,9 +326,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
 
     HRESULT DeploymentManager::VerifyPackage(const std::wstring& packageFamilyName, const PACKAGE_VERSION targetVersion,
-        __out std::wstring& packageIdentifier) try
+        const std::wstring& packageIdentifier) try
     {
-        packageIdentifier = L"";
         auto packageFullNames{ FindPackagesByFamily(packageFamilyName) };
         bool match{};
         for (const auto& packageFullName : packageFullNames)
