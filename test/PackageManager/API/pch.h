@@ -34,6 +34,7 @@
 #include <windows.foundation.h>
 #include <windows.foundation.collections.h>
 #include <windows.management.deployment.h>
+#define TODO_UpdatedWindowsSDK_with_Windows_Management_Deployment_IRemovePackageOptions
 #if !defined(TODO_UpdatedWindowsSDK_with_Windows_Management_Deployment_IRemovePackageOptions)
 // Until we have access to the updated Windows SDK we can't use RemovePackageOptions
 // but we need *something* to satisfy PackageManagement_RemovePackageByUriAsync() in the FrameworkUDK
