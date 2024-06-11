@@ -58,7 +58,7 @@ or via the browser:
 **NOTE:** You can tell the Visual Studio Installer to do the heavy lifting for you
 via `More` / `Import configuration` and select `docs\Coding-Guidelines\VisualStudio2022.vsconfig`.
 
-3. Run NuGet Restore
+4. Run NuGet Restore
    * Download nuget.exe version >= 6.2.1 from https://www.nuget.org/downloads
      e.g. https://dist.nuget.org/win-x86-commandline/v6.2.1/nuget.exe
    * Open a command prompt
