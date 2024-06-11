@@ -466,7 +466,7 @@ function Test-WindowsSDKInstall
     $found = Test-Path $regkey -PathType Container
     if ($found)
     {
-        Write-Verbose "Windows SDK $($version) = OK"
+        Write-Host "Windows SDK $($version) = OK"
     }
     else
     {
