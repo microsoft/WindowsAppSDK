@@ -14,7 +14,7 @@
 #include <windows.foundation.h>
 #include <windows.foundation.collections.h>
 #include <windows.management.deployment.h>
-#if NTDDI_VERSION >= NTDDI_WIN10_GA
+#if defined(NTDDI_WIN11_GE)
 #   define TODO_UpdatedWindowsSDK_with_Windows_Management_Deployment_IRemovePackageOptions
 #endif
 #if !defined(TODO_UpdatedWindowsSDK_with_Windows_Management_Deployment_IRemovePackageOptions)
