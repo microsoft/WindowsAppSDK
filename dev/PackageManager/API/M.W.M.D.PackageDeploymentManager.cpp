@@ -135,11 +135,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage:
             {
-                return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixResetPackageByUriAsync");
+                return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixResetPackageAsync");
             }
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage:
             {
-                return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixRemovePackageByUriAsync");
+                return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixRepairPackageAsync");
             }
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ProvisionPackage_Framework:
             {
