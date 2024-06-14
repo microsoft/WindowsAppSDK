@@ -131,7 +131,9 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageByUri:
             {
-                return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixRemovePackageByUriAsync");
+                //TODO Awaiting Platform SDK defining RemovePackageOptions
+                //return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixRemovePackageByUriAsync");
+                return false;
             }
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage:
             {
@@ -2266,7 +2268,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::hstring& /*errorText*/,
         winrt::guid& /*activityId*/)
     {
-        //TODO Awaiting FrameworkUdk update with PackageManagement_RemovePackageByUriAsync2()
         //TODO Awaiting Platform SDK defining RemovePackageOptions
         RETURN_HR(E_NOTIMPL);
     }
