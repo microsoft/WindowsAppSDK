@@ -41,6 +41,57 @@ Microsoft.Windows.ApplicationModel.Resources.ApplicationLanguages.PrimaryLanguag
 Language tags support the Unicode extensions "ca-" and "nu-". (See Unicode Key/Type Definitions.)
 Note that these extensions can affect the numeral system or calendar used by globalization objects.
 
+## ApplicationLanguages.Languages property
+
+Gets a ranked list of current runtime language values preferred by the user.
+
+# Property Value
+
+[IReadOnlyList](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1)<[String](https://learn.microsoft.com/dotnet/api/system.string)>
+
+A computed list of languages that merges the app's declared supported languages
+(ApplicationLanguages.ManifestLanguages) with the user's ranked list of preferred languages.
+
+Note: This property returns the same values as the language list exposed by
+[Windows.Globalization.ApplicationLanguages.Languages](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.languages1)
+property.
+
+# Remarks
+
+At runtime, the list of languages for which your app has declared support (the app manifest language
+list) is compared with the list of languages for which the user has declared a preference (the user
+profile language list). The app runtime language list is set to this intersection (if the
+intersection is not empty), or to just the app's default language (if the intersection is empty).
+For more detail, see the
+[App runtime language list](https://learn.microsoft.com/windows/apps/design/globalizing/manage-language-and-region#app-runtime-language-list)
+section in
+[Understand user profile languages and app manifest languages](https://learn.microsoft.com/windows/apps/design/globalizing/manage-language-and-region).
+
+## ApplicationLanguages.ManifestLanguages property
+
+Gets the app's declared list of supported languages.
+
+# Property Value
+
+[IReadOnlyList](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1)<[String](https://learn.microsoft.com/dotnet/api/system.string)>
+
+The list of supported languages declared in the app's manifest. For un-packaged applications,
+exception is thrown.
+
+Note: This property returns the same values as the language list exposed by
+[Windows.Globalization.ApplicationLanguages.ManifestLanguages](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.manifestlanguages)
+property.
+
+# Remarks
+
+When language resource packages are used, the packages that are installed and registered for a given
+user are determined by the languages in the user's language profile. The set of languages returned
+by the ManifestLanguages property is limited to the languages currently available on the system for
+the user. Languages included in the main app package manifest will always be returned; languages
+from resource packages will be returned only if the language is applicable for the user (that is, is
+in the user's preferences) and the resource package has been installed and registered for the user
+at the time the property is accessed.
+
 ## ApplicationLanguages.PrimaryLanguageOverride property
 
 Gets or sets an override for the app's preferred language, expressed as a
@@ -111,6 +162,31 @@ public partial class App : Application
 }
 ```
 
+## ApplicationLanguages.GetLanguagesForUser(User) Method
+
+Retrieves the language preferences of the specified user. This API is part of support for multi-user
+apps (MUA).
+
+```c#
+public static IReadOnlyList<string> GetLanguagesForUser(User user);
+```
+
+# Parameters
+
+`user` [User](https://learn.microsoft.com/uwp/api/windows.system.user?view=winrt-22621) \
+The user to retrieve preferences for.
+
+# Returns
+
+[IReadOnlyList](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1)<[String](https://learn.microsoft.com/dotnet/api/system.string)>
+
+A list of normalized [BCP-47](https://www.rfc-editor.org/info/bcp47) language tags representing the
+language preferences of the specified user.
+
+Note: This method returns the same values as the language list returned by
+[Windows.Globalization.ApplicationLanguages.GetLanguagesForUser](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.getlanguagesforuser)
+property.
+
 # API Details
 
 ```c# (but really MIDL3)
@@ -120,7 +196,11 @@ namespace Microsoft.Windows.ApplicationModel.Resources
   [contract(MrtCoreContract, 2)]
   runtimeclass ApplicationLanguages
   {
+      static IVectorView<String> Languages { get; };
+      static IVectorView<String> ManifestLanguages { get; };
       static String PrimaryLanguageOverride;
+
+      static IVectorView<String> GetLanguagesForUser(Windows.System.User user);
   }
 }
 ```
