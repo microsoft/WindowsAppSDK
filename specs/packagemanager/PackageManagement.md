@@ -127,7 +127,7 @@ The following table shows the supported permutations of verbs and targets:
 |Remove                  |   X    |    X     |        WAS        |      OS/WAS     |   X    |    X     | OS/WAS  |    WAS     |
 |Repair                  |   X    |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
 |Reset                   |   X    |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
-|IsProvisioned           |   X    |    X     |       OS/WAS      |      OS/WAS     |   X    |    X     |  WAS    |    WAS     |
+|IsProvisioned           |   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
 |Provision               |   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
 |Deprovision             |   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
 
@@ -651,13 +651,18 @@ Fabrikam app installing Contoso's Muffin and Waffle packages for all users if ne
 ```c#
 void Install()
 {
+    // We want to check what's provisioned by PackageFamilyName. If something's
+    // not provisioned we'll also need MinVersion and PackageUri to Stage and
+    // Provision. But checking if a family is provisioned only supports some
+    // URI schemes (notably, not the one we need for our staging work). So we'll
+    // define the PackageSet with the families we want checked and if something's
+    // not provisioned we'll add the additional properties needed.
+
     var packageSet = new PackageSet() {
-        Items = { new PackageSetItem() { PackageFamilyName = "contoso.muffin_1234567890abc",
-                                         MinVersion = ToVersion(1, 2, 3, 4),
-                                         PackageUri = new Uri("c:\\contoso\\muffin-1.2.3.4.msix") },
-                { new PackageSetItem() { PackageFamilyName = "contoso.waffle_1234567890abc",
-                                         MinVersion = ToVersion(2, 4, 6, 8),
-                                         PackageUri = new Uri("https://contoso.com/waffle-2.4.6.8.msix") } };
+        Items = { new PackageSetItem() { PackageFamilyName = "contoso.muffin_1234567890abc" },
+                { new PackageSetItem() { PackageFamilyName = "contoso.waffle_1234567890abc" }
+        }
+    };
 
     var packageDeploymentManager = PackageDeploymentManager.GetDefault();
     if (packageDeploymentManager.IsPackageSetProvisioned(packageSet))
@@ -670,6 +675,11 @@ void Install()
     {
         return;
     }
+
+    packageSet.Items()[0].MinVersion(ToVersion(1, 2, 3, 4));
+    packageSet.Items()[0].PackageUri(new Uri("c:\\contoso\\muffin-1.2.3.4.msix"));
+    packageSet.Items()[1].MinVersion(ToVersion(2, 4, 6, 8));
+    packageSet.Items()[1].PackageUri(new Uri("https://contoso.com/waffle-2.4.6.8.msix"));
 
     var stageOptions = new StagePackageOptions();
     var deploymentResult = await packageDeploymentManager.StagePackageSetReadyAsync(packageSet, options);
