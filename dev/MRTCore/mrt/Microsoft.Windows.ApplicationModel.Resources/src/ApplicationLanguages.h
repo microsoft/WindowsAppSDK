@@ -10,8 +10,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
     {
         ApplicationLanguages() = delete;
 
+        static winrt::Windows::Foundation::Collections::IVectorView<hstring> Languages();
+        static winrt::Windows::Foundation::Collections::IVectorView<hstring> ManifestLanguages();
         static hstring PrimaryLanguageOverride();
         static void PrimaryLanguageOverride(hstring const& language);
+        static winrt::Windows::Foundation::Collections::IVectorView<hstring> GetLanguagesForUser(winrt::Windows::System::User const& user);
 
     private:
         static hstring m_language;

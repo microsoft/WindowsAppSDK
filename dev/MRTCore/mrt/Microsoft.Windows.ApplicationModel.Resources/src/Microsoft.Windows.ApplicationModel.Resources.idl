@@ -117,7 +117,11 @@ namespace Microsoft.Windows.ApplicationModel.Resources
     [contract(MrtCoreContract, 2)]
     runtimeclass ApplicationLanguages
     {
+        static IVectorView<String> Languages { get; };
+        static IVectorView<String> ManifestLanguages { get; };
         static String PrimaryLanguageOverride;
+
+        static IVectorView<String> GetLanguagesForUser(Windows.System.User user);
     }
 
 } // namespace Microsoft.Windows.ApplicationModel. Resources
