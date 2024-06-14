@@ -336,7 +336,7 @@ package management APIs in Windows (e.g. Windows.Management.Deployment.PackageMa
   requested package is installed.
 * Many `PackageManager` operations accept a target package as a file but require it expressed as a
   `Uri`. `PackageDeploymentManager` provides overrides also accepting it as a `String`.
-* `PackageManager.RemovePackageByFullNameAsyn(p)` fails if the specified package isn't found.
+* `PackageManager.RemovePackageByFullNameAsync(p)` fails if the specified package isn't found.
   `PackageDeploymentManager` succeeds as the requested package is not present at the end of the
   operation.
   * This follows the core deployment principle "'Tis not the journey that matters but the
@@ -660,13 +660,15 @@ void Install()
                                          PackageUri = new Uri("https://contoso.com/waffle-2.4.6.8.msix") } };
 
     var packageDeploymentManager = PackageDeploymentManager.GetDefault();
-    if (!packageDeploymentManager.IsPackageSetProvisioned(packageSet))
+    if (packageDeploymentManager.IsPackageSetProvisioned(packageSet))
     {
-        bool ok = PromptUserForConfirmation();
-        if (!ok)
-        {
-            return;
-        }
+        return;
+    }
+
+    bool ok = PromptUserForConfirmation();
+    if (!ok)
+    {
+        return;
     }
 
     var stageOptions = new StagePackageOptions();
