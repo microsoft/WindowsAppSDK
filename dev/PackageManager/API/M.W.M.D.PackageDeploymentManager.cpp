@@ -181,19 +181,26 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         // Currently supported URI schemes: ms-uup
         const auto packageFullNames{ GetPackageFullNamesFromUupProductUriIfMsUup(packageUri) };
-        if (packageFullNames)
+        if (!packageFullNames)
         {
-            for (PCWSTR packageFullName : packageFullNames)
+            // Currently supported URI schemes: ms-uup
+            if (!IsUriScheme_MsUup(packageUri))
             {
-                if (!IsReadyByPackageFullName(packageFullName))
-                {
-                    return false;
-                }
+                THROW_HR_IF(E_NOTIMPL, !IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::PackageUriScheme_ms_uup));
             }
-            return true;
+
+            // Ready UUP Products always have 1+ package so no packages found means not ready
+            return false;
         }
 
-        THROW_HR_MSG(E_INVALIDARG, "%ls", packageUri.ToString().c_str());
+        for (PCWSTR packageFullName : packageFullNames)
+        {
+            if (!IsReadyByPackageFullName(packageFullName))
+            {
+                return false;
+            }
+        }
+        return true;
     }
     bool PackageDeploymentManager::IsPackageSetReady(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet)
     {
@@ -242,43 +249,50 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         // Currently supported URI schemes: ms-uup
         const auto schemeName{ packageUri.SchemeName() };
         const auto uupProductId{ GetUupProductIdIfMsUup(packageUri) };
-        if (!uupProductId.empty())
+        if (uupProductId.empty())
         {
-            wil::unique_cotaskmem_array_ptr<wil::unique_cotaskmem_string> packageFullNames;
-            THROW_IF_FAILED_MSG(Uup_SRFindPackageFullNamesByUupProductId(uupProductId.c_str(), packageFullNames.size_address<UINT32>(), packageFullNames.addressof()), "%s", uupProductId.c_str());
-
-            bool anyNewerAvailable{};
-            const auto packageUriAsString{ packageUri.ToString() };
-            for (PCWSTR packageFullName : packageFullNames)
+            // Currently supported URI schemes: ms-uup
+            if (!IsUriScheme_MsUup(packageUri))
             {
-                const auto packageIdentity{ ::AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName) };
-                const auto packageFamilyName{ packageIdentity.PackageFamilyName() };
-                const auto minVersion{ packageIdentity.Version().Version };
-                const auto architectureType{ ToArchitectureType(packageIdentity.Architecture()) };
-                BOOL isRegistered{};
-                BOOL isNewerAvailable{};
-                THROW_IF_FAILED_MSG(PackageManagement_IsRegisteredOrNewerAvailable(nullptr, packageFamilyName.c_str(), minVersion, architectureType, &isRegistered, &isNewerAvailable), "%s", packageUriAsString.c_str());
-                if (!isRegistered)
-                {
-                    // At least one package isn't ready so we have our answer
-                    return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
-                }
-                if (!anyNewerAvailable & !!isNewerAvailable)
-                {
-                    anyNewerAvailable = true;
-                }
-            }
-            if (anyNewerAvailable)
-            {
-                // All packages are registered but at least 1 has a newer version available
-                return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable;
+                THROW_HR_IF(E_NOTIMPL, !IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::PackageUriScheme_ms_uup));
             }
 
-            // All packages are registered and none have anything newer avaiable
-            return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready;
+            // Ready UUP Products always have 1+ package so no packages found means not ready
+            return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
         }
 
-        THROW_HR_MSG(E_INVALIDARG, "%ls", packageUri.ToString().c_str());
+        wil::unique_cotaskmem_array_ptr<wil::unique_cotaskmem_string> packageFullNames;
+        THROW_IF_FAILED_MSG(Uup_SRFindPackageFullNamesByUupProductId(uupProductId.c_str(), packageFullNames.size_address<UINT32>(), packageFullNames.addressof()), "%s", uupProductId.c_str());
+
+        bool anyNewerAvailable{};
+        const auto packageUriAsString{ packageUri.ToString() };
+        for (PCWSTR packageFullName : packageFullNames)
+        {
+            const auto packageIdentity{ ::AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName) };
+            const auto packageFamilyName{ packageIdentity.PackageFamilyName() };
+            const auto minVersion{ packageIdentity.Version().Version };
+            const auto architectureType{ ToArchitectureType(packageIdentity.Architecture()) };
+            BOOL isRegistered{};
+            BOOL isNewerAvailable{};
+            THROW_IF_FAILED_MSG(PackageManagement_IsRegisteredOrNewerAvailable(nullptr, packageFamilyName.c_str(), minVersion, architectureType, &isRegistered, &isNewerAvailable), "%s", packageUriAsString.c_str());
+            if (!isRegistered)
+            {
+                // At least one package isn't ready so we have our answer
+                return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady;
+            }
+            if (!anyNewerAvailable & !!isNewerAvailable)
+            {
+                anyNewerAvailable = true;
+            }
+        }
+        if (anyNewerAvailable)
+        {
+            // All packages are registered but at least 1 has a newer version available
+            return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable;
+        }
+
+        // All packages are registered and none have anything newer avaiable
+        return winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready;
     }
     winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus PackageDeploymentManager::IsPackageSetReadyOrNewerAvailable(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet)
     {
@@ -342,11 +356,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
         // Create a PackageSet for the URI
         winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
-        packageSet.Id(packageUri.ToString());
-        packageSet.PackageUri(packageUri);
         const auto packageFullNames{ GetPackageFullNamesFromUupProductUriIfMsUup(packageUri) };
         if (packageFullNames)
         {
+            packageSet.Id(packageUri.ToString());
+            packageSet.PackageUri(packageUri);
             auto packageSetItems{ packageSet.Items() };
             for (PCWSTR packageFullName : packageFullNames)
             {
@@ -361,9 +375,19 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 packageSetItems.Append(packageSetItem);
             }
         }
+
         auto logTelemetry{ PackageManagementTelemetry::EnsurePackageReadyByUriAsync::Start(packageUri.ToString()) };
 
-        co_return co_await EnsurePackageSetReadyAsync(packageSet, options);
+        if (packageSet.Id().empty())
+        {
+            // Package URI isn't known to the system so it's an add or bust
+            co_return co_await AddPackageByUriAsync(packageUri, options.AddPackageOptions());
+        }
+        else
+        {
+            // Package URI is known so process the PackageSet
+            co_return co_await EnsurePackageSetReadyAsync(packageSet, options);
+        }
 
         logTelemetry.Stop(packageUri.ToString());
     }
@@ -1127,21 +1151,19 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         packageSet.Id(packageUri.ToString());
         packageSet.PackageUri(packageUri);
         const auto packageFullNames{ GetPackageFullNamesFromUupProductUriIfMsUup(packageUri) };
-        if (packageFullNames)
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), packageFullNames.empty());
+        auto packageSetItems{ packageSet.Items() };
+        for (PCWSTR packageFullName : packageFullNames)
         {
-            auto packageSetItems{ packageSet.Items() };
-            for (PCWSTR packageFullName : packageFullNames)
-            {
-                winrt::Microsoft::Windows::Management::Deployment::PackageSetItem packageSetItem;
-                packageSetItem.Id(packageFullName);
-                const auto packageIdentity{ ::AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName) };
-                packageSetItem.PackageFamilyName(packageIdentity.PackageFamilyName().c_str());
-                const ::AppModel::Identity::PackageVersion minVersion{ packageIdentity.Version() };
-                packageSetItem.MinVersion(minVersion.ToWinrtPackageVersion());
-                const auto processorArchitectureFilter{ ToPackageDependencyProcessorArchitectures(packageIdentity.Architecture()) };
-                packageSetItem.ProcessorArchitectureFilter(processorArchitectureFilter);
-                packageSetItems.Append(packageSetItem);
-            }
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem packageSetItem;
+            packageSetItem.Id(packageFullName);
+            const auto packageIdentity{ ::AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName) };
+            packageSetItem.PackageFamilyName(packageIdentity.PackageFamilyName().c_str());
+            const ::AppModel::Identity::PackageVersion minVersion{ packageIdentity.Version() };
+            packageSetItem.MinVersion(minVersion.ToWinrtPackageVersion());
+            const auto processorArchitectureFilter{ ToPackageDependencyProcessorArchitectures(packageIdentity.Architecture()) };
+            packageSetItem.ProcessorArchitectureFilter(processorArchitectureFilter);
+            packageSetItems.Append(packageSetItem);
         }
         auto logTelemetry{ PackageManagementTelemetry::EnsurePackageReadyByUriAsync::Start(packageUri.ToString()) };
 
@@ -1253,7 +1275,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         packageSet.Id(packageUri.ToString());
         packageSet.PackageUri(packageUri);
         const auto packageFullNames{ GetPackageFullNamesFromUupProductUriIfMsUup(packageUri) };
-        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), packageFullNames.empty());
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), packageFullNames.empty());
         auto packageSetItems{ packageSet.Items() };
         for (PCWSTR packageFullName : packageFullNames)
         {
@@ -1363,21 +1385,27 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
     bool PackageDeploymentManager::IsPackageProvisionedByUri(winrt::Windows::Foundation::Uri const& packageUri)
     {
-        // Currently supported URI schemes: ms-uup
         const auto packageFullNames{ GetPackageFullNamesFromUupProductUriIfMsUup(packageUri) };
-        if (packageFullNames)
+        if (!packageFullNames)
         {
-            for (PCWSTR packageFullName : packageFullNames)
+            // Currently supported URI schemes: ms-uup
+            if (!IsUriScheme_MsUup(packageUri))
             {
-                if (!IsProvisionedByPackageFullName(packageFullName))
-                {
-                    return false;
-                }
+                THROW_HR_IF(E_NOTIMPL, !IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::PackageUriScheme_ms_uup));
             }
-            return true;
+
+            // Provisioned UUP Products always have 1+ package so no packages found means not provisioned
+            return false;
         }
 
-        THROW_HR_MSG(E_INVALIDARG, "%ls", packageUri.ToString().c_str());
+        for (PCWSTR packageFullName : packageFullNames)
+        {
+            if (!IsProvisionedByPackageFullName(packageFullName))
+            {
+                return false;
+            }
+        }
+        return true;
     }
     bool PackageDeploymentManager::IsPackageSetProvisioned(winrt::Microsoft::Windows::Management::Deployment::PackageSet const& packageSet)
     {
