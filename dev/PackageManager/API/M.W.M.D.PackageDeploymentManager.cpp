@@ -1253,21 +1253,19 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         packageSet.Id(packageUri.ToString());
         packageSet.PackageUri(packageUri);
         const auto packageFullNames{ GetPackageFullNamesFromUupProductUriIfMsUup(packageUri) };
-        if (packageFullNames)
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), packageFullNames.empty());
+        auto packageSetItems{ packageSet.Items() };
+        for (PCWSTR packageFullName : packageFullNames)
         {
-            auto packageSetItems{ packageSet.Items() };
-            for (PCWSTR packageFullName : packageFullNames)
-            {
-                winrt::Microsoft::Windows::Management::Deployment::PackageSetItem packageSetItem;
-                packageSetItem.Id(packageFullName);
-                const auto packageIdentity{ ::AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName) };
-                packageSetItem.PackageFamilyName(packageIdentity.PackageFamilyName().c_str());
-                const ::AppModel::Identity::PackageVersion minVersion{ packageIdentity.Version() };
-                packageSetItem.MinVersion(minVersion.ToWinrtPackageVersion());
-                const auto processorArchitectureFilter{ ToPackageDependencyProcessorArchitectures(packageIdentity.Architecture()) };
-                packageSetItem.ProcessorArchitectureFilter(processorArchitectureFilter);
-                packageSetItems.Append(packageSetItem);
-            }
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem packageSetItem;
+            packageSetItem.Id(packageFullName);
+            const auto packageIdentity{ ::AppModel::Identity::PackageIdentity::FromPackageFullName(packageFullName) };
+            packageSetItem.PackageFamilyName(packageIdentity.PackageFamilyName().c_str());
+            const ::AppModel::Identity::PackageVersion minVersion{ packageIdentity.Version() };
+            packageSetItem.MinVersion(minVersion.ToWinrtPackageVersion());
+            const auto processorArchitectureFilter{ ToPackageDependencyProcessorArchitectures(packageIdentity.Architecture()) };
+            packageSetItem.ProcessorArchitectureFilter(processorArchitectureFilter);
+            packageSetItems.Append(packageSetItem);
         }
         auto logTelemetry{ PackageManagementTelemetry::EnsurePackageReadyByUriAsync::Start(packageUri.ToString()) };
 
