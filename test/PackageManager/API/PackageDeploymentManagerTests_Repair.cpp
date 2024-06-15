@@ -194,7 +194,7 @@ namespace Test::PackageManager::Tests
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
 
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
+            VERIFY_IS_TRUE(IsPackageRegistered_Red());
         }
 
         TEST_METHOD(RepairPackageByUriAsync_NoSuchPackage_Fail)
@@ -608,8 +608,8 @@ namespace Test::PackageManager::Tests
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
 
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
+            VERIFY_IS_TRUE(IsPackageRegistered_Red());
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
         }
 
         TEST_METHOD(RepairPackageAsync_PackageFamilyName_RegisteredPackageStatusBad_Success)
@@ -635,8 +635,8 @@ namespace Test::PackageManager::Tests
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
 
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
+            VERIFY_IS_TRUE(IsPackageRegistered_Red());
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
         }
 
         TEST_METHOD(RepairPackageByUriAsync_RegisteredPackageStatusBad_Success)

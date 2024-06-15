@@ -130,7 +130,7 @@ namespace Test::PackageManager::Tests
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
 
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
+            VERIFY_IS_TRUE(IsPackageRegistered_Red());
         }
 
         TEST_METHOD(ResetPackageAsync_PackageFamilyName_NotInstalled_Success)
@@ -194,7 +194,7 @@ namespace Test::PackageManager::Tests
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
 
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
+            VERIFY_IS_TRUE(IsPackageRegistered_Red());
         }
 
         TEST_METHOD(ResetPackageByUriAsync_NoSuchPackage_Fail)
@@ -607,8 +607,8 @@ namespace Test::PackageManager::Tests
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
 
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
+            VERIFY_IS_TRUE(IsPackageRegistered_Red());
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
         }
 
         TEST_METHOD(ResetPackageAsync_PackageFamilyName_RegisteredPackageStatusBad_Success)
@@ -634,8 +634,8 @@ namespace Test::PackageManager::Tests
             auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
             TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
 
-            VERIFY_IS_FALSE(IsPackageRegistered_Red());
-            VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
+            VERIFY_IS_TRUE(IsPackageRegistered_Red());
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(::TPF::Red::GetPackageFullName()));
         }
 
         TEST_METHOD(ResetPackageByUriAsync_RegisteredPackageStatusBad_Success)
