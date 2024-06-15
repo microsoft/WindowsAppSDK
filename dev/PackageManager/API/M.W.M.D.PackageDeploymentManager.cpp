@@ -1370,10 +1370,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             return IsProvisionedByPackageFamilyName(package);
         }
-        else if (VerifyPackageFullName(package.c_str()) == ERROR_SUCCESS)
-        {
-            return IsProvisionedByPackageFullName(package);
-        }
 
         const winrt::Windows::Foundation::Uri packageUri{ package };
         const auto packageAbsoluteUri{ packageUri.AbsoluteUri() };
@@ -1400,7 +1396,10 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
 
         for (PCWSTR packageFullName : packageFullNames)
         {
-            if (!IsProvisionedByPackageFullName(packageFullName))
+            // Provisioning is based on package family but we only know package full names for the URI
+            // Use the package's family name for the actual provisioning check
+            const auto packageFamilyName{ ::AppModel::Identity::ToPackageFamilyName<winrt::hstring>(packageFullName) };
+            if (!IsProvisionedByPackageFamilyName(packageFamilyName))
             {
                 return false;
             }
@@ -2859,19 +2858,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         for (const winrt::Windows::ApplicationModel::Package& provisionedPackage: provisionedPackages)
         {
             if (StringEqualsNoCase(packageFamilyName, provisionedPackage.Id().FamilyName()))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    bool PackageDeploymentManager::IsProvisionedByPackageFullName(hstring const& packageFullName)
-    {
-        const auto packages{ m_packageManager.FindProvisionedPackages() };
-        for (const winrt::Windows::ApplicationModel::Package& package : packages)
-        {
-            if (StringEqualsNoCase(packageFullName, package.Id().FullName()))
             {
                 return true;
             }

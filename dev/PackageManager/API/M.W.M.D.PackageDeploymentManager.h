@@ -258,8 +258,6 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         bool IsProvisionedByPackageFamilyName(
             winrt::Windows::Foundation::Collections::IVector<winrt::Windows::ApplicationModel::Package> const& provisionedPackages,
             hstring const& packageFamilyName);
-        bool IsProvisionedByPackageFullName(
-            hstring const& packageFullName);
         bool IsProvisioned(
             winrt::Windows::Foundation::Collections::IVector<winrt::Windows::ApplicationModel::Package> const& provisionedPackages,
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem const& packageSetItem);

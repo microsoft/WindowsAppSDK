@@ -399,7 +399,7 @@ T ToPackageFamilyName(PCWSTR packageFullName)
     WCHAR packageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
     UINT32 packageFamilyNameLength{ ARRAYSIZE(packageFamilyName) };
     THROW_IF_WIN32_ERROR_MSG(::PackageFamilyNameFromFullName(packageFullName, &packageFamilyNameLength, packageFamilyName), "%ls", packageFullName);
-    T{ packageFamilyName };
+    return T{ packageFamilyName };
 }
 }
 
