@@ -1,27 +1,36 @@
-# ApplicationLanguages.PrimaryLanguageOverride
+# ApplicationLanguages
 
-This feature provides the ability to change the application language for WindowsAppSDK applications,
-comparable to the one in
-[Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages).
-The benefit of this addition is that it applies to both packaged and un-packaged WindowsAppSDK
-applications, whereas the existing one is not supported for un-packaged.
+This new type (`Microsoft.Windows.ApplicationModel.Resources.ApplicationLanguages`) is a wrapper for
+the OS `Windows.Globalization.ApplicationLanguages` type with the updated behavior for the
+`PrimaryLanguageOverride` property to be supported for un-packaged apps.
 
 # Background
 
 Changing the application language using
 [PrimaryLanguageOverride](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.primarylanguageoverride)
 property from `Windows.Globalization.ApplicationLanguages` namespace is not supported for
-WindowsAppSDK un-packaged apps, only for packaged. To support the same behavior for un-packaged
-applications `PrimaryLanguageOverride` property is introduced in
-`Microsoft.Windows.ApplicationModel.Resources` MRTCore namespace. This property
-(`Microsoft.Windows.ApplicationModel.Resources.PrimaryLanguageOverride`) overrides the behavior of
-the existing one (`Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride`).
+WindowsAppSDK un-packaged apps, only for packaged. To support language change for un-packaged
+applications `ApplicationLanguages` type is introduced in
+`Microsoft.Windows.ApplicationModel.Resources` MRTCore namespace.
+`Microsoft.Windows.ApplicationModel.Resources.ApplicationLanguages.PrimaryLanguageOverride` property
+is supported both for packaged and un-packaged WindowsAppSDK apps.
+
+This new type (`Microsoft.Windows.ApplicationModel.Resources.ApplicationLanguages`) is a wrapper for
+the OS type with the updated behavior for the `PrimaryLanguageOverride` to support un-packaged apps.
+`Microsoft.Windows.ApplicationModel.Resources.ApplicationLanguages` should serve as a replacement
+for the existing OS type (`Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride`).
+
+`GetLanguagesForUser(User)` method from `Windows.Globalization.ApplicationLanguages` is being
+intentionally left off due to not being relevant for WinAppSDK.
 
 # API Pages
 
 ## ApplicationLanguages class
 
-Specifies the language-related preferences that the app can use and maintain.
+Specifies the language-related preferences that the app can use and maintain. This class is based on
+OS
+[Windows.Globalization.ApplicationLanguages](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages)
+class. You should prefer this type for WinAppSDK apps over the OS one.
 
 # Remarks
 
@@ -53,7 +62,7 @@ A computed list of languages that merges the app's declared supported languages
 (ApplicationLanguages.ManifestLanguages) with the user's ranked list of preferred languages.
 
 Note: This property returns the same values as the language list exposed by
-[Windows.Globalization.ApplicationLanguages.Languages](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.languages1)
+[Windows.Globalization.ApplicationLanguages.Languages](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.languages)
 property.
 
 # Remarks
@@ -95,10 +104,11 @@ at the time the property is accessed.
 ## ApplicationLanguages.PrimaryLanguageOverride property
 
 Gets or sets an override for the app's preferred language, expressed as a
-[BCP-47 language tag](https://tools.ietf.org/html/bcp47). This setting is global for the running
-process. Unlike
-[Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.primarylanguageoverride),
-this setting is not persisted between app sessions.
+[BCP-47 language tag](https://tools.ietf.org/html/bcp47). For packaged apps, this property is a
+wrapper for
+[Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.primarylanguageoverride)
+property and behaves the same. This setting is global for the running process. Unlike for packaged
+apps, for un-packaged apps, this setting is not persisted between app sessions.
 
 ```c#
 public static string PrimaryLanguageOverride { get; set; }
@@ -123,21 +133,22 @@ Apps normally run with language settings determined by the system by comparing t
 supported by the app with the language preferences of the user. The PrimaryLanguageOverride property
 is used to override that behavior by setting a single specific language.
 
-The PrimaryLanguageOverride setting is not persisted between sessions. It should be set each time
-the app is loaded. You should set PrimaryLanguageOverride setting in early stage of app loading,
-before any resource is loaded. It should only be set based on user input presented in settings UI.
-The property can be read at any time. If the property has never been set, it returns an empty
-string.
+For packaged apps, `PrimaryLanguageOverride` setting is a wrapper for
+[Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.primarylanguageoverride)
+property and behaves the same. It is persisted between app sessions.
+
+For un-packaged apps, `PrimaryLanguageOverride` setting is not persisted between sessions. It should
+be set each time the app is loaded. You should set PrimaryLanguageOverride setting in early stage of
+app loading, before any resource is loaded.
+
+The property should only be set based on user input presented in settings UI. It can be read at any
+time. If the property has never been set, it returns an empty string.
 
 When you set the PrimaryLanguageOverride, this will be immediately reflected in resources loaded
 afterwards, both resources loaded from the code and the resources loaded by XAML. However, this
 change may not take effect immediately on resources already loaded in the app UI. To make sure the
 app responds to such changes, actions may be needed to reload resources. Those requirements may vary
 depending on the UI framework used by the app, and it may be necessary to restart the app.
-
-This property (Microsoft.Windows.ApplicationModel.Resources.PrimaryLanguageOverride) takes
-precedence over the existing one
-[Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.primarylanguageoverride).
 
 Example:
 
@@ -162,31 +173,6 @@ public partial class App : Application
 }
 ```
 
-## ApplicationLanguages.GetLanguagesForUser(User) Method
-
-Retrieves the language preferences of the specified user. This API is part of support for multi-user
-apps (MUA).
-
-```c#
-public static IReadOnlyList<string> GetLanguagesForUser(User user);
-```
-
-# Parameters
-
-`user` [User](https://learn.microsoft.com/uwp/api/windows.system.user?view=winrt-22621) \
-The user to retrieve preferences for.
-
-# Returns
-
-[IReadOnlyList](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1)<[String](https://learn.microsoft.com/dotnet/api/system.string)>
-
-A list of normalized [BCP-47](https://www.rfc-editor.org/info/bcp47) language tags representing the
-language preferences of the specified user.
-
-Note: This method returns the same values as the language list returned by
-[Windows.Globalization.ApplicationLanguages.GetLanguagesForUser](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.getlanguagesforuser)
-property.
-
 # API Details
 
 ```c# (but really MIDL3)
@@ -199,8 +185,6 @@ namespace Microsoft.Windows.ApplicationModel.Resources
       static IVectorView<String> Languages { get; };
       static IVectorView<String> ManifestLanguages { get; };
       static String PrimaryLanguageOverride;
-
-      static IVectorView<String> GetLanguagesForUser(Windows.System.User user);
   }
 }
 ```
