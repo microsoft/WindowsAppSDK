@@ -211,7 +211,7 @@ namespace Test::PackageManager::Tests
 
             auto deploymentResult{ packageDeploymentManager.RepairPackageByUriAsync(packageUri).get() };
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentStatus::CompletedFailure, deploymentResult.Status());
-            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_FAILED), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.Error()));
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), deploymentResult.Error(), WEX::Common::String().Format(L"0x%X", deploymentResult.Error()));
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), deploymentResult.ExtendedError(), WEX::Common::String().Format(L"0x%X", deploymentResult.ExtendedError()));
             VERIFY_IS_FALSE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
         }
@@ -275,7 +275,7 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem packageSetItem;
             PCWSTR c_packageFamilyName{ L"Does.Not.Exist_1234567890abc" };
             packageSetItem.PackageFamilyName(c_packageFamilyName);
-            PCWSTR c_packageUriAsString{ L"file://c:/does/not/exist.msix" };
+            PCWSTR c_packageUriAsString{ L"ms-uup://Product/does.not.exist" };
             winrt::Windows::Foundation::Uri packageUri{ c_packageUriAsString };
             packageSetItem.PackageUri(packageUri);
             packageSet.Items().Append(packageSetItem);
