@@ -27,12 +27,7 @@ stages:
 
   - job: BuildBinaries
     pool:
-      ${{ if parameters.IsOneBranch }}:
-        type: windows
-      ${{ if not( parameters.IsOneBranch ) }}:
-        type: windows
-        isCustom: true
-        name: 'ProjectReunionESPool-2022'
+      type: windows
     timeoutInMinutes: 120
     strategy:
       maxParallel: 10
@@ -72,12 +67,7 @@ stages:
     # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
     # Can be expanded to add any other binary as needed
     pool:
-      ${{ if parameters.IsOneBranch }}:
-        type: windows
-      ${{ if not( parameters.IsOneBranch ) }}:
-        type: windows
-        isCustom: true
-        name: 'ProjectReunionESPool-2022'
+      type: windows
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
@@ -97,13 +87,8 @@ stages:
 
   - job: BuildMRT
     pool:
-      # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
-      ${{ if parameters.IsOneBranch }}:
-        type: windows
-      ${{ if not( parameters.IsOneBranch ) }}:
-        type: windows
-        isCustom: true
-        name: 'ProjectReunionESPool-2022'
+    pool:
+      type: windows
     timeoutInMinutes: 120
     strategy:
       maxParallel: 10

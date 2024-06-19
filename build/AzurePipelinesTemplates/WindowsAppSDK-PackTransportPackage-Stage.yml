@@ -22,13 +22,7 @@ stages:
   jobs:
   - job: NugetPackage
     pool:
-      # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
-      ${{ if parameters.IsOneBranch }}:
-        type: windows
-      ${{ if not( parameters.IsOneBranch ) }}:
-        type: windows
-        isCustom: true
-        name: 'ProjectReunionESPool-2022'
+      type: windows
     timeoutInMinutes: 120
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
