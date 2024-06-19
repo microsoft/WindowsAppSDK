@@ -87,7 +87,6 @@ stages:
 
   - job: BuildMRT
     pool:
-    pool:
       type: windows
     timeoutInMinutes: 120
     strategy:
