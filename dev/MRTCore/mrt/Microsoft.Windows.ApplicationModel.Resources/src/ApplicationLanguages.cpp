@@ -7,6 +7,8 @@
 
 #include <winrt/Windows.Globalization.h>
 
+#include <AppModel.Identity.h>
+
 namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 {
     hstring ApplicationLanguages::m_language;
@@ -23,17 +25,24 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 
     hstring ApplicationLanguages::PrimaryLanguageOverride()
     {
+        static wil::srwlock lock;
+
+        auto criticalSection{ lock.lock_shared() };
         return m_language;
     }
 
     void ApplicationLanguages::PrimaryLanguageOverride(hstring const& language)
     {
-        m_language = language;
-    }
+        if (AppModel::Identity::IsPackagedProcess())
+        {
+            winrt::Windows::Globalization::ApplicationLanguages::PrimaryLanguageOverride(language);
+        }
+        else
+        {
+            static wil::srwlock lock;
 
-    winrt::Windows::Foundation::Collections::IVectorView<hstring> ApplicationLanguages::GetLanguagesForUser(winrt::Windows::System::User const& user)
-    {
-        return winrt::Windows::Globalization::ApplicationLanguages::GetLanguagesForUser(user);
+            auto criticalSection{ lock.lock_exclusive() };
+            m_language = language;
+        }
     }
-
 } // namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
