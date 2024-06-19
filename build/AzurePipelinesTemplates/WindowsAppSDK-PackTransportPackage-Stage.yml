@@ -28,7 +28,8 @@ stages:
       ${{ if not( parameters.IsOneBranch ) }}:
         type: windows
         isCustom: true
-        name: 'ProjectReunionESPool-2022'
+        name: Azure Pipelines
+        vmImage: 'windows-2022'
     timeoutInMinutes: 120
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
