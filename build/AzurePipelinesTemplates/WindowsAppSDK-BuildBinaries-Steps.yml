@@ -118,8 +118,7 @@ steps:
   - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
     parameters:
       FolderPath: '$(build.SourcesDirectory)\BuildOutput'
-          UseMinimatch: true
-
+      UseMinimatch: true
       Pattern: |
         **/*.winmd
         **/*.dll
