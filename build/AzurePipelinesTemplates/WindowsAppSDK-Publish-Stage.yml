@@ -19,6 +19,7 @@ stages:
       type: windows
       isCustom: true
       name: 'ProjectReunionESPool-2022' # This job is purely for ES, hence this custom pool
+      demands: ImageOverride -equals $(BuildPoolImageVersion)
     variables:
       WindowsAppSDKPackageVersion: $[ stageDependencies.Pack.NugetPackage.outputs['SetVersion.packageVersion'] ]
     steps:
