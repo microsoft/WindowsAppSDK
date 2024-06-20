@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -633,8 +633,6 @@ namespace winrt::Microsoft::Windows::System::Power
                     m_systemSuspendStatus = SystemSuspendStatus::ManualResume;
                     RaiseEvent(systemSuspendFunc);
                 }
-                // Resetting the value after the callback
-                m_systemSuspendStatus = SystemSuspendStatus::Uninitialized;
             }
 
         };
