@@ -2605,23 +2605,21 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 m_packageManager.FindPackagesWithPackageTypes(packageFamilyName, packageTypes) :
                 m_packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
         const size_t packagesCount{ packages ? Count(packages) : 0 };
-        if (packagesCount > 0)
+        RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), (packagesCount == 0));
+        const auto progressMaxPerPackage{ progressMaxPerPackageFamily / packagesCount };
+        for (const winrt::Windows::ApplicationModel::Package& package : packages)
         {
-            const auto progressMaxPerPackage{ progressMaxPerPackageFamily / packagesCount };
-            for (const winrt::Windows::ApplicationModel::Package& package : packages)
+            const auto packageFullName{ package.Id().FullName() };
+            try
             {
-                const auto packageFullName{ package.Id().FullName() };
-                try
-                {
-                    RETURN_IF_FAILED_MSG(ResetPackageByFullName(packageFullName, packageDeploymentProgress, progress, progressMaxPerPackage, extendedError, errorText, activityId),
-                                         "ExtendedError:0x%08X PackageFamilyName:%ls PackageFullName:%ls",
-                                         extendedError, packageFamilyName.c_str(), packageFullName.c_str());
-                }
-                catch (...)
-                {
-                    const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-                    RETURN_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFamilyName:%ls PackageFullName:%ls", extendedError, packageFamilyName.c_str(), packageFullName.c_str());
-                }
+                RETURN_IF_FAILED_MSG(ResetPackageByFullName(packageFullName, packageDeploymentProgress, progress, progressMaxPerPackage, extendedError, errorText, activityId),
+                                     "ExtendedError:0x%08X PackageFamilyName:%ls PackageFullName:%ls",
+                                     extendedError, packageFamilyName.c_str(), packageFullName.c_str());
+            }
+            catch (...)
+            {
+                const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
+                RETURN_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFamilyName:%ls PackageFullName:%ls", extendedError, packageFamilyName.c_str(), packageFullName.c_str());
             }
         }
         return S_OK;
@@ -2806,23 +2804,21 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 m_packageManager.FindPackagesWithPackageTypes(packageFamilyName, packageTypes) :
                 m_packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
         const size_t packagesCount{ packages ? Count(packages) : 0 };
-        if (packagesCount > 0)
+        RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), (packagesCount == 0));
+        const auto progressMaxPerPackage{ progressMaxPerPackageFamily / packagesCount };
+        for (const winrt::Windows::ApplicationModel::Package& package : packages)
         {
-            const auto progressMaxPerPackage{ progressMaxPerPackageFamily / packagesCount };
-            for (const winrt::Windows::ApplicationModel::Package& package : packages)
+            const auto packageFullName{ package.Id().FullName() };
+            try
             {
-                const auto packageFullName{ package.Id().FullName() };
-                try
-                {
-                    RETURN_IF_FAILED_MSG(RepairPackageByFullName(packageFullName, packageDeploymentProgress, progress, progressMaxPerPackage, extendedError, errorText, activityId),
-                                         "ExtendedError:0x%08X PackageFamilyName:%ls PackageFullName:%ls",
-                                         extendedError, packageFamilyName.c_str(), packageFullName.c_str());
-                }
-                catch (...)
-                {
-                    const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-                    RETURN_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFamilyName:%ls PackageFullName:%ls", extendedError, packageFamilyName.c_str(), packageFullName.c_str());
-                }
+                RETURN_IF_FAILED_MSG(RepairPackageByFullName(packageFullName, packageDeploymentProgress, progress, progressMaxPerPackage, extendedError, errorText, activityId),
+                                     "ExtendedError:0x%08X PackageFamilyName:%ls PackageFullName:%ls",
+                                     extendedError, packageFamilyName.c_str(), packageFullName.c_str());
+            }
+            catch (...)
+            {
+                const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
+                RETURN_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFamilyName:%ls PackageFullName:%ls", extendedError, packageFamilyName.c_str(), packageFullName.c_str());
             }
         }
         return S_OK;
