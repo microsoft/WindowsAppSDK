@@ -2528,7 +2528,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         }
         else if (options.FailIfNotFound())
         {
-            extendedError = HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND);
+            extendedError = HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
             errorText = winrt::impl::message_from_hresult(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND));
             RETURN_HR_MSG(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND), "PackageFamilyName:%ls", packageFamilyName.c_str());
         }
@@ -2608,7 +2608,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         if (packagesCount == 0)
         {
             extendedError = HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
-            RETURN_HR(HRESULT_FROM_WIN32(ERROR_INSTALL_FAILED));
+            errorText = winrt::impl::message_from_hresult(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND));
+            RETURN_HR(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND));
         }
         const auto progressMaxPerPackage{ progressMaxPerPackageFamily / packagesCount };
         for (const winrt::Windows::ApplicationModel::Package& package : packages)
@@ -2811,7 +2812,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         if (packagesCount == 0)
         {
             extendedError = HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
-            RETURN_HR(HRESULT_FROM_WIN32(ERROR_INSTALL_FAILED));
+            errorText = winrt::impl::message_from_hresult(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND));
+            RETURN_HR(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND));
         }
         const auto progressMaxPerPackage{ progressMaxPerPackageFamily / packagesCount };
         for (const winrt::Windows::ApplicationModel::Package& package : packages)
