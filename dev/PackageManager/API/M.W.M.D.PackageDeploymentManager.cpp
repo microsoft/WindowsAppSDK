@@ -1172,7 +1172,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             const auto hr{ HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND) };
             co_return winrt::make<PackageDeploymentResult>(
-                PackageDeploymentStatus::CompletedFailure, GUID{}, hr, S_OK, winrt::impl::message_from_hresult(hr));
+                PackageDeploymentStatus::CompletedFailure, GUID{}, hr, HRESULT_FROM_WIN32(ERROR_NOT_FOUND), winrt::impl::message_from_hresult(hr));
         }
 
         packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
@@ -1342,7 +1342,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             const auto hr{ HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND) };
             co_return winrt::make<PackageDeploymentResult>(
-                PackageDeploymentStatus::CompletedFailure, GUID{}, hr, S_OK, winrt::impl::message_from_hresult(hr));
+                PackageDeploymentStatus::CompletedFailure, GUID{}, hr, HRESULT_FROM_WIN32(ERROR_NOT_FOUND), winrt::impl::message_from_hresult(hr));
         }
 
         packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
