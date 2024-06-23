@@ -2619,16 +2619,25 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         for (const winrt::Windows::ApplicationModel::Package& package : packages)
         {
             const auto packageFullName{ package.Id().FullName() };
+            HRESULT error{};
             try
             {
-                RETURN_IF_FAILED_MSG(ResetPackageByFullName(packageFullName, packageDeploymentProgress, progress, progressMaxPerPackage, extendedError, errorText, activityId),
-                                     "ExtendedError:0x%08X PackageFamilyName:%ls PackageFullName:%ls",
-                                     extendedError, packageFamilyName.c_str(), packageFullName.c_str());
+                error = LOG_IF_FAILED_MSG(ResetPackageByFullName(packageFullName, packageDeploymentProgress, progress, progressMaxPerPackage, extendedError, errorText, activityId),
+                                          "ExtendedError:0x%08X PackageFamilyName:%ls PackageFullName:%ls",
+                                          extendedError, packageFamilyName.c_str(), packageFullName.c_str());
             }
             catch (...)
             {
                 const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-                RETURN_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFamilyName:%ls PackageFullName:%ls", extendedError, packageFamilyName.c_str(), packageFullName.c_str());
+                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFamilyName:%ls PackageFullName:%ls", extendedError, packageFamilyName.c_str(), packageFullName.c_str());
+            }
+            if (FAILED(error))
+            {
+                if (error == HRESULT_FROM_WIN32(ERROR_INSTALL_FAILED) && (extendedError == HRESULT_FROM_WIN32(ERROR_NOT_FOUND)))
+                {
+                    error = HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND);
+                }
+                RETURN_HR(error);
             }
         }
         return S_OK;
@@ -2672,6 +2681,10 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         }
         if (FAILED(error))
         {
+            if (error == HRESULT_FROM_WIN32(ERROR_INSTALL_FAILED) && (extendedError == HRESULT_FROM_WIN32(ERROR_NOT_FOUND)))
+            {
+                error = HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND);
+            }
             co_return winrt::make<PackageDeploymentResult>(
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
@@ -2781,6 +2794,10 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         }
         if (FAILED(error))
         {
+            if (error == HRESULT_FROM_WIN32(ERROR_INSTALL_FAILED) && (extendedError == HRESULT_FROM_WIN32(ERROR_NOT_FOUND)))
+            {
+                error = HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND);
+            }
             co_return winrt::make<PackageDeploymentResult>(
                 PackageDeploymentStatus::CompletedFailure, activityId, error, extendedError, errorText);
         }
