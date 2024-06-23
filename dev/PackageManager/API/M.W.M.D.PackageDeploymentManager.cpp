@@ -2605,7 +2605,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 m_packageManager.FindPackagesWithPackageTypes(packageFamilyName, packageTypes) :
                 m_packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
         const size_t packagesCount{ packages ? Count(packages) : 0 };
-        RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), (packagesCount == 0));
+        if (packagesCount == 0)
+        {
+            extendedError = HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
+            RETURN_HR(HRESULT_FROM_WIN32(ERROR_INSTALL_FAILED));
+        }
         const auto progressMaxPerPackage{ progressMaxPerPackageFamily / packagesCount };
         for (const winrt::Windows::ApplicationModel::Package& package : packages)
         {
@@ -2804,7 +2808,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 m_packageManager.FindPackagesWithPackageTypes(packageFamilyName, packageTypes) :
                 m_packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
         const size_t packagesCount{ packages ? Count(packages) : 0 };
-        RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), (packagesCount == 0));
+        if (packagesCount == 0)
+        {
+            extendedError = HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
+            RETURN_HR(HRESULT_FROM_WIN32(ERROR_INSTALL_FAILED));
+        }
         const auto progressMaxPerPackage{ progressMaxPerPackageFamily / packagesCount };
         for (const winrt::Windows::ApplicationModel::Package& package : packages)
         {
