@@ -34,6 +34,9 @@ namespace Test::PackageManager::Tests
             RemovePackage_Green();
             RemovePackage_Redder();
             RemovePackage_Red();
+            RemovePackage_White();
+            RemovePackage_Blacker();
+            RemovePackage_Black();
             ::TB::Setup();
             return true;
         }
@@ -44,6 +47,9 @@ namespace Test::PackageManager::Tests
             RemovePackage_Green();
             RemovePackage_Redder();
             RemovePackage_Red();
+            RemovePackage_White();
+            RemovePackage_Blacker();
+            RemovePackage_Black();
             ::TB::Cleanup();
             return true;
         }
@@ -63,7 +69,7 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
         }
 
-        TEST_METHOD(RegisterPackageAsync_Staged_Success)
+        TEST_METHOD(RegisterPackageAsync_Framework_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
@@ -84,7 +90,29 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(IsPackageRegistered_Red());
         }
 
-        TEST_METHOD(RegisterPackageAsync_Registered_Success)
+        TEST_METHOD(RegisterPackageAsync_Main_Staged_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            StagePackage_Black();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const auto appxManifestPath{ TP::GetAppxManifestPackagePath(::TPM::Black::GetPackageFullName()) };
+            const winrt::hstring package{ appxManifestPath.c_str() };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"package: %ls", package.c_str()));
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageAsync(package, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(IsPackageRegistered_Black());
+        }
+
+        TEST_METHOD(RegisterPackageAsync_Framework_Registered_Success)
         {
             AddPackage_Red();
 
@@ -101,7 +129,24 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(IsPackageRegistered_Red());
         }
 
-        TEST_METHOD(RegisterPackageAsync_OlderRegistered_Success)
+        TEST_METHOD(RegisterPackageAsync_Main_Registered_Success)
+        {
+            AddPackage_Black();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const auto appxManifestPath{ TP::GetAppxManifestPackagePath(::TPM::Black::GetPackageFullName()) };
+            const winrt::hstring package{ appxManifestPath.c_str() };
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageAsync(package, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(IsPackageRegistered_Black());
+        }
+
+        TEST_METHOD(RegisterPackageAsync_Framework_OlderRegistered_Success)
         {
             AddPackage_Red();
             StagePackage_Redder();
@@ -120,6 +165,27 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(IsPackageRegistered_Redder());
 
             RemovePackage_Redder();
+        }
+
+        TEST_METHOD(RegisterPackageAsync_Main_OlderRegistered_Success)
+        {
+            AddPackage_Black();
+            StagePackage_Blacker();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const auto appxManifestPath{ TP::GetAppxManifestPackagePath(::TPM::Blacker::GetPackageFullName()) };
+            const winrt::hstring package{ appxManifestPath.c_str() };
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageAsync(package, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Black());
+            VERIFY_IS_TRUE(IsPackageRegistered_Blacker());
+
+            RemovePackage_Blacker();
         }
 
         TEST_METHOD(RegisterPackageByUriAsync_NoSuchPackage_Fail)
@@ -138,7 +204,7 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(deploymentResult.ErrorText().empty(), WEX::Common::String().Format(L"%s", deploymentResult.ErrorText().c_str()));
         }
 
-        TEST_METHOD(RegisterPackageByUriAsync_Staged_Success)
+        TEST_METHOD(RegisterPackageByUriAsync_Framework_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
@@ -160,7 +226,29 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(IsPackageRegistered_Red());
         }
 
-        TEST_METHOD(RegisterPackageByUriAsync_Registered_Success)
+        TEST_METHOD(RegisterPackageByUriAsync_Main_Staged_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            StagePackage_Black();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const auto appxManifestPath{ TP::GetAppxManifestPackagePath(::TPM::Black::GetPackageFullName()) };
+            const winrt::hstring package{ appxManifestPath.c_str() };
+            winrt::Windows::Foundation::Uri packageUri{ package };
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageByUriAsync(packageUri, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(IsPackageRegistered_Black());
+        }
+
+        TEST_METHOD(RegisterPackageByUriAsync_Framework_Registered_Success)
         {
             AddPackage_Red();
 
@@ -178,7 +266,25 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(IsPackageRegistered_Red());
         }
 
-        TEST_METHOD(RegisterPackageByUriAsync_OlderRegistered_Success)
+        TEST_METHOD(RegisterPackageByUriAsync_Main_Registered_Success)
+        {
+            AddPackage_Black();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const auto appxManifestPath{ TP::GetAppxManifestPackagePath(::TPM::Black::GetPackageFullName()) };
+            const winrt::hstring package{ appxManifestPath.c_str() };
+            winrt::Windows::Foundation::Uri packageUri{ package };
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageByUriAsync(packageUri, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(IsPackageRegistered_Black());
+        }
+
+        TEST_METHOD(RegisterPackageByUriAsync_Framework_OlderRegistered_Success)
         {
             AddPackage_Red();
             StagePackage_Redder();
@@ -200,7 +306,29 @@ namespace Test::PackageManager::Tests
             RemovePackage_Redder();
         }
 
-        TEST_METHOD(RegisterPackageSetAsync_1_Staged_Success)
+        TEST_METHOD(RegisterPackageByUriAsync_Main_OlderRegistered_Success)
+        {
+            AddPackage_Black();
+            StagePackage_Blacker();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            const auto appxManifestPath{ TP::GetAppxManifestPackagePath(::TPM::Blacker::GetPackageFullName()) };
+            const winrt::hstring package{ appxManifestPath.c_str() };
+            winrt::Windows::Foundation::Uri packageUri{ package };
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageByUriAsync(packageUri, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Black());
+            VERIFY_IS_TRUE(IsPackageRegistered_Blacker());
+
+            RemovePackage_Blacker();
+        }
+
+        TEST_METHOD(RegisterPackageSetAsync_Framework_1_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
@@ -224,7 +352,31 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
-        TEST_METHOD(RegisterPackageSetAsync_1_Registered_Success)
+        TEST_METHOD(RegisterPackageSetAsync_Main_1_Staged_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            StagePackage_Black();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem black{ Make_PackageSetItem_ForRegister(::TPM::Black::GetPackageFullName()) };
+            packageSet.Items().Append(black);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(RegisterPackageSetAsync_Framework_1_Registered_Success)
         {
             AddPackage_Red();
 
@@ -244,7 +396,27 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
-        TEST_METHOD(RegisterPackageSetAsync_1_OlderRegistered_Success)
+        TEST_METHOD(RegisterPackageSetAsync_Main_1_Registered_Success)
+        {
+            AddPackage_Black();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"BW" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem black{ Make_PackageSetItem_ForRegister(::TPM::Black::GetPackageFullName()) };
+            packageSet.Items().Append(black);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(RegisterPackageSetAsync_Framework_1_OlderRegistered_Success)
         {
             AddPackage_Red();
             StagePackage_Redder();
@@ -270,7 +442,33 @@ namespace Test::PackageManager::Tests
             RemovePackage_Redder();
         }
 
-        TEST_METHOD(RegisterPackageSetAsync_N_Registered_Success)
+        TEST_METHOD(RegisterPackageSetAsync_Main_1_OlderRegistered_Success)
+        {
+            AddPackage_Black();
+            StagePackage_Blacker();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder{ Make_PackageSetItem_ForRegister(::TPM::Blacker::GetPackageFullName()) };
+            packageSet.Items().Append(redder);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Black());
+            VERIFY_IS_TRUE(IsPackageRegistered_Blacker());
+
+            RemovePackage_Blacker();
+        }
+
+        TEST_METHOD(RegisterPackageSetAsync_Framework_N_Registered_Success)
         {
             AddPackage_Red();
             AddPackage_Green();
@@ -296,7 +494,30 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
-        TEST_METHOD(RegisterPackageSetAsync_N_OlderRegistered_Success)
+        TEST_METHOD(RegisterPackageSetAsync_Main_N_Registered_Success)
+        {
+            AddPackage_Black();
+            AddPackage_White();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"BW" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem black{ Make_PackageSetItem_ForRegister(::TPM::Black::GetPackageFullName()) };
+            packageSet.Items().Append(black);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem white{ Make_PackageSetItem_ForRegister(::TPM::White::GetPackageFullName()) };
+            packageSet.Items().Append(white);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(RegisterPackageSetAsync_Framework_N_OlderRegistered_Success)
         {
             AddPackage_Red();
             StagePackage_Redder();
@@ -327,7 +548,35 @@ namespace Test::PackageManager::Tests
             RemovePackage_Redder();
         }
 
-        TEST_METHOD(RegisterPackageSetAsync_N_RegisteredAndStaged_Success)
+        TEST_METHOD(RegisterPackageSetAsync_Main_N_OlderRegistered_Success)
+        {
+            AddPackage_Black();
+            StagePackage_Blacker();
+            AddPackage_White();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blacker{ Make_PackageSetItem_ForRegister(::TPM::Blacker::GetPackageFullName()) };
+            packageSet.Items().Append(blacker);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem white{ Make_PackageSetItem_ForRegister(::TPM::White::GetPackageFullName()) };
+            packageSet.Items().Append(white);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Black());
+            VERIFY_IS_TRUE(IsPackageRegistered_Blacker());
+            RemovePackage_Blacker();
+        }
+
+        TEST_METHOD(RegisterPackageSetAsync_Framework_N_RegisteredAndStaged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
@@ -345,6 +594,33 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(red);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem_ForRegister(::TPF::Blue::GetPackageFullName()) };
             packageSet.Items().Append(blue);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(RegisterPackageSetAsync_Main_N_RegisteredAndStaged_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            AddPackage_Black();
+            StagePackage_White();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"BW" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem black{ Make_PackageSetItem_ForRegister(::TPM::Black::GetPackageFullName()) };
+            packageSet.Items().Append(black);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem white{ Make_PackageSetItem_ForRegister(::TPM::White::GetPackageFullName()) };
+            packageSet.Items().Append(white);
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
