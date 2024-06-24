@@ -22,7 +22,7 @@
     <ProjectTypeTag>desktop</ProjectTypeTag>
     <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>
-  <TemplateContent PreferedSolutionConfiguration="Debug|x86">
+  <TemplateContent PreferedSolutionConfiguration="Debug|x64">
     <ProjectCollection>
       <ProjectTemplateLink ProjectName="$projectname$ (Package)" CopyParameters="true">WapProj\WinUI.Desktop.CppWinRT.WapProj.vstemplate</ProjectTemplateLink>
       <ProjectTemplateLink ProjectName="$projectname$" CopyParameters="true">BlankApp\WinUI.Desktop.CppWinRT.BlankApp.vstemplate</ProjectTemplateLink>

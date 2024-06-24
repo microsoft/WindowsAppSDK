@@ -31,7 +31,7 @@ steps:
 
 - ${{ if eq(parameters.runStaticAnalysis, 'True') }}:
   - task: SDLNativeRules@3
-    displayName: Run PREfast SDL Native Rules 
+    displayName: Run PREfast SDL Native Rules
     condition: and(succeeded(), eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
     inputs:
       setupCommandlines: '"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat"'
@@ -68,50 +68,16 @@ steps:
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
-  - task: EsrpCodeSigning@2
-    inputs:
-      ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+  - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+    parameters:
       FolderPath: '$(build.SourcesDirectory)\BuildOutput'
+      UseMinimatch: true
       Pattern: |
         **/*.winmd
         **/*.dll
         **/*.exe
-      UseMinimatch: true
-      signConfigType: 'inlineSignParams'
-      inlineOperation: |
-        [
-          {
-            "keyCode": "CP-230012",
-            "operationSetCode": "SigntoolSign",
-            "parameters": [
-              {
-                "parameterName": "OpusName",
-                "parameterValue": "Microsoft"
-              },
-              {
-                "parameterName": "OpusInfo",
-                "parameterValue": "http://www.microsoft.com"
-              },
-              {
-                "parameterName": "PageHash",
-                "parameterValue": "/NPH"
-              },
-              {
-                "parameterName": "FileDigest",
-                "parameterValue": "/fd sha256"
-              },
-              {
-                "parameterName": "TimeStamp",
-                "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
-              }
-            ],
-            "toolName": "signtool.exe",
-            "toolVersion": "6.2.9304.0"
-          }
-        ]
-      SessionTimeout: '60'
-      MaxConcurrency: '50'
-      MaxRetryAttempts: '5'
+      KeyCode: 'CP-230012'
+      displayName: 'Authenticode CodeSign Binaries'
 
 - task: CopyFiles@2
   displayName: MoveToOutputDirectory

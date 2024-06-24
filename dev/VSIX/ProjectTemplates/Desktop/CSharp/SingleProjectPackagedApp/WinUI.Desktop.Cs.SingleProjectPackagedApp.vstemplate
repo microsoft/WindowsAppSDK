@@ -23,7 +23,7 @@
     <ProjectTypeTag>desktop</ProjectTypeTag>
     <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>
-  <TemplateContent PreferedSolutionConfiguration="Debug|x86">
+  <TemplateContent PreferedSolutionConfiguration="Debug|x64">
     <CustomParameters>
       <CustomParameter Name="$WindowsAppSDKNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
       <CustomParameter Name="$WindowsSDKBuildToolsNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
