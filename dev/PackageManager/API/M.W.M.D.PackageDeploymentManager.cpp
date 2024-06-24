@@ -2604,10 +2604,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         const auto packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Framework |
                                  winrt::Windows::Management::Deployment::PackageTypes::Main |
                                  winrt::Windows::Management::Deployment::PackageTypes::Optional };
+#if defined(TODO_Reset_DoesElevatedMatter)
         auto packages{
             ::Security::IntegrityLevel::IsElevated() ?
                 m_packageManager.FindPackagesWithPackageTypes(packageFamilyName, packageTypes) :
                 m_packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
+#else
+        auto packages{ m_packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
+#endif
         const size_t packagesCount{ packages ? Count(packages) : 0 };
         if (packagesCount == 0)
         {
@@ -2825,10 +2829,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         const auto packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Framework |
                                  winrt::Windows::Management::Deployment::PackageTypes::Main |
                                  winrt::Windows::Management::Deployment::PackageTypes::Optional };
+#if defined(TODO_Reset_DoesElevatedMatter)
         auto packages{
             ::Security::IntegrityLevel::IsElevated() ?
                 m_packageManager.FindPackagesWithPackageTypes(packageFamilyName, packageTypes) :
                 m_packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
+#else
+        auto packages{ m_packageManager.FindPackagesForUserWithPackageTypes(winrt::hstring(), packageFamilyName, packageTypes) };
+#endif
         const size_t packagesCount{ packages ? Count(packages) : 0 };
         if (packagesCount == 0)
         {
