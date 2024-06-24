@@ -2947,6 +2947,17 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         errorText.clear();
         activityId = winrt::guid{};
 
+        // Repair only works on packages if they're registered to the caller.
+        // But PackageManagement_RepairPackageAsync2() = Register
+        // which succeeds if the package isn't initially registered for the caller.
+        // Ensure we're only working on packages if they're registered to the caller
+        if (!::Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::IsRegistered(m_packageManager, packageFullName))
+        {
+            extendedError = HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
+            errorText = winrt::impl::message_from_hresult(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND));
+            RETURN_HR(HRESULT_FROM_WIN32(ERROR_INSTALL_PACKAGE_NOT_FOUND));
+        }
+
         ::ABI::Windows::Foundation::IAsyncOperationWithProgress<::ABI::Windows::Management::Deployment::DeploymentResult*, ::ABI::Windows::Management::Deployment::DeploymentProgress>* abiDeploymentOperation{};
         RETURN_IF_FAILED(PackageManagement_RepairPackageAsync2(packageFullName.c_str(), &abiDeploymentOperation));
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Windows::Management::Deployment::DeploymentResult, winrt::Windows::Management::Deployment::DeploymentProgress> deploymentOperation;
