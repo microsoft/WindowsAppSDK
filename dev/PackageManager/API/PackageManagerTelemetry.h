@@ -126,11 +126,11 @@ public:
         CATCH_LOG()
     END_ACTIVITY_CLASS();
 
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(EnsurePackageAsync, PDT_ProductAndServicePerformance);
+    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(EnsurePackageReadyAsync, PDT_ProductAndServicePerformance);
         DEFINE_ACTIVITY_START(winrt::hstring const& package) noexcept try
         {
             TraceLoggingClassWriteStart(
-                EnsurePackageAsync,
+                EnsurePackageReadyAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(package.c_str(), "Package"));
         }
@@ -138,17 +138,17 @@ public:
         DEFINE_ACTIVITY_STOP(winrt::hstring const& package) noexcept try
         {
             TraceLoggingClassWriteStop(
-                EnsurePackageAsync,
+                EnsurePackageReadyAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(package.c_str(), "Package"));
         }
         CATCH_LOG()
     END_ACTIVITY_CLASS();
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(EnsurePackageByUriAsync, PDT_ProductAndServicePerformance);
+    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(EnsurePackageReadyByUriAsync, PDT_ProductAndServicePerformance);
         DEFINE_ACTIVITY_START(winrt::hstring const& packageUri) noexcept try
         {
             TraceLoggingClassWriteStart(
-                EnsurePackageByUriAsync,
+                EnsurePackageReadyByUriAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageUri.c_str(), "PackageUri"));
         }
@@ -156,7 +156,7 @@ public:
         DEFINE_ACTIVITY_STOP(winrt::hstring const& packageUri) noexcept try
         {
             TraceLoggingClassWriteStop(
-                EnsurePackageByUriAsync,
+                EnsurePackageReadyByUriAsync,
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingWideString(packageUri.c_str(), "PackageUri"));
         }
