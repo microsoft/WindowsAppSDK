@@ -22,7 +22,7 @@ but with additional functionality, improved developer experience and performance
   - [3.9. PackageRuntimeManager](#39-packageruntimemanager)
   - [3.10. PackageVolume Repair](#310-packagevolume-repair)
   - [3.11. Usability](#311-usability)
-  - [3.12. 3.12 Is\*Provisioned()](#312-312-isprovisioned)
+  - [3.12. Is\*Provisioned()](#312-312-isprovisioned)
 - [4. Examples](#4-examples)
   - [4.1. AddPackageAsync()](#41-addpackageasync)
   - [4.2. AddPackageByUriAsync()](#42-addpackagebyuriasync)
@@ -393,7 +393,7 @@ package management APIs in Windows (e.g. Windows.Management.Deployment.PackageMa
   not PackageFamilyName. `PackageDeploymentManager` provides a richer API accepting additional
   identifiers.
 
-## 3.12. 3.12 Is*Provisioned()
+## 3.12. Is*Provisioned()
 
 Is\*Provisioned\*() methods determine if the target is provisioned.
 
