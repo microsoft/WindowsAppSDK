@@ -17,11 +17,12 @@ but with additional functionality, improved developer experience and performance
   - [3.6. Reset](#36-reset)
   - [3.7. IsPackageRegistrationPending](#37-ispackageregistrationpending)
   - [3.8. PackageSet](#38-packageset)
-    - [3.8.1. PackageSetItem: URI is for Acquisition](#381-packagesetitem-uri-is-for-acquisition)
+    - [3.8.1. PackageSet Properties](#381-packageset-properties)
+    - [3.8.2. PackageSetItem Properties](#382-packagesetitem-properties)
   - [3.9. PackageRuntimeManager](#39-packageruntimemanager)
   - [3.10. PackageVolume Repair](#310-packagevolume-repair)
   - [3.11. Usability](#311-usability)
-  - [3.12 Is\*Provisioned()](#312-isprovisioned)
+  - [3.12. 3.12 Is\*Provisioned()](#312-312-isprovisioned)
 - [4. Examples](#4-examples)
   - [4.1. AddPackageAsync()](#41-addpackageasync)
   - [4.2. AddPackageByUriAsync()](#42-addpackagebyuriasync)
@@ -134,10 +135,10 @@ The following table shows the supported permutations of verbs and targets:
 
 Legend:
 
-* OS = Supported by Windows (OS) APIs in the Windows.Management.Deployment.PackageManager namespace.
-* WAS = Supported by Windows App SDK APIs in the
+* **OS** = Supported by Windows (OS) APIs in the Windows.Management.Deployment.PackageManager namespace.
+* **WAS** = Supported by Windows App SDK APIs in the
   Microsoft.Windows.Management.Deployment.PackageDeploymentManager namespace.
-* X = Not supported
+* **X** = Not supported
 
 ## 3.2. Is\*Ready()
 
@@ -287,26 +288,49 @@ foreach (PackageSetItem psi in ps.Items)
 return new PackageDeploymentResult(PackageDeploymentStatus.CompletedSuccess);
 ```
 
-###  3.8.1. PackageSetItem: URI is for Acquisition
+### 3.8.1. PackageSet Properties
 
- The `PackageUri` property of `PackageSet` and `PackageSetItem` is only used by some operations:
+`Id` is optional. This is used primarily for logging and troubleshooting.
 
-|Verb                    | PackageURI | PackageFamilyName |
-|------------------------|:----------:|:-----------------:|
-|IsReady                 |     &#x274C;      |     &#x2705;      |
-|IsReadyOrNewerAvailable |     &#x274C;      |     &#x2705;      |
-|EnsureReady             |     &#x2705;      |     &#x2705;      |
-|Add                     |     &#x2705;      |     &#x2705;      |
-|Stage                   |     &#x2705;      |     &#x2705;      |
-|Register                |     &#x2705;      |     &#x2705;      |
-|Remove                  |     &#9888;&#65039;<sup>1</sup>      |&#9888;&#65039;<sup>2</sup>      |
-|Repair                  |     &#9888;&#65039;<sup>1</sup>      |&#9888;&#65039;<sup>2</sup>      |
-|Reset                   |     &#9888;&#65039;<sup>1</sup>      |&#9888;&#65039;<sup>2</sup>      |
-|Provision               |     &#x274C;      |     &#x2705;      |
-|Deprovision             |     &#x274C;      |     &#x2705;      |
+`Items` is required to contain 1+ item.
 
-<sup>1</sup> `PackageUri` is used if specified.<br>
-<sup>2</sup> `PackageFamilyName` is required if `PackageUri` is not specified.
+`PackageUri` is optional. This is used if a `PackageUri` is needed for a `PackageSetItem` but the
+`PackageSetItem.PackageUri` is not specified.
+
+### 3.8.2. PackageSetItem Properties
+
+`Id` is required and used primarily for logging and troubleshooting.
+
+`MinVersion` is optional. If not set the default value is 0.0.0.0. Some verbs use this property (see below).
+
+`PackageFamilyName` is optional. Some verbs require this property (see below).
+
+`PackageUri` is optional. If a `PackageUri` is needed and this is not set the `PackageSet`'s `PackageUri` property is used. Some verbs require this property (see below).
+
+`ProcessorArchitectureFilter` is optional. If not set the default value is `Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyProcessorArchitectures.None`. Only some verbs use this property (see below).
+
+|Verb                    | MinVersion |     PackageFamilyName     | PackageUri | ProcessorArchitectureFilter |
+|------------------------|:----------:|:-------------------------:|:----------:|:---------------------------:|
+|IsReady                 |  Used      |          Required         |     N/A    |           Optional          |
+|IsReadyOrNewerAvailable |  Used      |          Required         |     N/A    |           Optional          |
+|EnsureReady             |  Used      |          Required         |  Used  |           Optional          |
+|Add                     |    N/A     |             N/A           |  Used  |              N/A            |
+|Stage                   |    N/A     |             N/A           |  USed  |              N/A            |
+|Register                |    N/A     |             N/A           |  Used  |              N/A            |
+|Remove                  |    N/A     | Used-if-no-PackageUri |  Optional  |              N/A            |
+|Repair                  |    N/A     | Used-if-no-PackageUri |  Optional  |              N/A            |
+|Reset                   |    N/A     | Used-if-no-PackageUri |  Optional  |              N/A            |
+|IsProvisioned           |    N/A     |          Used         |  Optional  |              N/A            |
+|Provision               |    N/A     | Used-if-no-PackageUri |  Optional  |              N/A            |
+|Deprovision             |    N/A     | Used-if-no-PackageUri |  Optional  |              N/A            |
+
+**Legend:**
+
+* **N/A** = Not applicable. This property is not used.
+* **Optional** = This property is used, if specified.
+* **Required** = This property is required.
+* **Used** = This property is used; if not specified, the default value is used.
+
 
 ## 3.9. PackageRuntimeManager
 
@@ -369,7 +393,7 @@ package management APIs in Windows (e.g. Windows.Management.Deployment.PackageMa
   not PackageFamilyName. `PackageDeploymentManager` provides a richer API accepting additional
   identifiers.
 
-## 3.12 Is*Provisioned()
+## 3.12. 3.12 Is*Provisioned()
 
 Is\*Provisioned\*() methods determine if the target is provisioned.
 
