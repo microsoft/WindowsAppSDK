@@ -81,6 +81,7 @@ namespace Test::PackageManager::Tests
 
             const auto appxManifestPath{ TP::GetAppxManifestPackagePath(::TPF::Red::GetPackageFullName()) };
             const winrt::hstring package{ appxManifestPath.c_str() };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"package: %ls", package.c_str()));
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.RegisterPackageAsync(package, options) };
@@ -120,6 +121,7 @@ namespace Test::PackageManager::Tests
 
             const auto appxManifestPath{ TP::GetAppxManifestPackagePath(::TPF::Red::GetPackageFullName()) };
             const winrt::hstring package{ appxManifestPath.c_str() };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"package: %ls", package.c_str()));
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.RegisterPackageAsync(package, options) };
@@ -137,6 +139,7 @@ namespace Test::PackageManager::Tests
 
             const auto appxManifestPath{ TP::GetAppxManifestPackagePath(::TPM::Black::GetPackageFullName()) };
             const winrt::hstring package{ appxManifestPath.c_str() };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"package: %ls", package.c_str()));
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.RegisterPackageAsync(package, options) };
@@ -155,6 +158,7 @@ namespace Test::PackageManager::Tests
 
             const auto appxManifestPath{ TP::GetAppxManifestPackagePath(::TPF::Redder::GetPackageFullName()) };
             const winrt::hstring package{ appxManifestPath.c_str() };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"package: %ls", package.c_str()));
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.RegisterPackageAsync(package, options) };
@@ -176,6 +180,7 @@ namespace Test::PackageManager::Tests
 
             const auto appxManifestPath{ TP::GetAppxManifestPackagePath(::TPM::Blacker::GetPackageFullName()) };
             const winrt::hstring package{ appxManifestPath.c_str() };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"package: %ls", package.c_str()));
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.RegisterPackageAsync(package, options) };
@@ -216,7 +221,9 @@ namespace Test::PackageManager::Tests
 
             const auto appxManifestPath{ TP::GetAppxManifestPackagePath(::TPF::Red::GetPackageFullName()) };
             const winrt::hstring package{ appxManifestPath.c_str() };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"package: %ls", package.c_str()));
             winrt::Windows::Foundation::Uri packageUri{ package };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"packageUri: %ls", packageUri.ToString().c_str()));
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.RegisterPackageByUriAsync(packageUri, options) };
@@ -238,7 +245,9 @@ namespace Test::PackageManager::Tests
 
             const auto appxManifestPath{ TP::GetAppxManifestPackagePath(::TPM::Black::GetPackageFullName()) };
             const winrt::hstring package{ appxManifestPath.c_str() };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"package: %ls", package.c_str()));
             winrt::Windows::Foundation::Uri packageUri{ package };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"packageUri: %ls", packageUri.ToString().c_str()));
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.RegisterPackageByUriAsync(packageUri, options) };
@@ -256,7 +265,9 @@ namespace Test::PackageManager::Tests
 
             const auto appxManifestPath{ TP::GetAppxManifestPackagePath(::TPF::Red::GetPackageFullName()) };
             const winrt::hstring package{ appxManifestPath.c_str() };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"package: %ls", package.c_str()));
             winrt::Windows::Foundation::Uri packageUri{ package };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"packageUri: %ls", packageUri.ToString().c_str()));
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.RegisterPackageByUriAsync(packageUri, options) };
@@ -274,7 +285,9 @@ namespace Test::PackageManager::Tests
 
             const auto appxManifestPath{ TP::GetAppxManifestPackagePath(::TPM::Black::GetPackageFullName()) };
             const winrt::hstring package{ appxManifestPath.c_str() };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"package: %ls", package.c_str()));
             winrt::Windows::Foundation::Uri packageUri{ package };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"packageUri: %ls", packageUri.ToString().c_str()));
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.RegisterPackageByUriAsync(packageUri, options) };
@@ -293,7 +306,9 @@ namespace Test::PackageManager::Tests
 
             const auto appxManifestPath{ TP::GetAppxManifestPackagePath(::TPF::Redder::GetPackageFullName()) };
             const winrt::hstring package{ appxManifestPath.c_str() };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"package: %ls", package.c_str()));
             winrt::Windows::Foundation::Uri packageUri{ package };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"packageUri: %ls", packageUri.ToString().c_str()));
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.RegisterPackageByUriAsync(packageUri, options) };
@@ -315,7 +330,9 @@ namespace Test::PackageManager::Tests
 
             const auto appxManifestPath{ TP::GetAppxManifestPackagePath(::TPM::Blacker::GetPackageFullName()) };
             const winrt::hstring package{ appxManifestPath.c_str() };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"package: %ls", package.c_str()));
             winrt::Windows::Foundation::Uri packageUri{ package };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"packageUri: %ls", packageUri.ToString().c_str()));
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
             auto deploymentOperation{ packageDeploymentManager.RegisterPackageByUriAsync(packageUri, options) };
