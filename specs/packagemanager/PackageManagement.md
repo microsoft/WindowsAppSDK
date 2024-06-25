@@ -21,6 +21,7 @@ but with additional functionality, improved developer experience and performance
   - [3.9. PackageRuntimeManager](#39-packageruntimemanager)
   - [3.10. PackageVolume Repair](#310-packagevolume-repair)
   - [3.11. Usability](#311-usability)
+  - [3.12 Is\*Provisioned()](#312-isprovisioned)
 - [4. Examples](#4-examples)
   - [4.1. AddPackageAsync()](#41-addpackageasync)
   - [4.2. AddPackageByUriAsync()](#42-addpackagebyuriasync)
@@ -30,6 +31,7 @@ but with additional functionality, improved developer experience and performance
   - [4.6. PackageRuntimeManager.AddPackageSet()](#46-packageruntimemanageraddpackageset)
   - [4.7. PackageRuntimeManager.RemovePackageset()](#47-packageruntimemanagerremovepackageset)
   - [4.8. PackageVolume.Repair()](#48-packagevolumerepair)
+  - [4.9. IsPackageProvisioned()](#49-ispackageprovisioned)
 - [5. Remarks](#5-remarks)
   - [5.1. Platform Support](#51-platform-support)
 - [6. API Details](#6-api-details)
@@ -126,6 +128,7 @@ The following table shows the supported permutations of verbs and targets:
 |Remove                  |   X    |    X     |        WAS        |      OS/WAS     |   X    |    X     | OS/WAS  |    WAS     |
 |Repair                  |   X    |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
 |Reset                   |   X    |    X     |        WAS        |       WAS       |   X    |    X     |  WAS    |    WAS     |
+|IsProvisioned           |   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
 |Provision               |   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
 |Deprovision             |   X    |    X     |       OS/WAS      |        X        |   X    |    X     |  WAS    |    WAS     |
 
@@ -355,7 +358,7 @@ package management APIs in Windows (e.g. Windows.Management.Deployment.PackageMa
   requested package is installed.
 * Many `PackageManager` operations accept a target package as a file but require it expressed as a
   `Uri`. `PackageDeploymentManager` provides overrides also accepting it as a `String`.
-* `PackageManager.RemovePackageByFullNameAsyn(p)` fails if the specified package isn't found.
+* `PackageManager.RemovePackageByFullNameAsync(p)` fails if the specified package isn't found.
   `PackageDeploymentManager` succeeds as the requested package is not present at the end of the
   operation.
   * This follows the core deployment principle "'Tis not the journey that matters but the
@@ -365,6 +368,12 @@ package management APIs in Windows (e.g. Windows.Management.Deployment.PackageMa
   target package. For example, `PackageManager` supports removing a package by PackageFullName but
   not PackageFamilyName. `PackageDeploymentManager` provides a richer API accepting additional
   identifiers.
+
+## 3.12 Is*Provisioned()
+
+Is\*Provisioned\*() methods determine if the target is provisioned.
+
+These methods require administrative privileges.
 
 # 4. Examples
 
@@ -655,6 +664,78 @@ void CheckAndFixPackageVolume(string packageStorePath)
     }
     packageVolume.Repair();
 }
+```
+
+## 4.9. IsPackageProvisioned()
+
+Fabrikam app installing Contoso's Muffin and Waffle packages for all users if necessary, and with explicit user confirmation before the installation.
+
+```c#
+void Install()
+{
+    // We want to check what's provisioned by PackageFamilyName. If something's
+    // not provisioned we'll also need MinVersion and PackageUri to Stage and
+    // Provision. But checking if a family is provisioned only supports some
+    // URI schemes (notably, not the one we need for our staging work). So we'll
+    // define the PackageSet with the families we want checked and if something's
+    // not provisioned we'll add the additional properties needed.
+
+    var packageSet = new PackageSet() {
+        Items = { new PackageSetItem() { PackageFamilyName = "contoso.muffin_1234567890abc" },
+                { new PackageSetItem() { PackageFamilyName = "contoso.waffle_1234567890abc" }
+        }
+    };
+
+    var packageDeploymentManager = PackageDeploymentManager.GetDefault();
+    if (packageDeploymentManager.IsPackageSetProvisioned(packageSet))
+    {
+        return;
+    }
+
+    bool ok = PromptUserForConfirmation();
+    if (!ok)
+    {
+        return;
+    }
+
+    packageSet.Items()[0].MinVersion(ToVersion(1, 2, 3, 4));
+    packageSet.Items()[0].PackageUri(new Uri("c:\\contoso\\muffin-1.2.3.4.msix"));
+    packageSet.Items()[1].MinVersion(ToVersion(2, 4, 6, 8));
+    packageSet.Items()[1].PackageUri(new Uri("https://contoso.com/waffle-2.4.6.8.msix"));
+
+    var stageOptions = new StagePackageOptions();
+    var deploymentResult = await packageDeploymentManager.StagePackageSetReadyAsync(packageSet, options);
+    if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
+    {
+        Console.WriteLine("Staged");
+    }
+    else
+    {
+        Console.WriteLine("Error:{} ExtendedError:{} {}",
+            deploymentResult.Error.HResult, deploymentResult.ExtendedError.HResult, deploymentResult.ErrorText);
+        return;
+    }
+
+    var options = new ProvisionPackageOptions();
+    var deploymentResult = await packageDeploymentManager.ProvisionPackageSetReadyAsync(packageSet, options);
+    if (deplymentResult.Status == PackageDeploymentStatus.CompletedSuccess)
+    {
+        Console.WriteLine("Provisioned");
+    }
+    else
+    {
+        Console.WriteLine("Error:{} ExtendedError:{} {}",
+            deploymentResult.Error.HResult, deploymentResult.ExtendedError.HResult, deploymentResult.ErrorText);
+    }
+}
+
+PackageVersion ToVersion(uint major, uint minor, uint build, uint revision) =>
+    new PackageVersion {
+        Major = checked((ushort)major),
+        Minor = checked((ushort)minor),
+        Build = checked((ushort)build),
+        Revision = checked((ushort)revision)
+    };
 ```
 
 # 5. Remarks
@@ -1071,6 +1152,21 @@ namespace Microsoft.Windows.Management.Deployment
 
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RepairPackageSetAsync(PackageSet packageSet);
+
+        //-------------------------------------------------------------
+        // IsProvisioned
+
+        // Return true if the package(s) are provisioned
+
+        [contract(PackageDeploymentContract, 2)]
+        Boolean IsPackageProvisioned(String package);
+
+        [contract(PackageDeploymentContract, 2)]
+        Boolean IsPackageProvisionedByUri(Windows.Foundation.Uri packageUri);
+
+        /// @note packageSet[Item].PackageUri is optional
+        [contract(PackageDeploymentContract, 2)]
+        Boolean IsPackageSetProvisioned(PackageSet packageSet);
 
         //-------------------------------------------------------------
         // Provision packages
