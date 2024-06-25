@@ -14,6 +14,21 @@ namespace TPF = ::Test::Packages::Framework;
 namespace TPM = ::Test::Packages::Main;
 namespace TPMT = ::Test::PackageManager::Tests;
 
+#if !defined(TODO_Register_error_0x80073D2B_ERROR_UNSIGNED_PACKAGE_INVALID_CONTENT_on_20h_vb)
+#define RETURN_TRUE_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST() \
+    if (!::WindowsVersion::IsWindows11_21H2OrGreater()) \
+    { \
+        WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager.Register*() tests require >= 21H2 (SV1). Skipping tests"); \
+        return true; \
+    }
+#define RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST() \
+    if (!::WindowsVersion::IsWindows11_21H2OrGreater()) \
+    { \
+        WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager.Register*() tests require >= 21H2 (SV1). Skipping tests"); \
+        return; \
+    }
+#endif
+
 namespace Test::PackageManager::Tests
 {
     class PackageDeploymentManagerTests_Register : PackageDeploymentManagerTests_Base
@@ -30,6 +45,7 @@ namespace Test::PackageManager::Tests
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
                 return true;
             }
+            RETURN_TRUE_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
             RemovePackage_Blue();
             RemovePackage_Green();
             RemovePackage_Redder();
@@ -75,6 +91,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             StagePackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -97,6 +115,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             StagePackage_Black();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -115,6 +135,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RegisterPackageAsync_Framework_Registered_Success)
         {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             AddPackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -133,6 +155,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RegisterPackageAsync_Main_Registered_Success)
         {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             AddPackage_Black();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -151,6 +175,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RegisterPackageAsync_Framework_OlderRegistered_Success)
         {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             AddPackage_Red();
             StagePackage_Redder();
 
@@ -173,6 +199,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RegisterPackageAsync_Main_OlderRegistered_Success)
         {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             AddPackage_Black();
             StagePackage_Blacker();
 
@@ -215,6 +243,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             StagePackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -239,6 +269,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             StagePackage_Black();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -259,6 +291,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RegisterPackageByUriAsync_Framework_Registered_Success)
         {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             AddPackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -279,6 +313,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RegisterPackageByUriAsync_Main_Registered_Success)
         {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             AddPackage_Black();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -299,6 +335,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RegisterPackageByUriAsync_Framework_OlderRegistered_Success)
         {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             AddPackage_Red();
             StagePackage_Redder();
 
@@ -323,6 +361,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RegisterPackageByUriAsync_Main_OlderRegistered_Success)
         {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             AddPackage_Black();
             StagePackage_Blacker();
 
@@ -351,6 +391,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             StagePackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -375,6 +417,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             StagePackage_Black();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -395,6 +439,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RegisterPackageSetAsync_Framework_1_Registered_Success)
         {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             AddPackage_Red();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -415,6 +461,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RegisterPackageSetAsync_Main_1_Registered_Success)
         {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             AddPackage_Black();
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -435,6 +483,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RegisterPackageSetAsync_Framework_1_OlderRegistered_Success)
         {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             AddPackage_Red();
             StagePackage_Redder();
 
@@ -461,6 +511,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RegisterPackageSetAsync_Main_1_OlderRegistered_Success)
         {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             AddPackage_Black();
             StagePackage_Blacker();
 
@@ -487,6 +539,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RegisterPackageSetAsync_Framework_N_Registered_Success)
         {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             AddPackage_Red();
             AddPackage_Green();
             AddPackage_Blue();
@@ -513,6 +567,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RegisterPackageSetAsync_Main_N_Registered_Success)
         {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             AddPackage_Black();
             AddPackage_White();
 
@@ -536,6 +592,8 @@ namespace Test::PackageManager::Tests
 
         TEST_METHOD(RegisterPackageSetAsync_Framework_N_OlderRegistered_Success)
         {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             AddPackage_Red();
             StagePackage_Redder();
             AddPackage_Green();
@@ -599,6 +657,8 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
             AddPackage_Red();
             StagePackage_Blue();
 
@@ -625,6 +685,8 @@ namespace Test::PackageManager::Tests
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
+
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
 
             AddPackage_Black();
             StagePackage_White();
