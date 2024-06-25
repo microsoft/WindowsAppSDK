@@ -79,7 +79,7 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int) try
                 deploymentResult.ErrorText().c_str(),
                 deploymentResult.ActivityId());
         }
-        return deploymentOperationExtendedHResult ? deploymentOperationExtendedHResult : deploymentOperationHResult;
+        return static_cast<int>(FAILED(deploymentOperationExtendedHResult) ? deploymentOperationExtendedHResult : deploymentOperationHResult);
     }
 
     WindowsAppRuntimeDeploymentAgent_TraceLogger::Success(

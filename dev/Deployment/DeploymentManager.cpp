@@ -107,7 +107,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         // (i.e. if any of the target packages is not installed, GetStatus should return PackageInstallRequired).
         HRESULT verifyResult{};
 
-        for (auto package : c_targetPackages)
+        for (const auto package : c_targetPackages)
         {
             // Build package family name based on the framework naming scheme.
             std::wstring packageFamilyName{};
@@ -326,7 +326,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
 
     HRESULT DeploymentManager::VerifyPackage(const std::wstring& packageFamilyName, const PACKAGE_VERSION targetVersion,
-        __out std::wstring& packageIdentifier) try
+        const std::wstring& packageIdentifier) try
     {
         auto packageFullNames{ FindPackagesByFamily(packageFamilyName) };
         bool match{};
@@ -414,8 +414,10 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                 deploymentResult.ActivityId());
         }
 
-        return !deploymentOperationHResult ? deploymentOperationHResult :
-            (deploymentOperationExtendedHResult ? deploymentOperationExtendedHResult : deploymentOperationHResult);
+        // If deploymentOperationHResult indicates success, take that, ignore deploymentOperationExtendedHResult.
+        // Otherwise, return deploymentOperationExtendedHResult if there is an error in it, if not, return deploymentOperationHResult.
+        return SUCCEEDED(deploymentOperationHResult) ? deploymentOperationHResult :
+            (FAILED(deploymentOperationExtendedHResult) ? deploymentOperationExtendedHResult : deploymentOperationHResult);
     }
     CATCH_RETURN()
 

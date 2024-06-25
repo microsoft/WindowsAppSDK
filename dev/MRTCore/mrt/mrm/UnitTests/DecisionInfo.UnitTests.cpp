@@ -85,6 +85,10 @@ void DecisionInfoUnitTests::SimpleBuilderTests()
     }
 
     // Add test data to builders
+    // Although it is tempting to remove the '!' below to address the PREfast issue, doing that broke the build. 
+    // OTOH, 2 instances of the same code pattern are also in OS.2020, therefore, we probably would want to have 
+    // a "global" fix for all instances. Bug 50087117 has been filed for tracking the "global" fix.
+#pragma warning(suppress: 6215) // C6215: Cast between semantically different integer types.
     if (FAILED(!decisionInfo.ApplyTestData(pBuilder)))
     {
         Log::Error(L"[ Error applying test data ]");

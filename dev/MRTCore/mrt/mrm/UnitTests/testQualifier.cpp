@@ -78,7 +78,7 @@ TestQualifierCollection::InitFromTestValue(__in PCWSTR pValue, __inout TestStrin
 
     SecureZeroMemory(pQualifierOut, sizeof(TestQualifier));
 
-    if (FAILED(pSpecsOut->InitFromList(pValue)) || (pSpecsOut->GetNumStrings() < 3))
+    if (!pSpecsOut->InitFromList(pValue) || (pSpecsOut->GetNumStrings() < 3))
     {
         Log::Error(tmp.Format(L"[ illegal qualifier spec: \"%s\" ]", pValue));
         return E_FAIL;
@@ -359,7 +359,7 @@ TestQualifierSetCollection::InitFromTestVars(__in PCWSTR pPrefix, __in TestQuali
 
     for (int i = 0; i < m_numQualifierSets; i++)
     {
-        if (FAILED(m_pSpecs[i].InitFromList(m_testStrings[i])) || (m_pSpecs[i].GetNumStrings() < 1))
+        if (!m_pSpecs[i].InitFromList(m_testStrings[i]) || (m_pSpecs[i].GetNumStrings() < 1))
         {
             Log::Warning(tmp.Format(L"[ illegal qualifier set spec: \"%s\" ]", (PCWSTR)m_testStrings[i]));
             return E_FAIL;
@@ -607,7 +607,7 @@ TestDecisionCollection::InitFromTestVars(__in PCWSTR pPrefix, __in TestQualifier
 
     for (int i = 0; i < m_numDecisions; i++)
     {
-        if (FAILED(m_pSpecs[i].InitFromList(m_testStrings[i])) || (m_pSpecs[i].GetNumStrings() < 2))
+        if (!m_pSpecs[i].InitFromList(m_testStrings[i]) || (m_pSpecs[i].GetNumStrings() < 2))
         {
             Log::Warning(tmp.Format(L"[ illegal decision spec: \"%s\" ]", (PCWSTR)m_testStrings[i]));
             return E_FAIL;

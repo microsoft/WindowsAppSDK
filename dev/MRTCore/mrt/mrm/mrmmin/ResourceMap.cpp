@@ -400,6 +400,7 @@ public:
     const IResourceLinks* GetLinks() const { return m_links; }
     void SetLinks(_In_ const IResourceLinks* links) { m_links = links; }
 
+    _Success_(return == true)
     bool TryGetResourceLinkForResourceIndex(
         _In_ UINT32 linksFromResourceIndex,
         _Out_ const IHierarchicalSchema** linksToSchema,
@@ -463,7 +464,7 @@ protected:
     const IDecisionInfo* m_pDecisionInfo;
 
     mutable StringResult m_packageRootPath;
-    mutable size_t m_cchPackageRootPath;
+    mutable size_t m_cchPackageRootPath{ 0 };
 
     mutable const IDecisionInfo* m_pOverrideDecisionInfo;
     mutable RemapUInt16* m_pOverrideDecisionMap;
@@ -472,7 +473,7 @@ protected:
     mutable const IResourceLinks* m_links;
 
     _Field_size_(1) const MRMFILE_RESOURCE_MAP_HEADER* m_pHeader;
-    _Field_size_(m_pHeader->cbSchemaRef) const BYTE* m_pSchemaRefData;
+    _Field_size_(m_pHeader->cbSchemaRef) const BYTE* m_pSchemaRefData{ nullptr };
     _Field_size_(m_pHeader->cbEnvironmentRefs) const BYTE* m_pEnvironmentRefData;
     _Field_size_(m_pHeader->numEnvironmentRefs) const MRMFILE_ENVIRONMENT_REF* m_pFileEnvironmentRefs;
     _Field_size_(m_pHeader->numResourceValueTypes) const DEF_ATOM* m_pResourceValueTypes;
@@ -912,13 +913,21 @@ HRESULT NamedResourceResult::GetCandidate(_In_ int index, _Inout_ ResourceCandid
     return S_OK;
 }
 
+_Success_(return == true)
 bool NamedResourceResult::TryGetResourceLink(_Out_ const IHierarchicalSchema** linksToSchema, _Out_ UINT32* linksToResourceIndex) const
 {
+    if (linksToSchema != nullptr)
+    {
+        *linksToSchema = nullptr;
+    }
+    if (linksToResourceIndex != nullptr)
+    {
+        *linksToResourceIndex = 0;
+    }
     if (m_pRawMap == nullptr)
     {
         return false;
     }
-
     return m_pRawMap->TryGetResourceLinkForResourceIndex(m_resourceIndexInSchema, linksToSchema, linksToResourceIndex);
 }
 
@@ -1543,6 +1552,7 @@ HRESULT ResourceMapBase::GetResourceLinkById(
     return HRESULT_FROM_WIN32(ERROR_RANGE_NOT_FOUND);
 }
 
+_Success_(return == true)
 bool ResourceMapBase::TryGetResourceLinkForResourceIndex(
     _In_ UINT32 linksFromResourceIndex,
     _Out_ const IHierarchicalSchema** linksToSchema,

@@ -27,21 +27,21 @@
     -->
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.FrameworkUdk" Version="1.5.0-CI-22625.1035.240116-1502.0">
+    <Dependency Name="Microsoft.FrameworkUdk" Version="1.7.0-CI-26107.1701.240510-1748.0">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
-      <Sha>9eb4dc0048e66d2fcce4ecbcb22f5bbfca6bc2b5</Sha>
+      <Sha>5190f048458d3dd446318391385a832e081e4e9e</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.5.0-main.20231018.0">
+    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.7.0-main.20240513.0">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
-      <Sha>a7e140955e5277860cefd48500222c5eeeb3e921</Sha>
+      <Sha>2c1c46a69150a164073a76607be58f10c5a3b94c</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.5.230711">
+    <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.6.240418">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKAggregator</Uri>
-      <Sha>cd02e3c39f21b488bbab4e3c494860015cdfb75e</Sha>
+      <Sha>1b726bba007f2b3817b320693a1267f8b1c620b1</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.0.3">
+    <Dependency Name="Microsoft.Windows.CsWinRT" Version="2.1.0-prerelease.240605.1">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>fa7f5565cb53353dc15c28a09ebd500577dc0b72</Sha>
     </Dependency>

@@ -201,7 +201,7 @@ public:
     //! Generate hash with the default hash method
     static Hash HashString(PCWSTR str) { return HashString(str, HashMethodDefault); }
 
-    /*! 
+    /*!
          * \name Class-specific new/delete operators
          * @{
          * We can't derive from DefObject because we don't want a vtbl,
@@ -254,12 +254,12 @@ public:
          */
     virtual Atom::PoolIndex GetPoolIndex() const = 0;
 
-    /*! 
+    /*!
          * Gets the small index of this atom pool in the group
          * that contains it.
          * \param smallIndexResult
          * Returns the small pool index for this pool.
-         * 
+         *
          * \return HRESULT
          * - HRESULT_FROM_WIN32(ERROR_INVALID_INDEX) if the pool index is too large to fit in
          *   a small index.
@@ -294,22 +294,23 @@ public:
     /*!
          * Retrieves a string from an atom pool by index.  Returns NULL
          * if the index is out of range.
-         * 
+         *
          */
     virtual bool TryGetString(_In_ Atom::Index index, _Inout_opt_ StringResult* resultString) const = 0;
 
     /*!
          * Gets an atom that corresponds to a specified string from an atom
-         * pool.   Sets pAtomOut to Atom::NullAtom and returns FALSE if no 
+         * pool.   Sets pAtomOut to Atom::NullAtom and returns FALSE if no
          * matching string is found.
          */
     virtual bool TryGetAtom(_In_ PCWSTR str, _Out_opt_ Atom* resultAtom) const = 0;
 
     /*!
          * Gets an atom that corresponds to a specified index from an atom
-         * pool.   Sets resultAtom to Atom::NullAtom and returns FALSE if no 
+         * pool.   Sets resultAtom to Atom::NullAtom and returns FALSE if no
          * matching string is found.
          */
+    _Success_(return == true)
     virtual bool TryGetAtom(_In_ Atom::Index index, _Out_opt_ Atom* resultAtom) const
     {
         if (index >= GetNumAtoms())
@@ -390,7 +391,7 @@ public:
     virtual PCWSTR GetDescription() const = 0;
 
     /*!
-        * Returns the number of atoms in the pool. 
+        * Returns the number of atoms in the pool.
         */
     virtual Atom::Index GetNumAtoms() const = 0;
 
@@ -416,7 +417,7 @@ public:
     virtual ~AtomPoolGroup();
 
     /*!
-         * Creates a new, empty AtomPoolGroup with room for the 
+         * Creates a new, empty AtomPoolGroup with room for the
          * specified number of atom pools.
          */
     static HRESULT CreateInstance(_In_ int numPools, _Outptr_ AtomPoolGroup** group);
@@ -428,6 +429,7 @@ public:
          */
     HRESULT ExtendPools(_In_ Atom::PoolIndex newMaxIndex);
 
+    _Success_(return == true)
     bool TryGetAtomPool(_In_ Atom::PoolIndex index, _Out_opt_ IAtomPool** resultPool) const;
 
     IAtomPool* GetAtomPool(_In_ Atom::PoolIndex index) const;
@@ -443,7 +445,7 @@ public:
     HRESULT RemoveAtomPool(_Inout_opt_ IAtomPool* pool);
 
     /*!
-         * Adds an atom pool to a AtomPoolGroup at a specified 
+         * Adds an atom pool to a AtomPoolGroup at a specified
          * index.
          * NOTE:
          *    Note that the index specified here does _not_
@@ -454,13 +456,13 @@ public:
 
     /*!
          * Adds an atom pool to an AtomPoolGroup to the next
-         * available index, growing the group if necessary. 
+         * available index, growing the group if necessary.
          * Ignores the current index of the pool.
          *
          * Succeeds without changes if pool already belongs
          * to this group.  If pool belongs to another group
          * it will be removed from that group and added here
-         * at the next available index. 
+         * at the next available index.
          *
          * Returns HRESULT
          */
@@ -490,7 +492,7 @@ private:
     Atom::PoolIndex m_nPools;
 };
 
-/*! 
+/*!
      * An atom pool initialized directly from an array of static strings.
      * Uses the supplied strings directly, so they must remain valid for
      * the life of the pool.
@@ -570,6 +572,7 @@ public:
 
     void SetPoolIndex(_In_ Atom::PoolIndex index);
 
+    _Success_(return == true)
     bool TryGetAtom(_In_ PCWSTR str, _Out_opt_ Atom* resultAtom) const;
 
     bool TryGetIndex(_In_ PCWSTR str, _Out_opt_ Atom::Index* resultIndex) const;

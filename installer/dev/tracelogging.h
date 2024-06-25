@@ -30,12 +30,14 @@ void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcep
 
 class WindowsAppRuntimeInstaller_TraceLogger final : public wil::TraceLoggingProvider
 {
+    #pragma prefast(push)
+    #pragma prefast(disable:6387, "PreFast gets confused over tracelogging parameters")
     IMPLEMENT_TRACELOGGING_CLASS(
         WindowsAppRuntimeInstaller_TraceLogger,
         "Microsoft.WindowsAppRuntimeInstaller",
         // {7028b782-2ccf-5a66-0008-9b040616d425}
         (0x7028b782, 0x2ccf, 0x5a66, 0x00, 0x08, 0x9b, 0x04, 0x06, 0x16, 0xd4, 0x25));
-
+    #pragma prefast(pop)
 public:
 
     BEGIN_COMPLIANT_CRITICAL_DATA_ACTIVITY_CLASS(Install, PDT_ProductAndServicePerformance);
@@ -63,7 +65,7 @@ public:
     {
         SetStopResult(hresult);
 
-        if (hresult)
+        if (FAILED(hresult))
         {
             TraceLoggingClassWriteStop(Install,
                 _GENERIC_PARTB_FIELDS_ENABLED,

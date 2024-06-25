@@ -99,7 +99,6 @@
     <Import Project="..\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems" Label="ChangeTracker" />
     <Import Project="..\VersionInfo\VersionInfo.vcxitems" Label="VersionInfo" />
     <Import Project="..\PackageManager\API\PackageManager.vcxitems" Label="Shared" />
-    <Import Project="..\Workloads\Workloads.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />

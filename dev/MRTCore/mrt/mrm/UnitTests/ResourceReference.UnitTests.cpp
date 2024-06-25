@@ -75,7 +75,7 @@ _Success_(return ) static bool GetOrigin(_Out_ UINT16* pOriginFlagsOut, _Inout_ 
     // Where "<name>" is the name of the file or package used for the reference
     String originSpecStr;
     TestStringArray originSpec;
-    if (FAILED(TestData::TryGetValue(L"Origin", originSpecStr)) || FAILED(originSpec.InitFromList(originSpecStr)) ||
+    if (FAILED(TestData::TryGetValue(L"Origin", originSpecStr)) || !originSpec.InitFromList(originSpecStr) ||
         ((originSpec.GetNumStrings() != 1) && (originSpec.GetNumStrings() != 2)))
     {
         Log::Warning(tmp.Format(L"[ Missing or malformed Origin specification ]"));
@@ -171,7 +171,7 @@ static bool VerifyBuildReferences(_In_ UINT16 originType, _In_opt_ PCWSTR pszOri
             Log::Comment(tmp.Format(L"[ BuildReference: \"%s\" ]", (PCWSTR)refs[i]));
 
             // Parse the build reference
-            if (FAILED(refSpec.InitFromList(refs[i])) || (refSpec.GetNumStrings() < 2) || (!refSpec.TryGetStringAsInt(1, &expectedStatus)))
+            if (!refSpec.InitFromList(refs[i]) || (refSpec.GetNumStrings() < 2) || (!refSpec.TryGetStringAsInt(1, &expectedStatus)))
             {
                 Log::Warning(tmp.Format(L"[ Malformed BuildReference \"%s\" ignored. ]", (PCWSTR)refs[i]));
                 continue;
@@ -273,7 +273,7 @@ static bool VerifyLookupReferences(
 
     String contextSpec;
     TestStringArray contextStrings;
-    if (SUCCEEDED(TestData::TryGetValue(L"Context", contextSpec)) && SUCCEEDED(contextStrings.InitFromList((PCWSTR)contextSpec)))
+    if (SUCCEEDED(TestData::TryGetValue(L"Context", contextSpec)) && contextStrings.InitFromList((PCWSTR)contextSpec))
     {
 
         for (int i = 0; i < contextStrings.GetNumStrings(); i += 2)
@@ -320,7 +320,7 @@ static bool VerifyLookupReferences(
             Log::Comment(tmp.Format(L"[ LookupReference: \"%s\" ]", (PCWSTR)refs[i]));
 
             // Parse the build reference
-            if (FAILED(refSpec.InitFromList(refs[i])) || (refSpec.GetNumStrings() < 3) || (!refSpec.TryGetStringAsBool(1, &useMap)) ||
+            if (!refSpec.InitFromList(refs[i]) || (refSpec.GetNumStrings() < 3) || (!refSpec.TryGetStringAsBool(1, &useMap)) ||
                 (!refSpec.TryGetStringAsHexadecimal(2, &expectedStatus)))
             {
                 Log::Warning(tmp.Format(L"[ Malformed LookupReference \"%s\" ignored. ]", (PCWSTR)refs[i]));
@@ -467,7 +467,7 @@ void ResourceReferenceUnitTests::BlobFormatTests()
         for (size_t i = 0; i < blobs.GetSize(); i++)
         {
             TestStringArray blobSpecs;
-            if (SUCCEEDED(blobSpecs.InitFromList((PCWSTR)blobs[i])))
+            if (blobSpecs.InitFromList((PCWSTR)blobs[i]))
             {
                 UINT32 flags;
                 UINT32 cbTotal;

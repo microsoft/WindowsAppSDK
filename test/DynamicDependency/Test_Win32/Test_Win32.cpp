@@ -19,12 +19,6 @@ wil::unique_hmodule Test::DynamicDependency::Test_Win32::m_bootstrapDll;
 
 bool Test::DynamicDependency::Test_Win32::Setup()
 {
-    if (/*TODO ::WindowsVersion::IsWindows11_23H1OrGreater() &&*/ !::Test::TAEF::IsEnabled(L"DynamicDependency.23H1"))
-    {
-        WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Skipping tests to avoid https://task.ms/48525090");
-        return true;
-    }
-
     // Remove our packages in case they were previously installed and incompletely removed
     TP::RemovePackage_DynamicDependencyLifetimeManager();
     TP::RemovePackage_DynamicDependencyDataStore();
@@ -142,14 +136,14 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framewor
     VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
-    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, nullptr);
+    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
     VerifyPackageGraphRevisionId(1);
 
     // -- Add
 
     wil::unique_process_heap_string packageFullName_FrameworkMathAdd;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext_FrameworkMathAdd{ Mdd_Add(packageDependencyId_FrameworkMathAdd.get(), packageFullName_FrameworkMathAdd) };
-    VERIFY_IS_NOT_NULL(packageFullName_FrameworkMathAdd.get());
+    VERIFY_IS_NOT_NULL(packageFullName_FrameworkMathAdd.get(), WEX::Common::String().Format(L"PackageFullName=%s Expected=not-<null>", !packageFullName_FrameworkMathAdd ? L"<null>" : packageFullName_FrameworkMathAdd.get()));
     std::wstring actualPackageFullName_FrameworkMathAdd{ packageFullName_FrameworkMathAdd.get() };
     VERIFY_ARE_EQUAL(actualPackageFullName_FrameworkMathAdd, expectedPackageFullName_FrameworkMathAdd);
 
@@ -176,7 +170,7 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framewor
 
     wil::unique_process_heap_string resolvedPackageFullName;
     VERIFY_ARE_EQUAL(S_OK, mddGetResolvedPackageFullNameForPackageDependency(packageDependencyId_FrameworkMathAdd.get(), &resolvedPackageFullName));
-    VERIFY_IS_NOT_NULL(resolvedPackageFullName.get());
+    VERIFY_IS_NOT_NULL(resolvedPackageFullName.get(), WEX::Common::String().Format(L"PackageFullName=%s Expected=not-<null>", !resolvedPackageFullName ? L"<null>" : resolvedPackageFullName.get()));
     std::wstring actualResolvedPackageFullName{ resolvedPackageFullName.get() };
     const auto& expectedResolvedPackageFullName{ expectedPackageFullName_FrameworkMathAdd };
     VERIFY_ARE_EQUAL(expectedResolvedPackageFullName, actualResolvedPackageFullName);
@@ -191,7 +185,7 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framewor
     VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
-    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, nullptr);
+    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
     VerifyPackageGraphRevisionId(3);
 
     // -- Delete
@@ -217,7 +211,7 @@ void Test::DynamicDependency::Test_Win32::GetResolvedPackageFullName_NotFound()
     PCWSTR packageDependencyId{ L"This.Does.Not.Exist" };
     wil::unique_process_heap_string packageFullName;
     VERIFY_SUCCEEDED(MddGetResolvedPackageFullNameForPackageDependency(packageDependencyId, &packageFullName));
-    VERIFY_IS_NULL(packageFullName);
+    VERIFY_IS_NULL(packageFullName, WEX::Common::String().Format(L"PackageFullName=%s Expected=<null>", !packageFullName ? L"<null>" : packageFullName.get()));
 }
 
 void Test::DynamicDependency::Test_Win32::GetIdForPackageDependencyContext_Null()
@@ -263,7 +257,7 @@ void Test::DynamicDependency::Test_Win32::VerifyPackageDependency(
     VERIFY_ARE_EQUAL(expectedHR1, MddGetResolvedPackageFullNameForPackageDependency(packageDependencyId, &packageFullName1));
     if (FAILED(expectedHR1) || !expectedPackageFullName)
     {
-        VERIFY_IS_NULL(packageFullName1);
+        VERIFY_IS_NULL(packageFullName1, WEX::Common::String().Format(L"PackageFullName=%s Expected=<null>", !packageFullName1 ? L"<null>" : packageFullName1.get()));
     }
     else
     {
@@ -275,7 +269,7 @@ void Test::DynamicDependency::Test_Win32::VerifyPackageDependency(
     VERIFY_ARE_EQUAL(expectedHR2, MddGetResolvedPackageFullNameForPackageDependency2(packageDependencyId, &packageFullName2));
     if (FAILED(expectedHR2) || !expectedPackageFullName)
     {
-        VERIFY_IS_NULL(packageFullName2);
+        VERIFY_IS_NULL(packageFullName2, WEX::Common::String().Format(L"PackageFullName=%s Expected=<null>", !packageFullName2 ? L"<null>" : packageFullName2.get()));
     }
     else
     {

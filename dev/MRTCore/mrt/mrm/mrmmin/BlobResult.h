@@ -15,7 +15,7 @@ HRESULT DefBlobResult_GetCopy(_In_ const DEFBLOBRESULT* pSelf, _Inout_ DEFBLOBRE
 
 void DefBlobResult_Clear(_Inout_ DEFBLOBRESULT* pSelf);
 
-void DefBlobResult_Delete(_Inout_ DEFBLOBRESULT* pSelf);
+void DefBlobResult_Delete(_In_ DEFBLOBRESULT* pSelf);
 
 _Success_(return != nullptr) _Check_return_ const void* DefBlobResult_GetRef(_In_ const DEFBLOBRESULT* pSelf, _Out_opt_ size_t* pcbRefOut);
 

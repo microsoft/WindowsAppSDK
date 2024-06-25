@@ -3,7 +3,7 @@
 
 #include "pch.h"
 
-#include <IsWindowsVersion.h>
+#include <MddWin11.h>
 
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
@@ -21,9 +21,9 @@ namespace Test::PackageManager::Tests
 
         TEST_CLASS_SETUP(ClassSetup)
         {
-            if (!::WindowsVersion::IsWindows11_22H2OrGreater())
+            if (!MddCore::Win11::IsSupported())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageRuntimeManager requires >= 22H2 (Sun Valley 2). Skipping tests");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageRuntimeManager requires Dynamic Dependencies delegating to OS Dynamic Dependencies. Skipping tests");
                 return true;
             }
             RemovePackage_Blue();

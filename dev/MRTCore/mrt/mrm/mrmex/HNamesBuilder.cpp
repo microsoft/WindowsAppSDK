@@ -289,6 +289,7 @@ bool ScopeInfo::TryGetChild(_In_ const HierarchicalNameSegment* pName, _Outptr_o
     return false;
 }
 
+_Success_(return == true)
 bool ScopeInfo::TryGetDescendent(_In_ PCWSTR pFullName, _Outptr_opt_result_maybenull_ HNamesNode** ppChildOut) const
 {
     if (DefString_IsEmpty(pFullName))
@@ -751,8 +752,8 @@ public:
     }
 
 protected:
-    AtomPoolGroup* m_pPoolGroup;
-    Atom::Index m_poolIndex;
+    AtomPoolGroup* m_pPoolGroup { nullptr };
+    Atom::Index m_poolIndex{ DEF_ATOM_INDEX_NONE };
     const HierarchicalNamesBuilder* m_pBuilder;
 
     HNamesNodeAtomPool(__in const HierarchicalNamesBuilder* pBuilder) : m_pBuilder(pBuilder) {}
@@ -777,6 +778,7 @@ public:
         return S_OK;
     }
 
+    _Success_(return == true)
     bool TryGetIndex(__in PCWSTR pString, __out_opt Atom::Index* pIndexOut) const
     {
         int index = -1;
@@ -815,6 +817,7 @@ public:
         return S_OK;
     }
 
+    _Success_(return == true)
     bool TryGetIndex(__in PCWSTR pString, __out_opt Atom::Index* pIndexOut) const
     {
         int index = -1;
@@ -1393,9 +1396,9 @@ HRESULT HierarchicalNamesBuilder::BuildNameNode(
     return S_OK;
 }
 
-/*! 
+/*!
  * Serializes the file list into the provided buffer.
- * 
+ *
  * \param pBuffer
  * The buffer into which the file list is generated.
  *

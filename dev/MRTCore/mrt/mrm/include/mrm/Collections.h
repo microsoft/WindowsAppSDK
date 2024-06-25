@@ -38,6 +38,11 @@ public:
 
     _Success_(return ) HRESULT Add(_In_ T pv, _Out_opt_ int* pIndexOut = nullptr)
     {
+        if (pIndexOut != nullptr)
+        {
+            *pIndexOut = 0;
+        }
+
         if (m_nData >= m_szData)
         {
             RETURN_IF_FAILED_EXPECTED(Extend(m_nData + 1, false));
@@ -78,6 +83,7 @@ public:
         return S_OK;
     }
 
+    _Success_(return == true)
     bool TryGet(_In_ UINT ind, _Out_ T* pValueOut) const
     {
         _Analysis_assume_(m_szData >= m_nData);

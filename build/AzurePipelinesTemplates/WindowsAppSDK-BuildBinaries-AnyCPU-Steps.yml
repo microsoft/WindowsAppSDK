@@ -5,6 +5,9 @@ parameters:
 - name: "IsOneBranch"
   type: boolean
   default: True
+- name: runStaticAnalysis
+  type: boolean
+  default: True
 
 steps:
 - task: NuGetToolInstaller@1
@@ -29,6 +32,19 @@ steps:
     filePath: 'BuildAll.ps1'
     arguments: -AzureBuildStep "BuildAnyCPU"
 
+- ${{ if eq(parameters.runStaticAnalysis, 'True') }}:
+  - task: SDLNativeRules@3
+    displayName: Run PREfast SDL Native Rules
+    inputs:
+      setupCommandlines: '"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat"'
+      msBuildCommandline: 'msbuild.exe /restore /nologo /nr:false $(Build.SourcesDirectory)\dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj'
+      # Generally speaking, we leave it to the external repos to scan the bits in their packages.
+      excludedPaths: |
+        $(Build.SourcesDirectory)\packages
+    continueOnError: true
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
 # component detection must happen *within* the build task
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 
@@ -40,50 +56,16 @@ steps:
     failOnAlert: true
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
-  - task: EsrpCodeSigning@2
-    inputs:
-      ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+  - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+    parameters:
       FolderPath: '$(build.SourcesDirectory)\BuildOutput'
+      UseMinimatch: true
       Pattern: |
         **/*.winmd
         **/*.dll
         **/*.exe
-      UseMinimatch: true
-      signConfigType: 'inlineSignParams'
-      inlineOperation: |
-        [
-          {
-            "keyCode": "CP-230012",
-            "operationSetCode": "SigntoolSign",
-            "parameters": [
-              {
-                "parameterName": "OpusName",
-                "parameterValue": "Microsoft"
-              },
-              {
-                "parameterName": "OpusInfo",
-                "parameterValue": "http://www.microsoft.com"
-              },
-              {
-                "parameterName": "PageHash",
-                "parameterValue": "/NPH"
-              },
-              {
-                "parameterName": "FileDigest",
-                "parameterValue": "/fd sha256"
-              },
-              {
-                "parameterName": "TimeStamp",
-                "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
-              }
-            ],
-            "toolName": "signtool.exe",
-            "toolVersion": "6.2.9304.0"
-          }
-        ]
-      SessionTimeout: '60'
-      MaxConcurrency: '50'
-      MaxRetryAttempts: '5'
+      KeyCode: 'CP-230012'
+      displayName: 'Authenticode CodeSign Binaries'
 
 # Artifacts are uploaded via ob_outputDirectory where the each vPack Push jobs downloads from
 # so the CopyFiles below are to move all the vPack files to the right locations

@@ -8,6 +8,9 @@ parameters:
 - name: "IsOneBranch"
   type: boolean
   default: True
+- name: "IsOfficial"
+  type: boolean
+  default: False
 - name: "BuildMockWindowsAppSDK"
   type: boolean
   default: True
@@ -32,8 +35,6 @@ stages:
       ob_artifactBaseName: "TransportPackage"
     steps:
     - task: NuGetAuthenticate@1
-      inputs:
-        nuGetServiceConnections: 'ProjectReunionInternal'
 
     - task: DownloadPipelineArtifact@2
       displayName: 'Download Foundation x64'
@@ -135,25 +136,30 @@ stages:
       # This ADO task does not support indexing of github sources currently :-(
         indexSources: false
         detailedLog: true
+        SymbolsArtifactName: $(symbolsArtifactName)
       # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
       # To work around this issue, we just force LIB to be any dir that we know exists.
       env:
         LIB: $(Build.SourcesDirectory)
 
-    - task: PublishSymbols@2
-      displayName: 'Publish symbols to public server (without source indexing)'
-      inputs:
-        searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
-        symbolServerType: 'TeamServices'
-      # This ADO task does not support indexing of github sources currently :-(
-        indexSources: false
-        detailedLog: true
-      # # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
-      # # To work around this issue, we just force LIB to be any dir that we know exists.
-      # env:
-      #   LIB: $(Build.SourcesDirectory)
-      #   ArtifactServices_Symbol_AccountName: microsoftpublicsymbols
-      #   ArtifactServices_Symbol_PAT: $(WinSDKLab_microsoftpublicsymbols_PAT)
+    # Publishing symbols publicly requires making an API call to the service and is handled by PublishPublicSymbols.ps1
+    # in eng/common
+    # See this page for more info:
+    # https://www.osgwiki.com/wiki/Symbols_Publishing_Pipeline_to_SymWeb_and_MSDL
+    - ${{ if eq(parameters.IsOfficial, 'true') }}:
+      - pwsh: |
+          Install-Module -Name Az.Accounts -Scope AllUsers -AllowClobber -Force
+        displayName: Install Az.Accounts PowerShell module
+
+      # WinAppSDK-AZSC service connection must be used because the service principal created by this connection has been granted read and publish access
+      - task: AzurePowerShell@5
+        displayName: Publish symbols to SymWeb and MSDL
+        inputs:
+          azureSubscription: 'WinAppSDK-AZSC'
+          ScriptType: 'InlineScript'
+          Inline: $(Build.SourcesDirectory)\eng\common\Scripts\PublishPublicSymbols.ps1 -RequestName "$(symbolsArtifactName)"
+          azurePowerShellVersion: 'LatestVersion'
+          pwsh: true
 
     - task: PowerShell@2
       name: SetVersion
@@ -163,11 +169,7 @@ stages:
         script: |
           $packageVersion = '$(version)'
           $pipelineType = '$(PipelineType)'
-          $sourceBranchName = '$(Build.SourceBranchName)'
-          if ($sourceBranchName -eq 'main' -or $sourceBranchName -eq 'develop')
-          {
-            $packageVersion = $packageVersion + '.' + $sourceBranchName + '.' + $pipelineType
-          }
+          $packageVersion = $packageVersion + '.' + $pipelineType
           Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
           Write-Host "##vso[task.setvariable variable=packageVersion;isOutput=true;]$packageVersion"
 
@@ -191,33 +193,12 @@ stages:
     #       arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "BuildMock" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(packageVersion)"
 
     - ${{ if eq(parameters.SignOutput, 'true') }}:
-      - task: EsrpCodeSigning@2
-        inputs:
-          ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+      - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+        parameters:
           FolderPath: $(build.artifactStagingDirectory)\FullNuget
           Pattern: 'Microsoft.WindowsAppSDK.Foundation*.nupkg'
+          KeyCode: 'CP-401405'
           UseMinimatch: true
-          signConfigType: 'inlineSignParams'
-          inlineOperation: |
-            [
-              {
-                "KeyCode" : "CP-401405",
-                "OperationCode" : "NuGetSign",
-                "Parameters" : {},
-                "ToolName" : "sign",
-                "ToolVersion" : "1.0"
-              },
-              {
-                  "KeyCode" : "CP-401405",
-                  "OperationCode" : "NuGetVerify",
-                  "Parameters" : {},
-                  "ToolName" : "sign",
-                  "ToolVersion" : "1.0"
-              }
-            ]
-          SessionTimeout: '60'
-          MaxConcurrency: '50'
-          MaxRetryAttempts: '5'
 
     - task: CopyFiles@2
       displayName: MoveToOutputDirectory

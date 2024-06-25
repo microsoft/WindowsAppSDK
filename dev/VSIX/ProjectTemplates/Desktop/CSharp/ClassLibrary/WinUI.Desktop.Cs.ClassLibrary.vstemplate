@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
     <Name ID="1025" Package="FIXME-PACKAGEGUID" />
@@ -24,13 +24,16 @@
     <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>
   <TemplateContent PreferedSolutionConfiguration="Debug|AnyCPU">
-    <CustomParameters>
-      <CustomParameter Name="$WindowsAppSDKNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <CustomParameter Name="$WindowsSDKBuildToolsNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <CustomParameter Name="$DotNetVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries"/>
-    </CustomParameters>
     <Project File="ProjectTemplate.csproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" OpenInEditor="true">Class1.cs</ProjectItem>
     </Project>
+    <CustomParameters>
+      <CustomParameter Name="$NuGetPackages$" Value="Microsoft.WindowsAppSDK;Microsoft.Windows.SDK.BuildTools"/>
+      <CustomParameter Name="$DotNetVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries"/>        
+    </CustomParameters>
   </TemplateContent>
+  <WizardExtension>
+    <Assembly>WindowsAppSDK.Cs.Extension.Dev17, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>WindowsAppSDK.TemplateUtilities.NuGetPackageInstaller</FullClassName>
+  </WizardExtension>
 </VSTemplate>

@@ -38,13 +38,13 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_RegistryLifetime_Framewo
     VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
-    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, nullptr);
+    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
 
     // -- Add
 
     wil::unique_process_heap_string packageFullName_FrameworkMathAdd;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext_FrameworkMathAdd{ Mdd_Add(packageDependencyId_FrameworkMathAdd.get(), packageFullName_FrameworkMathAdd) };
-    VERIFY_IS_NOT_NULL(packageFullName_FrameworkMathAdd.get());
+    VERIFY_IS_NOT_NULL(packageFullName_FrameworkMathAdd.get(), WEX::Common::String().Format(L"PackageFullName=%s Expected=not-<null>", !packageFullName_FrameworkMathAdd ? L"<null>" : packageFullName_FrameworkMathAdd.get()));
     std::wstring actualPackageFullName_FrameworkMathAdd{ packageFullName_FrameworkMathAdd.get() };
     VERIFY_ARE_EQUAL(actualPackageFullName_FrameworkMathAdd, expectedPackageFullName_FrameworkMathAdd);
 
@@ -61,7 +61,7 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_RegistryLifetime_Framewo
     // Add it a 2nd time. The package dependency is deleted but still resolved so this should succeed. PackageGraph = [ Fwk, MathAdd, MathAdd ]
     wil::unique_process_heap_string packageFullName;
     auto context{ Mdd_Add(packageDependencyId_FrameworkMathAdd.get(), packageFullName) };
-    VERIFY_IS_NOT_NULL(packageFullName.get());
+    VERIFY_IS_NOT_NULL(packageFullName.get(), WEX::Common::String().Format(L"PackageFullName=%s Expected=not-<null>", !packageFullName ? L"<null>" : packageFullName.get()));
     std::wstring actualPackageFullName{ packageFullName.get() };
     VERIFY_ARE_EQUAL(actualPackageFullName, expectedPackageFullName_FrameworkMathAdd);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, packagePath_FrameworkMathAdd, packagePath_FrameworkMathAdd, pathEnvironmentVariable.c_str());
@@ -101,7 +101,7 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_RegistryLifetime_Framewo
     VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
-    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, nullptr);
+    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
 
     // -- Delete
 

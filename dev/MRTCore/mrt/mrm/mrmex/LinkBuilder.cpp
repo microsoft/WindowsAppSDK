@@ -307,6 +307,7 @@ HRESULT ResourceLinkSectionBuilder::AddResourceLink(_In_ PCWSTR linkFromResource
     return AddResourceLink(linkFromResourceName, m_schema, linkToResourceName);
 }
 
+_Success_(return == true)
 bool ResourceLinkSectionBuilder::TryGetResourceIndex(_In_ int schemaIndex, _In_ PCWSTR resourceName, _Out_ Atom::Index* resourceIndex) const
 {
     SchemaRef* haveSchema;
@@ -325,6 +326,7 @@ bool ResourceLinkSectionBuilder::TryGetResourceIndex(_In_ int schemaIndex, _In_ 
     return haveSchema->section->GetItemNames()->TryGetIndex(resourceName, resourceIndex);
 }
 
+_Success_(return == true)
 bool ResourceLinkSectionBuilder::TryGetResourceLinkByResourceIndex(
     _In_ int resourceIndexInSchema,
     _Out_opt_ int* linksToSchemaIndex,

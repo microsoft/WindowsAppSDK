@@ -54,7 +54,7 @@ private:
 
     CallBackCompareFunc m_pFnComparer;
     CallbackHashFunc m_pFnHash;
-    bool m_fSorted;
+    bool m_fSorted{ false };
 
     HASH_KEY* m_pHashTable;
 
@@ -270,6 +270,7 @@ public:
         return false;
     }
 
+    _Success_(return == true)
     bool TryGetValue(__in UINT32 index, __out VALUE* pValueOut) const
     {
 

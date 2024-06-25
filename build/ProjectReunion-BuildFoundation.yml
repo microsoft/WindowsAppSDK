@@ -13,6 +13,7 @@ variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
+- template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-GlobalVariables.yml
 
 stages:
 - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self

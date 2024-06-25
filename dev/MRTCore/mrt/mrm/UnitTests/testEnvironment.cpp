@@ -172,7 +172,7 @@ HRESULT TestEnvironment::InitQualifiers(PCWSTR pVarPrefix, _In_opt_ TestEnvironm
             return E_FAIL;
         }
     }
-    return true;
+    return S_OK;
 }
 
 HRESULT TestEnvironment::CreateInstance(
@@ -245,18 +245,18 @@ HRESULT TestEnvironment::CreateInstance(
     pRtrn->m_pResourceValueLocatorNames = new TestAtomPool();
     pRtrn->m_pConditionOperatorNames = new TestAtomPool();
 
-    if (FAILED(pRtrn->m_pQualifierTypeNames->InitFromTestVarsOrClone(
-            L"QualifierTypes", true, var.Format(L"%sQualifierTypeNames", pVarPrefix), pAtoms, pOtherQualifierTypes)) ||
-        FAILED(pRtrn->m_pQualifierNames->InitFromTestVarsOrClone(
-            L"Qualifiers", true, var.Format(L"%sQualifierNames", pVarPrefix), pAtoms, pOtherQualifiers)) ||
-        FAILED(pRtrn->m_pItemTypeNames->InitFromTestVarsOrClone(
-            L"ItemTypes", true, var.Format(L"%sItemTypeNames", pVarPrefix), pAtoms, pOtherItemTypes)) ||
-        FAILED(pRtrn->m_pResourceValueTypeNames->InitFromTestVarsOrClone(
-            L"ResourceValueTypes", true, var.Format(L"%sResourceValueTypeNames", pVarPrefix), pAtoms, pOtherInstanceTypes)) ||
-        FAILED(pRtrn->m_pResourceValueLocatorNames->InitFromTestVarsOrClone(
-            L"ResourceValueLocators", true, var.Format(L"%sResourceValueLocatorNames", pVarPrefix), pAtoms, pOtherInstanceLocators)) ||
-        FAILED(pRtrn->m_pConditionOperatorNames->InitFromTestVarsOrClone(
-            L"ConditionOperators", true, var.Format(L"%sConditionOperatorNames", pVarPrefix), pAtoms, pOtherConditionOperators)))
+    if (!pRtrn->m_pQualifierTypeNames->InitFromTestVarsOrClone(
+            L"QualifierTypes", true, var.Format(L"%sQualifierTypeNames", pVarPrefix), pAtoms, pOtherQualifierTypes) ||
+        !pRtrn->m_pQualifierNames->InitFromTestVarsOrClone(
+            L"Qualifiers", true, var.Format(L"%sQualifierNames", pVarPrefix), pAtoms, pOtherQualifiers) ||
+        !pRtrn->m_pItemTypeNames->InitFromTestVarsOrClone(
+            L"ItemTypes", true, var.Format(L"%sItemTypeNames", pVarPrefix), pAtoms, pOtherItemTypes) ||
+        !pRtrn->m_pResourceValueTypeNames->InitFromTestVarsOrClone(
+            L"ResourceValueTypes", true, var.Format(L"%sResourceValueTypeNames", pVarPrefix), pAtoms, pOtherInstanceTypes) ||
+        !pRtrn->m_pResourceValueLocatorNames->InitFromTestVarsOrClone(
+            L"ResourceValueLocators", true, var.Format(L"%sResourceValueLocatorNames", pVarPrefix), pAtoms, pOtherInstanceLocators) ||
+        !pRtrn->m_pConditionOperatorNames->InitFromTestVarsOrClone(
+            L"ConditionOperators", true, var.Format(L"%sConditionOperatorNames", pVarPrefix), pAtoms, pOtherConditionOperators))
     {
         delete pRtrn;
         return E_FAIL;

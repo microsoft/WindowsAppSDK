@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #if !defined(PACKAGEID_H)
@@ -27,7 +27,7 @@ public:
         m_packageFullName(std::move(other.m_packageFullName))
     {
         memcpy(m_buffer, other.m_buffer, sizeof(m_buffer));
-        m_packageId = reinterpret_cast<PACKAGE_ID*>(m_buffer);
+        SetPackageId(m_buffer, other.m_packageId);
 
         other.m_packageId = nullptr;
         memset(other.m_buffer, 0, sizeof(other.m_buffer));
@@ -41,7 +41,7 @@ public:
         {
             m_packageFullName = std::move(other.m_packageFullName);
             memcpy(m_buffer, other.m_buffer, sizeof(m_buffer));
-            m_packageId = reinterpret_cast<PACKAGE_ID*>(m_buffer);
+            SetPackageId(m_buffer, other.m_packageId);
 
             other.m_packageId = nullptr;
             memset(other.m_buffer, 0, sizeof(other.m_buffer));
@@ -82,6 +82,32 @@ public:
     explicit operator bool() const
     {
         return m_packageId != nullptr;
+    }
+
+private:
+    void SetPackageId(BYTE* buffer, const PACKAGE_ID* from)
+    {
+        m_packageId = reinterpret_cast<PACKAGE_ID*>(buffer);
+        PACKAGE_ID& packageId{ *const_cast<PACKAGE_ID*>(m_packageId) };
+
+        packageId.name = PtrToValueInBuffer(from, from->name, buffer);
+        packageId.publisher = PtrToValueInBuffer(from, from->publisher, buffer);
+        packageId.resourceId = PtrToValueInBuffer(from, from->resourceId, buffer);
+        packageId.publisherId = PtrToValueInBuffer(from, from->publisherId, buffer);
+    }
+
+    PWSTR PtrToValueInBuffer(const void* from, const void* fromValue, BYTE* buffer)
+    {
+        if (fromValue)
+        {
+            return nullptr;
+        }
+
+        const auto fromBytes{ static_cast<const BYTE*>(from) };
+        const auto fromValueBytes{ static_cast<const BYTE*>(fromValue) };
+        const auto offset{ fromValueBytes - fromBytes };
+        void * to{ buffer + offset };
+        return static_cast<PWSTR>(to);
     }
 
 private:
