@@ -22,7 +22,7 @@
     <ProjectTypeTag>desktop</ProjectTypeTag>
     <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>
-  <TemplateContent PreferedSolutionConfiguration="Debug|Win32">
+  <TemplateContent PreferedSolutionConfiguration="Debug|x64">
     <Project File="ProjectTemplate.vcxproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" TargetFileName="$projectname$.vcxproj.filters">ProjectTemplate.vcxproj.filters</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="pch.cpp">pch.cpp</ProjectItem>
