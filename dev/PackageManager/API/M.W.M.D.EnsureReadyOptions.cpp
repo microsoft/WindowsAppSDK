@@ -14,12 +14,4 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     {
         return m_addPackageOptions;
     }
-    bool EnsureReadyOptions::RegisterNewerIfAvailable()
-    {
-        return m_registerNewerIfAvailable;
-    }
-    void EnsureReadyOptions::RegisterNewerIfAvailable(bool value)
-    {
-        m_registerNewerIfAvailable = value;
-    }
 }

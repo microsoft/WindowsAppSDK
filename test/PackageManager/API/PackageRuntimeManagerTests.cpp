@@ -5,11 +5,9 @@
 
 #include <MddWin11.h>
 
-namespace TD = ::Test::Diagnostics;
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
 namespace TPF = ::Test::Packages::Framework;
-namespace TPM = ::Test::Packages::Main;
 namespace TPMT = ::Test::PackageManager::Tests;
 
 namespace Test::PackageManager::Tests

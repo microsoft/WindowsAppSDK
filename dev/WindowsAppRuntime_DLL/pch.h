@@ -12,7 +12,6 @@
 #include <shellapi.h>
 #include <appmodel.h>
 #include <xmllite.h>
-#include <sddl.h>
 
 #include <string>
 #include <string_view>
@@ -31,7 +30,6 @@
 #include <wil/filesystem.h>
 #include <wil/com.h>
 #include <wil/win32_helpers.h>
-#include <wil/winrt.h>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
@@ -55,7 +53,6 @@
 #include <microsoft.configuration.h>
 #include <microsoft.utf8.h>
 #include <security.integritylevel.h>
-#include <security.user.h>
 #include <windowsappruntime.selfcontained.h>
 #include <windowsappruntime.versioninfo.h>
 

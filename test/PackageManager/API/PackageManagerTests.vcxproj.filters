@@ -21,45 +21,6 @@
     <ClCompile Include="PackageDeploymentManagerTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PackageDeploymentManagerTests_Add.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PackageDeploymentManagerTests_Deprovision_Framework.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PackageDeploymentManagerTests_Deprovision_Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PackageDeploymentManagerTests_EnsureReady.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PackageDeploymentManagerTests_IsPackageRegistrationPending.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PackageDeploymentManagerTests_IsReady.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PackageDeploymentManagerTests_IsReadyOrNewerAvailable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PackageDeploymentManagerTests_Provision.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PackageDeploymentManagerTests_Register.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PackageDeploymentManagerTests_Remove.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PackageDeploymentManagerTests_Repair.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PackageDeploymentManagerTests_Reset.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PackageDeploymentManagerTests_Stage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PackageRuntimeManagerTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -68,17 +29,11 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PackageDeploymentManagerTests.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PackageManagerTests.Packages.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
   </ItemGroup>
 </Project>
