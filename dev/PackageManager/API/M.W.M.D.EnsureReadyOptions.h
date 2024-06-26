@@ -12,8 +12,11 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         EnsureReadyOptions() = default;
 
         winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions AddPackageOptions();
+        bool RegisterNewerIfAvailable();
+        void RegisterNewerIfAvailable(bool value);
     private:
         winrt::Microsoft::Windows::Management::Deployment::AddPackageOptions m_addPackageOptions{};
+        bool m_registerNewerIfAvailable{};
     };
 }
 namespace winrt::Microsoft::Windows::Management::Deployment::factory_implementation

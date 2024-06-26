@@ -399,6 +399,14 @@ public:
         return m_packageId->publisherId;
     }
 
+    std::wstring PackageFamilyName() const
+    {
+        WCHAR packageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
+        UINT32 packageFamilyNameLength{ ARRAYSIZE(packageFamilyName) };
+        THROW_IF_WIN32_ERROR_MSG(::PackageFamilyNameFromId(m_packageId, &packageFamilyNameLength, packageFamilyName), "%ls", m_packageFullName.c_str());
+        return packageFamilyName;
+    }
+
     explicit operator bool() const
     {
         return m_packageId != nullptr;
@@ -411,6 +419,15 @@ private:
                                         PACKAGE_RESOURCEID_MAX_LENGTH + 1 +
                                         PACKAGE_PUBLISHERID_MAX_LENGTH + 1) * sizeof(WCHAR)]{};
 };
+
+template<typename T>
+T ToPackageFamilyName(PCWSTR packageFullName)
+{
+    WCHAR packageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
+    UINT32 packageFamilyNameLength{ ARRAYSIZE(packageFamilyName) };
+    THROW_IF_WIN32_ERROR_MSG(::PackageFamilyNameFromFullName(packageFullName, &packageFamilyNameLength, packageFamilyName), "%ls", packageFullName);
+    return T{ packageFamilyName };
+}
 }
 
 #endif // __APPMODEL_IDENTITY_H

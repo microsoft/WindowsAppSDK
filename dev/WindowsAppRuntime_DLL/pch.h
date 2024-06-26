@@ -12,6 +12,7 @@
 #include <shellapi.h>
 #include <appmodel.h>
 #include <xmllite.h>
+#include <sddl.h>
 
 #include <string>
 #include <string_view>
@@ -31,6 +32,7 @@
 #include <wil/registry.h>
 #include <wil/com.h>
 #include <wil/win32_helpers.h>
+#include <wil/winrt.h>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
