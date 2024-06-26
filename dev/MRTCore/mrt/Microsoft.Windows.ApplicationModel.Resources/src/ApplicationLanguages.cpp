@@ -9,6 +9,8 @@
 
 #include <AppModel.Identity.h>
 
+#include "Helper.h"
+
 namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 {
     hstring ApplicationLanguages::m_language;
@@ -20,7 +22,14 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 
     winrt::Windows::Foundation::Collections::IVectorView<hstring> ApplicationLanguages::ManifestLanguages()
     {
-        return winrt::Windows::Globalization::ApplicationLanguages::ManifestLanguages();
+        if (AppModel::Identity::IsPackagedProcess())
+        {
+            return winrt::Windows::Globalization::ApplicationLanguages::ManifestLanguages();
+        }
+        else
+        {
+            return {};
+        }
     }
 
     hstring ApplicationLanguages::PrimaryLanguageOverride()
@@ -33,16 +42,18 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 
     void ApplicationLanguages::PrimaryLanguageOverride(hstring const& language)
     {
+        bool isValidLanguageTag = IsWellFormedLanguageTag(language.c_str());
+
+        THROW_HR_IF_MSG(E_INVALIDARG, isValidLanguageTag, "The parameter is incorrect");
+
+        static wil::srwlock lock;
+
+        auto criticalSection {lock.lock_exclusive()};
+        m_language = language;
+
         if (AppModel::Identity::IsPackagedProcess())
         {
             winrt::Windows::Globalization::ApplicationLanguages::PrimaryLanguageOverride(language);
-        }
-        else
-        {
-            static wil::srwlock lock;
-
-            auto criticalSection{ lock.lock_exclusive() };
-            m_language = language;
         }
     }
 } // namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation

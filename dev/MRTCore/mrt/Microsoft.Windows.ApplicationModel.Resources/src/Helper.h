@@ -4,3 +4,4 @@
 #pragma once
 bool IsResourceNotFound(HRESULT hr);
 HRESULT GetDefaultPriFile(winrt::hstring& path);
+bool IsWellFormedLanguageTag(const wchar_t* languageTag);

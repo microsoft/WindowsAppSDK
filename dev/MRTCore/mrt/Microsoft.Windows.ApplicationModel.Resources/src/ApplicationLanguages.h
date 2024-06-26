@@ -25,4 +25,4 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Resources::factory_implem
     struct ApplicationLanguages : ApplicationLanguagesT<ApplicationLanguages, implementation::ApplicationLanguages>
     {
     };
-} // winrt::Microsoft::Windows::ApplicationModel::Resources::factory_implementation
+} // namespace winrt::Microsoft::Windows::ApplicationModel::Resources::factory_implementation
