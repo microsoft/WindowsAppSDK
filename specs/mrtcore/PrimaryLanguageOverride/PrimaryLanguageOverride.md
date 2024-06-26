@@ -1,24 +1,23 @@
 # ApplicationLanguages
 
-This new type (`Microsoft.Windows.ApplicationModel.Resources.ApplicationLanguages`) is a wrapper for
-the OS `Windows.Globalization.ApplicationLanguages` type with the updated behavior for the
-`PrimaryLanguageOverride` property to be supported for un-packaged apps.
+This new type (`Microsoft.Windows.Globalization.ApplicationLanguages`) is a wrapper for the OS
+`Windows.Globalization.ApplicationLanguages` type with the updated behavior for the
+`PrimaryLanguageOverride` property to be supported for unpackaged apps.
 
 # Background
 
 Changing the application language using
 [PrimaryLanguageOverride](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.primarylanguageoverride)
 property from `Windows.Globalization.ApplicationLanguages` namespace is not supported for
-WindowsAppSDK un-packaged apps, only for packaged. To support language change for un-packaged
-applications `ApplicationLanguages` type is introduced in
-`Microsoft.Windows.ApplicationModel.Resources` MRTCore namespace.
-`Microsoft.Windows.ApplicationModel.Resources.ApplicationLanguages.PrimaryLanguageOverride` property
-is supported both for packaged and un-packaged WindowsAppSDK apps.
+WindowsAppSDK unpackaged apps, only for packaged. To support language change for unpackaged
+applications, `Microsoft.Windows.Globalization.ApplicationLanguages` type is introduced in
+MRTCore.`Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride` property is
+supported both for packaged and unpackaged WindowsAppSDK apps.
 
-This new type (`Microsoft.Windows.ApplicationModel.Resources.ApplicationLanguages`) is a wrapper for
-the OS type with the updated behavior for the `PrimaryLanguageOverride` to support un-packaged apps.
-`Microsoft.Windows.ApplicationModel.Resources.ApplicationLanguages` should serve as a replacement
-for the existing OS type (`Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride`).
+This new type (`Microsoft.Windows.Globalization.ApplicationLanguages`) is a wrapper for the OS type
+with the updated behavior for the `PrimaryLanguageOverride` to support unpackaged apps.
+`Microsoft.Windows.Globalization.ApplicationLanguages` should serve as a replacement for the
+existing OS type (`Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride`).
 
 `GetLanguagesForUser(User)` method from `Windows.Globalization.ApplicationLanguages` is being
 intentionally left off due to not being relevant for WinAppSDK.
@@ -44,10 +43,10 @@ claims about conventions that are used in the US such as the measurement system 
 Example:
 
 ```c#
-Microsoft.Windows.ApplicationModel.Resources.ApplicationLanguages.PrimaryLanguageOverride = "en-US";
+Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "en-US";
 ```
 
-Language tags support the Unicode extensions "ca-" and "nu-". (See Unicode Key/Type Definitions.)
+Language tags support the Unicode extensions "ca-" and "nu-" (See Unicode Key/Type Definitions.).
 Note that these extensions can affect the numeral system or calendar used by globalization objects.
 
 ## ApplicationLanguages.Languages property
@@ -78,18 +77,17 @@ section in
 
 ## ApplicationLanguages.ManifestLanguages property
 
-Gets the app's declared list of supported languages.
+Gets the declared list of supported languages in the app's manifest, or empty list for unpackaged
+applications.
 
 # Property Value
 
 [IReadOnlyList](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1)<[String](https://learn.microsoft.com/dotnet/api/system.string)>
 
-The list of supported languages declared in the app's manifest. For un-packaged applications,
-exception is thrown.
-
-Note: This property returns the same values as the language list exposed by
+For packaged applications, the list of supported languages declared in the app's manifest, same as
+the language list exposed by
 [Windows.Globalization.ApplicationLanguages.ManifestLanguages](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.manifestlanguages)
-property.
+property. For unpackaged applications, empty list.
 
 # Remarks
 
@@ -108,7 +106,7 @@ Gets or sets an override for the app's preferred language, expressed as a
 wrapper for
 [Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.primarylanguageoverride)
 property and behaves the same. This setting is global for the running process. Unlike for packaged
-apps, for un-packaged apps, this setting is not persisted between app sessions.
+apps, for unpackaged apps, this setting is not persisted between app sessions.
 
 ```c#
 public static string PrimaryLanguageOverride { get; set; }
@@ -119,10 +117,16 @@ public static string PrimaryLanguageOverride { get; set; }
 [String](https://learn.microsoft.com/dotnet/api/system.string)
 
 A [BCP-47 language tag](https://tools.ietf.org/html/bcp47). The app can set it to override the
-language. It must be a single language tag; a delimited list of language tags will result in default
-language being used.
+language. It must be a single language tag; if delimited list of language tags or any value not
+representing a language tag is used, exception is thrown.
 
-The PrimaryLanguageOverride property should only be set to languages available for the app.
+The PrimaryLanguageOverride property should only be set to languages available for the app. For
+packaged apps, languages available for the app to use are limited to those languages included in the
+main app package manifest. The ApplicationLanguages.ManifestLanguages property reflects language
+resource packages that are available for the user, and returns an appropriate set of languages that
+can be used for setting the PrimaryLanguageOverride property. For unpackaged apps, languages
+available for the app to use are limited to languages for which your app has explicitely declared
+support.
 
 When your app gets the value, PrimaryLanguageOverride returns either a single language tag (if your
 app has previously set the property) or an empty string.
@@ -135,14 +139,15 @@ is used to override that behavior by setting a single specific language.
 
 For packaged apps, `PrimaryLanguageOverride` setting is a wrapper for
 [Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride](https://learn.microsoft.com/uwp/api/windows.globalization.applicationlanguages.primarylanguageoverride)
-property and behaves the same. It is persisted between app sessions.
+property and behaves the same. It is persisted between app sessions. The property should only be set
+based on user input presented in settings UI.
 
-For un-packaged apps, `PrimaryLanguageOverride` setting is not persisted between sessions. It should
+For unpackaged apps, `PrimaryLanguageOverride` setting is not persisted between sessions. It should
 be set each time the app is loaded. You should set PrimaryLanguageOverride setting in early stage of
 app loading, before any resource is loaded.
 
-The property should only be set based on user input presented in settings UI. It can be read at any
-time. If the property has never been set, it returns an empty string.
+The property can be read at any time. If the property has never been set, it returns an empty
+string.
 
 When you set the PrimaryLanguageOverride, this will be immediately reflected in resources loaded
 afterwards, both resources loaded from the code and the resources loaded by XAML. However, this
@@ -162,9 +167,9 @@ public partial class App : Application
         // This will cause the app to use the German (Germany) resources
         // Both resources loaded manually with ResourceLoader and XAML resources fetched with x:Uid
         // will be German (Germany)
-        Microsoft.Windows.ApplicationModel.Resources.ApplicationLanguages.PrimaryLanguageOverride = "de-DE";
+        Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "de-DE";
 
-        Microsoft.Windows.ApplicationModel.Resources.ResourceLoader resourceLoader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader();
+        var resourceLoader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader();
         var resourceString = resourceLoader.GetString("SampleString");
 
         this.InitializeComponent();
@@ -176,7 +181,7 @@ public partial class App : Application
 # API Details
 
 ```c# (but really MIDL3)
-namespace Microsoft.Windows.ApplicationModel.Resources
+namespace Microsoft.Windows.Globalization
 {
   // ...
   [contract(MrtCoreContract, 2)]
