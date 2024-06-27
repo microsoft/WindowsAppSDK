@@ -16,6 +16,18 @@ variables:
 - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-GlobalVariables.yml
 
 stages:
+- stage: BuildInstaller
+  jobs:
+  - job: VerifyInstaller
+    dependsOn: []
+    pool:
+      type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022' # This stage is purely a test stage so we will use our own pools here
+    steps:
+    - template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Steps.yml@self
+
+
 - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
   parameters:
     SignOutput: False
