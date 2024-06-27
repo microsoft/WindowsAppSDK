@@ -10,6 +10,10 @@ parameters:
   default: False
 
 steps:
+  - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
+    parameters:
+      IsOneBranch: false
+      
   - task: NuGetToolInstaller@1
     inputs:
       versionSpec: 6.5.x
