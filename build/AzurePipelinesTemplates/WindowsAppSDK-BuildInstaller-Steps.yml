@@ -10,16 +10,13 @@ parameters:
   default: False
 
 steps:
-  - task: PowerShell@2
-    displayName: 'Add Windows SDK 10.0.17134.0'
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  - task: powershell@2
     inputs:
       targetType: filePath
-      filePath: $(Build.SourcesDirectory)\build\scripts\windows-sdk.ps1
-      arguments: >
-        -SdkVersion "10.0.17134.0"
-      
+      filePath: build\Scripts\Install-WindowsSdkISO.ps1
+      arguments: 17134
+    displayName: 'Install Insider SDK 17134'
+
   - task: NuGetToolInstaller@1
     inputs:
       versionSpec: 6.5.x
