@@ -11,6 +11,7 @@ parameters:
 
 stages:
 - stage: Build
+  dependsOn: []
   jobs:
   - job: VerifyCopyrightHeaders
     dependsOn: []
