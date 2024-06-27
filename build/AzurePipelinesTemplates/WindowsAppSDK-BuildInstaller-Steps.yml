@@ -55,7 +55,7 @@ steps:
   inputs:
     restoreSolution: WindowsAppSDK/build/packages.config
     feedsToUse: config
-    nugetConfigPath: WindowsAppSDK/build/nuget.config
+    nugetConfigPath: WindowsAppSDK/nuget.config
     restoreDirectory: packages
 
 - task: powershell@2
