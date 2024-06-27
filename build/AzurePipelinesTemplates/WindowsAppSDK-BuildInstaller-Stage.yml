@@ -26,4 +26,4 @@ stages:
       ob_artifactSuffix: '_$(buildConfiguration)_$(buildPlatform)'
       ob_artifactBaseName: "Installer$(ob_artifactSuffix)"
     steps:
-    - template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Steps.yml@self
+    - template: WindowsAppSDK-BuildInstaller-Steps.yml@self
