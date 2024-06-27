@@ -1,4 +1,7 @@
 steps:
+###
+# This step downloads the WindowsAppSDK NuGet package from last successful build of the Aggregator's Nightly build
+# for use in building the installers
 - task: DownloadPipelineArtifact@2
   displayName: 'Download WindowsAppSDK'
   inputs:
