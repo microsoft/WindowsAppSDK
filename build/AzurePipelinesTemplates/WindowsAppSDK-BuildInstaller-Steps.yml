@@ -105,7 +105,7 @@ steps:
   - task: PowerShell@2
     displayName: ExtractMSIXPackagesFromNuget
     inputs:
-      filePath: '$(Build.SourcesDirectory)\build\Scripts\ExtractMSIXFromNuget.ps1'
+      filePath: '$(Build.SourcesDirectory)\build\scripts\ExtractMSIXFromNuget.ps1'
       arguments: >
         -Source '$(System.ArtifactsDirectory)'
         -Dest '$(Build.SourcesDirectory)\InstallerInput'
