@@ -7,8 +7,21 @@ import "M.AM.DynamicDependency.idl";
 
 namespace Microsoft.Windows.Management.Deployment
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract PackageDeploymentContract{};
+
+    /// Features can be queried if currently available/enabled.
+    /// @see PackageDeploymentManager.IsPackageDeploymentFeatureSupported()
+    [contract(PackageDeploymentContract, 2)]
+    enum PackageDeploymentFeature
+    {
+        PackageUriScheme_ms_uup             = 1,
+        IsPackageReadyOrNewerAvailable      = 2,
+        RemovePackageByUri                  = 3,
+        ResetPackage                        = 4,
+        RepairPackage                       = 5,
+        ProvisionPackage_Framework          = 6,
+    };
 
     /// Represents a package storage volume.
     /// @note A volume 'name' is the volume's media ID (you can treat 'Volume Name' == 'Volume Media ID').
@@ -69,6 +82,15 @@ namespace Microsoft.Windows.Management.Deployment
         InstallFull,
         InstallStub,
         UsePreference,
+    };
+
+    /// Defines the stub behavior for an app package that is being added or staged.
+    [contract(PackageDeploymentContract, 2)]
+    enum PackageReadyOrNewerAvailableStatus
+    {
+        NotReady             = 0,
+        Ready                = 1,
+        NewerAvailable       = 2,
     };
 
     /// The progress status of the deployment request.
@@ -258,6 +280,9 @@ namespace Microsoft.Windows.Management.Deployment
         EnsureReadyOptions();
 
         AddPackageOptions AddPackageOptions { get; };
+
+        [contract(PackageDeploymentContract, 2)]
+        Boolean RegisterNewerIfAvailable;
     }
 
     [contract(PackageDeploymentContract, 1)]
@@ -265,6 +290,11 @@ namespace Microsoft.Windows.Management.Deployment
     {
         // Get an instance of the manager
         static PackageDeploymentManager GetDefault();
+
+        //-------------------------------------------------------------
+        // IsPackageDeploymentFeatureSupported
+
+        static Boolean IsPackageDeploymentFeatureSupported(PackageDeploymentFeature feature);
 
         //-------------------------------------------------------------
         // IsReady
@@ -275,7 +305,23 @@ namespace Microsoft.Windows.Management.Deployment
 
         Boolean IsPackageReadyByUri(Windows.Foundation.Uri packageUri);
 
+        /// @note packageSet[Item].PackageUri is optional
         Boolean IsPackageSetReady(PackageSet packageSet);
+
+        //-------------------------------------------------------------
+        // IsReadyOrNewerAvailable
+
+        // Return true if the package(s) are present and available for use
+
+        [contract(PackageDeploymentContract, 2)]
+        PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailable(String package);
+
+        [contract(PackageDeploymentContract, 2)]
+        PackageReadyOrNewerAvailableStatus IsPackageReadyOrNewerAvailableByUri(Windows.Foundation.Uri packageUri);
+
+        /// @note packageSet[Item].PackageUri is optional
+        [contract(PackageDeploymentContract, 2)]
+        PackageReadyOrNewerAvailableStatus IsPackageSetReadyOrNewerAvailable(PackageSet packageSet);
 
         //-------------------------------------------------------------
         // EnsureReady
@@ -292,6 +338,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         EnsurePackageReadyByUriAsync(Windows.Foundation.Uri packageUri, EnsureReadyOptions options);
 
+        /// @note packageSet[Item].PackageUri is required
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         EnsurePackageSetReadyAsync(PackageSet packageSet, EnsureReadyOptions options);
 
@@ -304,6 +351,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         AddPackageByUriAsync(Windows.Foundation.Uri packageUri, AddPackageOptions options);
 
+        /// @note packageSet[Item].PackageUri is required
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         AddPackageSetAsync(PackageSet packageSet, AddPackageOptions options);
 
@@ -316,6 +364,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         StagePackageByUriAsync(Windows.Foundation.Uri packageUri, StagePackageOptions options);
 
+        /// @note packageSet[Item].PackageUri is required
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         StagePackageSetAsync(PackageSet packageSet, StagePackageOptions options);
 
@@ -328,6 +377,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RegisterPackageByUriAsync(Windows.Foundation.Uri packageUri, RegisterPackageOptions options);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RegisterPackageSetAsync(PackageSet packageSet, RegisterPackageOptions options);
 
@@ -346,6 +396,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RemovePackageByUriAsync(Windows.Foundation.Uri packageUri, RemovePackageOptions options);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RemovePackageSetAsync(PackageSet packageSet, RemovePackageOptions options);
 
@@ -358,6 +409,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         ResetPackageByUriAsync(Windows.Foundation.Uri packageUri);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         ResetPackageSetAsync(PackageSet packageSet);
 
@@ -370,8 +422,24 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RepairPackageByUriAsync(Windows.Foundation.Uri packageUri);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         RepairPackageSetAsync(PackageSet packageSet);
+
+        //-------------------------------------------------------------
+        // IsProvisioned
+
+        // Return true if the package(s) are provisioned
+
+        [contract(PackageDeploymentContract, 2)]
+        Boolean IsPackageProvisioned(String package);
+
+        [contract(PackageDeploymentContract, 2)]
+        Boolean IsPackageProvisionedByUri(Windows.Foundation.Uri packageUri);
+
+        /// @note packageSet[Item].PackageUri is optional
+        [contract(PackageDeploymentContract, 2)]
+        Boolean IsPackageSetProvisioned(PackageSet packageSet);
 
         //-------------------------------------------------------------
         // Provision packages
@@ -382,6 +450,7 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         ProvisionPackageByUriAsync(Windows.Foundation.Uri packageUri, ProvisionPackageOptions options);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         ProvisionPackageSetAsync(PackageSet packageSet, ProvisionPackageOptions options);
 
@@ -394,15 +463,16 @@ namespace Microsoft.Windows.Management.Deployment
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         DeprovisionPackageByUriAsync(Windows.Foundation.Uri packageUri);
 
+        /// @note packageSet[Item].PackageUri is optional
         Windows.Foundation.IAsyncOperationWithProgress<PackageDeploymentResult, PackageDeploymentProgress>
         DeprovisionPackageSetAsync(PackageSet packageSet);
 
         //-------------------------------------------------------------
         // IsRegistrationPending
 
-        Boolean IsPackageRegistrationPending(String packageFamilyName);
+        Boolean IsPackageRegistrationPending(String packageFullName);
 
-        Boolean IsPackageRegistrationPendingForUser(String userSecurityId, String packageFamilyName);
+        Boolean IsPackageRegistrationPendingForUser(String userSecurityId, String packageFullName);
     }
 
     [contract(PackageDeploymentContract, 1)]

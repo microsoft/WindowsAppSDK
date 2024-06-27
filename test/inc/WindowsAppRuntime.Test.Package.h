@@ -8,6 +8,7 @@
 
 #include <WindowsAppRuntime.Test.FileSystem.h>
 #include <winrt/Windows.Management.Deployment.h>
+#include <winrt/Windows.ApplicationModel.h>
 #include <WexTestClass.h>
 
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION            0x0004000107AF014DLLu
@@ -126,19 +127,36 @@ namespace DeploymentWindowsAppRuntimeSingleton
     constexpr PCWSTR c_PackageFullName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 
-inline std::wstring GetPackagePath(PCWSTR packageFullName)
+template <typename T=std::wstring>
+inline T GetPackagePath(PCWSTR packageFullName)
 {
     UINT32 pathLength{};
-    const auto rc{ GetPackagePathByFullName(packageFullName, &pathLength, nullptr) };
+    const auto rc{ ::GetPackagePathByFullName(packageFullName, &pathLength, nullptr) };
     if (rc == ERROR_NOT_FOUND)
     {
-        return std::wstring();
+        return T{};
     }
 
     VERIFY_ARE_EQUAL(ERROR_INSUFFICIENT_BUFFER, rc);
-    auto path = wil::make_process_heap_string(nullptr, pathLength);
+    auto path{ wil::make_process_heap_string(nullptr, pathLength) };
     VERIFY_ARE_EQUAL(ERROR_SUCCESS, GetPackagePathByFullName(packageFullName, &pathLength, path.get()));
-    return std::wstring(path.get());
+    return T{ path.get() };
+}
+
+template <typename T=std::wstring>
+inline T GetStagedPackagePath(PCWSTR packageFullName)
+{
+    UINT32 pathLength{};
+    const auto rc{ ::GetStagedPackagePathByFullName(packageFullName, &pathLength, nullptr) };
+    if (rc == ERROR_NOT_FOUND)
+    {
+        return T{};
+    }
+
+    VERIFY_ARE_EQUAL(ERROR_INSUFFICIENT_BUFFER, rc);
+    auto path{ wil::make_process_heap_string(nullptr, pathLength) };
+    VERIFY_ARE_EQUAL(ERROR_SUCCESS, ::GetStagedPackagePathByFullName(packageFullName, &pathLength, path.get()));
+    return T{ path.get() };
 }
 
 #if defined(__APPMODEL_IDENTITY_H)
@@ -188,19 +206,6 @@ inline bool IsPackageRegistered(PCWSTR packageFullName)
 
 inline bool IsPackageStaged(PCWSTR packageFullName)
 {
-#if 0
-    UINT32 pathLength{};
-    const auto rc{ ::GetStagedPackagePathByFullName(packageFullName, &pathLength, nullptr) };
-    if (rc == ERROR_INSUFFICIENT_BUFFER)
-    {
-        return true;
-    }
-    else if (rc == HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
-    {
-        return false;
-    }
-    THROW_WIN32(rc);
-#else
     // Check if the package is staged
     PackageOrigin packageOrigin{};
     const auto rc{ GetStagedPackageOrigin(packageFullName, &packageOrigin) };
@@ -213,7 +218,6 @@ inline bool IsPackageStaged(PCWSTR packageFullName)
         return false;
     }
     THROW_WIN32(rc);
-#endif
 }
 
 inline bool IsPackageAvailable(PCWSTR packageFullName)
@@ -229,21 +233,26 @@ inline std::filesystem::path GetMsixPackagePath(PCWSTR packageDirName)
 {
     // Build the target package's .msix filename. It's under the Solution's $(OutDir)
     // NOTE: It could live in ...\Something.msix\... or ...\Something\...
-    auto solutionOutDirPath = ::Test::FileSystem::GetSolutionOutDirPath();
-    //
+    auto solutionOutDirPath{ ::Test::FileSystem::GetSolutionOutDirPath() };
+
+    // Filename is packagedirName plus .msix (if not already present)
+    std::filesystem::path filename{ packageDirName };
+    if (CompareStringOrdinal(filename.extension().c_str(), -1, L".msix", -1, TRUE) != CSTR_EQUAL)
+    {
+        filename += L".msix";
+    }
+
     // Look in ...\Something.msix\...
     auto msix(solutionOutDirPath);
     msix /= packageDirName;
     msix += L".msix";
-    msix /= packageDirName;
-    msix += L".msix";
+    msix /= filename;
     if (!std::filesystem::is_regular_file(msix))
     {
         // Look in ...\Something\...
         msix = solutionOutDirPath;
         msix /= packageDirName;
-        msix /= packageDirName;
-        msix += L".msix";
+        msix /= filename;
         WIN32_FILE_ATTRIBUTE_DATA data{};
         const auto ok{ GetFileAttributesExW(msix.c_str(), GetFileExInfoStandard, &data) };
         const auto lastError{ ::GetLastError() };
@@ -264,15 +273,37 @@ inline winrt::Windows::Foundation::Uri GetMsixPackageUri(PCWSTR packageDirName)
     return winrt::Windows::Foundation::Uri{ path.c_str() };
 }
 
+inline std::filesystem::path GetAppxManifestPackagePath(PCWSTR packageFullName)
+{
+    auto path{ GetStagedPackagePath<std::filesystem::path>(packageFullName) };
+    return path / L"AppxManifest.xml";
+}
+
+inline winrt::Windows::Foundation::Uri GetAppxManifestPackageUri(PCWSTR packageFullName)
+{
+    auto path{ GetAppxManifestPackagePath(packageFullName) };
+    return winrt::Windows::Foundation::Uri{ path.c_str() };
+}
+
 inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
 {
     auto msixUri{ GetMsixPackageUri(packageDirName) };
 
-    // Install the package
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
     auto deploymentResult{ packageManager.AddPackageAsync(msixUri, nullptr, options).get() };
     VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+}
+
+inline void AddPackageDefer(PCWSTR packageDirName, PCWSTR packageFullName)
+{
+    auto msixUri{ GetMsixPackageUri(packageDirName) };
+
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    winrt::Windows::Management::Deployment::AddPackageOptions options;
+    options.DeferRegistrationWhenPackagesAreInUse(true);
+    auto deploymentResult{ packageManager.AddPackageByUriAsync(msixUri, options).get() };
+    VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageByUriAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
 }
 
 inline void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
@@ -288,11 +319,23 @@ inline void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
     }
 }
 
+inline void AddPackageDeferIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
+{
+    if (IsPackageRegistered(packageFullName))
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"AddPackageDeferIfNecessary: %s already registered", packageFullName));
+    }
+    else
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"AddPackageDeferIfNecessary: %s not registered, adding...", packageFullName));
+        AddPackageDefer(packageDirName, packageFullName);
+    }
+}
+
 inline void StagePackage(PCWSTR packageDirName, PCWSTR packageFullName)
 {
     auto msixUri{ GetMsixPackageUri(packageDirName) };
 
-    // Install the package
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
     auto deploymentResult{ packageManager.StagePackageAsync(msixUri, nullptr, options).get() };
@@ -312,6 +355,29 @@ inline void StagePackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullNam
     }
 }
 
+inline void RegisterPackage(PCWSTR packageFullName)
+{
+    winrt::hstring mainPackageFullName{ packageFullName };
+
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
+    auto deploymentResult{ packageManager.RegisterPackageByFullNameAsync(mainPackageFullName, nullptr, options).get() };
+    VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"RegisterPackageByFullNameAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+}
+
+inline void RegisterPackageIfNecessary(PCWSTR packageFullName)
+{
+    if (IsPackageRegistered(packageFullName))
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"RegisterPackageIfNecessary: %s already registered", packageFullName));
+    }
+    else
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"RegisterPackageIfNecessary: %s not registered, adding...", packageFullName));
+        RegisterPackage(packageFullName);
+    }
+}
+
 inline void RemovePackage(PCWSTR packageFullName)
 {
     winrt::Windows::Management::Deployment::PackageManager packageManager;
@@ -327,6 +393,63 @@ inline void RemovePackageIfNecessary(PCWSTR packageFullName)
     if (IsPackageRegistered(packageFullName))
     {
         RemovePackage(packageFullName);
+    }
+}
+
+inline bool IsPackageProvisioned(PCWSTR packageFamilyName)
+{
+    // We have no random access check for a specific package family
+    // so we'll have to brute force it by scanning the list of all
+    // provisioned packages for the one we're interested in
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    const auto provisionedPackages{ packageManager.FindProvisionedPackages() };
+    for (const winrt::Windows::ApplicationModel::Package& provisionedPackage: provisionedPackages)
+    {
+        if (CompareStringOrdinal(packageFamilyName, -1, provisionedPackage.Id().FamilyName().c_str(), -1, TRUE) == CSTR_EQUAL)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+inline void ProvisionPackage(PCWSTR packageFamilyName)
+{
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    auto deploymentResult{ packageManager.ProvisionPackageForAllUsersAsync(packageFamilyName).get() };
+    VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"ProvisionPackageForAllUsersAsync('%s') = 0x%0X %s", packageFamilyName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+}
+
+inline void ProvisionPackageIfNecessary(PCWSTR packageFamilyName)
+{
+    if (IsPackageProvisioned(packageFamilyName))
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ProvisionPackageIfNecessary: %s already provisioned", packageFamilyName));
+    }
+    else
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ProvisionPackageIfNecessary: %s not provisioned, provisioning...", packageFamilyName));
+        ProvisionPackage(packageFamilyName);
+    }
+}
+
+inline void DeprovisionPackage(PCWSTR packageFamilyName)
+{
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    auto deploymentResult{ packageManager.DeprovisionPackageForAllUsersAsync(packageFamilyName).get() };
+    VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"DeprovisionPackageForAllUsersAsync('%s') = 0x%0X %s", packageFamilyName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+}
+
+inline void DeprovisionPackageIfNecessary(PCWSTR packageFamilyName)
+{
+    if (IsPackageProvisioned(packageFamilyName))
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"DeprovisionPackageIfNecessary: %s is provisioned, deprovisioning...", packageFamilyName));
+        DeprovisionPackage(packageFamilyName);
+    }
+    else
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"DeprovisionPackageIfNecessary: %s not provisioned", packageFamilyName));
     }
 }
 
