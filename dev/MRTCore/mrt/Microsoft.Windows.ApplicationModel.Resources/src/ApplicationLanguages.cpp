@@ -42,7 +42,7 @@ namespace winrt::Microsoft::Windows::Globalization::implementation
 
     void ApplicationLanguages::PrimaryLanguageOverride(hstring const& language)
     {
-        bool isValidLanguageTag = IsWellFormedLanguageTag(language.c_str());
+        bool isValidLanguageTag = _DefIsWellFormedTag(language.c_str());
 
         THROW_HR_IF_MSG(E_INVALIDARG, !isValidLanguageTag, "The parameter is incorrect");
 

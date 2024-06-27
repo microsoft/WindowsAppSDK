@@ -87,30 +87,66 @@ HRESULT GetDefaultPriFile(winrt::hstring& filePath)
     return GetDefaultPriFileForCurentModule(isPackaged, filePath);
 }
 
-bool IsWellFormedLanguageTag(const wchar_t* languageTag)
+// Taken from Platform.h/.cpp
+typedef bool(WINAPI* IsWellFormedTagFunc)(PCWSTR);
+HMODULE g_bcp47 = (HMODULE)(-1);
+
+HMODULE LoadBcp47ModuleFrom(_In_ PCWSTR moduleName)
 {
-    // Implementation taken from Platform.h, without accepting semi-colon, as it must be a single language tag
-    if (languageTag == nullptr || *languageTag == L'\0')
+    HMODULE module = LoadLibraryExW(moduleName, nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    if (module != nullptr)
     {
-        return FALSE;
+        // All BCP47 APIs we are interested are always exported from the same dll together. So we just pick anyone for probe.
+        IsWellFormedTagFunc func = (IsWellFormedTagFunc)(GetProcAddress(module, "IsWellFormedTag"));
+        if (func != nullptr)
+        {
+            return module;
+        }
+        FreeLibrary(module);
     }
 
-    BOOLEAN ok = TRUE;
-    PCWSTR test = languageTag;
+    return nullptr;
+}
 
-    while (ok && (*test != L'\0'))
+HMODULE LoadBcp47Module()
+{
+    HMODULE module = LoadBcp47ModuleFrom(L"bcp47mrm.dll");
+    if (module == nullptr)
     {
-        // we accept letters, numbers and dash
-        if (((*test >= L'0') && (*test <= L'9')) || ((*test >= L'a') && (*test <= L'z')) || ((*test >= L'A') && (*test <= L'Z')) ||
-            (*test == L'-'))
-        {
-            test++;
-        }
-        else
-        {
-            ok = FALSE;
-        }
+        // In downlevel OS, the API is exposed by bcp47langs.dll.
+        module = LoadBcp47ModuleFrom(L"bcp47langs.dll");
     }
 
-    return ok && ((test - languageTag) >= 2);
+    return module;
+}
+
+void InitializeBcp47Module()
+{
+    HMODULE comparand = (HMODULE)(-1);
+    if (InterlockedCompareExchangePointer(reinterpret_cast<PVOID*>(&g_bcp47), comparand, comparand) == comparand)
+    {
+        HMODULE module = LoadBcp47Module();
+        InterlockedExchangePointer(reinterpret_cast<PVOID*>(&g_bcp47), module);
+    }
+}
+
+BOOLEAN _DefIsWellFormedTag(_In_ PCWSTR tag)
+{
+    // Before new SDK is released, we need to use LoadLibrary/GetProcAddress
+    InitializeBcp47Module();
+
+    if (g_bcp47 == nullptr)
+    {
+        // Didn't find an implementation. Just return TRUE.
+        return TRUE;
+    }
+
+    IsWellFormedTagFunc func = (IsWellFormedTagFunc)(GetProcAddress(g_bcp47, "IsWellFormedTag"));
+    if (func != nullptr)
+    {
+        return func(tag);
+    }
+
+    // Should not reach here.
+    return TRUE;
 }
