@@ -14,7 +14,10 @@ parameters:
 - name: UseCurrentBuild
   type: boolean
   default: False 
-
+- name: CheckoutPath
+  type: string
+  default: "" 
+  
 steps:
 - ${{ if eq(parameters.UseCurrentBuild, 'True') }}:
   - task: DownloadPipelineArtifact@2
@@ -47,22 +50,22 @@ steps:
   name: ConvertVersionDetailsToPackageConfig
   displayName: "Convert VersionDetails To PackageConfig"
   inputs:
-    filePath: '$(Build.SourcesDirectory)\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
-    arguments: -versionDetailsPath '$(Build.SourcesDirectory)\eng\Version.Details.xml' -packageConfigPath '$(Build.SourcesDirectory)\build\packages.config'
+    filePath: '$(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
+    arguments: -versionDetailsPath '$(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\eng\Version.Details.xml' -packageConfigPath '$(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\build\packages.config'
 
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
   displayName: RestoreNuGetPackages
   inputs:
-    restoreSolution: $(Build.SourcesDirectory)/build/packages.config
+    restoreSolution: $(Build.SourcesDirectory)${{ parameters.CheckoutPath }}/build/packages.config
     feedsToUse: config
-    nugetConfigPath: $(Build.SourcesDirectory)/nuget.config
+    nugetConfigPath: $(Build.SourcesDirectory)${{ parameters.CheckoutPath }}/nuget.config
     restoreDirectory: packages
 
 - task: powershell@2
   displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
   inputs:
     targetType: filePath
-    filePath: eng\common\DevCheck.ps1
+    filePath: ${{ parameters.CheckoutPath }}eng\common\DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
     workingDirectory: '$(Build.SourcesDirectory)'
 
@@ -70,7 +73,7 @@ steps:
   displayName: 'Install test certificate for MSIX test packages (DevCheck)'
   inputs:
     targetType: filePath
-    filePath: eng\common\DevCheck.ps1
+    filePath: ${{ parameters.CheckoutPath }}eng\common\DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -CheckTestCert
     workingDirectory: '$(Build.SourcesDirectory)'
 
@@ -81,20 +84,20 @@ steps:
 - task: CopyFiles@2
   displayName: 'Copy licenses to target folder'
   inputs:
-    SourceFolder: '$(Build.SourcesDirectory)\build\packages\$(AppLicensingInternalPackageName).$(AppLicensingInternalPackageVersion)\licenses'
+    SourceFolder: '$(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\build\packages\$(AppLicensingInternalPackageName).$(AppLicensingInternalPackageVersion)\licenses'
     Contents: |
       *.xml
-    TargetFolder: '$(Build.SourcesDirectory)\InstallerInput'
+    TargetFolder: '$(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\InstallerInput'
     flattenFolders: false
 
 # Copy license installation header into the correct installer source location.
 - task: CopyFiles@2
   displayName: 'Extract files needed for Nuget package'
   inputs:
-    SourceFolder: '$(Build.SourcesDirectory)\build\packages\$(AppLicensingInternalPackageName).$(AppLicensingInternalPackageVersion)\src'
+    SourceFolder: '$(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\build\packages\$(AppLicensingInternalPackageName).$(AppLicensingInternalPackageVersion)\src'
     Contents: |
       *.h
-    TargetFolder: '$(Build.SourcesDirectory)\installer\dev'
+    TargetFolder: '$(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\installer\dev'
     flattenFolders: false
     overWrite: true
 
@@ -105,7 +108,7 @@ steps:
 - task: PowerShell@2
   displayName: ExtractMSIXPackagesFromNuget
   inputs:
-    filePath: '$(Build.SourcesDirectory)\build\scripts\ExtractMSIXFromNuget.ps1'
+    filePath: '$(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\build\scripts\ExtractMSIXFromNuget.ps1'
     arguments: >
       -Source '$(System.ArtifactsDirectory)'
       -Dest '$(Build.SourcesDirectory)\InstallerInput'
@@ -113,7 +116,7 @@ steps:
 - task: PowerShell@2
   displayName: CreateInstallerOverrideHeader
   inputs:
-    filePath: '$(Build.SourcesDirectory)\build\Scripts\CreateInstallerOverrideHeader.ps1'
+    filePath: '$(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\build\Scripts\CreateInstallerOverrideHeader.ps1'
     arguments: >
       -SourceFolder '$(Build.SourcesDirectory)\InstallerInput'
       -DestinationFolder '$(Build.SourcesDirectory)\InstallerInput'
@@ -123,9 +126,9 @@ steps:
   displayName: 'Restore Windows App Runtime Install Nuget'
   inputs:
     command: 'restore'
-    restoreSolution: installer\WindowsAppRuntimeInstall.sln
+    restoreSolution: ${{ parameters.CheckoutPath }}installer\WindowsAppRuntimeInstall.sln
     feedsToUse: config
-    nugetConfigPath: $(Build.SourcesDirectory)\nuget.config
+    nugetConfigPath: $(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\nuget.config
 
 - task: CopyFiles@2
   displayName: 'Copy installer override header'
@@ -147,7 +150,7 @@ steps:
   inputs:
     command: "custom"
     arguments:
-        'restore $(Build.SourcesDirectory)\installer\dev\telemetry\packages.config -ConfigFile $(Build.SourcesDirectory)\nuget.config -PackagesDirectory $(Build.SourcesDirectory)\packages'
+        'restore $(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\installer\dev\telemetry\packages.config -ConfigFile $(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\nuget.config -PackagesDirectory $(Build.SourcesDirectory)\packages'
 
 # Overwrite wil\Traceloggingconfig.h content in public nuget with that of MicrosoftTelemetry.h from internal nuget
 # This step enables telemetry in the Installer
@@ -201,12 +204,12 @@ steps:
     microsoftDropReadPat: $(System.AccessToken)
     compilerPackageName: $(compilerOverridePackageName)
     compilerPackageVersion: $(compilerOverridePackageVersion)
-    slnDirectory: $(Build.SourcesDirectory)\installer\dev
+    slnDirectory: $(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\installer\dev
 
 - task: VSBuild@1
   displayName: 'Build Windows App Runtime Install'
   inputs:
-    solution: installer\dev\WindowsAppRuntimeInstall.vcxproj
+    solution: ${{ parameters.CheckoutPath }}installer\dev\WindowsAppRuntimeInstall.vcxproj
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
@@ -231,16 +234,16 @@ steps:
     failOnAlert: true
 
 - ${{ if eq(parameters.IsOneBranch, 'true') }}:
-  - template: ${{variables['System.DefaultWorkingDirectory']}}\build\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml
+  - template: ${{variables['System.DefaultWorkingDirectory']}}${{ parameters.CheckoutPath }}\build\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml
     parameters:
-      SearchPattern: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
+      SearchPattern: '$(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
       IsOfficial: ${{ parameters.IsOfficial }}
-      PublishPublicSymbolsPowershellPath: '$(Build.SourcesDirectory)\eng\common\Scripts\PublishPublicSymbols.ps1'
+      PublishPublicSymbolsPowershellPath: '$(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\eng\common\Scripts\PublishPublicSymbols.ps1'
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
-  - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+  - template: ${{variables['System.DefaultWorkingDirectory']}}${{ parameters.CheckoutPath }}\AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
     parameters:
-      FolderPath: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall'
+      FolderPath: $(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall'
       Pattern: WindowsAppRuntimeInstall*.exe
       UseMinimatch: true
       KeyCode: 'CP-230012'
@@ -255,7 +258,7 @@ steps:
   displayName: 'Remove test certificate for MSIX test packages (DevCheck)'
   inputs:
     targetType: filePath
-    filePath: eng\common\DevCheck.ps1
+    filePath: ${{ parameters.CheckoutPath }}eng\common\DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -RemoveTestCert -RemoveTestPfx
     workingDirectory: '$(Build.SourcesDirectory)'
 
