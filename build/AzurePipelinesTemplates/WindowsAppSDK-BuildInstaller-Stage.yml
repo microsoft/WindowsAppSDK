@@ -25,5 +25,8 @@ stages:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_artifactSuffix: '_$(buildConfiguration)_$(buildPlatform)'
       ob_artifactBaseName: "Installer$(ob_artifactSuffix)"
+      FoundationRepoName: "WindowsAppSDK"
     steps:
+    - checkout: self
+      path: "$(Pipeline.Workspace)/$(FoundationRepoName)"
     - template: WindowsAppSDK-BuildInstaller-Steps.yml@self
