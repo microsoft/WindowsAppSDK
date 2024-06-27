@@ -17,6 +17,7 @@ namespace winrt::Microsoft::Windows::Globalization::implementation
 
     private:
         static hstring m_language;
+        static wil::srwlock m_lock;
     };
 } // namespace winrt::Microsoft::Windows::Globalization::implementation
 

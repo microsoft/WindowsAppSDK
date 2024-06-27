@@ -14,6 +14,8 @@
 namespace winrt::Microsoft::Windows::Globalization::implementation
 {
     hstring ApplicationLanguages::m_language;
+    wil::srwlock ApplicationLanguages::m_lock;
+
 
     winrt::Windows::Foundation::Collections::IVectorView<hstring> ApplicationLanguages::Languages()
     {
@@ -34,9 +36,7 @@ namespace winrt::Microsoft::Windows::Globalization::implementation
 
     hstring ApplicationLanguages::PrimaryLanguageOverride()
     {
-        static wil::srwlock lock;
-
-        auto criticalSection{ lock.lock_shared() };
+        auto criticalSection{ m_lock.lock_shared() };
         return m_language;
     }
 
@@ -46,9 +46,7 @@ namespace winrt::Microsoft::Windows::Globalization::implementation
 
         THROW_HR_IF_MSG(E_INVALIDARG, !isValidLanguageTag, "The parameter is incorrect");
 
-        static wil::srwlock lock;
-
-        auto criticalSection {lock.lock_exclusive()};
+        auto criticalSection {m_lock.lock_exclusive()};
         m_language = language;
 
         if (AppModel::Identity::IsPackagedProcess())
