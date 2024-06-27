@@ -47,22 +47,22 @@ steps:
   name: ConvertVersionDetailsToPackageConfig
   displayName: "Convert VersionDetails To PackageConfig"
   inputs:
-    filePath: '$(Build.SourcesDirectory)\$(FoundationRepoName)\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
-    arguments: -versionDetailsPath '$(Build.SourcesDirectory)\$(FoundationRepoName)\eng\Version.Details.xml' -packageConfigPath '$(Build.SourcesDirectory)\$(FoundationRepoName)\build\packages.config'
+    filePath: '$(Build.SourcesDirectory)\WindowsAppSDK\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
+    arguments: -versionDetailsPath '$(Build.SourcesDirectory)\WindowsAppSDK\eng\Version.Details.xml' -packageConfigPath '$(Build.SourcesDirectory)\WindowsAppSDK\build\packages.config'
 
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
   displayName: RestoreNuGetPackages
   inputs:
-    restoreSolution: $(FoundationRepoName)/build/packages.config
+    restoreSolution: WindowsAppSDK/build/packages.config
     feedsToUse: config
-    nugetConfigPath: $(FoundationRepoName)/build/nuget.config
+    nugetConfigPath: WindowsAppSDK/build/nuget.config
     restoreDirectory: packages
 
 - task: powershell@2
   displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
   inputs:
     targetType: filePath
-    filePath: $(FoundationRepoName)\eng\common\DevCheck.ps1
+    filePath: WindowsAppSDK\eng\common\DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
     workingDirectory: '$(Build.SourcesDirectory)'
 
@@ -70,7 +70,7 @@ steps:
   displayName: 'Install test certificate for MSIX test packages (DevCheck)'
   inputs:
     targetType: filePath
-    filePath: $(FoundationRepoName)\eng\common\DevCheck.ps1
+    filePath: WindowsAppSDK\eng\common\DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -CheckTestCert
     workingDirectory: '$(Build.SourcesDirectory)'
 
@@ -81,7 +81,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'Copy licenses to target folder'
   inputs:
-    SourceFolder: '$(Build.SourcesDirectory)\$(FoundationRepoName)\build\packages\$(AppLicensingInternalPackageName).$(AppLicensingInternalPackageVersion)\licenses'
+    SourceFolder: '$(Build.SourcesDirectory)\WindowsAppSDK\build\packages\$(AppLicensingInternalPackageName).$(AppLicensingInternalPackageVersion)\licenses'
     Contents: |
       *.xml
     TargetFolder: '$(Build.SourcesDirectory)\InstallerInput'
@@ -91,10 +91,10 @@ steps:
 - task: CopyFiles@2
   displayName: 'Extract files needed for Nuget package'
   inputs:
-    SourceFolder: '$(Build.SourcesDirectory)\$(FoundationRepoName)\build\packages\$(AppLicensingInternalPackageName).$(AppLicensingInternalPackageVersion)\src'
+    SourceFolder: '$(Build.SourcesDirectory)\WindowsAppSDK\build\packages\$(AppLicensingInternalPackageName).$(AppLicensingInternalPackageVersion)\src'
     Contents: |
       *.h
-    TargetFolder: '$(Build.SourcesDirectory)\$(FoundationRepoName)\installer\dev'
+    TargetFolder: '$(Build.SourcesDirectory)\WindowsAppSDK\installer\dev'
     flattenFolders: false
     overWrite: true
 
@@ -105,7 +105,7 @@ steps:
 - task: PowerShell@2
   displayName: ExtractMSIXPackagesFromNuget
   inputs:
-    filePath: '$(Build.SourcesDirectory)\$(FoundationRepoName)\build\Scripts\ExtractMSIXFromNuget.ps1'
+    filePath: '$(Build.SourcesDirectory)\WindowsAppSDK\build\Scripts\ExtractMSIXFromNuget.ps1'
     arguments: >
       -Source '$(System.ArtifactsDirectory)'
       -Dest '$(Build.SourcesDirectory)\InstallerInput'
@@ -113,7 +113,7 @@ steps:
 - task: PowerShell@2
   displayName: CreateInstallerOverrideHeader
   inputs:
-    filePath: '$(Build.SourcesDirectory)\$(FoundationRepoName)\build\Scripts\CreateInstallerOverrideHeader.ps1'
+    filePath: '$(Build.SourcesDirectory)\WindowsAppSDK\build\Scripts\CreateInstallerOverrideHeader.ps1'
     arguments: >
       -SourceFolder '$(Build.SourcesDirectory)\InstallerInput'
       -DestinationFolder '$(Build.SourcesDirectory)\InstallerInput'
@@ -123,9 +123,9 @@ steps:
   displayName: 'Restore Windows App Runtime Install Nuget'
   inputs:
     command: 'restore'
-    restoreSolution: $(FoundationRepoName)\installer\WindowsAppRuntimeInstall.sln
+    restoreSolution: WindowsAppSDK\installer\WindowsAppRuntimeInstall.sln
     feedsToUse: config
-    nugetConfigPath: $(Build.SourcesDirectory)\$(FoundationRepoName)\nuget.config
+    nugetConfigPath: $(Build.SourcesDirectory)\WindowsAppSDK\nuget.config
 
 - task: CopyFiles@2
   displayName: 'Copy installer override header'
@@ -133,7 +133,7 @@ steps:
     SourceFolder: '$(Build.SourcesDirectory)\InstallerInput'
     Contents: |
       windowsappruntime_definitions_override.h
-    TargetFolder: $(FoundationRepoName)\installer\dev
+    TargetFolder: WindowsAppSDK\installer\dev
     flattenFolders: false
 
 - task: NuGetAuthenticate@1
@@ -147,7 +147,7 @@ steps:
   inputs:
     command: "custom"
     arguments:
-        'restore $(Build.SourcesDirectory)\$(FoundationRepoName)\installer\dev\telemetry\packages.config -ConfigFile $(Build.SourcesDirectory)\$(FoundationRepoName)\nuget.config -PackagesDirectory $(Build.SourcesDirectory)\$(FoundationRepoName)\packages'
+        'restore $(Build.SourcesDirectory)\WindowsAppSDK\installer\dev\telemetry\packages.config -ConfigFile $(Build.SourcesDirectory)\WindowsAppSDK\nuget.config -PackagesDirectory $(Build.SourcesDirectory)\WindowsAppSDK\packages'
 
 # Overwrite wil\Traceloggingconfig.h content in public nuget with that of MicrosoftTelemetry.h from internal nuget
 # This step enables telemetry in the Installer
@@ -156,10 +156,10 @@ steps:
   inputs:
     targetType: "inline"
     script: |
-        $srcPath = Get-Childitem -Path '$(Build.SourcesDirectory)\$(FoundationRepoName)\packages\' -File 'MicrosoftTelemetry.h' -Recurse
+        $srcPath = Get-Childitem -Path '$(Build.SourcesDirectory)\WindowsAppSDK\packages\' -File 'MicrosoftTelemetry.h' -Recurse
         if ($srcPath -ne $null)
         {
-          $destinationPaths = Get-Childitem -Path '$(Build.SourcesDirectory)\$(FoundationRepoName)\packages\' -File 'Traceloggingconfig.h' -Recurse
+          $destinationPaths = Get-Childitem -Path '$(Build.SourcesDirectory)\WindowsAppSDK\packages\' -File 'Traceloggingconfig.h' -Recurse
           if ($destinationPaths -ne $null)
           {
             foreach ($destPath in $destinationPaths)
@@ -169,14 +169,14 @@ steps:
           }
           else
           {
-            Write-Host Did not find the destination wil/traceloggingconfig.h under $(Build.SourcesDirectory)\$(FoundationRepoName)\packages\
-            Get-Childitem -Path '$(Build.SourcesDirectory)\$(FoundationRepoName)\packages\' -Recurse
+            Write-Host Did not find the destination wil/traceloggingconfig.h under $(Build.SourcesDirectory)\WindowsAppSDK\packages\
+            Get-Childitem -Path '$(Build.SourcesDirectory)\WindowsAppSDK\packages\' -Recurse
           }
         }
         else
         {
-          Write-Host Did not find the source MicrosoftTelemetry.h under $(Build.SourcesDirectory)\$(FoundationRepoName)\packages\
-          Get-Childitem -Path '$(Build.SourcesDirectory)\$(FoundationRepoName)\packages\' -Recurse
+          Write-Host Did not find the source MicrosoftTelemetry.h under $(Build.SourcesDirectory)\WindowsAppSDK\packages\
+          Get-Childitem -Path '$(Build.SourcesDirectory)\WindowsAppSDK\packages\' -Recurse
         }
 
 # Extract Microsoft.WindowsAppSDK Nuget package artifact published by BuildWindowsAppSDKPackages job of Aggregate stage,
@@ -188,12 +188,12 @@ steps:
     targetType: "inline"
     script: |
       $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK*'
-      Copy-Item -Force $srcWinAppSDKNupkgPath.FullName '$(Build.SourcesDirectory)\$(FoundationRepoName)\packages\'
-      $destWinAppSDKNupkgPath = Get-Childitem -Path '$(Build.SourcesDirectory)\$(FoundationRepoName)\packages\' -File '*Microsoft.WindowsAppSDK*'
+      Copy-Item -Force $srcWinAppSDKNupkgPath.FullName '$(Build.SourcesDirectory)\WindowsAppSDK\packages\'
+      $destWinAppSDKNupkgPath = Get-Childitem -Path '$(Build.SourcesDirectory)\WindowsAppSDK\packages\' -File '*Microsoft.WindowsAppSDK*'
       $winAppSDKZip = $destWinAppSDKNupkgPath.FullName -replace '.nupkg','.zip'
       Rename-Item -Path $destWinAppSDKNupkgPath.FullName -NewName $winAppSDKZip
       Expand-Archive $winAppSDKZip -DestinationPath ($destWinAppSDKNupkgPath.Directory.FullName + '\' + $destWinAppSDKNupkgPath.BaseName)
-      Copy-Item -Force ($destWinAppSDKNupkgPath.Directory.FullName + '\' + $destWinAppSDKNupkgPath.BaseName + "\include\WindowsAppSDK-VersionInfo.h") '$(Build.SourcesDirectory)\$(FoundationRepoName)\installer\dev\'
+      Copy-Item -Force ($destWinAppSDKNupkgPath.Directory.FullName + '\' + $destWinAppSDKNupkgPath.BaseName + "\include\WindowsAppSDK-VersionInfo.h") '$(Build.SourcesDirectory)\WindowsAppSDK\installer\dev\'
 
 - task: WinUndockNativeCompiler@1
   displayName: 'Setup native compiler version override'
@@ -201,12 +201,12 @@ steps:
     microsoftDropReadPat: $(System.AccessToken)
     compilerPackageName: $(compilerOverridePackageName)
     compilerPackageVersion: $(compilerOverridePackageVersion)
-    slnDirectory: $(Build.SourcesDirectory)\$(FoundationRepoName)\installer\dev
+    slnDirectory: $(Build.SourcesDirectory)\WindowsAppSDK\installer\dev
 
 - task: VSBuild@1
   displayName: 'Build Windows App Runtime Install'
   inputs:
-    solution: $(FoundationRepoName)\installer\dev\WindowsAppRuntimeInstall.vcxproj
+    solution: WindowsAppSDK\installer\dev\WindowsAppRuntimeInstall.vcxproj
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     ${{ if eq( parameters.runStaticAnalysis, 'True') }}:
@@ -235,14 +235,14 @@ steps:
 - ${{ if eq(parameters.IsOneBranch, 'true') }}:
   - template: ${{variables['System.DefaultWorkingDirectory']}}\build\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml
     parameters:
-      SearchPattern: '$(FoundationRepoName)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
+      SearchPattern: 'WindowsAppSDK\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
       IsOfficial: ${{ parameters.IsOfficial }}
-      PublishPublicSymbolsPowershellPath: '$(Build.SourcesDirectory)\$(FoundationRepoName)\eng\common\Scripts\PublishPublicSymbols.ps1'
+      PublishPublicSymbolsPowershellPath: '$(Build.SourcesDirectory)\WindowsAppSDK\eng\common\Scripts\PublishPublicSymbols.ps1'
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
   - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
     parameters:
-      FolderPath: $(FoundationRepoName)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall'
+      FolderPath: WindowsAppSDK\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall'
       Pattern: WindowsAppRuntimeInstall*.exe
       UseMinimatch: true
       KeyCode: 'CP-230012'
@@ -250,14 +250,14 @@ steps:
 - task: CopyFiles@2
   displayName: 'Publish Installer'
   inputs:
-    SourceFolder: '$(FoundationRepoName)\BuildOutput'
+    SourceFolder: 'WindowsAppSDK\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)\Installer'
 
 - task: powershell@2
   displayName: 'Remove test certificate for MSIX test packages (DevCheck)'
   inputs:
     targetType: filePath
-    filePath: $(FoundationRepoName)\eng\common\DevCheck.ps1
+    filePath: WindowsAppSDK\eng\common\DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -RemoveTestCert -RemoveTestPfx
     workingDirectory: '$(Build.SourcesDirectory)'
 
