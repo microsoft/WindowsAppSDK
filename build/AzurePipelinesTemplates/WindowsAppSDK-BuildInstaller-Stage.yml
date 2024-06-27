@@ -25,6 +25,8 @@ stages:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_artifactSuffix: '_$(buildConfiguration)_$(buildPlatform)'
       ob_artifactBaseName: "Installer$(ob_artifactSuffix)"
-      FoundationRepoPath: ""
+      # foundationRepoPath should be empty because we are not doing multiple checkouts hence
+      # it is not under $(Build.SourcesDirectory)\WindowsAppSDK
+      foundationRepoPath: ""
     steps:
     - template: WindowsAppSDK-BuildInstaller-Steps.yml@self
