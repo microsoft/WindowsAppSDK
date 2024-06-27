@@ -11,14 +11,14 @@ parameters:
 
 steps:
   - task: PowerShell@2
-    displayName: 'Add Windows SDK 10.1.17763'
+    displayName: 'Add Windows SDK 10.0.17134.0'
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     inputs:
       targetType: filePath
       filePath: $(Build.SourcesDirectory)\build\scripts\windows-sdk.ps1
       arguments: >
-        -SdkVersion "10.1.17763"
+        -SdkVersion "10.0.17134.0"
       
   - task: NuGetToolInstaller@1
     inputs:
