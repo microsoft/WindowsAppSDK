@@ -4,6 +4,8 @@
 #ifndef __SECURITY_USER_H
 #define __SECURITY_USER_H
 
+#include <sddl.h>
+
 namespace Security::User
 {
 inline bool IsLocalSystem(HANDLE token = nullptr)
