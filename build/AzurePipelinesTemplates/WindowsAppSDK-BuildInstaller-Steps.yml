@@ -234,14 +234,14 @@ steps:
     failOnAlert: true
 
 - ${{ if eq(parameters.IsOneBranch, 'true') }}:
-  - template: ${{variables['System.DefaultWorkingDirectory']}}\build\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml
+  - template: ${{variables['System.DefaultWorkingDirectory']}}${{ parameters.CheckoutPath }}\build\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml
     parameters:
       SearchPattern: '$(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
       IsOfficial: ${{ parameters.IsOfficial }}
       PublishPublicSymbolsPowershellPath: '$(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\eng\common\Scripts\PublishPublicSymbols.ps1'
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
-  - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+  - template: ${{variables['System.DefaultWorkingDirectory']}}${{ parameters.CheckoutPath }}\AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
     parameters:
       FolderPath: $(Build.SourcesDirectory)${{ parameters.CheckoutPath }}\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall'
       Pattern: WindowsAppRuntimeInstall*.exe
