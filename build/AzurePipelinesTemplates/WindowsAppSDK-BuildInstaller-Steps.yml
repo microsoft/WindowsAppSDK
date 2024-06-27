@@ -18,6 +18,14 @@ steps:
     inputs:
       nuGetServiceConnections: 'Internal-ReleaseSigned'
 
+  - task: powerShell@2
+    displayName: 'Shell task'
+    inputs:
+      targetType: 'inline'
+      script: |
+        Write-Host "$(System.TeamProjectId)"
+        Write-Host "$(System.TeamProject)"
+
   - task: DownloadPipelineArtifact@2
     displayName: 'Download WindowsAppSDK'
     inputs:
