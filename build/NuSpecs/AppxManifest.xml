@@ -22,6 +22,7 @@
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.Resources.ResourceLoader" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.Resources.ResourceManager" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.Globalization.ApplicationLanguages" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">

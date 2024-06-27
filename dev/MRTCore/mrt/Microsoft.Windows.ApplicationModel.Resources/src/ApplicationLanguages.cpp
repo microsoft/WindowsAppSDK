@@ -3,7 +3,7 @@
 
 #include "pch.h"
 #include "ApplicationLanguages.h"
-#include "ApplicationLanguages.g.cpp"
+#include "Microsoft.Windows.Globalization.ApplicationLanguages.g.cpp"
 
 #include <winrt/Windows.Globalization.h>
 
@@ -11,7 +11,7 @@
 
 #include "Helper.h"
 
-namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
+namespace winrt::Microsoft::Windows::Globalization::implementation
 {
     hstring ApplicationLanguages::m_language;
 
@@ -44,7 +44,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
     {
         bool isValidLanguageTag = IsWellFormedLanguageTag(language.c_str());
 
-        THROW_HR_IF_MSG(E_INVALIDARG, isValidLanguageTag, "The parameter is incorrect");
+        THROW_HR_IF_MSG(E_INVALIDARG, !isValidLanguageTag, "The parameter is incorrect");
 
         static wil::srwlock lock;
 
@@ -56,4 +56,4 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
             winrt::Windows::Globalization::ApplicationLanguages::PrimaryLanguageOverride(language);
         }
     }
-} // namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
+} // namespace winrt::Microsoft::Windows::Globalization::implementation

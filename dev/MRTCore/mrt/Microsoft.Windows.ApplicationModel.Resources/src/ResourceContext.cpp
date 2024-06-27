@@ -8,6 +8,10 @@
 
 const wchar_t c_languageQualifierName[] = L"Language";
 
+#include "ApplicationLanguages.h"
+
+using namespace winrt::Microsoft::Windows::Globalization;
+
 namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 {
 void ResourceContext::InitializeQualifierNames()

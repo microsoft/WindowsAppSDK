@@ -113,6 +113,12 @@ namespace Microsoft.Windows.ApplicationModel.Resources
         static String TargetSize { get; };
         static String Theme { get; };
     }
+} // namespace Microsoft.Windows.ApplicationModel.Resources
+
+namespace Microsoft.Windows.Globalization
+{
+    [contractversion(1)]
+    apicontract MrtCoreContract{};
 
     [contract(MrtCoreContract, 2)]
     runtimeclass ApplicationLanguages
@@ -122,4 +128,4 @@ namespace Microsoft.Windows.ApplicationModel.Resources
         static String PrimaryLanguageOverride;
     }
 
-} // namespace Microsoft.Windows.ApplicationModel. Resources
+} // namespace Microsoft.Windows.Globalization

@@ -100,7 +100,7 @@ bool IsWellFormedLanguageTag(const wchar_t* languageTag)
 
     while (ok && (*test != L'\0'))
     {
-        // we accept letters, numbers, dash and semi-colon (as list separator)
+        // we accept letters, numbers and dash
         if (((*test >= L'0') && (*test <= L'9')) || ((*test >= L'a') && (*test <= L'z')) || ((*test >= L'A') && (*test <= L'Z')) ||
             (*test == L'-'))
         {
