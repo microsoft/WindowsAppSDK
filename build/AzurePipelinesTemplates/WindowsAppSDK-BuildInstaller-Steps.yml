@@ -10,9 +10,15 @@ parameters:
   default: False
 
 steps:
-  - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
-    parameters:
-      IsOneBranch: false
+  - task: PowerShell@2
+    displayName: 'Add Windows SDK 10.1.17763'
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    inputs:
+      targetType: filePath
+      filePath: $(Build.SourcesDirectory)\build\scripts\windows-sdk.ps1
+      arguments: >
+        -SdkVersion "10.1.17763"
       
   - task: NuGetToolInstaller@1
     inputs:
