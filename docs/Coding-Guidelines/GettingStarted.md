@@ -18,14 +18,7 @@ or via the browser:
 
 **NOTE:** Visual Studio 2022 doesn't include this SDK but will use it if installed on the machine.
 
-2. Windows 11 SDK 10.0.26100.0 (24H2)
-   a. Browse to https://go.microsoft.com/fwlink/?linkid=2272610
-   b. Save the offered download `winsdksetup.exe`
-   c. Run winsdksetup.exe
-
-**NOTE:** Visual Studio 2022 doesn't include this SDK but will use it if installed on the machine.
-
-3. Visual Studio 2022 with...
+2. Visual Studio 2022 with...
    * Workloads
       * .NET desktop development
       * Desktop development with C++
@@ -58,7 +51,7 @@ or via the browser:
 **NOTE:** You can tell the Visual Studio Installer to do the heavy lifting for you
 via `More` / `Import configuration` and select `docs\Coding-Guidelines\VisualStudio2022.vsconfig`.
 
-4. Run NuGet Restore
+3. Run NuGet Restore
    * Download nuget.exe version >= 6.2.1 from https://www.nuget.org/downloads
      e.g. https://dist.nuget.org/win-x86-commandline/v6.2.1/nuget.exe
    * Open a command prompt
@@ -95,7 +88,7 @@ Some tips:
 
 ## MSBuild Tips
 
-### Build everything from the command line via msbuild e.g.
+Build everything from the command line via msbuild e.g.
 
 | Goal | Command Line |
 |---|---|
@@ -109,17 +102,6 @@ See MSBuild documentation for more details.
 
 Troubleshoot build problems by enabling binary logging (e.g. `msbuild...-bl`) and use
 [MSBuild Binary and Structured Log Viewer](https://msbuildlog.com/) to review the log.
-
-### Common Build Errors
-
-PROBLEM 001: Expired Test Certificate
-SYMPTOMS:
-    VS ErrorList:
-        MSB3073 The command "signtool.exe sign ..." exited with code 1...\MakeMsix.targets...
-    Build Output:
-        Build Output: EXEC : SignTool error : No certificates were found that met all the given criteria.
-        ...\MakeMsix.targets...error MSB3073: The command "signtool.exe sign ..." exited with code 1.
-SOLUTION: Run DevCheck.cmd (from an admin prompt). This detects the expired certificate and prompts to create a new one.
 
 ## Testing Tips
 

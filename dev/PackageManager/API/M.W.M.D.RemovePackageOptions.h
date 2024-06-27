@@ -21,7 +21,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         void RemoveForAllUsers(bool value);
 
     private:
-        bool m_failIfNotFound{};
+        bool m_failIfNotFound{ true };
         bool m_preserveApplicationData{};
         bool m_preserveRoamableApplicationData{};
         bool m_removeForAllUsers{};

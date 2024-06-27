@@ -18,32 +18,6 @@ inline bool IsLocalSystem(HANDLE token = nullptr)
 
     return !!EqualSid(userSid, localSystemSid);
 }
-
-/// @return sid. Allocated via LocalAlloc; use LocalFree to deallocate
-inline PSID StringToSid(PCWSTR sidString)
-{
-    if (!sidString || (sidString[0] == L'\0'))
-    {
-        return nullptr;
-    }
-
-    PSID sid{};
-    THROW_IF_WIN32_BOOL_FALSE(::ConvertStringSidToSidW(sidString, &sid));
-    return sid;
-}
-
-/// @return sid as a string. Allocated via LocalAlloc; use LocalFree to deallocate
-inline PWSTR SidToString(PSID sid)
-{
-    if (!sid)
-    {
-        return nullptr;
-    }
-
-    PWSTR sidString{};
-    THROW_IF_WIN32_BOOL_FALSE(::ConvertSidToStringSidW(sid, &sidString));
-    return sidString;
-}
 }
 
 #endif // __SECURITY_USER_H

@@ -24,10 +24,6 @@ namespace Microsoft::Windows::ApplicationModel::PackageDeploymentResolver
     bool FindAny(
         const winrt::Windows::Management::Deployment::PackageManager& packageManager,
         const winrt::hstring& packageFullName);
-
-    bool IsRegistered(
-        const winrt::Windows::Management::Deployment::PackageManager& packageManager,
-        const winrt::hstring& packageFullName);
 }
 
 #endif // PACKAGERESOLVER_H

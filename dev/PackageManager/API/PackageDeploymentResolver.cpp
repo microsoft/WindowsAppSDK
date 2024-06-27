@@ -330,12 +330,3 @@ winrt::hstring Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::
     }
     return bestFitPackageFullName;
 }
-
-bool Microsoft::Windows::ApplicationModel::PackageDeploymentResolver::IsRegistered(
-    const winrt::Windows::Management::Deployment::PackageManager& packageManager,
-    const winrt::hstring& packageFullName)
-{
-    // Find the match
-    auto package{ packageManager.FindPackageForUser(winrt::hstring(), packageFullName) };
-    return !!package;
-}

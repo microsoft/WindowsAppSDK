@@ -43,9 +43,6 @@
 .PARAMETER NoInteractive
     Run in non-interactive mode (fail if any need for user input)
 
-.PARAMETER InstallWindowsSDK
-    Download and install Windows Platform SDKs (if necessary).
-
 .PARAMETER Offline
     Do not access the network
 
@@ -102,8 +99,6 @@ Param(
     [Switch]$CheckDeveloperMode=$false,
 
     [Switch]$Clean=$false,
-
-    [Switch]$InstallWindowsSDK=$false,
 
     [Switch]$NoInteractive=$false,
 
@@ -312,6 +307,7 @@ function Get-VSWhereOnline
         Write-Host "Downloading $global:vswhere from $global:vswhere_url..."
         Write-Verbose "Executing: curl.exe --output $path -L -# $global:vswhere_url"
         $null = Start-Process curl.exe -ArgumentList "--output $path -L -# $global:vswhere_url" -Wait -NoNewWindow -PassThru
+
     }
     if (-not(Test-Path -Path $path -PathType Leaf))
     {
@@ -460,61 +456,17 @@ function Test-VisualStudio2022Install
     return $ok
 }
 
-function Install-WindowsSDK
-{
-    param(
-        [String]$version,
-        [uri]$url
-    )
-
-    $path = Join-Path $env:TEMP "winsdksetup-$($version).exe"
-    if ($Clean -eq $true -And (Test-Path -Path $path -PathType Leaf))
-    {
-        Write-Verbose "Found $path. Deleting per -Clean..."
-        Remove-Item -Path $path -Force
-    }
-
-    $log = Join-Path $env:TEMP "winsdksetup-$($version).log"
-    if ($Clean -eq $true -And (Test-Path -Path $log -PathType Leaf))
-    {
-        Write-Verbose "Found $log. Deleting per -Clean..."
-        Remove-Item -Path $log -Force
-    }
-
-    if (-not(Test-Path -Path $path -PathType Leaf))
-    {
-        Write-Host "Downloading Windows SDK $version from $url..."
-        Write-Verbose "Executing: curl.exe --output $path -L -# $url"
-        $null = Start-Process curl.exe -ArgumentList "--output $path -L -# $url" -Wait -NoNewWindow -PassThru
-    }
-    $p = Start-Process $path -ArgumentList "/features + /q /log $log" -Wait -NoNewWindow -PassThru
-    if ($p.ExitCode -ne 0)
-    {
-        Write-Host "...ERROR: Windows SDK $($version) install failed. See $log" -ForegroundColor Red -BackgroundColor Black
-        $global:issues++
-        return $false
-    }
-    Write-Host "Install Windows SDK $($version)...OK"
-    return $true
-}
-
 function Test-WindowsSDKInstall
 {
     param(
-        [String]$version,
-        [uri]$url
+        [String]$version
     )
 
     $regkey = "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots\$version"
     $found = Test-Path $regkey -PathType Container
     if ($found)
     {
-        Write-Host "Windows SDK $($version) = OK"
-    }
-    elseif ($InstallWindowsSDK -eq $true)
-    {
-        Write-Warning "WARNING: Windows SDK $($version) not found. Installing..."
-        $null = Install-WindowsSDK $version $url
+        Write-Verbose "Windows SDK $($version) = OK"
     }
     else
     {
@@ -1327,8 +1279,8 @@ function Get-DeveloperMode
     $regkey = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock'
     if (Test-Path -Path $regkey -PathType Container)
     {
-        $value = $(Get-Item -Path $regkey).GetValue('AllowDevelopmentWithoutDevLicense')
-        return $value -eq 1
+        $value = Get-ItemProperty -Path $regkey -Name AllowDevelopmentWithoutDevLicense
+        return $value.AllowDevelopmentWithoutDevLicense -eq 1
     }
 
     return $false
@@ -1345,6 +1297,7 @@ function Test-DeveloperMode
     {
         Write-Host "ERROR: Developer mode is not enabled. Enable it via Settings" -ForegroundColor Red -BackgroundColor Black
         $global:issues++
+        $fatal_errors++
     }
 }
 
@@ -1401,8 +1354,7 @@ if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
     {
         $null = Test-VisualStudioComponents
     }
-    $null = Test-WindowsSDKInstall '10.0.17763.0' [uri]'https://go.microsoft.com/fwlink/p/?LinkID=2033908'
-    #TODO Uncomment to require new SDK: $null = Test-WindowsSDKInstall '10.0.26100.0' [uri]'https://go.microsoft.com/fwlink/?linkid=2272610'
+    $null = Test-WindowsSDKInstall '10.0.17763.0'
 }
 
 if (($CheckAll -ne $false) -Or ($CheckTestPfx -ne $false))

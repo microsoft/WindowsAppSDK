@@ -4,21 +4,7 @@
 #ifndef __PACKAGEMANAGERTESTS_PACKAGES_H
 #define __PACKAGEMANAGERTESTS_PACKAGES_H
 
-namespace Test::Packages::Framework{}
-namespace Test::Packages::Main{}
-namespace Test::PackageManager::Tests{}
-//
-namespace TD = ::Test::Diagnostics;
-namespace TB = ::Test::Bootstrap;
-namespace TP = ::Test::Packages;
-namespace TPF = ::Test::Packages::Framework;
-namespace TPM = ::Test::Packages::Main;
-namespace TPMT = ::Test::PackageManager::Tests;
-
-
-namespace Test::Packages
-{
-namespace Framework
+namespace Test::Packages::Framework
 {
 namespace Red
 {
@@ -101,94 +87,6 @@ namespace Blue
     }
 }
 }
-namespace Main
-{
-namespace Black
-{
-    constexpr PCWSTR c_packageDirName = L"PackageManager.Test.M.Black.msix";
-    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.M.Black_8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.M.Black_1.2.3.4_x86__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.M.Black_1.2.3.4_x64__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.M.Black_1.2.3.4_arm64__8wekyb3d8bbwe";
-    constexpr inline PCWSTR GetPackageFullName()
-    {
-#if defined(_M_ARM64)
-        return c_packageFullName_arm64;
-#elif defined(_M_IX86)
-        return c_packageFullName_x86;
-#elif defined(_M_X64)
-        return c_packageFullName_x64;
-#else
-#   error "Unknown processor architecture"
-#endif
-    }
-    constexpr PCWSTR c_appUserModelId = L"Test.PackageManager.M.Black_8wekyb3d8bbwe!App";
-}
-namespace Blacker
-{
-    constexpr PCWSTR c_packageDirName = L"PackageManager.Test.M.Blacker.msix";
-    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.M.Black_8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.M.Black_2.4.6.8_x86__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.M.Black_2.4.6.8_x64__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.M.Black_2.4.6.8_arm64__8wekyb3d8bbwe";
-    constexpr inline PCWSTR GetPackageFullName()
-    {
-#if defined(_M_ARM64)
-        return c_packageFullName_arm64;
-#elif defined(_M_IX86)
-        return c_packageFullName_x86;
-#elif defined(_M_X64)
-        return c_packageFullName_x64;
-#else
-#   error "Unknown processor architecture"
-#endif
-    }
-    constexpr PCWSTR c_appUserModelId = L"Test.PackageManager.M.Black_8wekyb3d8bbwe!App";
-}
-namespace White
-{
-    constexpr PCWSTR c_packageDirName = L"PackageManager.Test.M.White.msix";
-    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.M.White_8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.M.White_1.2.3.4_x86__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.M.White_1.2.3.4_x64__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.M.White_1.2.3.4_arm64__8wekyb3d8bbwe";
-    constexpr inline PCWSTR GetPackageFullName()
-    {
-#if defined(_M_ARM64)
-        return c_packageFullName_arm64;
-#elif defined(_M_IX86)
-        return c_packageFullName_x86;
-#elif defined(_M_X64)
-        return c_packageFullName_x64;
-#else
-#   error "Unknown processor architecture"
-#endif
-    }
-    constexpr PCWSTR c_appUserModelId = L"Test.PackageManager.M.White_8wekyb3d8bbwe!App";
-}
-namespace Whiter
-{
-    constexpr PCWSTR c_packageDirName = L"PackageManager.Test.M.Whiter.msix";
-    constexpr PCWSTR c_packageFamilyName = L"Test.PackageManager.M.White_8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x86 = L"Test.PackageManager.M.White_2.4.6.8_x86__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_x64 = L"Test.PackageManager.M.White_2.4.6.8_x64__8wekyb3d8bbwe";
-    constexpr PCWSTR c_packageFullName_arm64 = L"Test.PackageManager.M.White_2.4.6.8_arm64__8wekyb3d8bbwe";
-    constexpr inline PCWSTR GetPackageFullName()
-    {
-#if defined(_M_ARM64)
-        return c_packageFullName_arm64;
-#elif defined(_M_IX86)
-        return c_packageFullName_x86;
-#elif defined(_M_X64)
-        return c_packageFullName_x64;
-#else
-#   error "Unknown processor architecture"
-#endif
-    }
-    constexpr PCWSTR c_appUserModelId = L"Test.PackageManager.M.White_8wekyb3d8bbwe!App";
-}
-}
-}
 
 namespace Test::PackageManager::Tests
 {
@@ -198,34 +96,19 @@ namespace Test::PackageManager::Tests
     // Forward declarations
     void RemovePackageFamily_Redder();
 
-    inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem _Make_PackageSetItem(
-        PCWSTR packageFullName,
-        winrt::Windows::Foundation::Uri const& packageUri)
-    {
-        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageSetItem: PackageFullName:%s Path:%s", packageFullName, packageUri.ToString().c_str()));
-        const auto [packageName, packageVersion, packageArchitecture, packageResourceId, packagePublisherId, packageFamilyName]{ ::AppModel::Package::ParsePackageFullName(packageFullName) };
-
-        winrt::Microsoft::Windows::Management::Deployment::PackageSetItem psi;
-        psi.PackageFamilyName(packageFamilyName);
-        psi.PackageUri(packageUri);
-        const ::AppModel::Identity::PackageVersion version{ packageVersion };
-        psi.MinVersion(version.ToWinrtPackageVersion());
-        return psi;
-    }
-
     inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem Make_PackageSetItem(
         PCWSTR packageFullName,
         PCWSTR packageDirName)
     {
-        const auto packageUri{ TP::GetMsixPackageUri(packageDirName) };
-        return _Make_PackageSetItem(packageFullName, packageUri);
-    }
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageSetItem: PackageFullName:%s Path:%s", packageFullName, packageDirName));
+        const auto [packageName, packageVersion, packageArchitecture, packageResourceId, packagePublisherId, packageFamilyName]{ ::AppModel::Package::ParsePackageFullName(packageFullName) };
 
-    inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem Make_PackageSetItem_ForRegister(
-        PCWSTR packageFullName)
-    {
-        const auto appxManifestUri{ TP::GetAppxManifestPackageUri(packageFullName) };
-        return _Make_PackageSetItem(packageFullName, appxManifestUri);
+        winrt::Microsoft::Windows::Management::Deployment::PackageSetItem psi;
+        psi.PackageFamilyName(packageFamilyName);
+        psi.PackageUri(TP::GetMsixPackageUri(packageDirName));
+        const ::AppModel::Identity::PackageVersion version{ packageVersion };
+        psi.MinVersion(version.ToWinrtPackageVersion());
+        return psi;
     }
 
     inline bool IsPackageRegistered_Red()
@@ -238,15 +121,11 @@ namespace Test::PackageManager::Tests
     }
     inline void AddPackage_Red()
     {
-        TP::AddPackageIfNecessary(TPF::Red::c_packageDirName, TPF::Red::GetPackageFullName());
+        TP::AddPackageIfNecessary(Test::Packages::Framework::Red::c_packageDirName, TPF::Red::GetPackageFullName());
     }
     inline void StagePackage_Red()
     {
-        TP::StagePackageIfNecessary(TPF::Red::c_packageDirName, TPF::Red::GetPackageFullName());
-    }
-    inline void RegisterPackage_Red()
-    {
-        TP::RegisterPackageIfNecessary(TPF::Red::GetPackageFullName());
+        TP::StagePackageIfNecessary(Test::Packages::Framework::Red::c_packageDirName, TPF::Red::GetPackageFullName());
     }
     inline void RemovePackage_Red()
     {
@@ -266,18 +145,16 @@ namespace Test::PackageManager::Tests
     {
         // Same as RemovePackageFamily_Redder
         RemovePackageFamily_Redder();
-    }
-    inline bool IsPackageProvisioned_Red()
-    {
-        return TP::IsPackageProvisioned(TPF::Red::c_packageFamilyName);
-    }
-    inline void ProvisionPackage_Red()
-    {
-        TP::ProvisionPackage(TPF::Red::c_packageFamilyName);
-    }
-    inline void DeprovisionPackage_Red()
-    {
-        TP::DeprovisionPackageIfNecessary(TPF::Red::c_packageFamilyName);
+#if 0
+        // The package could be staged and not registered so checking
+        // checking for registered packages in the family is insufficient,
+        // and checking for staged packages not registered for the current user
+        // requires admin privilege (which we may not have). So we'll rely on
+        // remove for each package in the family handling it whether the packages
+        // are staged or registered.
+        TP::RemovePackageIfNecessary(TPF::Red::GetPackageFullName());
+        TP::RemovePackageIfNecessary(TPF::Redder::GetPackageFullName());
+#endif
     }
 
     inline bool IsPackageRegistered_Redder()
@@ -290,15 +167,11 @@ namespace Test::PackageManager::Tests
     }
     inline void AddPackage_Redder()
     {
-        TP::AddPackageIfNecessary(TPF::Redder::c_packageDirName, TPF::Redder::GetPackageFullName());
+        TP::AddPackageIfNecessary(Test::Packages::Framework::Redder::c_packageDirName, TPF::Redder::GetPackageFullName());
     }
     inline void StagePackage_Redder()
     {
-        TP::StagePackageIfNecessary(TPF::Redder::c_packageDirName, TPF::Redder::GetPackageFullName());
-    }
-    inline void RegisterPackage_Redder()
-    {
-        TP::RegisterPackageIfNecessary(TPF::Redder::GetPackageFullName());
+        TP::StagePackageIfNecessary(Test::Packages::Framework::Redder::c_packageDirName, TPF::Redder::GetPackageFullName());
     }
     inline void RemovePackage_Redder()
     {
@@ -318,18 +191,16 @@ namespace Test::PackageManager::Tests
     {
         RemovePackage_Redder();
         RemovePackage_Red();
-    }
-    inline bool IsPackageProvisioned_Redder()
-    {
-        return TP::IsPackageProvisioned(TPF::Redder::c_packageFamilyName);
-    }
-    inline void ProvisionPackage_Redder()
-    {
-        TP::ProvisionPackage(TPF::Redder::c_packageFamilyName);
-    }
-    inline void DeprovisionPackage_Redder()
-    {
-        TP::DeprovisionPackageIfNecessary(TPF::Redder::c_packageFamilyName);
+#if 0
+        // The package could be staged and not registered so checking
+        // checking for registered packages in the family is insufficient,
+        // and checking for staged packages not registered for the current user
+        // requires admin privilege (which we may not have). So we'll rely on
+        // remove for each package in the family handling it whether the packages
+        // are staged or registered.
+        TP::RemovePackageIfNecessary(TPF::Red::GetPackageFullName());
+        TP::RemovePackageIfNecessary(TPF::Redder::GetPackageFullName());
+#endif
     }
 
     inline bool IsPackageRegistered_Green()
@@ -342,15 +213,11 @@ namespace Test::PackageManager::Tests
     }
     inline void AddPackage_Green()
     {
-        TP::AddPackageIfNecessary(TPF::Green::c_packageDirName, TPF::Green::GetPackageFullName());
+        TP::AddPackageIfNecessary(Test::Packages::Framework::Green::c_packageDirName, TPF::Green::GetPackageFullName());
     }
     inline void StagePackage_Green()
     {
-        TP::StagePackageIfNecessary(TPF::Green::c_packageDirName, TPF::Green::GetPackageFullName());
-    }
-    inline void RegisterPackage_Green()
-    {
-        TP::RegisterPackageIfNecessary(TPF::Green::GetPackageFullName());
+        TP::StagePackageIfNecessary(Test::Packages::Framework::Green::c_packageDirName, TPF::Green::GetPackageFullName());
     }
     inline void RemovePackage_Green()
     {
@@ -369,18 +236,15 @@ namespace Test::PackageManager::Tests
     inline void RemovePackageFamily_Green()
     {
         RemovePackage_Green();
-    }
-    inline bool IsPackageProvisioned_Green()
-    {
-        return TP::IsPackageProvisioned(TPF::Green::c_packageFamilyName);
-    }
-    inline void ProvisionPackage_Green()
-    {
-        TP::ProvisionPackage(TPF::Green::c_packageFamilyName);
-    }
-    inline void DeprovisionPackage_Green()
-    {
-        TP::DeprovisionPackageIfNecessary(TPF::Green::c_packageFamilyName);
+#if 0
+        // The package could be staged and not registered so checking
+        // checking for registered packages in the family is insufficient,
+        // and checking for staged packages not registered for the current user
+        // requires admin privilege (which we may not have). So we'll rely on
+        // remove for each package in the family handling it whether the packages
+        // are staged or registered.
+        TP::RemovePackageIfNecessary(TPF::Green::GetPackageFullName());
+#endif
     }
 
     inline bool IsPackageRegistered_Blue()
@@ -393,15 +257,11 @@ namespace Test::PackageManager::Tests
     }
     inline void AddPackage_Blue()
     {
-        TP::AddPackageIfNecessary(TPF::Blue::c_packageDirName, TPF::Blue::GetPackageFullName());
+        TP::AddPackageIfNecessary(Test::Packages::Framework::Blue::c_packageDirName, TPF::Blue::GetPackageFullName());
     }
     inline void StagePackage_Blue()
     {
-        TP::StagePackageIfNecessary(TPF::Blue::c_packageDirName, TPF::Blue::GetPackageFullName());
-    }
-    inline void RegisterPackage_Blue()
-    {
-        TP::RegisterPackageIfNecessary(TPF::Blue::GetPackageFullName());
+        TP::StagePackageIfNecessary(Test::Packages::Framework::Blue::c_packageDirName, TPF::Blue::GetPackageFullName());
     }
     inline void RemovePackage_Blue()
     {
@@ -420,238 +280,15 @@ namespace Test::PackageManager::Tests
     inline void RemovePackageFamily_Blue()
     {
         RemovePackage_Blue();
-    }
-    inline bool IsPackageProvisioned_Blue()
-    {
-        return TP::IsPackageProvisioned(TPF::Blue::c_packageFamilyName);
-    }
-    inline void ProvisionPackage_Blue()
-    {
-        TP::ProvisionPackage(TPF::Blue::c_packageFamilyName);
-    }
-    inline void DeprovisionPackage_Blue()
-    {
-        TP::DeprovisionPackageIfNecessary(TPF::Blue::c_packageFamilyName);
-    }
-
-    inline bool IsPackageRegistered_Black()
-    {
-        return TP::IsPackageRegistered(TPM::Black::GetPackageFullName());
-    }
-    inline bool IsPackageStaged_Black()
-    {
-        return TP::IsPackageStaged(TPM::Black::GetPackageFullName());
-    }
-    inline void AddPackage_Black()
-    {
-        TP::AddPackageIfNecessary(TPM::Black::c_packageDirName, TPM::Black::GetPackageFullName());
-    }
-    inline void AddPackageDefer_Black()
-    {
-        TP::AddPackageDeferIfNecessary(TPM::Black::c_packageDirName, TPM::Black::GetPackageFullName());
-    }
-    inline void StagePackage_Black()
-    {
-        TP::StagePackageIfNecessary(TPM::Black::c_packageDirName, TPM::Black::GetPackageFullName());
-    }
-    inline void RegisterPackage_Black()
-    {
-        TP::RegisterPackageIfNecessary(TPM::Black::GetPackageFullName());
-    }
-    inline void RemovePackage_Black()
-    {
-        if (IsPackageRegistered_Black())
-        {
-            TP::RemovePackage(TPM::Black::GetPackageFullName());
-        }
-        else if (IsPackageStaged_Black())
-        {
-            // We can't directly remove a Stage package not registered for current user
-            // w/o admin privilege but we can add it to make it registered and then remove it.
-            AddPackage_Black();
-            TP::RemovePackage(TPM::Black::GetPackageFullName());
-        }
-    }
-    inline void RemovePackageFamily_Black()
-    {
-        RemovePackage_Black();
-    }
-    inline bool IsPackageProvisioned_Black()
-    {
-        return TP::IsPackageProvisioned(TPM::Black::c_packageFamilyName);
-    }
-    inline void ProvisionPackage_Black()
-    {
-        TP::ProvisionPackage(TPM::Black::c_packageFamilyName);
-    }
-    inline void DeprovisionPackage_Black()
-    {
-        TP::DeprovisionPackageIfNecessary(TPM::Black::c_packageFamilyName);
-    }
-
-    inline bool IsPackageRegistered_Blacker()
-    {
-        return TP::IsPackageRegistered(TPM::Blacker::GetPackageFullName());
-    }
-    inline bool IsPackageStaged_Blacker()
-    {
-        return TP::IsPackageStaged(TPM::Blacker::GetPackageFullName());
-    }
-    inline void AddPackage_Blacker()
-    {
-        TP::AddPackageIfNecessary(TPM::Blacker::c_packageDirName, TPM::Blacker::GetPackageFullName());
-    }
-    inline void AddPackageDefer_Blacker()
-    {
-        TP::AddPackageDeferIfNecessary(TPM::Blacker::c_packageDirName, TPM::Blacker::GetPackageFullName());
-    }
-    inline void StagePackage_Blacker()
-    {
-        TP::StagePackageIfNecessary(TPM::Blacker::c_packageDirName, TPM::Blacker::GetPackageFullName());
-    }
-    inline void RegisterPackage_Blacker()
-    {
-        TP::RegisterPackageIfNecessary(TPM::Blacker::GetPackageFullName());
-    }
-    inline void RemovePackage_Blacker()
-    {
-        if (IsPackageRegistered_Blacker())
-        {
-            TP::RemovePackage(TPM::Blacker::GetPackageFullName());
-        }
-        else if (IsPackageStaged_Blacker())
-        {
-            // We can't directly remove a Stage package not registered for current user
-            // w/o admin privilege but we can add it to make it registered and then remove it.
-            AddPackage_Blacker();
-            TP::RemovePackage(TPM::Blacker::GetPackageFullName());
-        }
-    }
-    inline void RemovePackageFamily_Blacker()
-    {
-        RemovePackage_Blacker();
-    }
-    inline bool IsPackageProvisioned_Blacker()
-    {
-        return TP::IsPackageProvisioned(TPM::Blacker::c_packageFamilyName);
-    }
-    inline void ProvisionPackage_Blacker()
-    {
-        TP::ProvisionPackage(TPM::Blacker::c_packageFamilyName);
-    }
-    inline void DeprovisionPackage_Blacker()
-    {
-        TP::DeprovisionPackageIfNecessary(TPM::Blacker::c_packageFamilyName);
-    }
-
-    inline bool IsPackageRegistered_White()
-    {
-        return TP::IsPackageRegistered(TPM::White::GetPackageFullName());
-    }
-    inline bool IsPackageStaged_White()
-    {
-        return TP::IsPackageStaged(TPM::White::GetPackageFullName());
-    }
-    inline void AddPackage_White()
-    {
-        TP::AddPackageIfNecessary(TPM::White::c_packageDirName, TPM::White::GetPackageFullName());
-    }
-    inline void AddPackageDefer_White()
-    {
-        TP::AddPackageDeferIfNecessary(TPM::White::c_packageDirName, TPM::White::GetPackageFullName());
-    }
-    inline void StagePackage_White()
-    {
-        TP::StagePackageIfNecessary(TPM::White::c_packageDirName, TPM::White::GetPackageFullName());
-    }
-    inline void RegisterPackage_White()
-    {
-        TP::RegisterPackageIfNecessary(TPM::White::GetPackageFullName());
-    }
-    inline void RemovePackage_White()
-    {
-        if (IsPackageRegistered_White())
-        {
-            TP::RemovePackage(TPM::White::GetPackageFullName());
-        }
-        else if (IsPackageStaged_White())
-        {
-            // We can't directly remove a Stage package not registered for current user
-            // w/o admin privilege but we can add it to make it registered and then remove it.
-            AddPackage_White();
-            TP::RemovePackage(TPM::White::GetPackageFullName());
-        }
-    }
-    inline void RemovePackageFamily_White()
-    {
-        RemovePackage_White();
-    }
-    inline bool IsPackageProvisioned_White()
-    {
-        return TP::IsPackageProvisioned(TPM::White::c_packageFamilyName);
-    }
-    inline void ProvisionPackage_White()
-    {
-        TP::ProvisionPackage(TPM::White::c_packageFamilyName);
-    }
-    inline void DeprovisionPackage_White()
-    {
-        TP::DeprovisionPackageIfNecessary(TPM::White::c_packageFamilyName);
-    }
-
-    inline bool IsPackageRegistered_Whiter()
-    {
-        return TP::IsPackageRegistered(TPM::Whiter::GetPackageFullName());
-    }
-    inline bool IsPackageStaged_Whiter()
-    {
-        return TP::IsPackageStaged(TPM::Whiter::GetPackageFullName());
-    }
-    inline void AddPackage_Whiter()
-    {
-        TP::AddPackageIfNecessary(TPM::Whiter::c_packageDirName, TPM::Whiter::GetPackageFullName());
-    }
-    inline void AddPackageDefer_Whiter()
-    {
-        TP::AddPackageDeferIfNecessary(TPM::Whiter::c_packageDirName, TPM::Whiter::GetPackageFullName());
-    }
-    inline void StagePackage_Whiter()
-    {
-        TP::StagePackageIfNecessary(TPM::Whiter::c_packageDirName, TPM::Whiter::GetPackageFullName());
-    }
-    inline void RegisterPackage_Whiter()
-    {
-        TP::RegisterPackageIfNecessary(TPM::Whiter::GetPackageFullName());
-    }
-    inline void RemovePackage_Whiter()
-    {
-        if (IsPackageRegistered_Whiter())
-        {
-            TP::RemovePackage(TPM::Whiter::GetPackageFullName());
-        }
-        else if (IsPackageStaged_Whiter())
-        {
-            // We can't directly remove a Stage package not registered for current user
-            // w/o admin privilege but we can add it to make it registered and then remove it.
-            AddPackage_Whiter();
-            TP::RemovePackage(TPM::Whiter::GetPackageFullName());
-        }
-    }
-    inline void RemovePackageFamily_Whiter()
-    {
-        RemovePackage_Whiter();
-    }
-    inline bool IsPackageProvisioned_Whiter()
-    {
-        return TP::IsPackageProvisioned(TPM::Whiter::c_packageFamilyName);
-    }
-    inline void ProvisionPackage_Whiter()
-    {
-        TP::ProvisionPackage(TPM::Whiter::c_packageFamilyName);
-    }
-    inline void DeprovisionPackage_Whiter()
-    {
-        TP::DeprovisionPackageIfNecessary(TPM::Whiter::c_packageFamilyName);
+#if 0
+        // The package could be staged and not registered so checking
+        // checking for registered packages in the family is insufficient,
+        // and checking for staged packages not registered for the current user
+        // requires admin privilege (which we may not have). So we'll rely on
+        // remove for each package in the family handling it whether the packages
+        // are staged or registered.
+        TP::RemovePackageIfNecessary(TPF::Green::GetPackageFullName());
+#endif
     }
 
     inline winrt::Windows::ApplicationModel::PackageStatus GetPackageStatus(winrt::Windows::Management::Deployment::PackageManager packageManager, PCWSTR packageFullName)
