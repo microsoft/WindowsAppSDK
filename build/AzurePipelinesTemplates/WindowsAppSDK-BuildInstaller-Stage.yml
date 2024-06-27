@@ -28,5 +28,5 @@ stages:
       FoundationRepoName: "WindowsAppSDK"
     steps:
     - checkout: self
-      path: "$(Pipeline.Workspace)/$(FoundationRepoName)"
+      path: "$(Pipeline.Workspace)\$(FoundationRepoName)"
     - template: WindowsAppSDK-BuildInstaller-Steps.yml@self
