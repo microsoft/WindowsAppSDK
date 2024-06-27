@@ -1,7 +1,7 @@
 # This Installer Stage is purely for validation
 # The actual installer is built with the Aggregator build
 stages:
-- stage: InstallerValidation
+- stage: Installer
   jobs:
   - job: BuildInstaller
     dependsOn: []

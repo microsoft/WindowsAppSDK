@@ -1,3 +1,14 @@
+parameters:
+- name: SignOutput
+  type: boolean
+  default: False
+- name: IsOfficial
+  type: boolean
+  default: False 
+- name: IsOneBranch
+  type: boolean
+  default: False
+
 steps:
 ###
 # This step downloads the WindowsAppSDK NuGet package from last successful build of the Aggregator's Nightly build
@@ -192,10 +203,25 @@ steps:
     scanType: 'Register'
     failOnAlert: true
 
+- ${{ if eq(parameters.IsOneBranch, 'true') }}:
+  - template: ${{variables['System.DefaultWorkingDirectory']}}\build\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml
+    parameters:
+      SearchPattern: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
+      IsOfficial: ${{ parameters.IsOfficial }}
+      PublishPublicSymbolsPowershellPath: '$(Build.SourcesDirectory)\eng\common\Scripts\PublishPublicSymbols.ps1'
+
+- ${{ if eq(parameters.SignOutput, 'true') }}:
+  - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+    parameters:
+      FolderPath: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall'
+      Pattern: WindowsAppRuntimeInstall*.exe
+      UseMinimatch: true
+      KeyCode: 'CP-230012'
+
 - task: CopyFiles@2
   displayName: 'Publish Installer'
   inputs:
-    SourceFolder: 'BuildOutput'
+    SourceFolder: '$(Build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)\Installer'
 
 - task: powershell@2
@@ -206,7 +232,8 @@ steps:
     arguments: -NoInteractive -Offline -Verbose -RemoveTestCert -RemoveTestPfx
     workingDirectory: '$(Build.SourcesDirectory)'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(ob_outputDirectory)'
-    artifactName: '$(ob_artifactBaseName)'
+- ${{ if ne(parameters.IsOneBranch, 'true') }}:
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(ob_outputDirectory)'
+      artifactName: '$(ob_artifactBaseName)'
