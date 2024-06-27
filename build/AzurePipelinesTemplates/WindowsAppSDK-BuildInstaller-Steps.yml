@@ -10,13 +10,6 @@ parameters:
   default: False
 
 steps:
-  - task: powershell@2
-    inputs:
-      targetType: filePath
-      filePath: build\Scripts\Install-WindowsSdkISO.ps1
-      arguments: 22000
-    displayName: 'Install Insider SDK 22000'
-
   - task: NuGetToolInstaller@1
     inputs:
       versionSpec: 6.5.x
