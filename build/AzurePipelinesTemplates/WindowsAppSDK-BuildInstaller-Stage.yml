@@ -19,7 +19,7 @@ stages:
           buildPlatform: 'x64'
           buildConfiguration: 'Release'
         Release_arm64:
-          buildPlatform: 'ARM64'
+          buildPlatform: 'arm64'
           buildConfiguration: 'Release'
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
