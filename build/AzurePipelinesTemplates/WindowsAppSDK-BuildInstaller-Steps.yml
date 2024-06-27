@@ -224,19 +224,19 @@ steps:
       scanType: 'Register'
       failOnAlert: true
 
-  - template: ${{variables['System.DefaultWorkingDirectory']}}\build\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml
-    parameters:
-      SearchPattern: '$(FoundationRepoName)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
-      IsOfficial: ${{ parameters.IsOfficial }}
-      PublishPublicSymbolsPowershellPath: '$(Build.SourcesDirectory)\$(FoundationRepoName)\eng\common\Scripts\PublishPublicSymbols.ps1'
+  # - template: ${{variables['System.DefaultWorkingDirectory']}}\build\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml
+  #   parameters:
+  #     SearchPattern: '$(FoundationRepoName)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
+  #     IsOfficial: ${{ parameters.IsOfficial }}
+  #     PublishPublicSymbolsPowershellPath: '$(Build.SourcesDirectory)\$(FoundationRepoName)\eng\common\Scripts\PublishPublicSymbols.ps1'
 
-  - ${{ if eq(parameters.SignOutput, 'true') }}:
-    - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
-      parameters:
-        FolderPath: '$(FoundationRepoName)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall'
-        Pattern: WindowsAppRuntimeInstall*.exe
-        UseMinimatch: true
-        KeyCode: 'CP-230012'
+  # - ${{ if eq(parameters.SignOutput, 'true') }}:
+  #   - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+  #     parameters:
+  #       FolderPath: '$(FoundationRepoName)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall'
+  #       Pattern: WindowsAppRuntimeInstall*.exe
+  #       UseMinimatch: true
+  #       KeyCode: 'CP-230012'
 
   - task: CopyFiles@2
     displayName: 'Publish Installer'
@@ -251,3 +251,9 @@ steps:
       filePath: $(FoundationRepoName)\eng\common\DevCheck.ps1
       arguments: -NoInteractive -Offline -Verbose -RemoveTestCert -RemoveTestPfx
       workingDirectory: '$(Build.SourcesDirectory)'
+
+  # - ${{ if not( parameters.IsOneBranch ) }}:
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(ob_outputDirectory)'
+      artifactName: '$(ob_artifactBaseName)'
