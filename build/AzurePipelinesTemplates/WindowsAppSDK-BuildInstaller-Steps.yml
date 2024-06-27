@@ -238,7 +238,7 @@ steps:
       PublishPublicSymbolsPowershellPath: '$(Build.SourcesDirectory)\eng\common\Scripts\PublishPublicSymbols.ps1'
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
-  - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+  - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
     parameters:
       FolderPath: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall'
       Pattern: WindowsAppRuntimeInstall*.exe
