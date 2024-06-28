@@ -4,4 +4,3 @@
 #pragma once
 bool IsResourceNotFound(HRESULT hr);
 HRESULT GetDefaultPriFile(winrt::hstring& path);
-BOOLEAN _DefIsWellFormedTag(_In_ PCWSTR tag);

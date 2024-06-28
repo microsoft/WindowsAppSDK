@@ -5,11 +5,10 @@
 #include "ApplicationLanguages.h"
 #include "Microsoft.Windows.Globalization.ApplicationLanguages.g.cpp"
 
+#include <bcp47mrm.h>
 #include <winrt/Windows.Globalization.h>
 
 #include <AppModel.Identity.h>
-
-#include "Helper.h"
 
 namespace winrt::Microsoft::Windows::Globalization::implementation
 {
@@ -42,7 +41,7 @@ namespace winrt::Microsoft::Windows::Globalization::implementation
 
     void ApplicationLanguages::PrimaryLanguageOverride(hstring const& language)
     {
-        bool isValidLanguageTag = _DefIsWellFormedTag(language.c_str());
+        bool isValidLanguageTag = IsWellFormedTag(language.c_str());
 
         THROW_HR_IF_MSG(E_INVALIDARG, !isValidLanguageTag, "The parameter is incorrect");
 

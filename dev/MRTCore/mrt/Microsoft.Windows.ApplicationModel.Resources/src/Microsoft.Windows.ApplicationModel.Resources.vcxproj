@@ -17,7 +17,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.20348.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.17134.0</WindowsTargetPlatformMinVersion>
     <!-- Need to add this otherwise the ADO build won't copy mrm.dll to output directory, and eventually the file will miss in ManagedTest.build.appxrecipe and make
          the tests fail to run in ADO pipeline -->
@@ -96,7 +96,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <ModuleDefinitionFile>Microsoft.Windows.ApplicationModel.Resources.def</ModuleDefinitionFile>
-      <AdditionalDependencies>$(OutDir)..\mrm\MRM.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)..\mrm\MRM.lib;onecoreuap.lib;bcp47mrm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
