@@ -1,9 +1,9 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 namespace Microsoft.Windows.ApplicationModel.Resources
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract MrtCoreContract{};
 
     [contract(MrtCoreContract, 1)]
@@ -117,10 +117,7 @@ namespace Microsoft.Windows.ApplicationModel.Resources
 
 namespace Microsoft.Windows.Globalization
 {
-    [contractversion(1)]
-    apicontract MrtCoreContract{};
-
-    [contract(MrtCoreContract, 2)]
+    [contract(Microsoft.Windows.ApplicationModel.Resources.MrtCoreContract, 2)]
     runtimeclass ApplicationLanguages
     {
         static IVectorView<String> Languages { get; };
