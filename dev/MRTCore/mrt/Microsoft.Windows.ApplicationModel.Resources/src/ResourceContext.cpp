@@ -56,8 +56,15 @@ void ResourceContext::InitializeQualifierValueMap()
                 // Override the default behavior
                 if (m_qualifierNames[i] == c_languageQualifierName)
                 {
+                    auto primaryLanguageOverride = ApplicationLanguages::PrimaryLanguageOverride();
                     auto languages = GetLangugageContext();
-                    if (!languages.empty())
+
+                    if (!primaryLanguageOverride.empty())
+                    {
+                        m_qualifierValueMap.Insert(m_qualifierNames[i], primaryLanguageOverride);
+                        continue;
+                    }
+                    else if (!languages.empty())
                     {
                         m_qualifierValueMap.Insert(m_qualifierNames[i], languages);
                         continue;
@@ -100,10 +107,6 @@ void ResourceContext::Apply()
         {
             winrt::check_hresult(MrmSetQualifier(m_resourceContext, eachValue.Key().c_str(), eachValue.Value().c_str()));
         }
-    }
-    if (!ApplicationLanguages::PrimaryLanguageOverride().empty())
-    {
-        winrt::check_hresult(MrmSetQualifier(m_resourceContext, c_languageQualifierName, ApplicationLanguages::PrimaryLanguageOverride().c_str()));
     }
 }
 
