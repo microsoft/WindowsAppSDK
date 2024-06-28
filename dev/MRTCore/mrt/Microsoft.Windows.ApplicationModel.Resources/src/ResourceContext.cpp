@@ -8,6 +8,10 @@
 
 const wchar_t c_languageQualifierName[] = L"Language";
 
+#include "ApplicationLanguages.h"
+
+using namespace winrt::Microsoft::Windows::Globalization;
+
 namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 {
 void ResourceContext::InitializeQualifierNames()
@@ -96,6 +100,10 @@ void ResourceContext::Apply()
         {
             winrt::check_hresult(MrmSetQualifier(m_resourceContext, eachValue.Key().c_str(), eachValue.Value().c_str()));
         }
+    }
+    if (!ApplicationLanguages::PrimaryLanguageOverride().empty())
+    {
+        winrt::check_hresult(MrmSetQualifier(m_resourceContext, c_languageQualifierName, ApplicationLanguages::PrimaryLanguageOverride().c_str()));
     }
 }
 
