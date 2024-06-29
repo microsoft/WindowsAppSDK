@@ -21,13 +21,12 @@ steps:
     git config --global user.email "DoNotEmailThis@dev.null.microsoft.com"
     git config --global user.name "TDBuild"
 
-- task: TouchdownBuildTask@1
+- task: TouchdownBuildTask@4
   inputs:
     environment: 'PRODEXT'
     teamId: ${{ parameters.TeamID }}
-    authType: 'OAuth'
-    authId: $(TdBuildAuthID)
-    authKey: $(TdBuildToken)
+    authType: 'FederatedIdentity'
+    FederatedIdentityServiceConnection: "WindowsAppSDKSigningConnection"
     localizationTarget: true
     isPreview: false
     resourceFilePath: ${{ parameters.ResourceFilePath }}
