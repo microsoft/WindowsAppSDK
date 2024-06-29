@@ -99,7 +99,7 @@ namespace Test::PackageManager::Tests
             const winrt::hstring packageFullName{ ::TPM::Black::GetPackageFullName() };
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageRegistrationPending(packageFullName));
 
-            VERIFY_SUCCEEDED(LOG_IF_WIN32_BOOL_FALSE(::SetEvent(endOfTheLine.get())));
+            VERIFY_IS_TRUE(LOG_IF_WIN32_BOOL_FALSE(::SetEvent(endOfTheLine.get())));
         }
 
         TEST_METHOD(IsPackageRegistrationPendingForUser_NoSuchPackage)
@@ -157,7 +157,7 @@ namespace Test::PackageManager::Tests
             const winrt::hstring packageFullName{ ::TPM::Black::GetPackageFullName() };
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageRegistrationPendingForUser(winrt::hstring{}, packageFullName));
 
-            VERIFY_SUCCEEDED(LOG_IF_WIN32_BOOL_FALSE(::SetEvent(endOfTheLine.get())));
+            VERIFY_IS_TRUE(LOG_IF_WIN32_BOOL_FALSE(::SetEvent(endOfTheLine.get())));
         }
     };
 }
