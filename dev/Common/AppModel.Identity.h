@@ -19,6 +19,33 @@ inline bool IsPackagedProcess()
     return rc == ERROR_INSUFFICIENT_BUFFER;
 }
 
+template <typename Tstring>
+inline Tstring GetCurrentPackageFullName()
+{
+    WCHAR packageFullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1]{};
+    UINT32 n{ ARRAYSIZE(packageFullName) };
+    THROW_IF_WIN32_ERROR(::GetCurrentPackageFullName(&n, packageFullName));
+    return Tstring{ packageFullName };
+}
+
+template <typename Tstring>
+inline Tstring GetCurrentPackageFamilyName()
+{
+    WCHAR packageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
+    UINT32 n{ ARRAYSIZE(packageFamilyName) };
+    THROW_IF_WIN32_ERROR(::GetCurrentPackageFamilyName(&n, packageFamilyName));
+    return Tstring{ packageFamilyName };
+}
+
+template <typename Tstring>
+inline Tstring GetCurrentApplicationUserModelId()
+{
+    WCHAR applicationUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH]{};
+    UINT32 n{ ARRAYSIZE(applicationUserModelId) };
+    THROW_IF_WIN32_ERROR(::GetCurrentApplicationUserModelId(&n, applicationUserModelId));
+    return Tstring{ applicationUserModelId };
+}
+
 constexpr winrt::Windows::System::ProcessorArchitecture GetCurrentArchitecture()
 {
 #if defined(_M_X64)
