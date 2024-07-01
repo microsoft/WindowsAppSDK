@@ -24,6 +24,9 @@ function AllChangedFilesAreSkippable
     return $allFilesAreSkippable
 }
 
+Set-StrictMode -Version 3.0
+$ErrorActionPreference = 'Stop'
+
 $shouldSkipBuild = $false
 
 if($env:BUILD_REASON -eq "PullRequest")

@@ -28,6 +28,9 @@ function Convert-Guid
     return $guid
 }
 
+Set-StrictMode -Version 3.0
+$ErrorActionPreference = 'Stop'
+
 if (-not(Test-Path -Path $Path -PathType Container))
 {
     Write-Host "Creating $Path..."

@@ -13,6 +13,9 @@ Param(
     [switch]$Fix = $false
 )
 
+Set-StrictMode -Version 3.0
+$ErrorActionPreference = 'Stop'
+
 $copyrightHeaderText = (
     "Copyright (c) Microsoft Corporation and Contributors.",
     "Licensed under the MIT License."
