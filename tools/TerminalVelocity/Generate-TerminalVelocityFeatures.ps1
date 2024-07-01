@@ -46,7 +46,8 @@ Param(
     [string]$Namespace
 )
 
-Set-StrictMode -Version 3.0
+#Set-StrictMode -Version 3.0
+Set-StrictMode -Version 1.0
 
 # Make sure Channel has the exact spelling even if the parameter had different case
 foreach ($c in "Experimental", "Preview", "Stable", "WindowsInbox")
@@ -169,6 +170,7 @@ Function Resolve-FinalFeatureState
 
     $Feature.State
 }
+
 
 $ErrorActionPreference = "Stop"
 $xml = [xml](Get-Content $Path -EA:Stop)
