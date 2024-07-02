@@ -46,6 +46,8 @@ Param(
     [string]$Namespace
 )
 
+Set-StrictMode -Version 3.0
+
 # Make sure Channel has the exact spelling even if the parameter had different case
 foreach ($c in "Experimental", "Preview", "Stable", "WindowsInbox")
 {
@@ -93,6 +95,9 @@ Class Feature
     {
         $this.Name = $entry.name
         $this.State = ConvertTo-FeatureState $entry.state
+
+        # TODO: Remove the temp workaround of downgrading to StrictModel 1.0 once b#52128443 is fixed. 
+        Set-StrictMode -Version 1.0
         $this.Id = $entry.id
         $this.ChannelTokenStates = [System.Collections.Generic.Dictionary[string, State]]::new()
         $this.DisabledReleaseToken = $Null -Ne $entry.alwaysDisabledReleaseTokens
@@ -107,6 +112,7 @@ Class Feature
         {
             $this.ChannelTokenStates[$b] = [State]::AlwaysEnabled
         }
+        Set-StrictMode -Version 3.0
     }
 
     [string] PreprocessorName([string]$namespace)

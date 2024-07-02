@@ -27,6 +27,9 @@ Param(
     [switch]$Clean = $false
 )
 
+Set-StrictMode -Version 3.0
+$ErrorActionPreference = 'Stop'
+
 $env:Build_SourcesDirectory = (Split-Path $MyInvocation.MyCommand.Path)
 $buildOverridePath = "build\override"
 $BasePath = "BuildOutput/FullNuget"
