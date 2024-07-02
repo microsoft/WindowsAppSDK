@@ -99,7 +99,6 @@ Class Feature
         # TODO: Remove the temp workaround of downgrading to StrictModel 1.0 once b#52128443 is fixed. 
         Set-StrictMode -Version 1.0
         $this.Id = $entry.id
-
         $this.ChannelTokenStates = [System.Collections.Generic.Dictionary[string, State]]::new()
         $this.DisabledReleaseToken = $Null -Ne $entry.alwaysDisabledReleaseTokens
 
@@ -174,7 +173,6 @@ Function Resolve-FinalFeatureState
 
     $Feature.State
 }
-
 
 $ErrorActionPreference = "Stop"
 $xml = [xml](Get-Content $Path -EA:Stop)
