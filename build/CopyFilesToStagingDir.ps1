@@ -13,11 +13,7 @@ Set-StrictMode -Version 3.0
 $ErrorActionPreference = 'Stop'
 
 $FullBuildOutput = "$($BuildOutputDir)\$($Configuration)\$($Platform)"
-
-# TODO: BuildAll.ps1 maynot specify PublishDir. Remove the temp downgrade to 1.0 once this has been fixed.
-Set-StrictMode -Version 1.0
 $FullPublishDir = "$($PublishDir)\$($Configuration)\$($Platform)"
-Set-StrictMode -Version 3.0
 
 if (!(Test-Path $FullPublishDir)) { mkdir $FullPublishDir }
 
