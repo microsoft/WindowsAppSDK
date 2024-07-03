@@ -7,6 +7,9 @@ Param(
     [string]$queryParameters = ''
 )
 
+Set-StrictMode -Version 3.0
+$ErrorActionPreference = 'Stop'
+
 $headers = @{
     Authorization="Bearer $token"
 }

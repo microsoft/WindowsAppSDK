@@ -16,6 +16,9 @@ Param(
 # Version is read from the VERSION file.
 #
 
+Set-StrictMode -Version 3.0
+$ErrorActionPreference = 'Stop'
+
 $scriptDirectory = $script:MyInvocation.MyCommand.Path | Split-Path -Parent
 
 pushd $scriptDirectory

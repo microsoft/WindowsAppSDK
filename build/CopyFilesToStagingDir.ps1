@@ -9,6 +9,9 @@ Param(
     [switch]$PublishAppxFiles=$false
 )
 
+Set-StrictMode -Version 3.0
+$ErrorActionPreference = 'Stop'
+
 $FullBuildOutput = "$($BuildOutputDir)\$($Configuration)\$($Platform)"
 $FullPublishDir = "$($PublishDir)\$($Configuration)\$($Platform)"
 

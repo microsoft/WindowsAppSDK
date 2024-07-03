@@ -2,6 +2,8 @@
 param([Parameter(Mandatory=$true, Position=0)]
       [string]$buildNumber)
 
+Set-StrictMode -Version 3.0
+
 # Ensure the error action preference is set to the default for PowerShell3, 'Stop'
 $ErrorActionPreference = 'Stop'
 
