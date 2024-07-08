@@ -242,7 +242,7 @@ steps:
 - ${{ if eq(parameters.SignOutput, 'true') }}:
   - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
     parameters:
-      FolderPath: $(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall'
+      FolderPath: $(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall
       Pattern: WindowsAppRuntimeInstall*.exe
       UseMinimatch: true
       KeyCode: 'CP-230012'
