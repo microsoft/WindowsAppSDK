@@ -18,7 +18,7 @@ parameters:
 steps:
 - ${{ if eq(parameters.UseCurrentBuild, 'True') }}:
   - task: DownloadPipelineArtifact@2
-    displayName: 'Download WindowsAppSDK'
+    displayName: 'Download WindowsAppSDK From Current Build'
     inputs:
       artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
       targetPath: '$(System.ArtifactsDirectory)'
@@ -27,7 +27,7 @@ steps:
   # This step downloads the WindowsAppSDK NuGet package from last successful build of the Aggregator's Nightly build
   # for use in building the installers
   - task: DownloadPipelineArtifact@2
-    displayName: 'Download WindowsAppSDK'
+    displayName: 'Download WindowsAppSDK From Latest Nightly'
     inputs:
       artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
       targetPath: '$(System.ArtifactsDirectory)'
