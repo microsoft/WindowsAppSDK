@@ -3,7 +3,6 @@ param(
     [parameter(mandatory)][string] $OutputDirectory
 )
 
-Set-StrictMode -Version 3.0
 $ErrorActionPreference = "Stop"
 function Get-IsAmd64Bit
 {

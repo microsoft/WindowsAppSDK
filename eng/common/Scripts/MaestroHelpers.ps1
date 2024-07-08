@@ -53,7 +53,7 @@ function ConvertToMaestroFriendlyAzureDevOpUri([string]$buildRepositoryUri)
 
 function IsGitHubRepo([string]$buildRepositoryUri)
 {
-    $githubUrls = @("https://github.com", "https://wwww.github.com")
+    $githubUrls = @("https://github.com", "https://www.github.com")
     if ($githubUrls.length -gt 0)
     {
         for ($i = 0; $i -lt ($githubUrls.length); $i += 1)
@@ -82,6 +82,3 @@ function IsMaestroFriendlyAzureDevOpUri([string]$buildRepositoryUri)
     }
     return $false
 }
-
-Set-StrictMode -Version 3.0
-$ErrorActionPreference = 'Stop'

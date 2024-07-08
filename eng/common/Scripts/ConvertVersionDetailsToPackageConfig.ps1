@@ -5,9 +5,6 @@ Param(
     [string]$packageConfigPath = ""
 )
 
-Set-StrictMode -Version 3.0
-$ErrorActionPreference = 'Stop'
-
 [xml]$buildConfig = Get-Content -Path $versionDetailsPath
 
 $packagesText =
