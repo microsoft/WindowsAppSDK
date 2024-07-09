@@ -29,22 +29,6 @@ steps:
     filePath: 'BuildAll.ps1'
     arguments: -AzureBuildStep "BuildAnyCPU"
 
-<<<<<<< HEAD
-=======
-- ${{ if eq(parameters.runStaticAnalysis, 'True') }}:
-  - task: SDLNativeRules@3
-    displayName: Run PREfast SDL Native Rules
-    inputs:
-      setupCommandlines: '"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat"'
-      msBuildCommandline: 'msbuild.exe /restore /nologo /nr:false $(Build.SourcesDirectory)\dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj'
-      # Generally speaking, we leave it to the external repos to scan the bits in their packages.
-      excludedPaths: |
-        $(Build.SourcesDirectory)\packages
-    continueOnError: true
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-
->>>>>>> 9ca4c669 (Update ESRPCodeSigningTask to Version 5; Use WindowsAppSDK-EsrpCodeSigning-Steps.yml From WindowsAppSDKConfig Repository (#4499))
 # component detection must happen *within* the build task
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 

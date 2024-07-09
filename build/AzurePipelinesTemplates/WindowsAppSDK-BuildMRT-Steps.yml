@@ -36,19 +36,7 @@ steps:
   # So for the time being, we explicitly call SDLNativeRules@3, which is currently supported. Consider eliminating this
   # extra step when we run PREFast as part of WindowsAppSDK-BinaryAnalysis-steps.yml below.
   - task: SDLNativeRules@3
-<<<<<<< HEAD
     displayName: 'Guardian: PreFast@3'
-=======
-    displayName: Run PREfast SDL Native Rules
-    condition: and(succeeded(), eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
-    inputs:
-      setupCommandlines: '"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat"'
-      msBuildArchitecture: amd64
-      msBuildCommandline: 'msbuild.exe /nologo /nr:false /p:configuration=Release /p:platform=x64 $(Build.SourcesDirectory)\dev\MRTCore\mrt\MrtCore.sln'
-      # Generally speaking, we leave it to the external repos to scan the bits in their packages.
-      excludedPaths: |
-        $(Build.SourcesDirectory)\packages
->>>>>>> 9ca4c669 (Update ESRPCodeSigningTask to Version 5; Use WindowsAppSDK-EsrpCodeSigning-Steps.yml From WindowsAppSDKConfig Repository (#4499))
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     continueOnError: true
