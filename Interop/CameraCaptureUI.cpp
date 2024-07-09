@@ -8,13 +8,12 @@
 #include "CameraCaptureUI.h"
 #include "Microsoft.Windows.Media.Capture.CameraCaptureUI.g.cpp"
 
-using namespace winrt;
-using namespace Windows::Media::Capture;
-using namespace Windows::Storage;
-using namespace Windows::System;
-using namespace Windows::Foundation;
-using namespace Windows::Foundation::Collections;
-using namespace Windows::ApplicationModel::DataTransfer;
+using namespace winrt::Windows::Media::Capture;
+using namespace winrt::Windows::Storage;
+using namespace winrt::Windows::System;
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Foundation::Collections;
+using namespace winrt::Windows::ApplicationModel::DataTransfer;
 
 namespace winrt::Microsoft::Windows::Media::Capture::implementation
 {
