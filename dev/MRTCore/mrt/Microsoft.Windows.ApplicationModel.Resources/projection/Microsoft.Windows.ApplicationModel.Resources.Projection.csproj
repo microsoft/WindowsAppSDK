@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
@@ -21,9 +21,8 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <CSWinRTIncludes>Microsoft.Windows.ApplicationModel.Resources</CSWinRTIncludes>
+    <CSWinRTIncludes>Microsoft.Windows.Globalization;Microsoft.Windows.ApplicationModel.Resources</CSWinRTIncludes>
     <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
-    <WindowsSdkPackageVersion>10.0.17763.$(CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion)</WindowsSdkPackageVersion>
     <NoWarn>MSB3271</NoWarn>
   </PropertyGroup>
 
@@ -31,10 +30,11 @@
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DebugType>pdbonly</DebugType>
     <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>	
+  </PropertyGroup>
 
   <ItemGroup>
     <CsWinRTInputs Include="$(OutDir)/**/*.winmd" />
+    <CsWinRTInputs Include="$(BaseOutputPath)/Microsoft.Windows.ApplicationModel.Resources/Microsoft.Windows.Globalization.winmd" />
   </ItemGroup>
 
   <ItemGroup>

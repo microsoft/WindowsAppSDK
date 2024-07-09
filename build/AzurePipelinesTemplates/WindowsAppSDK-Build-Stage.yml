@@ -11,6 +11,7 @@ parameters:
 
 stages:
 - stage: Build
+  dependsOn: []
   jobs:
   - job: VerifyCopyrightHeaders
     dependsOn: []
@@ -55,9 +56,12 @@ stages:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**;-|**\packages\**'
       ob_artifactBaseName: "FoundationBinaries_$(buildConfiguration)_$(buildPlatform)"
-      ob_sdl_apiscan_enabled: true
+      ${{ if parameters.runStaticAnalysis }}:
+        ob_sdl_apiscan_enabled: true
+      ${{ if not( parameters.runStaticAnalysis ) }}:
+        ob_sdl_apiscan_enabled: false
       ob_sdl_apiscan_softwareFolder: '$(build.SourcesDirectory)\APIScanTarget'
-      ob_sdl_apiscan_symbolsFolder: '$(build.SourcesDirectory)\APIScanTarget;SRV*http://symweb'
+      ob_sdl_apiscan_symbolsFolder: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
     steps:
     - template: WindowsAppSDK-BuildBinaries-Steps.yml@self
       parameters:
@@ -79,9 +83,12 @@ stages:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_sdl_codeSignValidation_excludes: '-|**\Release\**'
       ob_artifactBaseName: "FoundationBinaries_release_anycpu"
-      ob_sdl_apiscan_enabled: true
+      ${{ if parameters.runStaticAnalysis }}:
+        ob_sdl_apiscan_enabled: true
+      ${{ if not( parameters.runStaticAnalysis ) }}:
+        ob_sdl_apiscan_enabled: false
       ob_sdl_apiscan_softwareFolder: '$(build.SourcesDirectory)\BuildOutput\Release\AnyCPU'
-      ob_sdl_apiscan_symbolsFolder: '$(build.SourcesDirectory)\BuildOutput\Release\AnyCPU;SRV*http://symweb'
+      ob_sdl_apiscan_symbolsFolder: '$(build.SourcesDirectory)\BuildOutput\Release\AnyCPU;SRV*https://symweb.azurefd.net'
     steps:
     - template: WindowsAppSDK-BuildBinaries-AnyCPU-Steps.yml@self
       parameters:
@@ -122,9 +129,12 @@ stages:
       ob_sdl_suppression_suppressionFile: $(Build.SourcesDirectory)\dev\MRTCore\.gdn\mrt.gdnsuppress # This value is set on the job cdpx_engine, it will override the global gdnsuppress for this job
       ob_sdl_suppression_suppressionSet: default
       ob_artifactBaseName: "MrtBinaries_$(buildConfiguration)_$(buildPlatform)"
-      ob_sdl_apiscan_enabled: true
+      ${{ if parameters.runStaticAnalysis }}:
+        ob_sdl_apiscan_enabled: true
+      ${{ if not( parameters.runStaticAnalysis ) }}:
+        ob_sdl_apiscan_enabled: false
       ob_sdl_apiscan_softwareFolder: '$(build.SourcesDirectory)\APIScanTarget'
-      ob_sdl_apiscan_symbolsFolder: '$(build.SourcesDirectory)\APIScanTarget;SRV*http://symweb'
+      ob_sdl_apiscan_symbolsFolder: '$(build.SourcesDirectory)\APIScanTarget;SRV*https://symweb.azurefd.net'
     steps:
     - template: WindowsAppSDK-BuildMRT-Steps.yml@self
       parameters:

@@ -3,6 +3,7 @@ param
     [String] $SourceDirectory
 )
 
+Set-StrictMode -Version 3.0
 $ErrorActionPreference = "Stop"
 
 # If $env:LkgVcToolsName and $env:LkgVcToolsVersion are not fully specified, try to retrieve the defaults from WindowsAppSDK-GlobalVariables.yml.

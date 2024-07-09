@@ -7,6 +7,7 @@
 
 #include <unknwn.h>
 #include <appmodel.h>
+#include <sddl.h>
 
 #include <filesystem>
 #include <thread>
@@ -15,6 +16,7 @@
 #include <wil/cppwinrt.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
+#include <wil/winrt.h>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
@@ -28,5 +30,9 @@
 
 #include <appmodel.identity.h>
 #include <appmodel.package.h>
+#include <security.user.h>
 
 #include "MsixPackageManager.h"
+
+#include <FrameworkUdk/PackageManagement.h>
+#include <FrameworkUdk/UupStateRepository.h>

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include <pch.h>
@@ -403,7 +403,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         HRESULT deploymentOperationHResult{};
         HRESULT deploymentOperationExtendedHResult{};
 
-        if (deploymentOperation.Status() != AsyncStatus::Completed)
+        if (deploymentOperation.Status() != winrt::Windows::Foundation::AsyncStatus::Completed)
         {
             deploymentOperationHResult = static_cast<HRESULT>(deploymentOperation.ErrorCode());
             deploymentOperationExtendedHResult = deploymentResult.ExtendedErrorCode();

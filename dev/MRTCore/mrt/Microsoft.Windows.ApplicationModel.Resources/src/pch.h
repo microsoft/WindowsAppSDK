@@ -7,6 +7,9 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include "..\..\core\src\MRM.h"
 
+#include <wil/result_macros.h>
+#include <wil/resource.h>
+
 struct StringResourceFreer
 {
     void operator()(wchar_t* resource) { MrmFreeResource(resource); }

@@ -270,7 +270,7 @@ If you need this functionality use the OS APIs in `Windows.Storage.ApplicationDa
 ```c# (but really MIDL3)
 namespace Microsoft.Windows.Storage
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract ApplicationDataContract{};
 
     /// Specifies the type of data store.
@@ -350,6 +350,8 @@ namespace Microsoft.Windows.Storage
         static ApplicationData GetForPackageFamily(String packageFamilyName);
 
         /// Get an instance of ApplicationData for the specified unpackaged app for the current user.
+        [feature(Feature_ApplicationData)]
+        [contract(ApplicationDataContract, 2)]
         static ApplicationData GetForUnpackaged(String publisher, String product);
 
         /// Return true if the package family supports the machine data store.

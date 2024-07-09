@@ -4,6 +4,9 @@ Param(
     [string]$dependencyVersion
 )
 
+Set-StrictMode -Version 3.0
+$ErrorActionPreference = 'Stop'
+
 Write-Host $dependencyName
 Write-Host $dependencyVersion
 

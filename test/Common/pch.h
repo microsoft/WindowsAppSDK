@@ -11,6 +11,7 @@
 #define PCH_H
 
 #include <unknwn.h>
+#include <sddl.h>
 
 #include <wil/cppwinrt.h>
 #include <wil/token_helpers.h>

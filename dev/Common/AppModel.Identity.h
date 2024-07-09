@@ -19,6 +19,33 @@ inline bool IsPackagedProcess()
     return rc == ERROR_INSUFFICIENT_BUFFER;
 }
 
+template <typename Tstring>
+inline Tstring GetCurrentPackageFullName()
+{
+    WCHAR packageFullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1]{};
+    UINT32 n{ ARRAYSIZE(packageFullName) };
+    THROW_IF_WIN32_ERROR(::GetCurrentPackageFullName(&n, packageFullName));
+    return Tstring{ packageFullName };
+}
+
+template <typename Tstring>
+inline Tstring GetCurrentPackageFamilyName()
+{
+    WCHAR packageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
+    UINT32 n{ ARRAYSIZE(packageFamilyName) };
+    THROW_IF_WIN32_ERROR(::GetCurrentPackageFamilyName(&n, packageFamilyName));
+    return Tstring{ packageFamilyName };
+}
+
+template <typename Tstring>
+inline Tstring GetCurrentApplicationUserModelId()
+{
+    WCHAR applicationUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH]{};
+    UINT32 n{ ARRAYSIZE(applicationUserModelId) };
+    THROW_IF_WIN32_ERROR(::GetCurrentApplicationUserModelId(&n, applicationUserModelId));
+    return Tstring{ applicationUserModelId };
+}
+
 constexpr winrt::Windows::System::ProcessorArchitecture GetCurrentArchitecture()
 {
 #if defined(_M_X64)
@@ -372,6 +399,14 @@ public:
         return m_packageId->publisherId;
     }
 
+    std::wstring PackageFamilyName() const
+    {
+        WCHAR packageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
+        UINT32 packageFamilyNameLength{ ARRAYSIZE(packageFamilyName) };
+        THROW_IF_WIN32_ERROR_MSG(::PackageFamilyNameFromId(m_packageId, &packageFamilyNameLength, packageFamilyName), "%ls", m_packageFullName.c_str());
+        return packageFamilyName;
+    }
+
     explicit operator bool() const
     {
         return m_packageId != nullptr;
@@ -384,6 +419,15 @@ private:
                                         PACKAGE_RESOURCEID_MAX_LENGTH + 1 +
                                         PACKAGE_PUBLISHERID_MAX_LENGTH + 1) * sizeof(WCHAR)]{};
 };
+
+template<typename T>
+T ToPackageFamilyName(PCWSTR packageFullName)
+{
+    WCHAR packageFamilyName[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1]{};
+    UINT32 packageFamilyNameLength{ ARRAYSIZE(packageFamilyName) };
+    THROW_IF_WIN32_ERROR_MSG(::PackageFamilyNameFromFullName(packageFullName, &packageFamilyNameLength, packageFamilyName), "%ls", packageFullName);
+    return T{ packageFamilyName };
+}
 }
 
 #endif // __APPMODEL_IDENTITY_H

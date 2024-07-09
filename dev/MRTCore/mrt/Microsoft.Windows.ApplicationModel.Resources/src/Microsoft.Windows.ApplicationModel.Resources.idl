@@ -1,9 +1,9 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 namespace Microsoft.Windows.ApplicationModel.Resources
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract MrtCoreContract{};
 
     [contract(MrtCoreContract, 1)]
@@ -114,3 +114,15 @@ namespace Microsoft.Windows.ApplicationModel.Resources
         static String Theme { get; };
     }
 } // namespace Microsoft.Windows.ApplicationModel.Resources
+
+namespace Microsoft.Windows.Globalization
+{
+    [contract(Microsoft.Windows.ApplicationModel.Resources.MrtCoreContract, 2)]
+    runtimeclass ApplicationLanguages
+    {
+        static IVectorView<String> Languages { get; };
+        static IVectorView<String> ManifestLanguages { get; };
+        static String PrimaryLanguageOverride;
+    }
+
+} // namespace Microsoft.Windows.Globalization

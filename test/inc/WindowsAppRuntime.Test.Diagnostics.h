@@ -13,6 +13,8 @@
 #include <wil\resource.h>
 #include <wil\token_helpers.h>
 
+#include <Security.IntegrityLevel.h>
+
 namespace Test::Diagnostics
 {
 inline PCWSTR IntegrityLevelToString(DWORD integrityLevel)
@@ -38,9 +40,7 @@ inline void DumpUser(PCWSTR context, _In_ HANDLE token, PSID userSid)
         VERIFY_WIN32_BOOL_SUCCEEDED(ConvertSidToStringSidW(userSid, &userSidAsString));
         WEX::Logging::Log::Comment(WEX::Common::String().Format(L"UserSid:%s %s", context, userSidAsString.get()));
 
-        wistd::unique_ptr<TOKEN_MANDATORY_LABEL> tokenMandatoryLabel;
-        VERIFY_SUCCEEDED(wil::get_token_information_nothrow(tokenMandatoryLabel, token));
-        const DWORD integrityLevel{ *GetSidSubAuthority((*tokenMandatoryLabel).Label.Sid, static_cast<DWORD>(static_cast<UCHAR>(*GetSidSubAuthorityCount((*tokenMandatoryLabel).Label.Sid) - 1))) };
+        const DWORD integrityLevel{ ::Security::IntegrityLevel::GetIntegrityLevel(token) };
         WEX::Logging::Log::Comment(WEX::Common::String().Format(L"IntegrityLevel: 0x%08X (%s)", integrityLevel, IntegrityLevelToString(integrityLevel)));
     }
     else
