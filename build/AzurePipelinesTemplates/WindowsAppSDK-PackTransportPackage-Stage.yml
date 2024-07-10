@@ -199,6 +199,7 @@ stages:
           Pattern: 'Microsoft.WindowsAppSDK.Foundation*.nupkg'
           KeyCode: 'CP-401405'
           UseMinimatch: true
+          DisplayName: 'CodeSign Nuget Package'
 
     - task: CopyFiles@2
       displayName: MoveToOutputDirectory
