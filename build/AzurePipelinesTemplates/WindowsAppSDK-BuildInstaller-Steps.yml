@@ -32,9 +32,10 @@ steps:
       artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
       targetPath: '$(System.ArtifactsDirectory)'
       source: 'specific'
-      definition: 104083 # Official Aggregator Build       
       project: $(System.TeamProjectId)
-      tags: 'release/latest'
+      pipeline: 104083         
+      runVersion: 'latest'
+      tags: "release/latest"
 
 ###
 # Install the internal licensing support for release-signed packages. This can always be present in
