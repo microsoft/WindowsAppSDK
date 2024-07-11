@@ -36,7 +36,7 @@ steps:
       project: $(System.TeamProjectId)
       allowPartiallySucceededBuilds: True
       allowFailedBuilds: True
-      pipeline: 104083 # Official Aggregator Build       
+      pipelineId: 104083 # Official Aggregator Build       
       tags: 'release/latest'
 
 ###
