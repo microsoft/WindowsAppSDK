@@ -32,11 +32,8 @@ steps:
       artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
       targetPath: '$(System.ArtifactsDirectory)'
       source: 'specific'
-      runVersion: 'specific'
       pipelineId: 104083 # Official Aggregator Build       
       project: $(System.TeamProjectId)
-      allowPartiallySucceededBuilds: True
-      allowFailedBuilds: True
       tags: 'release/latest'
 
 ###
