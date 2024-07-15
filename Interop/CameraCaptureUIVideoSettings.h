@@ -16,9 +16,9 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         void Serialize(winrt::Windows::Foundation::Collections::ValueSet const& props);
 
         basic_property<bool> AllowTrimming{ true };
-        basic_property<winrt::Windows::Media::Capture::CameraCaptureUIVideoFormat> Format{ winrt::Windows::Media::Capture::CameraCaptureUIVideoFormat::Mp4 };
+        basic_property<winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIVideoFormat> Format{ winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIVideoFormat::Mp4 };
         basic_property<float> MaxDurationInSeconds{ 0.0f };
-        basic_property<winrt::Windows::Media::Capture::CameraCaptureUIMaxVideoResolution> MaxResolution{ winrt::Windows::Media::Capture::CameraCaptureUIMaxVideoResolution::HighestAvailable };
+        basic_property<winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxVideoResolution> MaxResolution{ winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxVideoResolution::HighestAvailable };
     };
 }
 namespace winrt::Microsoft::Windows::Media::Capture::factory_implementation

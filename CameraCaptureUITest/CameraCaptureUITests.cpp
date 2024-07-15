@@ -23,10 +23,10 @@ namespace TP = ::Test::Packages;
 
 namespace Test::CameraCaptureUI
 {
-    struct MockWindowId
+   /* struct MockWindowId
     {
         UINT64 Value;
-    };
+    };*/
 
     class CameraCaptureUITests
     {
@@ -102,10 +102,10 @@ namespace Test::CameraCaptureUI
                 // Arrange
                 winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI({12345});
                 // Configure Photo Settings
-                cameraUI.PhotoSettings().Format(winrt::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg);
+                cameraUI.PhotoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg);
                 cameraUI.PhotoSettings().AllowCropping(false);
                 // Act
-                auto photoOperation = cameraUI.CaptureFileAsync(winrt::Windows::Media::Capture::CameraCaptureUIMode::Photo);
+                auto photoOperation = cameraUI.CaptureFileAsync(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMode::Photo);
                 auto photo = photoOperation.get();
 
                 // Assert
@@ -145,7 +145,7 @@ namespace Test::CameraCaptureUI
 
             //cameraUI.PhotoSettings().Format(winrt::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg);
             cameraUI.PhotoSettings().AllowCropping(false);
-            auto file = cameraUI.CaptureFileAsync(winrt::Windows::Media::Capture::CameraCaptureUIMode::Photo);
+            auto file = cameraUI.CaptureFileAsync(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMode::Photo);
             auto photo = file.get();
 
             // Assert
@@ -158,11 +158,11 @@ namespace Test::CameraCaptureUI
             winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI({ 12345 });
             cameraUI.PhotoSettings().AllowCropping(true);
             cameraUI.PhotoSettings().CroppedAspectRatio({ 16, 9 });
-            cameraUI.PhotoSettings().Format(winrt::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg);
+            cameraUI.PhotoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg);
 
             // Act and Assert
             
-            auto file = cameraUI.CaptureFileAsync(winrt::Windows::Media::Capture::CameraCaptureUIMode::Photo);
+            auto file = cameraUI.CaptureFileAsync(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMode::Photo);
             auto photo = file.get();
             VERIFY_IS_NOT_NULL(photo);
            
@@ -175,10 +175,10 @@ namespace Test::CameraCaptureUI
 
             // Act
             // Set either a fixed size or an aspect ratio, but not both
-            cameraUI.VideoSettings().Format(winrt::Windows::Media::Capture::CameraCaptureUIVideoFormat::Mp4); 
+            cameraUI.VideoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIVideoFormat::Mp4);
             cameraUI.VideoSettings().AllowTrimming(false);
 
-            auto file = cameraUI.CaptureFileAsync(winrt::Windows::Media::Capture::CameraCaptureUIMode::Video);
+            auto file = cameraUI.CaptureFileAsync(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMode::Video);
             auto video = file.get();
 
             // Assert
@@ -196,13 +196,13 @@ namespace Test::CameraCaptureUI
             
             cameraUI.PhotoSettings().AllowCropping(true);
             cameraUI.PhotoSettings().CroppedSizeInPixels({ 1920, 1080 });
-            cameraUI.PhotoSettings().Format(winrt::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg);
-            cameraUI.PhotoSettings().MaxResolution(winrt::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::HighestAvailable);
+            cameraUI.PhotoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg);
+            cameraUI.PhotoSettings().MaxResolution(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::HighestAvailable);
       
-            cameraUI.VideoSettings().Format(winrt::Windows::Media::Capture::CameraCaptureUIVideoFormat::Mp4);
+            cameraUI.VideoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIVideoFormat::Mp4);
             cameraUI.VideoSettings().AllowTrimming(true);
 
-            auto file = cameraUI.CaptureFileAsync(winrt::Windows::Media::Capture::CameraCaptureUIMode::PhotoOrVideo);
+            auto file = cameraUI.CaptureFileAsync(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMode::PhotoOrVideo);
             auto photo = file.get();
 
             // Assert

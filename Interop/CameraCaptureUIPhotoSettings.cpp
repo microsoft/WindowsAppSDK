@@ -4,7 +4,7 @@
 #include "CameraCaptureUIPhotoSettings.h"
 #include "Microsoft.Windows.Media.Capture.CameraCaptureUIPhotoSettings.g.cpp"
 
-using namespace winrt::Windows::Media::Capture;
+//using namespace winrt::Windows::Media::Capture;
 using namespace winrt::Windows::Foundation;
 
 namespace winrt::Microsoft::Windows::Media::Capture::implementation

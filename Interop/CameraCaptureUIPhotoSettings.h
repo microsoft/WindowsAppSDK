@@ -18,8 +18,8 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         basic_property<bool> AllowCropping{ true };
         basic_property<winrt::Windows::Foundation::Size> CroppedAspectRatio{ 0.0f, 0.0f };
         basic_property<winrt::Windows::Foundation::Size> CroppedSizeInPixels{ 0.0f, 0.0f };
-        basic_property<winrt::Windows::Media::Capture::CameraCaptureUIPhotoFormat> Format{ winrt::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg };
-        basic_property<winrt::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution> MaxResolution{ winrt::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::HighestAvailable };
+        basic_property<winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat> Format{ winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg };
+        basic_property<winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution> MaxResolution{ winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::HighestAvailable };
     };
 }
 

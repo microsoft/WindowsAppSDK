@@ -223,7 +223,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.Media.Capture">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.Media.Capture.winmd</HintPath>
+      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Media.Capture.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>

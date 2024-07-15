@@ -2,11 +2,48 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 namespace Microsoft.Windows.Media.Capture
 {
-    
-    struct WindowId
+    [version(1.0)]
+    typedef enum CameraCaptureUIMode
     {
-        UInt64 Value;
-    };
+        PhotoOrVideo = 0,
+        Photo,
+        Video,
+    } CameraCaptureUIMode;
+
+    [version(1.0)]
+    typedef enum CameraCaptureUIPhotoFormat
+    {
+        Jpeg = 0,
+        Png,
+        JpegXR,
+    } CameraCaptureUIPhotoFormat;
+
+    [version(1.0)]
+    typedef enum CameraCaptureUIVideoFormat
+    {
+        Mp4 = 0,
+        Wmv,
+    } CameraCaptureUIVideoFormat;
+
+    [version(1.0)]
+    typedef enum CameraCaptureUIMaxVideoResolution
+    {
+        HighestAvailable = 0,
+        LowDefinition,
+        StandardDefinition,
+        HighDefinition,
+    } CameraCaptureUIMaxVideoResolution;
+
+    [version(1.0)]
+    typedef enum CameraCaptureUIMaxPhotoResolution
+    {
+        HighestAvailable = 0,
+        VerySmallQvga,
+        SmallVga,
+        MediumXga,
+        Large3M,
+        VeryLarge5M,
+    } CameraCaptureUIMaxPhotoResolution;
 
     [default_interface]
     runtimeclass CameraCaptureUIPhotoSettings
@@ -16,8 +53,8 @@ namespace Microsoft.Windows.Media.Capture
         Boolean AllowCropping;
         Windows.Foundation.Size CroppedAspectRatio;
         Windows.Foundation.Size CroppedSizeInPixels;
-        Windows.Media.Capture.CameraCaptureUIPhotoFormat Format;
-        Windows.Media.Capture.CameraCaptureUIMaxPhotoResolution MaxResolution;
+        Microsoft.Windows.Media.Capture.CameraCaptureUIPhotoFormat Format;
+        Microsoft.Windows.Media.Capture.CameraCaptureUIMaxPhotoResolution MaxResolution;
     }
 
     [default_interface]
@@ -26,20 +63,20 @@ namespace Microsoft.Windows.Media.Capture
         CameraCaptureUIVideoSettings();
 
         Boolean AllowTrimming;
-        Windows.Media.Capture.CameraCaptureUIVideoFormat Format;
+        Microsoft.Windows.Media.Capture.CameraCaptureUIVideoFormat Format;
         Single MaxDurationInSeconds;
-        Windows.Media.Capture.CameraCaptureUIMaxVideoResolution MaxResolution;
+        Microsoft.Windows.Media.Capture.CameraCaptureUIMaxVideoResolution MaxResolution;
     }
 
     [default_interface]
     runtimeclass CameraCaptureUI
     {
-        CameraCaptureUI(WindowId window);
+        CameraCaptureUI(Windows.UI.WindowId window);
         //CameraCaptureUI(Microsoft.UI.WindowId window);
 
         CameraCaptureUIPhotoSettings PhotoSettings{ get; };
         CameraCaptureUIVideoSettings VideoSettings{ get; };
 
-        Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> CaptureFileAsync(Windows.Media.Capture.CameraCaptureUIMode mode);
+        Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> CaptureFileAsync(Microsoft.Windows.Media.Capture.CameraCaptureUIMode mode);
     }
 }
