@@ -14,12 +14,12 @@ In response to this feedback, the CameraCaptureUI API for WinAppSDK aims to prov
 
 # 3. Description
 
-Winappsdk version of CameraCaptureUI is essentially the same as the existing public CameraCaptureUI OS API, with a minor adjustment to accept a windowID in the constructor for enhanced integration capabilities with desktop applications.
+Winappsdk version of CameraCaptureUI is essentially the same as the existing public CameraCaptureUI OS API, with a minor adjustment to the CameraCapture constructor to accept a windowID in the constructor for enhanced integration capabilities with desktop applications.
 
-The API includes the following key components:
+The ***Existing API*** includes the following key components:
 
 
-## 3.1 CameraCaptureUI class
+## 3.1 CameraCaptureUI
 
 Provides a full window UI for capturing audio, video, and photos from a camera. As well as controls for trimming video, time delayed capture, and camera settings.
 
@@ -33,16 +33,7 @@ dialog.PhotoSettings.CroppedAspectRatio = aspectRatio;
 StorageFile file = await dialog.CaptureFileAsync(CameraCaptureUIMode.Photo);
 ```
 
-### Remarks
-CameraCaptureUI provides a full window UI experience for capturing audio, video, and images. It provides controls for setting a time delay on photo captures, trimming video, and for adjusting the camera's settings such as video resolution, the audio device, brightness, and contrast.
-
-Call CaptureFileAsync to launch the UI. The user has control over when to start the capture. When the asynchronous CaptureFileAsync operation completes, a StorageFile object is returned. 
-
-`` Note: 
-You should not specify the webcam or microphone capabilities in your app manifest file if you are using CameraCaptureUI. If you do so, your app will be displayed in the device's camera privacy settings, but even if the user denies camera access to your app, it will not prevent the CameraCaptureUI from capturing media. This is because the Windows built-in camera app is a trusted first-party app that requires the user to initiate photo, audio, and video capture with a button press. Your app may fail Windows Application Certification Kit certification when submitted to the Store if you specify the webcam or microphone capabilities when using CameraCaptureUI.
-``
-
-### Constructors
+### 3.1.1 Constructor (The Change Introduced)
 | Name | Description |
 |-|-|
 | CameraCaptureUI(windowID) | Create a new CameraCaptureUI object.|
@@ -50,17 +41,26 @@ You should not specify the webcam or microphone capabilities in your app manifes
 Note: After you create a new CameraCaptureUI object, you may want to set the PhotoSettings or VideoSettings property of the object before calling CaptureFileAsync.
 ```
 
-### Properties
+### 3.1.2 Properties
 | Name | Description | Value |
 |-|-|-|
 |PhotoSettings| Provides settings for capturing photos. The settings include aspect ratio, image size, format, resolution, and whether or not cropping is allowed by the user interface (UI).|CameraCaptureUIPhotoCaptureSettings (An object containing settings for capturing photos) |
 |VideoSettings| Provides settings for capturing videos. The settings include format, maximum resolution, maximum duration, and whether or not to allow trimming.| CameraCaptureUIVideoCaptureSettings (An object that provides settings for capturing videos) |
 
-### Methods
+### 3.1.3 Methods
 
 | Name | Description | Parameters | Returns |
 |-|-|-|-|
 | CaptureFileAsync(CameraCaptureUIMode) | Launches the CameraCaptureUI user interface.| __mode__ CameraCaptureUIMode | __IAsyncOperation< StorageFile >__ |
+
+### 3.1.4 Remarks
+CameraCaptureUI provides a full window UI experience for capturing audio, video, and images. It provides controls for setting a time delay on photo captures, trimming video, and for adjusting the camera's settings such as video resolution, the audio device, brightness, and contrast.
+
+Call CaptureFileAsync to launch the UI. The user has control over when to start the capture. When the asynchronous CaptureFileAsync operation completes, a StorageFile object is returned. 
+
+`` Note: 
+You should not specify the webcam or microphone capabilities in your app manifest file if you are using CameraCaptureUI. If you do so, your app will be displayed in the device's camera privacy settings, but even if the user denies camera access to your app, it will not prevent the CameraCaptureUI from capturing media. This is because the Windows built-in camera app is a trusted first-party app that requires the user to initiate photo, audio, and video capture with a button press. Your app may fail Windows Application Certification Kit certification when submitted to the Store if you specify the webcam or microphone capabilities when using CameraCaptureUI.
+``
 
 ## 3.2 CameraCaptureUIPhotoCaptureSettings Class
 Provides settings for capturing photos with CameraCaptureUI. The settings include aspect ratio, image size, format, resolution, and whether or not cropping is allowed by the user interface (UI).
@@ -88,8 +88,10 @@ Provides settings for capturing videos. The settings include format, maximum res
 
 
 ## 3.4 Enums
+All existing enumerated values from the CameraCapture class are brought over as-is to the Windows App SDK version as well.
 
-#### CameraCaptureUIMode
+#### 3.4.1 CameraCaptureUIMode
+
 Determines whether the user interface for capturing from the attached camera allows capture of photos, videos, or both photos and videos.
 
 | Name | Value | Description |
@@ -98,7 +100,7 @@ Determines whether the user interface for capturing from the attached camera all
 | Photo | 1 | The user interface allows capture of photos only.|
 | Video | 2 | The user interface allows capture of videos only. |
 
-#### CameraCaptureUIPhotoFormat
+#### 3.4.2 CameraCaptureUIPhotoFormat
 Determines the format for photos captured with CameraCaptureUI.
 
 | Name | Value | Description |
@@ -107,7 +109,7 @@ Determines the format for photos captured with CameraCaptureUI.
 | Png | 1 | PNG format. |
 | JpegXR | 2 | JPEG-XR format. |
 
-#### CameraCaptureUIVideoFormat
+#### 3.4.3 CameraCaptureUIVideoFormat
 Determines the format for saving captured videos.
 
 | Name | Value | Description |
@@ -115,7 +117,7 @@ Determines the format for saving captured videos.
 | Mp4 | 0 |MP4/H.264/AAC format.|
 | Wmv | 1 | WMV format. |
 
-#### CameraCaptureUIMaxPhotoResolution
+#### 3.4.4 CameraCaptureUIMaxPhotoResolution
 Determines the highest resolution the user can select for capturing photos.
 
 | Name | Value | Description |
@@ -128,7 +130,7 @@ Determines the highest resolution the user can select for capturing photos.
 | VeryLarge5M | 5 | The user can select resolutions up to 5 MP.|
 
 
-#### CameraCaptureUIMaxVideoResolution
+#### 3.4.5 CameraCaptureUIMaxVideoResolution
 Determines the highest resolution the user can select for capturing video.
 
 | Name | Value | Description |
@@ -139,6 +141,65 @@ Determines the highest resolution the user can select for capturing video.
 | HighDefinition | 3 | The user can select resolutions up to high definition resolutions. |
 
 # 4. Examples
+
+## 4.1 Capture a photo (C++)
+
+A C++ example that tests whether a photo was successfully taken using the CaptureFileAsync method.
+
+```c++
+    // Initialize CameraCaptureUI with a specific app window handle (12345 in this case)
+
+    CameraCaptureUI cameraUI({12345});
+
+    // Configure Photo Settings
+    cameraUI.PhotoSettings().Format(CameraCaptureUIPhotoFormat::Jpeg);
+    cameraUI.PhotoSettings().AllowCropping(false);
+
+    // Capture a photo asynchronously
+    auto photoOperation = cameraUI.CaptureFileAsync(CameraCaptureUIMode::Photo);
+    auto photo = photoOperation.get(); // Get the result synchronously
+
+    // Assert the result
+    if (photo != nullptr)
+    {
+        // Log success if photo capture was successful
+        Log::Comment(L"Photo capture was successful.");
+    }
+    else
+    {
+        // Log error if photo capture failed or was canceled
+        Log::Error(L"Photo capture failed or was canceled.");
+    }
+ ```
+
+ ## 4.2 Capture a video (c#)
+ The code is from file [CaptureVideo.xaml.cs](https://github.com/microsoftarchive/msdn-code-gallery-microsoft/tree/master/Official%20Windows%20Platform%20Sample/Windows%208%20app%20samples/%5BC%23%5D-Windows%208%20app%20samples/C%23/Windows%208%20app%20samples/CameraCaptureUI%20Sample%20(Windows%208)/C%23) of the Camera capture UI C# sample with a small modification to include the window ID in the CameraCaptureUI constructor.
+ ```c#
+// Initialize CameraCaptureUI with a specific app window handle (12345 in this case)
+CameraCaptureUI dialog = new CameraCaptureUI(123456);
+
+// Configure Video Settings
+dialog.VideoSettings.Format = CameraCaptureUIVideoFormat.Mp4;
+
+// Capture a video asynchronously
+StorageFile file = await dialog.CaptureFileAsync(CameraCaptureUIMode.Video);
+
+if (file != null)
+{
+    // Open the captured file for reading
+    using (IRandomAccessStream fileStream = await file.OpenAsync(FileAccessMode.Read))
+    {
+        // Log success if video capture was successful
+        // Add any additional logic or UI updates here
+    }
+}
+else
+{
+    // Log message if no video was captured
+    // Consider adding your own logging mechanism here
+    // For example: logger.Log("No video captured.");
+}
+```
 
 # 5. Interface Definition
 
