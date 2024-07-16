@@ -2,7 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 namespace Microsoft.Windows.Media.Capture
 {
-    [version(1.0)]
+    [contractversion(1)]
+    apicontract CameraCaptureUIContract {};
+
+    [contract(CameraCaptureUIContract, 1)]
     typedef enum CameraCaptureUIMode
     {
         PhotoOrVideo = 0,
@@ -10,7 +13,7 @@ namespace Microsoft.Windows.Media.Capture
         Video,
     } CameraCaptureUIMode;
 
-    [version(1.0)]
+    [contract(CameraCaptureUIContract, 1)]
     typedef enum CameraCaptureUIPhotoFormat
     {
         Jpeg = 0,
@@ -18,14 +21,14 @@ namespace Microsoft.Windows.Media.Capture
         JpegXR,
     } CameraCaptureUIPhotoFormat;
 
-    [version(1.0)]
+    [contract(CameraCaptureUIContract, 1)]
     typedef enum CameraCaptureUIVideoFormat
     {
         Mp4 = 0,
         Wmv,
     } CameraCaptureUIVideoFormat;
 
-    [version(1.0)]
+    [contract(CameraCaptureUIContract, 1)]
     typedef enum CameraCaptureUIMaxVideoResolution
     {
         HighestAvailable = 0,
@@ -34,7 +37,7 @@ namespace Microsoft.Windows.Media.Capture
         HighDefinition,
     } CameraCaptureUIMaxVideoResolution;
 
-    [version(1.0)]
+    [contract(CameraCaptureUIContract, 1)]
     typedef enum CameraCaptureUIMaxPhotoResolution
     {
         HighestAvailable = 0,
@@ -45,6 +48,7 @@ namespace Microsoft.Windows.Media.Capture
         VeryLarge5M,
     } CameraCaptureUIMaxPhotoResolution;
 
+    [contract(CameraCaptureUIContract, 1)]
     [default_interface]
     runtimeclass CameraCaptureUIPhotoSettings
     {
@@ -57,6 +61,7 @@ namespace Microsoft.Windows.Media.Capture
         Microsoft.Windows.Media.Capture.CameraCaptureUIMaxPhotoResolution MaxResolution;
     }
 
+    [contract(CameraCaptureUIContract, 1)]
     [default_interface]
     runtimeclass CameraCaptureUIVideoSettings
     {
@@ -68,6 +73,7 @@ namespace Microsoft.Windows.Media.Capture
         Microsoft.Windows.Media.Capture.CameraCaptureUIMaxVideoResolution MaxResolution;
     }
 
+    [contract(CameraCaptureUIContract, 1)]
     [default_interface]
     runtimeclass CameraCaptureUI
     {
