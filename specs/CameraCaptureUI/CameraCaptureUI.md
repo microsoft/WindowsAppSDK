@@ -24,7 +24,6 @@ The ***Existing API*** includes the following key components:
 Provides a full window UI for capturing audio, video, and photos from a camera. As well as controls for trimming video, time delayed capture, and camera settings.
 
 This example shows how to use the CameraCaptureUI Class to take a picture. The dialog with the user occurs when you call the asynchronous method CaptureFileAsync.
-
 ```c#
 CameraCaptureUI dialog = new CameraCaptureUI(windowId);
 Size aspectRatio = new Size(16, 9);
@@ -32,6 +31,10 @@ dialog.PhotoSettings.CroppedAspectRatio = aspectRatio;
 
 StorageFile file = await dialog.CaptureFileAsync(CameraCaptureUIMode.Photo);
 ```
+
+
+![Screenshot](CameraCaptureUI_Snapshot.png)
+
 
 ### 3.1.1 Constructor (The Change Introduced)
 | Name | Description |
@@ -142,14 +145,16 @@ Determines the highest resolution the user can select for capturing video.
 
 # 4. Examples
 
+*Todo - Replace Windows.UI.WindowId with Microsoft.UI.WindowId post testing.*
 ## 4.1 Capture a photo (C++)
 
 A C++ example that tests whether a photo was successfully taken using the CaptureFileAsync method.
 
 ```c++
-    // Initialize CameraCaptureUI with a specific app window handle (12345 in this case)
-
-    CameraCaptureUI cameraUI({12345});
+    // Initialize CameraCaptureUI with a window handle (Foreground Window in this example)
+    auto parentWindow = ::GetForegroundWindow();
+    winrt::Windows::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+    winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI(windowId);
 
     // Configure Photo Settings
     cameraUI.PhotoSettings().Format(CameraCaptureUIPhotoFormat::Jpeg);
@@ -175,8 +180,14 @@ A C++ example that tests whether a photo was successfully taken using the Captur
  ## 4.2 Capture a video (c#)
  The code is from file [CaptureVideo.xaml.cs](https://github.com/microsoftarchive/msdn-code-gallery-microsoft/tree/master/Official%20Windows%20Platform%20Sample/Windows%208%20app%20samples/%5BC%23%5D-Windows%208%20app%20samples/C%23/Windows%208%20app%20samples/CameraCaptureUI%20Sample%20(Windows%208)/C%23) of the Camera capture UI C# sample with a small modification to include the window ID in the CameraCaptureUI constructor.
  ```c#
+// Get the handle of the foreground window
+IntPtr parentWindow = NativeMethods.GetForegroundWindow();
+
+// Create a WindowId from the window handle
+Windows.UI.WindowId windowId = new WindowId(parentWindow.ToInt64());
+
 // Initialize CameraCaptureUI with a specific app window handle (12345 in this case)
-CameraCaptureUI dialog = new CameraCaptureUI(123456);
+CameraCaptureUI dialog = new CameraCaptureUI(windowId);
 
 // Configure Video Settings
 dialog.VideoSettings.Format = CameraCaptureUIVideoFormat.Mp4;
@@ -199,6 +210,13 @@ else
     // Consider adding your own logging mechanism here
     // For example: logger.Log("No video captured.");
 }
+
+// NativeMethods class to access native Win32 functions
+internal static class NativeMethods
+{
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    internal static extern IntPtr GetForegroundWindow();
+}
 ```
 
 # 5. Interface Definition
@@ -208,7 +226,7 @@ namespace Microsoft.Windows.Media.Capture
 {
     [contractversion(1)]
     apicontract CameraCaptureUIContract {};
-
+ 
     [contract(CameraCaptureUIContract, 1)]
     typedef enum CameraCaptureUIMode
     {
@@ -216,7 +234,7 @@ namespace Microsoft.Windows.Media.Capture
         Photo,
         Video,
     } CameraCaptureUIMode;
-
+ 
     [contract(CameraCaptureUIContract, 1)]
     typedef enum CameraCaptureUIPhotoFormat
     {
@@ -224,14 +242,14 @@ namespace Microsoft.Windows.Media.Capture
         Png,
         JpegXR,
     } CameraCaptureUIPhotoFormat;
-
+ 
     [contract(CameraCaptureUIContract, 1)]
     typedef enum CameraCaptureUIVideoFormat
     {
         Mp4 = 0,
         Wmv,
     } CameraCaptureUIVideoFormat;
-
+ 
     [contract(CameraCaptureUIContract, 1)]
     typedef enum CameraCaptureUIMaxVideoResolution
     {
@@ -240,7 +258,7 @@ namespace Microsoft.Windows.Media.Capture
         StandardDefinition,
         HighDefinition,
     } CameraCaptureUIMaxVideoResolution;
-
+ 
     [contract(CameraCaptureUIContract, 1)]
     typedef enum CameraCaptureUIMaxPhotoResolution
     {
@@ -251,42 +269,44 @@ namespace Microsoft.Windows.Media.Capture
         Large3M,
         VeryLarge5M,
     } CameraCaptureUIMaxPhotoResolution;
-
+ 
     [contract(CameraCaptureUIContract, 1)]
     [default_interface]
-    runtimeclass CameraCaptureUIPhotoSettings
+    runtimeclass CameraCaptureUIPhotoCaptureSettings
     {
-        CameraCaptureUIPhotoSettings();
-
+        CameraCaptureUIPhotoCaptureSettings();
+ 
         Boolean AllowCropping;
         Windows.Foundation.Size CroppedAspectRatio;
         Windows.Foundation.Size CroppedSizeInPixels;
         Microsoft.Windows.Media.Capture.CameraCaptureUIPhotoFormat Format;
         Microsoft.Windows.Media.Capture.CameraCaptureUIMaxPhotoResolution MaxResolution;
     }
-
+ 
     [contract(CameraCaptureUIContract, 1)]
     [default_interface]
-    runtimeclass CameraCaptureUIVideoSettings
+    runtimeclass CameraCaptureUIVideoCaptureSettings
     {
-        CameraCaptureUIVideoSettings();
-
+        CameraCaptureUIVideoCaptureSettings();
+ 
         Boolean AllowTrimming;
         Microsoft.Windows.Media.Capture.CameraCaptureUIVideoFormat Format;
         Single MaxDurationInSeconds;
         Microsoft.Windows.Media.Capture.CameraCaptureUIMaxVideoResolution MaxResolution;
     }
-
+ 
     [contract(CameraCaptureUIContract, 1)]
     [default_interface]
+    [threading(sta),
+    marshaling_behavior(none)]
     runtimeclass CameraCaptureUI
     {
-        CameraCaptureUI(Microsoft.UI.WindowId window);
+        CameraCaptureUI(Windows.UI.WindowId window);
         //CameraCaptureUI(Microsoft.UI.WindowId window);
-
-        CameraCaptureUIPhotoSettings PhotoSettings{ get; };
-        CameraCaptureUIVideoSettings VideoSettings{ get; };
-
+ 
+        CameraCaptureUIPhotoCaptureSettings PhotoSettings{ get; };
+        CameraCaptureUIVideoCaptureSettings VideoSettings{ get; };
+ 
         Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> CaptureFileAsync(Microsoft.Windows.Media.Capture.CameraCaptureUIMode mode);
     }
 }
