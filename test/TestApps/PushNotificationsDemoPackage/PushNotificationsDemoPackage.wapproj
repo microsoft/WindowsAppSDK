@@ -36,7 +36,7 @@
   <PropertyGroup>
     <ProjectGuid>424a6d96-37ee-4456-8347-08ab425c8dbe</ProjectGuid>
     <TargetPlatformVersion>10.0.19041.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <EntryPointProjectUniqueName>..\PushNotificationsDemoApp\PushNotificationsDemoApp.vcxproj</EntryPointProjectUniqueName>

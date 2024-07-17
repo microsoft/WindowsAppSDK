@@ -36,7 +36,7 @@
   <PropertyGroup>
     <ProjectGuid>03ebf097-66c6-4996-95a3-28f6f5999e27</ProjectGuid>
     <TargetPlatformVersion>10.0.19041.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <EntryPointProjectUniqueName>..\AccessControlTestApp\AccessControlTestApp.vcxproj</EntryPointProjectUniqueName>
