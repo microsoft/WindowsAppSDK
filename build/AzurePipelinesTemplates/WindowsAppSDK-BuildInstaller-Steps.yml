@@ -33,8 +33,8 @@ steps:
       targetPath: '$(System.ArtifactsDirectory)'
       source: 'specific'
       project: $(System.TeamProjectId)
-      pipeline: $(OfficialPipelineID) 
-      pipelineId: $(LatestOfficialBuildID) 
+      pipeline: 104083
+      pipelineId: 102534029
       runVersion: 'latestFromBranch'
       runBranch: "refs/heads/main"
 
