@@ -8,15 +8,15 @@ This spec details the implementation of CameraCaptureUI, enabling WinUI 3 deskto
 
 The current OS CameraCaptureUI implementation, primarily designed for UWP applications, presents several challenges when used in desktop environments. Key issues include the dependency on CoreWindow, which are not compatible with desktop app frameworks and the lack of support for IInitializeWithWindow. As a result, developers are forced to resort to workarounds involving interop interfaces and additional code to integrate camera capture functionality into their WinUI 3 desktop applications.
 
-In response to this feedback, the CameraCaptureUI API for WinAppSDK aims to provide a streamlined solution that meets the expectations of our developer community. The goal is to offer seamless integration of camera capture capabilities with full feature parity across all Windows platforms supported by WinUI 3. This new API eliminates the need for cumbersome workarounds and simplifies the process of incorporating camera functionality into desktop applications.
+In response to this feedback, the CameraCaptureUI API for WinAppSDK aims to provide a streamlined solution that meets the expectations of our developer community. The goal is to offer seamless integration of camera capture capabilities with full feature parity across all Windows platforms supported by WinAppSDK. This new API eliminates the need for cumbersome workarounds and simplifies the process of incorporating camera functionality into desktop applications.
 
 
 
 # 3. Description
 
-Winappsdk version of CameraCaptureUI is essentially the same as the existing public CameraCaptureUI OS API, with a minor adjustment to the CameraCapture constructor to accept a windowID in the constructor for enhanced integration capabilities with desktop applications.
+Winappsdk version of CameraCaptureUI is essentially the same as the existing public [CameraCaptureUI](https://learn.microsoft.com/en-us/uwp/api/windows.media.capture.cameracaptureui?view=winrt-22621) WinRT API, with a minor adjustment to the CameraCapture constructor to accept a windowID in the constructor for enhanced integration capabilities with desktop applications.
 
-The ***Existing API*** includes the following key components:
+The ***API*** includes the following key components:
 
 
 ## 3.1 CameraCaptureUI
@@ -25,12 +25,14 @@ Provides a full window UI for capturing audio, video, and photos from a camera. 
 
 This example shows how to use the CameraCaptureUI Class to take a picture. The dialog with the user occurs when you call the asynchronous method CaptureFileAsync.
 ```c#
+// Using Microsoft.Windows.Media.Capture.CameraCaptureUI API to capture a photo
 CameraCaptureUI dialog = new CameraCaptureUI(windowId);
 Size aspectRatio = new Size(16, 9);
 dialog.PhotoSettings.CroppedAspectRatio = aspectRatio;
 
 StorageFile file = await dialog.CaptureFileAsync(CameraCaptureUIMode.Photo);
 ```
+Screenshot of the UI:
 
 
 ![Screenshot](CameraCaptureUI_Snapshot.png)
