@@ -17,7 +17,7 @@ variables:
 
 stages:
 # Disabling this because it is sensitive to failures on the Aggregator Nightly Build
-# - template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Stage.yml@self
+- template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Stage.yml@self
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
   parameters:

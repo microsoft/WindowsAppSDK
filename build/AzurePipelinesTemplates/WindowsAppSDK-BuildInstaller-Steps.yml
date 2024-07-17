@@ -33,9 +33,8 @@ steps:
       targetPath: '$(System.ArtifactsDirectory)'
       source: 'specific'
       project: $(System.TeamProjectId)
-      allowPartiallySucceededBuilds: True
-      allowFailedBuilds: True
-      pipeline: 118002         
+      pipeline: $(OfficialPipelineID) 
+      pipelineId: $(LatestOfficialBuildID) 
       runVersion: 'latestFromBranch'
       runBranch: "refs/heads/main"
 
