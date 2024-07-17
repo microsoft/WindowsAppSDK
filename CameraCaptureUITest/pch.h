@@ -18,16 +18,12 @@
 #include <unknwn.h>
 
 #include <wil/cppwinrt.h>
-
+#include <winrt/Microsoft.Windows.Media.Capture.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.UI.h>
-
-#include <winrt/Microsoft.Windows.Media.Capture.h>
-
 #include <WexTestClass.h>
-
 #include <WindowsAppRuntime.Test.AppModel.h>
 #include <WindowsAppRuntime.Test.Package.h>
 #include <WindowsAppRuntime.Test.Bootstrap.h>

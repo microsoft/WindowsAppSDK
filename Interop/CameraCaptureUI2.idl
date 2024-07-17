@@ -75,6 +75,8 @@ namespace Microsoft.Windows.Media.Capture
 
     [contract(CameraCaptureUIContract, 1)]
     [default_interface]
+    [threading(sta),
+    marshaling_behavior(none)]
     runtimeclass CameraCaptureUI
     {
         CameraCaptureUI(Windows.UI.WindowId window);

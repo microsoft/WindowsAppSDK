@@ -502,6 +502,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Interop", "Interop\Interop.vcxitems", "{B3FBA49A-9AAA-445E-883C-971A1935C6F5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CameraCaptureUITest", "CameraCaptureUITest\CameraCaptureUITest.vcxproj", "{E79F9486-D547-4416-A16A-AD23149BD7CC}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApplicationData", "ApplicationData", "{095B9BD4-CBBD-417E-84E9-63F2C3EA2BFC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ApplicationData", "dev\ApplicationData\ApplicationData.vcxitems", "{7CF52890-56FA-47E2-84FB-68EE274324B6}"
