@@ -33,10 +33,8 @@ steps:
       targetPath: '$(System.ArtifactsDirectory)'
       source: 'specific'
       project: $(System.TeamProjectId)
-      pipeline: 104083
-      pipelineId: 102534029
-      runVersion: 'latestFromBranch'
-      runBranch: "refs/heads/main"
+      pipeline: $(OfficialPipelineID) 
+      pipelineId: $(LatestOfficialBuildID) 
 
 ###
 # Install the internal licensing support for release-signed packages. This can always be present in
