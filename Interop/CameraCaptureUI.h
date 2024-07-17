@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 #include "Microsoft.Windows.Media.Capture.CameraCaptureUI.g.h"
-#include "CameraCaptureUIPhotoSettings.h"
-#include "CameraCaptureUIVideoSettings.h"
+#include "CameraCaptureUIPhotoCaptureSettings.h"
+#include "CameraCaptureUIVideoCaptureSettings.h"
 
 namespace winrt::Microsoft::Windows::Media::Capture::implementation
 {
@@ -20,12 +20,12 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         {
         }
 
-        Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoSettings PhotoSettings()
+        Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoCaptureSettings PhotoSettings()
         {
             return *m_photoSettings;
         }
 
-        Microsoft::Windows::Media::Capture::CameraCaptureUIVideoSettings VideoSettings()
+        Microsoft::Windows::Media::Capture::CameraCaptureUIVideoCaptureSettings VideoSettings()
         {
             return *m_videoSettings;
         }
@@ -36,8 +36,8 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         winrt::Windows::UI::WindowId m_windowId;
         token_and_path m_photoTokenFile;
         token_and_path m_videoTokenFile;
-        com_ptr<CameraCaptureUIVideoSettings> m_videoSettings = make_self<CameraCaptureUIVideoSettings>();
-        com_ptr<CameraCaptureUIPhotoSettings> m_photoSettings = make_self<CameraCaptureUIPhotoSettings>();
+        com_ptr<CameraCaptureUIVideoCaptureSettings> m_videoSettings = make_self<CameraCaptureUIVideoCaptureSettings>();
+        com_ptr<CameraCaptureUIPhotoCaptureSettings> m_photoSettings = make_self<CameraCaptureUIPhotoCaptureSettings>();
     };
 }
 namespace winrt::Microsoft::Windows::Media::Capture::factory_implementation

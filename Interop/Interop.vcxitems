@@ -15,13 +15,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)CameraCaptureUI.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)CameraCaptureUIPhotoSettings.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)CameraCaptureUIVideoSettings.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CameraCaptureUIPhotoCaptureSettings.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CameraCaptureUIVideoCaptureSettings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)CameraCaptureUI.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)CameraCaptureUIPhotoSettings.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)CameraCaptureUIVideoSettings.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CameraCaptureUIPhotoCaptureSettings.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CameraCaptureUIVideoCaptureSettings.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)CameraCaptureUI2.idl" />

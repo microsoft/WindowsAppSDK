@@ -100,7 +100,9 @@ namespace Test::CameraCaptureUI
             try
             {
                 // Arrange
-                winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI({12345});
+                auto parentWindow = ::GetForegroundWindow();
+                winrt::Windows::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+                winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI(windowId);
                 // Configure Photo Settings
                 cameraUI.PhotoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg);
                 cameraUI.PhotoSettings().AllowCropping(false);

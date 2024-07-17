@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
-#include "Microsoft.Windows.Media.Capture.CameraCaptureUIPhotoSettings.g.h"
+#include "Microsoft.Windows.Media.Capture.CameraCaptureUIPhotoCaptureSettings.g.h"
 #include "PropertyHelper.h"
 
 namespace winrt::Microsoft::Windows::Media::Capture::implementation
 {
-    struct CameraCaptureUIPhotoSettings : CameraCaptureUIPhotoSettingsT<CameraCaptureUIPhotoSettings>
+    struct CameraCaptureUIPhotoCaptureSettings : CameraCaptureUIPhotoCaptureSettingsT<CameraCaptureUIPhotoCaptureSettings>
     {
-        CameraCaptureUIPhotoSettings() = default;
+        CameraCaptureUIPhotoCaptureSettings() = default;
 
         void validate();
 
@@ -25,7 +25,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
 
 namespace winrt::Microsoft::Windows::Media::Capture::factory_implementation
 {
-    struct CameraCaptureUIPhotoSettings : CameraCaptureUIPhotoSettingsT<CameraCaptureUIPhotoSettings, implementation::CameraCaptureUIPhotoSettings>
+    struct CameraCaptureUIPhotoCaptureSettings : CameraCaptureUIPhotoCaptureSettingsT<CameraCaptureUIPhotoCaptureSettings, implementation::CameraCaptureUIPhotoCaptureSettings>
     {
     };
 }

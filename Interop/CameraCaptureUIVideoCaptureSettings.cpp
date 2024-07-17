@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include "pch.h"
-#include "CameraCaptureUIVideoSettings.h"
-#include "Microsoft.Windows.Media.Capture.CameraCaptureUIVideoSettings.g.cpp"
+#include "CameraCaptureUIVideoCaptureSettings.h"
+#include "Microsoft.Windows.Media.Capture.CameraCaptureUIVideoCaptureSettings.g.cpp"
 
 //using namespace winrt::Windows::Media::Capture;
 
 namespace winrt::Microsoft::Windows::Media::Capture::implementation
 {
-    void CameraCaptureUIVideoSettings::validate()
+    void CameraCaptureUIVideoCaptureSettings::validate()
     {
         float durationInMs = MaxDurationInSeconds * 1000.0f;
         if ((durationInMs < 0.0f) || (durationInMs > UINT32_MAX))
@@ -22,7 +22,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         }
     }
 
-    hstring CameraCaptureUIVideoSettings::GetFileExtension()
+    hstring CameraCaptureUIVideoCaptureSettings::GetFileExtension()
     {
         switch (Format)
         {
@@ -35,7 +35,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         }
     }
 
-    void CameraCaptureUIVideoSettings::Serialize(winrt::Windows::Foundation::Collections::ValueSet const& props)
+    void CameraCaptureUIVideoCaptureSettings::Serialize(winrt::Windows::Foundation::Collections::ValueSet const& props)
     {
         props.Insert(L"AllowTrimming", box_value(AllowTrimming()));
         props.Insert(L"VideoFormat", box_value(static_cast<int32_t>(Format())));

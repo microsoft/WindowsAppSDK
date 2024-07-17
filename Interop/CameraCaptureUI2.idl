@@ -50,9 +50,9 @@ namespace Microsoft.Windows.Media.Capture
 
     [contract(CameraCaptureUIContract, 1)]
     [default_interface]
-    runtimeclass CameraCaptureUIPhotoSettings
+    runtimeclass CameraCaptureUIPhotoCaptureSettings
     {
-        CameraCaptureUIPhotoSettings();
+        CameraCaptureUIPhotoCaptureSettings();
 
         Boolean AllowCropping;
         Windows.Foundation.Size CroppedAspectRatio;
@@ -63,9 +63,9 @@ namespace Microsoft.Windows.Media.Capture
 
     [contract(CameraCaptureUIContract, 1)]
     [default_interface]
-    runtimeclass CameraCaptureUIVideoSettings
+    runtimeclass CameraCaptureUIVideoCaptureSettings
     {
-        CameraCaptureUIVideoSettings();
+        CameraCaptureUIVideoCaptureSettings();
 
         Boolean AllowTrimming;
         Microsoft.Windows.Media.Capture.CameraCaptureUIVideoFormat Format;
@@ -82,8 +82,8 @@ namespace Microsoft.Windows.Media.Capture
         CameraCaptureUI(Windows.UI.WindowId window);
         //CameraCaptureUI(Microsoft.UI.WindowId window);
 
-        CameraCaptureUIPhotoSettings PhotoSettings{ get; };
-        CameraCaptureUIVideoSettings VideoSettings{ get; };
+        CameraCaptureUIPhotoCaptureSettings PhotoSettings{ get; };
+        CameraCaptureUIVideoCaptureSettings VideoSettings{ get; };
 
         Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> CaptureFileAsync(Microsoft.Windows.Media.Capture.CameraCaptureUIMode mode);
     }

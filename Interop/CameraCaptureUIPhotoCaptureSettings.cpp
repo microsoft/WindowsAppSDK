@@ -1,15 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include "pch.h"
-#include "CameraCaptureUIPhotoSettings.h"
-#include "Microsoft.Windows.Media.Capture.CameraCaptureUIPhotoSettings.g.cpp"
+#include "CameraCaptureUIPhotoCaptureSettings.h"
+#include "Microsoft.Windows.Media.Capture.CameraCaptureUIPhotoCaptureSettings.g.cpp"
 
 //using namespace winrt::Windows::Media::Capture;
 using namespace winrt::Windows::Foundation;
 
 namespace winrt::Microsoft::Windows::Media::Capture::implementation
 {
-    void CameraCaptureUIPhotoSettings::validate()
+    void CameraCaptureUIPhotoCaptureSettings::validate()
     {
         Size const size = CroppedSizeInPixels;
         Size const aspect = CroppedAspectRatio;
@@ -27,7 +27,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         }
     }
 
-    hstring CameraCaptureUIPhotoSettings::GetFileExtension()
+    hstring CameraCaptureUIPhotoCaptureSettings::GetFileExtension()
     {
         switch (Format)
         {
@@ -42,7 +42,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         }
     }
 
-    void CameraCaptureUIPhotoSettings::Serialize(winrt::Windows::Foundation::Collections::ValueSet const& props)
+    void CameraCaptureUIPhotoCaptureSettings::Serialize(winrt::Windows::Foundation::Collections::ValueSet const& props)
     {
         props.Insert(L"AllowCropping", box_value(AllowCropping()));
         props.Insert(L"PhotoFormat", box_value<int32_t>(static_cast<int32_t>(Format())));
