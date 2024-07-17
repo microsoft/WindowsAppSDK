@@ -21,9 +21,6 @@ Param(
     [int]$ProductMinor
 )
 
-Set-StrictMode -Version 3.0
-$ErrorActionPreference = 'Stop'
-
 # Don't output file with Bom
 $utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
 
@@ -47,8 +44,6 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyVersion("$ProductMajor.$ProductMinor")]
 [assembly: AssemblyFileVersion("$ProductMajor.$ProductMinor")]
-
-[assembly: AssemblyMetadata("IsTrimmable", "True")]
 "@
 
 Write-Verbose $assemblyInfoCs

@@ -43,9 +43,6 @@
 .PARAMETER NoInteractive
     Run in non-interactive mode (fail if any need for user input)
 
-.PARAMETER InstallWindowsSDK
-    Download and install Windows Platform SDKs (if necessary).
-
 .PARAMETER Offline
     Do not access the network
 
@@ -103,8 +100,6 @@ Param(
 
     [Switch]$Clean=$false,
 
-    [Switch]$InstallWindowsSDK=$false,
-
     [Switch]$NoInteractive=$false,
 
     [Switch]$Offline=$false,
@@ -135,9 +130,6 @@ $ErrorActionPreference = "Stop"
 $global:issues = 0
 
 $global:isadmin = $null
-
-$global:vswhere = ''
-$global:vswhere_url = ''
 
 $remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
 if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAEFService -eq $false) -And
@@ -308,10 +300,11 @@ function Get-VSWhereOnline
         {
             return $null
         }
-        $global:vswhere_url = 'https://github.com/microsoft/vswhere/releases/download/3.1.7/vswhere.exe'
-        Write-Host "Downloading $global:vswhere from $global:vswhere_url..."
-        Write-Verbose "Executing: curl.exe --output $path -L -# $global:vswhere_url"
-        $null = Start-Process curl.exe -ArgumentList "--output $path -L -# $global:vswhere_url" -Wait -NoNewWindow -PassThru
+        $vswhere_url = 'https://github.com/microsoft/vswhere/releases/download/3.1.1/vswhere.exe'
+        Write-Host "Downloading $vswhere from $vswhere_url..."
+        Write-Verbose "Executing: curl.exe --output $vswhere -L -# $vswhere_url"
+        $null = Start-Process curl.exe -ArgumentList "--output $vswhere -L -# $vswhere_url" -Wait -NoNewWindow -PassThru
+
     }
     if (-not(Test-Path -Path $path -PathType Leaf))
     {
@@ -321,6 +314,8 @@ function Get-VSWhereOnline
 }
 
 # Home of vswhere.exe: https://github.com/microsoft/vswhere
+$vswhere = ''
+$vswhere_url = ''
 function Get-VSWhere
 {
     Write-Verbose "Detecting vswhere.exe..."
@@ -338,11 +333,12 @@ function Get-VSWhere
     if ([string]::IsNullOrEmpty($global:vswhere))
     {
         Write-Host "ERROR: vswhere.exe not found" -ForegroundColor Red -BackgroundColor Black
-        $global:issues++
+        $global:issues += 1
         return $null
     }
 
-    Write-Verbose "Using $global:vswhere"
+    Write-Verbose "Using $vswhere"
+    $global:vswhere = $vswhere
     return $global:vswhere
 }
 
@@ -374,18 +370,18 @@ function Run-Process([string]$exe, [string]$arguments, [Ref][string]$stderr, [in
     return $stdout
 }
 
-$global:vspath = ''
+$vspath = ''
 function Get-VisualStudio2022InstallPath
 {
     Write-Verbose "Detecting VisualStudio 2022..."
-    $vswhere_exe = Get-VSWhere
-    if ([string]::IsNullOrEmpty($vswhere_exe))
+    $vswhere = Get-VSWhere
+    if ([string]::IsNullOrEmpty($global:vswhere))
     {
         return $null
     }
     $args = " -latest -products * -version [17.0,18.0) -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath"
-    Write-Verbose "Executing $vswhere_exe $args"
-    $path = Run-Process $vswhere_exe $args
+    Write-Verbose "Executing $vswhere $args"
+    $path = Run-Process $vswhere $args
     $path = $path -replace [environment]::NewLine, ''
     Write-Verbose "Visual Studio 2022 detected at $path"
     $global:vspath = $path
@@ -398,16 +394,16 @@ function Test-VisualStudioComponent
         [String]$versionRange
     )
 
-    $vswhere_exe = Get-VSWhere
+    $vswhere = Get-VSWhere
     if ([string]::IsNullOrEmpty($global:vswhere))
     {
         return 0
     }
     $args = " -latest -products * -version $versionRange -requires $component -property productDisplayVersion"
-    Write-Verbose "Executing $vswhere_exe $args"
+    Write-Verbose "Executing $vswhere $args"
     try
     {
-        $value = Run-Process $vswhere_exe $args -throwIfExitCodeIsFailure $true
+        $value = Run-Process $vswhere $args -throwIfExitCodeIsFailure $true
         $path = $path -replace [environment]::NewLine, ''
         Write-Verbose "Visual Studio component $($component) = $($value)"
         return 0
@@ -460,70 +456,6 @@ function Test-VisualStudio2022Install
     return $ok
 }
 
-function Install-WindowsSDK
-{
-    param(
-        [String]$version,
-        [uri]$url
-    )
-
-    $path = Join-Path $env:TEMP "winsdksetup-$($version).exe"
-    if ($Clean -eq $true -And (Test-Path -Path $path -PathType Leaf))
-    {
-        Write-Verbose "Found $path. Deleting per -Clean..."
-        Remove-Item -Path $path -Force
-    }
-
-    $log = Join-Path $env:TEMP "winsdksetup-$($version).log"
-    if ($Clean -eq $true -And (Test-Path -Path $log -PathType Leaf))
-    {
-        Write-Verbose "Found $log. Deleting per -Clean..."
-        Remove-Item -Path $log -Force
-    }
-
-    if (-not(Test-Path -Path $path -PathType Leaf))
-    {
-        Write-Host "Downloading Windows SDK $version from $url..."
-        Write-Verbose "Executing: curl.exe --output $path -L -# $url"
-        $null = Start-Process curl.exe -ArgumentList "--output $path -L -# $url" -Wait -NoNewWindow -PassThru
-    }
-    $p = Start-Process $path -ArgumentList "/features + /q /log $log" -Wait -NoNewWindow -PassThru
-    if ($p.ExitCode -ne 0)
-    {
-        Write-Host "...ERROR: Windows SDK $($version) install failed. See $log" -ForegroundColor Red -BackgroundColor Black
-        $global:issues++
-        return $false
-    }
-    Write-Host "Install Windows SDK $($version)...OK"
-    return $true
-}
-
-function Test-WindowsSDKInstall
-{
-    param(
-        [String]$version,
-        [uri]$url
-    )
-
-    $regkey = "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots\$version"
-    $found = Test-Path $regkey -PathType Container
-    if ($found)
-    {
-        Write-Host "Windows SDK $($version) = OK"
-    }
-    elseif ($InstallWindowsSDK -eq $true)
-    {
-        Write-Warning "WARNING: Windows SDK $($version) not found. Installing..."
-        $null = Install-WindowsSDK $version $url
-    }
-    else
-    {
-        Write-Host "...ERROR: Windows SDK $($version) not found or valid. See [Getting Started doc's Tooling Prerequisites](https://github.com/microsoft/WindowsAppSDK/blob/main/docs/Coding-Guidelines/GettingStarted.md#tooling-prerequisites)" -ForegroundColor Red -BackgroundColor Black
-        $global:issues++
-    }
-    return $found
-}
-
 function Test-DevTestPfx
 {
     if ($Clean -eq $true)
@@ -536,7 +468,7 @@ function Test-DevTestPfx
     if (-not(Test-Path -Path $pfx_thumbprint -PathType Leaf))
     {
         Write-Host "Test certificate thumbprint $pfx_thumbprint...Not Found"
-        $global:issues++
+        $global:issues += 1
         return $false
     }
 
@@ -545,7 +477,7 @@ function Test-DevTestPfx
     if (-not(Test-Path -Path $cert_path))
     {
         Write-Host "Test certificate for $pfx_thumbprint...Not Found"
-        $global:issues++
+        $global:issues += 1
         return $false
     }
 
@@ -555,13 +487,13 @@ function Test-DevTestPfx
     if ($expiration -lt $now)
     {
         Write-Host "Test certificate for $pfx_thumbprint...Expired ($expiration)"
-        $global:issues++
+        $global:issues += 1
         return $false
     }
     elseif ($expiration -lt ($now + (New-TimeSpan -Days 14)))
     {
         Write-Host "Test certificate for $pfx_thumbprint...Expires soon ($expiration)"
-        $global:issues++
+        $global:issues += 1
         return $true
     }
 
@@ -575,7 +507,7 @@ function Repair-DevTestPfx
     if ($isadmin -eq $false)
     {
         Write-Host "Test certificate .pfx...Access Denied. Run from an admin prompt"
-        $global:issues++
+        $global:issues += 1
         return $false
     }
 
@@ -594,7 +526,7 @@ function Repair-DevTestPfx
         if (-not(Test-Path -Path $CertPasswordFile -PathType Leaf))
         {
             Write-Host "Test certificate file $CertPasswordFile...Not Found"
-            $global:issues++
+            $global:issues += 1
             return $false
         }
         $password = Get-Content -Path $CertPasswordFile -Encoding utf8
@@ -610,7 +542,7 @@ function Repair-DevTestPfx
     if ([string]::IsNullOrEmpty($password_plaintext))
     {
         Write-Host "Test certificate .pfx...password parameter (-CertPassword | -CertPasswordFile | -CertPasswordUser) or prompting required"
-        $global:issues++
+        $global:issues += 1
         return $false
     }
     $password = ConvertTo-SecureString -String $password_plaintext -Force -AsPlainText
@@ -657,7 +589,7 @@ function Repair-DevTestPfx
         else
         {
             Write-Host "Create $f...Error"
-            $global:issues++
+            $global:issues += 1
             $ok = $false
         }
     }
@@ -694,7 +626,7 @@ function Test-DevTestCert
     if (-not(Test-Path -Path $cert_path))
     {
         Write-Host "Test certificate $pfx_thumbprint thumbprint $thumbprint...Not Found"
-        $global:issues++
+        $global:issues += 1
         return $false
     }
 
@@ -704,13 +636,13 @@ function Test-DevTestCert
     if ($expiration -lt $now)
     {
         Write-Host "Test certificate $thumbprint...Expired ($expiration)"
-        $global:issues++
+        $global:issues += 1
         return $false
     }
     elseif ($expiration -lt ($now + (New-TimeSpan -Days 14)))
     {
         Write-Host "Test certificate $thumbprint...Expires soon ($expiration)"
-        $global:issues++
+        $global:issues += 1
         return $false
     }
 
@@ -724,7 +656,7 @@ function Repair-DevTestCert
     if ($isadmin -eq $false)
     {
         Write-Host "Install test certificate...Access Denied. Run from an admin prompt"
-        $global:issues++
+        $global:issues += 1
         return
     }
 
@@ -745,7 +677,7 @@ function Remove-DevTestCert
     if ($isadmin -eq $false)
     {
         Write-Host "Remove test certificate...Access Denied. Run from an admin prompt"
-        $global:issues++
+        $global:issues += 1
         return $false
     }
 
@@ -864,7 +796,7 @@ function Install-TAEFService
     if ($isadmin -eq $false)
     {
         Write-Host "Install TAEF service...Access Denied. Run from an admin prompt"
-        $global:issues++
+        $global:issues += 1
         return
     }
 
@@ -876,7 +808,7 @@ function Install-TAEFService
     if (-not(Test-Path -Path $path -PathType Leaf))
     {
         Write-Host "Install TAEF service...Not Found ($path)"
-        $global:issues++
+        $global:issues += 1
         return 'TAEFNotFound'
     }
 
@@ -886,7 +818,7 @@ function Install-TAEFService
     if ([string]::IsNullOrEmpty($service))
     {
         Write-Host "Install TAEF service...Failed"
-        $global:issues++
+        $global:issues += 1
         return 'InstallError'
     }
     else
@@ -902,7 +834,7 @@ function Uninstall-TAEFService
     if ($isadmin -eq $false)
     {
         Write-Host "Uninstall TAEF service...Access Denied. Run from an admin prompt"
-        $global:issues++
+        $global:issues += 1
         return
     }
 
@@ -919,7 +851,7 @@ function Uninstall-TAEFService
     if (-not([string]::IsNullOrEmpty($service)))
     {
         Write-Host "Uninstall TAEF service...Failed"
-        $global:issues++
+        $global:issues += 1
         return 'UninstallError'
     }
     else
@@ -935,7 +867,7 @@ function Start-TAEFService
     if ($isadmin -eq $false)
     {
         Write-Host "Install TAEF service...Access Denied. Run from an admin prompt"
-        $global:issues++
+        $global:issues += 1
         return
     }
 
@@ -944,7 +876,7 @@ function Start-TAEFService
     if ($service.Status -ne "Running")
     {
         Write-Host "Start TAEF service...Failed"
-        $global:issues++
+        $global:issues += 1
     }
     else
     {
@@ -959,7 +891,7 @@ function Stop-TAEFService
     if ($isadmin -eq $false)
     {
         Write-Host "Stop TAEF service...Access Denied. Run from an admin prompt"
-        $global:issues++
+        $global:issues += 1
         return $false
     }
 
@@ -980,7 +912,7 @@ function Stop-TAEFService
     elseif ($service.Status -ne "Stopped")
     {
         Write-Host "Stop TAEF service...Failed"
-        $global:issues++
+        $global:issues += 1
         return $false
     }
     else
@@ -1327,8 +1259,8 @@ function Get-DeveloperMode
     $regkey = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock'
     if (Test-Path -Path $regkey -PathType Container)
     {
-        $value = $(Get-Item -Path $regkey).GetValue('AllowDevelopmentWithoutDevLicense')
-        return $value -eq 1
+        $value = Get-ItemProperty -Path $regkey -Name AllowDevelopmentWithoutDevLicense
+        return $value.AllowDevelopmentWithoutDevLicense -eq 1
     }
 
     return $false
@@ -1345,6 +1277,7 @@ function Test-DeveloperMode
     {
         Write-Host "ERROR: Developer mode is not enabled. Enable it via Settings" -ForegroundColor Red -BackgroundColor Black
         $global:issues++
+        $fatal_errors++
     }
 }
 
@@ -1401,8 +1334,6 @@ if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
     {
         $null = Test-VisualStudioComponents
     }
-    $null = Test-WindowsSDKInstall '10.0.17763.0' [uri]'https://go.microsoft.com/fwlink/p/?LinkID=2033908'
-    #TODO Uncomment to require new SDK: $null = Test-WindowsSDKInstall '10.0.26100.0' [uri]'https://go.microsoft.com/fwlink/?linkid=2272610'
 }
 
 if (($CheckAll -ne $false) -Or ($CheckTestPfx -ne $false))

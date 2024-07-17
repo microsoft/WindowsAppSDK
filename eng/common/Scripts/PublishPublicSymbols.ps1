@@ -5,9 +5,6 @@ Param(
     [switch] $preProductionEnviroment
 )
 
-Set-StrictMode -Version 3.0
-$ErrorActionPreference = 'Stop'
-
 $ProjectName = 'WindowsAppSDK'
 
 $endPoint = "https://symbolrequestprod.trafficmanager.net/projects/$ProjectName/requests"
