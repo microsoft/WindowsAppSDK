@@ -1,9 +1,9 @@
-# This Installer Stage is purely for validation
-# The actual installer is built with the Aggregator build
+# This VSIX Stage is purely for validation
+# The actual VSIX is built with the Aggregator build
 stages:
-- stage: Installer
+- stage: VSIX
   jobs:
-  - job: BuildInstaller
+  - job: BuildVSIX
     dependsOn: []
     pool:
       type: windows
