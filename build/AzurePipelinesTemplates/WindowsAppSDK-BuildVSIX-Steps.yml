@@ -32,8 +32,9 @@ steps:
       targetPath: '$(System.ArtifactsDirectory)'
 - ${{ else }}:
   ###
-  # This step downloads the WindowsAppSDK NuGet package from last successful or failed build of the Aggregator's Nightly build
-  # for use in building the installers
+  # This step downloads the WindowsAppSDK NuGet package from a pipeline
+  # variables: OfficialPipelineID LatestOfficialBuildID
+  # for use in building the VSIX
   - task: DownloadPipelineArtifact@2
     displayName: 'Download WindowsAppSDK From Latest Nightly'
     inputs:
