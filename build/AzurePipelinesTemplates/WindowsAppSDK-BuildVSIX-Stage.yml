@@ -1,0 +1,32 @@
+# This Installer Stage is purely for validation
+# The actual installer is built with the Aggregator build
+stages:
+- stage: Installer
+  jobs:
+  - job: BuildInstaller
+    dependsOn: []
+    pool:
+      type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022' # This stage is purely for validation
+    strategy:
+      maxParallel: 10
+      matrix:
+        Release_x86:
+          buildPlatform: 'x86'
+          buildConfiguration: 'Release'
+        Release_x64:
+          buildPlatform: 'x64'
+          buildConfiguration: 'Release'
+        Release_arm64:
+          buildPlatform: 'arm64'
+          buildConfiguration: 'Release'
+    variables:
+      ob_outputDirectory: '$(REPOROOT)\out'
+      ob_artifactSuffix: '_$(buildConfiguration)_$(buildPlatform)'
+      ob_artifactBaseName: "Installer$(ob_artifactSuffix)"
+      # foundationRepoPath should be empty because we are not doing multiple checkouts hence
+      # it is not under $(Build.SourcesDirectory)\WindowsAppSDK
+      foundationRepoPath: ""
+    steps:
+    - template: WindowsAppSDK-BuildInstaller-Steps.yml@self
