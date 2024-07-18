@@ -10,7 +10,7 @@ parameters:
   default: False
 - name: runStaticAnalysis
   type: boolean
-  default: False
+  default: True
 - name: UseCurrentBuild
   type: boolean
   default: False 
