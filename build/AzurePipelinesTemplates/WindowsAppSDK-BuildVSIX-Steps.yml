@@ -22,9 +22,6 @@ parameters:
 - name: EnableExperimentalVSIXFeatures
   type: boolean
   default: False
-- name: runStaticAnalysis
-  type: boolean
-  default: False
 
 steps:
 - ${{ if eq(parameters.UseCurrentBuild, 'True') }}:
