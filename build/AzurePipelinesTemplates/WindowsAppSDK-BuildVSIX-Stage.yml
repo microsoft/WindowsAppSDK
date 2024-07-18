@@ -9,22 +9,9 @@ stages:
       type: windows
       isCustom: true
       name: 'ProjectReunionESPool-2022' # This stage is purely for validation
-    strategy:
-      maxParallel: 10
-      matrix:
-        Release_x86:
-          buildPlatform: 'x86'
-          buildConfiguration: 'Release'
-        Release_x64:
-          buildPlatform: 'x64'
-          buildConfiguration: 'Release'
-        Release_arm64:
-          buildPlatform: 'arm64'
-          buildConfiguration: 'Release'
     variables:
       ob_outputDirectory: '$(REPOROOT)\out'
-      ob_artifactSuffix: '_$(buildConfiguration)_$(buildPlatform)'
-      ob_artifactBaseName: "Installer$(ob_artifactSuffix)"
+      ob_artifactBaseName: "VSIX"
       # foundationRepoPath should be empty because we are not doing multiple checkouts hence
       # it is not under $(Build.SourcesDirectory)\WindowsAppSDK
       foundationRepoPath: ""
