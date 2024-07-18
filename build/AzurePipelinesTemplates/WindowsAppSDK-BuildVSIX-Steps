@@ -14,9 +14,6 @@ parameters:
 - name: UseCurrentBuild
   type: boolean
   default: False 
-- name: BuildType
-  type: string
-  default: 'stable'
 - name: OptionalVSIXVersion
   # if blank, the project template will select the version matching the Windows App SDK
   # nuget. If provided, it should be a 4-part dotted version ('1.2.3.4')
@@ -27,8 +24,7 @@ parameters:
   default: False
 - name: runStaticAnalysis
   type: boolean
-  default: True
-
+  default: False
 
 steps:
 - ${{ if eq(parameters.UseCurrentBuild, 'True') }}:
