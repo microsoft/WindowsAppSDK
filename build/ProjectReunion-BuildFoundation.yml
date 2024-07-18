@@ -16,7 +16,7 @@ variables:
 - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-GlobalVariables.yml
 
 stages:
-- template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Stage.yml@self
+# - template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Stage.yml@self
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildVSIX-Stage.yml
 

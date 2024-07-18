@@ -16,6 +16,5 @@ stages:
       # foundationRepoPath should be empty because we are not doing multiple checkouts hence
       # it is not under $(Build.SourcesDirectory)\WindowsAppSDK
       buildConfiguration: "Release"
-      WindowsAppSDKPackageVersion: $[ stageDependencies.Aggregate.BuildWindowsAppSDKPackages.outputs['DetermineNugetPackageVersion.WindowsAppSDKPackageVersion'] 
     steps:
     - template: WindowsAppSDK-BuildVSIX-Steps.yml@self
