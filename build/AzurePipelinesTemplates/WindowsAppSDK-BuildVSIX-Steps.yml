@@ -228,7 +228,7 @@ steps:
     SourceFolder: '$(FoundationRepoPath)dev\VSIX'
     Contents: 'overview.md'
     flattenFolders: True
-    TargetFolder: '$(ob_outputDirectory)\VSIX'
+    TargetFolder: '$(ob_outputDirectory)'
 
 - ${{ if ne(parameters.IsOneBranch, 'true') }}:
   - task: PublishBuildArtifacts@1
