@@ -89,6 +89,8 @@ steps:
   inputs:
     versionSpec: 6.5.x
 
+- task: NuGetAuthenticate@1
+
 - task: VSBuild@1
   displayName: 'Restore WindowsAppSDK.Extension.sln'
   inputs:
