@@ -182,7 +182,7 @@ steps:
   - template: WindowsAppSDK-SignPackageContents-steps.yml
     parameters:
       inputPackageDirectory: '$(Agent.TempDirectory)/UnsignedVSIX'
-      outputPackageDirectory: '$(ob_outputDirectory)\VSIX'
+      outputPackageDirectory: '$(ob_outputDirectory)'
       packageType: 'vsix'
       packages:
         - WindowsAppSDK.Cpp.Extension.Dev17.Component.vsix
@@ -204,7 +204,7 @@ steps:
     SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
     Contents: '**/WindowsAppSDK*.pdb'
     flattenFolders: True
-    TargetFolder: '$(ob_outputDirectory)\VSIX\symbols'
+    TargetFolder: '$(ob_outputDirectory)\symbols'
 
 - task: CopyFiles@2
   displayName: 'Stage VSIX component JSONs'
@@ -212,7 +212,7 @@ steps:
     SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
     Contents: '**/WindowsAppSDK.*.Component.json'
     flattenFolders: True
-    TargetFolder: '$(ob_outputDirectory)\VSIX'
+    TargetFolder: '$(ob_outputDirectory)'
 
 - task: CopyFiles@2
   displayName: 'Stage VSIX manifest'
@@ -220,7 +220,7 @@ steps:
     SourceFolder: '$(FoundationRepoPath)dev\VSIX'
     Contents: 'extension.manifest.json'
     flattenFolders: True
-    TargetFolder: '$(ob_outputDirectory)\VSIX'
+    TargetFolder: '$(ob_outputDirectory)'
 
 - task: CopyFiles@2
   displayName: 'Stage VSIX overview markdown'
