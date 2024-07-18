@@ -16,4 +16,4 @@ stages:
       # it is not under $(Build.SourcesDirectory)\WindowsAppSDK
       foundationRepoPath: ""
     steps:
-    - template: WindowsAppSDK-BuildInstaller-Steps.yml@self
+    - template: WindowsAppSDK-BuildVSIX-Steps.yml@self
