@@ -20,10 +20,10 @@
     <PackageVersion Include="System.Text.Json" Version="8.0.4" />
     <PackageVersion Include="Microsoft.VSSDK.BuildTools" Version="17.4.2118" />
     <PackageVersion Include="Microsoft.Windows.CppWinRT" Version="[$(CppWinRTVersion)]" />
-    <ItemGroup Condition=" '$(WindowsAppSDKVersion)' != '' ">
-      <PackageVersion Include="Microsoft.WindowsAppSDK" Version="[$(WindowsAppSDKVersion)]" />
-    </ItemGroup>  
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="[$(WindowsSDKBuildToolsVersion)]" />
     <PackageVersion Include="Microsoft.Windows.ImplementationLibrary" Version="[$(WILVersion)]" />
   </ItemGroup>
+  <ItemGroup Condition=" '$(WindowsAppSDKVersion)' != '' ">
+    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="[$(WindowsAppSDKVersion)]" />
+  </ItemGroup>  
 </Project>
