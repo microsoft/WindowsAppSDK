@@ -1,0 +1,21 @@
+# This VSIX Stage is purely for validation
+# The actual VSIX is built with the Aggregator build
+stages:
+- stage: VSIX
+  dependsOn: []
+  jobs:
+  - job: BuildVSIX
+    dependsOn: []
+    pool:
+      type: windows
+      isCustom: true
+      name: 'ProjectReunionESPool-2022' # This stage is purely for validation
+    variables:
+      ob_outputDirectory: '$(REPOROOT)\out'
+      ob_artifactBaseName: "VSIX"
+      # foundationRepoPath should be empty because we are not doing multiple checkouts hence
+      # it is not under $(Build.SourcesDirectory)\WindowsAppSDK
+      foundationRepoPath: ""
+      buildConfiguration: "Release"
+    steps:
+    - template: WindowsAppSDK-BuildVSIX-Steps.yml@self

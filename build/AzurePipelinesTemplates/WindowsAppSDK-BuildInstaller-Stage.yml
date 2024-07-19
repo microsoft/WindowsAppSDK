@@ -2,6 +2,7 @@
 # The actual installer is built with the Aggregator build
 stages:
 - stage: Installer
+  dependsOn: []
   jobs:
   - job: BuildInstaller
     dependsOn: []
