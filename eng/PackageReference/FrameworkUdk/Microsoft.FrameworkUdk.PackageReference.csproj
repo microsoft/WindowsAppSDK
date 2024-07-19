@@ -12,8 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.FrameworkUdk">
-        <IncludeAssets>None</IncludeAssets> <!-- Default is `all`, can be omitted-->
-        <ExcludeAssets>all</ExcludeAssets>
+      <ExcludeAssets>all</ExcludeAssets>
     </PackageReference>
   </ItemGroup>
 </Project>
