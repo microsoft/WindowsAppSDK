@@ -24,6 +24,6 @@
     <PackageVersion Include="Microsoft.Windows.ImplementationLibrary" Version="[$(WILVersion)]" />
   </ItemGroup>
   <ItemGroup Condition=" '$(WindowsAppSDKVersion)' != '' ">
-    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="[$(WindowsAppSDKVersion)]" />
+    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="$(WindowsAppSDKVersion)" />
   </ItemGroup>  
 </Project>
