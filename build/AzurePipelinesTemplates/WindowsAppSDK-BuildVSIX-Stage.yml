@@ -17,6 +17,6 @@ stages:
       # it is not under $(Build.SourcesDirectory)\WindowsAppSDK
       foundationRepoPath: ""
       buildConfiguration: "Release"
-    condition: ne(variables.LatestOfficialBuildID'], '')
+    condition: ne(variables.LatestOfficialBuildID, '')
     steps:
     - template: WindowsAppSDK-BuildVSIX-Steps.yml@self
