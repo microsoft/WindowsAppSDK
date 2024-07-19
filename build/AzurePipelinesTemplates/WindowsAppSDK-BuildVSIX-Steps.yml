@@ -87,8 +87,6 @@ steps:
       Exit 1
 
 - task: NuGetToolInstaller@1
-  inputs:
-    versionSpec: 6.5.x
 
 - task: NuGetAuthenticate@1
 
