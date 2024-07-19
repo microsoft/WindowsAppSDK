@@ -51,7 +51,9 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $files = Get-ChildItem $(System.ArtifactsDirectory)
+      Copy-Item -Path "$(System.ArtifactsDirectory)" -Destination "$(Build.SourcesDirectory)\temp" -Recurse
+
+      $files = Get-ChildItem $(Build.SourcesDirectory)\temp
       foreach ($file in $files) # Iterate through each package we restored in the directory
       {
         Write-Host "file:" $file.FullName
