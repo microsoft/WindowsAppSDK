@@ -11,6 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageDownload Include="Microsoft.FrameworkUdk" />
+    <PackageReference Include="Microsoft.FrameworkUdk">
+        <IncludeAssets>None</IncludeAssets> <!-- Default is `all`, can be omitted-->
+        <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>
