@@ -2,12 +2,12 @@ parameters:
 - name: SignOutput
   type: boolean
   default: False
-- name: IsOfficial
-  type: boolean
-  default: False 
 - name: IsOneBranch
   type: boolean
   default: False
+- name: IsOfficial
+  type: boolean
+  default: False 
 - name: runStaticAnalysis
   type: boolean
   default: True
@@ -196,6 +196,8 @@ steps:
   - template: ${{variables['System.DefaultWorkingDirectory']}}\build\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml
     parameters:
       SearchPattern: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
+      IsOfficial: ${{ parameters.IsOfficial }}
+      PublishPublicSymbolsPowershellPath: '$(Build.SourcesDirectory)\$(foundationRepoPath)eng\common\Scripts\PublishPublicSymbols.ps1'
 
 - task: CopyFiles@2
   displayName: 'Stage VSIX component JSONs'
