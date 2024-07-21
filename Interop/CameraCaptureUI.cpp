@@ -7,6 +7,7 @@
 #include <ShlObj.h>
 #include "CameraCaptureUI.h"
 #include "Microsoft.Windows.Media.Capture.CameraCaptureUI.g.cpp"
+#include <winrt/Microsoft.UI.h> // for WindowId
 
 //using namespace winrt::Windows::Media::Capture;
 using namespace winrt::Windows::UI;

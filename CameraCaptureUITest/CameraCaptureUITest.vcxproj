@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\Packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.25935.1004.230824-1513.uia7\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.props" Condition="Exists('..\Packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.25935.1004.230824-1513.uia7\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.props')" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props')" />
   <ItemGroup Label="ProjectConfigurations">
@@ -102,7 +103,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
-
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -117,7 +117,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -136,7 +135,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -152,7 +150,6 @@
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -171,7 +168,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -187,7 +183,6 @@
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -206,7 +201,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  
   <ItemGroup>
     <ClInclude Include="pch.h" />
   </ItemGroup>
@@ -242,6 +236,7 @@
     <Import Project="$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets')" />
     <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" />
     <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
+    <Import Project="..\Packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.25935.1004.230824-1513.uia7\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets" Condition="Exists('..\Packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.25935.1004.230824-1513.uia7\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -251,6 +246,8 @@
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.ImplementationLibrary.$(MicrosoftWindowsImplementationLibraryVersion)\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+    <Error Condition="!Exists('..\Packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.25935.1004.230824-1513.uia7\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.props')" Text="$([System.String]::Format('$(ErrorText)', '..\Packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.25935.1004.230824-1513.uia7\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.props'))" />
+    <Error Condition="!Exists('..\Packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.25935.1004.230824-1513.uia7\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\Packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.25935.1004.230824-1513.uia7\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets'))" />
   </Target>
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
     <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
