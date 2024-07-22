@@ -30,13 +30,17 @@
     <Dependency Name="Microsoft.FrameworkUdk" Version="1.7.0-CI-26107.1701.240510-1748.0">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
       <Sha>5190f048458d3dd446318391385a832e081e4e9e</Sha>
+      <DependentPackages>
+        <Package>Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage</Package>
+      </DependentPackages>
     </Dependency>
     <Dependency Name="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="1.7.0-CI-26107.1708.240627-1116.6">
-    <Uri>
-      https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP
-    </Uri>
-    <Sha>232b8bf409e7aeb2bbd797ac2076fcd5380a5efb</Sha>
+      <Uri>
+        https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP
+      </Uri>
+      <Sha>232b8bf409e7aeb2bbd797ac2076fcd5380a5efb</Sha>
     </Dependency>
+
     <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.7.0-main.20240513.0">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
       <Sha>2c1c46a69150a164073a76607be58f10c5a3b94c</Sha>

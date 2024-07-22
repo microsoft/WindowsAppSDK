@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\Packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.25935.1004.230824-1513.uia7\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.props" Condition="Exists('..\..\Packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.25935.1004.230824-1513.uia7\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.props')" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" />
   <Import Project="$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.props')" />
@@ -99,7 +100,7 @@
     <Import Project="..\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems" Label="ChangeTracker" />
     <Import Project="..\VersionInfo\VersionInfo.vcxitems" Label="VersionInfo" />
     <Import Project="..\PackageManager\API\PackageManager.vcxitems" Label="Shared" />
-    <Import Project="..\..\Interop\Interop.vcxitems" Label="Interop"/>
+    <Import Project="..\..\Interop\Interop.vcxitems" Label="Interop" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -294,6 +295,7 @@
     <Import Project="$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.Common.$(MicrosoftSourceLinkCommonVersion)\build\Microsoft.SourceLink.Common.targets')" />
     <Import Project="$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" />
     <Import Project="$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" />
+    <Import Project="..\..\Packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.25935.1004.230824-1513.uia7\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets" Condition="Exists('..\..\Packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.25935.1004.230824-1513.uia7\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets')" />
   </ImportGroup>
   <Target Name="MakeStrippedMetadata" AfterTargets="CppWinRTMergeProjectWinMDInputs" BeforeTargets="ClCompile">
     <PropertyGroup>
@@ -316,6 +318,8 @@
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.Build.Tasks.Git.$(MicrosoftBuildTasksGitVersion)\build\Microsoft.Build.Tasks.Git.targets'))" />
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.props'))" />
     <Error Condition="!Exists('$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(NugetPackageDirectory)\Microsoft.SourceLink.GitHub.$(MicrosoftSourceLinkGitHubVersion)\build\Microsoft.SourceLink.GitHub.targets'))" />
+    <Error Condition="!Exists('..\..\Packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.25935.1004.230824-1513.uia7\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\Packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.25935.1004.230824-1513.uia7\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.props'))" />
+    <Error Condition="!Exists('..\..\Packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.25935.1004.230824-1513.uia7\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\Packages\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.25935.1004.230824-1513.uia7\build\native\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.targets'))" />
   </Target>
   <!-- Include header files from the dev chunks -->
   <Target Name="CopyFiles" AfterTargets="AfterBuild">

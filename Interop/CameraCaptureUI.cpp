@@ -7,7 +7,7 @@
 #include <ShlObj.h>
 #include "CameraCaptureUI.h"
 #include "Microsoft.Windows.Media.Capture.CameraCaptureUI.g.cpp"
-#include <winrt/Microsoft.UI.h> // for WindowId
+#include "winrt/Microsoft.UI.h"
 
 //using namespace winrt::Windows::Media::Capture;
 using namespace winrt::Windows::UI;
@@ -19,7 +19,7 @@ using namespace winrt::Windows::ApplicationModel::DataTransfer;
 
 namespace winrt::Microsoft::Windows::Media::Capture::implementation
 {
-    IAsyncOperation<hstring> LaunchCameraForResultToken(winrt::Windows::UI::WindowId const& targetWindow, ValueSet const& properties)
+    IAsyncOperation<hstring> LaunchCameraForResultToken(winrt::Microsoft::UI::WindowId const& targetWindow, ValueSet const& properties)
     {
         LauncherOptions options;
         if (targetWindow.Value)

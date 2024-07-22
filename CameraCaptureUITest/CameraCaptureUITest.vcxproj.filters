@@ -27,4 +27,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="CameraCaptureUI-AppxManifest.xml" />
+  </ItemGroup>
 </Project>

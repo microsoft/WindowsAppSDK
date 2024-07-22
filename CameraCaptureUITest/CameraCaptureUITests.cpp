@@ -16,7 +16,6 @@ using namespace WEX::TestExecution;
 //using namespace winrt::Windows::Management::Deployment;
 //using namespace winrt::Windows::System;
 
-
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
 
@@ -99,8 +98,9 @@ namespace Test::CameraCaptureUI
         {
             try
             {
+                winrt::Microsoft::UI::WindowId windowwIdd{ 12345 };
                 // Arrange
-                winrt::Microsoft::UI::WindowId windowwId{ 12345 };
+                winrt::Windows::UI::WindowId windowwId{ 12345 };
                 auto parentWindow = ::GetForegroundWindow();
                 winrt::Windows::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
                 winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI(windowId);

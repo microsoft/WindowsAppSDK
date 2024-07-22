@@ -27,7 +27,7 @@
 #include <WindowsAppRuntime.Test.AppModel.h>
 #include <WindowsAppRuntime.Test.Package.h>
 #include <WindowsAppRuntime.Test.Bootstrap.h>
+
 #include <winrt/Microsoft.UI.h>
-
-
+#include <winrt/Microsoft.UI.Interop.h>
 #endif //PCH_H
