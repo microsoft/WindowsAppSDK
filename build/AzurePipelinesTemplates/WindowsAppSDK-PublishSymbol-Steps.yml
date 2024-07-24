@@ -29,6 +29,7 @@ steps:
   - pwsh: |
       Install-Module -Name Az.Accounts -Scope AllUsers -AllowClobber -Force
     displayName: Install Az.Accounts PowerShell module
+
   # WinAppSDK-AZSC service connection must be used because the service principal created by this connection has been granted read and publish access
   - task: AzurePowerShell@5
     displayName: Publish symbols to SymWeb and MSDL
