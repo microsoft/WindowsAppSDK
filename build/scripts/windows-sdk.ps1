@@ -7,9 +7,8 @@ param(
     [string]$SdkVersion = $null
 )
 
+Set-StrictMode -Version 3.0
 $ErrorActionPreference = "Stop"
-
-
 
 function Install-EXE
 {

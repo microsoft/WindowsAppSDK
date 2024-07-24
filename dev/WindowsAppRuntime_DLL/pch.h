@@ -29,6 +29,7 @@
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <wil/filesystem.h>
+#include <wil/registry.h>
 #include <wil/com.h>
 #include <wil/win32_helpers.h>
 #include <wil/winrt.h>

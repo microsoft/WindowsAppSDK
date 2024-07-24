@@ -31,7 +31,7 @@ private:
         wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH]{};
 
         UINT32 appUserModelIdSize{ ARRAYSIZE(appUserModelId) };
-        THROW_IF_WIN32_ERROR(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
+        THROW_IF_WIN32_ERROR(::GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
 
         return appUserModelId;
     }

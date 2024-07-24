@@ -27,6 +27,9 @@ Param(
     [switch]$Clean = $false
 )
 
+Set-StrictMode -Version 3.0
+$ErrorActionPreference = 'Stop'
+
 $env:Build_SourcesDirectory = (Split-Path $MyInvocation.MyCommand.Path)
 $buildOverridePath = "build\override"
 $BasePath = "BuildOutput/FullNuget"
@@ -288,7 +291,10 @@ Try {
         {
             foreach($platformToRun in $platform.Split(","))
             {
+                # TODO: $windowsAppSdkBinariesPath may not be defined. Remove the temp downgrade to 1.0 once this issue has been fixed (b#52130179). 
+                Set-StrictMode -Version 1.0
                 .\build\CopyFilesToStagingDir.ps1 -BuildOutputDir 'BuildOutput' -OverrideDir "$buildOverridePath" -PublishDir "$windowsAppSdkBinariesPath" -NugetDir "$BasePath" -Platform $PlatformToRun -Configuration $ConfigurationToRun
+                Set-StrictMode -Version 3.0
                 if ($lastexitcode -ne 0)
                 {
                     write-host "ERROR: msCopyFilesToStagingDir.ps1 FAILED."

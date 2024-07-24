@@ -1,0 +1,65 @@
+# VSIX and NuGet packages are generated from an MSBuild target.
+# This prevents us from using a ADO signing task to sign the contents
+# before packaging. Fortunately, these are both ZIP archives, so we
+# can extract the contents, sign the files we want, and repack the files.
+# Finally, we can sign the recreated package itself.
+
+parameters:
+- name: "inputPackageDirectory"
+  type: string
+  default: ""
+- name: "outputPackageDirectory"
+  type: string
+  default: ""
+- name: "packages"
+  type: object
+  default: {}
+- name: "codeSignPattern"
+  type: string
+  default: ""
+- name: "packageType"
+  type: string
+  values:
+  - "vsix"
+  - "nupkg"
+
+steps:
+- ${{ each package in parameters.packages }}:
+  - task: ExtractFiles@1
+    displayName: Extract package '${{parameters.inputPackageDirectory}}\${{package}}'
+    inputs:
+      archiveFilePatterns: '${{parameters.inputPackageDirectory}}\${{package}}'
+      destinationFolder: '$(Agent.TempDirectory)/${{package}}'
+
+  - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+    parameters:
+      DisplayName: 'CodeSign package contents'
+      FolderPath: '$(Agent.TempDirectory)/${{package}}'
+      Pattern: ${{parameters.codeSignPattern}}
+      UseMinimatch: true
+      KeyCode: 'CP-230012'
+
+  - task: ArchiveFiles@2
+    displayName: Repack signed package contents
+    inputs:
+      rootFolderOrFile: '$(Agent.TempDirectory)/${{package}}'
+      includeRootFolder: false
+      archiveFile: '${{parameters.outputPackageDirectory}}/${{package}}'
+
+  - ${{ if eq(parameters.packageType, 'nupkg') }}:
+    - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+      parameters:
+        DisplayName: 'CodeSign repacked package (Nuget)'
+        FolderPath: '${{parameters.outputPackageDirectory}}'
+        Pattern: ${{package}}
+        UseMinimatch: true
+        KeyCode: 'CP-401405'
+
+  - ${{ if eq(parameters.packageType, 'vsix') }}:
+    - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+      parameters:
+        DisplayName: 'CodeSign repacked package (VSIX)'
+        FolderPath: '${{parameters.outputPackageDirectory}}'
+        Pattern: ${{package}}
+        UseMinimatch: true
+        KeyCode: 'CP-233016'

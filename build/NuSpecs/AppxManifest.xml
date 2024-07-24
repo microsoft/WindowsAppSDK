@@ -90,6 +90,10 @@
         <!-- AccessControl -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers" ThreadingModel="both" />
 
+        <!-- ApplicationData -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.ApplicationData" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Storage.ApplicationDataContainer" ThreadingModel="both" />
+
         <!-- Environment Manager -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.System.EnvironmentManager" ThreadingModel="both" />
 

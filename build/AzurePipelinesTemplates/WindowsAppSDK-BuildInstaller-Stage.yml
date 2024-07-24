@@ -1,7 +1,8 @@
 # This Installer Stage is purely for validation
 # The actual installer is built with the Aggregator build
 stages:
-- stage: InstallerValidation
+- stage: Installer
+  dependsOn: []
   jobs:
   - job: BuildInstaller
     dependsOn: []
@@ -25,5 +26,9 @@ stages:
       ob_outputDirectory: '$(REPOROOT)\out'
       ob_artifactSuffix: '_$(buildConfiguration)_$(buildPlatform)'
       ob_artifactBaseName: "Installer$(ob_artifactSuffix)"
+      # foundationRepoPath should be empty because we are not doing multiple checkouts hence
+      # it is not under $(Build.SourcesDirectory)\WindowsAppSDK
+      foundationRepoPath: ""
+    condition: ne(variables.LatestOfficialBuildID, '')
     steps:
     - template: WindowsAppSDK-BuildInstaller-Steps.yml@self

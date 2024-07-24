@@ -18,6 +18,8 @@ variables:
 stages:
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Stage.yml@self
 
+- template: AzurePipelinesTemplates\WindowsAppSDK-BuildVSIX-Stage.yml@self
+
 - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
   parameters:
     SignOutput: False
