@@ -126,7 +126,12 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable:
             {
                 BOOL isSupported{};
-                THROW_IF_FAILED(PackageManagement_IsFeatureSupported(L"IsPackageReadyOrNewerAvailable", &isSupported));
+                const HRESULT hr{ PackageManagement_IsFeatureSupported(L"IsPackageReadyOrNewerAvailable", &isSupported) };
+                if (hr == E_NOTIMPL)
+                {
+                    return false;
+                }
+                THROW_IF_FAILED_MSG(hr, "IsPackageReadyOrNewerAvailable");
                 return !!isSupported;
             }
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageByUri:
