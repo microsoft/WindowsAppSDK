@@ -6,6 +6,8 @@
 #include "ResourceContext.g.cpp"
 #include "winrt/Windows.Globalization.h"
 
+#include <AppModel.Identity.h>
+
 const wchar_t c_languageQualifierName[] = L"Language";
 
 #include "ApplicationLanguages.h"
@@ -99,6 +101,16 @@ void ResourceContext::Apply()
         if (!eachValue.Value().empty())
         {
             winrt::check_hresult(MrmSetQualifier(m_resourceContext, eachValue.Key().c_str(), eachValue.Value().c_str()));
+        }
+    }
+
+    // sync with Windows::Globalization::ApplicationLanguages::PrimaryLanguageOverride if it has been updated more recently
+    if (AppModel::Identity::IsPackagedProcess())
+    {
+        auto language = winrt::Windows::Globalization::ApplicationLanguages::PrimaryLanguageOverride();
+        if (language != ApplicationLanguages::PrimaryLanguageOverride())
+        {
+            ApplicationLanguages::PrimaryLanguageOverride(language);
         }
     }
     if (!ApplicationLanguages::PrimaryLanguageOverride().empty())
