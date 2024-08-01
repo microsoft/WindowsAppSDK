@@ -125,9 +125,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable:
             {
-                //TODO Feature lookup
-                // Relies on PackageManagement_IsFeatureSupported(L"IsPackageReadyOrNewerAvailable") exist in Microsoft.FrameworkUdk and enabled
-                return false;
+                BOOL isSupported{};
+                const HRESULT hr{ PackageManagement_IsFeatureSupported(L"IsPackageReadyOrNewerAvailable", &isSupported) };
+                if (hr == E_NOTIMPL)
+                {
+                    return false;
+                }
+                THROW_IF_FAILED_MSG(hr, "IsPackageReadyOrNewerAvailable");
+                return !!isSupported;
             }
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RemovePackageByUri:
             {
@@ -137,11 +142,15 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             }
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ResetPackage:
             {
-                return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixResetPackageAsync");
+                //TODO Awaiting Windows update
+                //return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixResetPackageAsync");
+                return false;
             }
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::RepairPackage:
             {
-                return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixRepairPackageAsync");
+                //TODO Awaiting Windows update
+                //return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixRepairPackageAsync");
+                return false;
             }
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::ProvisionPackage_Framework:
             {
