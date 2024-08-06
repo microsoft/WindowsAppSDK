@@ -27,13 +27,13 @@
     -->
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.FrameworkUdk" Version="1.6.4-CI-26107.1006.240719-1146.0">
+    <Dependency Name="Microsoft.FrameworkUdk" Version="1.6.4-CI-26107.1007.240806-0649.0">
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
-      <Sha>534b0b3660f84e948237f93c52b11bb816fb985c</Sha>
+      <Sha>2755c21b3b1bad26019e8a8d721f1675c2685720</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.6.0-preview1.20240726.0">
+    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.6.0-preview1.20240806.1">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
-      <Sha>077ad7990ccc421623fe99390cd5ca4a254ae786</Sha>
+      <Sha>83c84efeaeb446672487167978254004791e55cd</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
