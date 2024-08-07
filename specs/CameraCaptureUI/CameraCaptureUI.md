@@ -40,7 +40,6 @@ API, with a minor adjustment to the CameraCapture constructor to require a
 
 # Conceptual pages
 
-*Todo - Replace Windows.UI.WindowId with Microsoft.UI.WindowId post testing.*
 ## Capture a photo (C++)
 
 A C++ example that tests whether a photo was successfully taken using the CaptureFileAsync method.
@@ -48,7 +47,7 @@ A C++ example that tests whether a photo was successfully taken using the Captur
 ```c++
     // Initialize CameraCaptureUI with a window handle (Foreground Window in this example)
     auto parentWindow = ::GetForegroundWindow();
-    winrt::Windows::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+    winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
     winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI(windowId);
 
     // Configure Photo Settings
@@ -78,14 +77,15 @@ A C++ example that tests whether a photo was successfully taken using the Captur
  [CaptureVideo.xaml.cs](https://github.com/microsoftarchive/msdn-code-gallery-microsoft/tree/master/Official%20Windows%20Platform%20Sample/Windows%208%20app%20samples/%5BC%23%5D-Windows%208%20app%20samples/C%23/Windows%208%20app%20samples/CameraCaptureUI%20Sample%20(Windows%208)/C%23) of the Camera capture UI C# sample with a small modification to include the window ID in the CameraCaptureUI constructor.
 
  ```c#
-// Get the handle of the foreground window
-IntPtr parentWindow = NativeMethods.GetForegroundWindow();
+// Retrieve the window handle (HWND) of the current WinUI 3 window.
+ var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
 
-// Create a WindowId from the window handle
-Windows.UI.WindowId windowId = new WindowId(parentWindow.ToInt64());
+// Get the WindowId for our window
+ Microsoft.UI.WindowId windowId;
+ windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
 
-// Initialize CameraCaptureUI with a specific app window handle (12345 in this case)
-CameraCaptureUI dialog = new CameraCaptureUI(windowId);
+ // Initialize CameraCaptureUI with a windiow handle
+ CameraCaptureUI dialog = new CameraCaptureUI(windowId);
 
 // Configure Video Settings
 dialog.VideoSettings.Format = CameraCaptureUIVideoFormat.Mp4;
@@ -107,13 +107,6 @@ else
     // Log message if no video was captured
     // Consider adding your own logging mechanism here
     // For example: logger.Log("No video captured.");
-}
-
-// NativeMethods class to access native Win32 functions
-internal static class NativeMethods
-{
-    [System.Runtime.InteropServices.DllImport("user32.dll")]
-    internal static extern IntPtr GetForegroundWindow();
 }
 ```
 
@@ -378,8 +371,7 @@ namespace Microsoft.Windows.Media.Capture
     marshaling_behavior(none)]
     runtimeclass CameraCaptureUI
     {
-        CameraCaptureUI(Windows.UI.WindowId window);
-        //CameraCaptureUI(Microsoft.UI.WindowId window);
+        CameraCaptureUI(Microsoft.UI.WindowId window);
  
         CameraCaptureUIPhotoCaptureSettings PhotoSettings{ get; };
         CameraCaptureUIVideoCaptureSettings VideoSettings{ get; };
