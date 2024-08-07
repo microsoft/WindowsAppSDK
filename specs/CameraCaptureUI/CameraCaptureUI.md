@@ -80,7 +80,7 @@ A C++ example that tests whether a photo was successfully taken using the Captur
 // Retrieve the window handle (HWND) of the current WinUI 3 window.
  var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
 
-// Get the WindowId for our window
+// Get the WindowId for the window
  Microsoft.UI.WindowId windowId;
  windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
 
