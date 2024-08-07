@@ -124,6 +124,14 @@ steps:
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2
+  displayName: 'Create ApplicationData TerminalVelocity features'
+  inputs:
+    targetType: filePath
+    filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-ApplicationData.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.Storage.ApplicationData -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-ApplicationData.h
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: powershell@2
   displayName: 'Create AppNotifications TerminalVelocity features'
   inputs:
     targetType: filePath
