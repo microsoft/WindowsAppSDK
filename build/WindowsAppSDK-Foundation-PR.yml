@@ -97,4 +97,4 @@ extends:
     - template: AzurePipelinesTemplates\WindowsAppSDK-Publish-Stage.yml@self
       parameters:
         PublishToMaestro: true
-        IgnoreFailures: ${{ parameters.IgnoreFailures }}
+        IgnoreFailures: true
