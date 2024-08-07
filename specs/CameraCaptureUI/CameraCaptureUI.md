@@ -84,7 +84,7 @@ A C++ example that tests whether a photo was successfully taken using the Captur
  Microsoft.UI.WindowId windowId;
  windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
 
- // Initialize CameraCaptureUI with a windiow handle
+ // Initialize CameraCaptureUI with a window handle
  CameraCaptureUI dialog = new CameraCaptureUI(windowId);
 
 // Configure Video Settings
