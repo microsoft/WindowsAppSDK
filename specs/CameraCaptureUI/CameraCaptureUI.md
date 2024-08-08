@@ -45,9 +45,15 @@ API, with a minor adjustment to the CameraCapture constructor to require a
 A C++ example that tests whether a photo was successfully taken using the CaptureFileAsync method.
 
 ```c++
-    // Initialize CameraCaptureUI with a window handle (Foreground Window in this example)
-    auto parentWindow = ::GetForegroundWindow();
-    winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+    // Retrieve the window handle (HWND) of the current WinUI 3 window.
+    auto windowNative{ this->m_inner.as<::IWindowNative>() };
+    HWND hWnd{ 0 };
+    windowNative->get_WindowHandle(&hWnd);
+
+    // Get the WindowId for the window
+    Microsoft::UI::WindowId windowId = Microsoft::UI::GetWindowIdFromWindow(hWnd);
+
+    // Initialize CameraCaptureUI with a window handle
     winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI(windowId);
 
     // Configure Photo Settings
@@ -55,8 +61,7 @@ A C++ example that tests whether a photo was successfully taken using the Captur
     cameraUI.PhotoSettings().AllowCropping(false);
 
     // Capture a photo asynchronously
-    auto photoOperation = cameraUI.CaptureFileAsync(CameraCaptureUIMode::Photo);
-    auto photo = photoOperation.get(); // Get the result synchronously
+    auto photo = co_await cameraUI.CaptureFileAsync(CameraCaptureUIMode::Photo);
 
     // Assert the result
     if (photo != nullptr)
