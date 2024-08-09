@@ -24,4 +24,5 @@ stages:
     steps:
     - template: AzurePipelinesTemplates/WindowsAppSDK-PublishToMaestro-Steps.yml@WindowsAppSDKConfig
       parameters:
-        NuGetArtifactName: 'TransportPackage'
+        NuGetArtifactNames:
+        - 'TransportPackage'
