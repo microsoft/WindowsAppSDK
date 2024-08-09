@@ -1,4 +1,4 @@
-parameter:
+parameters:
 - name: SignOutput
   type: boolean
   default: False
