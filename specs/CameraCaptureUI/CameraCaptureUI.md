@@ -45,13 +45,8 @@ API, with a minor adjustment to the CameraCapture constructor to require a
 A C++ example that tests whether a photo was successfully taken using the CaptureFileAsync method.
 
 ```c++
-    // Retrieve the window handle (HWND) of the current WinUI 3 window.
-    auto windowNative{ this->m_inner.as<::IWindowNative>() };
-    HWND hWnd{ 0 };
-    windowNative->get_WindowHandle(&hWnd);
-
     // Get the WindowId for the window
-    Microsoft::UI::WindowId windowId = Microsoft::UI::GetWindowIdFromWindow(hWnd);
+    Microsoft::UI::WindowId windowId = this->AppWindow().Id();
 
     // Initialize CameraCaptureUI with a window handle
     winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI(windowId);
@@ -82,12 +77,8 @@ A C++ example that tests whether a photo was successfully taken using the Captur
  [CaptureVideo.xaml.cs](https://github.com/microsoftarchive/msdn-code-gallery-microsoft/tree/master/Official%20Windows%20Platform%20Sample/Windows%208%20app%20samples/%5BC%23%5D-Windows%208%20app%20samples/C%23/Windows%208%20app%20samples/CameraCaptureUI%20Sample%20(Windows%208)/C%23) of the Camera capture UI C# sample with a small modification to include the window ID in the CameraCaptureUI constructor.
 
  ```c#
-// Retrieve the window handle (HWND) of the current WinUI 3 window.
- var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-
 // Get the WindowId for the window
- Microsoft.UI.WindowId windowId;
- windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
+ Microsoft.UI.WindowId windowId = this.AppWindow.Id;
 
  // Initialize CameraCaptureUI with a window handle
  CameraCaptureUI dialog = new CameraCaptureUI(windowId);
@@ -371,7 +362,6 @@ namespace Microsoft.Windows.Media.Capture
     }
  
     [contract(CameraCaptureUIContract, 1)]
-    [default_interface]
     [threading(sta),
     marshaling_behavior(none)]
     runtimeclass CameraCaptureUI
