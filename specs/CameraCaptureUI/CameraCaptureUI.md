@@ -337,7 +337,6 @@ namespace Microsoft.Windows.Media.Capture
     } CameraCaptureUIMaxPhotoResolution;
  
     [contract(CameraCaptureUIContract, 1)]
-    [default_interface]
     runtimeclass CameraCaptureUIPhotoCaptureSettings
     {
         CameraCaptureUIPhotoCaptureSettings();
@@ -350,7 +349,6 @@ namespace Microsoft.Windows.Media.Capture
     }
  
     [contract(CameraCaptureUIContract, 1)]
-    [default_interface]
     runtimeclass CameraCaptureUIVideoCaptureSettings
     {
         CameraCaptureUIVideoCaptureSettings();
