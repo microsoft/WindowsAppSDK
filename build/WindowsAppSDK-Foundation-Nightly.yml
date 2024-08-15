@@ -23,7 +23,7 @@ trigger: none
 parameters:
 - name: "PublishToMaestro"
   type: boolean
-  default: False
+  default: True
 - name: "IgnoreFailures"
   type: boolean
   default: False

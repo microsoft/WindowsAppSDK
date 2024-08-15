@@ -35,7 +35,7 @@ resources:
     - repository: WindowsAppSDKConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/user/kythant/MaestroMigration
+      ref: refs/heads/main
 
 variables:
 - template: WindowsAppSDK-Versions.yml
@@ -85,16 +85,10 @@ extends:
         SignOutput: false
         runStaticAnalysis : ${{ parameters.runStaticAnalysis }}
 
-    # Temporary, uncomment in PR
-    # - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
+    - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
 
     - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
       parameters:
         SignOutput: false
         PublishPackage: false
-
-    # Temporary, remove later in PR
-    - template: AzurePipelinesTemplates\WindowsAppSDK-Publish-Stage.yml@self
-      parameters:
-        PublishToMaestro: true
-        IgnoreFailures: true
+        
