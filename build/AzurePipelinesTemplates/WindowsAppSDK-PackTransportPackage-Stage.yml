@@ -128,11 +128,10 @@ stages:
           **\*.pdb
         targetFolder: $(Build.ArtifactStagingDirectory)\symbols
 
-    - template: ${{variables['System.DefaultWorkingDirectory']}}\build\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml
+    - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
       parameters:
         SearchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
         IsOfficial: ${{ parameters.IsOfficial }}
-        PublishPublicSymbolsPowershellPath: '$(Build.SourcesDirectory)\eng\common\Scripts\PublishPublicSymbols.ps1'
 
     - task: PowerShell@2
       name: SetVersion

@@ -57,7 +57,7 @@ steps:
       foreach ($file in $files) # Iterate through each package we restored in the directory
       {
         Write-Host "file:" $file.FullName
-        $nupkgPaths = Get-ChildItem $file.FullName -Filter "*.nupkg"
+        $nupkgPaths = Get-ChildItem $file.FullName -Filter "*WindowsAppSDK*.nupkg"
 
         # Extract nupkg to access the nuspec
         # The files in this directory does not contain the nuspec by default
@@ -195,11 +195,10 @@ steps:
         **/WindowsAppSDK.*.Extension.*.dll
         
 - ${{ if eq(parameters.IsOneBranch, 'true') }}:
-  - template: ${{variables['System.DefaultWorkingDirectory']}}\build\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml
+  - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
     parameters:
       SearchPattern: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
       IsOfficial: ${{ parameters.IsOfficial }}
-      PublishPublicSymbolsPowershellPath: '$(Build.SourcesDirectory)\$(foundationRepoPath)eng\common\Scripts\PublishPublicSymbols.ps1'
 
 - task: CopyFiles@2
   displayName: 'Stage VSIX component JSONs'
