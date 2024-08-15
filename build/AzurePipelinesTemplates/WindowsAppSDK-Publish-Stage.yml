@@ -8,7 +8,7 @@ parameters:
 stages:
 - stage: Publish
   dependsOn:
-  # - Test
+  - Test
   - Pack
   condition: not(failed())
   jobs:
