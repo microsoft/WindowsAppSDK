@@ -21,7 +21,7 @@
     <NugetPackageDirectory>$(RepoRoot)\packages</NugetPackageDirectory>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(RepoRoot)\WasdkStrongNameSign.snk</AssemblyOriginatorKeyFile>
-    <WindowsSdkPackageVersion>10.0.17763.36-preview</WindowsSdkPackageVersion>
+    <WindowsSdkPackageVersion>10.0.17763.$(CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion)</WindowsSdkPackageVersion>
   </PropertyGroup>
   <PropertyGroup>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
