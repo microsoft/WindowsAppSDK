@@ -92,12 +92,9 @@ steps:
         -AzurePipelineBuild
 
   - ${{ if not( parameters.IsOneBranch ) }}:
-    - task: PublishBuildArtifacts@1
+    - publish: $(Build.SourcesDirectory)\PipelineTestOutput
       displayName: 'Publish test results'
-      condition: succeededOrFailed()
-      inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)\PipelineTestOutput'
-        artifactName: 'TestResults-WindowsAppSDKIntegration'
+      artifact: TestResults-WindowsAppSDKIntegration
 
   - ${{ if parameters.IsOneBranch }}:
     - task: CopyFiles@2

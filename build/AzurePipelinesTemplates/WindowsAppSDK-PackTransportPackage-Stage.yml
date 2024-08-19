@@ -185,10 +185,8 @@ stages:
         TargetFolder: '$(ob_outputDirectory)'
 
     - ${{ if not( parameters.IsOneBranch ) }}:
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(ob_outputDirectory)'
-          artifactName: '$(ob_artifactBaseName)'
+      - publish: $(ob_outputDirectory)
+        artifact: $(ob_artifactBaseName)
 
     - ${{ if eq(parameters.PublishPackage, 'true') }}:
       # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
