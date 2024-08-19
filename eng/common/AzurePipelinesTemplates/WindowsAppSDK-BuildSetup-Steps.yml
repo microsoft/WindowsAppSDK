@@ -24,7 +24,7 @@ parameters:
 steps:
   - checkout: git://ProjectReunion/WindowsAppSDKAggregator
 
-  - task: AzureKeyVault@1
+  - task: AzureKeyVault@2
     inputs:
       azureSubscription: ${{ parameters.AzureSubscriptionServiceConnection }}
       KeyVaultName: 'ProjectReunionCerts'
