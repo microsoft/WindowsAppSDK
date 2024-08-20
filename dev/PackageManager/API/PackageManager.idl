@@ -471,11 +471,13 @@ namespace Microsoft.Windows.Management.Deployment
         //-------------------------------------------------------------
         // IsRegistrationPending
 
-        [contract(PackageDeploymentContract, 2)]
-        Boolean IsPackageRegistrationPending(String packageFullName);
+        /// @warning The parameter is should be "packageFullName" but can't due to http://task.ms/53280356.
+        ///          Consider the current (wrong) parameter name deprecated until vFuture (2.0) when we can change to the new (right) parameter name.
+        Boolean IsPackageRegistrationPending(String packageFamilyName);
 
-        [contract(PackageDeploymentContract, 2)]
-        Boolean IsPackageRegistrationPendingForUser(String userSecurityId, String packageFullName);
+        /// @warning The parameter is should be "packageFullName" but can't due to http://task.ms/53280356.
+        ///          Consider the current (wrong) parameter name deprecated until vFuture (2.0) when we can change to the new (right) parameter name.
+        Boolean IsPackageRegistrationPendingForUser(String userSecurityId, String packageFamilyName);
     }
 
     [contract(PackageDeploymentContract, 1)]
