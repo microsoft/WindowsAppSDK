@@ -294,6 +294,7 @@ namespace Microsoft.Windows.Management.Deployment
         //-------------------------------------------------------------
         // IsPackageDeploymentFeatureSupported
 
+        [contract(PackageDeploymentContract, 2)]
         static Boolean IsPackageDeploymentFeatureSupported(PackageDeploymentFeature feature);
 
         //-------------------------------------------------------------
@@ -470,8 +471,10 @@ namespace Microsoft.Windows.Management.Deployment
         //-------------------------------------------------------------
         // IsRegistrationPending
 
+        [contract(PackageDeploymentContract, 2)]
         Boolean IsPackageRegistrationPending(String packageFullName);
 
+        [contract(PackageDeploymentContract, 2)]
         Boolean IsPackageRegistrationPendingForUser(String userSecurityId, String packageFullName);
     }
 
