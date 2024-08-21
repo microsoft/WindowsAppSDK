@@ -90,14 +90,14 @@ namespace Test::PackageManager::Tests
 
     std::filesystem::path GetExpectedMachinePath(winrt::hstring const& packageFamilyName)
     {
-        // Expected Path = HKLM\...apprepository...\ApplicationData\...pkgfamilyname...\Machine
-        // This is typically %ProgramData%\Microsoft\Windows\AppRepository\ApplicationData\...pkgfamilyname...\Machine
+        // Expected Path = HKLM\...apprepository...\Families\ApplicationData\...pkgfamilyname...\Machine
+        // This is typically %ProgramData%\Microsoft\Windows\AppRepository\Families\ApplicationData\...pkgfamilyname...\Machine
         // and by 'typically' we mean 'all current Windows editions' so we'll assume it's true for ease of testing
         // and use this test as a canary to detect if/when this is ever not true on any supported platform.
         wil::unique_cotaskmem_string path;
         THROW_IF_FAILED(::SHGetKnownFolderPath(FOLDERID_ProgramData, 0, nullptr, wil::out_param(path)));
         const std::filesystem::path programData{ path.get() };
-        const auto packageRepositoryRoot{ programData / L"Microsoft\\Windows\\AppRepository\\ApplicationData" };
+        const auto packageRepositoryRoot{ programData / L"Microsoft\\Windows\\AppRepository\\Families\\ApplicationData" };
         const auto packageFamilyRoot{ packageRepositoryRoot / packageFamilyName.c_str() };
         const auto expectedMachinePath{ packageFamilyRoot / L"Machine" };
         return expectedMachinePath;
