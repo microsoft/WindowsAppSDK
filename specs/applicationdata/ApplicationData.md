@@ -110,7 +110,7 @@ to grant more access than provided by default.
 
 ### 3.4.1. Machine Path/Folder
 
-The path for a package family's "Machine Folder" is located at `%ProgramData%\Microsoft\Windows\AppRepository\ApplicationData\...packagefamilyname...\Machine`.
+The path for a package family's "Machine Folder" is located at `%ProgramData%\Microsoft\Windows\AppRepository\Families\ApplicationData\...packagefamilyname...\Machine`.
 
 This directory is ACL'd similarly to a package's System Metadata directory (`%ProgramData%\Microsoft\Windows\AppRepository\Packages\...pkgfullname...`) e.g.
 
