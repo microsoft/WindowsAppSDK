@@ -83,4 +83,42 @@
   <Target Name="CleanIntermediateFiles" AfterTargets="Build" Condition="'$(WindowsAppSDKCleanIntermediateFiles)' == 'true'">
     <RemoveDir Directories="$(IntermediateOutputPath)" />
   </Target>
+
+  <!-- 
+    This repository is mirrored to an internal repository in Azure Devops that is used for the official build.
+    We need to translate the internal AzDO URLs into Github URLs in order for SourceLink to properly resolve
+    source code.
+
+    The logic for doing this was adapted from the Arcade SDK (https://github.com/dotnet/arcade/blob/8fe02bab989df1265eee225df2c28af6dbdccc83/src/Microsoft.DotNet.Arcade.Sdk/tools/RepositoryInfo.targets#L36-L75).
+  -->
+  <PropertyGroup>
+    <!-- There are a few git repo forms:
+      https://microsoft@dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDK
+      https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDK
+    -->
+    <!-- Set DisableSourceLinkUrlTranslation to true when building a tool for internal use where sources only come from internal URIs -->
+    <DisableSourceLinkUrlTranslation Condition="'$(DisableSourceLinkUrlTranslation)' == ''">false</DisableSourceLinkUrlTranslation>
+    <_TranslateUrlPattern>(https://microsoft%40dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDK|https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDK|https://microsoft.visualstudio.com/ProjectReunion/_git/WindowsAppSDK)</_TranslateUrlPattern>
+    <_TranslateUrlReplacement>https://github.com/microsoft/WindowsAppSDK.git</_TranslateUrlReplacement>
+  </PropertyGroup>
+
+  <Target Name="_TranslateAzureDevOpsUrlToGitHubUrl"
+          Condition="'$(DisableSourceLinkUrlTranslation)' == 'false'"
+          DependsOnTargets="$(SourceControlManagerUrlTranslationTargets)"
+          BeforeTargets="SourceControlManagerPublishTranslatedUrls">
+
+    <PropertyGroup>
+      <ScmRepositoryUrl>$([System.Text.RegularExpressions.Regex]::Replace($(ScmRepositoryUrl), $(_TranslateUrlPattern), $(_TranslateUrlReplacement)))</ScmRepositoryUrl>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <SourceRoot Update="@(SourceRoot)">
+        <ScmRepositoryUrl>$([System.Text.RegularExpressions.Regex]::Replace(%(SourceRoot.ScmRepositoryUrl), $(_TranslateUrlPattern), $(_TranslateUrlReplacement)))</ScmRepositoryUrl>
+        <!-- As part of our deterministic build, we pass the `/d1trimfile:$(RepoRoot)` switch to the C++ compiler to remove the 
+             repo root from file paths embedded into the PDB, e.g. `d:\winappsdk\dev\MRTCore\mrt\Core\src\MRM.cpp` becomes 
+             `\dev\MRTCore\mrt\Core\src\MRM.cpp`. We thus need to tell Source Link about this mapping. -->
+        <MappedPath Condition="'$(Language)'=='C++'">$([System.String]::Copy('%(SourceRoot.Identity)').Replace('$(RepoRoot)',''))</MappedPath>
+      </SourceRoot>
+    </ItemGroup>
+  </Target>
 </Project>
