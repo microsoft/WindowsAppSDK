@@ -114,6 +114,10 @@
     <ItemGroup>
       <SourceRoot Update="@(SourceRoot)">
         <ScmRepositoryUrl>$([System.Text.RegularExpressions.Regex]::Replace(%(SourceRoot.ScmRepositoryUrl), $(_TranslateUrlPattern), $(_TranslateUrlReplacement)))</ScmRepositoryUrl>
+        <!-- As part of our deterministic build, we pass the `/d1trimfile:$(RepoRoot)` switch to the C++ compiler to remove the 
+             repo root from file paths embedded into the PDB, e.g. `d:\winappsdk\dev\MRTCore\mrt\Core\src\MRM.cpp` becomes 
+             `\dev\MRTCore\mrt\Core\src\MRM.cpp`. We thus need to tell Source Link about this mapping. -->
+        <MappedPath Condition="'$(Language)'=='C++'">$([System.String]::Copy('%(SourceRoot.Identity)').Replace('$(RepoRoot)',''))</MappedPath>
       </SourceRoot>
     </ItemGroup>
   </Target>
