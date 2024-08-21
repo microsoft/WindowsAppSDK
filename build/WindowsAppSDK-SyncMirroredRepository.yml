@@ -8,6 +8,13 @@ parameters:
     release/1.5-stable: release/1.5-stable
     release/1.6-stable: release/1.6-stable
 
+resources:
+  repositories:
+    - repository: WindowsAppSDKConfig
+      type: git
+      name: ProjectReunion/WindowsAppSDKConfig
+      ref: refs/heads/main
+
 jobs:
 - job: SyncMirror
   strategy:
@@ -19,7 +26,7 @@ jobs:
   dependsOn: []
   pool: 'ProjectReunionESPool-2022'
   steps:
-  - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-SyncMirror-Steps.yml
+  - template: AzurePipelinesTemplates/WindowsAppSDK-SyncMirror-Steps.yml@WindowsAppSDKConfig
     parameters:
       SourceRepository: "https://github.com/microsoft/WindowsAppSDK.git"
       TargetBranch: $(TargetBranch)
