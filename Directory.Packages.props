@@ -2,10 +2,7 @@
     This is the project file used by CentralPackageVersions, and used to control all PackageReference's
     and make sure the version is only declared in a single place
 
-    In order to the CentralPackageVersions, add this to your SDK-Style .csproj file:
-    <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.1" />
-
-    For more info: https://github.com/microsoft/MSBuildSdks/tree/master/src/CentralPackageVersions
+    https://learn.microsoft.com/en-us/nuget/consume-packages/Central-Package-Management
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
