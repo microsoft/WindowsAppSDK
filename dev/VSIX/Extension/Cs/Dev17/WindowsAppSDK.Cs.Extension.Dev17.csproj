@@ -29,7 +29,6 @@
     <PackageGuidString>{B0F1BA01-DE66-4EF9-9C8B-DBB99FB4DA4B}</PackageGuidString>
     <!-- Dev17 templates should target .NET 8 -->
     <DotNetVersion>net8.0</DotNetVersion>
-    <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.1" />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
