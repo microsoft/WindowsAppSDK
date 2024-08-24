@@ -46,6 +46,8 @@ variables:
 extends:
   template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates
   parameters:
+    featureFlags:
+      EnableCDPxPAT: false
     platform:
       name: 'windows_undocked' # windows undocked
 
