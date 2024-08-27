@@ -106,7 +106,7 @@ steps:
     solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
-    msBuildArgs: '/p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"'
+    msBuildArgs: '/p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /binaryLogger:$(ob_outputDirectory)\binlogs\StandaloneVSIX.binlog'
     ${{ if eq( parameters.runStaticAnalysis, 'True') }}:
       createLogFile: true
 
@@ -130,7 +130,7 @@ steps:
     solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
-    msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:RestoreAdditionalProjectSources="$(System.ArtifactsDirectory)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"'
+    msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:RestoreAdditionalProjectSources="$(System.ArtifactsDirectory)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"' 
 
 - task: VSBuild@1
   displayName: 'Build Component WindowsAppSDK.Extension.sln'
@@ -138,7 +138,7 @@ steps:
     solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
-    msBuildArgs: '/restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /p:Deployment="Component"'
+    msBuildArgs: '/restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /p:Deployment="Component" /binaryLogger:$(ob_outputDirectory)\binlogs\ComponentVSIX.binlog'
     ${{ if eq( parameters.runStaticAnalysis, 'True') }}:
       createLogFile: true
 

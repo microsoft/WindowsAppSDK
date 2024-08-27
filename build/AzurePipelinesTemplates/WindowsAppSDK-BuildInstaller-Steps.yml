@@ -209,6 +209,7 @@ steps:
     solution: $(foundationRepoPath)installer\dev\WindowsAppRuntimeInstall.vcxproj
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    msbuildArgs: /binaryLogger:$(ob_outputDirectory)\binlogs\WindowsAppRuntimeInstall.$(buildPlatform).$(buildConfiguration).binlog
     ${{ if eq( parameters.runStaticAnalysis, 'True') }}:
       createLogFile: true
 
