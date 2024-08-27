@@ -78,7 +78,7 @@ steps:
 - task: PowerShell@2
   displayName: GenerateVersionInfo
   inputs:
-    filePath: '$(Build.SourcesDirectory)\eng\common\VersionInfo\GenerateVersionInfo.ps1'
+    filePath: '$(Build.SourcesDirectory)\build\VersionInfo\GenerateVersionInfo.ps1'
     arguments: >
       -ProductMajor "$(major)"
       -ProductMinor "$(minor)"
