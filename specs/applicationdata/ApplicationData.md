@@ -214,7 +214,7 @@ void SaveData(string data)
 
 ## 4.3. Packaged app using MachinePath
 
-Fabrikam packaged app running elevated and creating a file in the LocalPath data store.
+Fabrikam packaged app running elevated and creating a file in the MachinePath data store.
 
 ```c#
 void SaveData(string data)
