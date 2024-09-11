@@ -53,13 +53,16 @@
     Download and use the latest vswhere.exe on the network
 
 .PARAMETER RemoveAll
-    Remove all.
+    Remove all
 
 .PARAMETER RemoveTestCert
     Remove the Test certificate (i.e. undoc CheckTestCert)
 
 .PARAMETER RemoveTestPfx
     Remove the MSIX Test signing certificate (i.e. undoc CheckTestPfx)
+
+.PARAMETER SaveSettingsFile
+    Save settings file
 
 .PARAMETER Settings
     Load settings file
@@ -123,9 +126,11 @@ Param(
 
     [Switch]$RemoveTestPfx=$false,
 
+    [String]$SaveSettingsFile=$null,
+
     [Switch]$Settings=$true,
 
-    [String]$SettingsFile="DevCheck-Settings.ps1",
+    [String]$SettingsFile='DevCheck-Settings.ps1',
 
     [Switch]$ShowSystemInfo=$false,
 
@@ -151,13 +156,9 @@ $global:vswhere_url = ''
 
 $global:dependency_paths = ('dev', 'test', 'installer', 'tools')
 
-function Get-Settings
+function Get-SettingsFile
 {
-    if ($Settings -eq $false)
-    {
-        return $null
-    }
-    if ([string]::IsNullOrEmpty($Settings))
+    if ([string]::IsNullOrEmpty($SettingsFile))
     {
         return $null
     }
@@ -173,7 +174,74 @@ function Get-Settings
             return $null
         }
     }
+    return $file
+}
+
+function Get-Settings
+{
+    if ($Settings -eq $false)
+    {
+        return $null
+    }
+
+    $settings_file = Get-SettingsFile $true
+    if ([string]::IsNullOrEmpty($settings_file))
+    {
+        return $null
+    }
+
+    $file = [IO.Path]::GetFullPath($settings_file)
+    if (-not(Test-Path -Path $file -PathType Leaf))
+    {
+        $root = Get-ProjectRoot
+        $userdir = Join-Path $root '.user'
+        $file = Join-Path $userdir $settings_file
+        if (-not(Test-Path -Path $file -PathType Leaf))
+        {
+            return $null
+        }
+    }
+    Write-Host "Loading settings file $($file)..."
     $null = . $file
+    Write-Host "Loaded settings file $($file)"
+    return $file
+}
+
+function Set-Settings
+{
+    $file = $SaveSettingsFile
+    if ([string]::IsNullOrEmpty($file))
+    {
+        return $null
+    }
+
+    if (Test-Path -Path $file)
+    {
+        Write-Host "ERROR: -SaveSettings file exists; will not overwrite $($file)" -ForegroundColor Red -BackgroundColor Black
+        $ERROR_ALREADY_EXISTS = 183
+        Exit $ERROR_ALREADY_EXISTS
+    }
+
+    $content = @'
+# Copyright (c) Microsoft Corporation and Contributors.
+# Licensed under the MIT License.
+
+# Do not alter contents except in the User Personalization block
+# Everything else is owned by DevCheck and subject to change without warning
+
+$me = (Get-Item $PSScriptRoot ).FullName
+Write-Verbose "$me BEGIN User Personalization"
+#-----------------------------------------------------------------------
+# BEGIN User Personalization
+#...insert user personalization here...
+# END   User Personalization
+#-----------------------------------------------------------------------
+$me = (Get-Item $PSScriptRoot ).FullName
+Write-Verbose "$me END User Personalization"
+'@
+
+    Write-Host "Saving settings file $($file)..."
+    Set-Content -Path $file -Value $content -Encoding utf8
     return $file
 }
 
@@ -1406,6 +1474,7 @@ function Get-SystemInfo
     Write-Host "Powershell      : $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)"
 }
 
+$null = Set-Settings
 $null = Get-Settings
 
 $remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
