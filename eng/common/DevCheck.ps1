@@ -61,6 +61,12 @@
 .PARAMETER RemoveTestPfx
     Remove the MSIX Test signing certificate (i.e. undoc CheckTestPfx)
 
+.PARAMETER Settings
+    Load settings file
+
+.PARAMETER SettingsFile
+    Settings file to load (if present). Relative filenames are resolved to .user directory. Default="DevCheck-Settings.ps1"
+
 .PARAMETER ShowSystemInfo
     Display system information
 
@@ -117,6 +123,10 @@ Param(
 
     [Switch]$RemoveTestPfx=$false,
 
+    [Switch]$Settings=$true,
+
+    [String]$SettingsFile="DevCheck-Settings.ps1",
+
     [Switch]$ShowSystemInfo=$false,
 
     [Switch]$StartTAEFService=$false,
@@ -139,17 +149,32 @@ $global:isadmin = $null
 $global:vswhere = ''
 $global:vswhere_url = ''
 
-$remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
-if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAEFService -eq $false) -And
-    ($StopTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And
-    ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And
-    ($CheckDeveloperMode -eq $false) -And ($ShowSystemInfo -eq $false))
+$global:dependency_paths = ('dev', 'test', 'installer', 'tools')
+
+function Get-Settings
 {
-    $CheckAll = $true
-}
-if ($SyncDependencies -eq $true)
-{
-    $CheckDependencies = $true
+    if ($Settings -eq $false)
+    {
+        return $null
+    }
+    if ([string]::IsNullOrEmpty($Settings))
+    {
+        return $null
+    }
+
+    $file = [IO.Path]::GetFullPath($SettingsFile)
+    if (-not(Test-Path -Path $file -PathType Leaf))
+    {
+        $root = Get-ProjectRoot
+        $userdir = Join-Path $root '.user'
+        $file = Join-Path $userdir $SettingsFile
+        if (-not(Test-Path -Path $file -PathType Leaf))
+        {
+            return $null
+        }
+    }
+    $null = . $file
+    return $file
 }
 
 function Write-Verbose
@@ -1296,7 +1321,7 @@ function Test-Dependencies
     # Scan for references - packages.config
     $root = Get-ProjectRoot
     $files = 0
-    ForEach ($subtree in 'dev', 'test', 'installer', 'tools')
+    ForEach ($subtree in $global:dependency_paths)
     {
         $path = Join-Path $root $subtree
         Write-Host "Scanning packages.config..."
@@ -1309,7 +1334,7 @@ function Test-Dependencies
     Write-Host "Scanned $($files) packages.config"
 
     $files = 0
-    ForEach ($subtree in 'dev', 'test', 'installer', 'tools')
+    ForEach ($subtree in $global:dependency_paths)
     {
         $path = Join-Path $root $subtree
         Write-Host "Scanning *.vcxproj..."
@@ -1379,6 +1404,21 @@ function Get-SystemInfo
     Write-Host "LCU Version     : $($lcuver)"
 
     Write-Host "Powershell      : $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)"
+}
+
+$null = Get-Settings
+
+$remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
+if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAEFService -eq $false) -And
+    ($StopTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And
+    ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And
+    ($CheckDeveloperMode -eq $false) -And ($ShowSystemInfo -eq $false))
+{
+    $CheckAll = $true
+}
+if ($SyncDependencies -eq $true)
+{
+    $CheckDependencies = $true
 }
 
 Write-Output "Checking developer environment..."
