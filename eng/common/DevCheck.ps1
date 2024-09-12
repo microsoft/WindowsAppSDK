@@ -64,6 +64,9 @@
 .PARAMETER SaveSettingsFile
     Save settings file
 
+.PARAMETER SaveUserSettingsFile
+    Save settings file
+
 .PARAMETER Settings
     Load settings file
 
@@ -81,6 +84,12 @@
 
 .PARAMETER SyncDependencies
     Update dependencies (*proj, packages.config, eng\Version.*.props) to match defined dependencies (eng\Version.*.xml)
+
+.PARAMETER UserSettings
+    Load settings file
+
+.PARAMETER UserSettingsFile
+    Settings file to load (if present). Relative filenames are resolved to .user directory.
 
 .PARAMETER Verbose
     Display detailed information
@@ -128,6 +137,8 @@ Param(
 
     [String]$SaveSettingsFile=$null,
 
+    [String]$SaveUserSettingsFile=$null,
+
     [Switch]$Settings=$true,
 
     [String]$SettingsFile='DevCheck-Settings.ps1',
@@ -139,6 +150,10 @@ Param(
     [Switch]$StopTAEFService=$false,
 
     [Switch]$SyncDependencies=$false,
+
+    [Switch]$UserSettings=$true,
+
+    [String]$UserSettingsFile='DevCheck-UserSettings.ps1',
 
     [Switch]$Verbose=$false
 )
@@ -226,21 +241,100 @@ function Set-Settings
 # Copyright (c) Microsoft Corporation and Contributors.
 # Licensed under the MIT License.
 
-# Do not alter contents except in the User Personalization block
+# DevCheck Settings
+
+# Do not alter contents except in the Customization block
 # Everything else is owned by DevCheck and subject to change without warning
 
 $me = (Get-Item $PSScriptRoot ).FullName
-Write-Verbose "$me BEGIN User Personalization"
+Write-Verbose "$me BEGIN Customization"
 #-----------------------------------------------------------------------
-# BEGIN User Personalization
-#...insert user personalization here...
-# END   User Personalization
+# BEGIN Customization
+#...insert customization here...
+# END   Customization
 #-----------------------------------------------------------------------
 $me = (Get-Item $PSScriptRoot ).FullName
-Write-Verbose "$me END User Personalization"
+Write-Verbose "$me END Customization"
 '@
 
     Write-Host "Saving settings file $($file)..."
+    Set-Content -Path $file -Value $content -Encoding utf8
+    return $file
+}
+
+function Get-UserSettingsFile
+{
+    if ([string]::IsNullOrEmpty($UserSettingsFile))
+    {
+        return $null
+    }
+
+    $file = [IO.Path]::GetFullPath($UserSettingsFile)
+    if (-not(Test-Path -Path $file -PathType Leaf))
+    {
+        $root = Get-ProjectRoot
+        $userdir = Join-Path $root '.user'
+        $file = Join-Path $userdir $UserSettingsFile
+        if (-not(Test-Path -Path $file -PathType Leaf))
+        {
+            return $null
+        }
+    }
+    return $file
+}
+
+function Get-UserSettings
+{
+    if ($UserSettings -eq $false)
+    {
+        return $null
+    }
+
+    $settings_file = Get-UserSettingsFile $true
+    if ([string]::IsNullOrEmpty($settings_file))
+    {
+        return $null
+    }
+
+    $file = [IO.Path]::GetFullPath($settings_file)
+    if (-not(Test-Path -Path $file -PathType Leaf))
+    {
+        $root = Get-ProjectRoot
+        $userdir = Join-Path $root '.user'
+        $file = Join-Path $userdir $settings_file
+        if (-not(Test-Path -Path $file -PathType Leaf))
+        {
+            return $null
+        }
+    }
+    Write-Host "Loading user settings file $($file)..."
+    $null = . $file
+    Write-Host "Loaded user settings file $($file)"
+    return $file
+}
+
+function Set-UserSettings
+{
+    $file = $SaveUserSettingsFile
+    if ([string]::IsNullOrEmpty($file))
+    {
+        return $null
+    }
+
+    if (Test-Path -Path $file)
+    {
+        Write-Host "ERROR: -SaveUserSettings file exists; will not overwrite $($file)" -ForegroundColor Red -BackgroundColor Black
+        $ERROR_ALREADY_EXISTS = 183
+        Exit $ERROR_ALREADY_EXISTS
+    }
+
+    $content = @'
+# DevCheck User Settings
+
+#...insert user customization here...
+'@
+
+    Write-Host "Saving user settings file $($file)..."
     Set-Content -Path $file -Value $content -Encoding utf8
     return $file
 }
@@ -1475,7 +1569,9 @@ function Get-SystemInfo
 }
 
 $null = Set-Settings
+$null = Set-UserSettings
 $null = Get-Settings
+$null = Get-UserSettings
 
 $remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
 if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAEFService -eq $false) -And
