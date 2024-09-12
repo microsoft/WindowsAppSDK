@@ -53,13 +53,25 @@
     Download and use the latest vswhere.exe on the network
 
 .PARAMETER RemoveAll
-    Remove all.
+    Remove all
 
 .PARAMETER RemoveTestCert
     Remove the Test certificate (i.e. undoc CheckTestCert)
 
 .PARAMETER RemoveTestPfx
     Remove the MSIX Test signing certificate (i.e. undoc CheckTestPfx)
+
+.PARAMETER SaveSettingsFile
+    Save settings file
+
+.PARAMETER SaveUserSettingsFile
+    Save settings file
+
+.PARAMETER Settings
+    Load settings file
+
+.PARAMETER SettingsFile
+    Settings file to load (if present). Relative filenames are resolved to .user directory. Default="DevCheck-Settings.ps1"
 
 .PARAMETER ShowSystemInfo
     Display system information
@@ -72,6 +84,12 @@
 
 .PARAMETER SyncDependencies
     Update dependencies (*proj, packages.config, eng\Version.*.props) to match defined dependencies (eng\Version.*.xml)
+
+.PARAMETER UserSettings
+    Load settings file
+
+.PARAMETER UserSettingsFile
+    Settings file to load (if present). Relative filenames are resolved to .user directory.
 
 .PARAMETER Verbose
     Display detailed information
@@ -117,6 +135,14 @@ Param(
 
     [Switch]$RemoveTestPfx=$false,
 
+    [String]$SaveSettingsFile=$null,
+
+    [String]$SaveUserSettingsFile=$null,
+
+    [Switch]$Settings=$true,
+
+    [String]$SettingsFile='DevCheck-Settings.ps1',
+
     [Switch]$ShowSystemInfo=$false,
 
     [Switch]$StartTAEFService=$false,
@@ -124,6 +150,10 @@ Param(
     [Switch]$StopTAEFService=$false,
 
     [Switch]$SyncDependencies=$false,
+
+    [Switch]$UserSettings=$true,
+
+    [String]$UserSettingsFile='DevCheck-UserSettings.ps1',
 
     [Switch]$Verbose=$false
 )
@@ -139,17 +169,174 @@ $global:isadmin = $null
 $global:vswhere = ''
 $global:vswhere_url = ''
 
-$remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
-if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAEFService -eq $false) -And
-    ($StopTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And
-    ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And
-    ($CheckDeveloperMode -eq $false) -And ($ShowSystemInfo -eq $false))
+$global:dependency_paths = ('dev', 'test', 'installer', 'tools')
+
+function Get-SettingsFile
 {
-    $CheckAll = $true
+    if ([string]::IsNullOrEmpty($SettingsFile))
+    {
+        return $null
+    }
+
+    $file = [IO.Path]::GetFullPath($SettingsFile)
+    if (-not(Test-Path -Path $file -PathType Leaf))
+    {
+        $root = Get-ProjectRoot
+        $userdir = Join-Path $root '.user'
+        $file = Join-Path $userdir $SettingsFile
+        if (-not(Test-Path -Path $file -PathType Leaf))
+        {
+            return $null
+        }
+    }
+    return $file
 }
-if ($SyncDependencies -eq $true)
+
+function Get-Settings
 {
-    $CheckDependencies = $true
+    if ($Settings -eq $false)
+    {
+        return $null
+    }
+
+    $settings_file = Get-SettingsFile $true
+    if ([string]::IsNullOrEmpty($settings_file))
+    {
+        return $null
+    }
+
+    $file = [IO.Path]::GetFullPath($settings_file)
+    if (-not(Test-Path -Path $file -PathType Leaf))
+    {
+        $root = Get-ProjectRoot
+        $userdir = Join-Path $root '.user'
+        $file = Join-Path $userdir $settings_file
+        if (-not(Test-Path -Path $file -PathType Leaf))
+        {
+            return $null
+        }
+    }
+    Write-Host "Loading settings file $($file)..."
+    $null = . $file
+    Write-Host "Loaded settings file $($file)"
+    return $file
+}
+
+function Set-Settings
+{
+    $file = $SaveSettingsFile
+    if ([string]::IsNullOrEmpty($file))
+    {
+        return $null
+    }
+
+    if (Test-Path -Path $file)
+    {
+        Write-Host "ERROR: -SaveSettings file exists; will not overwrite $($file)" -ForegroundColor Red -BackgroundColor Black
+        $ERROR_ALREADY_EXISTS = 183
+        Exit $ERROR_ALREADY_EXISTS
+    }
+
+    $content = @'
+# Copyright (c) Microsoft Corporation and Contributors.
+# Licensed under the MIT License.
+
+# DevCheck Settings
+
+# Do not alter contents except in the Customization block
+# Everything else is owned by DevCheck and subject to change without warning
+
+$me = (Get-Item $PSScriptRoot ).FullName
+Write-Verbose "$me BEGIN Customization"
+#-----------------------------------------------------------------------
+# BEGIN Customization
+#...insert customization here...
+# END   Customization
+#-----------------------------------------------------------------------
+$me = (Get-Item $PSScriptRoot ).FullName
+Write-Verbose "$me END Customization"
+'@
+
+    Write-Host "Saving settings file $($file)..."
+    Set-Content -Path $file -Value $content -Encoding utf8
+    return $file
+}
+
+function Get-UserSettingsFile
+{
+    if ([string]::IsNullOrEmpty($UserSettingsFile))
+    {
+        return $null
+    }
+
+    $file = [IO.Path]::GetFullPath($UserSettingsFile)
+    if (-not(Test-Path -Path $file -PathType Leaf))
+    {
+        $root = Get-ProjectRoot
+        $userdir = Join-Path $root '.user'
+        $file = Join-Path $userdir $UserSettingsFile
+        if (-not(Test-Path -Path $file -PathType Leaf))
+        {
+            return $null
+        }
+    }
+    return $file
+}
+
+function Get-UserSettings
+{
+    if ($UserSettings -eq $false)
+    {
+        return $null
+    }
+
+    $settings_file = Get-UserSettingsFile $true
+    if ([string]::IsNullOrEmpty($settings_file))
+    {
+        return $null
+    }
+
+    $file = [IO.Path]::GetFullPath($settings_file)
+    if (-not(Test-Path -Path $file -PathType Leaf))
+    {
+        $root = Get-ProjectRoot
+        $userdir = Join-Path $root '.user'
+        $file = Join-Path $userdir $settings_file
+        if (-not(Test-Path -Path $file -PathType Leaf))
+        {
+            return $null
+        }
+    }
+    Write-Host "Loading user settings file $($file)..."
+    $null = . $file
+    Write-Host "Loaded user settings file $($file)"
+    return $file
+}
+
+function Set-UserSettings
+{
+    $file = $SaveUserSettingsFile
+    if ([string]::IsNullOrEmpty($file))
+    {
+        return $null
+    }
+
+    if (Test-Path -Path $file)
+    {
+        Write-Host "ERROR: -SaveUserSettings file exists; will not overwrite $($file)" -ForegroundColor Red -BackgroundColor Black
+        $ERROR_ALREADY_EXISTS = 183
+        Exit $ERROR_ALREADY_EXISTS
+    }
+
+    $content = @'
+# DevCheck User Settings
+
+#...insert user customization here...
+'@
+
+    Write-Host "Saving user settings file $($file)..."
+    Set-Content -Path $file -Value $content -Encoding utf8
+    return $file
 }
 
 function Write-Verbose
@@ -1296,7 +1483,7 @@ function Test-Dependencies
     # Scan for references - packages.config
     $root = Get-ProjectRoot
     $files = 0
-    ForEach ($subtree in 'dev', 'test', 'installer', 'tools')
+    ForEach ($subtree in $global:dependency_paths)
     {
         $path = Join-Path $root $subtree
         Write-Host "Scanning packages.config..."
@@ -1309,7 +1496,7 @@ function Test-Dependencies
     Write-Host "Scanned $($files) packages.config"
 
     $files = 0
-    ForEach ($subtree in 'dev', 'test', 'installer', 'tools')
+    ForEach ($subtree in $global:dependency_paths)
     {
         $path = Join-Path $root $subtree
         Write-Host "Scanning *.vcxproj..."
@@ -1379,6 +1566,24 @@ function Get-SystemInfo
     Write-Host "LCU Version     : $($lcuver)"
 
     Write-Host "Powershell      : $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)"
+}
+
+$null = Set-Settings
+$null = Set-UserSettings
+$null = Get-Settings
+$null = Get-UserSettings
+
+$remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
+if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($StartTAEFService -eq $false) -And
+    ($StopTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And
+    ($CheckVisualStudio -eq $false) -And ($CheckDependencies -eq $false) -And ($SyncDependencies -eq $false) -And
+    ($CheckDeveloperMode -eq $false) -And ($ShowSystemInfo -eq $false))
+{
+    $CheckAll = $true
+}
+if ($SyncDependencies -eq $true)
+{
+    $CheckDependencies = $true
 }
 
 Write-Output "Checking developer environment..."
