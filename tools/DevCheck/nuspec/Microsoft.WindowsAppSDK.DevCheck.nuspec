@@ -7,7 +7,7 @@
     <authors>Microsoft</authors>
     <owners>Microsoft</owners>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <license type="file">license.txt</license>
+    <license type="file">LICENSE</license>
     <projectUrl>https://github.com/microsoft/windowsappsdk</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/microsoft/WindowsAppSDK/main/assets/WindowsAppSDK64.png</iconUrl>
     <description>DevCheck for WindowsAppSDK </description>

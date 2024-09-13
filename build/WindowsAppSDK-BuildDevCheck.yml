@@ -55,9 +55,9 @@ extends:
         - task: CopyFiles@2
           displayName: 'Add License.txt to Nuget'
           inputs:
-            SourceFolder: '$(Build.SourcesDirectory)\tools\DevCheck\nuspec'
+            SourceFolder: '$(Build.SourcesDirectory)'
             Contents: |
-             license.txt
+              LICENSE
             TargetFolder: '$(Build.SourcesDirectory)\PackLocation'
             flattenFolders: false
 
