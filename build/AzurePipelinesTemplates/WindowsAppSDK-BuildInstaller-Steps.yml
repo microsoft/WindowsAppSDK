@@ -62,7 +62,7 @@ steps:
   displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
   inputs:
     targetType: filePath
-    filePath: $(foundationRepoPath)eng\common\DevCheck.ps1
+    filePath: $(foundationRepoPath)tools\DevCheck\DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
     workingDirectory: '$(Build.SourcesDirectory)'
 
@@ -70,7 +70,7 @@ steps:
   displayName: 'Install test certificate for MSIX test packages (DevCheck)'
   inputs:
     targetType: filePath
-    filePath: $(foundationRepoPath)eng\common\DevCheck.ps1
+    filePath: $(foundationRepoPath)tools\DevCheck\DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -CheckTestCert
     workingDirectory: '$(Build.SourcesDirectory)'
 
@@ -257,7 +257,7 @@ steps:
   displayName: 'Remove test certificate for MSIX test packages (DevCheck)'
   inputs:
     targetType: filePath
-    filePath: $(foundationRepoPath)eng\common\DevCheck.ps1
+    filePath: $(foundationRepoPath)tools\DevCheck\DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -RemoveTestCert -RemoveTestPfx
     workingDirectory: '$(Build.SourcesDirectory)'
 
