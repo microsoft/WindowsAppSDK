@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.WinAppSDK.DevCheck</id>
+    <version>0.0.0.0</version>
+    <title>Microsoft WindowsAppSDK DevCheck</title>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="file">license.txt</license>
+    <projectUrl>https://github.com/microsoft/windowsappsdk</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/microsoft/WindowsAppSDK/main/assets/WindowsAppSDK64.png</iconUrl>
+    <description>DevCheck for WindowsAppSDK </description>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <tags>Windows,Windows App SDK,DevCheck</tags>
+  </metadata>
+</package>
