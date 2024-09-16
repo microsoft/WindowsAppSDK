@@ -132,6 +132,11 @@ Size aspectRatio = new Size(16, 9);
 dialog.PhotoSettings.CroppedAspectRatio = aspectRatio;
 
 StorageFile file = await dialog.CaptureFileAsync(CameraCaptureUIMode.Photo);
+if(file != null)
+{
+    // The user didn't cancel
+    this.ProcessFile(file);
+}
 ```
 Screenshot of the UI:
 
