@@ -112,20 +112,27 @@ to grant more access than provided by default.
 
 The path for a package family's "Machine Folder" is located at `%ProgramData%\Microsoft\Windows\AppRepository\Families\ApplicationData\...packagefamilyname...\Machine`.
 
-This directory is ACL'd similarly to a package's System Metadata directory (`%ProgramData%\Microsoft\Windows\AppRepository\Packages\...pkgfullname...`) e.g.
+This directory's ACL = `prefix + appxmanifest + suffix` where
+
+* **prefix** = "D:AI(A;OICI;GA;;;S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464)(A;OICI;GA;;;SY)"
+* **appxmanifest** = optional SDDL per `<appdata:MachineFolder Sddl="sdd"/>` in  appxmanifes.xml
+* **suffix** = "(A;OICI;FRFX;;;BA)S:"
+
+Thus the ACL has a Discretionary Access Control List (DACL) granting full control to Trusted
+Installer (S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464) and LocalSystem  so
+Windows can manage the directory, plus additional ACEs (if specified in the package's
+appxmanifest.xml) and FILE_READ and FILE_EXECUTE rights to Built-in administrators (unless denied by
+ACEs in appxmanifest).
+
+For example, if no additional ACEs are specified in appxmanifest.xml the Machine Folder is ACL'd as
 
 ```
-BUILTIN\Users:(OI)(CI)(Rc,S,RD,REA,X,RA)
-S-1-15-3-xxxx:(OI)(CI)(RX)              // Package capability SID
-BUILTIN\Users:(OI)(CI)(R)
 NT SERVICE\TrustedInstaller:(I)(F)
 NT SERVICE\TrustedInstaller:(I)(CI)(IO)(F)
 NT AUTHORITY\SYSTEM:(I)(F)
 NT AUTHORITY\SYSTEM:(I)(OI)(CI)(IO)(F)
 BUILTIN\Administrators:(I)(RX)
 BUILTIN\Administrators:(I)(OI)(CI)(IO)(GR,GE)
-S-1-15-3-xxxx:(I)(RX)                   // Package capability SID
-S-1-15-3-xxxx:(I)(OI)(CI)(IO)(GR,GE)    // Package group capability SID
 ```
 
 ### 3.4.2. Manifested Opt-In
