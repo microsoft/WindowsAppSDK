@@ -1173,7 +1173,7 @@ HRESULT MddBootstrapInitialize_ShowUI_OnNoMatch(
 
     // Get the message body
     WCHAR text[1024]{};
-    PCWSTR textFormat{ L"This application requires the Windows App Runtime\n"
+    PCWSTR textFormat{ L"Required components of the Windows App Runtime are missing\n"
                        L"    Version %hu.%hu%s\n"
                        L"    (MSIX package version >= %hu.%hu.%hu.%hu)\n"
                        L"\n"
