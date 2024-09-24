@@ -11,7 +11,7 @@ variables:
   NUGET_XMLDOC_MODE: none
 
   # Docker image which is used to build the project https://aka.ms/obpipelines/containers
-  WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2019/vse2022:latest'
+  WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2019/vse2022@sha256:ac667f8d65f2c8b99daa6b7dc78c099a9caf1c6c527116df4527567d9af18647'
 
   Codeql.Enabled: true #  CodeQL runs every 3 days on the default branch for all languages its applicable to in that pipeline.
 
