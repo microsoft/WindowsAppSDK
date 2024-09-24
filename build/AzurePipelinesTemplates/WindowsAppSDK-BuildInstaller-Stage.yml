@@ -2,6 +2,7 @@
 # The actual installer is built with the Aggregator build
 stages:
 - stage: Installer
+  dependsOn: []
   jobs:
   - job: BuildInstaller
     dependsOn: []
@@ -28,5 +29,6 @@ stages:
       # foundationRepoPath should be empty because we are not doing multiple checkouts hence
       # it is not under $(Build.SourcesDirectory)\WindowsAppSDK
       foundationRepoPath: ""
+    condition: ne(variables.LatestOfficialBuildID, '')
     steps:
     - template: WindowsAppSDK-BuildInstaller-Steps.yml@self

@@ -24,8 +24,9 @@ steps:
       targetPath: '$(System.ArtifactsDirectory)'
 - ${{ else }}:
   ###
-  # This step downloads the WindowsAppSDK NuGet package from last successful or failed build of the Aggregator's Nightly build
-  # for use in building the installers
+  # This step downloads the WindowsAppSDK NuGet package from a pipeline
+  # variables: OfficialPipelineID LatestOfficialBuildID
+  # for use in building the Installers
   - task: DownloadPipelineArtifact@2
     displayName: 'Download WindowsAppSDK From Latest Nightly'
     inputs:
@@ -33,11 +34,8 @@ steps:
       targetPath: '$(System.ArtifactsDirectory)'
       source: 'specific'
       project: $(System.TeamProjectId)
-      allowPartiallySucceededBuilds: True
-      allowFailedBuilds: True
-      pipeline: 118002         
-      runVersion: 'latestFromBranch'
-      runBranch: "refs/heads/main"
+      pipeline: $(OfficialPipelineID) 
+      pipelineId: $(LatestOfficialBuildID) 
 
 ###
 # Install the internal licensing support for release-signed packages. This can always be present in
@@ -64,7 +62,7 @@ steps:
   displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
   inputs:
     targetType: filePath
-    filePath: $(foundationRepoPath)eng\common\DevCheck.ps1
+    filePath: $(foundationRepoPath)tools\DevCheck\DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
     workingDirectory: '$(Build.SourcesDirectory)'
 
@@ -72,7 +70,7 @@ steps:
   displayName: 'Install test certificate for MSIX test packages (DevCheck)'
   inputs:
     targetType: filePath
-    filePath: $(foundationRepoPath)eng\common\DevCheck.ps1
+    filePath: $(foundationRepoPath)tools\DevCheck\DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -CheckTestCert
     workingDirectory: '$(Build.SourcesDirectory)'
 
@@ -211,6 +209,7 @@ steps:
     solution: $(foundationRepoPath)installer\dev\WindowsAppRuntimeInstall.vcxproj
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    msbuildArgs: /binaryLogger:$(ob_outputDirectory)\binlogs\WindowsAppRuntimeInstall.$(buildPlatform).$(buildConfiguration).binlog
     ${{ if eq( parameters.runStaticAnalysis, 'True') }}:
       createLogFile: true
 
@@ -235,11 +234,10 @@ steps:
     failOnAlert: true
 
 - ${{ if eq(parameters.IsOneBranch, 'true') }}:
-  - template: ${{variables['System.DefaultWorkingDirectory']}}\build\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml
+  - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
     parameters:
       SearchPattern: '$(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall\*.pdb'
       IsOfficial: ${{ parameters.IsOfficial }}
-      PublishPublicSymbolsPowershellPath: '$(Build.SourcesDirectory)\$(foundationRepoPath)eng\common\Scripts\PublishPublicSymbols.ps1'
 
 - ${{ if eq(parameters.SignOutput, 'true') }}:
   - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
@@ -259,7 +257,7 @@ steps:
   displayName: 'Remove test certificate for MSIX test packages (DevCheck)'
   inputs:
     targetType: filePath
-    filePath: $(foundationRepoPath)eng\common\DevCheck.ps1
+    filePath: $(foundationRepoPath)tools\DevCheck\DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -RemoveTestCert -RemoveTestPfx
     workingDirectory: '$(Build.SourcesDirectory)'
 

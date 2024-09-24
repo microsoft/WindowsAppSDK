@@ -13,11 +13,11 @@ variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
-- template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-GlobalVariables.yml
 
 stages:
-# Disabling this because it is sensitive to failures on the Aggregator Nightly Build
-# - template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Stage.yml@self
+- template: AzurePipelinesTemplates\WindowsAppSDK-BuildInstaller-Stage.yml@self
+
+- template: AzurePipelinesTemplates\WindowsAppSDK-BuildVSIX-Stage.yml@self
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
   parameters:

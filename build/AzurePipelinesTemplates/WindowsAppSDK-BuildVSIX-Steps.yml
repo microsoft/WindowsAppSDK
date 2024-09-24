@@ -1,0 +1,239 @@
+parameters:
+- name: SignOutput
+  type: boolean
+  default: False
+- name: IsOneBranch
+  type: boolean
+  default: False
+- name: IsOfficial
+  type: boolean
+  default: False 
+- name: runStaticAnalysis
+  type: boolean
+  default: True
+- name: UseCurrentBuild
+  type: boolean
+  default: False 
+- name: OptionalVSIXVersion
+  # if blank, the project template will select the version matching the Windows App SDK
+  # nuget. If provided, it should be a 4-part dotted version ('1.2.3.4')
+  type: string
+  default: 'default'
+- name: EnableExperimentalVSIXFeatures
+  type: boolean
+  default: False
+
+steps:
+- ${{ if eq(parameters.UseCurrentBuild, 'True') }}:
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download WindowsAppSDK From Current Build'
+    inputs:
+      artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
+      targetPath: '$(System.ArtifactsDirectory)'
+- ${{ else }}:
+  ###
+  # This step downloads the WindowsAppSDK NuGet package from a pipeline
+  # variables: OfficialPipelineID LatestOfficialBuildID
+  # for use in building the VSIX
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download WindowsAppSDK From Latest Nightly'
+    inputs:
+      artifactName: 'WindowsAppSDK_Nuget_And_MSIX'
+      targetPath: '$(System.ArtifactsDirectory)'
+      source: 'specific'
+      project: $(System.TeamProjectId)
+      pipeline: $(OfficialPipelineID) 
+      pipelineId: $(LatestOfficialBuildID) 
+    
+- task: PowerShell@2
+  name: ExtractWindowsAppSDKVersion
+  displayName: Extract WindowsAppSDKVersion
+  inputs:
+    targetType: 'inline'
+    script: |
+      Copy-Item -Path "$(System.ArtifactsDirectory)" -Destination "$(Build.SourcesDirectory)\temp" -Recurse
+
+      $files = Get-ChildItem $(Build.SourcesDirectory)\temp
+      foreach ($file in $files) # Iterate through each package we restored in the directory
+      {
+        Write-Host "file:" $file.FullName
+        $nupkgPaths = Get-ChildItem $file.FullName -Filter "*WindowsAppSDK*.nupkg"
+
+        # Extract nupkg to access the nuspec
+        # The files in this directory does not contain the nuspec by default
+        foreach ($nupkgPath in $nupkgPaths)
+        {
+          Write-Host "nupkgPath:" $nupkgPath.FullName
+          $rename = $nupkgPath.Name + ".zip"
+          Rename-Item $nupkgPath.FullName $rename
+          $renamedFilePath = $nupkgPath.FullName + ".zip"
+          $dest = $file.FullName + "/contents"
+          Expand-Archive $renamedFilePath -Destination $dest
+        }
+
+        $nuspecPaths = Get-ChildItem $file.FullName -Recurse -Filter "*.nuspec"
+        foreach ($nuspecPath in $nuspecPaths)
+        {
+          Write-Host "Found Nuspecs"
+          [xml]$nuspec = Get-Content -Path $nuspecPath.FullName
+          if ($nuspec.package.metadata.id -eq 'Microsoft.WindowsAppSDK')
+          {
+            $version = $nuspec.package.metadata.version
+            Write-Host "Found " $version
+            Write-Host "##vso[task.setvariable variable=WindowsAppSDKPackageVersion]$version"
+            Write-Host "##vso[task.setvariable variable=WindowsAppSDKPackageVersion;isOutput=true]$version"
+            Exit 0
+          }
+        }
+      }
+      Exit 1
+
+- task: NuGetToolInstaller@1
+
+- task: NuGetAuthenticate@1
+
+- task: VSBuild@1
+  displayName: 'Restore WindowsAppSDK.Extension.sln'
+  inputs:
+    solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
+    platform: 'Any CPU'
+    configuration: '$(buildConfiguration)'
+    msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:RestoreAdditionalProjectSources="$(System.ArtifactsDirectory)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"'
+
+- task: VSBuild@1
+  displayName: 'Build Standalone WindowsAppSDK.Extension.sln'
+  inputs:
+    solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
+    platform: 'Any CPU'
+    configuration: '$(buildConfiguration)'
+    msBuildArgs: '/p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /binaryLogger:$(ob_outputDirectory)\binlogs\StandaloneVSIX.binlog'
+    ${{ if eq( parameters.runStaticAnalysis, 'True') }}:
+      createLogFile: true
+
+- ${{ if eq(parameters.runStaticAnalysis, 'True') }}:
+  - task: SDLNativeRules@3
+    displayName: PREfast SDL Native Rules for Standalone WindowsAppSDK.Extension.sln
+    condition: and(succeeded(), eq(variables['buildConfiguration'], 'Release'))
+    inputs:
+      userProvideBuildInfo: auto
+      toolVersion: Latest
+      # Generally speaking, we leave it to the external repos to scan the bits in their packages.
+      excludedPaths: |
+        $(Build.SourcesDirectory)\packages
+    continueOnError: true
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+- task: VSBuild@1
+  displayName: 'Restore Component WindowsAppSDK.Extension.sln'
+  inputs:
+    solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
+    platform: 'Any CPU'
+    configuration: '$(buildConfiguration)'
+    msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:RestoreAdditionalProjectSources="$(System.ArtifactsDirectory)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"' 
+
+- task: VSBuild@1
+  displayName: 'Build Component WindowsAppSDK.Extension.sln'
+  inputs:
+    solution: $(FoundationRepoPath)dev\VSIX\WindowsAppSDK.Extension.sln
+    platform: 'Any CPU'
+    configuration: '$(buildConfiguration)'
+    msBuildArgs: '/restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="$(WindowsAppSDKPackageVersion)" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}" /p:Deployment="Component" /binaryLogger:$(ob_outputDirectory)\binlogs\ComponentVSIX.binlog'
+    ${{ if eq( parameters.runStaticAnalysis, 'True') }}:
+      createLogFile: true
+
+- ${{ if eq(parameters.runStaticAnalysis, 'True') }}:
+  - task: SDLNativeRules@3
+    displayName: PREfast SDL Native Rules for Component WindowsAppSDK.Extension.sln
+    condition: and(succeeded(), eq(variables['buildConfiguration'], 'Release'))
+    inputs:
+      userProvideBuildInfo: auto
+      toolVersion: Latest
+      # Generally speaking, we leave it to the external repos to scan the bits in their packages.
+      excludedPaths: |
+        $(Build.SourcesDirectory)\packages
+    continueOnError: true
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  displayName: 'Component Governance Detection'
+  inputs:
+    scanType: 'Register'
+    failOnAlert: true
+
+- ${{ if eq(parameters.SignOutput, False) }}:
+  - task: CopyFiles@2
+    displayName: 'Stage unsigned VSIX files for publishing'
+    inputs:
+      SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
+      Contents: '**/WindowsAppSDK.*.vsix'
+      flattenFolders: True
+      TargetFolder: '$(ob_outputDirectory)\VSIX'
+
+- ${{ if eq(parameters.SignOutput, True) }}:
+  - task: CopyFiles@2
+    displayName: 'Stage unsigned VSIX files for signing'
+    inputs:
+      SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
+      Contents: '**/WindowsAppSDK.*.vsix'
+      flattenFolders: True
+      TargetFolder: '$(Agent.TempDirectory)/UnsignedVSIX'
+
+  - template: WindowsAppSDK-SignPackageContents-steps.yml
+    parameters:
+      inputPackageDirectory: '$(Agent.TempDirectory)/UnsignedVSIX'
+      outputPackageDirectory: '$(ob_outputDirectory)'
+      packageType: 'vsix'
+      packages:
+        - WindowsAppSDK.Cpp.Extension.Dev17.Component.vsix
+        - WindowsAppSDK.Cs.Extension.Dev17.Component.vsix
+        - WindowsAppSDK.Cpp.Extension.Dev17.Standalone.vsix
+        - WindowsAppSDK.Cs.Extension.Dev17.Standalone.vsix
+      # Only sign binaries we produce
+      codeSignPattern: |
+        **/WindowsAppSDK.*.Extension.*.dll
+        
+- ${{ if eq(parameters.IsOneBranch, 'true') }}:
+  - template: ${{variables['System.DefaultWorkingDirectory']}}\AzurePipelinesTemplates\WindowsAppSDK-PublishSymbol-Steps.yml@WindowsAppSDKConfig
+    parameters:
+      SearchPattern: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\**\WindowsAppSDK*.pdb'
+      IsOfficial: ${{ parameters.IsOfficial }}
+
+- task: CopyFiles@2
+  displayName: 'Stage VSIX component JSONs'
+  inputs:
+    SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
+    Contents: '**/WindowsAppSDK*.pdb'
+    flattenFolders: True
+    TargetFolder: '$(ob_outputDirectory)\symbols'
+
+- task: CopyFiles@2
+  displayName: 'Stage VSIX component JSONs'
+  inputs:
+    SourceFolder: '$(FoundationRepoPath)dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
+    Contents: '**/WindowsAppSDK.*.Component.json'
+    flattenFolders: True
+    TargetFolder: '$(ob_outputDirectory)'
+
+- task: CopyFiles@2
+  displayName: 'Stage VSIX manifest'
+  inputs:
+    SourceFolder: '$(FoundationRepoPath)dev\VSIX'
+    Contents: 'extension.manifest.json'
+    flattenFolders: True
+    TargetFolder: '$(ob_outputDirectory)'
+
+- task: CopyFiles@2
+  displayName: 'Stage VSIX overview markdown'
+  inputs:
+    SourceFolder: '$(FoundationRepoPath)dev\VSIX'
+    Contents: 'overview.md'
+    flattenFolders: True
+    TargetFolder: '$(ob_outputDirectory)'
+
+- ${{ if ne(parameters.IsOneBranch, 'true') }}:
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(ob_outputDirectory)'
+      artifactName: '$(ob_artifactBaseName)'

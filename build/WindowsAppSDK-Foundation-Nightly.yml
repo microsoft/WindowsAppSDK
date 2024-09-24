@@ -23,7 +23,7 @@ trigger: none
 parameters:
 - name: "PublishToMaestro"
   type: boolean
-  default: False
+  default: True
 - name: "IgnoreFailures"
   type: boolean
   default: False
@@ -50,11 +50,12 @@ variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
 - template: WindowsAppSDK-Foundation-TestConfig.yml@WindowsAppSDKConfig
-- template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-GlobalVariables.yml
 
 extends:
   template: v2/Microsoft.NonOfficial.yml@templates # https://aka.ms/obpipelines/templates
   parameters:
+    featureFlags:
+      EnableCDPxPAT: false
     platform:
       name: 'windows_undocked' # windows undocked
 

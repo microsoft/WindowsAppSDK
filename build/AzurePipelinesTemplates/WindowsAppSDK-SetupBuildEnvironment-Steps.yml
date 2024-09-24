@@ -71,14 +71,14 @@ steps:
   displayName: 'DevCheck: Setup/Verify development environment'
   inputs:
     targetType: filePath
-    filePath: eng\common\DevCheck.ps1
+    filePath: tools\DevCheck\DevCheck.ps1
     arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies -ShowSystemInfo
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: PowerShell@2
   displayName: GenerateVersionInfo
   inputs:
-    filePath: '$(Build.SourcesDirectory)\eng\common\VersionInfo\GenerateVersionInfo.ps1'
+    filePath: '$(Build.SourcesDirectory)\build\VersionInfo\GenerateVersionInfo.ps1'
     arguments: >
       -ProductMajor "$(major)"
       -ProductMinor "$(minor)"
@@ -121,6 +121,14 @@ steps:
     targetType: filePath
     filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
     arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.h
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: powershell@2
+  displayName: 'Create ApplicationData TerminalVelocity features'
+  inputs:
+    targetType: filePath
+    filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+    arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-ApplicationData.xml -Channel $(channel) -Language C++ -Namespace Microsoft.Windows.Storage.ApplicationData -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-ApplicationData.h
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2
