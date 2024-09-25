@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
@@ -140,6 +140,12 @@
       <InProcessServer>
         <Path>Microsoft.WindowsAppRuntime.dll</Path>
         <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Power.PowerManager" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.WindowsAppRuntime.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Media.Capture.CameraCaptureUI" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.proxyStub">

@@ -1,0 +1,88 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Microsoft.Windows.Media.Capture
+{
+    [contractversion(1)]
+    apicontract CameraCaptureUIContract {};
+
+    [contract(CameraCaptureUIContract, 1)]
+    typedef enum CameraCaptureUIMode
+    {
+        PhotoOrVideo = 0,
+        Photo,
+        Video,
+    } CameraCaptureUIMode;
+
+    [contract(CameraCaptureUIContract, 1)]
+    typedef enum CameraCaptureUIPhotoFormat
+    {
+        Jpeg = 0,
+        Png,
+        JpegXR,
+    } CameraCaptureUIPhotoFormat;
+
+    [contract(CameraCaptureUIContract, 1)]
+    typedef enum CameraCaptureUIVideoFormat
+    {
+        Mp4 = 0,
+        Wmv,
+    } CameraCaptureUIVideoFormat;
+
+    [contract(CameraCaptureUIContract, 1)]
+    typedef enum CameraCaptureUIMaxVideoResolution
+    {
+        HighestAvailable = 0,
+        LowDefinition,
+        StandardDefinition,
+        HighDefinition,
+    } CameraCaptureUIMaxVideoResolution;
+
+    [contract(CameraCaptureUIContract, 1)]
+    typedef enum CameraCaptureUIMaxPhotoResolution
+    {
+        HighestAvailable = 0,
+        VerySmallQvga,
+        SmallVga,
+        MediumXga,
+        Large3M,
+        VeryLarge5M,
+    } CameraCaptureUIMaxPhotoResolution;
+
+    [contract(CameraCaptureUIContract, 1)]
+    runtimeclass CameraCaptureUIPhotoCaptureSettings
+    {
+        CameraCaptureUIPhotoCaptureSettings();
+
+        Boolean AllowCropping;
+        Windows.Foundation.Size CroppedAspectRatio;
+        Windows.Foundation.Size CroppedSizeInPixels;
+        Microsoft.Windows.Media.Capture.CameraCaptureUIPhotoFormat Format;
+        Microsoft.Windows.Media.Capture.CameraCaptureUIMaxPhotoResolution MaxResolution;
+    }
+
+    [contract(CameraCaptureUIContract, 1)]
+    runtimeclass CameraCaptureUIVideoCaptureSettings
+    {
+        CameraCaptureUIVideoCaptureSettings();
+
+        Boolean AllowTrimming;
+        Microsoft.Windows.Media.Capture.CameraCaptureUIVideoFormat Format;
+        Single MaxDurationInSeconds;
+        Microsoft.Windows.Media.Capture.CameraCaptureUIMaxVideoResolution MaxResolution;
+    }
+
+    [contract(CameraCaptureUIContract, 1)]
+    [threading(sta),
+    marshaling_behavior(none)]
+    runtimeclass CameraCaptureUI
+    {
+    CameraCaptureUI(Windows.UI.WindowId window);
+    //CameraCaptureUI(Microsoft.UI.WindowId window);
+
+    CameraCaptureUIPhotoCaptureSettings PhotoSettings{ get; };
+    CameraCaptureUIVideoCaptureSettings VideoSettings{ get; };
+
+    Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> CaptureFileAsync(Microsoft.Windows.Media.Capture.CameraCaptureUIMode mode);
+};
+}

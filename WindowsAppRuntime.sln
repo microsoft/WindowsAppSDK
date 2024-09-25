@@ -529,6 +529,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PackageManager.Test.M.White
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PackageManager.Test.M.White.msix", "test\PackageManager\data\PackageManager.Test.M.White.msix\PackageManager.Test.M.White.msix.vcxproj", "{28DCF9CE-D9F4-4A7D-8AD1-F2EFC0D3B4DF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Interop", "Interop", "{3B706C5C-55E0-4B76-BF59-89E20FE46795}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CameraCaptureUI", "CameraCaptureUI", "{0833D8EF-6E11-4133-B0EE-9B7625CD615E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CameraCaptureUI", "dev\Interop\CameraCaptureUI\CameraCaptureUI\CameraCaptureUI.vcxitems", "{95409D1E-843F-4316-8D8E-471B3E203F94}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CameraCaptureUITests", "test\CameraCaptureUITests\CameraCaptureUITests.vcxproj", "{41D05722-C673-49AB-B204-804461CDF213}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1871,6 +1879,22 @@ Global
 		{28DCF9CE-D9F4-4A7D-8AD1-F2EFC0D3B4DF}.Release|x64.Build.0 = Release|x64
 		{28DCF9CE-D9F4-4A7D-8AD1-F2EFC0D3B4DF}.Release|x86.ActiveCfg = Release|Win32
 		{28DCF9CE-D9F4-4A7D-8AD1-F2EFC0D3B4DF}.Release|x86.Build.0 = Release|Win32
+		{41D05722-C673-49AB-B204-804461CDF213}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{41D05722-C673-49AB-B204-804461CDF213}.Debug|Any CPU.Build.0 = Debug|x64
+		{41D05722-C673-49AB-B204-804461CDF213}.Debug|ARM64.ActiveCfg = Debug|x64
+		{41D05722-C673-49AB-B204-804461CDF213}.Debug|ARM64.Build.0 = Debug|x64
+		{41D05722-C673-49AB-B204-804461CDF213}.Debug|x64.ActiveCfg = Debug|x64
+		{41D05722-C673-49AB-B204-804461CDF213}.Debug|x64.Build.0 = Debug|x64
+		{41D05722-C673-49AB-B204-804461CDF213}.Debug|x86.ActiveCfg = Debug|Win32
+		{41D05722-C673-49AB-B204-804461CDF213}.Debug|x86.Build.0 = Debug|Win32
+		{41D05722-C673-49AB-B204-804461CDF213}.Release|Any CPU.ActiveCfg = Release|x64
+		{41D05722-C673-49AB-B204-804461CDF213}.Release|Any CPU.Build.0 = Release|x64
+		{41D05722-C673-49AB-B204-804461CDF213}.Release|ARM64.ActiveCfg = Release|x64
+		{41D05722-C673-49AB-B204-804461CDF213}.Release|ARM64.Build.0 = Release|x64
+		{41D05722-C673-49AB-B204-804461CDF213}.Release|x64.ActiveCfg = Release|x64
+		{41D05722-C673-49AB-B204-804461CDF213}.Release|x64.Build.0 = Release|x64
+		{41D05722-C673-49AB-B204-804461CDF213}.Release|x86.ActiveCfg = Release|Win32
+		{41D05722-C673-49AB-B204-804461CDF213}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2033,6 +2057,10 @@ Global
 		{7C240089-0F22-4247-9C91-51255C8DC18B} = {6213B1A3-E854-498F-AAFA-4CFC1E71023E}
 		{AC79B8FF-4C27-4326-AD20-BBC70059FF51} = {7C240089-0F22-4247-9C91-51255C8DC18B}
 		{28DCF9CE-D9F4-4A7D-8AD1-F2EFC0D3B4DF} = {6759ECC6-9381-4172-89E6-853F81A03D28}
+		{3B706C5C-55E0-4B76-BF59-89E20FE46795} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{0833D8EF-6E11-4133-B0EE-9B7625CD615E} = {3B706C5C-55E0-4B76-BF59-89E20FE46795}
+		{95409D1E-843F-4316-8D8E-471B3E203F94} = {0833D8EF-6E11-4133-B0EE-9B7625CD615E}
+		{41D05722-C673-49AB-B204-804461CDF213} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
@@ -2052,6 +2080,7 @@ Global
 		dev\Licensing\Licensing.vcxitems*{885a43fa-052d-4b0d-a2dc-13ee15796435}*SharedItemsImports = 9
 		dev\PackageManager\API\PackageManager.vcxitems*{8a9a0c85-65a8-4bca-a49e-45fc4fdbc7d2}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{8e52d7ea-a200-4a6b-ba74-8efb49468caf}*SharedItemsImports = 4
+		dev\Interop\CameraCaptureUI\CameraCaptureUI\CameraCaptureUI.vcxitems*{95409d1e-843f-4316-8d8e-471b3e203f94}*SharedItemsImports = 9
 		dev\AppNotifications\AppNotifications.vcxitems*{b4824897-88e0-4927-8fb9-e60106f01ed9}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{b567fe2e-3a03-48d0-b2b5-760cdec35891}*SharedItemsImports = 9
 		dev\ApplicationData\ApplicationData.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
