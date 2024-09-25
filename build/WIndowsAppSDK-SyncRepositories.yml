@@ -33,8 +33,27 @@ jobs:
   - checkout: InternalWindowsAppSDK
     persistCredentials: true
 
-  - template: AzurePipelinesTemplates/WindowsAppSDK-SyncMirror-Steps.yml@WindowsAppSDKConfig
-    parameters:
-      SourceRepository: "https://github.com/microsoft/WindowsAppSDK.git"
-      TargetBranch: $(TargetBranch)
-      SourceBranch: $(SourceBranch)
+  - task: powershell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+        Write-Host "Sourcebranch " + "$(SourceBranch)"
+        Write-Host "TargetBranch " + "$(TargetBranch)"
+
+        $repo = "https://github.com/microsoft/WindowsAppSDK.git"
+        git remote add mirror $repo
+        git remote
+
+        $target = "$(TargetBranch)"
+        git fetch origin $target
+        git checkout $target
+        git pull origin $target
+
+        $source = "$(SourceBranch)"
+        git fetch mirror $source
+        git pull mirror $source
+
+  - task: CmdLine@2
+    inputs:
+      script: |
+        git push
