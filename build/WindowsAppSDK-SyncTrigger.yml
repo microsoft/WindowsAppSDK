@@ -13,12 +13,6 @@ resources:
 
 jobs:
 - job: SyncMirror
-  strategy:
-    matrix:
-      ${{ each branches in parameters.SourceToTargetBranch }}:
-        ${{ branches.key }}:
-          SourceBranch: ${{ branches.key }}
-          TargetBranch: ${{ branches.value }}
   dependsOn: []
   pool: 'ProjectReunionESPool-2022'
   steps:
