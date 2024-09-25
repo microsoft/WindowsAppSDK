@@ -6,10 +6,6 @@ resources:
       type: git
       name: ProjectReunion/WindowsAppSDK
       ref: refs/heads/main
-    - repository: WindowsAppSDKConfig
-      type: git
-      name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/main
 
 jobs:
 - job: SyncMirror
