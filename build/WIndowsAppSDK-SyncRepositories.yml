@@ -1,0 +1,50 @@
+name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+parameters:
+- name: "SourceToTargetBranch"
+  type: object
+  default:
+    main: main
+    release/1.4-stable: release/1.4-stable
+    release/1.5-stable: release/1.5-stable
+    release/1.6-stable: release/1.6-stable
+
+resources:
+  repositories:
+    - repository: InternalRepo
+      type: git
+      name: ProjectReunion/WindowsAppSDK
+      ref: refs/heads/main
+
+jobs:
+- job: SyncMirror
+  strategy:
+    matrix:
+      ${{ each branches in parameters.SourceToTargetBranch }}:
+        ${{ branches.key }}:
+          SourceBranch: ${{ branches.key }}
+          TargetBranch: ${{ branches.value }}
+  dependsOn: []
+  pool: 'ProjectReunionESPool-2022'
+  steps:
+  - checkout: InternalRepo
+    persistCredentials: true
+
+  - task: powershell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+        Write-Host "Sourcebranch " + "$(SourceBranch)"
+        Write-Host "TargetBranch " + "$(TargetBranch)"
+
+        $repo = "https://github.com/microsoft/WindowsAppSDK.git"
+        git remote add mirror $repo
+        git remote
+
+        $target = "$(TargetBranch)"
+        git fetch origin $target
+        git checkout $target
+        git pull origin $target
+
+        $source = "$(SourceBranch)"
+        git fetch mirror $source
+        git pull mirror $source
