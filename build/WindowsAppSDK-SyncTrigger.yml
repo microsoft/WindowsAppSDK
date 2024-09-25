@@ -19,7 +19,7 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        $branch = "$(Build.SourceBranch)".Replace("refs/heads", "")
+        $branch = "$(Build.SourceBranch)".Replace("refs/heads/", "")
         Write-Host "Sourcebranch " + $branch
         Write-Host "TargetBranch " + $branch
 
