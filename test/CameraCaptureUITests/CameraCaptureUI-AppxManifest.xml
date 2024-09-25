@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
@@ -8,19 +9,18 @@
   IgnorableNamespaces="uap uap5 com rescap">
 
   <Identity
-    Name="WindowsAppRuntime.Test.CameraCaptureUITest"
+    Name="WindowsAppRuntime.Test.CameraCaptureUI"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
-    Version="1.0.0.0" />
+    Version="4.1.1967.333" />
 
   <Properties>
-    <DisplayName>WindowsAppRuntime.Test.CameraCaptureUITest for tests</DisplayName>
+    <DisplayName>WindowsAppRuntime.Test.CameraCaptureUI for tests</DisplayName>
     <PublisherDisplayName>Windows APP SDK</PublisherDisplayName>
     <Logo>taef.png</Logo>
   </Properties>
 
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
     <PackageDependency Name="Microsoft.WindowsAppRuntime.Framework-4.1" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
   </Dependencies>
 
@@ -33,10 +33,10 @@
       Executable="Te.ProcessHost.uap.exe"
       EntryPoint="ProcessHostApplication">
       <uap:VisualElements
-        DisplayName="WindowsAppRuntime.Test.CameraCaptureUITest"
+        DisplayName="WindowsAppRuntime.Test.CameraCaptureUI"
         Square150x150Logo="taef.png"
         Square44x44Logo="taef.png"
-        Description="WindowsAppRuntime.Test.CameraCaptureUITest Test App"
+        Description="WindowsAppRuntime.Test.CameraCaptureUI Test App"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="taef.png"/>
         <uap:SplashScreen Image="taef.png" uap5:Optional="true"/>
@@ -45,9 +45,9 @@
   </Applications>
 
   <Capabilities>
-    <rescap:Capability Name="runFullTrust" />
     <rescap:Capability Name="packageManagement" />
     <rescap:Capability Name="packageQuery" />
     <rescap:Capability Name="webcam" />
+    <rescap:Capability Name="runFullTrust" />
   </Capabilities>
 </Package>

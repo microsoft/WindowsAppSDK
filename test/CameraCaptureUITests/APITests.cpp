@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
+#include "pch.h"
 #include "winrt\Microsoft.Windows.Media.Capture.h"
 #include <thread>
 #include <future>
@@ -19,14 +20,15 @@ using namespace winrt::Windows::Storage;
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
 
-
 namespace CameraCaptureUITests
 {
-    class CameraCaptureUITest
+    // Timeout in milliseconds
+    class APITests
     {
     public:
-        BEGIN_TEST_CLASS(CameraCaptureUITest)
+        BEGIN_TEST_CLASS(APITests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
             TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
             TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"CameraCaptureUI-AppxManifest.xml")
             END_TEST_CLASS()
@@ -58,8 +60,6 @@ namespace CameraCaptureUITests
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             return true;
         }
-
-
         TEST_METHOD(CapturePhoto_ShouldReturnFile)
         {
             try
@@ -174,7 +174,7 @@ namespace CameraCaptureUITests
         //    // Assert
         //    VERIFY_IS_NOT_NULL(photo);
         //}
-        
+
         // Verify requested JPEG photo format is read correctly
         //TEST_METHOD(VerifyRequestedJpegPhotoFormatIsReadCorrectly)
         //{
