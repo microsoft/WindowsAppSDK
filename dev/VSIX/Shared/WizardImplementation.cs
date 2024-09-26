@@ -29,7 +29,6 @@ namespace WindowsAppSDK.TemplateUtilities
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             _componentModel = (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
-            _waitDialog = ServiceProvider.GlobalProvider.GetService(typeof(SVsThreadedWaitDialog)) as IVsThreadedWaitDialog2;
             if (_componentModel != null)
             {
                 _nugetProjectUpdateEvents = _componentModel.GetService<IVsNuGetProjectUpdateEvents>();
@@ -38,6 +37,13 @@ namespace WindowsAppSDK.TemplateUtilities
                     _nugetProjectUpdateEvents.SolutionRestoreFinished += OnSolutionRestoreFinished;
                 }
             }
+
+            _waitDialog = ServiceProvider.GlobalProvider.GetService(typeof(SVsThreadedWaitDialog)) as IVsThreadedWaitDialog2;
+            if (_waitDialog == null)
+            {
+                LogError("GetService SVsThreadedWaitDialog returned NULL.");
+            }
+
             // Assuming package list is passed via a custom parameter in the .vstemplate file
             if (replacementsDictionary.TryGetValue("$NuGetPackages$", out string packages))
             {
