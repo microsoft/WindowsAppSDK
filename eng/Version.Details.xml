@@ -35,6 +35,10 @@
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
       <Sha>9fc686e177ad7d642136baec8877694e731550a1</Sha>
     </Dependency>
+    <Dependency Name="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="1.7.0-CI-26107.1716.240904-1440.0">
+      <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
+      <Sha>943a920dac1612ac395a09f42af287a08e6eddac</Sha>
+    </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
     <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.6.240418">

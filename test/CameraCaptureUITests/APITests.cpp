@@ -65,7 +65,7 @@ namespace CameraCaptureUITests
             try
             {
                 auto parentWindow = ::GetForegroundWindow();
-                winrt::Windows::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+                winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
                 winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI(windowId);
                 // Configure Photo Settings
                 cameraUI.PhotoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg);

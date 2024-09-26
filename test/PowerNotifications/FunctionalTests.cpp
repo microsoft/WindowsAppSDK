@@ -1,9 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
+// Copyright (c) Microsoft Corporation and Contributors. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
 #include "winrt/Microsoft.Windows.System.Power.h"
-
 using namespace std::chrono_literals;
 using namespace winrt::Microsoft::Windows::System::Power;
 
