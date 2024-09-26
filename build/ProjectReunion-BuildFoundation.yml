@@ -21,14 +21,14 @@ stages:
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-Build-Stage.yml@self
   parameters:
-    SignOutput: False
-    IsOneBranch: False
+    SignOutput: false
+    IsOneBranch: false
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-Test-Stage.yml@self
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-PackTransportPackage-Stage.yml@self
   parameters:
-    SignOutput: False
-    PublishPackage: False
-    IsOneBranch: False
-    BuildMockWindowsAppSDK: False
+    SignOutput: false
+    PublishPackage: false
+    IsOneBranch: false
+    BuildMockWindowsAppSDK: false

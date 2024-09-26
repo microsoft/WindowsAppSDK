@@ -1,7 +1,7 @@
 parameters:
 - name: "IsOneBranch"
   type: boolean
-  default: True
+  default: true
 
 steps:
 - task: UseDotNet@2

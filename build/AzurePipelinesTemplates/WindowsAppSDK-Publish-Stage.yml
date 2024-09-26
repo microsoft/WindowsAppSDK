@@ -1,10 +1,10 @@
 parameters:
 - name: "PublishToMaestro"
   type: boolean
-  default: True
+  default: true
 - name: "IgnoreFailures"
   type: boolean
-  default: True
+  default: true
 stages:
 - stage: Publish
   dependsOn:
