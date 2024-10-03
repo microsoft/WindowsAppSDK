@@ -39,47 +39,51 @@ and OAuth 2.0 for Native Apps [RFC 8252](https://tools.ietf.org/html/rfc8252).
 
  ## Perform OAuth 2.0 (c#)
 
- Performing an Authorization Code Request
+ Performing an Authorization Code Request (grant type/'response_type' = "code")
 
  ```c#
-auto requestParams = AuthRequestParams::CreateForAuthorizationCodeRequest(L"my_client_id",
+AuthRequestParams requestParams = AuthRequestParams::CreateForAuthorizationCodeRequest(L"my_client_id",
     Uri(L"my-app:/oauth-callback/"));
 requestParams.Scope(L"user:email user:birthday");
 
-auto requestResult = co_await AuthManager::InitiateAuthRequest(
+AuthRequestResult authRequestResult = co_await AuthManager::InitiateAuthRequestAsync(
     Uri(L"https://my.server.com/oauth/authorize"), requestParams);
-if (auto response = requestResult.Response())
+if (AuthResponse authResponse = authRequestResult.Response())
 {
-    DoTokenExchange(response);
+    //To obtain the authorization code
+    //authResponse.Code();
+
+    //To obtain the access token
+    DoTokenExchange(authResponse);
 }
 else
 {
-    auto failure = requestResult.Failure();
-    NotifyFailure(failure.Error(), failure.ErrorDescription());
+    AuthFailure authFailure = authRequestResult.Failure();
+    NotifyFailure(authFailure.Error(), authFailure.ErrorDescription());
 }
 ```
 
-Exchanging an Authorization Code for an Access Token
+Exchanging an Authorization Code for an Access Token (grant type/'response_type' = "code")
 
 ```c#
-AuthResponse authResponse = authResult.Response();
-auto tokenParams = TokenRequestParams::CreateForAuthorizationCodeRequest(authResponse);
-auto clientAuth = ClientAuthentication::CreateForBasicAuthorization(L"my_client_id",
+AuthResponse authResponse = authRequestResult.Response();
+TokenRequestParams tokenRequestParams = TokenRequestParams::CreateForAuthorizationCodeRequest(authResponse);
+ClientAuthentication clientAuth = ClientAuthentication::CreateForBasicAuthorization(L"my_client_id",
     L"my_client_secret");
 
-auto tokenResult = co_await AuthManager::RequestTokenAsync(
-    Uri(L"https://my.server.com/oauth/token"), tokenParams, clientAuth);
-if (auto response = tokenResult.Response())
+TokenRequestResult tokenRequestResult = co_await AuthManager::RequestTokenAsync(
+    Uri(L"https://my.server.com/oauth/token"), tokenRequestParams, clientAuth);
+if (TokenResponse tokenResponse = tokenRequestResult.Response())
 {
-    auto authToken = tokenResult.Token();
-    auto tokenType = tokenResult.TokenType();
+    String accessToken = tokenResponse.AccessToken();
+    String tokenType = tokenResponse.TokenType();
 
     // RefreshToken string null/empty when not present
-    if (auto refreshToken = tokenResult.RefreshToken(); !refreshToken.empty())
+    if (String refreshToken = tokenResponse.RefreshToken(); !refreshToken.empty())
     {
         // ExpiresIn is zero when not present
         DateTime expires = winrt::clock::now();
-        if (auto expiresIn = tokenResult.ExpiresIn(); expiresIn != 0)
+        if (String expiresIn = tokenResponse.ExpiresIn(); expiresIn != 0)
         {
             expires += std::chrono::seconds(static_cast<int64_t>(expiresIn));
         }
@@ -89,34 +93,55 @@ if (auto response = tokenResult.Response())
             expires += std::chrono::hours(1);
         }
 
+        //Schedule a refresh of the access token
         myAppState.ScheduleRefreshAt(expires, refreshToken);
     }
 
-    DoRequestWithToken(authToken, tokenType);
+    // Use the access token for resources
+    DoRequestWithToken(accessToken, tokenType);
 }
 else
 {
-    auto failure = tokenResult.Failure();
-    NotifyFailure(failure.Error(), failure.ErrorDescription());
+    TokenFailure tokenFailure = tokenRequestResult.Failure();
+    NotifyFailure(tokenFailure.Error(), tokenFailure.ErrorDescription());
 }
 ```
 
 Refreshing an Access Token
 
 ```c#
-auto tokenParams = TokenRequestParams::CreateForRefreshToken(myRefreshToken);
-auto clientAuth = ClientAuthentication::CreateForBasicAuthorization(L"my_client_id",
+TokenRequestParams tokenRequestParams = TokenRequestParams::CreateForRefreshToken(refreshToken);
+ClientAuthentication clientAuth = ClientAuthentication::CreateForBasicAuthorization(L"my_client_id",
     L"my_client_secret");
-auto tokenResult = co_await AuthManager::RequestTokenAsync(
-    Uri(L"https://my.server.com/oauth/token"), tokenParams, clientAuth));
-if (auto response = tokenResult.Response())
+TokenRequestResult tokenRequestResult = co_await AuthManager::RequestTokenAsync(
+    Uri(L"https://my.server.com/oauth/token"), tokenRequestParams, clientAuth));
+if (TokenResponse tokenResponse = tokenRequestResult.Response())
 {
-    UpdateToken(tokenResult.Token(), tokenResult.TokenType(), tokenResult.ExpiresIn());
+    UpdateToken(tokenResponse.AccessToken(), tokenResponse.TokenType(), tokenResponse.ExpiresIn());
+
+    //Store new refresh token if present
+    if (String refreshToken = tokenResponse.RefreshToken(); !refreshToken.empty())
+    {
+        // ExpiresIn is zero when not present
+        DateTime expires = winrt::clock::now();
+        if (String expiresIn = tokenResponse.ExpiresIn(); expiresIn != 0)
+        {
+            expires += std::chrono::seconds(static_cast<int64_t>(expiresIn));
+        }
+        else
+        {
+            // Assume a duration of one hour
+            expires += std::chrono::hours(1);
+        }
+
+        //Schedule a refresh of the access token
+        myAppState.ScheduleRefreshAt(expires, refreshToken);
+    }
 }
 else
 {
-    auto failure = tokenResult.Failure();
-    NotifyFailure(failure.Error(), failure.ErrorDescription());
+    TokenFailure tokenFailure = tokenRequestResult.Failure();
+    NotifyFailure(tokenFailure.Error(), tokenFailure.ErrorDescription());
 }
 ```
 
@@ -336,7 +361,7 @@ It's a class that provides the response of a token request.
 
 | Name | Description | Type |
 |-|-|-|
-| Token | Derived from the "access_token" parameter of the token response. | String |
+| AccessToken | Derived from the "access_token" parameter of the token response. | String |
 | TokenType | Derived from the "token_type" parameter of the token response. | String |
 | ExpiresIn | Derived from the "expires_in" parameter of the token response. | String |
 | RefreshToken | Derived from the "refresh_token" parameter of the token response. | String |
