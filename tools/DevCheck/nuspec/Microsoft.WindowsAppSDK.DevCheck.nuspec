@@ -12,6 +12,6 @@
     <iconUrl>https://raw.githubusercontent.com/microsoft/WindowsAppSDK/main/assets/WindowsAppSDK64.png</iconUrl>
     <description>DevCheck for WindowsAppSDK </description>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
-    <tags>Windows,Windows App SDK,DevCheck</tags>
+    <tags>Windows "Windows App SDK" DevCheck</tags>
   </metadata>
 </package>

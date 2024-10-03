@@ -114,7 +114,7 @@ configuration:
       - isAction:
           action: Created
       - isActivitySender:
-          issueAuthor: True
+          issueAuthor: true
       - hasLabel:
           label: needs-author-feedback
       - isAssignedToSomeone
@@ -131,7 +131,7 @@ configuration:
       - isAction:
           action: Created
       - isActivitySender:
-          issueAuthor: True
+          issueAuthor: true
       - hasLabel:
           label: needs-author-feedback
       - not: isAssignedToSomeone
@@ -161,7 +161,7 @@ configuration:
       - isAction:
           action: Created
       - isActivitySender:
-          issueAuthor: True
+          issueAuthor: true
       - hasLabel:
           label: needs-author-feedback
       - isOpen

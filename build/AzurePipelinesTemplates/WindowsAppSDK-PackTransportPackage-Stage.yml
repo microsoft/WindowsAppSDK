@@ -1,19 +1,19 @@
 parameters:
 - name: "PublishPackage"
   type: boolean
-  default: True
+  default: true
 - name: "SignOutput"
   type: boolean
-  default: True
+  default: true
 - name: "IsOneBranch"
   type: boolean
-  default: True
+  default: true
 - name: "IsOfficial"
   type: boolean
-  default: False
+  default: false
 - name: "BuildMockWindowsAppSDK"
   type: boolean
-  default: True
+  default: true
 
 stages:
 - stage: Pack
