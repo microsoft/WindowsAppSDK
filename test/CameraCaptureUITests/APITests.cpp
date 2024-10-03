@@ -96,115 +96,96 @@ namespace CameraCaptureUITests
                 VERIFY_FAIL(L"Standard exception occurred during photo capture.");
             }
         }
+        TEST_METHOD(VerifyRequestedPhotoFormatsAreReadCorrectly)
+        {
+            // Arrange
+            auto parentWindow = ::GetForegroundWindow();
+            winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+            winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI(windowId);
+
+            // Act and Assert for JPEG format
+            cameraUI.PhotoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg);
+            VERIFY_ARE_EQUAL(static_cast<int>(cameraUI.PhotoSettings().Format()), static_cast<int>(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg));
+
+            // Act and Assert for JPEG XR format
+            cameraUI.PhotoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::JpegXR);
+            VERIFY_ARE_EQUAL(static_cast<int>(cameraUI.PhotoSettings().Format()), static_cast<int>(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::JpegXR));
+
+            // Act and Assert for PNG format
+            cameraUI.PhotoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Png);
+            VERIFY_ARE_EQUAL(static_cast<int>(cameraUI.PhotoSettings().Format()), static_cast<int>(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Png));
+        }
 
 
+        TEST_METHOD(VerifyRequestedVideoFormatsAreReadCorrectly)
+        {
+            // Arrange
+            auto parentWindow = ::GetForegroundWindow();
+            winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+            winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI(windowId);
 
-        //TEST_METHOD(VerifyPhotoFileTokenRedeemedForFile)
-        //{
-        //    // Arrange
-        //    winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI({ 12345 });
+            // Act and Assert for MP4 format
+            cameraUI.VideoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIVideoFormat::Mp4);
+            VERIFY_ARE_EQUAL(static_cast<int>(cameraUI.VideoSettings().Format()), static_cast<int>(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIVideoFormat::Mp4));
 
-        //    // Act
-        //    // Set either a fixed size or an aspect ratio, but not both
-        //    //cameraUI.PhotoSettings().CroppedAspectRatio({ 16, 9 });
+            // Act and Assert for WMV format
+            cameraUI.VideoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIVideoFormat::Wmv);
+            VERIFY_ARE_EQUAL(static_cast<int>(cameraUI.VideoSettings().Format()), static_cast<int>(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIVideoFormat::Wmv));
+        }
+        TEST_METHOD(VerifyMaxVideoResolutionValues)
+        {
+            // Arrange
+            auto parentWindow = ::GetForegroundWindow();
+            winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+            winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI(windowId);
 
-        //    //cameraUI.PhotoSettings().Format(winrt::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg);
-        //    cameraUI.PhotoSettings().AllowCropping(false);
-        //    auto file = cameraUI.CaptureFileAsync(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMode::Photo);
-        //    auto photo = file.get();
+            // Act and Assert for Highest Available resolution
+            cameraUI.VideoSettings().MaxResolution(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxVideoResolution::HighestAvailable);
+            VERIFY_ARE_EQUAL(static_cast<int>(cameraUI.VideoSettings().MaxResolution()), static_cast<int>(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxVideoResolution::HighestAvailable));
 
-        //    // Assert
-        //    VERIFY_IS_NOT_NULL(photo);
-        //}
+            // Act and Assert for Low Definition resolution
+            cameraUI.VideoSettings().MaxResolution(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxVideoResolution::LowDefinition);
+            VERIFY_ARE_EQUAL(static_cast<int>(cameraUI.VideoSettings().MaxResolution()), static_cast<int>(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxVideoResolution::LowDefinition));
 
-        //TEST_METHOD(VerifyParameterValidationFailsIfCropAspectRatioDefinedWhenCroppingDisabled)
-        //{
-        //    // Arrange
-        //    winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI({ 12345 });
-        //    cameraUI.PhotoSettings().AllowCropping(true);
-        //    cameraUI.PhotoSettings().CroppedAspectRatio({ 16, 9 });
-        //    cameraUI.PhotoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg);
+            // Act and Assert for Standard Definition resolution
+            cameraUI.VideoSettings().MaxResolution(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxVideoResolution::StandardDefinition);
+            VERIFY_ARE_EQUAL(static_cast<int>(cameraUI.VideoSettings().MaxResolution()), static_cast<int>(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxVideoResolution::StandardDefinition));
 
-        //    // Act and Assert
+            // Act and Assert for High Definition resolution
+            cameraUI.VideoSettings().MaxResolution(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxVideoResolution::HighDefinition);
+            VERIFY_ARE_EQUAL(static_cast<int>(cameraUI.VideoSettings().MaxResolution()), static_cast<int>(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxVideoResolution::HighDefinition));
+        }
 
-        //    auto file = cameraUI.CaptureFileAsync(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMode::Photo);
-        //    auto photo = file.get();
-        //    VERIFY_IS_NOT_NULL(photo);
+        TEST_METHOD(VerifyMaxPhotoResolutionValues)
+        {
+            // Arrange
+            auto parentWindow = ::GetForegroundWindow();
+            winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
+            winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI(windowId);
 
-        //}
+            // Act and Assert for Highest Available resolution
+            cameraUI.PhotoSettings().MaxResolution(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::HighestAvailable);
+            VERIFY_ARE_EQUAL(static_cast<int>(cameraUI.PhotoSettings().MaxResolution()), static_cast<int>(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::HighestAvailable));
 
-        //TEST_METHOD(VerifyVideoFileTokenRedeemedForFile)
-        //{
-        //    // Arrange
-        //    winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI({ 12345 });
+            // Act and Assert for Very Small QVGA resolution
+            cameraUI.PhotoSettings().MaxResolution(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::VerySmallQvga);
+            VERIFY_ARE_EQUAL(static_cast<int>(cameraUI.PhotoSettings().MaxResolution()), static_cast<int>(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::VerySmallQvga));
 
-        //    // Act
-        //    // Set either a fixed size or an aspect ratio, but not both
-        //    cameraUI.VideoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIVideoFormat::Mp4);
-        //    cameraUI.VideoSettings().AllowTrimming(false);
+            // Act and Assert for Small VGA resolution
+            cameraUI.PhotoSettings().MaxResolution(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::SmallVga);
+            VERIFY_ARE_EQUAL(static_cast<int>(cameraUI.PhotoSettings().MaxResolution()), static_cast<int>(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::SmallVga));
 
-        //    auto file = cameraUI.CaptureFileAsync(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMode::Video);
-        //    auto video = file.get();
+            // Act and Assert for Medium XGA resolution
+            cameraUI.PhotoSettings().MaxResolution(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::MediumXga);
+            VERIFY_ARE_EQUAL(static_cast<int>(cameraUI.PhotoSettings().MaxResolution()), static_cast<int>(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::MediumXga));
 
-        //    // Assert
-        //    VERIFY_IS_NOT_NULL(video);
-        //}
+            // Act and Assert for Large 3M resolution
+            cameraUI.PhotoSettings().MaxResolution(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::Large3M);
+            VERIFY_ARE_EQUAL(static_cast<int>(cameraUI.PhotoSettings().MaxResolution()), static_cast<int>(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::Large3M));
 
-        //TEST_METHOD(VerifyPhotoFileTokenRedeemedForFileCroppingdisabled)
-        //{
-        //    // Arrange
-        //    winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI({ 12345 });
-
-        //    // Act
-        //    // Set either a fixed size or an aspect ratio, but not both
-        //    //cameraUI.PhotoSettings().CroppedAspectRatio({ 16, 9 });
-
-        //    cameraUI.PhotoSettings().AllowCropping(true);
-        //    cameraUI.PhotoSettings().CroppedSizeInPixels({ 1920, 1080 });
-        //    cameraUI.PhotoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg);
-        //    cameraUI.PhotoSettings().MaxResolution(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::HighestAvailable);
-
-        //    cameraUI.VideoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIVideoFormat::Mp4);
-        //    cameraUI.VideoSettings().AllowTrimming(true);
-
-        //    auto file = cameraUI.CaptureFileAsync(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMode::PhotoOrVideo);
-        //    auto photo = file.get();
-
-        //    // Assert
-        //    VERIFY_IS_NOT_NULL(photo);
-        //}
-
-        // Verify requested JPEG photo format is read correctly
-        //TEST_METHOD(VerifyRequestedJpegPhotoFormatIsReadCorrectly)
-        //{
-        //    // Arrange
-        //    winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI({ 12345 });
-        //    cameraUI.PhotoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg);
-
-        //    // Act and Assert
-        //    VERIFY_ARE_EQUAL(cameraUI.PhotoSettings().Format(), L".jpg");
-        //}   
-
-        //// Verify requested JPEG XR photo format is read correctly
-        //TEST_METHOD(VerifyRequestedJpegXRPhotoFormatIsReadCorrectly)
-        //{
-        //    // Arrange
-        //    winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI({ 12345 });
-        //    cameraUI.PhotoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::JpegXR);
-
-        //    // Act and Assert
-        //    VERIFY_ARE_EQUAL(cameraUI.PhotoSettings().Format(), L".jxr");
-        //}
-
-        //// Verify requested PNG photo format is read correctly
-        //TEST_METHOD(VerifyRequestedPngPhotoFormatIsReadCorrectly)
-        //{
-        //    // Arrange
-        //    winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI({ 12345 });
-        //    cameraUI.PhotoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Png);
-
-        //    // Act and Assert
-        //    VERIFY_ARE_EQUAL(cameraUI.PhotoSettings().Format(), L".png");
-        //}
+            // Act and Assert for Very Large 5M resolution
+            cameraUI.PhotoSettings().MaxResolution(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::VeryLarge5M);
+            VERIFY_ARE_EQUAL(static_cast<int>(cameraUI.PhotoSettings().MaxResolution()), static_cast<int>(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::VeryLarge5M));
+        }
     };
 }
