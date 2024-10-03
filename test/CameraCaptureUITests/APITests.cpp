@@ -59,6 +59,8 @@ namespace CameraCaptureUITests
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             return true;
         }
+        // The unit tests will be updated,first test might is there for testing purpose locally.
+        // Focusing solely on functional tests for now. 
         TEST_METHOD(CapturePhoto_ShouldReturnFile)
         {
             try
