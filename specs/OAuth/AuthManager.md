@@ -252,13 +252,13 @@ response_type is described in section 3.1.1 of [RFC 6749](https://www.rfc-editor
 
 | Name | Description | Type |
 |-|-|-|
-| ResponseType | Specifies the required "response_type" parameter of the authorization request described by section 3.1.1 of [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749.html#section-3.1.1). | String |
-| ClientId | Specifies the required "client_id" parameter of the authorization request described by section 2.2 of [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749.html#section-2.2). | String |
-| RedirectUri | Specifies the optional "redirect_uri" parameter of the authorization request described by section 3.1.2 of [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749.html#section-3.1.2). | Windows.Foundation.Uri |
-| State | Specifies the recommended "state" parameter of the authorization request. | String |
-| Scope | Specifies the optional "scope" parameter of the authorization request described by section 3.3 [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749#section-3.3). | String |
-| CodeVerifier | Used as the PKCE code verifier. | String |
-| CodeChallengeMethod | Specifies the optional "code_challenge_method" parameter of the authorization request. | CodeChallengeMethodKind |
+| ResponseType | Specifies the required "response_type" parameter of the authorization request described by the section 3.1.1 of [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749.html#section-3.1.1). | String |
+| ClientId | Specifies the required "client_id" parameter of the authorization request described by the section 2.2 of [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749.html#section-2.2). | String |
+| RedirectUri | Specifies the optional "redirect_uri" parameter of the authorization request described by the section 3.1.2 of [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749.html#section-3.1.2). | Windows.Foundation.Uri |
+| State | Specifies the recommended "state" parameter of the authorization request described in section 4.1.1 of [RFC 6749] (https://www.rfc-editor.org/rfc/rfc6749#section-4.1.1) | String |
+| Scope | Specifies the optional "scope" parameter of the authorization request described by the section 3.3 of [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749#section-3.3). | String |
+| CodeChallenge | Used as the PKCE code_challenge described by the section 4.2 [RFC 7636](https://www.rfc-editor.org/rfc/rfc7636#section-4.2). | String |
+| CodeChallengeMethod | Specifies the optional "code_challenge_method" parameter of the authorization request described by the section 4.3 [RFC 7636](https://www.rfc-editor.org/rfc/rfc7636#section-4.3). | CodeChallengeMethodKind |
 | AdditionalParams | Additional parameters passed along in the query string of the request URL. | Windows.Foundation.Collections.IMap<String, String> |
 
 ## AuthRequestResult class
@@ -275,7 +275,7 @@ It's a class that provides the result of an authorization request.
 
 ## AuthResponse class
 
-It's a class that provides the response of an authorization request.
+It's a class that provides the response of an authorization request described by the section section 4.1.2 and 4.2.2 of [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749.html#section-4.1.2).
 
 ## AuthResponse Properties
 
@@ -285,13 +285,15 @@ It's a class that provides the response of an authorization request.
 | Code | Derived from the "code" parameter of the authorization response. | String |
 | AccessToken | Derived from the "access_token" parameter of the authorization response. This is available when ResponseType in AuthRequestParams is set as 'token'. | String |
 | TokenType | Derived from the "token_type" parameter of the authorization response. This is available when ResponseType in AuthRequestParams is set as 'token'. | String |
-| ExpiresIn | Derived from the "expires_in" parameter of the authorization response. This is available when ResponseType in AuthRequestParams is set as 'token'. | String |
+| ExpiresIn | Derived from the "expires_in" parameter of the authorization response. It's the lieftime of access token in seconds. This is available when ResponseType in AuthRequestParams is set as 'token'. | String |
 | Scope | Derived from the "scope" parameter of the authorization response. This is available when ResponseType in AuthRequestParams is set as 'token'. | String |
 | AdditionalParams | Additional parameters set by the authorization server in the response URI. | Windows.Foundation.Collections.IMapView<String, String> |
 
 ## AuthFailure class
 
 It's a class that provides the failure object of an authorization request.
+
+> Note: It's null in case of a valid AuthResponse, and available in case of a failure.
 
 ## AuthFailure Properties
 
@@ -306,7 +308,7 @@ It's a class that provides the failure object of an authorization request.
 
 ## TokenRequestParams class
 
-It's a class that provides methods to create a token request parameter object.
+It's a class that provides methods to create a token request parameter object. This is described by the section 4.1.3 of [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749.html#section-4.1.3).
 
 > Note: This object is used to request access_token from the server.
 
@@ -355,7 +357,7 @@ It's a class that provides the result of a token request.
 
 ## TokenResponse class
 
-It's a class that provides the response of a token request.
+It's a class that provides the response of a token request. This is described by the section 4.1.4 and 4.2.2 of [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749.html#section-4.1.4).
 
 ## TokenResponse Properties
 
@@ -363,7 +365,7 @@ It's a class that provides the response of a token request.
 |-|-|-|
 | AccessToken | Derived from the "access_token" parameter of the token response. | String |
 | TokenType | Derived from the "token_type" parameter of the token response. | String |
-| ExpiresIn | Derived from the "expires_in" parameter of the token response. | String |
+| ExpiresIn | Derived from the "expires_in" parameter of the token response.  It's the lieftime of access token in seconds. | String |
 | RefreshToken | Derived from the "refresh_token" parameter of the token response. | String |
 | Scope | Derived from the "scope" parameter of the token response. | String |
 | AdditionalParams | Additional parameters set by the authorization server in the response URI. | Windows.Foundation.Collections.IMapView<String, String> |
@@ -535,7 +537,7 @@ namespace Microsoft.Windows.Security.Authentication.OAuth
         //
         // Defined by RFC 7636: Proof Key for Code Exchange by OAuth Public Clients, section 4.1
         //      https://www.rfc-editor.org/rfc/rfc7636#section-4.1
-        String CodeVerifier { get; set; };
+        String CodeChallenge { get; set; };
 
         // Specifies the optional "code_challenge_method" parameter of the authorization request. For authorization code
         // requests, this value defaults to 'S256'. For implicit requests, this value defaults to 'None' and cannot be
