@@ -24,7 +24,7 @@ parameters: # parameters are shown up in ADO UI in a build queue time
 - name: runStaticAnalysis
   displayName: "Run Static Analysis (e.g., PREFast, APIScan)"
   type: boolean
-  default: True
+  default: true
 
 resources:
   repositories:
@@ -64,7 +64,7 @@ extends:
         enabled: true
         break: true
       prefast:
-        ${{ if eq(parameters.runStaticAnalysis, 'True') }}:
+        ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
           enabled: true
         ${{ else }}:
           enabled: false

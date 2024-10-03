@@ -87,6 +87,7 @@ if(-not (test-path "$buildOverridePath"))
 
 Try {
     $WindowsAppSDKBuildPipeline = 0
+    $WindowsAppSDKVersionProperty = ""
 
     .\tools\GenerateDynamicDependencyOverrides.ps1 -Path "$buildOverridePath"
     .\tools\GeneratePushNotificationsOverrides.ps1 -Path "$buildOverridePath"

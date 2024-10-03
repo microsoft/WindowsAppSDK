@@ -1,13 +1,13 @@
 parameters:
 - name: "SignOutput"
   type: boolean
-  default: False
+  default: false
 - name: "IsOneBranch"
   type: boolean
-  default: True
+  default: true
 - name: runStaticAnalysis
   type: boolean
-  default: True
+  default: true
 
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
@@ -29,7 +29,7 @@ steps:
     filePath: 'BuildAll.ps1'
     arguments: -Platform "$(buildPlatform)" -Configuration "$(buildConfiguration)" -AzureBuildStep "BuildMRT"
 
-- ${{ if eq(parameters.runStaticAnalysis, 'True') }}:
+- ${{ if eq(parameters.runStaticAnalysis, 'true') }}:
   - task: SDLNativeRules@3
     displayName: Run PREfast SDL Native Rules
     condition: and(succeeded(), eq(variables['buildPlatform'], 'x64'), eq(variables['buildConfiguration'], 'Release'))
