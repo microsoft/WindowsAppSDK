@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)CameraCaptureUI.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CameraCaptureUIPhotoCaptureSettings.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CameraCaptureUITelemetry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CameraCaptureUIVideoCaptureSettings.h" />
   </ItemGroup>
   <ItemGroup>

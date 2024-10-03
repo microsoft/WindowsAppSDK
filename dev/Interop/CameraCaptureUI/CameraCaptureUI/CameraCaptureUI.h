@@ -5,7 +5,7 @@
 #include "CameraCaptureUIPhotoCaptureSettings.h"
 #include "CameraCaptureUIVideoCaptureSettings.h"
 #include "winrt/Microsoft.UI.h"
-
+#include "TelemetryHelper.h"
 
 
 namespace winrt::Microsoft::Windows::Media::Capture::implementation
@@ -36,6 +36,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> CaptureFileAsync(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMode mode);
 
     private:
+        TelemetryHelper m_telemetryHelper;
         winrt::Microsoft::UI::WindowId m_windowId;
         token_and_path m_photoTokenFile;
         token_and_path m_videoTokenFile;

@@ -28,6 +28,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NotificationTelemetryHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PropertyHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Security.IntegrityLevel.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TelemetryHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.SelfContained.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.VersionInfo.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)winrt_WindowsAppRuntime.h" />

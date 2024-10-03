@@ -7,6 +7,8 @@
 #include <ShlObj.h>
 #include "CameraCaptureUI.h"
 #include "Microsoft.Windows.Media.Capture.CameraCaptureUI.g.cpp"
+#include "CameraCaptureUITelemetry.h"
+#include "TelemetryHelper.h"
 
 //using namespace winrt::Windows::Media::Capture;
 using namespace winrt::Windows::UI;
@@ -58,10 +60,12 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
 
     IAsyncOperation<StorageFile> CameraCaptureUI::CaptureFileAsync(CameraCaptureUIMode mode)
     {
+        bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
+        PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
         try
         {
             auto strong = get_strong();
-
+            CameraCaptureUITelemetry::CaptureInitiated(isAppPackaged, appName);
             bool addPicker = false;
             const wchar_t* mediaType = nullptr;
             if (mode == CameraCaptureUIMode::PhotoOrVideo)
@@ -110,25 +114,31 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
             {
                 co_return nullptr;
             }
-            else if (tokenValue == m_photoTokenFile.token)
+            StorageFile file = nullptr;
+
+            if (tokenValue == m_photoTokenFile.token)
             {
-                co_return co_await StorageFile::GetFileFromPathAsync(m_photoTokenFile.path);
+                file = co_await StorageFile::GetFileFromPathAsync(m_photoTokenFile.path);
             }
             else if (tokenValue == m_videoTokenFile.token)
             {
-                co_return co_await StorageFile::GetFileFromPathAsync(m_videoTokenFile.path);
+                file = co_await StorageFile::GetFileFromPathAsync(m_videoTokenFile.path);
             }
             else
             {
-                co_return co_await SharedStorageAccessManager::RedeemTokenForFileAsync(tokenValue);
+                file = co_await SharedStorageAccessManager::RedeemTokenForFileAsync(tokenValue);
             }
+            CameraCaptureUITelemetry::CaptureSuccessful(isAppPackaged, appName);
+            co_return file;
         }
         catch (const hresult_error& ex)
         {
+            CameraCaptureUITelemetry::CaptureError(isAppPackaged, appName, ex.code());
             throw ex;
         }
         catch (const std::exception& ex)
         {
+            CameraCaptureUITelemetry::CaptureError(isAppPackaged, appName, E_FAIL);
             throw hresult_error(E_FAIL);
         }
     }
