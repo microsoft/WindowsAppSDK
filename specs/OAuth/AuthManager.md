@@ -42,12 +42,12 @@ and OAuth 2.0 for Native Apps [RFC 8252](https://tools.ietf.org/html/rfc8252).
  Performing an Authorization Code Request (grant type/'response_type' = "code")
 
  ```c#
-AuthRequestParams requestParams = AuthRequestParams::CreateForAuthorizationCodeRequest(L"my_client_id",
+AuthRequestParams authRequestParams = AuthRequestParams::CreateForAuthorizationCodeRequest(L"my_client_id",
     Uri(L"my-app:/oauth-callback/"));
-requestParams.Scope(L"user:email user:birthday");
+authRequestParams.Scope(L"user:email user:birthday");
 
 AuthRequestResult authRequestResult = co_await AuthManager::InitiateAuthRequestAsync(
-    Uri(L"https://my.server.com/oauth/authorize"), requestParams);
+    Uri(L"https://my.server.com/oauth/authorize"), authRequestParams);
 if (AuthResponse authResponse = authRequestResult.Response())
 {
     //To obtain the authorization code
@@ -107,7 +107,7 @@ else
 }
 ```
 
-Refreshing an Access Token
+Refreshing an Access Token (grant type/'response_type' = "code")
 
 ```c#
 TokenRequestParams tokenRequestParams = TokenRequestParams::CreateForRefreshToken(refreshToken);
@@ -145,6 +145,33 @@ else
 }
 ```
 
+Performing an Implicit Request for a token (grant type/'response_type' = "token")
+
+ ```c#
+AuthRequestParams authRequestParams = AuthRequestParams::CreateForImplicitRequest(L"my_client_id",
+    Uri(L"my-app:/oauth-callback/"));
+authRequestParams.Scope(L"user:email user:birthday");
+
+AuthRequestResult authRequestResult = co_await AuthManager::InitiateAuthRequestAsync(
+    Uri(L"https://my.server.com/oauth/authorize"), authRequestParams);
+if (AuthResponse authResponse = authRequestResult.Response())
+{
+    //To obtain the access token
+    String accessToken = tokenResponse.AccessToken();
+
+    String tokenType = tokenResponse.TokenType();
+
+    // Use the access token for resources
+    DoRequestWithToken(accessToken, tokenType);
+}
+else
+{
+    AuthFailure authFailure = authRequestResult.Failure();
+    NotifyFailure(authFailure.Error(), authFailure.ErrorDescription());
+}
+```
+
+> Note: The authorization server MUST NOT issue a refresh token for implicit request.
 
 Completing an Authorization Request from a Protocol Activation
 
