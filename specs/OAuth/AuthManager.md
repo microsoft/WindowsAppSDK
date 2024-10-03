@@ -257,8 +257,8 @@ response_type is described in section 3.1.1 of [RFC 6749](https://www.rfc-editor
 | RedirectUri | Specifies the optional "redirect_uri" parameter of the authorization request described by the section 3.1.2 of [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749.html#section-3.1.2). | Windows.Foundation.Uri |
 | State | Specifies the recommended "state" parameter of the authorization request described in section 4.1.1 of [RFC 6749] (https://www.rfc-editor.org/rfc/rfc6749#section-4.1.1) | String |
 | Scope | Specifies the optional "scope" parameter of the authorization request described by the section 3.3 of [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749#section-3.3). | String |
-| CodeChallenge | Used as the PKCE code_challenge described by the section 4.2 [RFC 7636](https://www.rfc-editor.org/rfc/rfc7636#section-4.2). | String |
-| CodeChallengeMethod | Specifies the optional "code_challenge_method" parameter of the authorization request described by the section 4.3 [RFC 7636](https://www.rfc-editor.org/rfc/rfc7636#section-4.3). | CodeChallengeMethodKind |
+| CodeChallenge | Used as the PKCE code_challenge described by the section 4.2 of [RFC 7636](https://www.rfc-editor.org/rfc/rfc7636#section-4.2). | String |
+| CodeChallengeMethod | Specifies the optional "code_challenge_method" parameter of the authorization request described by the section 4.3 of [RFC 7636](https://www.rfc-editor.org/rfc/rfc7636#section-4.3). | CodeChallengeMethodKind |
 | AdditionalParams | Additional parameters passed along in the query string of the request URL. | Windows.Foundation.Collections.IMap<String, String> |
 
 ## AuthRequestResult class
@@ -335,7 +335,7 @@ It's a class that provides methods to create a token request parameter object. T
 | GrantType | Specifies the required "grant_type" parameter of the token request. | String |
 | Code | Specifies the "code" parameter of the token request. | String |
 | RedirectUri | Specifies the "redirect_uri" parameter of the token request. | Windows.Foundation.Uri |
-| CodeVerifier | Specifies the "code_verifier" parameter of the token request. | String |
+| CodeVerifier | Specifies the "code_verifier" parameter of the token request. This property is required when the grant type is "authorization_code" and a code challenge was included in the authorization request. This is described by the section 4.1 of [RFC 7636](https://www.rfc-editor.org/rfc/rfc7636#section-4.1) | String |
 | ClientId | Specifies the "client_id" parameter of the token request. | String |
 | Username | Specifies the "username" parameter of the token request. | String |
 | Password | Specifies the "password" parameter of the token request. | String |
