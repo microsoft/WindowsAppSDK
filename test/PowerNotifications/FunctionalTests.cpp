@@ -3,6 +3,7 @@
 
 #include "pch.h"
 #include "winrt/Microsoft.Windows.System.Power.h"
+
 using namespace std::chrono_literals;
 using namespace winrt::Microsoft::Windows::System::Power;
 
