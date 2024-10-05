@@ -37,6 +37,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         // IAppNotificationInternal
         void SetNotificationId(uint32_t id);
 
+        winrt::Microsoft::Windows::AppNotifications::AppNotificationDevicesData DevicesData();
+        void DevicesData(winrt::Microsoft::Windows::AppNotifications::AppNotificationDevicesData const& value);
+
     private:
         winrt::hstring m_tag{};
         winrt::hstring m_group{};
@@ -49,6 +52,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         { winrt::Microsoft::Windows::AppNotifications::AppNotificationPriority::Default };
         bool m_suppressDisplay{ false };
         wil::srwlock m_lock;
+
+        winrt::Microsoft::Windows::AppNotifications::AppNotificationDevicesData m_devicesData{ nullptr };
     };
 }
 namespace winrt::Microsoft::Windows::AppNotifications::factory_implementation
