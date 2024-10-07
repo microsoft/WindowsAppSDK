@@ -25,6 +25,7 @@ namespace Test::PackageManager::Tests
 
         TEST_CLASS_SETUP(ClassSetup)
         {
+            ::TD::DumpExecutionContext();
             if (!::WindowsVersion::IsWindows10_20H1OrGreater())
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");

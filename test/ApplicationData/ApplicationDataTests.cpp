@@ -7,6 +7,7 @@
 
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
+namespace TD = ::Test::Diagnostics;
 
 static const winrt::hstring null_hstring;
 
@@ -112,6 +113,7 @@ namespace Test::PackageManager::Tests
 
         TEST_CLASS_SETUP(ClassSetup)
         {
+            ::TD::DumpExecutionContext();
             if (!::WindowsVersion::IsWindows11_21H2OrGreater())
             {
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires Win11 >= 21H2 (SV1). Skipping tests");
@@ -436,7 +438,7 @@ namespace Test::PackageManager::Tests
             container.Close();
             try
             {
-                auto locality{ container.Locality() };
+                [[maybe_unused]] auto locality{ container.Locality() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -447,7 +449,7 @@ namespace Test::PackageManager::Tests
             systemContainer.Close();
             try
             {
-                auto locality{ systemContainer.Locality() };
+                [[maybe_unused]] auto locality{ systemContainer.Locality() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -465,7 +467,7 @@ namespace Test::PackageManager::Tests
             localSettings.Close();
             try
             {
-                auto locality{ localSettings.Locality() };
+                [[maybe_unused]] auto locality{ localSettings.Locality() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -476,7 +478,7 @@ namespace Test::PackageManager::Tests
             systemLocalSettings.Close();
             try
             {
-                auto locality{ systemLocalSettings.Locality() };
+                [[maybe_unused]] auto locality{ systemLocalSettings.Locality() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
