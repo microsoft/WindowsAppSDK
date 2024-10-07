@@ -11,7 +11,7 @@ steps:
     inputs:
       targetType: filePath
       filePath: tools\DevCheck\DevCheck.ps1
-      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies -CheckTAEFService -CheckVisualStudio -CheckDeveloperMode -ShowSystemInfo
+      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies -CheckVisualStudio -ShowSystemInfo
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: DownloadPipelineArtifact@2
