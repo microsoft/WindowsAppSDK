@@ -119,7 +119,9 @@ namespace Test::PackageManager::Tests
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ApplicationData requires Win11 >= 21H2 (SV1). Skipping tests");
                 return true;
             }
+WEX::Logging::Log::Comment(WEX::Common::String().Format(L"S1"));
             ::TB::Setup();
+WEX::Logging::Log::Comment(WEX::Common::String().Format(L"S2"));
             return true;
         }
 

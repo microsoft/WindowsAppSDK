@@ -32,11 +32,17 @@ namespace Test::PackageManager::Tests
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
                 return true;
             }
+WEX::Logging::Log::Comment(L"S1");
             RemovePackage_Blue();
+WEX::Logging::Log::Comment(L"S2");
             RemovePackage_Green();
+WEX::Logging::Log::Comment(L"S3");
             RemovePackage_Redder();
+WEX::Logging::Log::Comment(L"S4");
             RemovePackage_Red();
+WEX::Logging::Log::Comment(L"S5");
             ::TB::Setup();
+WEX::Logging::Log::Comment(L"S6");
             return true;
         }
 
