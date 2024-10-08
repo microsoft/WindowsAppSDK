@@ -119,9 +119,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         {
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::PackageUriScheme_ms_uup:
             {
-                //TODO Feature lookup
-                // Relies on PackageManagement_IsFeatureSupported(L"PackageUriScheme.ms-uup") exist in Microsoft.FrameworkUdk and enabled
-                return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixRemovePackageByUriAsync");
+                BOOL isSupported{};
+                const HRESULT hr{ PackageManagement_IsFeatureSupported(L"PackageUriScheme.ms-uup", &isSupported) };
+                if (hr == E_NOTIMPL)
+                {
+                    return false;
+                }
+                THROW_IF_FAILED_MSG(hr, "PackageUriScheme_ms_uup");
+                return !!isSupported;
             }
             case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable:
             {
@@ -1212,7 +1217,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             catch (...)
             {
                 const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageUri:%ls PackageFamilyName:%ls PackageUri:%ls",
+                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFullName:%ls PackageUri:%ls",
                                    extendedError, packageFullName, packageUriAsString.c_str());
             }
             if (FAILED(error))
@@ -1382,7 +1387,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             catch (...)
             {
                 const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageUri:%ls PackageFamilyName:%ls PackageUri:%ls",
+                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFullName:%ls PackageUri:%ls",
                                    extendedError, packageFullName, packageUriAsString.c_str());
             }
             if (FAILED(error))
