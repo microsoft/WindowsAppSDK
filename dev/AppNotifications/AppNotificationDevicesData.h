@@ -24,9 +24,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         static bool IsVideoCallingSupported();
 
     private:
-        hstring m_cameraKey;
-        hstring m_microphoneKey;
-        hstring m_speakerKey;
+
         hstring m_cameraDeviceId;
         hstring m_microphoneDeviceId;
         hstring m_speakerDeviceId;

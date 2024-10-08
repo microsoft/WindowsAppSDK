@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -8,6 +8,7 @@
 #include "AppNotificationUtility.h"
 #include "../PushNotifications/PushNotificationUtility.h"
 #include "NotificationProgressData.h"
+#include "NotificationDevicesData.h"
 
 namespace winrt
 {
@@ -46,6 +47,11 @@ NotificationProperties::NotificationProperties(winrt::AppNotification const& toa
     if (toastNotification.Progress() != nullptr)
     {
         m_toastProgressData = winrt::make_self<NotificationProgressData>(toastNotification.Progress());
+    }
+
+    if (toastNotification.DevicesData() != nullptr)
+    {
+        m_toastDevicesData = winrt::make_self<NotificationDevicesData>(toastNotification.DevicesData());
     }
 }
 
@@ -145,5 +151,17 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ToastProgressData(_
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ActivityId(_Out_ GUID* activityId) noexcept
 {
     *activityId = GUID_NULL;
+    return S_OK;
+}
+
+STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ToastDevicesData(_Out_ ToastABI::IToastDevicesData** devicesData) noexcept
+{
+    *devicesData = nullptr;
+    auto lock{ m_lock.lock_shared() };
+    if (m_toastDevicesData != nullptr)
+    {
+        m_toastDevicesData.copy_to(devicesData);
+    }
+
     return S_OK;
 }
