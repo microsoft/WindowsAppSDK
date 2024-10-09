@@ -148,8 +148,8 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-        sc queryex te.service
-        sc qc te.service
+        sc queryex te.service | Write-Host
+        sc qc te.service | Write-Host
 
   - task: PowerShell@2
     displayName: 'Run TAEF Tests'
