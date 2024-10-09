@@ -21,9 +21,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     private:
 
-        hstring m_cameraDeviceId;
-        hstring m_microphoneDeviceId;
-        hstring m_speakerDeviceId;
+        hstring m_cameraDeviceId{};
+        hstring m_microphoneDeviceId{};
+        hstring m_speakerDeviceId{};
     };
 }
 namespace winrt::Microsoft::Windows::AppNotifications::factory_implementation

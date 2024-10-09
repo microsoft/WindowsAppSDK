@@ -117,15 +117,22 @@ namespace Microsoft.Windows.AppNotifications
     }
 
     // The Notification Device Data
-    [contract(AppNotificationsContract, 1)]
+    [contract(AppNotificationsContract, 2)]
     runtimeclass AppNotificationDevicesData
     {
+        // Initializes a new Instance of NotificationDevicesData
         AppNotificationDevicesData();
 
+        // Checks if Video or Audio Calling is supported
         static Boolean IsVideoOrAudioCallingSupported();
 
+        // Gets or sets the Camera Device Id
         String CameraDeviceId{ get; set; };
+
+        // Gets or sets the Microphone Device Id
         String MicrophoneDeviceId{ get; set; };
+
+        // Gets or sets the Speaker Device Id
         String SpeakerDeviceId{ get; set; };
     }
 
