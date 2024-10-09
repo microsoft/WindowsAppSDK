@@ -1,10 +1,6 @@
 #pragma once
 #include "Microsoft.Windows.AppNotifications.AppNotificationDevicesData.g.h"
 
-namespace winrt {
-    using namespace Windows::Foundation::Collections;
-}
-
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
     struct AppNotificationDevicesData : AppNotificationDevicesDataT<AppNotificationDevicesData>
@@ -21,7 +17,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         void MicrophoneDeviceId(hstring const& value);
         void SpeakerDeviceId(hstring const& value);
 
-        static bool IsVideoCallingSupported();
+        static bool IsVideoOrAudioCallingSupported();
 
     private:
 

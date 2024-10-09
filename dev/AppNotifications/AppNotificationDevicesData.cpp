@@ -36,10 +36,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     }
 
     /// <summary>
-    /// verifies if video calling is supported
+    /// verifies if video calling is supported <TO DO>
     /// </summary>
     /// <returns>bool</returns>
-    bool AppNotificationDevicesData::IsVideoCallingSupported()
+    bool AppNotificationDevicesData::IsVideoOrAudioCallingSupported()
     {
         return WindowsVersion::IsWindows11_23H1OrGreater(); // Windows 11 23H1 or greater
     }

@@ -5,9 +5,19 @@
 
 #include <frameworkUdk/ToastNotificationsRT.h>
 
-struct NotificationDevicesData : winrt::implements<NotificationDevicesData, ::ABI::Microsoft::Internal::ToastNotifications::IToastDevicesData>
+namespace winrt
 {
-    NotificationDevicesData(winrt::Microsoft::Windows::AppNotifications::AppNotificationDevicesData const& devicesData);
+    using namespace winrt::Microsoft::Windows::AppNotifications;
+}
+
+namespace ToastABI
+{
+    using namespace ::ABI::Microsoft::Internal::ToastNotifications;
+}
+
+struct NotificationDevicesData : winrt::implements<NotificationDevicesData, ToastABI::IToastDevicesData>
+{
+    NotificationDevicesData(winrt::AppNotificationDevicesData const& devicesData);
 
     STDMETHOD(get_CameraDeviceId)(_Out_ HSTRING* value) noexcept;
 
@@ -15,9 +25,7 @@ struct NotificationDevicesData : winrt::implements<NotificationDevicesData, ::AB
 
     STDMETHOD(get_SpeakerDeviceId)(_Out_ HSTRING* value) noexcept;
 
-    STDMETHOD(IsVideoCallingSupported)(_Out_ bool* value) noexcept;
-
 private:
 
-    winrt::Microsoft::Windows::AppNotifications::AppNotificationDevicesData m_devicesData;
+    winrt::AppNotificationDevicesData m_devicesData;
 };
