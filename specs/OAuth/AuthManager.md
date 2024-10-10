@@ -37,11 +37,11 @@ and OAuth 2.0 for Native Apps [RFC 8252](https://tools.ietf.org/html/rfc8252).
 
 # Conceptual pages
 
- ## Perform OAuth 2.0 (c#)
+ ## Perform OAuth 2.0 (c++)
 
  Performing an Authorization Code Request (grant type/'response_type' = "code")
 
- ```c#
+ ```c++
 AuthRequestParams authRequestParams = AuthRequestParams::CreateForAuthorizationCodeRequest(L"my_client_id",
     Uri(L"my-app:/oauth-callback/"));
 authRequestParams.Scope(L"user:email user:birthday");
@@ -65,7 +65,7 @@ else
 
 Exchanging an Authorization Code for an Access Token (grant type/'response_type' = "code")
 
-```c#
+```c++
 AuthResponse authResponse = authRequestResult.Response();
 TokenRequestParams tokenRequestParams = TokenRequestParams::CreateForAuthorizationCodeRequest(authResponse);
 ClientAuthentication clientAuth = ClientAuthentication::CreateForBasicAuthorization(L"my_client_id",
@@ -109,7 +109,7 @@ else
 
 Refreshing an Access Token (grant type/'response_type' = "code")
 
-```c#
+```c++
 TokenRequestParams tokenRequestParams = TokenRequestParams::CreateForRefreshToken(refreshToken);
 ClientAuthentication clientAuth = ClientAuthentication::CreateForBasicAuthorization(L"my_client_id",
     L"my_client_secret");
@@ -147,7 +147,7 @@ else
 
 Performing an Implicit Request for a token (grant type/'response_type' = "token")
 
- ```c#
+ ```c++
 AuthRequestParams authRequestParams = AuthRequestParams::CreateForImplicitRequest(L"my_client_id",
     Uri(L"my-app:/oauth-callback/"));
 authRequestParams.Scope(L"user:email user:birthday");
@@ -175,7 +175,7 @@ else
 
 Completing an Authorization Request from a Protocol Activation
 
-```c#
+```c++
 void App::OnActivated(const IActivatedEventArgs& args)
 {
     if (args.Kind() == ActivationKind::Protocol)
