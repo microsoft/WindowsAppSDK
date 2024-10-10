@@ -48,6 +48,7 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windo
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppNotifications.Builder.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppNotifications.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Management.Deployment.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Media.Capture.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.PushNotifications.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Security.AccessControl.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Storage.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
@@ -184,6 +185,7 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windo
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppNotifications.Builder.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppNotifications.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Management.Deployment.winmd $NugetDir\lib\uap10.0
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Media.Capture.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.PushNotifications.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Security.AccessControl.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Storage.winmd $NugetDir\lib\uap10.0
