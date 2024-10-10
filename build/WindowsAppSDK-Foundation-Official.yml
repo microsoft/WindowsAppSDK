@@ -23,7 +23,7 @@ trigger: none
 parameters:
 - name: "PublishToMaestro"
   type: boolean
-  default: False
+  default: True
 - name: "IgnoreFailures"
   type: boolean
   default: False
@@ -63,7 +63,10 @@ extends:
 
     globalSdl: # Refer the wiki for more options in this parameter: https://aka.ms/obpipelines/sdl
       tsa:
-        enabled: $(TsaEnabled) # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.  Please provide TSAOptions.json.
+        # We focus on enabling TSA on the Main branch, not on servicing branches, to avoid getting
+        # duplicates of bugs that are against the Main branch. To re-enable TSA, do this instead:
+        # enabled:  $(TsaEnabled) # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.
+        enabled:  false        
       isNativeCode: false #TODO turn back on when bug in CheckCFlags2.exe is fixed
       asyncSdl: # https://aka.ms/obpipelines/asyncsdl
         enabled: false
