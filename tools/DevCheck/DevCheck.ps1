@@ -997,7 +997,7 @@ function Test-TAEFServiceVersion
     }
     else
     {
-        Write-Verbose "Expected TAEF service is registered ($actual_taef_version)"
+        Write-Host "Expected TAEF service is registered ($actual_taef_version)"
         return 'OK'
     }
 }
@@ -1589,7 +1589,7 @@ if ($SyncDependencies -eq $true)
 Write-Output "Checking developer environment..."
 
 $cpu = Get-CpuArchitecture
-Write-Verbose("Processor...$cpu")
+Write-Verbose "Processor...$cpu"
 
 $project_root = Get-ProjectRoot
 Write-Output "Windows App SDK location...$project_root"

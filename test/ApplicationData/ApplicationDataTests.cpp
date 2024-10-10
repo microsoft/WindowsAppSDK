@@ -7,6 +7,7 @@
 
 namespace TB = ::Test::Bootstrap;
 namespace TP = ::Test::Packages;
+namespace TD = ::Test::Diagnostics;
 
 static const winrt::hstring null_hstring;
 
@@ -88,7 +89,7 @@ namespace Test::PackageManager::Tests
     const auto Main_PackageFamilyName{ ::TP::DynamicDependencyDataStore::c_PackageFamilyName };
     const auto Framework_PackageFamilyName{ ::TP::WindowsAppRuntimeFramework::c_PackageFamilyName };
 
-    std::filesystem::path GetExpectedMachinePath(winrt::hstring const& packageFamilyName)
+    inline std::filesystem::path GetExpectedMachinePath(winrt::hstring const& packageFamilyName)
     {
         // Expected Path = HKLM\...apprepository...\Families\ApplicationData\...pkgfamilyname...\Machine
         // This is typically %ProgramData%\Microsoft\Windows\AppRepository\Families\ApplicationData\...pkgfamilyname...\Machine
@@ -108,13 +109,15 @@ namespace Test::PackageManager::Tests
     public:
         BEGIN_TEST_CLASS(ApplicationDataTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_METHOD_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)
         {
+            ::TD::DumpExecutionContext();
             if (!::WindowsVersion::IsWindows11_21H2OrGreater())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires Win11 >= 21H2 (SV1). Skipping tests");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ApplicationData requires Win11 >= 21H2 (SV1). Skipping tests");
                 return true;
             }
             ::TB::Setup();
@@ -319,15 +322,23 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(MachineFolderAndPath_Main_NotSupported)
         {
             winrt::hstring packageFamilyName{ Main_PackageFamilyName };
+WEX::Logging::Log::Comment(WEX::Common::String().Format(L"A1: %ls", packageFamilyName.c_str()));
             auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForPackageFamily(packageFamilyName) };
+WEX::Logging::Log::Comment(WEX::Common::String().Format(L"A2: %ls", packageFamilyName.c_str()));
             VERIFY_IS_NOT_NULL(applicationData);
 
+WEX::Logging::Log::Comment(WEX::Common::String().Format(L"A3: %ls", packageFamilyName.c_str()));
             VERIFY_IS_FALSE(applicationData.IsMachinePathSupported());
 
+WEX::Logging::Log::Comment(WEX::Common::String().Format(L"A4: %ls", packageFamilyName.c_str()));
             const auto machineFolder{ applicationData.MachineFolder() };
+WEX::Logging::Log::Comment(WEX::Common::String().Format(L"A5: %ls", packageFamilyName.c_str()));
             VERIFY_IS_NULL(machineFolder);
+WEX::Logging::Log::Comment(WEX::Common::String().Format(L"A6: %ls", packageFamilyName.c_str()));
             const auto machinePath{ applicationData.MachinePath() };
+WEX::Logging::Log::Comment(WEX::Common::String().Format(L"A7: %ls", packageFamilyName.c_str()));
             VERIFY_ARE_EQUAL(machinePath, null_hstring);
+WEX::Logging::Log::Comment(WEX::Common::String().Format(L"A8: %ls", packageFamilyName.c_str()));
         }
 
         TEST_METHOD(MachineFolderAndPath_Framework_NotSupported)
@@ -436,7 +447,7 @@ namespace Test::PackageManager::Tests
             container.Close();
             try
             {
-                auto locality{ container.Locality() };
+                [[maybe_unused]] auto locality{ container.Locality() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -447,7 +458,7 @@ namespace Test::PackageManager::Tests
             systemContainer.Close();
             try
             {
-                auto locality{ systemContainer.Locality() };
+                [[maybe_unused]] auto locality{ systemContainer.Locality() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -465,7 +476,7 @@ namespace Test::PackageManager::Tests
             localSettings.Close();
             try
             {
-                auto locality{ localSettings.Locality() };
+                [[maybe_unused]] auto locality{ localSettings.Locality() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -476,7 +487,7 @@ namespace Test::PackageManager::Tests
             systemLocalSettings.Close();
             try
             {
-                auto locality{ systemLocalSettings.Locality() };
+                [[maybe_unused]] auto locality{ systemLocalSettings.Locality() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -535,30 +546,45 @@ namespace Test::PackageManager::Tests
         }
     };
 
-
+#if defined(BUG_54353582_MOVE_TO_AGGREGATOR_REPO_AS_INTEGRATED_TESTS)
+    // https://task.ms/54353582
+    //
+    // ApplicationData tests need to run as LocalSystem to muck with the MachineFolder (else E_ACCESSDENIED)
+    // but the Framework package containing the ApplicationData WinRT API can't be registered for LocalSystem
+    // (until https://task.ms/46984317 or https://task.ms/32845607 or the like). These tests can work
+    // if moved to the Aggregator repositories where the ApplicationData DeploymentExtensionHandler (DEH)
+    // is available - then we can install a test package where MachineFolder's ACL'd with additional rights
+    // so the tests can exercise MachineFolder as needed.
     class ApplicationDataTests_Elevated
     {
     public:
         BEGIN_TEST_CLASS(ApplicationDataTests_Elevated)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
-            TEST_CLASS_PROPERTY(L"RunFixtureAs", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", /*L"RestrictedUser"*/L"ElevatedUser")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs", /*L"RestrictedUser"*/L"ElevatedUser")
         END_TEST_CLASS()
+
+        // @warning Fixtures and Tests run as separate processes (despite they both RunAs:RestrictedUser).
+        //          Thus the Fixtures need to register packages whereas Tests need to enable the Bootstrapper.
+        //          Test methods that don't enable the bootstrapper will fail with 0x80040154 Class not registered
+        //          due to COM not finding the expected WinRT APIs in the test Framework package (which needs to be
+        //          in the process' package graph or error).
 
         TEST_CLASS_SETUP(ClassSetup)
         {
+            ::TD::DumpExecutionContext();
             if (!::WindowsVersion::IsWindows11_21H2OrGreater())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires Win11 >= 21H2 (SV1). Skipping tests");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"ApplicationData requires Win11 >= 21H2 (SV1). Skipping tests");
                 return true;
             }
-            ::TB::Setup();
+            ::TB::SetupPackages();
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassCleanup)
         {
-            ::TB::Cleanup();
+            ::TB::CleanupPackages();
             return true;
         }
 
@@ -601,25 +627,36 @@ namespace Test::PackageManager::Tests
                 TEST_METHOD_PROPERTY(L"RunAs", L"System")
             END_TEST_METHOD_PROPERTIES()
 
+            ::TD::DumpExecutionContext();
+            ::TB::SetupBootstrap();
+
             const auto packageFamilyName{ Framework_PackageFamilyName };
             CreateMachinePathIfNecessary(packageFamilyName);
+
+            ::TB::CleanupBootstrap();
         }
 
         TEST_METHOD(CreateMachinePathIfNecessary_Main)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"System")
+                TEST_METHOD_PROPERTY(L"RunAs", /*L"System"*/L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
+
+            ::TB::SetupBootstrap();
 
             const auto packageFamilyName{ Main_PackageFamilyName };
             CreateMachinePathIfNecessary(packageFamilyName);
+
+            ::TB::CleanupBootstrap();
         }
 
         TEST_METHOD(MachineFolderAndPath_Main_Supported)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"RestrictedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", /*L"RestrictedUser"*/L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
+
+            ::TB::SetupBootstrap();
 
             winrt::hstring packageFamilyName{ Main_PackageFamilyName };
             auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForPackageFamily(packageFamilyName) };
@@ -634,13 +671,17 @@ namespace Test::PackageManager::Tests
 
             const auto expectedMachinePath{ GetExpectedMachinePath(packageFamilyName) };
             VERIFY_ARE_EQUAL(machinePath, winrt::hstring(expectedMachinePath.c_str()));
+
+            ::TB::CleanupBootstrap();
         }
 
         TEST_METHOD(MachineFolderAndPath_Framework_Supported)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"RestrictedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", /*L"RestrictedUser"*/L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
+
+            ::TB::SetupBootstrap();
 
             winrt::hstring packageFamilyName{ Framework_PackageFamilyName };
             auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForPackageFamily(packageFamilyName) };
@@ -655,26 +696,37 @@ namespace Test::PackageManager::Tests
 
             const auto expectedMachinePath{ GetExpectedMachinePath(packageFamilyName) };
             VERIFY_ARE_EQUAL(machinePath, winrt::hstring(expectedMachinePath.c_str()));
+
+            ::TB::CleanupBootstrap();
         }
 
         TEST_METHOD(RemoveMachinePathIfNecessary_Main)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"System")
+                TEST_METHOD_PROPERTY(L"RunAs", /*L"System"*/L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
+
+            ::TB::SetupBootstrap();
 
             const auto packageFamilyName{ Main_PackageFamilyName };
             RemoveMachinePathIfNecessary(packageFamilyName);
+
+            ::TB::CleanupBootstrap();
         }
 
         TEST_METHOD(RemoveMachinePathIfNecessary_Framework)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"System")
+                TEST_METHOD_PROPERTY(L"RunAs", /*L"System"*/L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
+
+            ::TB::SetupBootstrap();
 
             const auto packageFamilyName{ Framework_PackageFamilyName };
             RemoveMachinePathIfNecessary(packageFamilyName);
+
+            ::TB::CleanupBootstrap();
         }
     };
+#endif
 }
