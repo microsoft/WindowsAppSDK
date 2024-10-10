@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -597,4 +597,43 @@ void BaseTestSuite::VerifyExplicitAppId()
 
     RegisterWithAppNotificationManager();
     AppNotificationManager::Default().Unregister();
+}
+
+void BaseTestSuite::VerifyToastDevicesDataAllDevicesSet()
+{
+    AppNotification toast{ CreateToastNotification() };
+
+    AppNotificationDevicesData devicesData{ nullptr };
+    devicesData.CameraDeviceId(L"CameraDeviceId");
+    devicesData.MicrophoneDeviceId(L"MicrophoneDeviceId");
+    devicesData.SpeakerDeviceId(L"SpeakerDeviceId");
+
+    toast.DevicesData(devicesData);
+
+    VERIFY_ARE_EQUAL(toast.DevicesData().CameraDeviceId(), L"CameraDeviceId");
+    VERIFY_ARE_EQUAL(toast.DevicesData().MicrophoneDeviceId(), L"MicrophoneDeviceId");
+    VERIFY_ARE_EQUAL(toast.DevicesData().SpeakerDeviceId(), L"SpeakerDeviceId");
+}
+
+void BaseTestSuite::VerifyToastDevicesDataNoDevicesSet()
+{
+    AppNotification toast{ CreateToastNotification() };
+
+    VERIFY_ARE_EQUAL(toast.DevicesData().CameraDeviceId(), L"");
+    VERIFY_ARE_EQUAL(toast.DevicesData().MicrophoneDeviceId(), L"");
+    VERIFY_ARE_EQUAL(toast.DevicesData().SpeakerDeviceId(), L"");
+}
+
+void BaseTestSuite::VerifyToastDevicesDataNotAllDevicesSet()
+{
+    AppNotification toast{ CreateToastNotification() };
+
+    AppNotificationDevicesData devicesData{ nullptr };
+    devicesData.CameraDeviceId(L"CameraDeviceId");
+
+    toast.DevicesData(devicesData);
+
+    VERIFY_ARE_EQUAL(toast.DevicesData().CameraDeviceId(), L"CameraDeviceId");
+    VERIFY_ARE_EQUAL(toast.DevicesData().MicrophoneDeviceId(), L"");
+    VERIFY_ARE_EQUAL(toast.DevicesData().SpeakerDeviceId(), L"");
 }
