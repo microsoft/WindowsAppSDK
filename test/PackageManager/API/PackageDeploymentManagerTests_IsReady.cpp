@@ -439,6 +439,47 @@ WEX::Logging::Log::Comment(L"4B");
 
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
+    };
+
+    class PackageDeploymentManagerTests_IsReady_Elevated : PackageDeploymentManagerTests_Base
+    {
+    public:
+        BEGIN_TEST_CLASS(PackageDeploymentManagerTests_IsReady_Elevated)
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(ClassSetup)
+        {
+            ::TD::DumpExecutionContext();
+            if (!::WindowsVersion::IsWindows10_20H1OrGreater())
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
+                return true;
+            }
+WEX::Logging::Log::Comment(L"S1");
+            RemovePackage_Blue();
+WEX::Logging::Log::Comment(L"S2");
+            RemovePackage_Green();
+WEX::Logging::Log::Comment(L"S3");
+            RemovePackage_Redder();
+WEX::Logging::Log::Comment(L"S4");
+            RemovePackage_Red();
+WEX::Logging::Log::Comment(L"S5");
+            ::TB::Setup();
+WEX::Logging::Log::Comment(L"S6");
+            return true;
+        }
+
+        TEST_CLASS_CLEANUP(ClassCleanup)
+        {
+            RemovePackage_Blue();
+            RemovePackage_Green();
+            RemovePackage_Redder();
+            RemovePackage_Red();
+            ::TB::Cleanup();
+            return true;
+        }
 
         TEST_METHOD(IsPackageSetReady_N_No_NotAllPackageStatusOK)
         {
