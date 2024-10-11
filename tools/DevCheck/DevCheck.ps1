@@ -576,6 +576,7 @@ function Get-VisualStudio2022InstallPath
     $path = $path -replace [environment]::NewLine, ''
     Write-Verbose "Visual Studio 2022 detected at $path"
     $global:vspath = $path
+    return $path
 }
 
 function Test-VisualStudioComponent
