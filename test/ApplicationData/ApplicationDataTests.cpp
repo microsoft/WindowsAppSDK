@@ -109,7 +109,7 @@ namespace Test::PackageManager::Tests
     public:
         BEGIN_TEST_CLASS(ApplicationDataTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_METHOD_PROPERTY(L"RunAs", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)

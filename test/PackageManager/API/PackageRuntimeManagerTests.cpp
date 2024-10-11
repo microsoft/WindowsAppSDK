@@ -231,7 +231,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(AddPackageSet_1_Staged_Fail)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             RemovePackage_Red();
@@ -330,7 +330,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(AddPackageSet_1_RegisteredPackageStatusBad_Fail)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             AddPackage_Red();
@@ -509,7 +509,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(AddPackageSet_N_RegisteredAndNotInstalledAndStaged_Fail)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             AddPackage_Red();
@@ -545,7 +545,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(AddPackageSet_N_RegisteredPackageStatusOkAndBad_Fail)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             AddPackage_Red();
