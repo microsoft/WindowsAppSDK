@@ -15,7 +15,7 @@
     <PackageVersion Include="NuGet.VisualStudio" Version="17.6.1" />
     <PackageVersion Include="Microsoft.VisualStudio.TemplateWizardInterface" Version="17.5.33428.366" />
     <PackageVersion Include="System.Net.Http" Version="4.3.4" />
-    <PackageVersion Include="System.Text.Json" Version="8.0.4" />
+    <PackageVersion Include="System.Text.Json" Version="8.0.5" />
     <PackageVersion Include="Microsoft.VSSDK.BuildTools" Version="17.4.2118" />
     <PackageVersion Include="Microsoft.WindowsAppSDK" Version="$(WindowsAppSDKVersion)" Condition=" '$(WindowsAppSDKVersion)' != '' " />
     <PackageVersion Include="Microsoft.Windows.CppWinRT" Version="$(CppWinRTVersion)" Condition=" '$(CppWinRTVersion)' != '' " />
