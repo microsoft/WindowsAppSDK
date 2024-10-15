@@ -44,9 +44,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)winrt_WindowsAppRuntime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)PropertyHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)TelemetryHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>

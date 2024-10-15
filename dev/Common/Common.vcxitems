@@ -26,7 +26,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.RoApi.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Utf8.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NotificationTelemetryHelper.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)PropertyHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Security.IntegrityLevel.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TelemetryHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.SelfContained.h" />

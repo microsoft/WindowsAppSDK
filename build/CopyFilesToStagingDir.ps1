@@ -115,6 +115,8 @@ PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Projection\Micro
 PublishFile $FullBuildOutput\Microsoft.Windows.AppNotifications.Projection\Microsoft.Windows.AppNotifications.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.Management.Deployment.Projection\Microsoft.Windows.Management.Deployment.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.Management.Deployment.Projection\Microsoft.Windows.Management.Deployment.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.Media.Capture.Projection\Microsoft.Windows.Media.Capture.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.Media.Capture.Projection\Microsoft.Windows.Media.Capture.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.PushNotifications.Projection\Microsoft.Windows.PushNotifications.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.PushNotifications.Projection\Microsoft.Windows.PushNotifications.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.Security.AccessControl.Projection\Microsoft.Windows.Security.AccessControl.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0

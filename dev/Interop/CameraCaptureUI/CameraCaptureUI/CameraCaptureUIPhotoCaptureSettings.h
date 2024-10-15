@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 #include "Microsoft.Windows.Media.Capture.CameraCaptureUIPhotoCaptureSettings.g.h"
-#include "PropertyHelper.h"
 
 namespace winrt::Microsoft::Windows::Media::Capture::implementation
 {
@@ -15,11 +14,11 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         hstring GetFileExtension();
         void Serialize(winrt::Windows::Foundation::Collections::ValueSet const& props);
 
-        basic_property<bool> AllowCropping{ true };
-        basic_property<winrt::Windows::Foundation::Size> CroppedAspectRatio{ 0.0f, 0.0f };
-        basic_property<winrt::Windows::Foundation::Size> CroppedSizeInPixels{ 0.0f, 0.0f };
-        basic_property<winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat> Format{ winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg };
-        basic_property<winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution> MaxResolution{ winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::HighestAvailable };
+        wil::single_threaded_rw_property<bool> AllowCropping{ true };
+        wil::single_threaded_rw_property<winrt::Windows::Foundation::Size> CroppedAspectRatio{ 0.0f, 0.0f };
+        wil::single_threaded_rw_property<winrt::Windows::Foundation::Size> CroppedSizeInPixels{ 0.0f, 0.0f };
+        wil::single_threaded_rw_property<winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat> Format{ winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg };
+        wil::single_threaded_rw_property<winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution> MaxResolution{ winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMaxPhotoResolution::HighestAvailable };
     };
 }
 

@@ -4,7 +4,6 @@
 #include "Microsoft.Windows.Media.Capture.CameraCaptureUI.g.h"
 #include "CameraCaptureUIPhotoCaptureSettings.h"
 #include "CameraCaptureUIVideoCaptureSettings.h"
-#include "winrt/Microsoft.UI.h"
 #include "TelemetryHelper.h"
 
 

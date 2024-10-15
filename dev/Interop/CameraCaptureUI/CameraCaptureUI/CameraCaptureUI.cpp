@@ -18,6 +18,10 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::ApplicationModel::DataTransfer;
 
+static constexpr const wchar_t* CameraAppPackageName = L"Microsoft.WindowsCamera_8wekyb3d8bbwe";
+static constexpr const wchar_t* CameraPickerUri = L"microsoft.windows.camera.picker:";
+
+
 namespace winrt::Microsoft::Windows::Media::Capture::implementation
 {
     IAsyncOperation<hstring> LaunchCameraForResultToken(winrt::Microsoft::UI::WindowId const& targetWindow, ValueSet const& properties)
@@ -30,9 +34,9 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
 
         options.TreatAsUntrusted(false);
         options.DisplayApplicationPicker(false);
-        options.TargetApplicationPackageFamilyName(L"Microsoft.WindowsCamera_8wekyb3d8bbwe");
+        options.TargetApplicationPackageFamilyName(CameraAppPackageName);
 
-        Uri launchUri{ L"microsoft.windows.camera.picker:" };
+        Uri launchUri(CameraPickerUri);
         winrt::Windows::System::LaunchUriResult result = co_await Launcher::LaunchUriForResultsAsync(launchUri, options, properties);
         if (!result.Result())
         {
@@ -66,7 +70,6 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         {
             auto strong = get_strong();
             CameraCaptureUITelemetry::CaptureInitiated(isAppPackaged, appName);
-            bool addPicker = false;
             const wchar_t* mediaType = nullptr;
             if (mode == CameraCaptureUIMode::PhotoOrVideo)
             {
@@ -102,11 +105,6 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
                 m_videoTokenFile = co_await CreateEmptyFileAndGetToken(m_videoSettings->GetFileExtension());
                 properties.Insert(L"VideoFileToken", box_value(m_videoTokenFile.token));
                 m_videoSettings->Serialize(properties);
-            }
-
-            if (addPicker)
-            {
-                properties.Insert(L"id", box_value(L"picker"));
             }
 
             auto tokenValue = co_await LaunchCameraForResultToken(m_windowId, properties);

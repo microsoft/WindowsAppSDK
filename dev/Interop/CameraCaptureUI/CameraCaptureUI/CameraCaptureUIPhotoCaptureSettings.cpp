@@ -4,7 +4,6 @@
 #include "CameraCaptureUIPhotoCaptureSettings.h"
 #include "Microsoft.Windows.Media.Capture.CameraCaptureUIPhotoCaptureSettings.g.cpp"
 
-//using namespace winrt::Windows::Media::Capture;
 using namespace winrt::Windows::Foundation;
 
 namespace winrt::Microsoft::Windows::Media::Capture::implementation
@@ -21,9 +20,9 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         {
             throw hresult_invalid_argument(L"PhotoSettings can't have both a size and aspect ratio specified");
         }
-        else if (AllowCropping && hasPhotoSizeConstraint)
+        else if (!AllowCropping && hasPhotoSizeConstraint)
         {
-            throw hresult_invalid_argument(L"PhotoSettings allowing cropping can't have a ratio or size specified");
+            throw hresult_invalid_argument(L"PhotoSettings can't have a ratio or size specified with cropping disabled");
         }
     }
 
