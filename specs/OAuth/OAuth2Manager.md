@@ -207,7 +207,9 @@ complete an authorization request, and request an access token for a user throug
 
 | Name | Description | Parameters | Returns |
 |-|-|-|-| 
-| InitiateAuthRequestAsync(Windows.Foundation.Uri, AuthRequestParams) | Intiates auth request for a user through a client.| Windows.Foundation.Uri `authEndPoint`  , AuthRequestParams `params` | Windows.Foundation.IAsyncOperation< AuthRequestResult > |
+| InitiateAuthRequestAsync(Windows.Foundation.Uri, Windows.Foundation.Uri) | Initiates an authorization request in the user's default browser. This performs an access token request of implicit grant type. | Windows.Foundation.Uri `authEndPoint` , Windows.Foundation.Uri `redirectUri` | Windows.Foundation.IAsyncOperation< AuthRequestResult > |
+| InitiateAuthRequestAsyncWithoutCallback(Windows.Foundation.Uri) | Initiates an authorization request in the user's default browser. This performs an access token request of implicit grant type. | Windows.Foundation.Uri `authEndPoint` | Windows.Foundation.IAsyncOperation< AuthRequestResult > |
+| InitiateAuthRequestAsync(Windows.Foundation.Uri, AuthRequestParams) | Intiates auth request for a user in the user's default browser through a client.| Windows.Foundation.Uri `authEndPoint`  , AuthRequestParams `params` | Windows.Foundation.IAsyncOperation< AuthRequestResult > |
 | CompleteAuthRequest(Windows.Foundation.Uri) | Completes an auth request through a redirect URI. | Windows.Foundation.Uri `responseUri` | Boolean |
 | RequestTokenAsync(Windows.Foundation.Uri, TokenRequestParams) | Initiates an access token request. | Windows.Foundation.Uri `tokenEndPoint` , TokenRequestParams `params` | Windows.Foundation.IAsyncOperation< TokenRequestResult > |
 | RequestTokenAsync(Windows.Foundation.Uri, TokenRequestParams, ClientAuthentication) | Initiates an access token request with client authentication. | Windows.Foundation.Uri `tokenEndPoint` , TokenRequestParams `params` , ClientAuthentication `clientAuth` | Windows.Foundation.IAsyncOperation< TokenRequestResult > |
@@ -455,6 +457,19 @@ namespace Microsoft.Windows.Security.Authentication.OAuth
     [contract(OAuthContract, 1)]
     static runtimeclass OAuth2Manager
     {
+        // Initiates an authorization request in the user's default browser as described by RFC 6749 section 3.1. The
+        // returned 'IAsyncOperation' will remain in the 'Started' state until it is either cancelled or completed by a
+        // call to 'CompleteAuthRequest'. This performs authorization of response_type="token".
+        static Windows.Foundation.IAsyncOperation<AuthRequestResult> InitiateAuthRequestAsync(
+            Windows.Foundation.Uri completeAuthEndpoint,
+            Windows.Foundation.Uri redirectUri);
+
+        // Initiates an authorization request in the user's default browser as described by RFC 6749 section 3.1. The
+        // returned 'IAsyncOperation' will remain in the 'Started' state until it is either cancelled or completed by a
+        // call to 'CompleteAuthRequest'.This performs authorization of response_type="token".
+        static Windows.Foundation.IAsyncOperation<AuthRequestResult> InitiateAuthRequestAsyncWithoutCallback(
+            Windows.Foundation.Uri completeAuthEndpoint);
+
         // Initiates an authorization request in the user's default browser as described by RFC 6749 section 3.1. The
         // returned 'IAsyncOperation' will remain in the 'Started' state until it is either cancelled or completed by a
         // call to 'CompleteAuthRequest'.
