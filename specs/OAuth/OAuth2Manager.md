@@ -1,9 +1,9 @@
-AuthManager API
+OAuth2Manager API
 ===
 
 This is the spec for proposal: [Issue #441](https://github.com/microsoft/WindowsAppSDK/issues/441)
 
-This spec details the API of a new `AuthManager` in WinAppSDK,
+This spec details the API of a new `OAuth2Manager` in WinAppSDK,
 enabling desktop applications such as WinUI3 to seamlessly perform OAuth functionality across diverse Windows platforms.
 
 
@@ -19,14 +19,14 @@ which are not compatible with desktop app frameworks.
 As a result, developers are forced to resort to workarounds involving interop interfaces and 
 additional code to implement OAuth 2.0 functionality into their WinUI 3 desktop applications.
 
-In response to this feedback, this `AuthManager` API for WinAppSDK aims to provide 
+In response to this feedback, this `OAuth2Manager` API for WinAppSDK aims to provide 
 a streamlined solution that meets the expectations of our developer community. 
 The goal is to offer seamless OAuth 2.0 capabilities with full feature parity across all Windows platforms supported by WinAppSDK. 
 This new API eliminates the need for cumbersome workarounds and 
 simplifies the process of incorporating OAuth 2.0 functionality into desktop applications.
 
 
-This new WinAppSDK version of the `AuthManager` is different than the existing public
+This new WinAppSDK version of the `OAuth2Manager` is different than the existing public
 [WebAuthenticationBroker](https://learn.microsoft.com/en-us/uwp/api/windows.security.authentication.web.webauthenticationbroker?view=winrt-22621) 
 API. We've opted to follow OAuth best practices more closely - e.g. using user's default browser. The best practices for the API are taken from the
 IETF(Internet Engineering Task Force) OAuth 2.0 Authorization Framework [RFC 6749](https://tools.ietf.org/html/rfc6749), 
@@ -46,7 +46,7 @@ AuthRequestParams authRequestParams = AuthRequestParams::CreateForAuthorizationC
     Uri(L"my-app:/oauth-callback/"));
 authRequestParams.Scope(L"user:email user:birthday");
 
-AuthRequestResult authRequestResult = co_await AuthManager::InitiateAuthRequestAsync(
+AuthRequestResult authRequestResult = co_await OAuth2Manager::InitiateAuthRequestAsync(
     Uri(L"https://my.server.com/oauth/authorize"), authRequestParams);
 if (AuthResponse authResponse = authRequestResult.Response())
 {
@@ -71,7 +71,7 @@ TokenRequestParams tokenRequestParams = TokenRequestParams::CreateForAuthorizati
 ClientAuthentication clientAuth = ClientAuthentication::CreateForBasicAuthorization(L"my_client_id",
     L"my_client_secret");
 
-TokenRequestResult tokenRequestResult = co_await AuthManager::RequestTokenAsync(
+TokenRequestResult tokenRequestResult = co_await OAuth2Manager::RequestTokenAsync(
     Uri(L"https://my.server.com/oauth/token"), tokenRequestParams, clientAuth);
 if (TokenResponse tokenResponse = tokenRequestResult.Response())
 {
@@ -113,7 +113,7 @@ Refreshing an Access Token (grant type/'response_type' = "code")
 TokenRequestParams tokenRequestParams = TokenRequestParams::CreateForRefreshToken(refreshToken);
 ClientAuthentication clientAuth = ClientAuthentication::CreateForBasicAuthorization(L"my_client_id",
     L"my_client_secret");
-TokenRequestResult tokenRequestResult = co_await AuthManager::RequestTokenAsync(
+TokenRequestResult tokenRequestResult = co_await OAuth2Manager::RequestTokenAsync(
     Uri(L"https://my.server.com/oauth/token"), tokenRequestParams, clientAuth));
 if (TokenResponse tokenResponse = tokenRequestResult.Response())
 {
@@ -152,7 +152,7 @@ AuthRequestParams authRequestParams = AuthRequestParams::CreateForImplicitReques
     Uri(L"my-app:/oauth-callback/"));
 authRequestParams.Scope(L"user:email user:birthday");
 
-AuthRequestResult authRequestResult = co_await AuthManager::InitiateAuthRequestAsync(
+AuthRequestResult authRequestResult = co_await OAuth2Manager::InitiateAuthRequestAsync(
     Uri(L"https://my.server.com/oauth/authorize"), authRequestParams);
 if (AuthResponse authResponse = authRequestResult.Response())
 {
@@ -181,7 +181,7 @@ void App::OnActivated(const IActivatedEventArgs& args)
     if (args.Kind() == ActivationKind::Protocol)
     {
         auto protocolArgs = args.as<ProtocolActivatedEventArgs>();
-        if (AuthManager::CompleteAuthRequest(protocolArgs.Uri()))
+        if (OAuth2Manager::CompleteAuthRequest(protocolArgs.Uri()))
         {
             TerminateCurrentProcess();
         }
@@ -194,7 +194,7 @@ void App::OnActivated(const IActivatedEventArgs& args)
 # API Pages
 
 
-## AuthManager class
+## OAuth2Manager class
 
 It's a static class that provides methods to initiate an authorization request,
 complete an authorization request, and request an access token for a user through a client.
@@ -203,7 +203,7 @@ complete an authorization request, and request an access token for a user throug
   User refers to the end-user who is the resource owner and is authorizing the client application to access their resources.
 
 
-## AuthManager Methods
+## OAuth2Manager Methods
 
 | Name | Description | Parameters | Returns |
 |-|-|-|-| 
@@ -219,7 +219,7 @@ It's a class that provides methods to create a client authentication object for 
 
 > Note: This is used to authenticate the client application to the authorization server. 
   It is not used to authenticate the user to the client application. 
-  User authentication is handled by the InitiateAuthRequestAsync method of AuthManager class.
+  User authentication is handled by the InitiateAuthRequestAsync method of OAuth2Manager class.
 
 ## ClientAuthentication constructor
 
@@ -453,7 +453,7 @@ namespace Microsoft.Windows.Security.Authentication.OAuth
     }
 
     [contract(OAuthContract, 1)]
-    static runtimeclass AuthManager
+    static runtimeclass OAuth2Manager
     {
         // Initiates an authorization request in the user's default browser as described by RFC 6749 section 3.1. The
         // returned 'IAsyncOperation' will remain in the 'Started' state until it is either cancelled or completed by a
