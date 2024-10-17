@@ -311,18 +311,18 @@ return new PackageDeploymentResult(PackageDeploymentStatus.CompletedSuccess);
 
 |Verb                    | MinVersion |     PackageFamilyName     | PackageUri | ProcessorArchitectureFilter |
 |------------------------|:----------:|:-------------------------:|:----------:|:---------------------------:|
-|IsReady                 |  Used      |          Required         |     N/A    |           Optional          |
-|IsReadyOrNewerAvailable |  Used      |          Required         |     N/A    |           Optional          |
-|EnsureReady             |  Used      |          Required         |  Used  |           Optional          |
-|Add                     |    N/A     |             N/A           |  Used  |              N/A            |
-|Stage                   |    N/A     |             N/A           |  USed  |              N/A            |
-|Register                |    N/A     |             N/A           |  Used  |              N/A            |
-|Remove                  |    N/A     | Used-if-no-PackageUri |  Optional  |              N/A            |
-|Repair                  |    N/A     | Used-if-no-PackageUri |  Optional  |              N/A            |
-|Reset                   |    N/A     | Used-if-no-PackageUri |  Optional  |              N/A            |
-|IsProvisioned           |    N/A     |          Used         |  Optional  |              N/A            |
-|Provision               |    N/A     | Used-if-no-PackageUri |  Optional  |              N/A            |
-|Deprovision             |    N/A     | Used-if-no-PackageUri |  Optional  |              N/A            |
+|IsReady                 |    Used    |          Required         |    N/A     |           Optional          |
+|IsReadyOrNewerAvailable |    Used    |          Required         |    N/A     |           Optional          |
+|EnsureReady             |    Used    |          Required         |    Used    |           Optional          |
+|Add                     |    N/A     |            N/A            |    Used    |             N/A             |
+|Stage                   |    N/A     |            N/A            |    Used    |             N/A             |
+|Register                |    N/A     |   Used-if-no-PackageUri   |  Optional  |             N/A             |
+|Remove                  |    N/A     |   Used-if-no-PackageUri   |  Optional  |             N/A             |
+|Repair                  |    N/A     |   Used-if-no-PackageUri   |  Optional  |             N/A             |
+|Reset                   |    N/A     |   Used-if-no-PackageUri   |  Optional  |             N/A             |
+|IsProvisioned           |    N/A     |            Used           |  Optional  |             N/A             |
+|Provision               |    N/A     |   Used-if-no-PackageUri   |  Optional  |             N/A             |
+|Deprovision             |    N/A     |   Used-if-no-PackageUri   |  Optional  |             N/A             |
 
 **Legend:**
 
@@ -330,7 +330,6 @@ return new PackageDeploymentResult(PackageDeploymentStatus.CompletedSuccess);
 * **Optional** = This property is used, if specified.
 * **Required** = This property is required.
 * **Used** = This property is used; if not specified, the default value is used.
-
 
 ## 3.9. PackageRuntimeManager
 

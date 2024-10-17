@@ -155,6 +155,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions const& registerOptions,
             winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
             wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+        const double progressMaxPerPackage,
             HRESULT& extendedError,
             winrt::hstring& errorText,
             winrt::guid& activityId);

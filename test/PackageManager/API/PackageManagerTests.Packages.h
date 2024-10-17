@@ -200,14 +200,17 @@ namespace Test::PackageManager::Tests
 
     inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem _Make_PackageSetItem(
         PCWSTR packageFullName,
-        winrt::Windows::Foundation::Uri const& packageUri)
+        const winrt::Windows::Foundation::Uri* packageUri)
     {
-        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageSetItem: PackageFullName:%s Path:%s", packageFullName, packageUri.ToString().c_str()));
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageSetItem: PackageFullName:%s Path:%s", packageFullName, (packageUri ? packageUri->ToString().c_str() : L"<null>")));
         const auto [packageName, packageVersion, packageArchitecture, packageResourceId, packagePublisherId, packageFamilyName]{ ::AppModel::Package::ParsePackageFullName(packageFullName) };
 
         winrt::Microsoft::Windows::Management::Deployment::PackageSetItem psi;
         psi.PackageFamilyName(packageFamilyName);
-        psi.PackageUri(packageUri);
+        if (packageUri)
+        {
+            psi.PackageUri(*packageUri);
+        }
         const ::AppModel::Identity::PackageVersion version{ packageVersion };
         psi.MinVersion(version.ToWinrtPackageVersion());
         return psi;
@@ -218,14 +221,20 @@ namespace Test::PackageManager::Tests
         PCWSTR packageDirName)
     {
         const auto packageUri{ TP::GetMsixPackageUri(packageDirName) };
-        return _Make_PackageSetItem(packageFullName, packageUri);
+        return _Make_PackageSetItem(packageFullName, &packageUri);
     }
 
     inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem Make_PackageSetItem_ForRegister(
         PCWSTR packageFullName)
     {
         const auto appxManifestUri{ TP::GetAppxManifestPackageUri(packageFullName) };
-        return _Make_PackageSetItem(packageFullName, appxManifestUri);
+        return _Make_PackageSetItem(packageFullName, &appxManifestUri);
+    }
+
+    inline winrt::Microsoft::Windows::Management::Deployment::PackageSetItem Make_PackageSetItem_NoPackageUri(
+        PCWSTR packageFullName)
+    {
+        return _Make_PackageSetItem(packageFullName, nullptr);
     }
 
     inline bool IsPackageRegistered_Red()
