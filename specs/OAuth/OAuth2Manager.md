@@ -39,6 +39,41 @@ and OAuth 2.0 for Native Apps [RFC 8252](https://tools.ietf.org/html/rfc8252).
 
  ## Perform OAuth 2.0 (c++)
 
+ Performing an Implicit Request with redirect URI(grant type/'response_type' = "token")
+
+ ```c++
+AuthRequestResult authRequestResult = co_await OAuth2Manager::InitiateAuthRequestAsync(
+    Uri(L"https://my.server.com/oauth/authorize?client_id=<client ID>&scope=<Scope>"), Uri(L"my-app:/oauth-callback/"));
+if (AuthResponse authResponse = authRequestResult.Response())
+{
+    //To obtain the access token 
+    authResponse.AccessToken();
+}
+else
+{
+    AuthFailure authFailure = authRequestResult.Failure();
+    NotifyFailure(authFailure.Error(), authFailure.ErrorDescription());
+}
+```
+
+Performing an Implicit Request without redirect URI(grant type/'response_type' = "token")
+
+ ```c++
+AuthRequestResult authRequestResult = co_await OAuth2Manager::InitiateAuthRequestAsyncWithoutCallback(
+    Uri(L"https://my.server.com/oauth/authorize?client_id=<client ID>&scope=<Scope>"));
+if (AuthResponse authResponse = authRequestResult.Response())
+{
+    //To obtain the access token 
+    authResponse.AccessToken();
+}
+else
+{
+    AuthFailure authFailure = authRequestResult.Failure();
+    NotifyFailure(authFailure.Error(), authFailure.ErrorDescription());
+}
+```
+
+
  Performing an Authorization Code Request (grant type/'response_type' = "code")
 
  ```c++
@@ -431,7 +466,7 @@ It's a class that provides the failure object of a token request.
   OAuth 2.0 launch using browser launch.
  
 ```c++ (but really MIDL3)
-namespace Microsoft.Windows.Security.Authentication.OAuth
+namespace Microsoft.Security.Authentication.OAuth
 {
     [contractversion(1)]
     apicontract OAuthContract {};
@@ -519,6 +554,7 @@ namespace Microsoft.Windows.Security.Authentication.OAuth
         // Helper method to create for an authorization code grant request ("code" response type) with required
         // parameters, per RFC 6749 section 4.1.1.
         static AuthRequestParams CreateForAuthorizationCodeRequest(String clientId);
+
         // Helper method to create for an authorization code grant request ("code" response type) with required
         // parameters as well as a redirect URI, which is frequently specified.
         static AuthRequestParams CreateForAuthorizationCodeRequest(String clientId, Windows.Foundation.Uri redirectUri);
@@ -526,6 +562,7 @@ namespace Microsoft.Windows.Security.Authentication.OAuth
         // Helper method to create for an implicit grant request ("token" response type) with required parameters, per
         // RFC 6749 section 4.2.1.
         static AuthRequestParams CreateForImplicitRequest(String clientId);
+
         // Helper method to create for an implicit grant request ("token" response type) with required parameters as
         // well as a redirect URI, which is frequently specified.
         static AuthRequestParams CreateForImplicitRequest(String clientId, Windows.Foundation.Uri redirectUri);
