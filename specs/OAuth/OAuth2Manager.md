@@ -45,7 +45,7 @@ and OAuth 2.0 for Native Apps [RFC 8252](https://tools.ietf.org/html/rfc8252).
  // Get the WindowId for the application window
  Microsoft::UI::WindowId parentWindowId = this->AppWindow().Id();
 
-AuthRequestResult authRequestResult = co_await OAuth2Manager::InitiateAuthRequestAsync(parentWindowId,
+AuthRequestResult authRequestResult = co_await OAuth2Manager::RequestAuthAsync(parentWindowId,
     Uri(L"https://my.server.com/oauth/authorize?client_id=<client ID>&scope=<Scope>"), Uri(L"my-app:/oauth-callback/"));
 if (AuthResponse authResponse = authRequestResult.Response())
 {
@@ -65,7 +65,7 @@ Performing an Implicit Request without redirect URI(grant type/'response_type' =
  // Get the WindowId for the application window
  Microsoft::UI::WindowId parentWindowId = this->AppWindow().Id();
 
-AuthRequestResult authRequestResult = co_await OAuth2Manager::InitiateAuthRequestAsyncWithoutCallback(parentWindowId,
+AuthRequestResult authRequestResult = co_await OAuth2Manager::RequestAuthAsync(parentWindowId,
     Uri(L"https://my.server.com/oauth/authorize?client_id=<client ID>&scope=<Scope>"));
 if (AuthResponse authResponse = authRequestResult.Response())
 {
@@ -90,7 +90,7 @@ AuthRequestParams authRequestParams = AuthRequestParams::CreateForAuthorizationC
     Uri(L"my-app:/oauth-callback/"));
 authRequestParams.Scope(L"user:email user:birthday");
 
-AuthRequestResult authRequestResult = co_await OAuth2Manager::InitiateAuthRequestAsync(parentWindowId, 
+AuthRequestResult authRequestResult = co_await OAuth2Manager::RequestAuthWithParamsAsync(parentWindowId, 
     Uri(L"https://my.server.com/oauth/authorize"), authRequestParams);
 if (AuthResponse authResponse = authRequestResult.Response())
 {
@@ -200,7 +200,7 @@ AuthRequestParams authRequestParams = AuthRequestParams::CreateForImplicitReques
     Uri(L"my-app:/oauth-callback/"));
 authRequestParams.Scope(L"user:email user:birthday");
 
-AuthRequestResult authRequestResult = co_await OAuth2Manager::InitiateAuthRequestAsync(parentWindowId, 
+AuthRequestResult authRequestResult = co_await OAuth2Manager::RequestAuthWithParamsAsync(parentWindowId, 
     Uri(L"https://my.server.com/oauth/authorize"), authRequestParams);
 if (AuthResponse authResponse = authRequestResult.Response())
 {
@@ -255,9 +255,9 @@ complete an authorization request, and request an access token for a user throug
 
 | Name | Description | Parameters | Returns |
 |-|-|-|-| 
-| InitiateAuthRequestAsync(Microsoft.UI.WindowId, Windows.Foundation.Uri, Windows.Foundation.Uri) | Initiates an authorization request in the user's default browser. This performs an access token request of implicit grant type. | Microsoft.UI.WindowId `parentWindowId`, Windows.Foundation.Uri `authEndPoint` , Windows.Foundation.Uri `redirectUri` | Windows.Foundation.IAsyncOperation< AuthRequestResult > |
-| InitiateAuthRequestAsyncWithoutCallback(Microsoft.UI.WindowId, Windows.Foundation.Uri) | Initiates an authorization request in the user's default browser. This performs an access token request of implicit grant type. | Microsoft.UI.WindowId `parentWindowId`, Windows.Foundation.Uri `authEndPoint` | Windows.Foundation.IAsyncOperation< AuthRequestResult > |
-| InitiateAuthRequestAsync(Microsoft.UI.WindowId, Windows.Foundation.Uri, AuthRequestParams) | Intiates auth request for a user in the user's default browser through a client.| Microsoft.UI.WindowId `parentWindowId`, Windows.Foundation.Uri `authEndPoint`  , AuthRequestParams `params` | Windows.Foundation.IAsyncOperation< AuthRequestResult > |
+| RequestAuthAsync(Microsoft.UI.WindowId, Windows.Foundation.Uri, Windows.Foundation.Uri) | Initiates an authorization request in the user's default browser. This performs an access token request of implicit grant type. | Microsoft.UI.WindowId `parentWindowId`, Windows.Foundation.Uri `authEndPoint` , Windows.Foundation.Uri `redirectUri` | Windows.Foundation.IAsyncOperation< AuthRequestResult > |
+| RequestAuthAsync(Microsoft.UI.WindowId, Windows.Foundation.Uri) | Initiates an authorization request in the user's default browser. This performs an access token request of implicit grant type. | Microsoft.UI.WindowId `parentWindowId`, Windows.Foundation.Uri `authEndPoint` | Windows.Foundation.IAsyncOperation< AuthRequestResult > |
+| RequestAuthWithParamsAsync(Microsoft.UI.WindowId, Windows.Foundation.Uri, AuthRequestParams) | Intiates auth request for a user in the user's default browser through a client.| Microsoft.UI.WindowId `parentWindowId`, Windows.Foundation.Uri `authEndPoint`  , AuthRequestParams `params` | Windows.Foundation.IAsyncOperation< AuthRequestResult > |
 | CompleteAuthRequest(Windows.Foundation.Uri) | Completes an auth request through a redirect URI. | Windows.Foundation.Uri `responseUri` | Boolean |
 | RequestTokenAsync(Windows.Foundation.Uri, TokenRequestParams) | Initiates an access token request. | Windows.Foundation.Uri `tokenEndPoint` , TokenRequestParams `params` | Windows.Foundation.IAsyncOperation< TokenRequestResult > |
 | RequestTokenAsync(Windows.Foundation.Uri, TokenRequestParams, ClientAuthentication) | Initiates an access token request with client authentication. | Windows.Foundation.Uri `tokenEndPoint` , TokenRequestParams `params` , ClientAuthentication `clientAuth` | Windows.Foundation.IAsyncOperation< TokenRequestResult > |
@@ -269,7 +269,7 @@ It's a class that provides methods to create a client authentication object for 
 
 > Note: This is used to authenticate the client application to the authorization server. 
   It is not used to authenticate the user to the client application. 
-  User authentication is handled by the InitiateAuthRequestAsync method of OAuth2Manager class.
+  User authentication is handled by the RequestAuthWithParamsAsync method of OAuth2Manager class.
 
 ## ClientAuthentication constructor
 
@@ -508,20 +508,20 @@ namespace Microsoft.Security.Authentication.OAuth
         // Initiates an authorization request in the user's default browser as described by RFC 6749 section 3.1. The
         // returned 'IAsyncOperation' will remain in the 'Started' state until it is either cancelled or completed by a
         // call to 'CompleteAuthRequest'. This performs authorization of response_type="token".
-        static Windows.Foundation.IAsyncOperation<AuthRequestResult> InitiateAuthRequestAsync(Microsoft.UI.WindowId parentWindowId,
+        static Windows.Foundation.IAsyncOperation<AuthRequestResult> RequestAuthAsync(Microsoft.UI.WindowId parentWindowId,
             Windows.Foundation.Uri completeAuthEndpoint,
             Windows.Foundation.Uri redirectUri);
 
         // Initiates an authorization request in the user's default browser as described by RFC 6749 section 3.1. The
         // returned 'IAsyncOperation' will remain in the 'Started' state until it is either cancelled or completed by a
         // call to 'CompleteAuthRequest'.This performs authorization of response_type="token".
-        static Windows.Foundation.IAsyncOperation<AuthRequestResult> InitiateAuthRequestAsyncWithoutCallback(Microsoft.UI.WindowId parentWindowId,
+        static Windows.Foundation.IAsyncOperation<AuthRequestResult> RequestAuthAsync(Microsoft.UI.WindowId parentWindowId,
             Windows.Foundation.Uri completeAuthEndpoint);
 
         // Initiates an authorization request in the user's default browser as described by RFC 6749 section 3.1. The
         // returned 'IAsyncOperation' will remain in the 'Started' state until it is either cancelled or completed by a
         // call to 'CompleteAuthRequest'.
-        static Windows.Foundation.IAsyncOperation<AuthRequestResult> InitiateAuthRequestAsync(Microsoft.UI.WindowId parentWindowId,
+        static Windows.Foundation.IAsyncOperation<AuthRequestResult> RequestAuthWithParamsAsync(Microsoft.UI.WindowId parentWindowId,
             Windows.Foundation.Uri authEndpoint,
             AuthRequestParams params);
 
