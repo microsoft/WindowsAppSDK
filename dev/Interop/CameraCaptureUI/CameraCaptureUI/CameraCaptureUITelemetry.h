@@ -17,6 +17,6 @@ public:
     DEFINE_COMPLIANT_MEASURES_EVENT_PARAM2(CaptureSuccessful, PDT_ProductAndServicePerformance,
         bool, IsAppPackaged, PCWSTR, AppName);
 
-    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM3(CaptureError, PDT_ProductAndServiceUsage,
-        bool, IsAppPackaged, PCWSTR, AppName, HRESULT, hResult);
+    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM4(CaptureError, PDT_ProductAndServiceUsage,
+        bool, IsAppPackaged, PCWSTR, AppName, HRESULT, hResult, PCWSTR, message);
 };

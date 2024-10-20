@@ -77,7 +77,7 @@ namespace Microsoft.Windows.Media.Capture
     marshaling_behavior(none)]
     runtimeclass CameraCaptureUI
     {
-        CameraCaptureUI(Microsoft.UI.WindowId window);
+        CameraCaptureUI(Microsoft.UI.WindowId windowId);
 
         CameraCaptureUIPhotoCaptureSettings PhotoSettings{ get; };
         CameraCaptureUIVideoCaptureSettings VideoSettings{ get; };

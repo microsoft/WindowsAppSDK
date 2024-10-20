@@ -54,7 +54,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
     concurrency::task<token_and_path> CreateEmptyFileAndGetToken(hstring const& fileExtension)
     {
         auto tempFolder = ApplicationData::Current().TemporaryFolder();
-        auto tempFile = co_await tempFolder.CreateFileAsync(L"CCapture" + fileExtension, CreationCollisionOption::GenerateUniqueName);
+        auto tempFile = co_await tempFolder.CreateFileAsync(L"CameraCapture" + fileExtension, CreationCollisionOption::GenerateUniqueName);
         auto tempFilePath = tempFile.Path();
         auto token = SharedStorageAccessManager::AddFile(tempFile);
 
@@ -128,15 +128,13 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
             CameraCaptureUITelemetry::CaptureSuccessful(isAppPackaged, appName);
             co_return file;
         }
-        catch (const hresult_error& ex)
+        catch (...)
         {
-            CameraCaptureUITelemetry::CaptureError(isAppPackaged, appName, ex.code());
-            throw ex;
-        }
-        catch (const std::exception& ex)
-        {
-            CameraCaptureUITelemetry::CaptureError(isAppPackaged, appName, E_FAIL);
-            throw hresult_error(E_FAIL);
+            auto e = winrt::hresult_error(winrt::to_hresult(), winrt::take_ownership_from_abi);
+            auto hr = e.code();
+            auto message = e.message().c_str();
+            CameraCaptureUITelemetry::CaptureError(isAppPackaged, appName, hr, message);
+            throw e;
         }
     }
 }

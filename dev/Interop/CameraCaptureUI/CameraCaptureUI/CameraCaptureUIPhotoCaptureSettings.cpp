@@ -16,7 +16,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         auto hasPhotoAspectRatioConstraint = (aspect.Width != 0) || (aspect.Height != 0);
         auto hasPhotoSizeConstraint = hasPhotoFixedSizeConstraint || hasPhotoAspectRatioConstraint;
 
-        if (hasPhotoAspectRatioConstraint && hasPhotoAspectRatioConstraint)
+        if (hasPhotoAspectRatioConstraint && hasPhotoFixedSizeConstraint)
         {
             throw hresult_invalid_argument(L"PhotoSettings can't have both a size and aspect ratio specified");
         }

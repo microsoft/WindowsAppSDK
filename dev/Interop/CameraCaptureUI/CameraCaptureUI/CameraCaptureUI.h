@@ -17,8 +17,8 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
 
     struct CameraCaptureUI : CameraCaptureUIT<CameraCaptureUI>
     {
-        CameraCaptureUI(winrt::Microsoft::UI::WindowId const& window) :
-            m_windowId(window)
+        CameraCaptureUI(winrt::Microsoft::UI::WindowId const& windowId) :
+            m_windowId(windowId)
         {
         }
 
