@@ -35,6 +35,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::StorageFile> CaptureFileAsync(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMode mode);
 
     private:
+        std::mutex m_captureMutex; // Mutex for locking
         TelemetryHelper m_telemetryHelper;
         winrt::Microsoft::UI::WindowId m_windowId;
         token_and_path m_photoTokenFile;

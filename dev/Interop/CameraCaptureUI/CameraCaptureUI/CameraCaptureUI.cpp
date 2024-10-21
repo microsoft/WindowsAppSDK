@@ -63,6 +63,13 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
 
     IAsyncOperation<StorageFile> CameraCaptureUI::CaptureFileAsync(CameraCaptureUIMode mode)
     {
+        // Only allow one capture operation at a time from this instance
+        std::unique_lock<std::mutex> lock(m_captureMutex, std::try_to_lock);
+        if (!lock.owns_lock())
+        {
+            throw hresult_error(E_ILLEGAL_METHOD_CALL, L"CameraCaptureUI is already capturing");
+        }
+
         bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
         try
@@ -93,17 +100,17 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
             if ((mode == CameraCaptureUIMode::PhotoOrVideo) || (mode == CameraCaptureUIMode::Photo))
             {
                 m_photoSettings->validate();
+                m_photoSettings->Serialize(properties);
                 m_photoTokenFile = co_await CreateEmptyFileAndGetToken(m_photoSettings->GetFileExtension());
                 properties.Insert(L"PhotoFileToken", box_value(m_photoTokenFile.token));
-                m_photoSettings->Serialize(properties);
             }
 
             if ((mode == CameraCaptureUIMode::PhotoOrVideo) || (mode == CameraCaptureUIMode::Video))
             {
                 m_videoSettings->validate();
+                m_videoSettings->Serialize(properties);
                 m_videoTokenFile = co_await CreateEmptyFileAndGetToken(m_videoSettings->GetFileExtension());
                 properties.Insert(L"VideoFileToken", box_value(m_videoTokenFile.token));
-                m_videoSettings->Serialize(properties);
             }
 
             auto tokenValue = co_await LaunchCameraForResultToken(m_windowId, properties);
