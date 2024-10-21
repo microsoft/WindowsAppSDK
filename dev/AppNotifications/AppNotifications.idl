@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 import "..\AppLifecycle\AppLifecycle.idl";
 
@@ -111,6 +111,29 @@ namespace Microsoft.Windows.AppNotifications
 
         // Gets or sets whether a Notification's pop-up UI is displayed on the user's screen.
         Boolean SuppressDisplay;
+
+        // Gets or sets the Notification Device Data
+        AppNotificationDevicesData DevicesData;
+    }
+
+    // The Notification Device Data
+    [contract(AppNotificationsContract, 2)]
+    runtimeclass AppNotificationDevicesData
+    {
+        // Initializes a new Instance of NotificationDevicesData
+        AppNotificationDevicesData();
+
+        // Checks if Video or Audio Calling is supported
+        static Boolean IsVideoOrAudioCallingSupported();
+
+        // Gets or sets the Camera Device Id
+        String CameraDeviceId{ get; set; };
+
+        // Gets or sets the Microphone Device Id
+        String MicrophoneDeviceId{ get; set; };
+
+        // Gets or sets the Speaker Device Id
+        String SpeakerDeviceId{ get; set; };
     }
 
     // The manager class which encompasses all App Notification API Functionality

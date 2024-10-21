@@ -119,4 +119,16 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         auto lock{ m_lock.lock_exclusive() };
         m_notificationId = id;
     }
+
+    winrt::Microsoft::Windows::AppNotifications::AppNotificationDevicesData AppNotification::DevicesData()
+    {
+        auto lock{ m_lock.lock_shared() };
+        return m_devicesData;
+    }
+
+    void AppNotification::DevicesData(winrt::Microsoft::Windows::AppNotifications::AppNotificationDevicesData const& devicesData)
+    {
+        auto lock{ m_lock.lock_exclusive() };
+        m_devicesData = devicesData;
+    }
 }
