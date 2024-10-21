@@ -144,6 +144,17 @@ steps:
             Get-WinSystemLocale
 
   - task: PowerShell@2
+    displayName: 'Dump services'
+    inputs:
+      targetType: 'inline'
+      script: |
+        Get-Service
+        Get-Service | Write-Host
+        Get-Service | Out-Host
+        sc.exe queryex te.service | Write-Host
+        sc.exe qc te.service | Write-Host
+
+  - task: PowerShell@2
     displayName: 'Run TAEF Tests'
     inputs:
       filePath: 'TestAll.ps1'
