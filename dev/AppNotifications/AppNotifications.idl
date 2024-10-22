@@ -113,6 +113,7 @@ namespace Microsoft.Windows.AppNotifications
         Boolean SuppressDisplay;
 
         // Gets or sets the Notification Device Data
+        [contract(AppNotificationsContract, 2)]
         AppNotificationDevicesData DevicesData;
     }
 

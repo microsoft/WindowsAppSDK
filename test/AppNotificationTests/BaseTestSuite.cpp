@@ -603,7 +603,7 @@ void BaseTestSuite::VerifyToastDevicesDataAllDevicesSet()
 {
     AppNotification toast{ CreateToastNotification() };
 
-    AppNotificationDevicesData devicesData{ nullptr };
+    AppNotificationDevicesData devicesData{};
     devicesData.CameraDeviceId(L"CameraDeviceId");
     devicesData.MicrophoneDeviceId(L"MicrophoneDeviceId");
     devicesData.SpeakerDeviceId(L"SpeakerDeviceId");
@@ -619,16 +619,14 @@ void BaseTestSuite::VerifyToastDevicesDataNoDevicesSet()
 {
     AppNotification toast{ CreateToastNotification() };
 
-    VERIFY_ARE_EQUAL(toast.DevicesData().CameraDeviceId(), L"");
-    VERIFY_ARE_EQUAL(toast.DevicesData().MicrophoneDeviceId(), L"");
-    VERIFY_ARE_EQUAL(toast.DevicesData().SpeakerDeviceId(), L"");
+    VERIFY_ARE_EQUAL(toast.DevicesData(), nullptr);
 }
 
 void BaseTestSuite::VerifyToastDevicesDataNotAllDevicesSet()
 {
     AppNotification toast{ CreateToastNotification() };
 
-    AppNotificationDevicesData devicesData{ nullptr };
+    AppNotificationDevicesData devicesData{ };
     devicesData.CameraDeviceId(L"CameraDeviceId");
 
     toast.DevicesData(devicesData);

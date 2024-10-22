@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -665,6 +665,56 @@ namespace Test::AppNotification::Builder
 
             VERIFY_ARE_EQUAL(Decode(LR"(&%3B"%3D'%25<>)"), LR"(&;"='%<>)");
             VERIFY_ARE_EQUAL(Decode(L"%3B%3D%25"), L";=%");
+        }
+
+        TEST_METHOD(AppNotificationBuilderWithCameraPreview)
+        {
+            auto builder{ winrt::AppNotificationBuilder()
+                .AddCameraPreview()
+                .AddButton(winrt::AppNotificationButton(L"content")
+                .AddArgument(L"key", L"value")
+                .SetButtonStyle(winrt::AppNotificationButtonStyle::Success)
+                .SetIcon(c_sampleUri)
+                .SetInputId(L"inputId")
+                .SetToolTip(L"toolTip"))
+            };
+
+            auto expected{ L"<toast useButtonStyle='true'><visual><binding template='ToastGeneric'><cameraPreview/></binding></visual><actions><action content='content' arguments='key=value' imageUri='http://www.microsoft.com/' hint-inputId='inputId' hint-buttonStyle='Success' hint-toolTip='toolTip'/></actions></toast>" };
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderWithCameraPreviewAndVideoCallSettingsButton)
+        {
+            auto builder{ winrt::AppNotificationBuilder()
+                .AddCameraPreview()
+                .AddButton(winrt::AppNotificationButton(L"content")
+                .AddArgument(L"key", L"value")
+                .SetButtonStyle(winrt::AppNotificationButtonStyle::Success)
+                .SetIcon(c_sampleUri)
+                .SetInputId(L"inputId")
+                .SetToolTip(L"toolTip")
+                .SetSettingType(winrt::AppNotificationButtonSettingType::VideoCall))
+            };
+
+            auto expected{ L"<toast useButtonStyle='true'><visual><binding template='ToastGeneric'><cameraPreview/></binding></visual><actions><action content='content' arguments='key=value' imageUri='http://www.microsoft.com/' hint-inputId='inputId' hint-buttonStyle='Success' hint-toolTip='toolTip' settingType='VideoDevices'/></actions></toast>" };
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
+        }
+
+        TEST_METHOD(AppNotificationBuilderWithCameraPreviewAndAudioCallSettingsButton)
+        {
+            auto builder{ winrt::AppNotificationBuilder()
+                .AddCameraPreview()
+                .AddButton(winrt::AppNotificationButton(L"content")
+                .AddArgument(L"key", L"value")
+                .SetButtonStyle(winrt::AppNotificationButtonStyle::Success)
+                .SetIcon(c_sampleUri)
+                .SetInputId(L"inputId")
+                .SetToolTip(L"toolTip")
+                .SetSettingType(winrt::AppNotificationButtonSettingType::AudioCall))
+            };
+
+            auto expected{ L"<toast useButtonStyle='true'><visual><binding template='ToastGeneric'><cameraPreview/></binding></visual><actions><action content='content' arguments='key=value' imageUri='http://www.microsoft.com/' hint-inputId='inputId' hint-buttonStyle='Success' hint-toolTip='toolTip' settingType='AudioDevices'/></actions></toast>" };
+            VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
     };
 }

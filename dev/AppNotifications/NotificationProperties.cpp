@@ -160,12 +160,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ActivityId(_Out_ GU
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ToastDevicesData(_Out_ ToastABI::IToastDevicesData** devicesData) noexcept
 {
-    *devicesData = nullptr;
     auto lock{ m_lock.lock_shared() };
-    if (m_toastDevicesData != nullptr)
-    {
-        m_toastDevicesData.copy_to(devicesData);
-    }
-
+    m_toastDevicesData.copy_to(devicesData);
     return S_OK;
 }

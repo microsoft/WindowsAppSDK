@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -121,17 +121,42 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
     {
         auto logTelemetry{ AppNotificationBuilderTelemetry::ButtonToString::Start(g_telemetryHelper) };
 
-        std::wstring xmlResult{ wil::str_printf<std::wstring>(L"<action content='%ls'%ls%ls%ls%ls%ls%ls/>",
+        std::wstring xmlResult{ wil::str_printf<std::wstring>(L"<action content='%ls'%ls%ls%ls%ls%ls%ls%ls/>",
             m_content.c_str(),
             GetActivationArguments().c_str(),
             m_useContextMenuPlacement ? L" placement='contextMenu'" : L"",
             m_iconUri ? wil::str_printf<std::wstring>(L" imageUri='%ls'", m_iconUri.ToString().c_str()).c_str() : L"",
             !m_inputId.empty() ? wil::str_printf<std::wstring>(L" hint-inputId='%ls'", m_inputId.c_str()).c_str() : L"",
             GetButtonStyle().c_str(),
-            !m_toolTip.empty() ? wil::str_printf<std::wstring>(L" hint-toolTip='%ls'", m_toolTip.c_str()).c_str() : L"") };
+            !m_toolTip.empty() ? wil::str_printf<std::wstring>(L" hint-toolTip='%ls'", m_toolTip.c_str()).c_str() : L"",
+            GetSettingType().c_str()) };
 
         logTelemetry.Stop();
 
         return xmlResult.c_str();
+    }
+
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetSettingType(AppNotificationButtonSettingType const& value)
+    {
+        m_settingType = value;
+        return *this;
+    }
+
+    std::wstring AppNotificationButton::GetSettingType()
+    {
+        if (m_settingType == AppNotificationButtonSettingType::none)
+        {
+            return L""; 
+        }
+
+        switch (m_settingType)
+        {
+        case AppNotificationButtonSettingType::VideoCall:
+            return L" settingType='VideoDevices'";
+        case AppNotificationButtonSettingType::AudioCall:
+            return L" settingType='AudioDevices'";
+        default:
+            return L"";
+        }
     }
 }
