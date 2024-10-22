@@ -15,6 +15,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8630F7AA-2969-4DC9-8700-9B468C1DC21D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppRuntime_DLL", "dev\WindowsAppRuntime_DLL\WindowsAppRuntime_DLL.vcxproj", "{B73AD907-6164-4294-88FB-F3C9C10DA1F1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32} = {FD0CC14A-ED4B-4936-B68B-F31E58372E32}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppLifecycle", "AppLifecycle", "{3DE93B2F-F887-437D-B512-6B1024ABA290}"
 EndProject
@@ -69,6 +72,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.WindowsAppRuntime
 	ProjectSection(ProjectDependencies) = postProject
 		{4410D374-A90C-4ADF-8B15-AA2AAE2636BF} = {4410D374-A90C-4ADF-8B15-AA2AAE2636BF}
 		{BC5E5A3E-E733-4388-8B00-F8495DA7C778} = {BC5E5A3E-E733-4388-8B00-F8495DA7C778}
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32} = {FD0CC14A-ED4B-4936-B68B-F31E58372E32}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicDependencyDataStore", "DynamicDependencyDataStore", "{441A3BB0-7FD2-4902-AEDB-A1C57B528C77}"
@@ -172,6 +176,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationTests", "te
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask", "dev\PushNotifications\PushNotificationsLongRunningTask\PushNotificationsLongRunningTask.vcxproj", "{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32} = {FD0CC14A-ED4B-4936-B68B-F31E58372E32}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask.ProxyStub", "dev\PushNotifications\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.vcxproj", "{BF3FCED0-CADB-490A-93A7-4D90E1F45AB0}"
 EndProject
@@ -185,6 +192,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerNotifications", "dev\PowerNotifications\PowerNotifications.vcxitems", "{B75C1B22-553C-40E4-B38E-6AB4D01FDB9D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerNotifications", "test\PowerNotifications\PowerNotifications.vcxproj", "{CBD95746-61CE-4F31-B6CC-C5ABF1766180}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32} = {FD0CC14A-ED4B-4936-B68B-F31E58372E32}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projections", "Projections", "{6CD616F9-173E-42CD-89A1-8FDFD86283AA}"
 EndProject
@@ -206,6 +216,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.AppLifecy
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppRuntime.Test.Singleton.Msix", "test\DynamicDependency\data\WindowsAppRuntime.Test.Singleton.Msix\WindowsAppRuntime.Test.Singleton.Msix.vcxproj", "{8F2C21F1-47AB-428C-A110-EE33FD7D9493}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32} = {FD0CC14A-ED4B-4936-B68B-F31E58372E32}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeploymentTests", "test\Deployment\API\DeploymentTests.vcxproj", "{E5659A29-FE68-417B-9BC5-613073DD54DF}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -219,6 +232,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EnvironmentManagerTests", "
 		{A7391725-4EF5-438F-8DE1-645423E46955} = {A7391725-4EF5-438F-8DE1-645423E46955}
 		{B71E818A-882E-456A-87E5-4DE4A6602B99} = {B71E818A-882E-456A-87E5-4DE4A6602B99}
 		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32} = {FD0CC14A-ED4B-4936-B68B-F31E58372E32}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bootstrap", "Bootstrap", "{8746775A-899E-49DD-A46C-2FE0899FFFEA}"
@@ -351,6 +365,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_BootstrapAutoInitialize_CS_Options_None", "test\DynamicDependency\Test_BootstrapAutoInitialize\CS\Test_BootstrapAutoInitialize_CS_Options_None\Test_BootstrapAutoInitialize_CS_Options_None.csproj", "{4A74BBED-3B20-44A7-B6FF-3373160DE741}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppNotificationTests", "test\AppNotificationTests\AppNotificationTests.vcxproj", "{1C9477D2-7330-4992-B06C-F7E2193CF379}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32} = {FD0CC14A-ED4B-4936-B68B-F31E58372E32}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeploymentAgent", "dev\DeploymentAgent\DeploymentAgent.vcxproj", "{4410D374-A90C-4ADF-8B15-AA2AAE2636BF}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -360,6 +377,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppNotificationBuilder", "dev\AppNotifications\AppNotificationBuilder\AppNotificationBuilder.vcxitems", "{E49329F3-5196-4BBA-B5C4-E11CE7EFB07A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppNotificationBuilderTests", "test\AppNotificationBuilderTests\AppNotificationBuilderTests.vcxproj", "{131DE0C4-AA1E-4649-B5BC-7B43508FA93A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32} = {FD0CC14A-ED4B-4936-B68B-F31E58372E32}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.Security.AccessControl.Projection", "dev\Projections\CS\Microsoft.Windows.Security.AccessControl.Projection\Microsoft.Windows.Security.AccessControl.Projection.csproj", "{E6D59245-696F-4D13-ACF6-7ECE6E653367}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -432,6 +452,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LRPTests", "test\LRPTests\L
 	ProjectSection(ProjectDependencies) = postProject
 		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
 		{F76B776E-86F5-48C5-8FC7-D2795ECC9746} = {F76B776E-86F5-48C5-8FC7-D2795ECC9746}
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32} = {FD0CC14A-ED4B-4936-B68B-F31E58372E32}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VersionInfo", "VersionInfo", "{2A2D1131-273C-4E17-BCD3-8812170A4B95}"
@@ -472,6 +493,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PackageManagerTests", "test
 		{D0A1DFB8-8CEE-4CFC-B57B-B7C574B411C2} = {D0A1DFB8-8CEE-4CFC-B57B-B7C574B411C2}
 		{F2946790-DAF7-4DFF-A754-BA471A12E494} = {F2946790-DAF7-4DFF-A754-BA471A12E494}
 		{FBAE1876-C50A-4EFC-A686-3008B6438731} = {FBAE1876-C50A-4EFC-A686-3008B6438731}
+		{FD0CC14A-ED4B-4936-B68B-F31E58372E32} = {FD0CC14A-ED4B-4936-B68B-F31E58372E32}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{6213B1A3-E854-498F-AAFA-4CFC1E71023E}"

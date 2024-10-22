@@ -89,7 +89,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(StagePackageAsync_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             RemovePackageFamily_Red();
@@ -206,7 +206,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(StagePackageByUriAsync_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             RemovePackageFamily_Red();
@@ -334,7 +334,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(StagePackageSetAsync_1_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             RemovePackageFamily_Red();
@@ -654,7 +654,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(StagePackageSetAsync_N_StagedAndNotInstalledAndStaged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             RemovePackageFamily_Red();
@@ -729,7 +729,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(StagePackageAsync_StagedPackageStatusBad_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -754,7 +754,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(StagePackageByUriAsync_StagedPackageStatusBad_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -778,7 +778,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(StagePackageSetAsync_1_StagedPackageStatusBad_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
@@ -806,7 +806,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(StagePackageSetAsync_N_StagedPackageStatusOkAndBad_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
