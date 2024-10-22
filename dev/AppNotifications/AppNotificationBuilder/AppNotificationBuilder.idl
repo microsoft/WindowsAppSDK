@@ -31,7 +31,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Critical,
     };
 
-    [contract(AppNotificationBuilderContract, 1)]
+    [contract(AppNotificationBuilderContract, 2)]
     enum AppNotificationButtonSettingType
     {
         none,
