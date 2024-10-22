@@ -72,11 +72,11 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
 
         bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
+        const wchar_t* mediaType = nullptr;
         try
         {
             auto strong = get_strong();
-            CameraCaptureUITelemetry::CaptureInitiated(isAppPackaged, appName);
-            const wchar_t* mediaType = nullptr;
+
             if (mode == CameraCaptureUIMode::PhotoOrVideo)
             {
                 mediaType = L"photoOrVideo";
@@ -93,6 +93,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
             {
                 throw hresult_invalid_argument();
             }
+            CameraCaptureUITelemetry::CaptureInitiated(isAppPackaged, appName, mediaType);
 
             ValueSet properties;
             properties.Insert(L"MediaType", box_value(mediaType));
@@ -120,19 +121,9 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
             }
             StorageFile file = nullptr;
 
-            if (tokenValue == m_photoTokenFile.token)
-            {
-                file = co_await StorageFile::GetFileFromPathAsync(m_photoTokenFile.path);
-            }
-            else if (tokenValue == m_videoTokenFile.token)
-            {
-                file = co_await StorageFile::GetFileFromPathAsync(m_videoTokenFile.path);
-            }
-            else
-            {
-                file = co_await SharedStorageAccessManager::RedeemTokenForFileAsync(tokenValue);
-            }
-            CameraCaptureUITelemetry::CaptureSuccessful(isAppPackaged, appName);
+            file = co_await SharedStorageAccessManager::RedeemTokenForFileAsync(tokenValue);
+            
+            CameraCaptureUITelemetry::CaptureSuccessful(isAppPackaged, appName, mediaType);
             co_return file;
         }
         catch (...)
@@ -140,7 +131,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
             auto e = winrt::hresult_error(winrt::to_hresult(), winrt::take_ownership_from_abi);
             auto hr = e.code();
             auto message = e.message().c_str();
-            CameraCaptureUITelemetry::CaptureError(isAppPackaged, appName, hr, message);
+            CameraCaptureUITelemetry::CaptureError(isAppPackaged, appName, mediaType, hr, message);
             throw e;
         }
     }
