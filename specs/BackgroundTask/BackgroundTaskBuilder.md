@@ -3,7 +3,7 @@ BackgroundTaskBuilder API
 
 This is the spec for BackgroundTaskBuilder API to support Background Task Registration for WinAppSDK apps.
 
-[Related Bug]( https://github.com/microsoft/WindowsAppSDK/issues/3840)
+[Related Bug Report]( https://github.com/microsoft/WindowsAppSDK/issues/3840)
 
 
 # Background
@@ -23,7 +23,7 @@ This API takes care of avoiding this workaround so that WinAppSDK applications c
         SystemTrigger trigger = SystemTrigger(SystemTriggerType::TimeZoneChange, false);
         auto backgroundTrigger = trigger.as<IBackgroundTrigger>();
         builder.SetTrigger(backgroundTrigger);
-        builder.SetTaskEntryPointClsid (classGuid);
+        builder.SetTaskEntryPointClsid(classGuid);
         builder.Register(); 
 ```
 
@@ -55,8 +55,8 @@ This class is not agile, which means that you need to consider its threading mod
 
 | Name | Description | Parameters | Returns |
 |-|-|-|-|
-| AddCondition(IBackgroundCondition) | Adds a condition to a background task.| __IBackgroundCondition __ Condition for Background Task | |
-| Register() | Registers a background task with the system.| | __BackgroundTaskRegistration __|
+| AddCondition(IBackgroundCondition) | Adds a condition to a background task.| __IBackgroundCondition__ Condition for Background Task | |
+| Register() | Registers a background task with the system.| | __BackgroundTaskRegistration__|
 
 
 
@@ -78,22 +78,19 @@ namespace Microsoft.Windows.ApplicationModel.Background
     {
         BackgroundTaskBuilder();
 
-        void
-            SetTrigger(
+        void SetTrigger(
                 Windows.ApplicationModel.Background.IBackgroundTrigger trigger
             );
-    void
-            SetTaskEntryPointClsId(
+        void SetTaskEntryPointClsId(
                 GUID clsId
             );
-
-
 
         String Name{ set; get; };
 
         [return_name("task")]
-            Windows.ApplicationModel.Background.BackgroundTaskRegistration Register(
-            );
+            Windows.ApplicationModel.Background.BackgroundTaskRegistration Register();
+        [return_name("task")]
+            Windows.ApplicationModel.Background.BackgroundTaskRegistration Register(String name);
     }
 }
 
