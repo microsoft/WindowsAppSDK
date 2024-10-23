@@ -543,6 +543,367 @@ namespace Microsoft.Windows.AppNotifications
 }
 ```
 
+## Enhanced UX Notification for Video and Audio Call
+The Enhanced UI for Calling Notifications introduces a series of design improvements aimed at making video call notifications clearer, more interactive, and user-friendly. This feature is designed to increase the likelihood of users responding to calls promptly and efficiently by optimizing how notifications are presented and interacted with. We are adding improvements below to video calling UI/UX.  
+ 
+#### Interactive Elements: 
+
+- Quick Actions: Integrated buttons for mic and camera to allow users to manage their audio device and camera directly from the notification without needing to switch apps or windows. 
+ 
+- Live camera feed preview: Users can view a live feed of themselves when they make/receive a video call. This will help users be better prepared for video calls and also potentially avoid embarrassing situations.
+
+A screenshot of a Audio and video call
+
+![Notification Progress](Enhanced_ux_video_call_Notifications.png)
+
+Screenshot 1: Displays an example of Audio Call with new element as the setting button on click of that buttons it should show devices list for Audio Input and Output Devices. 
+
+Screenshot 2 and 3: Displays an example of Audio Call with 2 new elements - Camera Preview and Setting Button. Setting button click shows devices list for Audio Input and Output Devices. 
+
+If the camera device is changed, then the camera preview element should also display the selected device preview. 
+
+## Sample Code
+```cpp
+void SendVideoCallNotification()  
+{  
+    winrt::AppNotification notification =   
+    AppNotificationBuilder()
+    .SetScenario(AppNotificationScenario::IncomingCall) 
+    .AddText(L"Jill Bender", AppNotificationTextProperties().SetMaxLines(1)) 
+    .AddText(L"Incoming Video Call", AppNotificationTextProperties().SetMaxLines(1)) 
+    .AddCameraPreview() 
+    .AddButton(AppNotificationButton() 
+        .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://Assets/Icons/Setting.png)")) 
+        .SetSettingType(AppNotificationSettingType::VideoCall)) 
+    .AddButton(AppNotificationButton() 
+        .AddArgument(L"action", L"acceptCall") 
+        .AddArgument(L"threadId", L"92187") 
+        .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://Assets/Icons/Accept.png)")) 
+        .SetButtonStyle(AppNotificationButtonStyle::Success)) 
+    .AddButton(AppNotificationButton()
+        .AddArgument(L"action", L"declineCall") 
+        .AddArgument(L"threadId", L"92187") 
+        .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://Assets/Icons/Decline.png)")) 
+        .SetButtonStyle(AppNotificationButtonStyle::Critical)) 
+    .AddButton(AppNotificationButton() 
+        .AddArgument(L"action", L"message") 
+        .AddArgument(L"threadId", L"92187") 
+        .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://Assets/Icons/Message.png)"))) 
+    .BuildNotification(); 
+;  
+
+    if(winrt::AppNotificationDevicesData::IsVideoOrAudioCallingSupported())
+    {     
+       // Assign Devices Data values for the video call notification
+       winrt::AppNotificationDevicesData devicesData; 
+
+       devicesData.VideoDeviceId(L"\\?\USB#VID_045E&PID_0990&MI_00#6&db32c28&0&0000#{e5323777-f976-4f5b-9b55-b94699c46e44}\GLOBAL");  
+       devicesData.AudioInputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");  
+       devicesData.AudioOutputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");
+       notification.DevicesData(devicesData); 
+    } 
+
+    winrt::AppNotificationManager::Default().Show(notification);  
+} 
+```
+Example of Invoke Callback Existing API with additional User Inputs key-values (Contoso Calling App will get the selected device ids from User B from below invoke API on any button clicked accept/ decline/ message):
+```cpp
+//Example playload
+//<toast >
+//  <visual>
+//      <binding template="ToastGeneric">
+//          <text hint-maxLines="1">Jill Bender</text>
+//      </binding>
+//  </visual>
+//  <actions>
+//        <action  
+//          content=""  
+//          imageUri="Assets/Icons/Setting.png"  
+//          settingType="VideoDevices”  // New Property
+//          arguments=""/>   
+ //       <action  
+ //         content=""  
+  //        imageUri="Assets/Icons/Accept.png"  
+ //        hint-buttonStyle="Success"  
+ //         activationType="background"  
+ //         arguments="action=accept"/> 
+//  </actions>
+//</toast>
+
+void ProcessNotificationArgs(const winrt::AppNotificationActivatedEventArgs& notificationActivatedEventArgs)
+{
+    // If the user clicks on a toast, the code will need to launch the chat thread window
+    if (std::wstring(notificationActivatedEventArgs.Argument().c_str()).find(L"openThread") != std::wstring::npos)
+    {
+        GenerateChatThreadWindow();
+    }
+    else // If the user responds to a notification by clicking a accept button in the toast, we will need to initiate call to the other user
+    if (std::wstring(notificationActivatedEventArgs.Argument().c_str()).find(L"accept") != std::wstring::npos)
+    {
+        auto input = notificationActivatedEventArgs.UserInput(); // Below 3 User Input key-values would be provided from OS 
+        auto selectedCameraDeviceId  = input.Lookup(L"videoDeviceId");
+        auto selectedMicrophoneDeviceId  = input.Lookup(L"audioInputDeviceId");
+        auto selectedSpeakerDeviceId  = input.Lookup(L"audioOutputDeviceId");
+
+        // Process the selected device ids and launch video / audio call 
+        ActivateCallToUser(selectedCameraDeviceId  , selectedMicrophoneDeviceId  , selectedSpeakerDeviceId  );
+    }
+}
+```
+
+## API Details
+#### AppNotification
+  ```c#
+namespace Microsoft.Windows.AppNotifications
+{
+    apicontract AppNotificationsContract {}
+
+    // Event args for the Notification Activation
+    runtimeclass AppNotificationActivatedEventArgs
+    {
+        // Arguments from the invoked button. Empty for Default Activation with no launch args specified in payload.
+        String Argument{ get; };
+
+        // The data from the input elements of a Notification like a TextBox
+        Windows.Foundation.Collections.IMap<String, String> UserInput{ get; };
+
+        // Arguments from the invoked button built from AppNotificationBuilder
+        [contract(AppNotificationsContract, 3)]
+        Windows.Foundation.Collections.IMap<String, String> Arguments{ get; };
+    }
+
+    runtimeclass AppNotification
+    {
+        // The notification payload representation in xml
+        AppNotification(String payload);
+
+        // Unique identifier used to replace a notification within a group.
+        String Tag;
+
+        // Unique identifier for a Notification group in the app
+        String Group;
+
+        // A unique identifier for the Notification generated by the platform.
+        UInt32 Id { get; };
+
+        // The notification payload representation in XML
+        String Payload{ get; };
+
+        // Gets or sets additional information about the Notification progress.
+        AppNotificationProgressData Progress;
+
+        // Gets or sets the time after which a Notification should not be displayed.
+        Windows.Foundation.DateTime Expiration;
+
+        // Indicates whether the Notification will remain in the Action Center after a reboot.
+        Boolean ExpiresOnReboot;
+
+        // Gets or sets the priority for a Notification.
+        // Hints on how and at what urgency level a notification should be presented to the user (whether to wake up the screen, etc).
+        AppNotificationPriority Priority;
+
+        // Gets or sets whether a Notification's pop-up UI is displayed on the user's screen.
+        Boolean SuppressDisplay;
+
+        // Gets or sets the Notification Device Data
+        AppNotificationDevicesData DevicesData;
+    }
+
+    // The Notification Device Data
+    runtimeclass AppNotificationDevicesData
+    {
+        // Initializes a new Instance of NotificationDevicesData
+        AppNotificationDevicesData();
+
+        // Checks if Video or Audio Calling is supported
+        static Boolean IsVideoOrAudioCallingSupported();
+
+        // Gets or sets the Video Device Id
+        String VideoDeviceId;
+
+        // Gets or sets the Microphone Device Id
+        String AudioInputDeviceId;
+
+        // Gets or sets the Speaker Device Id
+        String AudioOutputDeviceId;
+    }
+
+    // The manager class which encompasses all App Notification API Functionality
+    runtimeclass AppNotificationManager
+    {
+        // Gets a Default instance of a AppNotificationManager
+        static AppNotificationManager Default{ get; };
+
+        // Registers an application for Notifications
+        // For Packaged apps, the COM server is defined in the manifest. The Process calling Register() and the process defined as the COM server are required to be the same.
+        // For Unpackaged apps, the caller process will be registered as the COM server. And assets like displayname and icon will be gleaned from Shell and registered as well.
+        void Register();
+
+        // Unpackaged Apps can call this API to register custom displayname and icon for AppNotifications and register themselves as a COM server.
+        void Register(String displayName, Windows.Foundation.Uri iconUri);
+
+        // Unregisters the COM Service so that a subsequent activation will launch a new process
+        void Unregister();
+
+        // Cleans up all Registration related data for toasts. After this, toasts will not work until Register() is called again
+        void UnregisterAll();
+
+        // Event handler for Notification Activations
+        event Windows.Foundation.TypedEventHandler<AppNotificationManager, AppNotificationActivatedEventArgs> NotificationInvoked;
+
+        // Displays the Notification in Action Center
+        void Show(AppNotification notification);
+
+        // Updates the Notification for a Progress related operation using Tag and Group
+        Windows.Foundation.IAsyncOperation<AppNotificationProgressResult> UpdateAsync(AppNotificationProgressData data, String tag, String group);
+
+        // Updates the Notification for a Progress related operation using Tag
+        Windows.Foundation.IAsyncOperation<AppNotificationProgressResult> UpdateAsync(AppNotificationProgressData data, String tag);
+
+        // Get the Notification Setting status for the app
+        AppNotificationSetting Setting { get; };
+
+        // Removes a specific Notification with a specific NotificationIdentifier from Action Centre
+        Windows.Foundation.IAsyncAction RemoveByIdAsync(UInt32 notificationId);
+
+        // Removes a Notification having a specific tag
+        Windows.Foundation.IAsyncAction RemoveByTagAsync(String tag);
+
+        // Removes a Notification having a specific tag and group
+        Windows.Foundation.IAsyncAction RemoveByTagAndGroupAsync(String tag, String group);
+
+        // Remove all Notifications for a specific group
+        Windows.Foundation.IAsyncAction RemoveByGroupAsync(String group);
+
+        // Removes all the Notifications for the App from Action Centre
+        Windows.Foundation.IAsyncAction RemoveAllAsync();
+
+        // Gets all the Notifications for the App from Action Centre
+        Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVector<AppNotification> > GetAllAsync();
+    }
+}
+  ```
+#### AppNotificationBuilder
+  ```c#
+  namespace Microsoft.Windows.AppNotifications.Builder
+{
+    enum AppNotificationButtonSettingType
+    {
+        none,
+        VideoCall,
+        AudioCall,
+    };
+
+    runtimeclass AppNotificationButton
+    {
+        AppNotificationButton();
+        AppNotificationButton(String content);
+
+        String Content;
+        Windows.Foundation.Collections.IMap<String, String> Arguments;
+        Windows.Foundation.Uri Icon;
+        String ToolTip;
+        Boolean ContextMenuPlacement;
+        AppNotificationButtonStyle ButtonStyle;
+        String InputId;
+        Windows.Foundation.Uri InvokeUri;
+        String TargetAppId;
+
+        AppNotificationButton AddArgument(String key, String value);
+
+        // Sets the Icon for the button.
+        AppNotificationButton SetIcon(Windows.Foundation.Uri value);
+
+        // The tooltip for a button, if the button has an empty content string.
+        AppNotificationButton SetToolTip(String value);
+        static Boolean IsToolTipSupported();
+
+        // Sets the Button as context menu action.
+        AppNotificationButton SetContextMenuPlacement();
+
+        // Sets the ButtonStyle to Success or Critical
+        AppNotificationButton SetButtonStyle(AppNotificationButtonStyle value);
+        static Boolean IsButtonStyleSupported();
+
+        // Specifies the ID of an existing TextBox next to which the button will be placed.
+        AppNotificationButton SetInputId(String value);
+
+        // Launches the URI passed into the button when activated.
+        AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri);
+        AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri, String targetAppId);
+
+        // Sets the setting type for the button.
+        AppNotificationButton SetSettingType(AppNotificationButtonSettingType value);
+    };
+
+    runtimeclass AppNotificationBuilder
+    {
+        AppNotificationBuilder();
+
+        // Adds arguments to the launch attribute to return when AppNotification is clicked.
+        AppNotificationBuilder AddArgument(String key, String value);
+
+        // Sets the timeStamp of the AppNotification to when it was constructed instead of when it was sent.
+        AppNotificationBuilder SetTimeStamp(Windows.Foundation.DateTime value);
+
+        AppNotificationBuilder SetDuration(AppNotificationDuration duration);
+
+        // Sets the scenario of the AppNotification.
+        AppNotificationBuilder SetScenario(AppNotificationScenario value);
+        static Boolean IsUrgentScenarioSupported();
+
+        // Adds text to the AppNotification.
+        AppNotificationBuilder AddText(String text);
+        AppNotificationBuilder AddText(String text, AppNotificationTextProperties properties);
+
+        AppNotificationBuilder SetAttributionText(String text);
+        AppNotificationBuilder SetAttributionText(String text, String language);
+
+        // Sets the full-width inline-image that appears when you expand the AppNotification
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri);
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
+        AppNotificationBuilder SetInlineImage(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imagecrop, String alternateText);
+
+        // Sets the image that replaces the app logo
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri);
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop);
+        AppNotificationBuilder SetAppLogoOverride(Windows.Foundation.Uri imageUri, AppNotificationImageCrop imageCrop, String alternateText);
+
+        // Sets the image that displays within the banner of the AppNotification.
+        AppNotificationBuilder SetHeroImage(Windows.Foundation.Uri imageUri);
+        AppNotificationBuilder SetHeroImage(Windows.Foundation.Uri imageUri, String alternateText);
+
+        // SetAudio
+        AppNotificationBuilder SetAudioUri(Windows.Foundation.Uri audioUri);
+        AppNotificationBuilder SetAudioUri(Windows.Foundation.Uri audioUri, AppNotificationAudioLooping loop);
+
+        AppNotificationBuilder SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent);
+        AppNotificationBuilder SetAudioEvent(AppNotificationSoundEvent appNotificationSoundEvent, AppNotificationAudioLooping loop);
+
+        AppNotificationBuilder MuteAudio();
+
+        AppNotificationBuilder AddTextBox(String id);
+        AppNotificationBuilder AddTextBox(String id, String placeHolderText, String title);
+
+        // Adds a button to the AppNotificationBuilder
+        AppNotificationBuilder AddButton(AppNotificationButton value);
+
+        AppNotificationBuilder AddComboBox(AppNotificationComboBox value);
+
+        AppNotificationBuilder AddProgressBar(AppNotificationProgressBar value);
+
+        // Constructs a WindowsAppSDK AppNotification object with the XML payload
+        Microsoft.Windows.AppNotifications.AppNotification BuildNotification();
+
+        // AppNotification properties
+        AppNotificationBuilder SetTag(String value);
+        AppNotificationBuilder SetGroup(String group);
+
+        // Adds a camera preview to the AppNotification
+        AppNotificationBuilder AddCameraPreview();
+    };
+}
+  ```
 # Appendix
 
 -   To support Cloud Sourced Notifications, the Windows App SDK will have to implement some
