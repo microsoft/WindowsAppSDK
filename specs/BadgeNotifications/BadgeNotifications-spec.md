@@ -117,7 +117,7 @@ The `BadgeNotificationManager` class is the central point for managing badge not
 The `BadgeGlyphValue` enum defines a set of predefined glyphs that can be used to represent various statuses or notifications on an application's badge. These glyphs provide a visual cue on the app's tile, allowing users to quickly understand the app's status or to be alerted to new information without opening the app.
 
 | Name | Description | Glyph |
-|-|-|
+|-|-|-|
 | None | No glyph is displayed. The badge will appear blank or not be shown at all. | (No Badge Shown) |
 | Activity | A glyph indicating some form of activity is taking place within the app. | ![Screenshot](badge-activity.png) |
 | Alert | A glyph that suggests an alert or an important notification that may require immediate attention. | ![Screenshot](badge-alert.png) |
