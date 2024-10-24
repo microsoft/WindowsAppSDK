@@ -560,9 +560,13 @@ Screenshot 1: Displays an example of Audio Call with new element as the setting 
 
 Screenshot 2 and 3: Displays an example of Audio Call with 2 new elements - Camera Preview and Setting Button. Setting button click shows devices list for Audio Input and Output Devices. 
 
-If the camera device is changed, then the camera preview element should also display the selected device preview. 
+#### Note
 
-## Sample Code
+  - If the camera device is changed, then the camera preview element should also display the selected device preview. 
+  - The camera preview would be displayed locally on the user machine and camera feed data on notification toast is not sent to app/caller.
+  - The preview will shown only after verifying camera access permissions for both the app and notifications.
+  
+### Sample Code using notification builder
 ```cpp
 void SendVideoCallNotification()  
 {  
@@ -571,10 +575,10 @@ void SendVideoCallNotification()
     .SetScenario(AppNotificationScenario::IncomingCall) 
     .AddText(L"Jill Bender", AppNotificationTextProperties().SetMaxLines(1)) 
     .AddText(L"Incoming Video Call", AppNotificationTextProperties().SetMaxLines(1)) 
-    .AddCameraPreview() 
+    .AddCameraPreview()                                                              /*NEW API*/
     .AddButton(AppNotificationButton() 
         .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://Assets/Icons/Setting.png)")) 
-        .SetSettingType(AppNotificationSettingType::VideoCall)) 
+        .SetSettingType(AppNotificationSettingType::VideoCall))                      /*NEW API*/
     .AddButton(AppNotificationButton() 
         .AddArgument(L"action", L"acceptCall") 
         .AddArgument(L"threadId", L"92187") 
@@ -589,21 +593,77 @@ void SendVideoCallNotification()
         .AddArgument(L"action", L"message") 
         .AddArgument(L"threadId", L"92187") 
         .SetIcon(winrt::Windows::Foundation::Uri(LR"(ms-appx://Assets/Icons/Message.png)"))) 
-    .BuildNotification(); 
-;  
+    .BuildNotification();
 
-    if(winrt::AppNotificationDevicesData::IsVideoOrAudioCallingSupported())
+    if(winrt::AppNotificationDevicesData::IsVideoOrAudioCallingSupported()) /*NEW API*/
     {     
        // Assign Devices Data values for the video call notification
-       winrt::AppNotificationDevicesData devicesData; 
+       winrt::AppNotificationDevicesData devicesData;                       /*NEW API*/
 
-       devicesData.VideoDeviceId(L"\\?\USB#VID_045E&PID_0990&MI_00#6&db32c28&0&0000#{e5323777-f976-4f5b-9b55-b94699c46e44}\GLOBAL");  
-       devicesData.AudioInputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");  
-       devicesData.AudioOutputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");
-       notification.DevicesData(devicesData); 
+       devicesData.VideoDeviceId(L"\\?\USB#VID_045E&PID_0990&MI_00#6&db32c28&0&0000#{e5323777-f976-4f5b-9b55-b94699c46e44}\GLOBAL");                            /*NEW API*/
+       devicesData.AudioInputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");      /*NEW API*/
+       devicesData.AudioOutputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");     /*NEW API*/
+       notification.DevicesData(devicesData); /*NEW API*/
     } 
 
     winrt::AppNotificationManager::Default().Show(notification);  
+} 
+```
+## Sample Code using payload xml
+```cpp
+// Send video call notification  
+void SendVideoCallNotification()  
+{  
+    winrt::hstring payload =  LR"( 
+<toast scenario="incomingCall" useButtonStyle="true">  
+    <visual>  
+        <binding template="ToastGeneric">  
+            <text hint-maxLines="1">Jill Bender</text>  
+            <text hint-maxLines="1">Incoming Video Call</text>  
+           <cameraPreview/>  /*NEW TAG*/
+      </binding> 
+    </visual> 
+    <actions>  
+        <action  
+          content=""  
+          imageUri="Assets/Icons/Setting.png"  
+          settingType="videoDevices”      /*NEW TAG*/
+          arguments=""/>   
+        <action  
+          content=""  
+          imageUri="Assets/Icons/Accept.png"  
+         hint-buttonStyle="Success"  
+          activationType="background"  
+          arguments="action=reply&amp;threadId=92187"/>  
+        <action  
+          content=""  
+          imageUri="Assets/Icons/Decline.png"  
+          activationType="background"  
+          hint-buttonStyle="Critical"  
+          arguments="action=reply&amp;threadId=92187"/>  
+         <action  
+          content=""  
+          imageUri="Assets/Icons/Message.png"  
+          activationType="background"  
+          arguments="action=reply&amp;threadId=92187"/>  
+    </actions>  
+</toast> 
+)”  
+
+    winrt::AppNotification notification(payload);  
+
+    if(winrt::AppNotificationDevicesData::IsVideoOrAudioCallingSupported()) /*NEW API*/
+    {     
+       // Assign Devices Data values for the video call notification  
+       winrt::AppNotificationDevicesData devicesData;                       /*NEW API*/
+       devicesData.VideoDeviceId(L"\\?\USB#VID_045E&PID_0990&MI_00#6&db32c28&0&0000#{e5323777-f976-4f5b-9b55-b94699c46e44}\GLOBAL");  /*NEW API*/
+       devicesData.AudioInputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");  /*NEW API*/
+       devicesData.AudioOutputDeviceId(L"\\?\SWD#MMDEVAPI#{0.0.1.00000000}.{a19be0b4-e6e9-404b-b3ae-e98dc182e850}#{2eef81be-33fa-4800-9670-1cd474972c3f}");  /*NEW API*/
+
+       notification.DevicesData(devicesData); /*NEW API*/
+    } 
+
+     winrt::AppNotificationManager::Default().Show(notification);  
 } 
 ```
 Example of Invoke Callback Existing API with additional User Inputs key-values (Contoso Calling App will get the selected device ids from User B from below invoke API on any button clicked accept/ decline/ message):
