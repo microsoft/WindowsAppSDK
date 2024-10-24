@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -597,4 +597,41 @@ void BaseTestSuite::VerifyExplicitAppId()
 
     RegisterWithAppNotificationManager();
     AppNotificationManager::Default().Unregister();
+}
+
+void BaseTestSuite::VerifyToastConferencingConfigAllDevicesSet()
+{
+    AppNotification toast{ CreateToastNotification() };
+
+    AppNotificationConferencingConfig conferencingConfig{};
+    conferencingConfig.VideoDeviceId(L"CameraDeviceId");
+    conferencingConfig.AudioInputDeviceId(L"MicrophoneDeviceId");
+    conferencingConfig.AudioOutputDeviceId(L"SpeakerDeviceId");
+
+    toast.ConferencingConfig(conferencingConfig);
+
+    VERIFY_ARE_EQUAL(toast.ConferencingConfig().VideoDeviceId(), L"CameraDeviceId");
+    VERIFY_ARE_EQUAL(toast.ConferencingConfig().AudioInputDeviceId(), L"MicrophoneDeviceId");
+    VERIFY_ARE_EQUAL(toast.ConferencingConfig().AudioOutputDeviceId(), L"SpeakerDeviceId");
+}
+
+void BaseTestSuite::VerifyToastConferencingConfigNoDevicesSet()
+{
+    AppNotification toast{ CreateToastNotification() };
+
+    VERIFY_ARE_EQUAL(toast.ConferencingConfig(), nullptr);
+}
+
+void BaseTestSuite::VerifyToastConferencingConfigNotAllDevicesSet()
+{
+    AppNotification toast{ CreateToastNotification() };
+
+    AppNotificationConferencingConfig conferencingConfig{ };
+    conferencingConfig.VideoDeviceId(L"CameraDeviceId");
+
+    toast.ConferencingConfig(conferencingConfig);
+
+    VERIFY_ARE_EQUAL(toast.ConferencingConfig().VideoDeviceId(), L"CameraDeviceId");
+    VERIFY_ARE_EQUAL(toast.ConferencingConfig().AudioInputDeviceId(), L"");
+    VERIFY_ARE_EQUAL(toast.ConferencingConfig().AudioOutputDeviceId(), L"");
 }
