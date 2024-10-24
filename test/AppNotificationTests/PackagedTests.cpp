@@ -193,17 +193,17 @@ void PackagedTests::VerifyRemoveAllAsync()
     BaseTestSuite::VerifyRemoveAllAsync();
 }
 
-void PackagedTests::VerifyToastDevicesDataAllDevicesSet()
+void PackagedTests::VerifyToastConferencingConfigAllDevicesSet()
 {
-    BaseTestSuite::VerifyToastDevicesDataAllDevicesSet();
+    BaseTestSuite::VerifyToastConferencingConfigAllDevicesSet();
 }
 
-void PackagedTests::VerifyToastDevicesDataNotAllDevicesSet()
+void PackagedTests::VerifyToastConferencingConfigNotAllDevicesSet()
 {
-    BaseTestSuite::VerifyToastDevicesDataNotAllDevicesSet();
+    BaseTestSuite::VerifyToastConferencingConfigNotAllDevicesSet();
 }
 
-void PackagedTests::VerifyToastDevicesDataNoDevicesSet()
+void PackagedTests::VerifyToastConferencingConfigNoDevicesSet()
 {
-    BaseTestSuite::VerifyToastDevicesDataNoDevicesSet();
+    BaseTestSuite::VerifyToastConferencingConfigNoDevicesSet();
 }

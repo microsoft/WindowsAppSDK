@@ -112,29 +112,29 @@ namespace Microsoft.Windows.AppNotifications
         // Gets or sets whether a Notification's pop-up UI is displayed on the user's screen.
         Boolean SuppressDisplay;
 
-        // Gets or sets the Notification Device Data
+        // Gets or sets the Notification Conferencing Config
         [contract(AppNotificationsContract, 2)]
-        AppNotificationDevicesData DevicesData;
+        AppNotificationConferencingConfig ConferencingConfig;
     }
 
-    // The Notification Device Data
+    // The Notification Conferencing Config
     [contract(AppNotificationsContract, 2)]
-    runtimeclass AppNotificationDevicesData
+    runtimeclass AppNotificationConferencingConfig
     {
-        // Initializes a new Instance of NotificationDevicesData
-        AppNotificationDevicesData();
+        // Initializes a new Instance of AppNotificationConferencingConfig
+        AppNotificationConferencingConfig();
 
         // Checks if Video or Audio Calling is supported
         static Boolean IsVideoOrAudioCallingSupported();
 
-        // Gets or sets the Camera Device Id
-        String CameraDeviceId{ get; set; };
+        // Gets or sets the Video Device Id
+        String VideoDeviceId;
 
         // Gets or sets the Microphone Device Id
-        String MicrophoneDeviceId{ get; set; };
+        String AudioInputDeviceId;
 
         // Gets or sets the Speaker Device Id
-        String SpeakerDeviceId{ get; set; };
+        String AudioOutputDeviceId;
     }
 
     // The manager class which encompasses all App Notification API Functionality

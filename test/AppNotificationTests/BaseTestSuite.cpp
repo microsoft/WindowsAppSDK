@@ -599,39 +599,39 @@ void BaseTestSuite::VerifyExplicitAppId()
     AppNotificationManager::Default().Unregister();
 }
 
-void BaseTestSuite::VerifyToastDevicesDataAllDevicesSet()
+void BaseTestSuite::VerifyToastConferencingConfigAllDevicesSet()
 {
     AppNotification toast{ CreateToastNotification() };
 
-    AppNotificationDevicesData devicesData{};
-    devicesData.CameraDeviceId(L"CameraDeviceId");
-    devicesData.MicrophoneDeviceId(L"MicrophoneDeviceId");
-    devicesData.SpeakerDeviceId(L"SpeakerDeviceId");
+    AppNotificationConferencingConfig conferencingConfig{};
+    conferencingConfig.VideoDeviceId(L"CameraDeviceId");
+    conferencingConfig.AudioInputDeviceId(L"MicrophoneDeviceId");
+    conferencingConfig.AudioOutputDeviceId(L"SpeakerDeviceId");
 
-    toast.DevicesData(devicesData);
+    toast.ConferencingConfig(conferencingConfig);
 
-    VERIFY_ARE_EQUAL(toast.DevicesData().CameraDeviceId(), L"CameraDeviceId");
-    VERIFY_ARE_EQUAL(toast.DevicesData().MicrophoneDeviceId(), L"MicrophoneDeviceId");
-    VERIFY_ARE_EQUAL(toast.DevicesData().SpeakerDeviceId(), L"SpeakerDeviceId");
+    VERIFY_ARE_EQUAL(toast.ConferencingConfig().VideoDeviceId(), L"CameraDeviceId");
+    VERIFY_ARE_EQUAL(toast.ConferencingConfig().AudioInputDeviceId(), L"MicrophoneDeviceId");
+    VERIFY_ARE_EQUAL(toast.ConferencingConfig().AudioOutputDeviceId(), L"SpeakerDeviceId");
 }
 
-void BaseTestSuite::VerifyToastDevicesDataNoDevicesSet()
+void BaseTestSuite::VerifyToastConferencingConfigNoDevicesSet()
 {
     AppNotification toast{ CreateToastNotification() };
 
-    VERIFY_ARE_EQUAL(toast.DevicesData(), nullptr);
+    VERIFY_ARE_EQUAL(toast.ConferencingConfig(), nullptr);
 }
 
-void BaseTestSuite::VerifyToastDevicesDataNotAllDevicesSet()
+void BaseTestSuite::VerifyToastConferencingConfigNotAllDevicesSet()
 {
     AppNotification toast{ CreateToastNotification() };
 
-    AppNotificationDevicesData devicesData{ };
-    devicesData.CameraDeviceId(L"CameraDeviceId");
+    AppNotificationConferencingConfig conferencingConfig{ };
+    conferencingConfig.VideoDeviceId(L"CameraDeviceId");
 
-    toast.DevicesData(devicesData);
+    toast.ConferencingConfig(conferencingConfig);
 
-    VERIFY_ARE_EQUAL(toast.DevicesData().CameraDeviceId(), L"CameraDeviceId");
-    VERIFY_ARE_EQUAL(toast.DevicesData().MicrophoneDeviceId(), L"");
-    VERIFY_ARE_EQUAL(toast.DevicesData().SpeakerDeviceId(), L"");
+    VERIFY_ARE_EQUAL(toast.ConferencingConfig().VideoDeviceId(), L"CameraDeviceId");
+    VERIFY_ARE_EQUAL(toast.ConferencingConfig().AudioInputDeviceId(), L"");
+    VERIFY_ARE_EQUAL(toast.ConferencingConfig().AudioOutputDeviceId(), L"");
 }

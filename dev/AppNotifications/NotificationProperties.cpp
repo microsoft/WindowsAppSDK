@@ -9,7 +9,7 @@
 #include "../PushNotifications/PushNotificationUtility.h"
 #include "NotificationProgressData.h"
 #include "NotificationDevicesData.h"
-#include "AppNotificationDevicesData.h"
+#include "AppNotificationConferencingConfig.h"
 
 namespace winrt
 {
@@ -50,11 +50,11 @@ NotificationProperties::NotificationProperties(winrt::AppNotification const& toa
         m_toastProgressData = winrt::make_self<NotificationProgressData>(toastNotification.Progress());
     }
 
-    if (winrt::AppNotificationDevicesData::IsVideoOrAudioCallingSupported())
+    if (winrt::AppNotificationConferencingConfig::IsVideoOrAudioCallingSupported())
     {
-        if (toastNotification.DevicesData() != nullptr)
+        if (toastNotification.ConferencingConfig() != nullptr)
         {
-            m_toastDevicesData = winrt::make_self<NotificationDevicesData>(toastNotification.DevicesData());
+            m_toastDevicesData = winrt::make_self<NotificationDevicesData>(toastNotification.ConferencingConfig());
         }
     }
 }

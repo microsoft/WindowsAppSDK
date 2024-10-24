@@ -54,9 +54,9 @@ class BaseTestSuite
         void VerifyToastProgressDataSequence0Fail();
         void VerifyIconPathExists();
         void VerifyExplicitAppId();
-        void VerifyToastDevicesDataAllDevicesSet();
-        void VerifyToastDevicesDataNotAllDevicesSet();
-        void VerifyToastDevicesDataNoDevicesSet();
+        void VerifyToastConferencingConfigAllDevicesSet();
+        void VerifyToastConferencingConfigNotAllDevicesSet();
+        void VerifyToastConferencingConfigNoDevicesSet();
 
     private:
         void RegisterWithAppNotificationManager();

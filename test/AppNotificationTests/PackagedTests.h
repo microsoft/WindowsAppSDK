@@ -82,8 +82,8 @@ class PackagedTests : BaseTestSuite
     TEST_METHOD(VerifyRemoveGroupAsync);
     TEST_METHOD(VerifyRemoveAllAsyncWithNoActiveToastDoesNotThrow);
     TEST_METHOD(VerifyRemoveAllAsync);
-    TEST_METHOD(VerifyToastDevicesDataAllDevicesSet);
-    TEST_METHOD(VerifyToastDevicesDataNotAllDevicesSet);
-    TEST_METHOD(VerifyToastDevicesDataNoDevicesSet);
+    TEST_METHOD(VerifyToastConferencingConfigAllDevicesSet);
+    TEST_METHOD(VerifyToastConferencingConfigNotAllDevicesSet);
+    TEST_METHOD(VerifyToastConferencingConfigNoDevicesSet);
 };
 

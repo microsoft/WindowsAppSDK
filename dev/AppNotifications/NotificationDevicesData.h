@@ -17,7 +17,7 @@ namespace ToastABI
 
 struct NotificationDevicesData : winrt::implements<NotificationDevicesData, ToastABI::IToastDevicesData>
 {
-    NotificationDevicesData(winrt::AppNotificationDevicesData const& devicesData);
+    NotificationDevicesData(winrt::AppNotificationConferencingConfig const& conferencingConfig);
 
     STDMETHOD(get_CameraDeviceId)(_Out_ HSTRING* value) noexcept;
 
@@ -27,5 +27,5 @@ struct NotificationDevicesData : winrt::implements<NotificationDevicesData, Toas
 
 private:
 
-    winrt::AppNotificationDevicesData m_devicesData;
+    winrt::AppNotificationConferencingConfig m_devicesData;
 };

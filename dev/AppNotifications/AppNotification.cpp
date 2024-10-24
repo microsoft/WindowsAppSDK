@@ -120,15 +120,15 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         m_notificationId = id;
     }
 
-    winrt::Microsoft::Windows::AppNotifications::AppNotificationDevicesData AppNotification::DevicesData()
+    winrt::Microsoft::Windows::AppNotifications::AppNotificationConferencingConfig AppNotification::ConferencingConfig()
     {
         auto lock{ m_lock.lock_shared() };
-        return m_devicesData;
+        return m_conferencingConfig;
     }
 
-    void AppNotification::DevicesData(winrt::Microsoft::Windows::AppNotifications::AppNotificationDevicesData const& devicesData)
+    void AppNotification::ConferencingConfig(winrt::Microsoft::Windows::AppNotifications::AppNotificationConferencingConfig const& conferencingConfig)
     {
         auto lock{ m_lock.lock_exclusive() };
-        m_devicesData = devicesData;
+        m_conferencingConfig = conferencingConfig;
     }
 }

@@ -696,7 +696,7 @@ namespace Test::AppNotification::Builder
                 .SetSettingType(winrt::AppNotificationButtonSettingType::VideoCall))
             };
 
-            auto expected{ L"<toast useButtonStyle='true'><visual><binding template='ToastGeneric'><cameraPreview/></binding></visual><actions><action content='content' arguments='key=value' imageUri='http://www.microsoft.com/' hint-inputId='inputId' hint-buttonStyle='Success' hint-toolTip='toolTip' settingType='VideoDevices'/></actions></toast>" };
+            auto expected{ L"<toast useButtonStyle='true'><visual><binding template='ToastGeneric'><cameraPreview/></binding></visual><actions><action content='content' arguments='key=value' imageUri='http://www.microsoft.com/' hint-inputId='inputId' hint-buttonStyle='Success' hint-toolTip='toolTip' settingType='videoDevices'/></actions></toast>" };
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
 
@@ -713,7 +713,7 @@ namespace Test::AppNotification::Builder
                 .SetSettingType(winrt::AppNotificationButtonSettingType::AudioCall))
             };
 
-            auto expected{ L"<toast useButtonStyle='true'><visual><binding template='ToastGeneric'><cameraPreview/></binding></visual><actions><action content='content' arguments='key=value' imageUri='http://www.microsoft.com/' hint-inputId='inputId' hint-buttonStyle='Success' hint-toolTip='toolTip' settingType='AudioDevices'/></actions></toast>" };
+            auto expected{ L"<toast useButtonStyle='true'><visual><binding template='ToastGeneric'><cameraPreview/></binding></visual><actions><action content='content' arguments='key=value' imageUri='http://www.microsoft.com/' hint-inputId='inputId' hint-buttonStyle='Success' hint-toolTip='toolTip' settingType='audioDevices'/></actions></toast>" };
             VERIFY_ARE_EQUAL(builder.BuildNotification().Payload(), expected);
         }
     };

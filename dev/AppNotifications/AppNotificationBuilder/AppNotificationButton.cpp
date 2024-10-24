@@ -152,9 +152,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         switch (m_settingType)
         {
         case AppNotificationButtonSettingType::VideoCall:
-            return L" settingType='VideoDevices'";
+            return L" settingType='videoDevices'";
         case AppNotificationButtonSettingType::AudioCall:
-            return L" settingType='AudioDevices'";
+            return L" settingType='audioDevices'";
         default:
             return L"";
         }
