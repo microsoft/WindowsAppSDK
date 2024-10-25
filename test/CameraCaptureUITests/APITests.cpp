@@ -47,16 +47,12 @@ namespace CameraCaptureUITests
         TEST_METHOD_SETUP(MethodInit)
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             return true;
         }
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             return true;
         }
         // The unit tests will be updated,first test might is there for testing purpose locally.

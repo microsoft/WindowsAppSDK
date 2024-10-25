@@ -25,6 +25,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)CameraCaptureUIVideoCaptureSettings.h" />
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="$(MSBuildThisFileDirectory)CameraCaptureUI2.idl" />
+    <Midl Include="$(MSBuildThisFileDirectory)CameraCaptureUI.idl" />
   </ItemGroup>
 </Project>
