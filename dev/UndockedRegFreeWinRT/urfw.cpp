@@ -415,6 +415,12 @@ HRESULT UrfwInitialize() noexcept
     {
         return S_OK;
     }
+#elif defined(TODO_SEEME_PRODUCT_TARGET)
+    // Delegate to the OS' implementation on >= Windows 11 24H1
+    if (WindowsVersion::IsWindows11_22H2OrGreater())
+    {
+        return S_OK;
+    }
 #else
     // Delegate to the OS' implementation on >= Windows 11 24H1
     if (WindowsVersion::IsWindows11_24H1OrGreater())
