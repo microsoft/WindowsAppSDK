@@ -42,6 +42,12 @@ PublishFile $OverrideDir\PushNotifications-Override.json $FullPublishDir\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.lib $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\WindowsAppRuntime_UniversalBGTaskDLL\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll $FullPublishDir\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask\
+PublishFile $FullBuildOutput\WindowsAppRuntime_UniversalBGTaskDLL\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.pdb $FullPublishDir\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask\
+PublishFile $FullBuildOutput\WindowsAppRuntime_UniversalBGTaskDLL\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.lib $FullPublishDir\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask\
+PublishFile $FullBuildOutput\WindowsAppRuntime_UniversalBGTaskDLL\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.winmd $FullPublishDir\WindowsAppRuntime_UniversalBGTaskDLL\
+
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.Background.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppLifecycle.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
@@ -176,10 +182,13 @@ PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicD
 # Native (not managed, AppLocal / no MSIX)
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll $NugetDir\runtimes\win-$Platform\native
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.pdb $NugetDir\runtimes\win-$Platform\native
+PublishFile $FullBuildOutput\WindowsAppRuntime_UniversalBGTaskDLL\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll $NugetDir\runtimes\win-$Platform\native
+PublishFile $FullBuildOutput\WindowsAppRuntime_UniversalBGTaskDLL\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.pdb $NugetDir\runtimes\win-$Platform\native
 #
 # WinMD for UWP apps
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd $NugetDir\lib\uap10.0
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.ApplicationModel.Background.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppNotifications.Builder.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.AppNotifications.winmd $NugetDir\lib\uap10.0
@@ -189,6 +198,7 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windo
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Storage.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.System.Power.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.System.winmd $NugetDir\lib\uap10.0
+PublishFile $FullBuildOutput\WindowsAppRuntime_UniversalBGTaskDLL\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.winmd $NugetDir\lib\uap10.0
 #
 # Bootstrap Auto-Initializer Files
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cpp $NugetDir\include

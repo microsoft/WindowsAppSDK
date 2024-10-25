@@ -529,6 +529,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PackageManager.Test.M.White
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PackageManager.Test.M.White.msix", "test\PackageManager\data\PackageManager.Test.M.White.msix\PackageManager.Test.M.White.msix.vcxproj", "{28DCF9CE-D9F4-4A7D-8AD1-F2EFC0D3B4DF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BackgroundTaskBuilder", "BackgroundTaskBuilder", "{F425452A-3597-4A7A-BA0A-0C3C76A9F5CD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BackgroundTaskBuilder", "dev\BackgroundTask\BackgroundTaskBuilder\BackgroundTaskBuilder.vcxitems", "{858FA9A9-F822-4B98-84A1-FE44E2C00A5D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppRuntime_UniversalBGTaskDLL", "dev\WindowsAppRuntime_UniversalBGTaskDLL\WindowsAppRuntime_UniversalBGTaskDLL.vcxproj", "{0C4405E6-029E-4363-8273-A9E1FCF057DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1871,6 +1877,22 @@ Global
 		{28DCF9CE-D9F4-4A7D-8AD1-F2EFC0D3B4DF}.Release|x64.Build.0 = Release|x64
 		{28DCF9CE-D9F4-4A7D-8AD1-F2EFC0D3B4DF}.Release|x86.ActiveCfg = Release|Win32
 		{28DCF9CE-D9F4-4A7D-8AD1-F2EFC0D3B4DF}.Release|x86.Build.0 = Release|Win32
+		{0C4405E6-029E-4363-8273-A9E1FCF057DE}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{0C4405E6-029E-4363-8273-A9E1FCF057DE}.Debug|Any CPU.Build.0 = Debug|x64
+		{0C4405E6-029E-4363-8273-A9E1FCF057DE}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{0C4405E6-029E-4363-8273-A9E1FCF057DE}.Debug|ARM64.Build.0 = Debug|ARM64
+		{0C4405E6-029E-4363-8273-A9E1FCF057DE}.Debug|x64.ActiveCfg = Debug|x64
+		{0C4405E6-029E-4363-8273-A9E1FCF057DE}.Debug|x64.Build.0 = Debug|x64
+		{0C4405E6-029E-4363-8273-A9E1FCF057DE}.Debug|x86.ActiveCfg = Debug|Win32
+		{0C4405E6-029E-4363-8273-A9E1FCF057DE}.Debug|x86.Build.0 = Debug|Win32
+		{0C4405E6-029E-4363-8273-A9E1FCF057DE}.Release|Any CPU.ActiveCfg = Release|x64
+		{0C4405E6-029E-4363-8273-A9E1FCF057DE}.Release|Any CPU.Build.0 = Release|x64
+		{0C4405E6-029E-4363-8273-A9E1FCF057DE}.Release|ARM64.ActiveCfg = Release|ARM64
+		{0C4405E6-029E-4363-8273-A9E1FCF057DE}.Release|ARM64.Build.0 = Release|ARM64
+		{0C4405E6-029E-4363-8273-A9E1FCF057DE}.Release|x64.ActiveCfg = Release|x64
+		{0C4405E6-029E-4363-8273-A9E1FCF057DE}.Release|x64.Build.0 = Release|x64
+		{0C4405E6-029E-4363-8273-A9E1FCF057DE}.Release|x86.ActiveCfg = Release|Win32
+		{0C4405E6-029E-4363-8273-A9E1FCF057DE}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2033,6 +2055,9 @@ Global
 		{7C240089-0F22-4247-9C91-51255C8DC18B} = {6213B1A3-E854-498F-AAFA-4CFC1E71023E}
 		{AC79B8FF-4C27-4326-AD20-BBC70059FF51} = {7C240089-0F22-4247-9C91-51255C8DC18B}
 		{28DCF9CE-D9F4-4A7D-8AD1-F2EFC0D3B4DF} = {6759ECC6-9381-4172-89E6-853F81A03D28}
+		{F425452A-3597-4A7A-BA0A-0C3C76A9F5CD} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{858FA9A9-F822-4B98-84A1-FE44E2C00A5D} = {F425452A-3597-4A7A-BA0A-0C3C76A9F5CD}
+		{0C4405E6-029E-4363-8273-A9E1FCF057DE} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
@@ -2048,6 +2073,7 @@ Global
 		test\inc\inc.vcxitems*{5b2d17fe-c371-417f-860c-3d32397c2404}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{7c502995-59c3-483b-86ba-815985353633}*SharedItemsImports = 4
 		dev\ApplicationData\ApplicationData.vcxitems*{7cf52890-56fa-47e2-84fb-68ee274324b6}*SharedItemsImports = 9
+		dev\BackgroundTask\BackgroundTaskBuilder\BackgroundTaskBuilder.vcxitems*{858fa9a9-f822-4b98-84a1-fe44e2c00a5d}*SharedItemsImports = 9
 		dev\Common\Common.vcxitems*{8828053c-d6ec-4744-8624-f8c676c2d4df}*SharedItemsImports = 9
 		dev\Licensing\Licensing.vcxitems*{885a43fa-052d-4b0d-a2dc-13ee15796435}*SharedItemsImports = 9
 		dev\PackageManager\API\PackageManager.vcxitems*{8a9a0c85-65a8-4bca-a49e-45fc4fdbc7d2}*SharedItemsImports = 9
@@ -2055,6 +2081,7 @@ Global
 		dev\AppNotifications\AppNotifications.vcxitems*{b4824897-88e0-4927-8fb9-e60106f01ed9}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{b567fe2e-3a03-48d0-b2b5-760cdec35891}*SharedItemsImports = 9
 		dev\ApplicationData\ApplicationData.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
+		dev\BackgroundTask\BackgroundTaskBuilder\BackgroundTaskBuilder.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\Common\Common.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\DynamicDependency\API\DynamicDependency.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\Licensing\Licensing.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
