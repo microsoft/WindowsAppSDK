@@ -32,6 +32,7 @@ namespace Test::PackageManager::Tests
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
                 return true;
             }
+//TODO Remove
 WEX::Logging::Log::Comment(L"S1");
             RemovePackage_Blue();
 WEX::Logging::Log::Comment(L"S2");
@@ -72,7 +73,7 @@ WEX::Logging::Log::Comment(L"S6");
             }
         }
 
-        TEST_METHOD(IsPackageReady_NoSuchPackage_No)
+        TEST_METHOD(IsPackageReady_PackageFullName_NoSuchPackage_No)
         {
             auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
 
@@ -81,7 +82,7 @@ WEX::Logging::Log::Comment(L"S6");
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(c_packageFullName));
         }
 
-        TEST_METHOD(IsPackageReady_NotInstalled_No)
+        TEST_METHOD(IsPackageReady_PackageFullName_NotInstalled_No)
         {
             RemovePackage_Red();
 
@@ -92,7 +93,7 @@ WEX::Logging::Log::Comment(L"S6");
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(packageFullName));
         }
 
-        TEST_METHOD(IsPackageReady_Registered_Yes)
+        TEST_METHOD(IsPackageReady_PackageFullName_Registered_Yes)
         {
             AddPackage_Red();
 
@@ -103,7 +104,7 @@ WEX::Logging::Log::Comment(L"S6");
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(packageFullName));
         }
 
-        TEST_METHOD(IsPackageReady_OlderRegistered_No)
+        TEST_METHOD(IsPackageReady_PackageFullName_OlderRegistered_No)
         {
             AddPackage_Red();
 
@@ -114,7 +115,7 @@ WEX::Logging::Log::Comment(L"S6");
             VERIFY_IS_FALSE(packageDeploymentManager.IsPackageReady(packageFullName));
         }
 
-        TEST_METHOD(IsPackageReady_NewerRegistered_Yes)
+        TEST_METHOD(IsPackageReady_PackageFullName_NewerRegistered_Yes)
         {
             AddPackage_Redder();
 
@@ -125,6 +126,22 @@ WEX::Logging::Log::Comment(L"S6");
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageReady(packageFullName));
 
             RemovePackage_Redder();
+        }
+
+        TEST_METHOD(IsPackageReady_PackageFamilyName_InvalidParameter)
+        {
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            try
+            {
+                PCWSTR c_packageFamilyName{ L"Does.Not.Exist_1234567890abc" };
+                packageDeploymentManager.IsPackageReady(c_packageFamilyName);
+                VERIFY_FAIL(L"Success is not expected");
+            }
+            catch (winrt::hresult_error& e)
+            {
+                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
+            }
         }
 
         TEST_METHOD(IsPackageSetReady_InvalidParameter)
