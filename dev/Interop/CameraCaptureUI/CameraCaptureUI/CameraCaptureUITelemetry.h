@@ -5,17 +5,41 @@
 #include "..\WindowsAppRuntime_Insights\WindowsAppRuntimeInsights.h"
 #include <TelemetryHelper.h>
 
+DECLARE_TRACELOGGING_CLASS(CameraCaptureUITelemetryProvider,
+    "Microsoft.WindowsAppSDK.CameraCaptureUITelemetry",
+    // {8ab25b76-fe88-4887-b908-24f8ca382b9d}
+    (0x12345678, 0x1234, 0x1234, 0x12, 0x34, 0x56, 0x78, 0x90, 0xab, 0xcd, 0xef));
+
 class CameraCaptureUITelemetry : public wil::TraceLoggingProvider
 {
-    IMPLEMENT_TRACELOGGING_CLASS_WITH_MICROSOFT_TELEMETRY(CameraCaptureUITelemetry, "Microsoft.WindowsAppSDK.CameraCaptureUITelemetry",
-        (0x8ab25b76, 0xfe88, 0x4887, 0xb9, 0x08, 0x24, 0xf8, 0xca, 0x38, 0x2b, 0x9d));
-    //{ 8ab25b76-fe88-4887-b908-24f8ca382b9d }
-public:
-    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM3(CaptureInitiated, PDT_ProductAndServicePerformance,
-      bool, IsAppPackaged, PCWSTR, AppName, PCWSTR, CaptureMode);
+    IMPLEMENT_TELEMETRY_CLASS(CameraCaptureUITelemetry, CameraCaptureUITelemetryProvider);
 
-    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM3(CaptureSuccessful, PDT_ProductAndServicePerformance,
-        bool, IsAppPackaged, PCWSTR, AppName, PCWSTR, CaptureMode);
+public:
+    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(CaptureInitiated, PDT_ProductAndServicePerformance);
+        DEFINE_ACTIVITY_START(bool isAppPackaged, PCWSTR appName, PCWSTR captureMode) noexcept try
+        {
+            TraceLoggingClassWriteStart(
+                CaptureInitiated,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(isAppPackaged, "IsAppPackaged"),
+                TraceLoggingWideString(appName, "AppName"),
+                TraceLoggingWideString(captureMode, "CaptureMode"));
+        }
+        CATCH_LOG()
+    END_ACTIVITY_CLASS();
+
+    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS(CaptureSuccessful, PDT_ProductAndServicePerformance);
+        DEFINE_ACTIVITY_START(bool isAppPackaged, PCWSTR appName, PCWSTR captureMode) noexcept try
+        {
+            TraceLoggingClassWriteStart(
+                CaptureSuccessful,
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(isAppPackaged, "IsAppPackaged"),
+                TraceLoggingWideString(appName, "AppName"),
+                TraceLoggingWideString(captureMode, "CaptureMode"));
+        }
+        CATCH_LOG()
+    END_ACTIVITY_CLASS();
 
     DEFINE_COMPLIANT_MEASURES_EVENT_PARAM5(CaptureError, PDT_ProductAndServiceUsage,
         bool, IsAppPackaged, PCWSTR, AppName, PCWSTR, CaptureMode, HRESULT, hResult, PCWSTR, message);

@@ -10,8 +10,9 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
 {
     void CameraCaptureUIPhotoCaptureSettings::validate()
     {
-        Size const size = CroppedSizeInPixels;
-        Size const aspect = CroppedAspectRatio;
+        auto lock = m_lock.lock_shared();
+        Size const size = m_croppedSizeInPixels; 
+        Size const aspect = m_croppedAspectRatio; 
         auto hasPhotoFixedSizeConstraint = (size.Width != 0) || (size.Height != 0);
         auto hasPhotoAspectRatioConstraint = (aspect.Width != 0) || (aspect.Height != 0);
         auto hasPhotoSizeConstraint = hasPhotoFixedSizeConstraint || hasPhotoAspectRatioConstraint;
@@ -20,7 +21,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         {
             throw hresult_invalid_argument(L"PhotoSettings can't have both a size and aspect ratio specified");
         }
-        else if (!AllowCropping && hasPhotoSizeConstraint)
+        else if (!m_allowCropping && hasPhotoSizeConstraint)
         {
             throw hresult_invalid_argument(L"PhotoSettings can't have a ratio or size specified with cropping disabled");
         }
@@ -28,7 +29,8 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
 
     hstring CameraCaptureUIPhotoCaptureSettings::GetFileExtension()
     {
-        switch (Format)
+        auto lock = m_lock.lock_shared();
+        switch (m_format)
         {
         case CameraCaptureUIPhotoFormat::Jpeg:
             return L".jpg";
@@ -43,6 +45,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
 
     void CameraCaptureUIPhotoCaptureSettings::Serialize(winrt::Windows::Foundation::Collections::ValueSet const& props)
     {
+        auto lock = m_lock.lock_shared();
         props.Insert(L"AllowCropping", box_value(AllowCropping()));
         props.Insert(L"PhotoFormat", box_value<int32_t>(static_cast<int32_t>(Format())));
         props.Insert(L"MaxResolution", box_value<int32_t>(static_cast<int32_t>(MaxResolution())));

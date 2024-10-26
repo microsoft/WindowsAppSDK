@@ -9,13 +9,14 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
 {
     void CameraCaptureUIVideoCaptureSettings::validate()
     {
-        float durationInMs = MaxDurationInSeconds * 1000.0f;
+        auto lock = m_lock.lock_shared();
+        float durationInMs = m_maxDurationInSeconds * 1000.0f;
         if ((durationInMs < 0.0f) || (durationInMs > UINT32_MAX))
         {
             throw hresult_invalid_argument(L"VideoSettings.MaxDurationInSeconds must be valid");
         }
 
-        if (!AllowTrimming && MaxDurationInSeconds != 0)
+        if (!m_allowTrimming && m_maxDurationInSeconds != 0)
         {
             throw hresult_invalid_argument(L"VideoSettings.MaxDurationInSeconds can't be set if .AllowTrimming is false");
         }
@@ -23,7 +24,8 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
 
     hstring CameraCaptureUIVideoCaptureSettings::GetFileExtension()
     {
-        switch (Format)
+        auto lock = m_lock.lock_shared();
+        switch (m_format)
         {
         case CameraCaptureUIVideoFormat::Mp4:
             return L".mp4";
@@ -36,6 +38,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
 
     void CameraCaptureUIVideoCaptureSettings::Serialize(winrt::Windows::Foundation::Collections::ValueSet const& props)
     {
+        auto lock = m_lock.lock_shared();
         props.Insert(L"AllowTrimming", box_value(AllowTrimming()));
         props.Insert(L"VideoFormat", box_value(static_cast<int32_t>(Format())));
         props.Insert(L"MaxVideoResolution", box_value(static_cast<int32_t>(MaxResolution())));
