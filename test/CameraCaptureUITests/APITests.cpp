@@ -65,7 +65,7 @@ namespace CameraCaptureUITests
                 winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
                 winrt::Microsoft::Windows::Media::Capture::CameraCaptureUI cameraUI(windowId);
                 // Configure Photo Settings
-                cameraUI.PhotoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Jpeg);
+                cameraUI.PhotoSettings().Format(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIPhotoFormat::Png);
                 cameraUI.PhotoSettings().AllowCropping(false);
                 // Act
                 auto photoOperation = cameraUI.CaptureFileAsync(winrt::Microsoft::Windows::Media::Capture::CameraCaptureUIMode::Photo);

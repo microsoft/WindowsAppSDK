@@ -46,12 +46,12 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
     void CameraCaptureUIPhotoCaptureSettings::Serialize(winrt::Windows::Foundation::Collections::ValueSet const& props)
     {
         auto lock = m_lock.lock_shared();
-        props.Insert(L"AllowCropping", box_value(AllowCropping()));
-        props.Insert(L"PhotoFormat", box_value<int32_t>(static_cast<int32_t>(Format())));
-        props.Insert(L"MaxResolution", box_value<int32_t>(static_cast<int32_t>(MaxResolution())));
-        props.Insert(L"PhotoCropWidth", box_value(static_cast<int32_t>(CroppedSizeInPixels().Width)));
-        props.Insert(L"PhotoCropHeight", box_value(static_cast<int32_t>(CroppedSizeInPixels().Height)));
-        props.Insert(L"PhotoCropARWidth", box_value(static_cast<int32_t>(CroppedAspectRatio().Width)));
-        props.Insert(L"PhotoCropARHeight", box_value(static_cast<int32_t>(CroppedAspectRatio().Height)));
+        props.Insert(L"AllowCropping", box_value(m_allowCropping));
+        props.Insert(L"PhotoFormat", box_value<int32_t>(static_cast<int32_t>(m_format)));
+        props.Insert(L"MaxResolution", box_value<int32_t>(static_cast<int32_t>(m_maxResolution)));
+        props.Insert(L"PhotoCropWidth", box_value(static_cast<int32_t>(m_croppedSizeInPixels.Width)));
+        props.Insert(L"PhotoCropHeight", box_value(static_cast<int32_t>(m_croppedSizeInPixels.Height)));
+        props.Insert(L"PhotoCropARWidth", box_value(static_cast<int32_t>(m_croppedAspectRatio.Width)));
+        props.Insert(L"PhotoCropARHeight", box_value(static_cast<int32_t>(m_croppedAspectRatio.Height)));
     }
 }

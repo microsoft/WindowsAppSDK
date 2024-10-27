@@ -39,9 +39,9 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
     void CameraCaptureUIVideoCaptureSettings::Serialize(winrt::Windows::Foundation::Collections::ValueSet const& props)
     {
         auto lock = m_lock.lock_shared();
-        props.Insert(L"AllowTrimming", box_value(AllowTrimming()));
-        props.Insert(L"VideoFormat", box_value(static_cast<int32_t>(Format())));
-        props.Insert(L"MaxVideoResolution", box_value(static_cast<int32_t>(MaxResolution())));
-        props.Insert(L"MaxDurationInSeconds", box_value(static_cast<int32_t>(MaxDurationInSeconds())));
+        props.Insert(L"AllowTrimming", box_value(m_allowTrimming));
+        props.Insert(L"VideoFormat", box_value(static_cast<int32_t>(m_format)));
+        props.Insert(L"MaxVideoResolution", box_value(static_cast<int32_t>(m_maxResolution)));
+        props.Insert(L"MaxDurationInSeconds", box_value(static_cast<int32_t>(m_maxDurationInSeconds)));
     }
 }

@@ -93,7 +93,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
             {
                 throw hresult_invalid_argument();
             }
-            auto logCaptureInitiated{ CameraCaptureUITelemetry::CaptureInitiated::Start(isAppPackaged, appName, mediaType) };
+            auto logCaptureOperation{ CameraCaptureUITelemetry::CameraCaptureOperation::Start(isAppPackaged, appName, mediaType) };
 
             ValueSet properties;
             properties.Insert(L"MediaType", box_value(mediaType));
@@ -122,10 +122,7 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
             StorageFile file = nullptr;
 
             file = co_await SharedStorageAccessManager::RedeemTokenForFileAsync(tokenValue);
-            
-            auto logCaptureSuccessful{ CameraCaptureUITelemetry::CaptureSuccessful::Start(isAppPackaged, appName, mediaType) };
-            logCaptureInitiated.Stop();
-            logCaptureSuccessful.Stop();
+            logCaptureOperation.Stop();
             co_return file;
         }
         catch (...)
