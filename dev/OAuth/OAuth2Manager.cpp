@@ -266,14 +266,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
         
         auto paramsImpl = winrt::get_self<implementation::TokenRequestParams>(params);
         paramsImpl->finalize();
-        if (clientAuth)
-        {
-            OAuth2ManagerTelemetry::RequestTokenAsyncTriggered(isAppPackaged, appName, paramsImpl->GrantType().c_str(), true);
-        }
-        else
-        {
-            OAuth2ManagerTelemetry::RequestTokenAsyncTriggered(isAppPackaged, appName, paramsImpl->GrantType().c_str(), false);
-        }
+        OAuth2ManagerTelemetry::RequestTokenAsyncTriggered(isAppPackaged, appName, paramsImpl->GrantType().c_str(), clientAuth ? true : false);
         HttpResponseMessage response{ nullptr };
         winrt::hstring responseString;
         try
