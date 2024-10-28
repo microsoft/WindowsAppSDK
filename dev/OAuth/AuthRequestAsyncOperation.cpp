@@ -13,7 +13,7 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Security::Cryptography;
 
-AuthRequestAsyncOperation::AuthRequestAsyncOperation(const winrt::hstring& state)
+AuthRequestAsyncOperation::AuthRequestAsyncOperation(winrt::hstring& state)
 {
     try
     {
@@ -21,6 +21,7 @@ AuthRequestAsyncOperation::AuthRequestAsyncOperation(const winrt::hstring& state
         {
             while (true)
             {
+                winrt::hstring state{ random_base64urlencoded_string(32) };
                 if (try_create_pipe(state))
                 {
                     break;

@@ -8,7 +8,7 @@ struct AuthRequestAsyncOperation :
     winrt::implements<AuthRequestAsyncOperation, foundation::IAsyncOperation<oauth::AuthRequestResult>,
         foundation::IAsyncInfo>
 {
-    AuthRequestAsyncOperation(const winrt::hstring& state);
+    AuthRequestAsyncOperation(winrt::hstring& state);
     AuthRequestAsyncOperation(oauth::implementation::AuthRequestParams* params);
     ~AuthRequestAsyncOperation();
 

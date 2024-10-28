@@ -32,7 +32,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
         OAuth2ManagerTelemetry::RequestAuthAsyncTriggered(isAppPackaged, appName, true);
 
-		winrt::hstring state{ random_base64urlencoded_string(32) };
+		winrt::hstring state;
         auto asyncOp = winrt::make_self<AuthRequestAsyncOperation>(state);
 
         {
@@ -73,7 +73,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
         OAuth2ManagerTelemetry::RequestAuthAsyncTriggered(isAppPackaged, appName, false);
 
-		winrt::hstring state{ random_base64urlencoded_string(32) };
+		winrt::hstring state;
 		auto asyncOp = winrt::make_self<AuthRequestAsyncOperation>(state);
 
 		{
