@@ -434,7 +434,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
 
 	std::wstring OAuth2Manager::create_implicit_url(const foundation::Uri& completeAuthEndpoint, const winrt::hstring& state, const foundation::Uri& redirectUri)
 	{
-		std::lock_guard guard{ m_mutex };
+	    std::lock_guard guard{ m_mutex };
 		// Per RFC 6749 section 3.1, the auth endpoint URI *MAY* contain a query string, which must be retained
 		std::wstring result{ completeAuthEndpoint.RawUri() };
 		if (completeAuthEndpoint.Query().empty())
