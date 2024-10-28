@@ -108,6 +108,8 @@ PublishFile $FullBuildOutput\DeploymentAgent\DeploymentAgent.pdb $symbolsOutputD
 # Copy files to Full Nuget package (alphabetical by category)
 #
 # C#/WinRT Projections
+PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.Background.Projection\Microsoft.Windows.ApplicationModel.Background.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.Background.Projection\Microsoft.Windows.ApplicationModel.Background.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.pdb $NugetDir\lib\net6.0-windows10.0.17763.0
 PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection.dll $NugetDir\lib\net6.0-windows10.0.17763.0
