@@ -21,7 +21,7 @@ AuthRequestAsyncOperation::AuthRequestAsyncOperation(winrt::hstring& state)
         {
             while (true)
             {
-                winrt::hstring state{ random_base64urlencoded_string(32) };
+                state = random_base64urlencoded_string(32);
                 if (try_create_pipe(state))
                 {
                     break;
