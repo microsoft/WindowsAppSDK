@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{95409d1e-843f-4316-8d8e-471b3e203f94}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)CameraCaptureUI.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CameraCaptureUIPhotoCaptureSettings.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CameraCaptureUIVideoCaptureSettings.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)CameraCaptureUI.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CameraCaptureUIPhotoCaptureSettings.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CameraCaptureUITelemetry.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CameraCaptureUIVideoCaptureSettings.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="$(MSBuildThisFileDirectory)CameraCaptureUI.idl" />
+  </ItemGroup>
+</Project>
