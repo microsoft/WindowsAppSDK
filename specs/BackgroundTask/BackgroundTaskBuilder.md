@@ -15,7 +15,7 @@ This API takes care of avoiding this workaround so that WinAppSDK applications c
 
  ## Register Background Task (c++)
 
- Registering a Background Task for full trust COM component. Developers may also need to set the UniversalBGTask property as true in their project configuration.
+ Registering a Background Task for full trust COM component. Developers may also need to set the **WindowsAppSDKUniversalBGTask** property as true in their project configuration.
 
  ```c++
        //Using WinAppSDK API for BackgroundTaskBuilder
@@ -33,7 +33,7 @@ This API takes care of avoiding this workaround so that WinAppSDK applications c
 
 Represents a background task to register with the system.
 
-This class is not agile, which means that you need to consider its threading model and marshaling behavior. For more info, see [Threading and Marshaling (C++/CX)]( https://learn.microsoft.com/en-us/cpp/cppcx/threading-and-marshaling-c-cx?view=msvc-170 ) and [Using Windows Runtime objects in a multithreaded environment (.NET)]( https://learn.microsoft.com/en-us/windows/uwp/threading-async/using-windows-runtime-objects-in-a-multithreaded-environment)
+This class is not agile, which means that you need to consider its threading model and marshaling behavior. For more info, see [Agile Objects in C++/WinRT](https://learn.microsoft.com/en-us/windows/uwp/cpp-and-winrt-apis/agile-objects), [Threading and Marshaling (C++/CX)]( https://learn.microsoft.com/en-us/cpp/cppcx/threading-and-marshaling-c-cx?view=msvc-170 ) and [Using Windows Runtime objects in a multithreaded environment (.NET)]( https://learn.microsoft.com/en-us/windows/uwp/threading-async/using-windows-runtime-objects-in-a-multithreaded-environment)
 
 
 ## BackgroundTaskBuilder constructor
@@ -47,8 +47,8 @@ This class is not agile, which means that you need to consider its threading mod
 
 | Name | Description | Value |
 |-|-|-|
-|Name| Gets or sets the name of a background task.|Name(A string representing name of the task) |
-|TaskGroup| Gets and sets the group identifier.| TaskGroup (The group identifier.) |
+|Name| Gets or sets the name of a background task.| Name (A string representing name of the task) |
+|TaskGroup| Gets and sets the group identifier.| TaskGroup (The group identifier for the task) |
 
 
 ## BackgroundTaskBuilder Methods
@@ -57,6 +57,9 @@ This class is not agile, which means that you need to consider its threading mod
 |-|-|-|-|
 | AddCondition(IBackgroundCondition) | Adds a condition to a background task.| __IBackgroundCondition__ Condition for Background Task | |
 | Register() | Registers a background task with the system.| | __BackgroundTaskRegistration__|
+| Register(String) | Registers a background task with the system.| __String__ Name for the task | __BackgroundTaskRegistration__|
+| SetTaskEntryPointClsId(GUID) | Assigns a COM CLSID entry point using an existing BackgroundTaskBuilder object. | __GUID__ GUID of the Entry point class | |
+| SetTrigger(IBackgroundTrigger) | Sets the event trigger for a background task. | __IBackgroundTrigger__ Trigger for Background Task | |
 
 
 
@@ -64,7 +67,7 @@ This class is not agile, which means that you need to consider its threading mod
 
 > Note: all of this new WinAppSDK API is the same as the existing UWP API
  [BackgroundTaskBuilder](https://learn.microsoft.com/en-us/uwp/api/windows.applicationmodel.background.backgroundtaskbuilder), only changing the register operation internally to use WindowsRuntimeComponent for registration and then use the WindowsRuntimeComponent to activate the COM component of the application.
-```c++ (but really MIDL3)
+```c# (but really MIDL3)
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
@@ -81,16 +84,19 @@ namespace Microsoft.Windows.ApplicationModel.Background
         void SetTrigger(
                 Windows.ApplicationModel.Background.IBackgroundTrigger trigger
             );
-        void SetTaskEntryPointClsId(
+
+        void
+            SetTaskEntryPointClsId(
                 GUID clsId
             );
 
         String Name{ set; get; };
 
-        [return_name("task")]
-            Windows.ApplicationModel.Background.BackgroundTaskRegistration Register();
-        [return_name("task")]
-            Windows.ApplicationModel.Background.BackgroundTaskRegistration Register(String name);
+        Windows.ApplicationModel.Background.BackgroundTaskRegistration Register(
+            );
+        Windows.ApplicationModel.Background.BackgroundTaskRegistration Register(
+                String taskName
+            );
     }
 }
 
