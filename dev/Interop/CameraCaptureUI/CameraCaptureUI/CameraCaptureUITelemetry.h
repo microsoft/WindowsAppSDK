@@ -27,7 +27,4 @@ public:
         }
         CATCH_LOG()
     END_ACTIVITY_CLASS();
-
-    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM5(CaptureError, PDT_ProductAndServiceUsage,
-        bool, IsAppPackaged, PCWSTR, AppName, PCWSTR, CaptureMode, HRESULT, hResult, PCWSTR, message);
 };

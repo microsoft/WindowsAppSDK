@@ -73,65 +73,54 @@ namespace winrt::Microsoft::Windows::Media::Capture::implementation
         bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
         const wchar_t* mediaType = nullptr;
-        try
+        auto strong = get_strong();
+
+        if (mode == CameraCaptureUIMode::PhotoOrVideo)
         {
-            auto strong = get_strong();
-
-            if (mode == CameraCaptureUIMode::PhotoOrVideo)
-            {
-                mediaType = L"photoOrVideo";
-            }
-            else if (mode == CameraCaptureUIMode::Photo)
-            {
-                mediaType = L"photo";
-            }
-            else if (mode == CameraCaptureUIMode::Video)
-            {
-                mediaType = L"video";
-            }
-            else
-            {
-                throw hresult_invalid_argument();
-            }
-            auto logCaptureOperation{ CameraCaptureUITelemetry::CameraCaptureOperation::Start(isAppPackaged, appName, mediaType) };
-
-            ValueSet properties;
-            properties.Insert(L"MediaType", box_value(mediaType));
-
-            if ((mode == CameraCaptureUIMode::PhotoOrVideo) || (mode == CameraCaptureUIMode::Photo))
-            {
-                m_photoSettings->validate();
-                m_photoSettings->Serialize(properties);
-                m_photoTokenFile = co_await CreateEmptyFileAndGetToken(m_photoSettings->GetFileExtension());
-                properties.Insert(L"PhotoFileToken", box_value(m_photoTokenFile.token));
-            }
-
-            if ((mode == CameraCaptureUIMode::PhotoOrVideo) || (mode == CameraCaptureUIMode::Video))
-            {
-                m_videoSettings->validate();
-                m_videoSettings->Serialize(properties);
-                m_videoTokenFile = co_await CreateEmptyFileAndGetToken(m_videoSettings->GetFileExtension());
-                properties.Insert(L"VideoFileToken", box_value(m_videoTokenFile.token));
-            }
-
-            auto tokenValue = co_await LaunchCameraForResultToken(m_windowId, properties);
-            if (tokenValue.empty())
-            {
-                co_return nullptr;
-            }
-            StorageFile file = nullptr;
-
-            file = co_await SharedStorageAccessManager::RedeemTokenForFileAsync(tokenValue);
-            logCaptureOperation.Stop();
-            co_return file;
+            mediaType = L"photoOrVideo";
         }
-        catch (...)
+        else if (mode == CameraCaptureUIMode::Photo)
         {
-            auto e = winrt::hresult_error(winrt::to_hresult(), winrt::take_ownership_from_abi);
-            auto hr = e.code();
-            auto message = e.message().c_str();
-            CameraCaptureUITelemetry::CaptureError(isAppPackaged, appName, mediaType, hr, message);
-            throw e;
+            mediaType = L"photo";
         }
+        else if (mode == CameraCaptureUIMode::Video)
+        {
+            mediaType = L"video";
+        }
+        else
+        {
+            throw hresult_invalid_argument();
+        }
+        auto logCaptureOperation{ CameraCaptureUITelemetry::CameraCaptureOperation::Start(isAppPackaged, appName, mediaType) };
+
+        ValueSet properties;
+        properties.Insert(L"MediaType", box_value(mediaType));
+
+        if ((mode == CameraCaptureUIMode::PhotoOrVideo) || (mode == CameraCaptureUIMode::Photo))
+        {
+            m_photoSettings->validate();
+            m_photoSettings->Serialize(properties);
+            m_photoTokenFile = co_await CreateEmptyFileAndGetToken(m_photoSettings->GetFileExtension());
+            properties.Insert(L"PhotoFileToken", box_value(m_photoTokenFile.token));
+        }
+
+        if ((mode == CameraCaptureUIMode::PhotoOrVideo) || (mode == CameraCaptureUIMode::Video))
+        {
+            m_videoSettings->validate();
+            m_videoSettings->Serialize(properties);
+            m_videoTokenFile = co_await CreateEmptyFileAndGetToken(m_videoSettings->GetFileExtension());
+            properties.Insert(L"VideoFileToken", box_value(m_videoTokenFile.token));
+        }
+
+        auto tokenValue = co_await LaunchCameraForResultToken(m_windowId, properties);
+        if (tokenValue.empty())
+        {
+            co_return nullptr;
+        }
+        StorageFile file = nullptr;
+
+        file = co_await SharedStorageAccessManager::RedeemTokenForFileAsync(tokenValue);
+        logCaptureOperation.Stop();
+        co_return file;
     }
 }
