@@ -29,13 +29,17 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Background::implementatio
         m_trigger = trigger;
     }
 
+    void BackgroundTaskBuilder::AddCondition(winrt::IBackgroundCondition condition)
+    {
+        m_builder.AddCondition(condition);
+    }
+
     winrt::BackgroundTaskRegistration BackgroundTaskBuilder::Register()
     {
-        winrt::BackgroundTaskBuilder builder;
-        builder.Name(m_name);
-        builder.SetTrigger(m_trigger);
-        builder.TaskEntryPoint(L"Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.Task");
-        winrt::BackgroundTaskRegistration taskRegistration = builder.Register();
+        m_builder.Name(m_name);
+        m_builder.SetTrigger(m_trigger);
+        m_builder.TaskEntryPoint(L"Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.Task");
+        winrt::BackgroundTaskRegistration taskRegistration = m_builder.Register();
 
         winrt::ApplicationDataContainer localSettings = winrt::ApplicationData::Current().LocalSettings();
         auto values = localSettings.Values();

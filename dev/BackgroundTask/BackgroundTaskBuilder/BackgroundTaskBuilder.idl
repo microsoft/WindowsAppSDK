@@ -17,6 +17,9 @@ namespace Microsoft.Windows.ApplicationModel.Background
         void SetTaskEntryPointClsId(
                 GUID clsId
             );
+        void AddCondition (
+            Windows.ApplicationModel.Background.IBackgroundCondition condition
+            );
 
         String Name{ set; get; };
 

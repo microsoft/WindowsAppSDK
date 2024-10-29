@@ -12,9 +12,12 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Background::implementatio
         BackgroundTaskBuilder() = default;
         void SetTaskEntryPointClsId(winrt::guid clsId);
 
-        void
-            SetTrigger(
+        void SetTrigger(
                 winrt::Windows::ApplicationModel::Background::IBackgroundTrigger trigger
+            );
+
+        void AddCondition(
+                winrt::Windows::ApplicationModel::Background::IBackgroundCondition trigger
             );
 
 
@@ -26,6 +29,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Background::implementatio
 
     private:
         winrt::guid m_taskEntryPointClsId;
+        winrt::Windows::ApplicationModel::Background::BackgroundTaskBuilder m_builder;
         winrt::hstring m_name;
         winrt::Windows::ApplicationModel::Background::IBackgroundTrigger m_trigger;
     };
