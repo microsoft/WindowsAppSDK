@@ -3,6 +3,7 @@
 #include <pch.h>
 #include "common.h"
 #include "windows.h"
+#include <wil/resource.h>
 
 #include "OAuth2Manager.h"
 #include "AuthRequestParams.h"
@@ -32,7 +33,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
         OAuth2ManagerTelemetry::RequestAuthAsyncTriggered(isAppPackaged, appName, true);
 
-		winrt::hstring state;
+        winrt::hstring state;
         auto asyncOp = winrt::make_self<AuthRequestAsyncOperation>(state);
 
         {
@@ -45,14 +46,8 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
             // Pipe server has been successfully set up. Initiate the launch
             auto url = create_implicit_url(completeAuthEndpoint, state, redirectUri);
 
-            // Convert parentWindowId to HWND
-            HWND hwndParent = reinterpret_cast<HWND>(parentWindowId.Value);
-
-            auto launchResult = ::ShellExecuteW(hwndParent, L"open", url.c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
-            if (auto code = reinterpret_cast<std::intptr_t>(launchResult); code < 32)
-            {
-                throw winrt::hresult_error(HRESULT_FROM_WIN32(::GetLastError()), L"Failed to launch browser");
-            }
+            // Launch browser
+            execute_shell(parentWindowId, url);
         }
         catch (...)
         {
@@ -73,33 +68,27 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
         OAuth2ManagerTelemetry::RequestAuthAsyncTriggered(isAppPackaged, appName, false);
 
-		winrt::hstring state;
-		auto asyncOp = winrt::make_self<AuthRequestAsyncOperation>(state);
+        winrt::hstring state;
+        auto asyncOp = winrt::make_self<AuthRequestAsyncOperation>(state);
 
-		{
-			std::lock_guard guard{ m_mutex };
-			m_pendingAuthRequests.push_back(AuthRequestState{ state, asyncOp });
-		}
+        {
+            std::lock_guard guard{ m_mutex };
+            m_pendingAuthRequests.push_back(AuthRequestState{ state, asyncOp });
+        }
 
-		try
-		{
-			// Pipe server has been successfully set up. Initiate the launch
-			auto url = create_implicit_url(completeAuthEndpoint, state, nullptr);
+        try
+        {
+            // Pipe server has been successfully set up. Initiate the launch
+            auto url = create_implicit_url(completeAuthEndpoint, state, nullptr);
 
-			// Convert parentWindowId to HWND
-			HWND hwndParent = reinterpret_cast<HWND>(parentWindowId.Value);
-
-			auto launchResult = ::ShellExecuteW(hwndParent, L"open", url.c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
-			if (auto code = reinterpret_cast<std::intptr_t>(launchResult); code < 32)
-			{
-				throw winrt::hresult_error(HRESULT_FROM_WIN32(::GetLastError()), L"Failed to launch browser");
-			}
-		}
-		catch (...)
-		{
-			try_remove(asyncOp.get());
-			throw;
-		}
+            // Launch browser
+            execute_shell(parentWindowId, url);
+        }
+        catch (...)
+        {
+            try_remove(asyncOp.get());
+            throw;
+        }
         return *asyncOp;
     }
 
@@ -115,7 +104,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
 
         auto paramsImpl = winrt::get_self<implementation::AuthRequestParams>(params);
         auto asyncOp = winrt::make_self<AuthRequestAsyncOperation>(paramsImpl);
-		OAuth2ManagerTelemetry::RequestAuthWithParamsAsyncTriggered(isAppPackaged, appName, paramsImpl->ResponseType().c_str());
+        OAuth2ManagerTelemetry::RequestAuthWithParamsAsyncTriggered(isAppPackaged, appName, paramsImpl->ResponseType().c_str());
 
 
         {
@@ -128,14 +117,8 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
             // Pipe server has been successfully set up. Initiate the launch
             auto url = paramsImpl->create_url(authEndpoint);
 
-            // Convert parentWindowId to HWND
-            HWND hwndParent = reinterpret_cast<HWND>(parentWindowId.Value);
-
-            auto launchResult = ::ShellExecuteW(hwndParent, L"open", url.c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
-            if (auto code = reinterpret_cast<std::intptr_t>(launchResult); code < 32)
-            {
-                throw winrt::hresult_error(HRESULT_FROM_WIN32(::GetLastError()), L"Failed to launch browser");
-            }
+            // Launch browser
+            execute_shell(parentWindowId, url);
         }
         catch (...)
         {
@@ -206,11 +189,11 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
         // innocuous - e.g. the browser did multiple redirects - or it could be a bad actor - e.g. a process sending
         // random garbage to any pipe it can open or another process specifically targeting oauth. Therefore we make
         // multiple attempts to connect to the pipe
-        HANDLE pipe = INVALID_HANDLE_VALUE;
+        wil::unique_handle pipe;
         while (true) // TODO: Bound this? Need to remember to return false if we do
         {
-            pipe = ::CreateFileW(pipeName.c_str(), GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, nullptr);
-            if (pipe != INVALID_HANDLE_VALUE) break;
+            pipe.reset(::CreateFileW(pipeName.c_str(), GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, nullptr));
+            if (pipe) break;
 
             if (auto err = ::GetLastError(); err != ERROR_PIPE_BUSY)
             {
@@ -228,7 +211,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
         }
 
         ULONG serverPid = 0;
-        if (::GetNamedPipeServerProcessId(pipe, &serverPid))
+        if (::GetNamedPipeServerProcessId(pipe.get(), &serverPid))
         {
             ::AllowSetForegroundWindow(serverPid);
 
@@ -237,16 +220,14 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
 
         DWORD bytesToWrite = encryptedUri.Length();
         DWORD bytesWritten = 0;
-        if (!::WriteFile(pipe, encryptedUri.data(), bytesToWrite, &bytesWritten, nullptr) ||
+        if (!::WriteFile(pipe.get(), encryptedUri.data(), bytesToWrite, &bytesWritten, nullptr) ||
             (bytesWritten != bytesToWrite))
         {
             // TODO: Actual error? This could be because the server timed us out...
-            ::CloseHandle(pipe);
             return false;
         }
 
         // The client should have the URI and the operation should be considered handled
-        ::CloseHandle(pipe);
         return true;
     }
 
@@ -263,7 +244,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
 
         bool isAppPackaged = m_telemetryHelper.IsPackagedApp();
         PCWSTR appName = m_telemetryHelper.GetAppName().c_str();
-        
+
         auto paramsImpl = winrt::get_self<implementation::TokenRequestParams>(params);
         paramsImpl->finalize();
         OAuth2ManagerTelemetry::RequestTokenAsyncTriggered(isAppPackaged, appName, paramsImpl->GrantType().c_str(), clientAuth ? true : false);
@@ -328,6 +309,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
         }
         catch (...)
         {
+            LOG_CAUGHT_EXCEPTION();
             co_return implementation::TokenRequestResult::MakeFailure(std::move(response),
                 TokenFailureKind::HttpFailure, winrt::to_hresult());
         }
@@ -358,6 +340,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
             }
             catch (...)
             {
+                LOG_CAUGHT_EXCEPTION();
                 co_return implementation::TokenRequestResult::MakeFailure(std::move(response),
                     TokenFailureKind::InvalidResponse, winrt::to_hresult());
             }
@@ -425,27 +408,48 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
         return result;
     }
 
-	std::wstring OAuth2Manager::create_implicit_url(const foundation::Uri& completeAuthEndpoint, const winrt::hstring& state, const foundation::Uri& redirectUri)
-	{
-	    std::lock_guard guard{ m_mutex };
-		// Per RFC 6749 section 3.1, the auth endpoint URI *MAY* contain a query string, which must be retained
-		std::wstring result{ completeAuthEndpoint.RawUri() };
-		if (completeAuthEndpoint.Query().empty())
-		{
-			result += L"?state=";
-		}
-		else
-		{
-			result += L"&state=";
-		}
-		result += Uri::EscapeComponent(state);
-		result += L"&response_type=token";
+    std::wstring OAuth2Manager::create_implicit_url(const foundation::Uri& completeAuthEndpoint, const winrt::hstring& state, const foundation::Uri& redirectUri)
+    {
+        std::lock_guard guard{ m_mutex };
+        // Per RFC 6749 section 3.1, the auth endpoint URI *MAY* contain a query string, which must be retained
+        std::wstring result{ completeAuthEndpoint.RawUri() };
+        if (completeAuthEndpoint.Query().empty())
+        {
+            result += L"?state=";
+        }
+        else
+        {
+            result += L"&state=";
+        }
+        result += Uri::EscapeComponent(state);
+        result += L"&response_type=token";
 
-		if (redirectUri)
-		{
-			result += L"&redirect_uri=";
-			result += Uri::EscapeComponent(redirectUri.RawUri());
-		}
-		return result;
-	}
+        if (redirectUri)
+        {
+            result += L"&redirect_uri=";
+            result += Uri::EscapeComponent(redirectUri.RawUri());
+        }
+        return result;
+    }
+
+    void OAuth2Manager::execute_shell(winrt::Microsoft::UI::WindowId const& parentWindowId, const std::wstring& url)
+    {
+        // Convert parentWindowId to HWND
+        HWND hwndParent = reinterpret_cast<HWND>(parentWindowId.Value);
+
+        SHELLEXECUTEINFO sei = { sizeof(sei) };
+        sei.fMask = SEE_MASK_NOCLOSEPROCESS;
+        sei.hwnd = hwndParent;
+        sei.lpVerb = L"open";
+        sei.lpFile = url.c_str();
+        sei.lpParameters = nullptr;
+        sei.lpDirectory = nullptr;
+        sei.nShow = SW_SHOWDEFAULT;
+        sei.hInstApp = nullptr;
+
+        if (!ShellExecuteExW(&sei))
+        {
+            throw winrt::hresult_error(HRESULT_FROM_WIN32(::GetLastError()), L"Failed to launch browser");
+        }
+    }
 }

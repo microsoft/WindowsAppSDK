@@ -42,6 +42,7 @@ namespace winrt::Microsoft::Security::Authentication::OAuth::factory_implementat
         AuthRequestState try_remove(AuthRequestAsyncOperation* op);
 
         std::wstring create_implicit_url(const foundation::Uri& completeAuthEndpoint, const winrt::hstring& state, const foundation::Uri& redirectUri);
+        void OAuth2Manager::execute_shell(winrt::Microsoft::UI::WindowId const& parentWindowId, const std::wstring& url);
         std::shared_mutex m_mutex;
         TelemetryHelper m_telemetryHelper;
         std::vector<AuthRequestState> m_pendingAuthRequests;

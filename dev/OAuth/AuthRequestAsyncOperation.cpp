@@ -50,7 +50,11 @@ AuthRequestAsyncOperation::AuthRequestAsyncOperation(winrt::hstring& state)
             throw winrt::hresult_error(HRESULT_FROM_WIN32(::GetLastError()), L"Failed to create an event");
         }
 
-        m_ptp = ::CreateThreadpoolWait(async_callback, this, nullptr);
+        m_ptp.reset(::CreateThreadpoolWait(async_callback, this, nullptr)); // Use reset() to initialize
+        if (!m_ptp)
+        {
+            throw winrt::hresult_error(HRESULT_FROM_WIN32(::GetLastError()), L"Failed to create threadpool wait");
+        }
         connect_to_new_client();
     }
     catch (...)
@@ -111,7 +115,11 @@ AuthRequestAsyncOperation::AuthRequestAsyncOperation(implementation::AuthRequest
             throw winrt::hresult_error(HRESULT_FROM_WIN32(::GetLastError()), L"Failed to create an event");
         }
 
-        m_ptp = ::CreateThreadpoolWait(async_callback, this, nullptr);
+        m_ptp.reset(::CreateThreadpoolWait(async_callback, this, nullptr)); // Use reset() to initialize
+        if (!m_ptp)
+        {
+            throw winrt::hresult_error(HRESULT_FROM_WIN32(::GetLastError()), L"Failed to create threadpool wait");
+        }
         connect_to_new_client();
     }
     catch (...)
@@ -141,15 +149,14 @@ void AuthRequestAsyncOperation::destroy()
     // or modify object state
     if (m_ptp)
     {
-        if (!::SetThreadpoolWaitEx(m_ptp, nullptr, nullptr, nullptr))
+        if (!::SetThreadpoolWaitEx(m_ptp.get(), nullptr, nullptr, nullptr))
         {
             // False here means that there's a callback in progress. This would realistically only happen if there was
             // a race between the client calling 'Cancel' and someone connecting to the pipe
-            ::WaitForThreadpoolWaitCallbacks(m_ptp, true);
+            ::WaitForThreadpoolWaitCallbacks(m_ptp.get(), true);
         }
 
-        ::CloseThreadpoolWait(m_ptp);
-        m_ptp = nullptr;
+        m_ptp.reset();
     }
 
     if (m_overlapped.hEvent)
@@ -167,11 +174,10 @@ void AuthRequestAsyncOperation::close_pipe()
         return;
     }
 
-    if (m_pipe != INVALID_HANDLE_VALUE)
+    if (m_pipe)
     {
-        ::CancelIoEx(m_pipe, &m_overlapped);
-        ::CloseHandle(m_pipe);
-        m_pipe = INVALID_HANDLE_VALUE;
+        ::CancelIoEx(m_pipe.get(), &m_overlapped);
+        m_pipe.reset();
     }
 }
 
@@ -328,7 +334,7 @@ void AuthRequestAsyncOperation::callback(TP_WAIT_RESULT waitResult)
 
             if (waitResult == WAIT_OBJECT_0)
             {
-                if (!::GetOverlappedResult(m_pipe, &m_overlapped, &bytes, false))
+                if (!::GetOverlappedResult(m_pipe.get(), &m_overlapped, &bytes, false))
                 {
                     overlappedError = ::GetLastError();
                 }
@@ -337,7 +343,8 @@ void AuthRequestAsyncOperation::callback(TP_WAIT_RESULT waitResult)
 
         switch (currentState)
         {
-        case request_state::connecting: {
+        case request_state::connecting:
+        {
             WINRT_ASSERT(waitResult == WAIT_OBJECT_0); // TODO: Is this valid? Maybe when we cancelled? Error?
             if (waitResult != WAIT_OBJECT_0)
             {
@@ -356,7 +363,8 @@ void AuthRequestAsyncOperation::callback(TP_WAIT_RESULT waitResult)
         }
         break;
 
-        case request_state::reading: {
+        case request_state::reading:
+        {
             if (overlappedError == ERROR_MORE_DATA)
             {
                 // NOTE: Pipe server is effectively single threaded, hence no synchronization needed here
@@ -393,11 +401,10 @@ bool AuthRequestAsyncOperation::try_create_pipe(const winrt::hstring& state)
 {
     // NOTE: Called on construction where no synchronization is needed
     auto name = request_pipe_name(state);
-    m_pipe =
-        ::CreateNamedPipeW(name.c_str(), PIPE_ACCESS_INBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE | FILE_FLAG_OVERLAPPED,
-            PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS, 1, 1024, 1024, 0, nullptr);
+    m_pipe.reset(::CreateNamedPipeW(name.c_str(), PIPE_ACCESS_INBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE | FILE_FLAG_OVERLAPPED,
+        PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS, 1, 1024, 1024, 0, nullptr));
 
-    if (m_pipe != INVALID_HANDLE_VALUE)
+    if (m_pipe)
     {
         m_pipeName = std::move(name);
         return true;
@@ -420,11 +427,11 @@ void AuthRequestAsyncOperation::connect_to_new_client(bool disconnect)
 
         if (disconnect)
         {
-            [[maybe_unused]] auto disconnectResult = ::DisconnectNamedPipe(m_pipe);
+            [[maybe_unused]] auto disconnectResult = ::DisconnectNamedPipe(m_pipe.get());
             WINRT_ASSERT(disconnectResult); // TODO: Correct if the client disconnected from us?
         }
 
-        [[maybe_unused]] auto connectResult = ::ConnectNamedPipe(m_pipe, &m_overlapped);
+        [[maybe_unused]] auto connectResult = ::ConnectNamedPipe(m_pipe.get(), &m_overlapped);
         WINRT_ASSERT(!connectResult); // Only non-zero in asynchronous mode, even if already connected
         lastError = ::GetLastError();
     }
@@ -450,7 +457,7 @@ void AuthRequestAsyncOperation::connect_to_new_client(bool disconnect)
 
             m_state = request_state::connecting;
         }
-        ::SetThreadpoolWait(m_ptp, m_overlapped.hEvent, nullptr);
+        ::SetThreadpoolWait(m_ptp.get(), m_overlapped.hEvent, nullptr);
     }
 }
 
@@ -467,7 +474,7 @@ void AuthRequestAsyncOperation::initiate_read()
                 return;
             }
 
-            readResult = ::ReadFile(m_pipe, m_pipeReadBuffer, sizeof(m_pipeReadBuffer), nullptr, &m_overlapped);
+            readResult = ::ReadFile(m_pipe.get(), m_pipeReadBuffer, sizeof(m_pipeReadBuffer), nullptr, &m_overlapped);
         }
 
         if (readResult)
@@ -495,7 +502,7 @@ void AuthRequestAsyncOperation::initiate_read()
 
             m_state = request_state::reading;
             std::int64_t timeout = std::chrono::duration_cast<TimeSpan>(-50ms).count(); // 50ms timeout
-            ::SetThreadpoolWait(m_ptp, m_overlapped.hEvent, reinterpret_cast<PFILETIME>(&timeout));
+            ::SetThreadpoolWait(m_ptp.get(), m_overlapped.hEvent, reinterpret_cast<PFILETIME>(&timeout));
             break;
         }
         else

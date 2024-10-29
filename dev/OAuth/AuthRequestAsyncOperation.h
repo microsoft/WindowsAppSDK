@@ -1,12 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
+#include <wil/resource.h>
 
 #include "AuthRequestParams.h"
 
 struct AuthRequestAsyncOperation :
     winrt::implements<AuthRequestAsyncOperation, foundation::IAsyncOperation<oauth::AuthRequestResult>,
-        foundation::IAsyncInfo>
+    foundation::IAsyncInfo>
 {
     AuthRequestAsyncOperation(winrt::hstring& state);
     AuthRequestAsyncOperation(oauth::implementation::AuthRequestParams* params);
@@ -56,10 +57,10 @@ private:
 
     winrt::com_ptr<oauth::implementation::AuthRequestParams> m_params;
     std::wstring m_pipeName;
-    HANDLE m_pipe = INVALID_HANDLE_VALUE;
+    wil::unique_handle m_pipe;
     request_state m_state = request_state::connecting;
     OVERLAPPED m_overlapped = {};
-    PTP_WAIT m_ptp = nullptr;
+    wil::unique_threadpool_wait m_ptp;
     std::vector<std::uint8_t> m_pipeReadData;
     std::uint8_t m_pipeReadBuffer[128];
 
