@@ -23,6 +23,7 @@ This API takes care of avoiding this workaround so that WinAppSDK applications c
         SystemTrigger trigger = SystemTrigger(SystemTriggerType::TimeZoneChange, false);
         auto backgroundTrigger = trigger.as<IBackgroundTrigger>();
         builder.SetTrigger(backgroundTrigger);
+        builder.AddCondition(backgroundTaskCondition);
         builder.SetTaskEntryPointClsid(classGuid);
         builder.Register(); 
 ```
@@ -83,6 +84,10 @@ namespace Microsoft.Windows.ApplicationModel.Background
 
         void SetTrigger(
                 Windows.ApplicationModel.Background.IBackgroundTrigger trigger
+            );
+
+        void AddCondition(
+                winrt::Windows::ApplicationModel::Background::IBackgroundCondition trigger
             );
 
         void
