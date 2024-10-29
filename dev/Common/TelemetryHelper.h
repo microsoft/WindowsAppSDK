@@ -6,7 +6,7 @@ class TelemetryHelper
 public:
     TelemetryHelper()
         : m_isPackagedApp(AppModel::Identity::IsPackagedProcess()),
-        m_appName(m_isPackagedApp ? GetAppNamePackaged() : GetAppNameUnpackaged())
+          m_appName(m_isPackagedApp ? GetAppNamePackaged() : GetAppNameUnpackaged())
     {
     }
 
