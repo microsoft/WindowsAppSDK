@@ -14,9 +14,9 @@ namespace winrt
 
 namespace winrt::Microsoft::Windows::ApplicationModel::Background::implementation
 {
-    void BackgroundTaskBuilder::SetTaskEntryPointClsId(winrt::guid clsId)
+    void BackgroundTaskBuilder::SetTaskEntryPointClsid(winrt::guid clsId)
     {
-        m_taskEntryPointClsId = clsId;
+        m_taskEntryPointClsid = clsId;
     }
 
     void BackgroundTaskBuilder::Name(winrt::hstring name)
@@ -26,7 +26,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Background::implementatio
 
     void BackgroundTaskBuilder::SetTrigger(winrt::IBackgroundTrigger trigger)
     {
-        m_trigger = trigger;
+        m_builder.SetTrigger(trigger);
     }
 
     void BackgroundTaskBuilder::AddCondition(winrt::IBackgroundCondition condition)
@@ -37,14 +37,13 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Background::implementatio
     winrt::BackgroundTaskRegistration BackgroundTaskBuilder::Register()
     {
         m_builder.Name(m_name);
-        m_builder.SetTrigger(m_trigger);
         m_builder.TaskEntryPoint(L"Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.Task");
         winrt::BackgroundTaskRegistration taskRegistration = m_builder.Register();
 
         winrt::ApplicationDataContainer localSettings = winrt::ApplicationData::Current().LocalSettings();
         auto values = localSettings.Values();
         winrt::hstring lookupId = winrt::to_hstring(taskRegistration.TaskId());
-        IInspectable obj = winrt::box_value(m_taskEntryPointClsId);
+        IInspectable obj = winrt::box_value(m_taskEntryPointClsid);
         values.Insert(lookupId, obj);
 
         return taskRegistration;

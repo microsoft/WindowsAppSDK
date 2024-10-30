@@ -10,7 +10,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Background::implementatio
     struct BackgroundTaskBuilder : BackgroundTaskBuilderT<BackgroundTaskBuilder>
     {
         BackgroundTaskBuilder() = default;
-        void SetTaskEntryPointClsId(winrt::guid clsId);
+        void SetTaskEntryPointClsid(winrt::guid clsId);
 
         void SetTrigger(
                 winrt::Windows::ApplicationModel::Background::IBackgroundTrigger trigger
@@ -28,10 +28,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::Background::implementatio
         winrt::Windows::ApplicationModel::Background::BackgroundTaskRegistration Register(winrt::hstring taskName);
 
     private:
-        winrt::guid m_taskEntryPointClsId;
+        winrt::guid m_taskEntryPointClsid;
         winrt::Windows::ApplicationModel::Background::BackgroundTaskBuilder m_builder;
         winrt::hstring m_name;
-        winrt::Windows::ApplicationModel::Background::IBackgroundTrigger m_trigger;
     };
 }
 

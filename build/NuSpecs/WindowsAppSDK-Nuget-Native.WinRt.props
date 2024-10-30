@@ -27,7 +27,7 @@
     </Reference>
     <Reference Include="Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.winmd">
       <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.winmd</HintPath>
-      <Implementation Condition="'$(WindowsAppSDKUniversalBGTask)' == 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.Windows.ApplicationModel.UniversalBGTask.dll</Implementation>
+      <Implementation Condition="'$(WindowsAppSDKBackgroundTask)' == 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.Windows.ApplicationModel.UniversalBGTask.dll</Implementation>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
     <Reference Include="Microsoft.Windows.AppLifecycle.winmd">
