@@ -45,4 +45,3 @@ private:
         return CensorFilePath(processName.get());
     }
 };
-

@@ -74,6 +74,13 @@
       <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Security.Authentication.OAuth.winmd"
+       Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Security.Authentication.OAuth.winmd')">
+      <Private>false</Private>
+      <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
+    </Reference>
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Media.Capture.winmd"
