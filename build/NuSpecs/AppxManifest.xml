@@ -39,6 +39,12 @@
         <!-- Background Task -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.Background.BackgroundTaskBuilder" ThreadingModel="both" />
 
+        <!-- OAuth -->
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.OAuth2Manager" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.AuthRequestParams" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.ClientAuthentication" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.TokenRequestParams" ThreadingModel="both" />
+		
         <!-- Dynamic Dependency -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions" ThreadingModel="both" />
@@ -109,6 +115,8 @@
         <!-- PowerNotifications -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Power.PowerManager" ThreadingModel="both" />
 
+        <!-- CameraCaptureUI -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Media.Capture.CameraCaptureUI" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.proxyStub">
