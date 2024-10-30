@@ -34,8 +34,8 @@ For more details see:
 private void setBadgeNumber(uint32_t num)
 {
     winrt::BadgeNotification badgeNotification(num);
-    winrt::BadgeNotificationManager manager = winrt::BadgeNotificationManager::Default();
-    manager.UpdateBadge(badgeNotification);
+    winrt::BadgeNotificationManager manager = winrt::BadgeNotificationManager::Current();
+    manager.Update(badgeNotification);
 }
 ```
 
@@ -44,10 +44,10 @@ private void setBadgeNumber(uint32_t num)
  ```c++
 private void updateBadgeGlyph()
 {
-    winrt::BadgeGlyphValue badgeGlyphValue = winrt::BadgeGlyphValue::alert
-    winrt::BadgeNotification badgeNotification(badgeGlyphValue);
-    winrt::BadgeNotificationManager manager = winrt::BadgeNotificationManager::Default();
-    manager.UpdateBadge(badgeNotification);
+    winrt::BadgeNotificationGlyph badgeNotificationGlyph = winrt::BadgeNotificationGlyph::Alert
+    winrt::BadgeNotification badgeNotification(badgeNotificationGlyph);
+    winrt::BadgeNotificationManager manager = winrt::BadgeNotificationManager::Current();
+    manager.Update(badgeNotification);
 }
 ```
 
@@ -56,8 +56,8 @@ private void updateBadgeGlyph()
  ```c++
 private void clearBadge()
 {
-    winrt::BadgeNotificationManager manager = winrt::BadgeNotificationManager::Default();
-    manager.ClearBadge();
+    winrt::BadgeNotificationManager manager = winrt::BadgeNotificationManager::Current();
+    manager.Clear();
 }
 ```
 
@@ -66,18 +66,18 @@ private void clearBadge()
  ```c++
 private void updateBadgeGlyph()
 {
-    winrt::BadgeGlyphValue badgeGlyphValue = winrt::BadgeGlyphValue::alert
-    winrt::BadgeNotification badgeNotification(badgeGlyphValue);
+    winrt::BadgeNotificationGlyph badgeNotificationGlyph = winrt::BadgeNotificationGlyph::Alert
+    winrt::BadgeNotification badgeNotification(badgeNotificationGlyph);
 
     DateTime expirationTime = clock::now() + std::chrono::hours(24);
     badgeNotification.Expiration(expirationTime);
 
-    winrt::BadgeNotificationManager manager = winrt::BadgeNotificationManager::Default();
-    manager.UpdateBadge(badgeNotification);
+    winrt::BadgeNotificationManager manager = winrt::BadgeNotificationManager::Current();
+    manager.Update(badgeNotification);
 }
 ```
 
-# API pages
+# API Description
 
 ## BadgeNotification class
 
@@ -88,7 +88,7 @@ The `BadgeNotification` class is used to create badge notifications for apps on 
 | Name | Description |
 |-|-|
 | BadgeNotification(UInt32) | Creates a new `BadgeNotification` object with a numeric badge value. This is used to display a specific number on the app's badge. |
-| BadgeNotification(BadgeGlyphValue) | Creates a new `BadgeNotification` object with a glyph value. This uses a predefined glyph from the `BadgeGlyphValue` enum to display a system-provided symbol on the app's badge. |
+| BadgeNotification(BadgeNotificationGlyph) | Creates a new `BadgeNotification` object with a glyph value. This uses a predefined glyph from the `BadgeNotificationGlyph` enum to display a system-provided symbol on the app's badge. |
 
 ## BadgeNotification Properties
 | Name | Description | Type |
@@ -109,12 +109,12 @@ The `BadgeNotificationManager` class is the central point for managing badge not
 
 | Name | Description | Parameters | Returns |
 |-|-|-|-|
-| UpdateBadge | Applies a change to the badge's glyph or number by providing a `BadgeNotification` object. This method is used to update the badge displayed on the app's tile to reflect a new status or count. | BadgeNotification `notification` | void |
-| ClearBadge | Removes the badge notifications for the app from the action center. This method is useful for clearing any badge notifications when they are no longer relevant or when the app wants to reset its badge status. | | Windows.Foundation.IAsyncAction |
+| Update | Applies a change to the badge's glyph or number by providing a `BadgeNotification` object. This method is used to update the badge displayed on the app's tile to reflect a new status or count. | BadgeNotification `notification` | void |
+| Clear | Removes the badge notifications for the app from the action center. This method is useful for clearing any badge notifications when they are no longer relevant or when the app wants to reset its badge status. | | Windows.Foundation.IAsyncAction |
 
-## BadgeGlyphValue enum
+## BadgeNotificationGlyph enum
 
-The `BadgeGlyphValue` enum defines a set of predefined glyphs that can be used to represent various statuses or notifications on an application's badge. These glyphs provide a visual cue on the app's tile, allowing users to quickly understand the app's status or to be alerted to new information without opening the app.
+The `BadgeNotificationGlyph` enum defines a set of predefined glyphs that can be used to represent various statuses or notifications on an application's badge. These glyphs provide a visual cue on the app's tile, allowing users to quickly understand the app's status or to be alerted to new information without opening the app.
 
 | Name | Description | Glyph |
 |-|-|-|
@@ -133,6 +133,7 @@ The `BadgeGlyphValue` enum defines a set of predefined glyphs that can be used t
 | Error | A glyph that denotes an error has occurred, which may require user action to resolve. | ![Screenshot](badge-error.png) |
 
 These glyphs are system-provided and standardized, ensuring a consistent look and feel across different applications that use them. By using these glyphs, developers can convey specific states or notifications to users in a visually intuitive manner.
+> Note: Only system-provided badge images can be used.
 
 # API Details
 
@@ -143,7 +144,7 @@ These glyphs are system-provided and standardized, ensuring a consistent look an
 namespace Microsoft.Windows.BadgeNotifications
 {
     // Set of predefined glyphs that can be used to represent various statuses or notifications on an application's badge
-    enum BadgeGlyphValue
+    enum BadgeNotificationGlyph
     {
         None, // No glyph. A blank tile appears in the badge.
         Activity, // A glyph representing an activity
@@ -165,12 +166,12 @@ namespace Microsoft.Windows.BadgeNotifications
         // Constructs a BadgeNotification with a numeric badge value.
         // This constructor initializes the BadgeNotification with a number that will be displayed on the badge.
         // @param num The numeric value to be displayed on the badge.
-        BadgeNotification(UInt32 num);
+        BadgeNotification(UInt32 notificationCount);
 
         // Constructs a BadgeNotification with a glyph value.
-        // This constructor initializes the BadgeNotification with a predefined glyph from the BadgeGlyphValue enum.
-        // @param value The BadgeGlyphValue representing a system-provided glyph to be displayed on the badge.
-        BadgeNotification(BadgeGlyphValue value);
+        // This constructor initializes the BadgeNotification with a predefined glyph from the BadgeNotificationGlyph enum.
+        // @param value The BadgeNotificationGlyph representing a system-provided glyph to be displayed on the badge.
+        BadgeNotification(BadgeNotificationGlyph value);
 
         // Gets or sets the time after which a Badge Notification should not be displayed.
         Windows.Foundation.DateTime Expiration;
@@ -180,13 +181,13 @@ namespace Microsoft.Windows.BadgeNotifications
     runtimeclass BadgeNotificationManager
     {
         // Gets a Default instance of a BadgeNotificationManager
-        static BadgeNotificationManager Default{ get; };
+        static BadgeNotificationManager Current{ get; };
 
         // Applies a change to the badge's glyph or number.
-        void UpdateBadge(BadgeNotification notification);
+        void Update(BadgeNotification notification);
 
         // Removes the Badge Notifications for the App from Action Centre
-        Windows.Foundation.IAsyncAction ClearBadge();
+        Windows.Foundation.IAsyncAction Clear();
     }
 }
 ```
