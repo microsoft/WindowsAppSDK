@@ -15,7 +15,7 @@ This API takes care of avoiding this workaround so that WinAppSDK applications c
 
  ## Register Background Task (c++)
 
- Registering a Background Task for full trust COM component. Developers may also need to set the **WindowsAppSDKUniversalBGTask** property as true in their project configuration.
+ Registering a Background Task for full trust COM component. Developers may also need to set the **WindowsAppSDKBackgroundTask** property as true in their project configuration.
 
  ```c++
        //Using WinAppSDK API for BackgroundTaskBuilder
@@ -23,7 +23,7 @@ This API takes care of avoiding this workaround so that WinAppSDK applications c
         SystemTrigger trigger = SystemTrigger(SystemTriggerType::TimeZoneChange, false);
         auto backgroundTrigger = trigger.as<IBackgroundTrigger>();
         builder.SetTrigger(backgroundTrigger);
-        builder.AddCondition(backgroundTaskCondition);
+        builder.AddCondition(SystemCondition(SystemConditionType::InternetAvailable));
         builder.SetTaskEntryPointClsid(classGuid);
         builder.Register(); 
 ```
@@ -48,8 +48,8 @@ This class is not agile, which means that you need to consider its threading mod
 
 | Name | Description | Value |
 |-|-|-|
-|Name| Gets or sets the name of a background task.| Name (A string representing name of the task) |
-|TaskGroup| Gets and sets the group identifier.| TaskGroup (The group identifier for the task) |
+|Name| Gets or sets the name of a background task.| __String__ (A string representing name of the task) |
+|TaskGroup| Gets and sets the group identifier so that background task registration can be maintained separately.| __BackgroundTaskRegistrationGroup__ (The group identifier for the task) |
 
 
 ## BackgroundTaskBuilder Methods
@@ -59,7 +59,7 @@ This class is not agile, which means that you need to consider its threading mod
 | AddCondition(IBackgroundCondition) | Adds a condition to a background task.| __IBackgroundCondition__ Condition for Background Task | |
 | Register() | Registers a background task with the system.| | __BackgroundTaskRegistration__|
 | Register(String) | Registers a background task with the system.| __String__ Name for the task | __BackgroundTaskRegistration__|
-| SetTaskEntryPointClsId(GUID) | Assigns a COM CLSID entry point using an existing BackgroundTaskBuilder object. | __GUID__ GUID of the Entry point class | |
+| SetTaskEntryPointClsid(GUID) | Assigns a COM CLSID entry point using an existing BackgroundTaskBuilder object. | __GUID__ GUID of the Entry point class | |
 | SetTrigger(IBackgroundTrigger) | Sets the event trigger for a background task. | __IBackgroundTrigger__ Trigger for Background Task | |
 
 
@@ -91,7 +91,7 @@ namespace Microsoft.Windows.ApplicationModel.Background
             );
 
         void
-            SetTaskEntryPointClsId(
+            SetTaskEntryPointClsid(
                 GUID clsId
             );
 
