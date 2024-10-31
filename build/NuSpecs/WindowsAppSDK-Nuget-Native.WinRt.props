@@ -1,4 +1,4 @@
-﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
+<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
@@ -50,6 +50,18 @@
     <Reference Include="Microsoft.Windows.PushNotifications.winmd"
       Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.PushNotifications.winmd')">
       <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.PushNotifications.winmd</HintPath>
+      <Implementation Condition="'$(WindowsAppSDKFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppRuntime.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="Microsoft.Security.Authentication.OAuth.winmd"
+      Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Security.Authentication.OAuth.winmd')">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Security.Authentication.OAuth.winmd</HintPath>
+      <Implementation Condition="'$(WindowsAppSDKFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppRuntime.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="Microsoft.Windows.Media.Capture.winmd"
+      Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Media.Capture.winmd')">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Media.Capture.winmd</HintPath>
       <Implementation Condition="'$(WindowsAppSDKFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppRuntime.dll</Implementation>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>

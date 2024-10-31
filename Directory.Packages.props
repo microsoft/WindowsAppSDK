@@ -6,6 +6,7 @@
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <PackageVersion Include="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" Version="1.8.0-CI-26107.1720.241003-1631.3" />
     <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)" />
     <PackageVersion Include="Microsoft.SourceLink.Common" Version="$(MicrosoftSourceLinkCommonVersion)" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="$(MicrosoftSourceLinkGitHubVersion)" />
