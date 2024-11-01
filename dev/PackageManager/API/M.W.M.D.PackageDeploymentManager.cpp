@@ -819,7 +819,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         progress(packageDeploymentProgress);
 
         // Check parameter(s)
-        Validate_PackageUriIsRequired(packageSet);
+        Validate_PackageUriIsOptional(packageSet);
 
         packageDeploymentProgress.Status = PackageDeploymentProgressStatus::InProgress;
         const double c_progressPercentageStartOfInstalls{ 0.10 };
@@ -834,12 +834,22 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         for (const winrt::Microsoft::Windows::Management::Deployment::PackageSetItem& packageSetItem : packageSetItems)
         {
             const auto packageUri{ GetEffectivePackageUri(packageSet, packageSetItem) };
+            const auto packageFamilyName{ packageSetItem.PackageFamilyName() };
             try
             {
                 const auto progressBeforePackage{ packageDeploymentProgress.Progress };
-                error = LOG_IF_FAILED_MSG(RegisterPackage(packageUri, options, packageDeploymentProgress, progress, progressIncrementPerPackageSetItem, extendedError, errorText, activityId),
-                                          "ExtendedError:0x%08X PackageFamilyName:%ls PackageUri:%ls",
-                                          extendedError, packageSetItem.PackageFamilyName().c_str(), packageUri.ToString().c_str());
+                if (packageUri)
+                {
+                    error = LOG_IF_FAILED_MSG(RegisterPackage(packageUri, options, packageDeploymentProgress, progress, progressIncrementPerPackageSetItem, extendedError, errorText, activityId),
+                                              "ExtendedError:0x%08X PackageFamilyName:%ls PackageUri:%ls",
+                                              extendedError, packageFamilyName.c_str(), packageUri.ToString().c_str());
+                }
+                else
+                {
+                    error = LOG_IF_FAILED_MSG(RegisterPackageByPackageFamilyName(packageFamilyName, options, packageDeploymentProgress, progress, progressIncrementPerPackageSetItem, extendedError, errorText, activityId),
+                                              "ExtendedError:0x%08X PackageFamilyName:%ls",
+                                              extendedError, packageFamilyName.c_str());
+                }
                 const auto progressAfterPackage{ progressBeforePackage + progressIncrementPerPackageSetItem };
                 if (packageDeploymentProgress.Progress < progressAfterPackage)
                 {
@@ -850,7 +860,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             catch (...)
             {
                 const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFamilyName:%ls PackageUri:%ls", extendedError, packageSetItem.PackageFamilyName().c_str(), packageUri.ToString().c_str());
+                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFamilyName:%ls PackageUri:%ls", extendedError, packageFamilyName.c_str(), (packageUri ? packageUri.ToString().c_str() : L"<null>"));
             }
             if (FAILED(error))
             {
@@ -1212,7 +1222,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             catch (...)
             {
                 const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageUri:%ls PackageFamilyName:%ls PackageUri:%ls",
+                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFamilyName:%ls PackageUri:%ls",
                                    extendedError, packageFullName, packageUriAsString.c_str());
             }
             if (FAILED(error))
@@ -1382,7 +1392,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             catch (...)
             {
                 const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageUri:%ls PackageFamilyName:%ls PackageUri:%ls",
+                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFamilyName:%ls PackageUri:%ls",
                                    extendedError, packageFullName, packageUriAsString.c_str());
             }
             if (FAILED(error))
@@ -1622,13 +1632,14 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 PackageDeploymentProgressStatus::Queued, 0} };
         progress(packageDeploymentProgress);
 
+        const double progressMaxPerPackageFamily{ 1.0 };
         HRESULT error{};
         HRESULT extendedError{};
         winrt::hstring errorText;
         winrt::guid activityId{};
         try
         {
-            error = LOG_IF_FAILED_MSG(RegisterPackageByPackageFamilyName(packageFamilyName, options, packageDeploymentProgress, progress, extendedError, errorText, activityId),
+            error = LOG_IF_FAILED_MSG(RegisterPackageByPackageFamilyName(packageFamilyName, options, packageDeploymentProgress, progress, progressMaxPerPackageFamily, extendedError, errorText, activityId),
                                       "ExtendedError:0x%08X PackageFamilyName:%ls",
                                       extendedError, packageFamilyName.c_str());
         }
@@ -2225,6 +2236,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions const& registerOptions,
         winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress& packageDeploymentProgress,
         wistd::function<void(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress)> progress,
+        const double progressMaxPerPackage,
         HRESULT& extendedError,
         winrt::hstring& errorText,
         winrt::guid& activityId)
@@ -2233,6 +2245,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         errorText.clear();
         activityId = winrt::guid{};
 
+        const auto progressBefore{ packageDeploymentProgress.Progress };
         const auto deploymentOptions{ ToDeploymentOptions(registerOptions) };
         auto deploymentOperation{ m_packageManager.RegisterPackageByFamilyNameAsync(packageFamilyName,
             registerOptions.DependencyPackageFamilyNames(), deploymentOptions,
@@ -2242,9 +2255,12 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                                             winrt::Windows::Management::Deployment::DeploymentProgress> const& /*sender*/,
                                          winrt::Windows::Management::Deployment::DeploymentProgress const& progressInfo)
         {
-            const double progressMaxPerPackageFamily{ 1.0 };
-            packageDeploymentProgress.Progress = PercentageToProgress(progressInfo.percentage, progressMaxPerPackageFamily);
-            progress(packageDeploymentProgress);
+            const auto progressAfter{ progressBefore + PercentageToProgress(progressInfo.percentage, progressMaxPerPackage) };
+            if (packageDeploymentProgress.Progress < progressAfter)
+            {
+                packageDeploymentProgress.Progress = progressAfter;
+                progress(packageDeploymentProgress);
+            }
         });
         deploymentOperation.get();
         try
