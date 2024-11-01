@@ -16,6 +16,12 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup Condition="'$(AppxPackage)' == 'true'">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
   <ItemGroup>
     <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd">
       <Private>false</Private>
@@ -27,6 +33,30 @@
     <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.AppLifecycle.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.AppNotifications.Builder.winmd">
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.AppNotifications.winmd">
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Globalization.winmd">
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Management.Deployment.winmd">
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
 
@@ -87,12 +117,6 @@
        Condition="Exists('$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.Media.Capture.winmd')">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.*.winmd">
-      <Private>false</Private>
     </Reference>
   </ItemGroup>
 
