@@ -130,14 +130,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
             !m_inputId.empty() ? wil::str_printf<std::wstring>(L" hint-inputId='%ls'", m_inputId.c_str()).c_str() : L"",
             GetButtonStyle().c_str(),
             !m_toolTip.empty() ? wil::str_printf<std::wstring>(L" hint-toolTip='%ls'", m_toolTip.c_str()).c_str() : L"",
-            GetSettingType().c_str()) };
+            GetSettingStyle().c_str()) };
 
         logTelemetry.Stop();
 
         return xmlResult.c_str();
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetSettingType(AppNotificationButtonSettingStyle const& value)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetSettingStyle(AppNotificationButtonSettingStyle const& value)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled());
 
@@ -145,7 +145,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return *this;
     }
 
-    std::wstring AppNotificationButton::GetSettingType()
+    std::wstring AppNotificationButton::GetSettingStyle()
     {
         switch (m_settingType)
         {

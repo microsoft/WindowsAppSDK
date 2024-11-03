@@ -80,7 +80,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Sets the setting type for the button.
         [contract(AppNotificationBuilderContract, 2)]
-        AppNotificationButton SetSettingType(AppNotificationButtonSettingStyle value);
+        AppNotificationButton SetSettingStyle(AppNotificationButtonSettingStyle value);
     };
 
     [contract(AppNotificationBuilderContract, 1)]

@@ -60,12 +60,12 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         winrt::hstring ToString();
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetSettingType(AppNotificationButtonSettingStyle const& value);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetSettingStyle(AppNotificationButtonSettingStyle const& value);
 
     private:
         std::wstring GetActivationArguments();
         std::wstring GetButtonStyle();
-        std::wstring GetSettingType();
+        std::wstring GetSettingStyle();
 
         winrt::hstring m_content{};
         winrt::Windows::Foundation::Collections::IMap<winrt::hstring, winrt::hstring> m_arguments { winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
