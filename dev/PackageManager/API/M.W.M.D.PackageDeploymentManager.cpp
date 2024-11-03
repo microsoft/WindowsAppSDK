@@ -123,7 +123,8 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 // Relies on PackageManagement_IsFeatureSupported(L"PackageUriScheme.ms-uup") exist in Microsoft.FrameworkUdk and enabled
                 return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixRemovePackageByUriAsync");
             }
-            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable:
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::
+            IsPackageReadyOrNewerAvailable:
             {
                 BOOL isSupported{};
                 const HRESULT hr{ PackageManagement_IsFeatureSupported(L"IsPackageReadyOrNewerAvailable", &isSupported) };
@@ -429,7 +430,17 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         const double c_progressPercentageStartOfIsReady{ 0.01 };
         packageDeploymentProgress.Progress = c_progressPercentageStartOfIsReady;
         progress(packageDeploymentProgress);
-        if (IsPackageSetReady(packageSet))
+        bool isReady{};
+        if (options.RegisterNewerIfAvailable())
+        {
+            THROW_HR_IF_MSG(E_NOTIMPL, !IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable), "RegisterNewerIfAvailable is not supported on this system");
+            isReady = (IsPackageSetReadyOrNewerAvailable(packageSet) == winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready);
+        }
+        else
+        {
+            isReady = IsPackageSetReady(packageSet);
+        }
+        if (isReady)
         {
             co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, winrt::guid{});
         }
@@ -1892,7 +1903,17 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         errorText.clear();
         activityId = winrt::guid{};
 
-        if (IsReady(packageSetItem))
+        bool isReady{};
+        if (options.RegisterNewerIfAvailable())
+        {
+            // Our caller already verified PackageDeploymentFeature::IsPackageReadyOrNewerAvailable is supported so no need to check again
+            isReady = (IsReadyOrNewerAvailable(packageSetItem) == winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready);
+        }
+        else
+        {
+            isReady = IsReady(packageSetItem);
+        }
+        if (isReady)
         {
             return S_OK;
         }

@@ -115,6 +115,7 @@
     <ClCompile Include="PackageDeploymentManagerTests_Deprovision_Framework.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_Deprovision_Main.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_EnsureReady.cpp" />
+    <ClCompile Include="PackageDeploymentManagerTests_EnsureReady_RegisterNewerIfAvailable.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_IsPackageRegistrationPending.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_IsReady.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_IsReadyOrNewerAvailable.cpp" />

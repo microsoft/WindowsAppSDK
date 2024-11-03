@@ -544,7 +544,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CameraCaptureUITests", "tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.Media.Capture.Projection", "dev\Projections\CS\Microsoft.Windows.Media.Capture.Projection\Microsoft.Windows.Media.Capture.Projection.csproj", "{97AB4F8D-DF7E-4BA8-9B06-E7B79AF616D6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.PackageReference", "eng\PackageReference\ProjectReunion.InteractiveExperiences\Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.PackageReference.csproj", "{EDD6D3BF-EBD9-4952-A9B7-76171031139B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IXP.TransportPackage.PackageReference", "eng\PackageReference\ProjectReunion.InteractiveExperiences\IXP.TransportPackage.PackageReference.csproj", "{EDD6D3BF-EBD9-4952-A9B7-76171031139B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
