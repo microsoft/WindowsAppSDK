@@ -2,6 +2,7 @@
 #include "AppNotificationConferencingConfig.h"
 #include "Microsoft.Windows.AppNotifications.AppNotificationConferencingConfig.g.cpp"
 #include <IsWindowsVersion.h>
+#include <TerminalVelocityFeatures-CallingPreviewSupport.h>
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
@@ -12,6 +13,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationConferencingConfig::VideoDeviceId(hstring const& value)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled());
         m_videoDeviceId = value;
     }
 
@@ -22,6 +24,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationConferencingConfig::AudioInputDeviceId(hstring const& value)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled());
         m_audioInputDeviceId = value;
     }
 
@@ -32,6 +35,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationConferencingConfig::AudioOutputDeviceId(hstring const& value)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled());
         m_audioOutputDeviceId = value;
     }
 
@@ -39,7 +43,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     /// verifies if video calling is supported <TO DO>
     /// </summary>
     /// <returns>bool</returns>
-    bool AppNotificationConferencingConfig::IsVideoOrAudioCallingSupported()
+    bool AppNotificationConferencingConfig::IsCallingPreviewSupported()
     {
         return WindowsVersion::IsWindows11_23H1OrGreater(); // Windows 11 23H1 or greater
     }

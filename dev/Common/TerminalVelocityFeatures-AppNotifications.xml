@@ -13,4 +13,15 @@
         <description>Enables Local App sourced Notifications on the device</description>
         <state>AlwaysEnabled</state>
     </feature>
+
+    <feature>
+         <name>Feature_CallingPreviewSupport</name>
+         <description>Apis for Calling preview feature</description>
+         <state>AlwaysEnabled</state>
+         <alwaysDisabledChannelTokens>
+             <channelToken>Preview</channelToken>
+             <channelToken>Stable</channelToken>
+         </alwaysDisabledChannelTokens>
+     </feature>
+
 </features>

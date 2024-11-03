@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 import "..\AppLifecycle\AppLifecycle.idl";
+#include <TerminalVelocityFeatures-CallingPreviewSupport.h>
 
 namespace Microsoft.Windows.AppNotifications
 {
@@ -113,11 +114,13 @@ namespace Microsoft.Windows.AppNotifications
         Boolean SuppressDisplay;
 
         // Gets or sets the Notification Conferencing Config
+        [feature(Feature_CallingPreviewSupport)]
         [contract(AppNotificationsContract, 2)]
         AppNotificationConferencingConfig ConferencingConfig;
     }
 
     // The Notification Conferencing Config
+    [feature(Feature_CallingPreviewSupport)]
     [contract(AppNotificationsContract, 2)]
     runtimeclass AppNotificationConferencingConfig
     {
@@ -125,7 +128,7 @@ namespace Microsoft.Windows.AppNotifications
         AppNotificationConferencingConfig();
 
         // Checks if Video or Audio Calling is supported
-        static Boolean IsVideoOrAudioCallingSupported();
+        static Boolean IsCallingPreviewSupported();
 
         // Gets or sets the Video Device Id
         String VideoDeviceId;

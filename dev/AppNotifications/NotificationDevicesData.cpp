@@ -16,14 +16,14 @@ NotificationDevicesData::NotificationDevicesData(winrt::AppNotificationConferenc
 
 STDMETHODIMP NotificationDevicesData::get_CameraDeviceId(_Out_ HSTRING* value) noexcept try
 {
-    *value = safe_make_unique_hstring(m_devicesData.VideoDeviceId().c_str()).release();
+    winrt::copy_to_abi(m_devicesData.VideoDeviceId(), reinterpret_cast<void*&>(value));
     return S_OK;
 }
 CATCH_RETURN()
 
 STDMETHODIMP NotificationDevicesData::get_MicrophoneDeviceId(_Out_ HSTRING* value) noexcept try
 {
-    *value = safe_make_unique_hstring(m_devicesData.AudioInputDeviceId().c_str()).release();
+    winrt::copy_to_abi(m_devicesData.AudioInputDeviceId(), reinterpret_cast<void*&>(value));
     return S_OK;
 }
 CATCH_RETURN() 
@@ -31,7 +31,7 @@ CATCH_RETURN()
 
 STDMETHODIMP NotificationDevicesData::get_SpeakerDeviceId(_Out_ HSTRING* value) noexcept try
 {
-    *value = safe_make_unique_hstring(m_devicesData.AudioOutputDeviceId().c_str()).release();
+    winrt::copy_to_abi(m_devicesData.AudioOutputDeviceId(), reinterpret_cast<void*&>(value));
     return S_OK;
 }
 CATCH_RETURN()

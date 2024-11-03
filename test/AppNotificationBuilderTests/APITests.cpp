@@ -693,7 +693,7 @@ namespace Test::AppNotification::Builder
                 .SetIcon(c_sampleUri)
                 .SetInputId(L"inputId")
                 .SetToolTip(L"toolTip")
-                .SetSettingType(winrt::AppNotificationButtonSettingType::VideoCall))
+                .SetSettingType(winrt::AppNotificationButtonSettingStyle::VideoCallConfig))
             };
 
             auto expected{ L"<toast useButtonStyle='true'><visual><binding template='ToastGeneric'><cameraPreview/></binding></visual><actions><action content='content' arguments='key=value' imageUri='http://www.microsoft.com/' hint-inputId='inputId' hint-buttonStyle='Success' hint-toolTip='toolTip' settingType='videoDevices'/></actions></toast>" };
@@ -710,7 +710,7 @@ namespace Test::AppNotification::Builder
                 .SetIcon(c_sampleUri)
                 .SetInputId(L"inputId")
                 .SetToolTip(L"toolTip")
-                .SetSettingType(winrt::AppNotificationButtonSettingType::AudioCall))
+                .SetSettingType(winrt::AppNotificationButtonSettingStyle::AudioCallConfig))
             };
 
             auto expected{ L"<toast useButtonStyle='true'><visual><binding template='ToastGeneric'><cameraPreview/></binding></visual><actions><action content='content' arguments='key=value' imageUri='http://www.microsoft.com/' hint-inputId='inputId' hint-buttonStyle='Success' hint-toolTip='toolTip' settingType='audioDevices'/></actions></toast>" };

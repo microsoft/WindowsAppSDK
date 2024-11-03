@@ -60,7 +60,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
         winrt::hstring ToString();
 
-        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetSettingType(AppNotificationButtonSettingType const& value);
+        winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton SetSettingType(AppNotificationButtonSettingStyle const& value);
 
     private:
         std::wstring GetActivationArguments();
@@ -76,7 +76,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         winrt::hstring m_inputId{};
         bool m_useContextMenuPlacement{};
         AppNotificationButtonStyle m_buttonStyle { AppNotificationButtonStyle::Default };
-        AppNotificationButtonSettingType m_settingType{ AppNotificationButtonSettingType::none };
+        AppNotificationButtonSettingStyle m_settingType{ AppNotificationButtonSettingStyle::None };
     };
 }
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::factory_implementation

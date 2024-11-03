@@ -17,7 +17,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         void AudioInputDeviceId(hstring const& value);
         void AudioOutputDeviceId(hstring const& value);
 
-        static bool IsVideoOrAudioCallingSupported();
+        static bool IsCallingPreviewSupported();
 
     private:
 

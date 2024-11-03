@@ -13,6 +13,7 @@
 #include <ctime>
 #include <sstream>
 #include <IsWindowsVersion.h>
+#include <TerminalVelocityFeatures-CallingPreviewSupport.h>
 
 using namespace winrt::Windows::Globalization;
 using namespace winrt::Windows::Globalization::DateTimeFormatting;
@@ -403,6 +404,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder AppNotificationBuilder::AddCameraPreview()
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled());
+
         THROW_HR_IF_MSG(E_INVALIDARG, m_useCameraPreview, "CameraPreview element is already added, only one is allowed");
 
         m_useCameraPreview = true;

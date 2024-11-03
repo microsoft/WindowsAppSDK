@@ -32,11 +32,11 @@ namespace Microsoft.Windows.AppNotifications.Builder
     };
 
     [contract(AppNotificationBuilderContract, 2)]
-    enum AppNotificationButtonSettingType
+    enum AppNotificationButtonSettingStyle
     {
-        none,
-        VideoCall,
-        AudioCall,
+        None,
+        VideoCallConfig,
+        AudioCallConfig,
     };
 
     [contract(AppNotificationBuilderContract, 1)]
@@ -80,7 +80,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
 
         // Sets the setting type for the button.
         [contract(AppNotificationBuilderContract, 2)]
-        AppNotificationButton SetSettingType(AppNotificationButtonSettingType value);
+        AppNotificationButton SetSettingType(AppNotificationButtonSettingStyle value);
     };
 
     [contract(AppNotificationBuilderContract, 1)]

@@ -8,6 +8,7 @@
 #include <IsWindowsVersion.h>
 #include "AppNotificationBuilderUtility.h"
 #include "AppNotificationBuilderTelemetry.h"
+#include <TerminalVelocityFeatures-CallingPreviewSupport.h>
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
@@ -136,26 +137,23 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
         return xmlResult.c_str();
     }
 
-    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetSettingType(AppNotificationButtonSettingType const& value)
+    winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetSettingType(AppNotificationButtonSettingStyle const& value)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled());
+
         m_settingType = value;
         return *this;
     }
 
     std::wstring AppNotificationButton::GetSettingType()
     {
-        if (m_settingType == AppNotificationButtonSettingType::none)
-        {
-            return L""; 
-        }
-
         switch (m_settingType)
         {
-        case AppNotificationButtonSettingType::VideoCall:
+        case AppNotificationButtonSettingStyle::VideoCallConfig:
             return L" settingType='videoDevices'";
-        case AppNotificationButtonSettingType::AudioCall:
+        case AppNotificationButtonSettingStyle::AudioCallConfig:
             return L" settingType='audioDevices'";
-        default:
+        default: // AppNotificationButtonSettingStyle::None
             return L"";
         }
     }
