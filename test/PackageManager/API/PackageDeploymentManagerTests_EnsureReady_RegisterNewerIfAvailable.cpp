@@ -35,6 +35,13 @@ namespace Test::PackageManager::Tests
             RemovePackage_Redder();
             RemovePackage_Red();
             ::TB::Setup();
+
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported. Skipping tests");
+                return true;
+            }
+
             return true;
         }
 
@@ -469,10 +476,10 @@ namespace Test::PackageManager::Tests
         }
     };
 
-    class PackageDeploymentManagerTests_EnsureReady_Elevated : PackageDeploymentManagerTests_Base
+    class PackageDeploymentManagerTests_EnsureReady_RegisterNewerIfAvailable_Elevated : PackageDeploymentManagerTests_Base
     {
     public:
-        BEGIN_TEST_CLASS(PackageDeploymentManagerTests_EnsureReady_Elevated)
+        BEGIN_TEST_CLASS(PackageDeploymentManagerTests_EnsureReady_RegisterNewerIfAvailable_Elevated)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
         END_TEST_CLASS()
@@ -493,6 +500,13 @@ namespace Test::PackageManager::Tests
             RemovePackage_Red();
             AddPackage_Red();
             ::TB::Setup();
+
+            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"IsPackageReadyOrNewerAvailable not supported. Skipping tests");
+                return true;
+            }
+
             return true;
         }
 
@@ -573,11 +587,6 @@ namespace Test::PackageManager::Tests
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
-            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
-            {
-                return;
-            }
-
             AddPackage_Red();
             StagePackage_Redder();
 
@@ -608,11 +617,6 @@ namespace Test::PackageManager::Tests
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
-
-            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
-            {
-                return;
-            }
 
             AddPackage_Red();
             StagePackage_Redder();
