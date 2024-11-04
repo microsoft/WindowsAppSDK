@@ -24,6 +24,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.Background.winmd">
+      <Private>false</Private>
+      <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.winmd">
+			<Private Condition="'$(WindowsAppSDKBackgroundTask)' == 'true'">true</Private>
+			<Private Condition="'$(WindowsAppSDKBackgroundTask)' != 'true'">false</Private>
+			<Implementation Condition="'$(WindowsAppSDKBackgroundTask)' == 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win-$(Platform)\native\Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll</Implementation>
+		</Reference>
+	</ItemGroup>
+
+  <ItemGroup>
     <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.AppLifecycle.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
