@@ -123,8 +123,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
                 // Relies on PackageManagement_IsFeatureSupported(L"PackageUriScheme.ms-uup") exist in Microsoft.FrameworkUdk and enabled
                 return ::WindowsVersion::IsExportPresent(L"appxdeploymentclient.dll", "MsixRemovePackageByUriAsync");
             }
-            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::
-            IsPackageReadyOrNewerAvailable:
+            case winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable:
             {
                 BOOL isSupported{};
                 const HRESULT hr{ PackageManagement_IsFeatureSupported(L"IsPackageReadyOrNewerAvailable", &isSupported) };
@@ -1623,7 +1622,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
 
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::RegisterPackageByPackageFamilyNameAsync(winrt::hstring const& packageFamilyName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
+    PackageDeploymentManager::RegisterPackageByPackageFamilyNameAsync(const winrt::hstring packageFamilyName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
     {
         auto logTelemetry{ PackageManagementTelemetry::RegisterPackageByPackageFamilyNameAsync::Start(packageFamilyName) };
 
@@ -1671,7 +1670,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
 
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::RegisterPackageByPackageFullNameAsync(winrt::hstring const& packageFullName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
+    PackageDeploymentManager::RegisterPackageByPackageFullNameAsync(const winrt::hstring packageFullName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
     {
         auto logTelemetry{ PackageManagementTelemetry::RegisterPackageByPackageFullNameAsync::Start(packageFullName) };
 
