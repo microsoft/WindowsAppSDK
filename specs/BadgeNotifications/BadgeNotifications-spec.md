@@ -34,6 +34,15 @@ For more details see:
 -   [Badge Notification WinRT APIs](https://learn.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/badges)
     Defines all the API constructs that we have for Badge Notifications in WinRT today.
 
+# Compatibility
+### Supported Platforms
+This API is exclusively available for packaged apps. It is not supported for web apps or other 
+types of applications.
+### Notification Type
+The badge notifications are local to the device. No remote server interaction is required or 
+supported for updating the badge count.
+
+
 # Examples
 
 ## Create a numeric badge (c++)
@@ -118,7 +127,7 @@ and also to remove the badge when it is no longer needed.
 
 | Name    | Description                                                                                                        | Type                     |
 | ------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------ |
-| Default | Provides a default instance of the `BadgeNotificationManager` for use in updating or clearing badge notifications. | BadgeNotificationManager |
+| Current | Provides a default instance of the `BadgeNotificationManager` for use in updating or clearing badge notifications. | BadgeNotificationManager |
 
 ## BadgeNotificationManager Methods
 
@@ -138,17 +147,17 @@ information without opening the app.
 | ----------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------ |
 | None        | No glyph is displayed. The badge will appear blank or not be shown at all.                                  | (No Badge Shown)                     |
 | Activity    | A glyph indicating some form of activity is taking place within the app.                                    | ![Screenshot](badge-activity.png)    |
-| Alert       | A glyph that suggests an alert or an important notification that may require immediate attention.           | ![Screenshot](badge-alert.png)       |
 | Alarm       | A glyph that represents an alarm, possibly indicating a set reminder or a timed event.                      | ![Screenshot](badge-alarm.png)       |
+| Alert       | A glyph that suggests an alert or an important notification that may require immediate attention.           | ![Screenshot](badge-alert.png)       |
 | Attention   | A glyph that signifies the need for attention, often used for notifications or new information.             | ![Screenshot](badge-attention.png)   |
 | Available   | A glyph that indicates the user or a service is available, often used in communication apps.                | ![Screenshot](badge-available.png)   |
 | Away        | A glyph that shows the user is away or inactive, commonly used in status indicators for communication apps. | ![Screenshot](badge-away.png)        |
 | Busy        | A glyph that represents the user being busy or engaged in an activity, preventing interruptions.            | ![Screenshot](badge-busy.png)        |
+| Error       | A glyph that denotes an error has occurred, which may require user action to resolve.                       | ![Screenshot](badge-error.png)       |
 | NewMessage  | A glyph that indicates the arrival of a new message, often used in messaging and email applications.        | ![Screenshot](badge-newmessage.png)  |
 | Paused      | A glyph that signifies a pause in activity or content, such as media playback being paused.                 | ![Screenshot](badge-paused.png)      |
 | Playing     | A glyph that indicates media or content is currently playing.                                               | ![Screenshot](badge-playing.png)     |
 | Unavailable | A glyph that shows the user or a service is not currently available or offline.                             | ![Screenshot](badge-unavailable.png) |
-| Error       | A glyph that denotes an error has occurred, which may require user action to resolve.                       | ![Screenshot](badge-error.png)       |
 
 These glyphs are system-provided and standardized, ensuring a consistent look and feel across
 different applications that use them. By using these glyphs, developers can convey specific states
