@@ -41,11 +41,7 @@ namespace MddCore::Win11
         __declspec(selectany) HMODULE g_dllApisetAppmodelRuntime_1_7{};
         //TODO:47775758 GetResolved2 __declspec(selectany) decltype(&::GetResolvedPackageFullNameForPackageDependency2) g_win11GetResolvedPackageFullNameForPackageDependency2{};
 
-#if defined(TODO_SEEME_PRODUCT_TARGET)
         __declspec(selectany) bool g_isSupported{ WindowsVersion::IsWindows11_24H1OrGreater() };
-#else
-        __declspec(selectany) bool g_isSupported{ WindowsVersion::IsWindows11_22H2OrGreater() };
-#endif
 
         constexpr PackageDependencyLifetimeKind ToLifetimeKind(MddPackageDependencyLifetimeKind lifetimeKind)
         {
