@@ -1232,7 +1232,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             catch (...)
             {
                 const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFamilyName:%ls PackageUri:%ls",
+                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFullName:%ls PackageUri:%ls",
                                    extendedError, packageFullName, packageUriAsString.c_str());
             }
             if (FAILED(error))
@@ -1402,7 +1402,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
             catch (...)
             {
                 const auto exception{ hresult_error(to_hresult(), take_ownership_from_abi) };
-                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFamilyName:%ls PackageUri:%ls",
+                error = LOG_HR_MSG(exception.code(), "ExtendedError:0x%08X PackageFullName:%ls PackageUri:%ls",
                                    extendedError, packageFullName, packageUriAsString.c_str());
             }
             if (FAILED(error))
