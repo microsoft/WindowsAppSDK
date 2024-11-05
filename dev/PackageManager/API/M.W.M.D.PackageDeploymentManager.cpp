@@ -434,7 +434,17 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         const double c_progressPercentageStartOfIsReady{ 0.01 };
         packageDeploymentProgress.Progress = c_progressPercentageStartOfIsReady;
         progress(packageDeploymentProgress);
-        if (IsPackageSetReady(packageSet))
+        bool isReady{};
+        if (options.RegisterNewerIfAvailable())
+        {
+            THROW_HR_IF_MSG(E_NOTIMPL, !IsPackageDeploymentFeatureSupported(winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentFeature::IsPackageReadyOrNewerAvailable), "RegisterNewerIfAvailable is not supported on this system");
+            isReady = (IsPackageSetReadyOrNewerAvailable(packageSet) == winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready);
+        }
+        else
+        {
+            isReady = IsPackageSetReady(packageSet);
+        }
+        if (isReady)
         {
             co_return winrt::make<PackageDeploymentResult>(PackageDeploymentStatus::CompletedSuccess, winrt::guid{});
         }
@@ -1617,7 +1627,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
 
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::RegisterPackageByPackageFamilyNameAsync(winrt::hstring const& packageFamilyName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
+    PackageDeploymentManager::RegisterPackageByPackageFamilyNameAsync(const winrt::hstring packageFamilyName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
     {
         auto logTelemetry{ PackageManagementTelemetry::RegisterPackageByPackageFamilyNameAsync::Start(packageFamilyName) };
 
@@ -1665,7 +1675,7 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
     }
 
     winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentResult, winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentProgress>
-    PackageDeploymentManager::RegisterPackageByPackageFullNameAsync(winrt::hstring const& packageFullName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
+    PackageDeploymentManager::RegisterPackageByPackageFullNameAsync(const winrt::hstring packageFullName, winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options)
     {
         auto logTelemetry{ PackageManagementTelemetry::RegisterPackageByPackageFullNameAsync::Start(packageFullName) };
 
@@ -1897,7 +1907,17 @@ namespace winrt::Microsoft::Windows::Management::Deployment::implementation
         errorText.clear();
         activityId = winrt::guid{};
 
-        if (IsReady(packageSetItem))
+        bool isReady{};
+        if (options.RegisterNewerIfAvailable())
+        {
+            // Our caller already verified PackageDeploymentFeature::IsPackageReadyOrNewerAvailable is supported so no need to check again
+            isReady = (IsReadyOrNewerAvailable(packageSetItem) == winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready);
+        }
+        else
+        {
+            isReady = IsReady(packageSetItem);
+        }
+        if (isReady)
         {
             return S_OK;
         }
