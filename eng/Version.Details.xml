@@ -31,9 +31,9 @@
       <Uri>https://dev.azure.com/microsoft/LiftedIXP/_git/DCPP</Uri>
       <Sha>7eafc2f38b361a0476b8d3336ca34b6811f00920</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.6.0-release.20241031.2">
+    <Dependency Name="Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage" Version="1.6.0-release.20241104.0">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/WindowsAppSDKClosed</Uri>
-      <Sha>cd74219f8fd7f147dc979a003bdc0c5508e58fc1</Sha>
+      <Sha>b52174b1bb7916451fee250ccec1cd2bfb3e86e1</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
