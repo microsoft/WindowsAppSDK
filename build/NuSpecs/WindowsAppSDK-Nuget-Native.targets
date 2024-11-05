@@ -16,6 +16,12 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup Condition="'$(AppxPackage)' == 'true'">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
   <ItemGroup>
     <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd">
       <Private>false</Private>
