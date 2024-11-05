@@ -191,7 +191,7 @@ namespace Microsoft.Windows.BadgeNotifications
         // Updates the badge on the app's tile to display a glyph with an expiration time.
         void SetBadgeAsGlyph(BadgeNotificationGlyph glyphValue, Windows.Foundation.DateTime expiration);
 
-        // Removes the Badge Notifications for the App from Action Centre
+        // Removes the Badge Notifications for the App from Action Center
         void ClearBadge();
     }
 }
