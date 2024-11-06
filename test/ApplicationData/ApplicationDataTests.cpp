@@ -437,7 +437,7 @@ namespace Test::PackageManager::Tests
             container.Close();
             try
             {
-                auto locality{ container.Locality() };
+                [[maybe_unused]] auto locality{ container.Locality() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -448,7 +448,7 @@ namespace Test::PackageManager::Tests
             systemContainer.Close();
             try
             {
-                auto locality{ systemContainer.Locality() };
+                [[maybe_unused]] auto locality{ systemContainer.Locality() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -466,7 +466,7 @@ namespace Test::PackageManager::Tests
             localSettings.Close();
             try
             {
-                auto locality{ localSettings.Locality() };
+                [[maybe_unused]] auto locality{ localSettings.Locality() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
@@ -477,7 +477,7 @@ namespace Test::PackageManager::Tests
             systemLocalSettings.Close();
             try
             {
-                auto locality{ systemLocalSettings.Locality() };
+                [[maybe_unused]] auto locality{ systemLocalSettings.Locality() };
                 VERIFY_FAIL(L"Success is not expected");
             }
             catch (winrt::hresult_error& e)
