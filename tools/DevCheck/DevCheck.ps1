@@ -796,9 +796,10 @@ function Repair-DevTestPfx
     }
     if ([string]::IsNullOrEmpty($password_plaintext))
     {
-        Write-Host "Test certificate .pfx...password parameter (-CertPassword | -CertPasswordFile | -CertPasswordUser) or prompting required"
-        $global:issues++
-        return $false
+        # Create a new SecureString object 
+        $password_plaintext = New-Object -TypeName System.Security.SecureString # Generate a random password 
+        $randomPassword = [System.Web.Security.Membership]::GeneratePassword(20, 4)
+        $randomPassword.ToCharArray() | ForEach-Object { $secureString.AppendChar($_) }
     }
     $password = $password_plaintext
     Set-Content -Path $pwd_file -Value $password_plaintext -Force
