@@ -800,7 +800,7 @@ function Repair-DevTestPfx
         $global:issues++
         return $false
     }
-    $password = ConvertTo-SecureString -String $password_plaintext -Force -AsPlainText
+    $password = $password_plaintext
     Set-Content -Path $pwd_file -Value $password_plaintext -Force
 
     # Prepare to record the pfx for the certificate
