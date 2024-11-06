@@ -21,6 +21,7 @@ namespace Test::PackageManager::Tests
     public:
         BEGIN_TEST_CLASS(PackageDeploymentManagerTests_IsReady)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)
