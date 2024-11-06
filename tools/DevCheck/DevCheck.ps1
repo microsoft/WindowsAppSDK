@@ -796,12 +796,9 @@ function Repair-DevTestPfx
     }
     if ([string]::IsNullOrEmpty($password_plaintext))
     {
-        # Define a character set for the random password
         $charSet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%)'
-
-        # Length of the random password
         $passwordLength = 20
-
+        $secureString = New-Object -TypeName System.Security.SecureString
         # Generate random characters and append to SecureString
         for ($i = 0; $i -lt $passwordLength; $i++) 
         {
