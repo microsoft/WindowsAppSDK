@@ -796,9 +796,18 @@ function Repair-DevTestPfx
     }
     if ([string]::IsNullOrEmpty($password_plaintext))
     {
-        # Create a new SecureString object 
-        $password_plaintext = New-Object -TypeName System.Security.SecureString # Generate a random password 
-        $randomPassword = [System.Web.Security.Membership]::GeneratePassword(20, 4)
+        # Define a character set for the random password
+        $charSet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%)'
+
+        # Length of the random password
+        $passwordLength = 20
+
+        # Generate random characters and append to SecureString
+        for ($i = 0; $i -lt $passwordLength; $i++) 
+        {
+            $randomChar = $charSet[(Get-Random -Maximum $charSet.Length)]
+            $secureString.AppendChar($randomChar)
+        }
         $randomPassword.ToCharArray() | ForEach-Object { $secureString.AppendChar($_) }
     }
     $password = $password_plaintext
