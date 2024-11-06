@@ -28,6 +28,9 @@ namespace Test::PackageManager::Tests
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageRuntimeManager requires Dynamic Dependencies delegating to OS Dynamic Dependencies. Skipping tests");
                 return true;
             }
+
+            TD::DumpExecutionContext();
+
             RemovePackage_Blue();
             RemovePackage_Green();
             RemovePackage_Redder();

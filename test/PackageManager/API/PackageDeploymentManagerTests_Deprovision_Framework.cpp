@@ -37,6 +37,8 @@ namespace Test::PackageManager::Tests
                 return true;
             }
 
+            TD::DumpExecutionContext();
+
             RemovePackage_Red();
             AddPackage_Red();
             ProvisionPackage_Red();

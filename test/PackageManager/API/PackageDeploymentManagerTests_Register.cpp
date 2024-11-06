@@ -45,6 +45,9 @@ namespace Test::PackageManager::Tests
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
                 return true;
             }
+
+            TD::DumpExecutionContext();
+
             RETURN_TRUE_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
             RemovePackage_Blue();
             RemovePackage_Green();

@@ -39,6 +39,8 @@ namespace Test::PackageManager::Tests
                 return true;
             }
 
+            TD::DumpExecutionContext();
+
             RemovePackage_Black();
             AddPackage_Black();
             ProvisionPackage_Black();

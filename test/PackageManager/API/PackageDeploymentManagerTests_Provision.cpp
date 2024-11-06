@@ -34,6 +34,9 @@ namespace Test::PackageManager::Tests
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
                 return true;
             }
+
+            TD::DumpExecutionContext();
+
             RemovePackage_Red();
             ::TB::Setup();
             return true;

@@ -31,6 +31,8 @@ namespace Test::PackageManager::Tests
                 return true;
             }
 
+            TD::DumpExecutionContext();
+
             ::TB::Setup();
             return true;
         }
