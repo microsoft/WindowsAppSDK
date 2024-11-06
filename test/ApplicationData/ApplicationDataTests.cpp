@@ -108,6 +108,7 @@ namespace Test::PackageManager::Tests
     public:
         BEGIN_TEST_CLASS(ApplicationDataTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)
@@ -541,8 +542,8 @@ namespace Test::PackageManager::Tests
     public:
         BEGIN_TEST_CLASS(ApplicationDataTests_Elevated)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
-            TEST_CLASS_PROPERTY(L"RunFixtureAs", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs", L"System")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)
@@ -552,13 +553,16 @@ namespace Test::PackageManager::Tests
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires Win11 >= 21H2 (SV1). Skipping tests");
                 return true;
             }
-            ::TB::Setup();
+
+            CreateMachinePathIfNecessary(Framework_PackageFamilyName);
+            CreateMachinePathIfNecessary(Main_PackageFamilyName);
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassCleanup)
         {
-            ::TB::Cleanup();
+            RemoveMachinePathIfNecessary(Main_PackageFamilyName);
+            RemoveMachinePathIfNecessary(Framework_PackageFamilyName);
             return true;
         }
 
@@ -595,31 +599,9 @@ namespace Test::PackageManager::Tests
             }
         }
 
-        TEST_METHOD(CreateMachinePathIfNecessary_Framework)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"System")
-            END_TEST_METHOD_PROPERTIES()
-
-            const auto packageFamilyName{ Framework_PackageFamilyName };
-            CreateMachinePathIfNecessary(packageFamilyName);
-        }
-
-        TEST_METHOD(CreateMachinePathIfNecessary_Main)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"System")
-            END_TEST_METHOD_PROPERTIES()
-
-            const auto packageFamilyName{ Main_PackageFamilyName };
-            CreateMachinePathIfNecessary(packageFamilyName);
-        }
-
         TEST_METHOD(MachineFolderAndPath_Main_Supported)
         {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"RestrictedUser")
-            END_TEST_METHOD_PROPERTIES()
+            ::TB::Setup();
 
             winrt::hstring packageFamilyName{ Main_PackageFamilyName };
             auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForPackageFamily(packageFamilyName) };
@@ -634,13 +616,13 @@ namespace Test::PackageManager::Tests
 
             const auto expectedMachinePath{ GetExpectedMachinePath(packageFamilyName) };
             VERIFY_ARE_EQUAL(machinePath, winrt::hstring(expectedMachinePath.c_str()));
+
+            ::TB::Cleanup();
         }
 
         TEST_METHOD(MachineFolderAndPath_Framework_Supported)
         {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"RestrictedUser")
-            END_TEST_METHOD_PROPERTIES()
+            ::TB::Setup();
 
             winrt::hstring packageFamilyName{ Framework_PackageFamilyName };
             auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForPackageFamily(packageFamilyName) };
@@ -655,26 +637,8 @@ namespace Test::PackageManager::Tests
 
             const auto expectedMachinePath{ GetExpectedMachinePath(packageFamilyName) };
             VERIFY_ARE_EQUAL(machinePath, winrt::hstring(expectedMachinePath.c_str()));
-        }
 
-        TEST_METHOD(RemoveMachinePathIfNecessary_Main)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"System")
-            END_TEST_METHOD_PROPERTIES()
-
-            const auto packageFamilyName{ Main_PackageFamilyName };
-            RemoveMachinePathIfNecessary(packageFamilyName);
-        }
-
-        TEST_METHOD(RemoveMachinePathIfNecessary_Framework)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"System")
-            END_TEST_METHOD_PROPERTIES()
-
-            const auto packageFamilyName{ Framework_PackageFamilyName };
-            RemoveMachinePathIfNecessary(packageFamilyName);
+            ::TB::Cleanup();
         }
     };
 }
