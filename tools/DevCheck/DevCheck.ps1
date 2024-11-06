@@ -99,7 +99,7 @@
 #>
 
 Param(
-    [String]$CertPassword=$null,
+    [SecureString]$CertPassword=$null,
 
     [String]$CertPasswordFile=$null,
 
@@ -792,7 +792,7 @@ function Repair-DevTestPfx
     }
     if ([string]::IsNullOrEmpty($password_plaintext) -And ($NoInteractive -eq $false))
     {
-        $password_plaintext = Read-Host -Prompt 'Creating test certificate. Please enter a password'
+        $password_plaintext = Read-Host -Prompt 'Creating test certificate. Please enter a password' -AsSecureString
     }
     if ([string]::IsNullOrEmpty($password_plaintext))
     {
