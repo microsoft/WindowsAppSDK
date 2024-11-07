@@ -806,7 +806,7 @@ function Repair-DevTestPfx
             $password.AppendChar($randomChar)
         }
     }
-    $passwordPlainText = Convert-SecureStringToString -SecureString $password
+    $passwordPlainText = ConvertFrom-SecureString -SecureString $password
 
     Set-Content -Path $pwd_file -Value $passwordPlainText -Force
 
