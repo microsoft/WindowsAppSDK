@@ -771,7 +771,6 @@ function Repair-DevTestPfx
 
     # -CertPassword <password> is a required parameter for this work
     $password = ''
-    $passwordText = $null
     if (-not [string]::IsNullOrEmpty($CertPassword))
     {
         $password = $CertPassword
