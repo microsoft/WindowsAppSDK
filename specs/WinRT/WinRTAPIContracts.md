@@ -101,16 +101,18 @@ additional information compared to the Windows App SDK version.
 The list of all contracts defined across Windows App SDK
 
 | Feature            | Repository    | Contract                        | Namespace                                            | Comment |
-|--------------------|---------------|---------------------------------|------------------------------------------------------|---------|
+|--------------------|---------------|---------------------------------|----------------------------------------------------------------------------|---------|
 | AccessControl      | windowsappsdk | AccessControlContract           | Microsoft.Windows.Security.AccessControl             |         |
 | AppLifecycle       | windowsappsdk | AppLifecycleContract            | Microsoft.Windows.AppLifecycle                       |         |
 | AppNotifications   | windowsappsdk | AppNotificationsContract        | Microsoft.Windows.AppNotifications                   |         |
+| BackgroundTask     | windowsappsdk | BackgroundTaskContract          | Microsoft.Windows.ApplicationModel.Background        |         |
 | Deployment         | windowsappsdk | DeploymentManagerContract       | Microsoft.Windows.ApplicationModel.WindowsAppRuntime |         |
 | DynamicDependency  | windowsappsdk | DynamicDependencyContract       | Microsoft.Windows.ApplicationModel.DynamicDependency |         |
 | EnvironmentManager | windowsappsdk | EnvironmentManagerContract      | Microsoft.Windows.System                             |         |
 | MRTCore            | windowsappsdk | MrtCoreContract                 | Microsoft.Windows.ApplicationModel.Resources         |         |
 | PowerNotifications | windowsappsdk | PowerNotificationsContract      | Microsoft.Windows.System.Power                       |         |
 | PushNotifications  | windowsappsdk | PushNotificationsContract       | Microsoft.Windows.PushNotifications                  |         |
+| OAuth              | windowsappsdk | OAuthContract                   | Microsoft.Windows.Security.Authentication.OAuth      |         |
 | WinUI              | winui         | HostingContract                 | Microsoft.UI.Xaml.Hosting                            |         |
 | WinUI              | winui         | WinUIContract                   | Microsoft.UI.Xaml                                    |         |
 | WinUI              | winui         | WinUIControlsContract           | Microsoft.UI.Xaml.Controls                           |         |
