@@ -110,6 +110,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ApplicationDataTests.cpp" />
+    <ClCompile Include="ApplicationDataTests_Elevated.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

@@ -143,6 +143,9 @@ steps:
             Write-Host "Get-WinSystemLocale"
             Get-WinSystemLocale
 
+            Write-Host "WhoAmI"
+            whoami /all
+
   - task: PowerShell@2
     displayName: 'Run TAEF Tests'
     inputs:

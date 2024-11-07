@@ -5,7 +5,8 @@
             "Filename": "ApplicationDataTests.dll",
             "Parameters": "",
             "Architectures": ["x86", "x64"],
-            "Status": "Enabled"
+            "Status": "Enabled",
+            "Parameters": "/enableEtwLogging /appendEtwLogging /miniDumpOnError"
         }
     ]
 }
