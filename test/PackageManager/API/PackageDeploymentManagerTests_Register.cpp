@@ -437,6 +437,58 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
         }
 
+        TEST_METHOD(RegisterPackageSetAsync_Framework_1_Staged_PackageFamilyName_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
+            StagePackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem_NoPackageUri(::TPF::Red::GetPackageFullName()) };
+            packageSet.Items().Append(red);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(RegisterPackageSetAsync_Main_1_Staged_PackageFamilyName_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
+            StagePackage_Black();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem black{ Make_PackageSetItem_NoPackageUri(::TPM::Black::GetPackageFullName()) };
+            packageSet.Items().Append(black);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
         TEST_METHOD(RegisterPackageSetAsync_Framework_1_Registered_Success)
         {
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
@@ -471,6 +523,50 @@ namespace Test::PackageManager::Tests
             PCWSTR c_packageSetId{ L"BW" };
             packageSet.Id(c_packageSetId);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem black{ Make_PackageSetItem_ForRegister(::TPM::Black::GetPackageFullName()) };
+            packageSet.Items().Append(black);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(RegisterPackageSetAsync_Framework_1_Registered_PackageFamilyName_Success)
+        {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
+            AddPackage_Red();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem_NoPackageUri(::TPF::Red::GetPackageFullName()) };
+            packageSet.Items().Append(red);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(RegisterPackageSetAsync_Main_1_Registered_PackageFamilyName_Success)
+        {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
+            AddPackage_Black();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"BW" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem black{ Make_PackageSetItem_NoPackageUri(::TPM::Black::GetPackageFullName()) };
             packageSet.Items().Append(black);
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
@@ -537,6 +633,62 @@ namespace Test::PackageManager::Tests
             RemovePackage_Blacker();
         }
 
+        TEST_METHOD(RegisterPackageSetAsync_Framework_1_OlderRegistered_PackageFamilyName_Success)
+        {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
+            AddPackage_Red();
+            StagePackage_Redder();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder{ Make_PackageSetItem_NoPackageUri(::TPF::Redder::GetPackageFullName()) };
+            packageSet.Items().Append(redder);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Red());
+            VERIFY_IS_TRUE(IsPackageRegistered_Redder());
+
+            RemovePackage_Redder();
+        }
+
+        TEST_METHOD(RegisterPackageSetAsync_Main_1_OlderRegistered_PackageFamilyName_Success)
+        {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
+            AddPackage_Black();
+            StagePackage_Blacker();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder{ Make_PackageSetItem_NoPackageUri(::TPM::Blacker::GetPackageFullName()) };
+            packageSet.Items().Append(redder);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Black());
+            VERIFY_IS_TRUE(IsPackageRegistered_Blacker());
+
+            RemovePackage_Blacker();
+        }
+
         TEST_METHOD(RegisterPackageSetAsync_Framework_N_Registered_Success)
         {
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
@@ -580,6 +732,59 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem black{ Make_PackageSetItem_ForRegister(::TPM::Black::GetPackageFullName()) };
             packageSet.Items().Append(black);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem white{ Make_PackageSetItem_ForRegister(::TPM::White::GetPackageFullName()) };
+            packageSet.Items().Append(white);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(RegisterPackageSetAsync_Framework_N_Registered_PackageFamilyName_Success)
+        {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
+            AddPackage_Red();
+            AddPackage_Green();
+            AddPackage_Blue();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem_NoPackageUri(::TPF::Red::GetPackageFullName()) };
+            packageSet.Items().Append(red);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem_NoPackageUri(::TPF::Green::GetPackageFullName()) };
+            packageSet.Items().Append(green);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem_NoPackageUri(::TPF::Blue::GetPackageFullName()) };
+            packageSet.Items().Append(blue);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(RegisterPackageSetAsync_Main_N_Registered_PackageFamilyName_Success)
+        {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
+            AddPackage_Black();
+            AddPackage_White();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"BW" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem black{ Make_PackageSetItem_NoPackageUri(::TPM::Black::GetPackageFullName()) };
+            packageSet.Items().Append(black);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem white{ Make_PackageSetItem_NoPackageUri(::TPM::White::GetPackageFullName()) };
             packageSet.Items().Append(white);
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
@@ -651,6 +856,67 @@ namespace Test::PackageManager::Tests
             RemovePackage_Blacker();
         }
 
+        TEST_METHOD(RegisterPackageSetAsync_Framework_N_OlderRegistered_PackageFamilyName_Success)
+        {
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
+            AddPackage_Red();
+            StagePackage_Redder();
+            AddPackage_Green();
+            AddPackage_Blue();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem redder{ Make_PackageSetItem_NoPackageUri(::TPF::Redder::GetPackageFullName()) };
+            packageSet.Items().Append(redder);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem green{ Make_PackageSetItem_NoPackageUri(::TPF::Green::GetPackageFullName()) };
+            packageSet.Items().Append(green);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem_NoPackageUri(::TPF::Blue::GetPackageFullName()) };
+            packageSet.Items().Append(blue);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Red());
+            VERIFY_IS_TRUE(IsPackageRegistered_Redder());
+            RemovePackage_Redder();
+        }
+
+        TEST_METHOD(RegisterPackageSetAsync_Main_N_OlderRegistered_PackageFamilyName_Success)
+        {
+            AddPackage_Black();
+            StagePackage_Blacker();
+            AddPackage_White();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RGB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blacker{ Make_PackageSetItem_NoPackageUri(::TPM::Blacker::GetPackageFullName()) };
+            packageSet.Items().Append(blacker);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem white{ Make_PackageSetItem_NoPackageUri(::TPM::White::GetPackageFullName()) };
+            packageSet.Items().Append(white);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            VERIFY_IS_FALSE(IsPackageRegistered_Black());
+            VERIFY_IS_TRUE(IsPackageRegistered_Blacker());
+            RemovePackage_Blacker();
+        }
+
         TEST_METHOD(RegisterPackageSetAsync_Framework_N_RegisteredAndStaged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
@@ -699,6 +965,64 @@ namespace Test::PackageManager::Tests
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem black{ Make_PackageSetItem_ForRegister(::TPM::Black::GetPackageFullName()) };
             packageSet.Items().Append(black);
             winrt::Microsoft::Windows::Management::Deployment::PackageSetItem white{ Make_PackageSetItem_ForRegister(::TPM::White::GetPackageFullName()) };
+            packageSet.Items().Append(white);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(RegisterPackageSetAsync_Framework_N_RegisteredAndStaged_PackageFamilyName_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
+            AddPackage_Red();
+            StagePackage_Blue();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"RB" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem red{ Make_PackageSetItem_NoPackageUri(::TPF::Red::GetPackageFullName()) };
+            packageSet.Items().Append(red);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem blue{ Make_PackageSetItem_NoPackageUri(::TPF::Blue::GetPackageFullName()) };
+            packageSet.Items().Append(blue);
+
+            winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;
+            auto deploymentOperation{ packageDeploymentManager.RegisterPackageSetAsync(packageSet, options) };
+            auto deploymentResult{ WaitForDeploymentOperation(deploymentOperation) };
+            TPMT::VerifyDeploymentSucceeded(deploymentResult, __FILE__, __LINE__, __FUNCTION__);
+
+            VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+        }
+
+        TEST_METHOD(RegisterPackageSetAsync_Main_N_RegisteredAndStaged_PackageFamilyName_Success)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
+            RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
+
+            AddPackage_Black();
+            StagePackage_White();
+
+            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
+
+            winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
+            PCWSTR c_packageSetId{ L"BW" };
+            packageSet.Id(c_packageSetId);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem black{ Make_PackageSetItem_NoPackageUri(::TPM::Black::GetPackageFullName()) };
+            packageSet.Items().Append(black);
+            winrt::Microsoft::Windows::Management::Deployment::PackageSetItem white{ Make_PackageSetItem_NoPackageUri(::TPM::White::GetPackageFullName()) };
             packageSet.Items().Append(white);
 
             winrt::Microsoft::Windows::Management::Deployment::RegisterPackageOptions options;

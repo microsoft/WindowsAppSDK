@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
@@ -24,6 +24,7 @@
 #include <filesystem>
 
 #include <wil/cppwinrt.h>
+#include <wil/cppwinrt_authoring.h>
 #include <wil/token_helpers.h>
 #include <wil/stl.h>
 #include <wil/resource.h>
@@ -41,6 +42,7 @@
 #include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.ApplicationModel.Core.h>
 #include <winrt/Windows.ApplicationModel.AppExtensions.h>
+#include <winrt/Windows.ApplicationModel.DataTransfer.h>
 #include <winrt/Windows.Data.Json.h>
 #include <winrt/Windows.Data.Xml.Dom.h>
 #include <winrt/Windows.Management.Core.h>
