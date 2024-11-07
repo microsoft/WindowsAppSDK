@@ -805,8 +805,12 @@ function Repair-DevTestPfx
             $password.AppendChar($randomChar)
         }
     }
-    $passwordPlainText = ConvertFrom-SecureString -SecureString $password
 
+    # Convert back to plaintext. This is not secure but this cert is only use for development purposes.
+    # Do not use for production purposes.
+    $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($password)
+    $passwordPlainText = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+    [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($BSTR)
     Set-Content -Path $pwd_file -Value $passwordPlainText -Force
 
     # Prepare to record the pfx for the certificate
@@ -1639,74 +1643,74 @@ if (($CheckAll -ne $false) -Or ($CheckTestCert -ne $false))
     }
 }
 
-if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
-{
-    $test = Test-TAEFService
-    if ($test -eq 'NotFound')
-    {
-        $test = Install-TAEFService
-    }
-    elseif ($test -eq 'NotRunning-OlderVersion')
-    {
-        $test = Uninstall-TAEFService
-        $test = Install-TAEFService
-        $test = Start-TAEFService
-    }
-    elseif ($test -eq 'NotRunning')
-    {
-        $test = Start-TAEFService
-    }
-    elseif ($test -eq 'Running-OlderVersion')
-    {
-        $test = Stop-TAEFService
-        if ($test -ne $false)
-        {
-            if ($test -eq $true)
-            {
-                $test = Uninstall-TAEFService
-            }
-            $test = Install-TAEFService
-            $test = Start-TAEFService
-        }
-    }
-}
+# if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
+# {
+#     $test = Test-TAEFService
+#     if ($test -eq 'NotFound')
+#     {
+#         $test = Install-TAEFService
+#     }
+#     elseif ($test -eq 'NotRunning-OlderVersion')
+#     {
+#         $test = Uninstall-TAEFService
+#         $test = Install-TAEFService
+#         $test = Start-TAEFService
+#     }
+#     elseif ($test -eq 'NotRunning')
+#     {
+#         $test = Start-TAEFService
+#     }
+#     elseif ($test -eq 'Running-OlderVersion')
+#     {
+#         $test = Stop-TAEFService
+#         if ($test -ne $false)
+#         {
+#             if ($test -eq $true)
+#             {
+#                 $test = Uninstall-TAEFService
+#             }
+#             $test = Install-TAEFService
+#             $test = Start-TAEFService
+#         }
+#     }
+# }
 
-if (($CheckAll -ne $false) -Or ($CheckDependencies -ne $false))
-{
-    $null = Test-Dependencies
-}
+# if (($CheckAll -ne $false) -Or ($CheckDependencies -ne $false))
+# {
+#     $null = Test-Dependencies
+# }
 
-if (($CheckAll -ne $false) -Or ($CheckDeveloperMode -ne $false))
-{
-    $null = Test-DeveloperMode
-}
+# if (($CheckAll -ne $false) -Or ($CheckDeveloperMode -ne $false))
+# {
+#     $null = Test-DeveloperMode
+# }
 
-if ($StartTAEFService -eq $true)
-{
-    $null = Start-TAEFService
-}
+# if ($StartTAEFService -eq $true)
+# {
+#     $null = Start-TAEFService
+# }
 
-if ($StopTAEFService -eq $true)
-{
-    $null = Stop-TAEFService
-}
+# if ($StopTAEFService -eq $true)
+# {
+#     $null = Stop-TAEFService
+# }
 
-if (($RemoveAll -ne $false) -Or ($RemoveTestCert -ne $false))
-{
-    $null = Remove-DevTestCert
-}
+# if (($RemoveAll -ne $false) -Or ($RemoveTestCert -ne $false))
+# {
+#     $null = Remove-DevTestCert
+# }
 
-if (($RemoveAll -ne $false) -Or ($RemoveTestPfx -ne $false))
-{
-    $null = Remove-DevTestPfx
-}
+# if (($RemoveAll -ne $false) -Or ($RemoveTestPfx -ne $false))
+# {
+#     $null = Remove-DevTestPfx
+# }
 
-if ($global:issues -eq 0)
-{
-    Write-Output "Coding time!"
-}
-else
-{
-    $n = $global:issues
-    Write-Output "$n issue(s) detected"
-}
+# if ($global:issues -eq 0)
+# {
+#     Write-Output "Coding time!"
+# }
+# else
+# {
+#     $n = $global:issues
+#     Write-Output "$n issue(s) detected"
+# }
