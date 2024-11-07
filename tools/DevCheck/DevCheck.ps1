@@ -774,7 +774,7 @@ function Repair-DevTestPfx
     $passwordText = $null
     if (-not [string]::IsNullOrEmpty($CertPassword))
     {
-        $passwordText = $CertPassword
+        $password = $CertPassword
     }
     elseif (-not [string]::IsNullOrEmpty($CertPasswordFile))
     {
@@ -790,24 +790,25 @@ function Repair-DevTestPfx
     {
         $password = Get-Content -Path $pwd_file -Encoding utf8
     }
-    if ([string]::IsNullOrEmpty($passwordText) -And ($NoInteractive -eq $false))
+    elseif ([string]::IsNullOrEmpty($password) -And ($NoInteractive -eq $false))
     {
-        $passwordText = Read-Host -Prompt 'Creating test certificate. Please enter a password' -AsSecureString
+        $password = Read-Host -Prompt 'Creating test certificate. Please enter a password' -AsSecureString
     }
-    if ([string]::IsNullOrEmpty($passwordText))
+    else
     {
         $charSet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%)'
         $passwordLength = 20
-        $passwordText = New-Object -TypeName System.Security.SecureString
+        $password = New-Object -TypeName System.Security.SecureString
         # Generate random characters and append to SecureString
         for ($i = 0; $i -lt $passwordLength; $i++) 
         {
             $randomChar = $charSet[(Get-Random -Maximum $charSet.Length)]
-            $passwordText.AppendChar($randomChar)
+            $password.AppendChar($randomChar)
         }
     }
-    $password = $passwordText
-    Set-Content -Path $pwd_file -Value $passwordText -Force
+    $passwordPlainText = Convert-SecureStringToString -SecureString $password
+
+    Set-Content -Path $pwd_file -Value $passwordPlainText -Force
 
     # Prepare to record the pfx for the certificate
     $user = Get-UserPath
