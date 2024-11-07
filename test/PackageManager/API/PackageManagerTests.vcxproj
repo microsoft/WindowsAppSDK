@@ -119,6 +119,7 @@
     <ClCompile Include="PackageDeploymentManagerTests_IsPackageRegistrationPending.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_IsReady.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_IsReadyOrNewerAvailable.cpp" />
+    <ClCompile Include="PackageDeploymentManagerTests_Module.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_Provision.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_Register.cpp" />
     <ClCompile Include="PackageDeploymentManagerTests_Remove.cpp" />

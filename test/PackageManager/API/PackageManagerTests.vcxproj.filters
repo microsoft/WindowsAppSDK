@@ -45,6 +45,9 @@
     <ClCompile Include="PackageDeploymentManagerTests_IsReadyOrNewerAvailable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PackageDeploymentManagerTests_Module.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="PackageDeploymentManagerTests_Provision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
