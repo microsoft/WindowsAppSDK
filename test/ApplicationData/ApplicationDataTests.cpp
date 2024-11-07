@@ -83,7 +83,7 @@ namespace WEX::TestExecution
     };
 }
 
-namespace Test::PackageManager::Tests
+namespace Test::ApplicationData::Tests
 {
     const auto Main_PackageFamilyName{ ::TP::DynamicDependencyDataStore::c_PackageFamilyName };
     const auto Framework_PackageFamilyName{ ::TP::WindowsAppRuntimeFramework::c_PackageFamilyName };
