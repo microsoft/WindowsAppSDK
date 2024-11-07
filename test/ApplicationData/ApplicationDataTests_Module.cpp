@@ -3,6 +3,6 @@
 
 #include "pch.h"
 
-BEGIN_MODULE()
-    MODULE_PROPERTY(L"IsolationLevel", L"Class")
-END_MODULE()
+//BEGIN_MODULE()
+//    MODULE_PROPERTY(L"IsolationLevel", L"Class")
+//END_MODULE()

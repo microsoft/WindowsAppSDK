@@ -95,7 +95,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(ResetPackageAsync_PackageFullName_Staged_Fail)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
@@ -169,7 +169,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(ResetPackageAsync_PackageFamilyName_Staged_Fail)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
@@ -249,7 +249,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(ResetPackageByUriAsync_Staged_Fail)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             if (TPMT::SkipIfFeatureNotSupported_ResetPackage() || TPMT::SkipIfFeatureNotSupported_PackageUriScheme_ms_uup())
@@ -327,7 +327,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(ResetPackageSetAsync_1_Staged_Fail)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
@@ -475,7 +475,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(ResetPackageSetAsync_N_RegisteredAndNotInstalledAndStaged_Fail)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
@@ -552,7 +552,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(ResetPackageAsync_PackageFullName_RegisteredPackageStatusBad_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             if (TPMT::SkipIfFeatureNotSupported_ResetPackage())
@@ -583,7 +583,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(ResetPackageAsync_PackageFamilyName_RegisteredPackageStatusBad_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             if (TPMT::SkipIfFeatureNotSupported_ResetPackage())

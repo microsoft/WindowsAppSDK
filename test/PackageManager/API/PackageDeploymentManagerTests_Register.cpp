@@ -91,7 +91,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(RegisterPackageAsync_Framework_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
@@ -115,7 +115,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(RegisterPackageAsync_Main_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
@@ -243,7 +243,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(RegisterPackageByUriAsync_Framework_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
@@ -269,7 +269,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(RegisterPackageByUriAsync_Main_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
@@ -391,7 +391,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(RegisterPackageSetAsync_Framework_1_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
@@ -417,7 +417,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(RegisterPackageSetAsync_Main_1_Staged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
@@ -443,7 +443,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(RegisterPackageSetAsync_Framework_1_Staged_PackageFamilyName_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
@@ -469,7 +469,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(RegisterPackageSetAsync_Main_1_Staged_PackageFamilyName_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
@@ -923,7 +923,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(RegisterPackageSetAsync_Framework_N_RegisteredAndStaged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
@@ -952,7 +952,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(RegisterPackageSetAsync_Main_N_RegisteredAndStaged_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
@@ -981,7 +981,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(RegisterPackageSetAsync_Framework_N_RegisteredAndStaged_PackageFamilyName_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
@@ -1010,7 +1010,7 @@ namespace Test::PackageManager::Tests
         TEST_METHOD(RegisterPackageSetAsync_Main_N_RegisteredAndStaged_PackageFamilyName_Success)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();

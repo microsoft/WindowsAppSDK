@@ -34,6 +34,7 @@ namespace Test::ApplicationData::Tests
     public:
         BEGIN_TEST_CLASS(ApplicationDataTests_Elevated)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")
             TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
             TEST_CLASS_PROPERTY(L"RunFixtureAs", L"System")
         END_TEST_CLASS()
