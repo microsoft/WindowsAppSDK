@@ -1643,74 +1643,74 @@ if (($CheckAll -ne $false) -Or ($CheckTestCert -ne $false))
     }
 }
 
-# if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
-# {
-#     $test = Test-TAEFService
-#     if ($test -eq 'NotFound')
-#     {
-#         $test = Install-TAEFService
-#     }
-#     elseif ($test -eq 'NotRunning-OlderVersion')
-#     {
-#         $test = Uninstall-TAEFService
-#         $test = Install-TAEFService
-#         $test = Start-TAEFService
-#     }
-#     elseif ($test -eq 'NotRunning')
-#     {
-#         $test = Start-TAEFService
-#     }
-#     elseif ($test -eq 'Running-OlderVersion')
-#     {
-#         $test = Stop-TAEFService
-#         if ($test -ne $false)
-#         {
-#             if ($test -eq $true)
-#             {
-#                 $test = Uninstall-TAEFService
-#             }
-#             $test = Install-TAEFService
-#             $test = Start-TAEFService
-#         }
-#     }
-# }
+if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
+{
+    $test = Test-TAEFService
+    if ($test -eq 'NotFound')
+    {
+        $test = Install-TAEFService
+    }
+    elseif ($test -eq 'NotRunning-OlderVersion')
+    {
+        $test = Uninstall-TAEFService
+        $test = Install-TAEFService
+        $test = Start-TAEFService
+    }
+    elseif ($test -eq 'NotRunning')
+    {
+        $test = Start-TAEFService
+    }
+    elseif ($test -eq 'Running-OlderVersion')
+    {
+        $test = Stop-TAEFService
+        if ($test -ne $false)
+        {
+            if ($test -eq $true)
+            {
+                $test = Uninstall-TAEFService
+            }
+            $test = Install-TAEFService
+            $test = Start-TAEFService
+        }
+    }
+}
 
-# if (($CheckAll -ne $false) -Or ($CheckDependencies -ne $false))
-# {
-#     $null = Test-Dependencies
-# }
+if (($CheckAll -ne $false) -Or ($CheckDependencies -ne $false))
+{
+    $null = Test-Dependencies
+}
 
-# if (($CheckAll -ne $false) -Or ($CheckDeveloperMode -ne $false))
-# {
-#     $null = Test-DeveloperMode
-# }
+if (($CheckAll -ne $false) -Or ($CheckDeveloperMode -ne $false))
+{
+    $null = Test-DeveloperMode
+}
 
-# if ($StartTAEFService -eq $true)
-# {
-#     $null = Start-TAEFService
-# }
+if ($StartTAEFService -eq $true)
+{
+    $null = Start-TAEFService
+}
 
-# if ($StopTAEFService -eq $true)
-# {
-#     $null = Stop-TAEFService
-# }
+if ($StopTAEFService -eq $true)
+{
+    $null = Stop-TAEFService
+}
 
-# if (($RemoveAll -ne $false) -Or ($RemoveTestCert -ne $false))
-# {
-#     $null = Remove-DevTestCert
-# }
+if (($RemoveAll -ne $false) -Or ($RemoveTestCert -ne $false))
+{
+    $null = Remove-DevTestCert
+}
 
-# if (($RemoveAll -ne $false) -Or ($RemoveTestPfx -ne $false))
-# {
-#     $null = Remove-DevTestPfx
-# }
+if (($RemoveAll -ne $false) -Or ($RemoveTestPfx -ne $false))
+{
+    $null = Remove-DevTestPfx
+}
 
-# if ($global:issues -eq 0)
-# {
-#     Write-Output "Coding time!"
-# }
-# else
-# {
-#     $n = $global:issues
-#     Write-Output "$n issue(s) detected"
-# }
+if ($global:issues -eq 0)
+{
+    Write-Output "Coding time!"
+}
+else
+{
+    $n = $global:issues
+    Write-Output "$n issue(s) detected"
+}
