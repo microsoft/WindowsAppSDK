@@ -799,7 +799,7 @@ function Repair-DevTestPfx
         $passwordLength = 20
         $password = New-Object -TypeName System.Security.SecureString
         # Generate random characters and append to SecureString
-        for ($i = 0; $i -lt $passwordLength; $i++) 
+        for ($i = 0; $i -lt $passwordLength; $i++)
         {
             $randomChar = $charSet[(Get-Random -Maximum $charSet.Length)]
             $password.AppendChar($randomChar)
@@ -1649,6 +1649,7 @@ if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
     if ($test -eq 'NotFound')
     {
         $test = Install-TAEFService
+        $test = Start-TAEFService
     }
     elseif ($test -eq 'NotRunning-OlderVersion')
     {
