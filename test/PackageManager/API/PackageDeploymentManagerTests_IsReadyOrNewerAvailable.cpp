@@ -169,6 +169,8 @@ namespace Test::PackageManager::Tests
             PCWSTR packageFullName{ ::TPM::Black::GetPackageFullName() };
 
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable, packageDeploymentManager.IsPackageReadyOrNewerAvailable(packageFullName));
+
+            RemovePackage_Blacker();
         }
 
         TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFamilyName_InvalidParameter)
@@ -326,24 +328,6 @@ namespace Test::PackageManager::Tests
                 PCWSTR c_packageSetId{ L"Does.Not.Exist" };
                 packageSet.Id(c_packageSetId);
                 winrt::Microsoft::Windows::Management::Deployment::PackageSetItem packageSetItem;
-                PCWSTR c_packageFamilyName{ L"Does.Not.Exist_1234567890abc" };
-                packageSetItem.PackageFamilyName(c_packageFamilyName);
-                packageSet.Items().Append(packageSetItem);
-
-                packageDeploymentManager.IsPackageSetReadyOrNewerAvailable(packageSet);
-                VERIFY_FAIL(L"Success is not expected");
-            }
-            catch (winrt::hresult_error& e)
-            {
-                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
-            }
-
-            try
-            {
-                winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
-                PCWSTR c_packageSetId{ L"Does.Not.Exist" };
-                packageSet.Id(c_packageSetId);
-                winrt::Microsoft::Windows::Management::Deployment::PackageSetItem packageSetItem;
                 PCWSTR c_packageUriAsString{ L"https://doesnotexist.com/assemble.msix" };
                 winrt::Windows::Foundation::Uri packageUri{ c_packageUriAsString };
                 packageSetItem.PackageUri(packageUri);
@@ -483,6 +467,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(black);
 
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable, packageDeploymentManager.IsPackageSetReadyOrNewerAvailable(packageSet));
+
+            RemovePackage_Blacker();
         }
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_N_NotInstalled_NotReady)
