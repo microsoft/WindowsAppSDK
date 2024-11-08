@@ -21,6 +21,7 @@ namespace Test::PackageManager::Tests
     public:
         BEGIN_TEST_CLASS(PackageDeploymentManagerTests_Deprovision_Framework)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")    /****SEEME****/
             TEST_CLASS_PROPERTY(L"RunFixtureAs", L"ElevatedUser")
         END_TEST_CLASS()
 
@@ -36,6 +37,8 @@ namespace Test::PackageManager::Tests
             {
                 return true;
             }
+
+            TD::DumpExecutionContext();
 
             RemovePackage_Red();
             AddPackage_Red();
