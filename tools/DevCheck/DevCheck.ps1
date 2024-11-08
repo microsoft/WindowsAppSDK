@@ -1617,7 +1617,7 @@ if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
         $null = Test-VisualStudioComponents
     }
     $null = Test-WindowsSDKInstall '10.0.17763.0' [uri]'https://go.microsoft.com/fwlink/p/?LinkID=2033908'
-    #TODO Uncomment to require new SDK: $null = Test-WindowsSDKInstall '10.0.26100.0' [uri]'https://go.microsoft.com/fwlink/?linkid=2272610'
+    $null = Test-WindowsSDKInstall '10.0.26100.0' [uri]'https://go.microsoft.com/fwlink/?linkid=2272610'
 }
 
 if (($CheckAll -ne $false) -Or ($CheckTestPfx -ne $false))
