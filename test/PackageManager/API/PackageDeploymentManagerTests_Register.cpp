@@ -183,6 +183,7 @@ namespace Test::PackageManager::Tests
         {
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
 
+            RemovePackage_Redder();
             AddPackage_Red();
             StagePackage_Redder();
 
@@ -346,6 +347,7 @@ namespace Test::PackageManager::Tests
         {
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
 
+            RemovePackage_Redder();
             AddPackage_Red();
             StagePackage_Redder();
 
@@ -595,6 +597,7 @@ namespace Test::PackageManager::Tests
         {
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
 
+            RemovePackage_Redder();
             AddPackage_Red();
             StagePackage_Redder();
 
@@ -652,6 +655,7 @@ namespace Test::PackageManager::Tests
         {
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
 
+            RemovePackage_Redder();
             AddPackage_Red();
             StagePackage_Redder();
 
@@ -817,6 +821,7 @@ namespace Test::PackageManager::Tests
         {
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
 
+            RemovePackage_Redder();
             AddPackage_Red();
             StagePackage_Redder();
             AddPackage_Green();
@@ -843,6 +848,7 @@ namespace Test::PackageManager::Tests
 
             VERIFY_IS_FALSE(IsPackageRegistered_Red());
             VERIFY_IS_TRUE(IsPackageRegistered_Redder());
+
             RemovePackage_Redder();
         }
 
@@ -880,6 +886,7 @@ namespace Test::PackageManager::Tests
         {
             RETURN_IF_SKIP_ON_WIN10_DUE_TO_0x80073D2B_IN_TEST();
 
+            RemovePackage_Redder();
             AddPackage_Red();
             StagePackage_Redder();
             AddPackage_Green();
@@ -906,6 +913,7 @@ namespace Test::PackageManager::Tests
 
             VERIFY_IS_FALSE(IsPackageRegistered_Red());
             VERIFY_IS_TRUE(IsPackageRegistered_Redder());
+
             RemovePackage_Redder();
         }
 
