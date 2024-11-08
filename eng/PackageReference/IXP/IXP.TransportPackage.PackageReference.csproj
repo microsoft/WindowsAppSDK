@@ -7,7 +7,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
 
     <Copyright>Copyright (c) Microsoft Corporation. All rights reserved.</Copyright>
-    <AssemblyTitle>Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage.PackageReference</AssemblyTitle>
+    <AssemblyTitle>IXP.TransportPackage.PackageReference</AssemblyTitle>
   </PropertyGroup>
 
   <PropertyGroup>
