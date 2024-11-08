@@ -591,6 +591,7 @@ namespace Test::PackageManager::Tests
                 TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            RemovePackage_Redder();
             AddPackage_Red();
             StagePackage_Redder();
 
@@ -614,6 +615,8 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_FALSE(IsPackageRegistered_Red());
             VERIFY_IS_TRUE(IsPackageRegistered_Redder());
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            RemovePackage_Redder();
         }
 
         TEST_METHOD(EnsurePackageSetReadyAsync_N_RegisteredAndNewerStaged_Success)
@@ -622,6 +625,7 @@ namespace Test::PackageManager::Tests
                 TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
             END_TEST_METHOD_PROPERTIES()
 
+            RemovePackage_Redder();
             AddPackage_Red();
             StagePackage_Redder();
             AddPackage_Green();
@@ -650,6 +654,8 @@ namespace Test::PackageManager::Tests
             VERIFY_IS_TRUE(IsPackageRegistered_Redder());
             VERIFY_IS_TRUE(IsPackageRegistered_Green());
             VERIFY_IS_TRUE(packageDeploymentManager.IsPackageSetReady(packageSet));
+
+            RemovePackage_Redder();
         }
      };
 }

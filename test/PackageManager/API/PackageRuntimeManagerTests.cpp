@@ -328,6 +328,7 @@ namespace Test::PackageManager::Tests
             const auto packageSetRuntimeDisposition{ packageRuntimeManager.AddPackageSet(packageSet, createOptions, addOptions) };
 
             packageRuntimeManager.RemovePackageSet(packageSetRuntimeDisposition);
+
             RemovePackage_Redder();
         }
 
@@ -446,6 +447,7 @@ namespace Test::PackageManager::Tests
             const auto packageSetRuntimeDisposition{ packageRuntimeManager.AddPackageSet(packageSet, createOptions, addOptions) };
 
             packageRuntimeManager.RemovePackageSet(packageSetRuntimeDisposition);
+
             RemovePackage_Redder();
         }
 

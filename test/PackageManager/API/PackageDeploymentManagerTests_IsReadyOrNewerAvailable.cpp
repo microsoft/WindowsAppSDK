@@ -169,6 +169,8 @@ namespace Test::PackageManager::Tests
             PCWSTR packageFullName{ ::TPM::Black::GetPackageFullName() };
 
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable, packageDeploymentManager.IsPackageReadyOrNewerAvailable(packageFullName));
+
+            RemovePackage_Blacker();
         }
 
         TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFamilyName_InvalidParameter)
@@ -465,6 +467,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(black);
 
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable, packageDeploymentManager.IsPackageSetReadyOrNewerAvailable(packageSet));
+
+            RemovePackage_Blacker();
         }
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_N_NotInstalled_NotReady)
