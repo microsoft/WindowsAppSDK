@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- This csproj is to facilitate restoring dependencies from Maestro. These versions are pulled from eng/version.details.xml -->
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <Platforms>x64;x86</Platforms>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+
+    <Copyright>Copyright (c) Microsoft Corporation. All rights reserved.</Copyright>
+    <AssemblyTitle>IXP.TransportPackage.PackageReference</AssemblyTitle>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Getting obj reference error. Disable for now (incompatible with PackageDownload??) -->
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageDownload Include="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" version="[$(MicrosoftProjectReunionInteractiveExperiencesTransportPackagePackageVersion)]" />
+  </ItemGroup>
+</Project>

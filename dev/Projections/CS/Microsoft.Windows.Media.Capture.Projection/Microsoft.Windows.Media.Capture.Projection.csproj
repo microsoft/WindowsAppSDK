@@ -6,7 +6,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-
+  
   <PropertyGroup>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <IsTrimmable>true</IsTrimmable>
@@ -18,6 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage" />
     <PackageReference Include="Microsoft.SourceLink.Common">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -28,9 +29,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.CsWinRT" />
   </ItemGroup>
-
+  
   <PropertyGroup>
-    <CSWinRTIncludes>Microsoft.Windows.Security.AccessControl</CSWinRTIncludes>
+    <CSWinRTIncludes>Microsoft.Windows.Media.Capture</CSWinRTIncludes>
     <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
   </PropertyGroup>
@@ -46,14 +47,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="$(RepoRoot)\eng\common\VersionInfo\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
+    <Compile Include="$(RepoRoot)\build\VersionInfo\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.Windows.Security.AccessControl">
-      <HintPath>$(OutDir)..\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Security.AccessControl.winmd</HintPath>
+    <Reference Include="Microsoft.Windows.Media.Capture">
+      <HintPath>$(OutDir)..\WindowsAppRuntime_DLL\StrippedWinMD\Microsoft.Windows.Media.Capture.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
-
 </Project>
