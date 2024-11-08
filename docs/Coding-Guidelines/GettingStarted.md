@@ -52,6 +52,7 @@ or via the browser:
       * Windows 10 SDK (10.0.20348.0)
       * Windows 10 SDK (10.0.22000.0)
       * Windows 10 SDK (10.0.22621.0)
+      * Windows 10 SDK (10.0.26100.0)
       * Windows Universal C Runtime
       * and more! See [VisualStudio2022.vsconfig](https://github.com/microsoft/WindowsAppSDK/blob/develop/docs/Coding-Guidelines/VisualStudio2022.vsconfig) for the complete list
 
