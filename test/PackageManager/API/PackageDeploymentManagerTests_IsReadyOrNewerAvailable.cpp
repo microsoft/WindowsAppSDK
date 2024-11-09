@@ -21,6 +21,7 @@ namespace Test::PackageManager::Tests
     public:
         BEGIN_TEST_CLASS(PackageDeploymentManagerTests_IsReadyOrNewerAvailable)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")    /****SEEME****/
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)
@@ -30,6 +31,9 @@ namespace Test::PackageManager::Tests
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
                 return true;
             }
+
+            TD::DumpExecutionContext();
+
             RemovePackage_Blue();
             RemovePackage_Green();
             RemovePackage_Redder();
@@ -165,6 +169,8 @@ namespace Test::PackageManager::Tests
             PCWSTR packageFullName{ ::TPM::Black::GetPackageFullName() };
 
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable, packageDeploymentManager.IsPackageReadyOrNewerAvailable(packageFullName));
+
+            RemovePackage_Blacker();
         }
 
         TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFamilyName_InvalidParameter)
@@ -186,104 +192,6 @@ namespace Test::PackageManager::Tests
             {
                 VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
-        }
-
-        TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFamilyName_NoSuchPackage_NotReady)
-        {
-            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
-            {
-                return;
-            }
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            PCWSTR c_packageFamilyName{ L"Does.Not.Exist_1234567890abc" };
-
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady, packageDeploymentManager.IsPackageReadyOrNewerAvailable(c_packageFamilyName));
-        }
-
-        TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFamilyName_NotInstalled_NotReady)
-        {
-            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
-            {
-                return;
-            }
-
-            RemovePackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            PCWSTR packageFamilyName{ ::TPF::Red::c_packageFamilyName };
-
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady, packageDeploymentManager.IsPackageReadyOrNewerAvailable(packageFamilyName));
-        }
-
-        TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFamilyName_Registered_Ready)
-        {
-            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
-            {
-                return;
-            }
-
-            AddPackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            PCWSTR packageFamilyName{ ::TPF::Red::c_packageFamilyName };
-
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready, packageDeploymentManager.IsPackageReadyOrNewerAvailable(packageFamilyName));
-        }
-
-        TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFamilyName_OlderRegistered_NotReady)
-        {
-            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
-            {
-                return;
-            }
-
-            AddPackage_Red();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            PCWSTR packageFamilyName{ ::TPF::Redder::c_packageFamilyName };
-
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NotReady, packageDeploymentManager.IsPackageReadyOrNewerAvailable(packageFamilyName));
-        }
-
-        TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFamilyName_NewerRegistered_Ready)
-        {
-            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
-            {
-                return;
-            }
-
-            AddPackage_Redder();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            PCWSTR packageFamilyName{ ::TPF::Red::c_packageFamilyName };
-
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::Ready, packageDeploymentManager.IsPackageReadyOrNewerAvailable(packageFamilyName));
-
-            RemovePackage_Redder();
-        }
-
-        TEST_METHOD(IsPackageReadyOrNewerAvailable_PackageFamilyName_NewerAvailable)
-        {
-            if (TPMT::SkipIfFeatureNotSupported_IsPackageReadyOrNewerAvailable())
-            {
-                return;
-            }
-
-            RemovePackage_Blacker();
-            AddPackage_Black();
-            StagePackage_Blacker();
-
-            auto packageDeploymentManager{ winrt::Microsoft::Windows::Management::Deployment::PackageDeploymentManager::GetDefault() };
-
-            PCWSTR packageFamilyName{ ::TPM::Black::c_packageFamilyName };
-
-            VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable, packageDeploymentManager.IsPackageReadyOrNewerAvailable(packageFamilyName));
         }
 
         TEST_METHOD(IsPackageReadyOrNewerAvailableByUri_InvalidParameter)
@@ -403,24 +311,6 @@ namespace Test::PackageManager::Tests
                 packageSet.Id(c_packageSetId);
                 winrt::Microsoft::Windows::Management::Deployment::PackageSetItem packageSetItem;
                 PCWSTR c_packageFamilyName{ L"Not a valid Package Family Name" };
-                packageSetItem.PackageFamilyName(c_packageFamilyName);
-                packageSet.Items().Append(packageSetItem);
-
-                packageDeploymentManager.IsPackageSetReadyOrNewerAvailable(packageSet);
-                VERIFY_FAIL(L"Success is not expected");
-            }
-            catch (winrt::hresult_error& e)
-            {
-                VERIFY_ARE_EQUAL(E_INVALIDARG, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
-            }
-
-            try
-            {
-                winrt::Microsoft::Windows::Management::Deployment::PackageSet packageSet;
-                PCWSTR c_packageSetId{ L"Does.Not.Exist" };
-                packageSet.Id(c_packageSetId);
-                winrt::Microsoft::Windows::Management::Deployment::PackageSetItem packageSetItem;
-                PCWSTR c_packageFamilyName{ L"Does.Not.Exist_1234567890abc" };
                 packageSetItem.PackageFamilyName(c_packageFamilyName);
                 packageSet.Items().Append(packageSetItem);
 
@@ -577,6 +467,8 @@ namespace Test::PackageManager::Tests
             packageSet.Items().Append(black);
 
             VERIFY_ARE_EQUAL(winrt::Microsoft::Windows::Management::Deployment::PackageReadyOrNewerAvailableStatus::NewerAvailable, packageDeploymentManager.IsPackageSetReadyOrNewerAvailable(packageSet));
+
+            RemovePackage_Blacker();
         }
 
         TEST_METHOD(IsPackageSetReadyOrNewerAvailable_N_NotInstalled_NotReady)

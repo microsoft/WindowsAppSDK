@@ -30,6 +30,9 @@
         <Path>Microsoft.WindowsAppRuntime.dll</Path>
         <!-- NOTE: Keep ActivationClass elements sorted by absolute ActivatableClassId (namespace.class) -->
 
+        <!-- Background Task -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.Background.BackgroundTaskBuilder" ThreadingModel="both" />
+
         <!-- OAuth -->
         <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.OAuth2Manager" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.AuthRequestParams" ThreadingModel="both" />

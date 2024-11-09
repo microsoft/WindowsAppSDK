@@ -21,6 +21,7 @@ namespace Test::PackageManager::Tests
     public:
         BEGIN_TEST_CLASS(PackageDeploymentManagerTests_IsReady)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")    /****SEEME****/
             TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
 
@@ -32,8 +33,9 @@ namespace Test::PackageManager::Tests
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageDeploymentManager requires >= 20H1 (Vibranium). Skipping tests");
                 return true;
             }
-//TODO Remove
-WEX::Logging::Log::Comment(L"S1");
+
+            TD::DumpExecutionContext();
+
             RemovePackage_Blue();
 WEX::Logging::Log::Comment(L"S2");
             RemovePackage_Green();

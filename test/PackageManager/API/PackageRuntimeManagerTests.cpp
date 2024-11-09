@@ -19,6 +19,7 @@ namespace Test::PackageManager::Tests
     public:
         BEGIN_TEST_CLASS(PackageRuntimeManagerTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")    /****SEEME****/
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassSetup)
@@ -28,6 +29,9 @@ namespace Test::PackageManager::Tests
                 WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"PackageRuntimeManager requires Dynamic Dependencies delegating to OS Dynamic Dependencies. Skipping tests");
                 return true;
             }
+
+            TD::DumpExecutionContext();
+
             RemovePackage_Blue();
             RemovePackage_Green();
             RemovePackage_Redder();
@@ -324,6 +328,7 @@ namespace Test::PackageManager::Tests
             const auto packageSetRuntimeDisposition{ packageRuntimeManager.AddPackageSet(packageSet, createOptions, addOptions) };
 
             packageRuntimeManager.RemovePackageSet(packageSetRuntimeDisposition);
+
             RemovePackage_Redder();
         }
 
@@ -442,6 +447,7 @@ namespace Test::PackageManager::Tests
             const auto packageSetRuntimeDisposition{ packageRuntimeManager.AddPackageSet(packageSet, createOptions, addOptions) };
 
             packageRuntimeManager.RemovePackageSet(packageSetRuntimeDisposition);
+
             RemovePackage_Redder();
         }
 

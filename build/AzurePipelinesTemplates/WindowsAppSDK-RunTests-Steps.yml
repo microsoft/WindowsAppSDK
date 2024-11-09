@@ -11,7 +11,7 @@ steps:
     inputs:
       targetType: filePath
       filePath: tools\DevCheck\DevCheck.ps1
-      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean -CheckDependencies -CheckVisualStudio -ShowSystemInfo
+      arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean -CheckDependencies -CheckVisualStudio -ShowSystemInfo
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: DownloadPipelineArtifact@2
@@ -142,6 +142,9 @@ steps:
 
             Write-Host "Get-WinSystemLocale"
             Get-WinSystemLocale
+
+            Write-Host "WhoAmI"
+            Write-Host (whoami /user /groups /priv)
 
   - task: PowerShell@2
     displayName: 'Dump services'

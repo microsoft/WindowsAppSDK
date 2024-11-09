@@ -63,7 +63,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: $(foundationRepoPath)tools\DevCheck\DevCheck.ps1
-    arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
+    arguments: -NoInteractive -Offline -Verbose -CheckTestPfx -Clean
     workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: powershell@2
