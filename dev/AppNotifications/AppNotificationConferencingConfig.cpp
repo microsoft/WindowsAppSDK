@@ -13,7 +13,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationConferencingConfig::VideoDeviceId(hstring const& value)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled());
+        THROW_HR_IF(E_NOTIMPL, !IsCallingPreviewSupported());
         m_videoDeviceId = value;
     }
 
@@ -24,7 +24,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationConferencingConfig::AudioInputDeviceId(hstring const& value)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled());
+        THROW_HR_IF(E_NOTIMPL, !IsCallingPreviewSupported());
         m_audioInputDeviceId = value;
     }
 
@@ -35,16 +35,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     void AppNotificationConferencingConfig::AudioOutputDeviceId(hstring const& value)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled());
+        THROW_HR_IF(E_NOTIMPL, !IsCallingPreviewSupported());
         m_audioOutputDeviceId = value;
     }
 
-    /// <summary>
-    /// verifies if video calling is supported <TO DO>
-    /// </summary>
-    /// <returns>bool</returns>
+    ///Checks if the calling preview feature is supported on the current OS version
+    ///TO DO - This method needs implementation on framework UDK, for now it always returns false
     bool AppNotificationConferencingConfig::IsCallingPreviewSupported()
     {
-        return WindowsVersion::IsWindows11_23H1OrGreater(); // Windows 11 23H1 or greater
+        return false;
     }
 }

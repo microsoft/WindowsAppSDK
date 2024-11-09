@@ -85,5 +85,6 @@ class PackagedTests : BaseTestSuite
     TEST_METHOD(VerifyToastConferencingConfigAllDevicesSet);
     TEST_METHOD(VerifyToastConferencingConfigNotAllDevicesSet);
     TEST_METHOD(VerifyToastConferencingConfigNoDevicesSet);
+    TEST_METHOD(VerifyToastConferencingConfigWithIsCallingPreviewSupportedFalse);
 };
 

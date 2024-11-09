@@ -433,7 +433,8 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             m_appId,
             notification.Payload(),
             notification.Tag(),
-            notification.Group()) };
+            notification.Group(),
+            winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported()) };
 
         THROW_HR_IF(WPN_E_NOTIFICATION_POSTED, notification.Id() != 0);
 

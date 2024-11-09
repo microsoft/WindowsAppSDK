@@ -10,7 +10,6 @@
 #include "NotificationProgressData.h"
 #include "NotificationDevicesData.h"
 #include "AppNotificationConferencingConfig.h"
-#include <TerminalVelocityFeatures-CallingPreviewSupport.h>
 
 namespace winrt
 {
@@ -51,14 +50,11 @@ NotificationProperties::NotificationProperties(winrt::AppNotification const& toa
         m_toastProgressData = winrt::make_self<NotificationProgressData>(toastNotification.Progress());
     }
 
-    if (::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled())
+    if (winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported())
     {
-        if (winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported())
+        if (auto config = toastNotification.ConferencingConfig())
         {
-            if (auto config = toastNotification.ConferencingConfig())
-            {
-                m_toastDevicesData = winrt::make_self<NotificationDevicesData>(config);
-            }
+            m_toastDevicesData = winrt::make_self<NotificationDevicesData>(config);
         }
     }
 }

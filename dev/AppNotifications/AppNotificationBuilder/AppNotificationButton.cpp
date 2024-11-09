@@ -8,7 +8,6 @@
 #include <IsWindowsVersion.h>
 #include "AppNotificationBuilderUtility.h"
 #include "AppNotificationBuilderTelemetry.h"
-#include <TerminalVelocityFeatures-CallingPreviewSupport.h>
 
 namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 {
@@ -139,7 +138,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::Builder::implementation
 
     winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton AppNotificationButton::SetSettingStyle(AppNotificationButtonSettingStyle const& value)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::CallingPreviewSupport::Feature_CallingPreviewSupport::IsEnabled());
+        THROW_HR_IF(E_NOTIMPL, !AppNotificationConferencingConfig::IsCallingPreviewSupported());
 
         m_settingType = value;
         return *this;

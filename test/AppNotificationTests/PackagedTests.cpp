@@ -207,3 +207,8 @@ void PackagedTests::VerifyToastConferencingConfigNoDevicesSet()
 {
     BaseTestSuite::VerifyToastConferencingConfigNoDevicesSet();
 }
+
+void PackagedTests::VerifyToastConferencingConfigWithIsCallingPreviewSupportedFalse()
+{
+    BaseTestSuite::VerifyToastConferencingConfigWithIsCallingPreviewSupportedFalse();
+}

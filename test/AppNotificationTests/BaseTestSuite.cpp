@@ -601,6 +601,11 @@ void BaseTestSuite::VerifyExplicitAppId()
 
 void BaseTestSuite::VerifyToastConferencingConfigAllDevicesSet()
 {
+    if (!AppNotificationConferencingConfig::IsCallingPreviewSupported())
+    {
+        return;
+    }
+
     AppNotification toast{ CreateToastNotification() };
 
     AppNotificationConferencingConfig conferencingConfig{};
@@ -624,6 +629,11 @@ void BaseTestSuite::VerifyToastConferencingConfigNoDevicesSet()
 
 void BaseTestSuite::VerifyToastConferencingConfigNotAllDevicesSet()
 {
+    if (!AppNotificationConferencingConfig::IsCallingPreviewSupported())
+    {
+        return;
+    }
+
     AppNotification toast{ CreateToastNotification() };
 
     AppNotificationConferencingConfig conferencingConfig{ };
@@ -634,4 +644,19 @@ void BaseTestSuite::VerifyToastConferencingConfigNotAllDevicesSet()
     VERIFY_ARE_EQUAL(toast.ConferencingConfig().VideoDeviceId(), L"CameraDeviceId");
     VERIFY_ARE_EQUAL(toast.ConferencingConfig().AudioInputDeviceId(), L"");
     VERIFY_ARE_EQUAL(toast.ConferencingConfig().AudioOutputDeviceId(), L"");
+}
+
+void BaseTestSuite::VerifyToastConferencingConfigWithIsCallingPreviewSupportedFalse()
+{
+    AppNotification toast{ CreateToastNotification() };
+    AppNotificationConferencingConfig conferencingConfig{ };
+
+    if (!AppNotificationConferencingConfig::IsCallingPreviewSupported())
+    {
+        VERIFY_THROWS_HR(conferencingConfig.VideoDeviceId(L"CameraDeviceId"), E_NOTIMPL);
+        VERIFY_THROWS_HR(conferencingConfig.AudioInputDeviceId(L"MicrophoneDeviceId"), E_NOTIMPL);
+        VERIFY_THROWS_HR(conferencingConfig.AudioOutputDeviceId(L"SpeakerDeviceId"), E_NOTIMPL);
+
+        VERIFY_THROWS_HR(toast.ConferencingConfig(conferencingConfig), E_NOTIMPL);
+    }
 }

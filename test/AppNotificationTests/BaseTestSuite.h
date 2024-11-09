@@ -57,6 +57,7 @@ class BaseTestSuite
         void VerifyToastConferencingConfigAllDevicesSet();
         void VerifyToastConferencingConfigNotAllDevicesSet();
         void VerifyToastConferencingConfigNoDevicesSet();
+        void VerifyToastConferencingConfigWithIsCallingPreviewSupportedFalse();
 
     private:
         void RegisterWithAppNotificationManager();

@@ -114,13 +114,11 @@ namespace Microsoft.Windows.AppNotifications
         Boolean SuppressDisplay;
 
         // Gets or sets the Notification Conferencing Config
-        [feature(Feature_CallingPreviewSupport)]
         [contract(AppNotificationsContract, 2)]
         AppNotificationConferencingConfig ConferencingConfig;
     }
 
     // The Notification Conferencing Config
-    [feature(Feature_CallingPreviewSupport)]
     [contract(AppNotificationsContract, 2)]
     runtimeclass AppNotificationConferencingConfig
     {
