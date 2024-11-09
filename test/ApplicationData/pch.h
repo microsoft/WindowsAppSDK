@@ -26,8 +26,10 @@
 
 #include <AppModel.Package.h>
 
+#include <WindowsAppRuntime.Test.Diagnostics.h>
 #include <WindowsAppRuntime.Test.AppModel.h>
 #include <WindowsAppRuntime.Test.Package.h>
 #include <WindowsAppRuntime.Test.Bootstrap.h>
+#include <WindowsAppRuntime.Test.TAEF.cppwinrt.h>
 
 #endif //PCH_H
