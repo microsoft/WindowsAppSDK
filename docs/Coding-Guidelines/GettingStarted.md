@@ -83,7 +83,7 @@ harmless if your configuration is current with no changes needed.
 
 # Tada!
 
-Now you're ready to load `WindowsAppSDK.sln` and start development!
+Now you're ready to load `WindowsAppRuntime.sln` and start development!
 
 Some tips:
 

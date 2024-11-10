@@ -1,0 +1,28 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+// TODO: new feature
+#include <TerminalVelocityFeatures-OAuth.h>
+
+namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
+{
+    [contractversion(1)]
+    apicontract CompatibilityContract {};
+
+    [contract(CompatibilityContract, 1), feature(Feature_OAuth)]
+    struct WindowsAppRuntimeVersion
+    {
+        UInt32 Major;
+        UInt32 Minor;
+        UInt32 Patch;
+    }
+
+    // TODO: new feature
+    [contract(CompatibilityContract, 1), feature(Feature_OAuth)]
+    sealed runtimeclass CompatibilityOptions
+    {
+        IVector<WindowsAppRuntimeVersion> PatchModes;
+        IVector<UInt64> DisabledFixesList;
+        void Apply();
+    }
+}

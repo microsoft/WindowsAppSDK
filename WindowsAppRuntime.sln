@@ -566,6 +566,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IXP", "IXP", "{7B323048-439
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IXP.TransportPackage.PackageReference", "eng\PackageReference\IXP\IXP.TransportPackage.PackageReference.csproj", "{A949149D-29CA-4AA7-B1ED-0E571B4AD9BB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CompatibilityOptions", "dev\CompatibilityOptions\CompatibilityOptions.vcxitems", "{1F7B9E9F-9987-490B-9E6E-093C7F63FEC4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2188,6 +2190,7 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{08bc78e0-63c6-49a7-81b3-6afc3deac4de}*SharedItemsImports = 4
 		dev\PushNotifications\PushNotifications.vcxitems*{103c0c23-7ba8-4d44-a63c-83488e2e3a81}*SharedItemsImports = 9
+		dev\CompatibilityOptions\CompatibilityOptions.vcxitems*{1f7b9e9f-9987-490b-9e6e-093c7f63fec4}*SharedItemsImports = 9
 		dev\EnvironmentManager\API\Microsoft.Process.Environment.vcxitems*{2f3fad1b-d3df-4866-a3a3-c2c777d55638}*SharedItemsImports = 9
 		dev\OAuth\OAuth.vcxitems*{3e7fd510-8b66-40e7-a80b-780cb8972f83}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{412d023e-8635-4ad2-a0ea-e19e08d36915}*SharedItemsImports = 4
@@ -2208,6 +2211,7 @@ Global
 		dev\ApplicationData\ApplicationData.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\BackgroundTask\BackgroundTaskBuilder\BackgroundTaskBuilder.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\Common\Common.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
+		dev\CompatibilityOptions\CompatibilityOptions.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\DynamicDependency\API\DynamicDependency.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\Licensing\Licensing.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\PackageManager\API\PackageManager.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
