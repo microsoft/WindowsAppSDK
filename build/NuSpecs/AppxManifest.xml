@@ -27,12 +27,6 @@
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
-        <Path>Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll</Path>
-        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.Task" ThreadingModel="both" />
-      </InProcessServer>
-    </Extension>
-    <Extension Category="windows.activatableClass.inProcessServer">
-      <InProcessServer>
         <Path>Microsoft.WindowsAppRuntime.dll</Path>
         <!-- NOTE: Keep ActivationClass elements sorted by absolute ActivatableClassId (namespace.class) -->
 
