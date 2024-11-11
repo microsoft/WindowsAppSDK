@@ -1,25 +1,33 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-// TODO: new feature
-#include <TerminalVelocityFeatures-OAuth.h>
+#include <TerminalVelocityFeatures-CompatibilityOptions.h>
 
+namespace features
+{
+#ifdef MUX_PRERELEASE
+    // In prerelease, the feature is disabled by default (giving it the [experimental] tag)
+    feature_name Feature_C = { DisabledByDefault, FALSE };
+#else
+    // In release, the experimental feature is disabled, removing it from the final WinMD
+    feature_name Feature_Experimental = { AlwaysDisabled, FALSE };
+#endif
+}
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
     [contractversion(1)]
     apicontract CompatibilityContract {};
 
-    [contract(CompatibilityContract, 1), feature(Feature_OAuth)]
+    [contract(CompatibilityContract, 1), feature(Feature_CompatibilityOptions)]
     struct WindowsAppRuntimeVersion
     {
         UInt32 Major;
         UInt32 Minor;
         UInt32 Patch;
-    }
+    };
 
-    // TODO: new feature
-    [contract(CompatibilityContract, 1), feature(Feature_OAuth)]
-    sealed runtimeclass CompatibilityOptions
+    [contract(CompatibilityContract, 1), feature(Feature_CompatibilityOptions)]
+    runtimeclass CompatibilityOptions
     {
         IVector<WindowsAppRuntimeVersion> PatchModes;
         IVector<UInt64> DisabledFixesList;
