@@ -16,4 +16,10 @@
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)CompatibilityOptions.idl" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)CompatibilityOptions.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)CompatibilityOptions.h" />
+  </ItemGroup>
 </Project>

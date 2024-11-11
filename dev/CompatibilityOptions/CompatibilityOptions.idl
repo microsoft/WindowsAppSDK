@@ -29,8 +29,8 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     [contract(CompatibilityContract, 1), feature(Feature_CompatibilityOptions)]
     runtimeclass CompatibilityOptions
     {
-        IVector<WindowsAppRuntimeVersion> PatchModes;
-        IVector<UInt64> DisabledFixesList;
+        IVector<WindowsAppRuntimeVersion> PatchModes { get; };
+        IVector<UInt64> DisabledFixesList{ get; };
         void Apply();
     }
 }
