@@ -33,6 +33,5 @@
   <Dependency Name="Microsoft.Telemetry.Inbox.Native"         Version="10.0.19041.1-191206-1406.vb-release.x86fre" />
   <Dependency Name="Microsoft.Windows.CppWinRT"               Version="2.0.230706.1"/>
   <Dependency Name="Microsoft.Windows.ImplementationLibrary"  Version="1.0.240803.1"/>
-  <Dependency Name="Microsoft.Windows.SDK.BuildTools"         Version="10.0.22621.756" />
   <Dependency Name="Microsoft.WindowsAppSDK.Protobuf"         Version="3.21.12"/>
 </Dependencies>
