@@ -163,6 +163,7 @@ Set-StrictMode -Version 3.0
 $ErrorActionPreference = "Stop"
 
 $global:issues = 0
+$global:issues_test_certificate_thumbprint_not_found = 0
 
 $global:isadmin = $null
 
@@ -170,6 +171,11 @@ $global:vswhere = ''
 $global:vswhere_url = ''
 
 $global:dependency_paths = ('dev', 'test', 'installer', 'tools')
+
+function Get-Issues
+{
+    return $global:issues + $global:issues_test_certificate_thumbprint_not_found
+}
 
 function Get-SettingsFile
 {
@@ -723,7 +729,7 @@ function Test-DevTestPfx
     if (-not(Test-Path -Path $pfx_thumbprint -PathType Leaf))
     {
         Write-Host "Test certificate thumbprint $pfx_thumbprint...Not Found"
-        $global:issues++
+        $global:issues_test_certificate_thumbprint_not_found = 1
         return $false
     }
 
@@ -1706,14 +1712,15 @@ if (($RemoveAll -ne $false) -Or ($RemoveTestPfx -ne $false))
     $null = Remove-DevTestPfx
 }
 
-if ($global:issues -eq 0)
+$issues_count = Get-Issues
+if ($issues_count -eq 0)
 {
     Write-Output "Coding time!"
     Exit 0
 }
 else
 {
-    $n = $global:issues
+    $n = $issues_count
     Write-Output "$n issue(s) detected"
     Exit 1
 }
