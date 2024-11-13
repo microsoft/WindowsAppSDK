@@ -1023,7 +1023,7 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
         std::unique_ptr<wchar_t, decltype(&MrmFreeResource)> outputPath(rawOutputPath, MrmFreeResource);
         RETURN_IF_FAILED(PathCchCombineEx(
             outputPath.get(),
-            size,
+            length,
             path.get(),
             filenameToUse,
             PATHCCH_ALLOW_LONG_PATHS));
