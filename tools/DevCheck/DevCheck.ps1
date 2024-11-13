@@ -700,7 +700,7 @@ function Test-WindowsSDKInstall
     }
     elseif ($InstallWindowsSDK -eq $true)
     {
-        Write-Warning "WARNING: Windows SDK $($version) not found. Installing..."
+        Write-Warning "Windows SDK $($version) not found. Installing..."
         $null = Install-WindowsSDK $version $url
     }
     else
@@ -997,12 +997,12 @@ function Test-TAEFServiceVersion
 
     if ($cmp -lt 0)
     {
-        Write-Warning "WARNING: TAEF service older than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)"
+        Write-Warning "TAEF service older than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)"
         return 'OlderVersion'
     }
     elseif ($cmp -gt 0)
     {
-        Write-Warning "WARNING: TAEF service newer than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)"
+        Write-Warning "TAEF service newer than the expected version (expected=$expected_taef_version, actual=$actual_taef_version)"
         return 'NewerVersion'
     }
     else
