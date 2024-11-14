@@ -847,7 +847,7 @@ function Repair-DevTestPfx
     $pfx = Join-Path $user 'winappsdk.certificate.test.pfx'
     $export_pfx = Export-PfxCertificate -Cert $cert_personal -FilePath $pfx -Password $password
 
-    # Delete the personal certiicate
+    # Delete the personal certificate
     Remove-Item -Path $cert_personal -DeleteKey
 
     $ok = $true
