@@ -31,7 +31,7 @@ struct NotificationProperties : winrt::implements<NotificationProperties, ::ABI:
 
     STDMETHOD(get_ActivityId)(_Out_ GUID* activityId) noexcept;
 
-    STDMETHOD(get_ToastDevicesData)(_Out_ ABI::Microsoft::Internal::ToastNotifications::IToastDevicesData** devicesData) noexcept;
+    STDMETHOD(get_ToastConferencingConfig)(_Out_ ABI::Microsoft::Internal::ToastNotifications::IToastConferencingConfig** conferencingConfig) noexcept;
 
 private:
     wil::srwlock m_lock;
@@ -51,5 +51,5 @@ private:
     bool m_expiresOnReboot = false;
 
     winrt::com_ptr<ABI::Microsoft::Internal::ToastNotifications::IToastProgressData> m_toastProgressData{ nullptr };
-    winrt::com_ptr<ABI::Microsoft::Internal::ToastNotifications::IToastDevicesData> m_toastDevicesData{ nullptr };
+    winrt::com_ptr<ABI::Microsoft::Internal::ToastNotifications::IToastConferencingConfig> m_toastConferencingConfig{ nullptr };
 };

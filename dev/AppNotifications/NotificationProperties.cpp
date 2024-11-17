@@ -8,7 +8,7 @@
 #include "AppNotificationUtility.h"
 #include "../PushNotifications/PushNotificationUtility.h"
 #include "NotificationProgressData.h"
-#include "NotificationDevicesData.h"
+#include "NotificationConferencingConfig.h"
 #include "AppNotificationConferencingConfig.h"
 
 namespace winrt
@@ -54,7 +54,7 @@ NotificationProperties::NotificationProperties(winrt::AppNotification const& toa
     {
         if (auto config = toastNotification.ConferencingConfig())
         {
-            m_toastDevicesData = winrt::make_self<NotificationDevicesData>(config);
+            m_toastConferencingConfig = winrt::make_self<NotificationConferencingConfig>(config);
         }
     }
 }
@@ -158,9 +158,9 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ActivityId(_Out_ GU
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ToastDevicesData(_Out_ ToastABI::IToastDevicesData** devicesData) noexcept
+STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ToastConferencingConfig(_Out_ ToastABI::IToastConferencingConfig** conferencingConfig) noexcept
 {
     auto lock{ m_lock.lock_shared() };
-    m_toastDevicesData.copy_to(devicesData);
+    m_toastConferencingConfig.copy_to(conferencingConfig);
     return S_OK;
 }
