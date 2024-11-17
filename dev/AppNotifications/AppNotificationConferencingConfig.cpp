@@ -2,7 +2,6 @@
 #include "AppNotificationConferencingConfig.h"
 #include "Microsoft.Windows.AppNotifications.AppNotificationConferencingConfig.g.cpp"
 #include <IsWindowsVersion.h>
-#include <TerminalVelocityFeatures-CallingPreviewSupport.h>
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
