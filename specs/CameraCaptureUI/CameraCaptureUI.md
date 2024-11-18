@@ -192,7 +192,7 @@ and whether or not cropping is allowed by the user interface (UI).
 
 **Important Note**:  
 - Don't specify both size and aspect ratio in the `PhotoSettings`, doing so will cause an invalid argument exception.  
-- `PhotoSettings` can't have a ratio or size specified with cropping disabled.
+- `PhotoSettings` can't have a ratio or size specified with cropping disabled. Attempting to do so will result in an invalid argument exception.
 
 
 ## CameraCaptureUIPhotoCaptureSettings Properties
@@ -213,8 +213,8 @@ Provides settings for capturing videos.
 The settings include format, maximum resolution, maximum duration, and whether or not to allow trimming.
 
 **Important Note**:  
-- `MaxDurationInSeconds` must be a valid value (i.e., the duration should be in the range of 0 to `UINT32_MAX`).
-- `MaxDurationInSeconds` cannot be set if `AllowTrimming` is false.
+- `MaxDurationInSeconds` must be a valid value (i.e., the duration should be in the range of 0 to `UINT32_MAX`). Specifying an invalid value will result in an invalid argument exception.
+- `MaxDurationInSeconds` cannot be set if `AllowTrimming` is false. Attempting to do so will result in an invalid argument exception.
 
 
 ## CameraCaptureUIVideoCaptureSettings Properties
