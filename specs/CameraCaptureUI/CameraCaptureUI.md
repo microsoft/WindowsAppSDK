@@ -190,6 +190,11 @@ Provides settings for capturing photos with CameraCaptureUI.
 The settings include aspect ratio, image size, format, resolution, 
 and whether or not cropping is allowed by the user interface (UI).
 
+**Important Note**:  
+- Don't specify both size and aspect ratio in the `PhotoSettings`, doing so will cause an invalid argument exception.  
+- `PhotoSettings` can't have a ratio or size specified with cropping disabled.
+
+
 ## CameraCaptureUIPhotoCaptureSettings Properties
 
 | Name | Description | Value |
@@ -206,6 +211,11 @@ and whether or not cropping is allowed by the user interface (UI).
 ## CameraCaptureUIVideoCaptureSettings Class
 Provides settings for capturing videos. 
 The settings include format, maximum resolution, maximum duration, and whether or not to allow trimming.
+
+**Important Note**:  
+- `MaxDurationInSeconds` must be a valid value (i.e., the duration should be in the range of 0 to `UINT32_MAX`).
+- `MaxDurationInSeconds` cannot be set if `AllowTrimming` is false.
+
 
 ## CameraCaptureUIVideoCaptureSettings Properties
 | Name | Description | Value |
@@ -355,8 +365,6 @@ namespace Microsoft.Windows.Media.Capture
     }
  
     [contract(CameraCaptureUIContract, 1)]
-    [threading(sta),
-    marshaling_behavior(none)]
     runtimeclass CameraCaptureUI
     {
         CameraCaptureUI(Microsoft.UI.WindowId window);
