@@ -53,7 +53,7 @@ namespace PushNotificationHelpers
 using namespace Microsoft::Windows::AppNotifications::Helpers;
 using namespace Microsoft::Windows::AppNotifications::ShellLocalization;
 
-namespace winrt::Microsoft::Windows::AppNotifications::implementation
+namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
 {
     BadgeNotificationManager::BadgeNotificationManager() : m_processName(GetCurrentProcessPath()), m_appId(RetrieveNotificationAppId()) {}
 
@@ -64,7 +64,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         static wil::srwlock lock;
 
         auto criticalSection{ lock.lock_exclusive() };
-        auto storedBadgeNotificationManager{ appProperties.TryLookup(STORED_APPNOTIFICATION_MANAGER_KEY) };
+        auto storedBadgeNotificationManager{ appProperties.TryLookup(STORED_BADGENOTIFICATION_MANAGER_KEY) };
         if (storedBadgeNotificationManager)
         {
             return storedBadgeNotificationManager.as<winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationManager>();
@@ -75,33 +75,33 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             ::Microsoft::RoApi::ClearRoActivateInstanceCache();
 
             // Store the BadgeNotificationManager in the COM static store
-            auto BadgeNotificationManager{ winrt::make<BadgeNotificationManager>() };
-            appProperties.Insert(STORED_APPNOTIFICATION_MANAGER_KEY, BadgeNotificationManager);
-            return BadgeNotificationManager;
+            auto badgeNotificationManager{ winrt::make<BadgeNotificationManager>() };
+            appProperties.Insert(STORED_BADGENOTIFICATION_MANAGER_KEY, badgeNotificationManager);
+            return badgeNotificationManager;
         }
     }
 
-    void SetBadgeAsCount(uint32_t notificationCount)
+    void BadgeNotificationManager::SetBadgeAsCount(uint32_t notificationCount)
     {
         return;
     }
 
-    void SetBadgeAsCount(uint32_t notificationCount, winrt::Windows::Foundation::DateTime expiration)
+    void BadgeNotificationManager::SetBadgeAsCount(uint32_t notificationCount, winrt::Windows::Foundation::DateTime expiration)
     {
         return;
     }
 
-    void SetBadgeAsGlyph(winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationGlyph glyphValue)
+    void BadgeNotificationManager::SetBadgeAsGlyph(winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationGlyph glyphValue)
     {
         return;
     }
 
-    void SetBadgeAsGlyph(winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationGlyph glyphValue, winrt::Windows::Foundation::DateTime expiration)
+    void BadgeNotificationManager::SetBadgeAsGlyph(winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationGlyph glyphValue, winrt::Windows::Foundation::DateTime expiration)
     {
         return;
     }
 
-    void ClearBadge()
+    void BadgeNotificationManager::ClearBadge()
     {
         return;
     }
