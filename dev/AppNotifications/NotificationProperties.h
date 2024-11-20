@@ -1,13 +1,16 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #pragma once
 
 #include <frameworkUdk/ToastNotificationsRT.h>
+#include "BaseNotification.h"
 
 struct NotificationProperties : winrt::implements<NotificationProperties, ::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties>
 {
     NotificationProperties(winrt::Microsoft::Windows::AppNotifications::AppNotification const& toastNotification);
+
+    NotificationProperties(Microsoft::Windows::BaseNotifications::BaseNotification const& baseNotification);
 
     STDMETHOD(get_NotificationId)(_Out_ unsigned int* notificationId) noexcept;
 
