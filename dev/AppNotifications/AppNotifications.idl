@@ -4,7 +4,7 @@ import "..\AppLifecycle\AppLifecycle.idl";
 
 namespace Microsoft.Windows.AppNotifications
 {
-    [contractversion(3)]
+    [contractversion(4)]
     apicontract AppNotificationsContract {}
 
     // Event args for the Notification Activation
@@ -113,12 +113,12 @@ namespace Microsoft.Windows.AppNotifications
         Boolean SuppressDisplay;
 
         // Gets or sets the Notification Conferencing Config
-        [contract(AppNotificationsContract, 2)]
+        [contract(AppNotificationsContract, 4)]
         AppNotificationConferencingConfig ConferencingConfig;
     }
 
     // The Notification Conferencing Config
-    [contract(AppNotificationsContract, 2)]
+    [contract(AppNotificationsContract, 4)]
     runtimeclass AppNotificationConferencingConfig
     {
         // Initializes a new Instance of AppNotificationConferencingConfig
