@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import "..\AppNotifications\AppNotifications.idl";
+#include <TerminalVelocityFeatures-CallingPreviewSupport.h>
 
 namespace Microsoft.Windows.AppNotifications.Builder
 {
@@ -31,7 +32,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         Critical,
     };
 
-    [contract(AppNotificationBuilderContract, 2)]
+    [contract(AppNotificationBuilderContract, 2), feature(Feature_CallingPreviewSupport)]
     enum AppNotificationButtonSettingStyle
     {
         None,
@@ -79,7 +80,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationButton SetInvokeUri(Windows.Foundation.Uri protocolUri, String targetAppId);
 
         // Sets the setting type for the button.
-        [contract(AppNotificationBuilderContract, 2)]
+        [contract(AppNotificationBuilderContract, 2), feature(Feature_CallingPreviewSupport)]
         AppNotificationButton SetSettingStyle(AppNotificationButtonSettingStyle value);
     };
 
@@ -256,7 +257,7 @@ namespace Microsoft.Windows.AppNotifications.Builder
         AppNotificationBuilder SetGroup(String group);
 
         // Adds a camera preview to the AppNotification
-        [contract(AppNotificationBuilderContract, 2)]
+        [contract(AppNotificationBuilderContract, 2), feature(Feature_CallingPreviewSupport)]
         AppNotificationBuilder AddCameraPreview();
     };
 }

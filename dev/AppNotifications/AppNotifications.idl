@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 import "..\AppLifecycle\AppLifecycle.idl";
+#include <TerminalVelocityFeatures-CallingPreviewSupport.h>
 
 namespace Microsoft.Windows.AppNotifications
 {
@@ -113,12 +114,12 @@ namespace Microsoft.Windows.AppNotifications
         Boolean SuppressDisplay;
 
         // Gets or sets the Notification Conferencing Config
-        [contract(AppNotificationsContract, 4)]
+        [contract(AppNotificationsContract, 4), feature(Feature_CallingPreviewSupport)]
         AppNotificationConferencingConfig ConferencingConfig;
     }
 
     // The Notification Conferencing Config
-    [contract(AppNotificationsContract, 4)]
+    [contract(AppNotificationsContract, 4), feature(Feature_CallingPreviewSupport)]
     runtimeclass AppNotificationConferencingConfig
     {
         // Initializes a new Instance of AppNotificationConferencingConfig
