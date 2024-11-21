@@ -15,7 +15,7 @@ namespace Microsoft::Windows::BaseNotifications {
     {
         BaseNotificationManager();
 
-        void Show(BaseNotification const& notification);
+        void Show(BaseNotification& notification);
         void RemoveAllNotification();
 
     protected:
