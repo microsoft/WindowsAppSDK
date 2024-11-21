@@ -9,7 +9,6 @@ namespace Microsoft::Windows::BadgeNotifications
     struct BadgeNotification : Microsoft::Windows::BaseNotifications::BaseNotification
     {
         BadgeNotification();
-
         BadgeNotification(winrt::hstring const& payload);
     };
 }
