@@ -156,9 +156,11 @@ namespace Test::DynamicDependency
             VerifyGenerationId(1);
 
             // -- Remove
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"MddRemovePackageDependency(%p)...", packageDependencyContext_FrameworkMathAdd));
             MddRemovePackageDependency(packageDependencyContext_FrameworkMathAdd);
 
             // -- Delete
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"MddDeletePackageDependency(%s)...", packageDependencyId_FrameworkMathAdd.get()));
             MddDeletePackageDependency(packageDependencyId_FrameworkMathAdd.get());
         }
 
