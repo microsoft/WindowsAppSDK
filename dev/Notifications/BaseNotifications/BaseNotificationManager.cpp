@@ -21,7 +21,7 @@ using namespace Microsoft::Windows::AppNotifications::ShellLocalization;
 namespace Microsoft::Windows::BaseNotifications {
     BaseNotificationManager::BaseNotificationManager() : m_processName(GetCurrentProcessPath()), m_appId(RetrieveNotificationAppId()) {};
 
-    void BaseNotificationManager::Show(BaseNotification const& notification)
+    void BaseNotificationManager::Show(BaseNotification& notification)
     {
         /*if (!IsSupported())
         {
@@ -37,7 +37,7 @@ namespace Microsoft::Windows::BaseNotifications {
 
         THROW_HR_IF(WPN_E_NOTIFICATION_POSTED, notification.Id() != 0);*/
 
-        /*winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties> notificationProperties = winrt::make_self<NotificationProperties>(notification);
+        winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties> notificationProperties = winrt::make_self<NotificationProperties>(notification);
 
         winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties> notificationTransientProperties = winrt::make_self<NotificationTransientProperties>(notification);
 
@@ -46,10 +46,11 @@ namespace Microsoft::Windows::BaseNotifications {
 
         THROW_HR_IF(E_UNEXPECTED, notificationId == 0);
 
-        implementation::AppNotification* notificationImpl = get_self<implementation::AppNotification>(notification);
-        notificationImpl->SetNotificationId(notificationId);
+        /*implementation::AppNotification* notificationImpl = get_self<implementation::AppNotification>(notification);
+        notificationImpl->SetNotificationId(notificationId);*/
+        notification.Id(notificationId);
 
-        logTelemetry.Stop();*/
+        /*logTelemetry.Stop();*/
     }
 
     void BaseNotificationManager::RemoveAllNotification()
