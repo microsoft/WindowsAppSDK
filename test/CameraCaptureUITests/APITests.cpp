@@ -9,6 +9,7 @@
 #include <mutex>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Foundation.h>
+#include <TerminalVelocityFeatures-CameraCaptureUI.h>
 
 using namespace std::chrono_literals;
 using namespace WEX::Common;
@@ -59,6 +60,11 @@ namespace CameraCaptureUITests
         // Focusing solely on functional tests for now. 
         TEST_METHOD(CapturePhoto_ShouldReturnFile)
         {
+            if (!::Microsoft::Windows::Media::Capture::Feature_CameraCaptureUI::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"CameraCaptureUI API Features are not enabled.");
+                return;
+            }
             try
             {
                 auto parentWindow = ::GetForegroundWindow();
@@ -96,6 +102,11 @@ namespace CameraCaptureUITests
         }
         TEST_METHOD(VerifyRequestedPhotoFormatsAreReadCorrectly)
         {
+            if (!::Microsoft::Windows::Media::Capture::Feature_CameraCaptureUI::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"CameraCaptureUI API Features are not enabled.");
+                return;
+            }
             // Arrange
             auto parentWindow = ::GetForegroundWindow();
             winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
@@ -117,6 +128,11 @@ namespace CameraCaptureUITests
 
         TEST_METHOD(VerifyRequestedVideoFormatsAreReadCorrectly)
         {
+            if (!::Microsoft::Windows::Media::Capture::Feature_CameraCaptureUI::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"CameraCaptureUI API Features are not enabled.");
+                return;
+            }
             // Arrange
             auto parentWindow = ::GetForegroundWindow();
             winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
@@ -132,6 +148,11 @@ namespace CameraCaptureUITests
         }
         TEST_METHOD(VerifyMaxVideoResolutionValues)
         {
+            if (!::Microsoft::Windows::Media::Capture::Feature_CameraCaptureUI::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"CameraCaptureUI API Features are not enabled.");
+                return;
+            }
             // Arrange
             auto parentWindow = ::GetForegroundWindow();
             winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
@@ -156,6 +177,11 @@ namespace CameraCaptureUITests
 
         TEST_METHOD(VerifyMaxPhotoResolutionValues)
         {
+            if (!::Microsoft::Windows::Media::Capture::Feature_CameraCaptureUI::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"CameraCaptureUI API Features are not enabled.");
+                return;
+            }
             // Arrange
             auto parentWindow = ::GetForegroundWindow();
             winrt::Microsoft::UI::WindowId windowId{ reinterpret_cast<uint64_t>(parentWindow) };
