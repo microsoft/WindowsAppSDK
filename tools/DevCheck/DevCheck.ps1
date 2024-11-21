@@ -795,7 +795,7 @@ function Repair-DevTestPfx
     }
     else
     {
-        $charSet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%)'
+        $charSet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@'
         $passwordLength = 20
         $password = New-Object -TypeName System.Security.SecureString
         # Generate random characters and append to SecureString
