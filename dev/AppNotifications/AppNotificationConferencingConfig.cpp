@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
 #include "pch.h"
 #include "AppNotificationConferencingConfig.h"
 #include "Microsoft.Windows.AppNotifications.AppNotificationConferencingConfig.g.cpp"
