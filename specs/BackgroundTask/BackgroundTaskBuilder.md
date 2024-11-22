@@ -15,7 +15,7 @@ This API takes care of avoiding this workaround so that WinAppSDK applications c
 
  ## Register Background Task (c++)
 
- Registering a Background Task for full trust COM component. Developers may also need to set the **WindowsAppSDKBackgroundTask** property as true in their project configuration.
+ Registering a Background Task for full trust COM component. Developers may also need to set the **WindowsAppSDKBackgroundTask** property as *true* in the project configuration. Also in the manifest file *EntryPoint* for BackgroundTask is to be set as **Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.Task**
 
  ```c++
        //Using WinAppSDK API for BackgroundTaskBuilder
@@ -26,6 +26,15 @@ This API takes care of avoiding this workaround so that WinAppSDK applications c
         builder.AddCondition(SystemCondition(SystemConditionType::InternetAvailable));
         builder.SetTaskEntryPointClsid(classGuid);
         builder.Register(); 
+```
+
+Package Manifest:
+```
+        <Extension Category="windows.backgroundTasks" EntryPoint="Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.Task">
+            <BackgroundTasks>
+                <Task Type="general"/>
+            </BackgroundTasks>
+        </Extension>
 ```
 
 # API Pages
