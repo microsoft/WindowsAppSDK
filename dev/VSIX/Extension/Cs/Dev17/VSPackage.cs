@@ -28,7 +28,7 @@ namespace WindowsAppSDK.Cs.Extension;
 /// </remarks>
 [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
 [Guid(VSPackage.PackageGuidString)]
-public sealed class VSPackage : AsyncPackage
+public sealed partial class VSPackage : AsyncPackage
 {
     /// <summary>
     /// VSPackage GUID string.

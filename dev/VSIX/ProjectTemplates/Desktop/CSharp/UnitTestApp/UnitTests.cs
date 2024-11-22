@@ -8,7 +8,7 @@ using System.Linq;
 namespace $safeprojectname$;
 
 [TestClass]
-public class UnitTest1
+public partial class UnitTest1
 {
     [TestMethod]
     public void TestMethod1()

@@ -9,6 +9,6 @@ using System.Threading.Tasks;
 
 namespace $safeprojectname$;
 
-public class Class1
+public partial class Class1
 {
 }

@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace WindowsAppSDK.TemplateUtilities;
 
-public class NuGetPackageInstaller : IWizard
+public partial class NuGetPackageInstaller : IWizard
 {
     internal static Guid SolutionVCProjectGuid = new Guid("8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942");
     private Project _project;
