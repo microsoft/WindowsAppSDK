@@ -12,5 +12,9 @@
         <name>Feature_OAuth</name>
         <description>OAuth for the WindowsAppRuntime</description>
         <state>AlwaysEnabled</state>
+        <alwaysDisabledChannelTokens>
+          <channelToken>Preview</channelToken>
+          <channelToken>Stable</channelToken>
+        </alwaysDisabledChannelTokens>
     </feature>
 </features>
