@@ -4,12 +4,17 @@
 #pragma once
 #include <winrt/Windows.ApplicationModel.Background.h>
 #include "Microsoft.Windows.ApplicationModel.Background.BackgroundTaskBuilder.g.h"
+#include <TerminalVelocityFeatures-BackgroundTask.h>
 
 namespace winrt::Microsoft::Windows::ApplicationModel::Background::implementation
 {
     struct BackgroundTaskBuilder : BackgroundTaskBuilderT<BackgroundTaskBuilder>
     {
-        BackgroundTaskBuilder() = default;
+        BackgroundTaskBuilder()
+        {
+            THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::ApplicationModel::Background::Feature_BackgroundTask::IsEnabled());
+        }
+
         void SetTaskEntryPointClsid(winrt::guid clsId);
 
         void SetTrigger(

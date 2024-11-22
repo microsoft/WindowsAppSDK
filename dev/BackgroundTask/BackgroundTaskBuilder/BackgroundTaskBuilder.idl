@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
+#include <TerminalVelocityFeatures-BackgroundTask.h>
 
 namespace Microsoft.Windows.ApplicationModel.Background
 {
@@ -7,6 +8,7 @@ namespace Microsoft.Windows.ApplicationModel.Background
     apicontract BackgroundTaskContract{};
 
     [contract(BackgroundTaskContract, 1)]
+    [feature(Feature_BackgroundTask)]
     runtimeclass BackgroundTaskBuilder
     {
         BackgroundTaskBuilder();
