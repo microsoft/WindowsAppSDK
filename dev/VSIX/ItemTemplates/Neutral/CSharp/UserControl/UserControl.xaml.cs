@@ -16,13 +16,12 @@ using Microsoft.UI.Xaml.Navigation;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace $rootnamespace$
+namespace $rootnamespace$;
+
+public sealed partial class $safeitemname$ : UserControl
 {
-    public sealed partial class $safeitemname$ : UserControl
+    public $safeitemname$()
     {
-        public $safeitemname$()
-        {
-            this.InitializeComponent();
-        }
+        this.InitializeComponent();
     }
 }

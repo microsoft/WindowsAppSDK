@@ -12,13 +12,12 @@ using Microsoft.UI.Xaml.Media;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace $rootnamespace$
+namespace $rootnamespace$;
+
+public sealed class $safeitemname$ : Control
 {
-    public sealed class $safeitemname$ : Control
+    public $safeitemname$()
     {
-        public $safeitemname$()
-        {
-            this.DefaultStyleKey = typeof($safeitemname$);
-        }
+        this.DefaultStyleKey = typeof($safeitemname$);
     }
 }

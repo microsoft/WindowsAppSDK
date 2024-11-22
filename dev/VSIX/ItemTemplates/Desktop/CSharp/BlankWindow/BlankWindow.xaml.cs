@@ -16,16 +16,15 @@ using Microsoft.UI.Xaml.Navigation;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace $rootnamespace$
+namespace $rootnamespace$;
+
+/// <summary>
+/// An empty window that can be used on its own or navigated to within a Frame.
+/// </summary>
+public sealed partial class $safeitemname$ : Window
 {
-    /// <summary>
-    /// An empty window that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class $safeitemname$ : Window
+    public $safeitemname$()
     {
-        public $safeitemname$()
-        {
-            this.InitializeComponent();
-        }
+        this.InitializeComponent();
     }
 }
