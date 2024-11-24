@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
 #include "pch.h"
@@ -23,6 +23,16 @@ NotificationTransientProperties::NotificationTransientProperties(winrt::AppNotif
     m_suppressPopup = toastNotification.SuppressDisplay();
 
     if (toastNotification.Priority() == winrt::AppNotificationPriority::High)
+    {
+        m_toastNotificationPriority = ToastABI::ToastNotificationPriority::ToastNotificationPriority_High;
+    }
+}
+
+NotificationTransientProperties::NotificationTransientProperties(_In_ Microsoft::Windows::BaseNotifications::BaseNotification const& baseNotification) noexcept
+{
+    m_suppressPopup = baseNotification.SuppressDisplay();
+
+    if (baseNotification.Priority() == winrt::AppNotificationPriority::High)
     {
         m_toastNotificationPriority = ToastABI::ToastNotificationPriority::ToastNotificationPriority_High;
     }

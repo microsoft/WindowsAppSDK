@@ -4,10 +4,13 @@
 #pragma once
 
 #include <frameworkUdk/ToastNotificationsRT.h>
+#include "BaseNotification.h"
 
 struct NotificationProperties : winrt::implements<NotificationProperties, ::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties, ::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties2>
 {
     NotificationProperties(winrt::Microsoft::Windows::AppNotifications::AppNotification const& toastNotification);
+
+    NotificationProperties(Microsoft::Windows::BaseNotifications::BaseNotification const& baseNotification);
 
     STDMETHOD(get_NotificationId)(_Out_ unsigned int* notificationId) noexcept;
 
