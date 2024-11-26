@@ -1,13 +1,15 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+#include <TerminalVelocityFeatures-BadgeNotifications.h>
+
 namespace Microsoft.Windows.BadgeNotifications
 {
     [contractversion(1)]
     apicontract BadgeNotificationsContract {};
 
     // Set of predefined glyphs that can be used to represent various statuses or notifications on an application's badge
-    [contract(BadgeNotificationsContract, 1)]
+    [contract(BadgeNotificationsContract, 1), feature(Feature_BadgeNotifications)]
     enum BadgeNotificationGlyph
     {
         None, // No glyph. A blank tile appears in the badge.
@@ -26,7 +28,7 @@ namespace Microsoft.Windows.BadgeNotifications
     };
 
     // The manager class which encompasses all Badge Notification API Functionality
-    [contract(BadgeNotificationsContract, 1)]
+    [contract(BadgeNotificationsContract, 1), feature(Feature_BadgeNotifications)]
     runtimeclass BadgeNotificationManager
     {
         // Gets a Default instance of a BadgeNotificationManager
