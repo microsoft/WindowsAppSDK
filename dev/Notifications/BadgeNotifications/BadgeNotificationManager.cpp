@@ -30,6 +30,7 @@
 #include "BaseNotification.h"
 #include "BaseNotificationManager.h"
 #include "BadgeNotification.h"
+#include "BadgeNotificationTelemetry.h"
 
 using namespace std::literals;
 
@@ -141,7 +142,14 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
 
     void BadgeNotificationManager::ClearBadge()
     {
+        auto logTelemetry{ BadgeNotificationTelemetry::ClearBadge::Start(
+            g_telemetryHelper,
+            m_appId) };
+
         BaseNotifications::BaseNotificationManager::RemoveAllNotification(ToastABI::NotificationType::NotificationType_Badge);
+
+        logTelemetry.Stop();
+
         return;
     }
 
@@ -172,11 +180,18 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
         auto xmlResult = wil::str_printf<std::wstring>(L"<badge value='%ls'/>", value.c_str());
         ::Microsoft::Windows::BadgeNotifications::BadgeNotification badgeNotifications(xmlResult.c_str());
 
+        auto logTelemetry{ BadgeNotificationTelemetry::SetBadge::Start(
+            g_telemetryHelper,
+            m_appId,
+            badgeNotifications.Payload().c_str()) };
+
         if (expiration != nullptr)
         {
             badgeNotifications.Expiration(*expiration);
         }
 
         BaseNotifications::BaseNotificationManager::Show(badgeNotifications);
+
+        logTelemetry.Stop();
     }
 }
