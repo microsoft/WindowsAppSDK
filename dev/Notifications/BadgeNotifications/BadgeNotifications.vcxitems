@@ -26,6 +26,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)BadgeNotificationManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)BadgeNotificationTelemetry.h" />
+  </ItemGroup>
+  <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)BadgeNotifications.idl" />
   </ItemGroup>
 </Project>
