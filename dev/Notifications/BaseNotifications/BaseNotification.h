@@ -6,6 +6,7 @@
 #include <wil/resource.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Microsoft.Windows.AppNotifications.h>
+#include <frameworkUdk/ToastNotificationsRT.h>
 
 namespace Microsoft::Windows::BaseNotifications {
     struct BaseNotification
@@ -30,6 +31,8 @@ namespace Microsoft::Windows::BaseNotifications {
         void Priority(winrt::Microsoft::Windows::AppNotifications::AppNotificationPriority const& value);
         bool SuppressDisplay() const noexcept;
         void SuppressDisplay(bool value);
+        ::ABI::Microsoft::Internal::ToastNotifications::NotificationType NotificationType() const noexcept;
+        void NotificationType(::ABI::Microsoft::Internal::ToastNotifications::NotificationType value);
 
     protected:
         winrt::hstring m_tag{};
@@ -41,7 +44,9 @@ namespace Microsoft::Windows::BaseNotifications {
         bool m_expiresOnReboot{ false };
         winrt::Microsoft::Windows::AppNotifications::AppNotificationPriority m_priority
         { winrt::Microsoft::Windows::AppNotifications::AppNotificationPriority::Default };
+        ::ABI::Microsoft::Internal::ToastNotifications::NotificationType m_notificationType;
         bool m_suppressDisplay{ false };
+
         wil::srwlock m_lock;
     };
 }

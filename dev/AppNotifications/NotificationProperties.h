@@ -36,6 +36,8 @@ struct NotificationProperties : winrt::implements<NotificationProperties, ::ABI:
 
     STDMETHOD(get_ToastConferencingConfig)(_Out_ ABI::Microsoft::Internal::ToastNotifications::IToastConferencingConfig** conferencingConfig) noexcept;
 
+    STDMETHOD(get_NotificationType)(_Out_ ABI::Microsoft::Internal::ToastNotifications::NotificationType* notificationType) noexcept;
+
 private:
     wil::srwlock m_lock;
 
@@ -55,4 +57,6 @@ private:
 
     winrt::com_ptr<ABI::Microsoft::Internal::ToastNotifications::IToastProgressData> m_toastProgressData{ nullptr };
     winrt::com_ptr<ABI::Microsoft::Internal::ToastNotifications::IToastConferencingConfig> m_toastConferencingConfig{ nullptr };
+
+    ABI::Microsoft::Internal::ToastNotifications::NotificationType m_notificationType;
 };
