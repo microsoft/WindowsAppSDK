@@ -47,6 +47,8 @@ NotificationProperties::NotificationProperties(winrt::AppNotification const& toa
     {
         m_toastProgressData = winrt::make_self<NotificationProgressData>(toastNotification.Progress());
     }
+
+    m_notificationType = ToastABI::NotificationType::NotificationType_Toast;
 }
 
 NotificationProperties::NotificationProperties(Microsoft::Windows::BaseNotifications::BaseNotification const& baseNotification)
@@ -72,6 +74,8 @@ NotificationProperties::NotificationProperties(Microsoft::Windows::BaseNotificat
     {
         m_toastProgressData = winrt::make_self<NotificationProgressData>(baseNotification.Progress());
     }
+
+    m_notificationType = baseNotification.NotificationType();
 }
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_NotificationId(_Out_ unsigned int* notificationId) noexcept
@@ -170,5 +174,13 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ToastProgressData(_
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ActivityId(_Out_ GUID* activityId) noexcept
 {
     *activityId = GUID_NULL;
+    return S_OK;
+}
+
+STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_NotificationType(_Out_ ToastABI::NotificationType* notificationType) noexcept
+{
+    auto lock{ m_lock.lock_shared() };
+    *notificationType = m_notificationType;
+
     return S_OK;
 }

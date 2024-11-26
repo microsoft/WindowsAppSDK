@@ -100,4 +100,14 @@ namespace Microsoft::Windows::BaseNotifications {
     {
         m_notificationId = id;
     }
+
+    ::ABI::Microsoft::Internal::ToastNotifications::NotificationType BaseNotification::NotificationType() const noexcept
+    {
+        return m_notificationType;
+    }
+
+    void BaseNotification::NotificationType(::ABI::Microsoft::Internal::ToastNotifications::NotificationType value)
+    {
+        m_notificationType = value;
+    }
 }
