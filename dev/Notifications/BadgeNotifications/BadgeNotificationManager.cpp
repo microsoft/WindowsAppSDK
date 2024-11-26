@@ -93,22 +93,24 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
 
     void BadgeNotificationManager::SetBadgeAsCount(uint32_t notificationCount)
     {
-        std::wstring notificationCountString = std::to_wstring(notificationCount);
+        /*std::wstring notificationCountString = std::to_wstring(notificationCount);
         auto xmlResult{ wil::str_printf<std::wstring>(L"<badge value='%ls'>",
             notificationCountString.c_str()) };
         ::Microsoft::Windows::BadgeNotifications::BadgeNotification badgeNotifications (xmlResult.c_str());
-        BaseNotifications::BaseNotificationManager::Show(badgeNotifications);
+        BaseNotifications::BaseNotificationManager::Show(badgeNotifications);*/
+        SetBadge(std::to_wstring(notificationCount), nullptr);
         return;
     }
 
     void BadgeNotificationManager::SetBadgeAsCount(uint32_t notificationCount, winrt::Windows::Foundation::DateTime expiration)
     {
-        std::wstring notificationCountString = std::to_wstring(notificationCount);
+        /*std::wstring notificationCountString = std::to_wstring(notificationCount);
         auto xmlResult{ wil::str_printf<std::wstring>(L"<badge value='%ls'>",
             notificationCountString.c_str()) };
         ::Microsoft::Windows::BadgeNotifications::BadgeNotification badgeNotifications(xmlResult.c_str());
         badgeNotifications.Expiration(expiration);
-        BaseNotifications::BaseNotificationManager::Show(badgeNotifications);
+        BaseNotifications::BaseNotificationManager::Show(badgeNotifications);*/
+        SetBadge(std::to_wstring(notificationCount), &expiration);
         return;
     }
 
@@ -116,10 +118,11 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
     {
         PCWSTR glyphValueString;
         GetBadgeNotificationGlyphToString(glyphValue, &glyphValueString);
-        auto xmlResult{ wil::str_printf<std::wstring>(L"<badge value='%ls'>",
+        /*auto xmlResult{ wil::str_printf<std::wstring>(L"<badge value='%ls'>",
             glyphValueString) };
         ::Microsoft::Windows::BadgeNotifications::BadgeNotification badgeNotifications(xmlResult.c_str());
-        BaseNotifications::BaseNotificationManager::Show(badgeNotifications);
+        BaseNotifications::BaseNotificationManager::Show(badgeNotifications);*/
+        SetBadge(glyphValueString, nullptr);
         return;
     }
 
@@ -127,17 +130,18 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
     {
         PCWSTR glyphValueString;
         GetBadgeNotificationGlyphToString(glyphValue, &glyphValueString);
-        auto xmlResult{ wil::str_printf<std::wstring>(L"<badge value='%ls'>",
+        /*auto xmlResult{ wil::str_printf<std::wstring>(L"<badge value='%ls'>",
             glyphValueString) };
         ::Microsoft::Windows::BadgeNotifications::BadgeNotification badgeNotifications(xmlResult.c_str());
         badgeNotifications.Expiration(expiration);
-        BaseNotifications::BaseNotificationManager::Show(badgeNotifications);
+        BaseNotifications::BaseNotificationManager::Show(badgeNotifications);*/
+        SetBadge(glyphValueString, &expiration);
         return;
     }
 
     void BadgeNotificationManager::ClearBadge()
     {
-        BaseNotifications::BaseNotificationManager::RemoveAllNotification();
+        BaseNotifications::BaseNotificationManager::RemoveAllNotification(ToastABI::NotificationType::NotificationType_Badge);
         return;
     }
 
@@ -161,5 +165,18 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
 
         *glyphString = enumMapping.at(glyphValue);
         return;
+    }
+
+    void BadgeNotificationManager::SetBadge(_In_ const std::wstring& value, _In_opt_ const winrt::Windows::Foundation::DateTime* expiration)
+    {
+        auto xmlResult = wil::str_printf<std::wstring>(L"<badge value='%ls'/>", value.c_str());
+        ::Microsoft::Windows::BadgeNotifications::BadgeNotification badgeNotifications(xmlResult.c_str());
+
+        if (expiration != nullptr)
+        {
+            badgeNotifications.Expiration(*expiration);
+        }
+
+        BaseNotifications::BaseNotificationManager::Show(badgeNotifications);
     }
 }

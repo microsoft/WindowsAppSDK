@@ -16,7 +16,7 @@ namespace Microsoft::Windows::BaseNotifications {
         BaseNotificationManager();
 
         void Show(BaseNotification& notification);
-        void RemoveAllNotification();
+        void RemoveAllNotification(ABI::Microsoft::Internal::ToastNotifications::NotificationType notificationType);
 
     protected:
         wil::srwlock m_lock;

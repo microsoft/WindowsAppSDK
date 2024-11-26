@@ -11,6 +11,7 @@
 #include "NotificationProperties.h"
 #include "NotificationTransientProperties.h"
 #include <frameworkudk/toastnotifications.h>
+//#include <frameworkudk/wnpnotifications.h>
 #include <FrameworkUdk/toastnotificationsrt.h>
 #include <algorithm>
 #include <winerror.h>
@@ -33,9 +34,9 @@ namespace Microsoft::Windows::BaseNotifications {
             m_appId,
             notification.Payload(),
             notification.Tag(),
-            notification.Group()) };
+            notification.Group()) }; */
 
-        THROW_HR_IF(WPN_E_NOTIFICATION_POSTED, notification.Id() != 0);*/
+        THROW_HR_IF(WPN_E_NOTIFICATION_POSTED, notification.Id() != 0);
 
         winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties> notificationProperties = winrt::make_self<NotificationProperties>(notification);
 
@@ -53,7 +54,7 @@ namespace Microsoft::Windows::BaseNotifications {
         /*logTelemetry.Stop();*/
     }
 
-    void BaseNotificationManager::RemoveAllNotification()
+    void BaseNotificationManager::RemoveAllNotification(ABI::Microsoft::Internal::ToastNotifications::NotificationType notificationType)
     {
         /*if (!IsSupported())
         {
@@ -65,7 +66,7 @@ namespace Microsoft::Windows::BaseNotifications {
 
         auto logTelemetry{ AppNotificationTelemetry::RemoveAllAsync::Start(g_telemetryHelper, m_appId) };*/
 
-        THROW_IF_FAILED(ToastNotifications_RemoveAllToastsForApp(m_appId.c_str()));
+        //THROW_IF_FAILED(WnpNotifications_RemoveAllNotificationsForAppOfType(m_appId.c_str(), notificationType));
 
         /*logTelemetry.Stop();*/
     }
