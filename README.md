@@ -22,7 +22,7 @@
 
 Make sure to also check out the [WinUI 3 Gallery](https://aka.ms/winui-gallery), our interactive sample experience showing everything you can do with WinUI.
 
-<p align="center"><img src=".github/assets/winui-gallery.png" alt="WinUI 3 Gallery" width="400"/></p>
+<p align="center"><img src="./docs/images/winui-gallery.png" alt="WinUI 3 Gallery" width="400"/></p>
 
 <p align="center">
   <a style="text-decoration:none" href="https://apps.microsoft.com/detail/9NGHP3DX8HDX?launch=true&mode=full">
