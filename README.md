@@ -1,22 +1,28 @@
 <h1 align="center">Windows App SDK</h1>
 
+<p align="center">
+  <a style="text-decoration:none" href="https://www.nuget.org/packages/Microsoft.WindowsAppSDK">
+    <img src="https://img.shields.io/nuget/v/Microsoft.WindowsAppSDK" alt="WindowsAppSDK NuGet" /></a>
+</p>
+
 [Windows App SDK](https://aka.ms/winappsdk) (F.K.A. Project Reunion) is a set of libraries, frameworks, components, and tools that you can use in your apps to access powerful Windows platform functionality from all kinds of apps on many versions of Windows. The Windows App SDK combines the powers of Win32 native applications alongside modern API usage techniques, so your apps light up everywhere your users are.
 
 - **WinUI3 support:** WinUI embodies Fluent Design to enable intuitive, accessible, and powerful experiences and the latest user interface patterns.
-- **Access new platform features:** Modern localization system, power status API, and more without having to rewrite your app.
+- **Access modern features:** [Modern resource tooling](https://github.com/microsoft/WindowsAppSDK/issues/11), [modern lifecycle helpers](https://github.com/microsoft/WindowsAppSDK/issues/9), [startup tasks](https://github.com/microsoft/WindowsAppSDK/issues/10), and more without having to rewrite your app
 - **Backwards compatibility:** Down to Windows 10 1809 (build 17763). There may be some API that are dependent on new OS features
 (like new Action Center functionality), however we will do our best to ensure this is the exception and not the norm, and provide reasonable fallbacks when possible.
 - **Wide platofrm support:** Win32, WPF, WinForms, and more.
-- **Reliable installation support:** You can still use your current installer, but there are [many benefits to using MSIX](https://docs.microsoft.com/windows/msix/overview#key-features).
+- **MSIX support:** You can still use your current installer, but there are [many benefits to using MSIX](https://docs.microsoft.com/windows/msix/overview#key-features).
 
 ## 📋 Getting started with Windows App SDK
 
-* [More details about the Windows App SDK](https://github.com/microsoft/WindowsAppSDK/blob/master/docs/README.md)
+* [Build your first app](https://learn.microsoft.com/windows/apps/winui/winui3/create-your-first-winui3-app)
 * [Video on Windows App SDK](https://techcommunity.microsoft.com/t5/video-hub/enterprise-development-futures-project-reunion/m-p/2177278)
 * [Contribution guide](docs/contributor-guide.md)
+* [Roadmap](roadmap.md)
 * [FAQ](docs/faq.md)
 * [Developer docs](https://aka.ms/windowsappsdkdocs)
-* [Samples](https://github.com/microsoft/WindowsAppSDK-Samples) 
+* [Samples](https://github.com/microsoft/WindowsAppSDK-Samples)
 
 ## 🖼️ WinUI 3 Gallery
 
