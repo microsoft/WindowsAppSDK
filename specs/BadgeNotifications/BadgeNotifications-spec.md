@@ -128,7 +128,7 @@ information without opening the app.
 
 | Name        | Description                                                                                                 | Glyph                                |
 | ----------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| None        | No glyph is displayed. The badge will appear blank or not be shown at all.                                  | (No Badge Shown)                     |
+| None        | No glyph is displayed. The badge will not be shown at all. It is equivalent to ClearBadge.                  | (No Badge Shown)                     |
 | Activity    | A glyph indicating some form of activity is taking place within the app.                                    | ![Screenshot](badge-activity.png)    |
 | Alarm       | A glyph that represents an alarm, possibly indicating a set reminder or a timed event.                      | ![Screenshot](badge-alarm.png)       |
 | Alert       | A glyph that suggests an alert or an important notification that may require immediate attention.           | ![Screenshot](badge-alert.png)       |
