@@ -6,7 +6,7 @@
 #include <frameworkUdk/ToastNotificationsRT.h>
 #include "BaseNotification.h"
 
-struct NotificationProperties : winrt::implements<NotificationProperties, ::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties>
+struct NotificationProperties : winrt::implements<NotificationProperties, ::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties, ::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties3>
 {
     NotificationProperties(winrt::Microsoft::Windows::AppNotifications::AppNotification const& toastNotification);
 
