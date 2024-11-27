@@ -4,31 +4,10 @@
 #include "pch.h"
 #include "BadgeNotificationManager.h"
 #include "Microsoft.Windows.BadgeNotifications.BadgeNotificationManager.g.cpp"
-#include <winrt/Windows.ApplicationModel.Core.h>
-#include <winrt/Windows.Storage.h>
-#include <winrt/base.h>
 #include "externs.h"
-#include "PushNotificationUtility.h"
-#include "AppNotificationUtility.h"
-#include <frameworkudk/pushnotifications.h>
 #include <frameworkudk/toastnotifications.h>
 #include <FrameworkUdk/toastnotificationsrt.h>
-#include "NotificationProperties.h"
-#include "NotificationTransientProperties.h"
-#include "AppNotification.h"
-#include <NotificationProgressData.h>
-#include "AppNotificationTelemetry.h"
-#include <algorithm>
-#include <winerror.h>
-#include <string_view>
-#include <winrt/Windows.Foundation.Collections.h>
-#include <WindowsAppRuntime.SelfContained.h>
 #include <Microsoft.RoApi.h>
-#include <ShellLocalization.h>
-#include <filesystem>
-#include <NotificationPlatformActivation.h>
-#include "BaseNotification.h"
-#include "BaseNotificationManager.h"
 #include "BadgeNotification.h"
 #include "BadgeNotificationTelemetry.h"
 
@@ -50,14 +29,6 @@ namespace ToastABI
     using namespace ::ABI::Windows::Foundation::Collections;
 }
 
-namespace PushNotificationHelpers
-{
-    using namespace winrt::Microsoft::Windows::PushNotifications::Helpers;
-}
-
-using namespace Microsoft::Windows::AppNotifications::Helpers;
-using namespace Microsoft::Windows::AppNotifications::ShellLocalization;
-
 namespace BaseNotifications
 {
     using namespace ::Microsoft::Windows::BaseNotifications;
@@ -65,7 +36,6 @@ namespace BaseNotifications
 
 namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
 {
-//    BadgeNotificationManager::BadgeNotificationManager() : m_processName(GetCurrentProcessPath()), m_appId(RetrieveNotificationAppId()) {}
     BadgeNotificationManager::BadgeNotificationManager() : BaseNotifications::BaseNotificationManager() {}
 
     winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationManager BadgeNotificationManager::Current()
@@ -94,54 +64,44 @@ namespace winrt::Microsoft::Windows::BadgeNotifications::implementation
 
     void BadgeNotificationManager::SetBadgeAsCount(uint32_t notificationCount)
     {
-        /*std::wstring notificationCountString = std::to_wstring(notificationCount);
-        auto xmlResult{ wil::str_printf<std::wstring>(L"<badge value='%ls'>",
-            notificationCountString.c_str()) };
-        ::Microsoft::Windows::BadgeNotifications::BadgeNotification badgeNotifications (xmlResult.c_str());
-        BaseNotifications::BaseNotificationManager::Show(badgeNotifications);*/
+        THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, !AppModel::Identity::IsPackagedProcess(), "Not applicable for unpackaged applications");
+
         SetBadge(std::to_wstring(notificationCount), nullptr);
         return;
     }
 
-    void BadgeNotificationManager::SetBadgeAsCount(uint32_t notificationCount, winrt::Windows::Foundation::DateTime expiration)
+    void BadgeNotificationManager::SetBadgeAsCount(uint32_t notificationCount, winrt::DateTime expiration)
     {
-        /*std::wstring notificationCountString = std::to_wstring(notificationCount);
-        auto xmlResult{ wil::str_printf<std::wstring>(L"<badge value='%ls'>",
-            notificationCountString.c_str()) };
-        ::Microsoft::Windows::BadgeNotifications::BadgeNotification badgeNotifications(xmlResult.c_str());
-        badgeNotifications.Expiration(expiration);
-        BaseNotifications::BaseNotificationManager::Show(badgeNotifications);*/
+        THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, !AppModel::Identity::IsPackagedProcess(), "Not applicable for unpackaged applications");
+
         SetBadge(std::to_wstring(notificationCount), &expiration);
         return;
     }
 
-    void BadgeNotificationManager::SetBadgeAsGlyph(winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationGlyph glyphValue)
+    void BadgeNotificationManager::SetBadgeAsGlyph(winrt::BadgeNotificationGlyph glyphValue)
     {
+        THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, !AppModel::Identity::IsPackagedProcess(), "Not applicable for unpackaged applications");
+
         PCWSTR glyphValueString;
         GetBadgeNotificationGlyphToString(glyphValue, &glyphValueString);
-        /*auto xmlResult{ wil::str_printf<std::wstring>(L"<badge value='%ls'>",
-            glyphValueString) };
-        ::Microsoft::Windows::BadgeNotifications::BadgeNotification badgeNotifications(xmlResult.c_str());
-        BaseNotifications::BaseNotificationManager::Show(badgeNotifications);*/
         SetBadge(glyphValueString, nullptr);
         return;
     }
 
-    void BadgeNotificationManager::SetBadgeAsGlyph(winrt::Microsoft::Windows::BadgeNotifications::BadgeNotificationGlyph glyphValue, winrt::Windows::Foundation::DateTime expiration)
+    void BadgeNotificationManager::SetBadgeAsGlyph(winrt::BadgeNotificationGlyph glyphValue, winrt::DateTime expiration)
     {
+        THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, !AppModel::Identity::IsPackagedProcess(), "Not applicable for unpackaged applications");
+
         PCWSTR glyphValueString;
         GetBadgeNotificationGlyphToString(glyphValue, &glyphValueString);
-        /*auto xmlResult{ wil::str_printf<std::wstring>(L"<badge value='%ls'>",
-            glyphValueString) };
-        ::Microsoft::Windows::BadgeNotifications::BadgeNotification badgeNotifications(xmlResult.c_str());
-        badgeNotifications.Expiration(expiration);
-        BaseNotifications::BaseNotificationManager::Show(badgeNotifications);*/
         SetBadge(glyphValueString, &expiration);
         return;
     }
 
     void BadgeNotificationManager::ClearBadge()
     {
+        THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, !AppModel::Identity::IsPackagedProcess(), "Not applicable for unpackaged applications");
+
         auto logTelemetry{ BadgeNotificationTelemetry::ClearBadge::Start(
             g_telemetryHelper,
             m_appId) };
