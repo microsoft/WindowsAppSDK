@@ -5,9 +5,6 @@
 
 #include <wil/resource.h>
 #include "externs.h"
-#include "ShellLocalization.h"
-#include <winrt/Windows.Foundation.Collections.h>
-#include <winrt/Microsoft.Windows.AppNotifications.h>
 #include <BaseNotification.h>
 
 namespace Microsoft::Windows::BaseNotifications {
