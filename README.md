@@ -16,13 +16,17 @@
 
 ## 📋 Getting started with Windows App SDK
 
-* [Build your first app](https://learn.microsoft.com/windows/apps/winui/winui3/create-your-first-winui3-app)
-* [Video on Windows App SDK](https://techcommunity.microsoft.com/t5/video-hub/enterprise-development-futures-project-reunion/m-p/2177278)
-* [Contribution guide](docs/contributor-guide.md)
-* [Roadmap](roadmap.md)
-* [FAQ](docs/faq.md)
-* [Developer docs](https://aka.ms/windowsappsdkdocs)
-* [Samples](https://github.com/microsoft/WindowsAppSDK-Samples)
+* [Build your first WinAppSDK app](https://learn.microsoft.com/windows/apps/winui/winui3/create-your-first-winui3-app)
+* [WinAppSDK usage samples](https://github.com/microsoft/WindowsAppSDK-Samples)
+* [WinAppSDK contribution guide](docs/contributor-guide.md)
+* [WinAppSDK roadmap](./docs/roadmap.md)
+* [FAQ on WinAppSDK](docs/faq.md)
+* [Developer documentations](https://aka.ms/windowsappsdkdocs)
+
+## 👨‍💻 Join in and stay connected
+
+If you're interested in WinUI/WinAppSDK, come join us on the live Windows Development [Community Calls](https://www.youtube.com/playlist?list=PLI_J2v67C23ZqsolUDaHoFkF1GKvGrttB), which are hosted quarterly.
+You also can find and tag us on X using [#WindowsAppSDK](https://twitter.com/search?q=%23WindowsAppSDK).
 
 ## 🖼️ WinUI 3 Gallery
 
@@ -41,6 +45,19 @@ Make sure to also check out the [WinUI 3 Gallery](https://aka.ms/winui-gallery),
 ## 📢 Contributing
 
 - **[File a new issue](https://github.com/microsoft/WindowsAppSDK/issues/new/choose):** Tell us what problem you're trying to solve, how you've tried to solve it so far, and what would be the ideal solution for your app. Bonus points if there's a gist or existing repo we can look at with you.
-- **[Ask a question](https://github.com/microsoft/WindowsAppSDK/discussions/categories/q-a):** Also, have a look at our [frequently asked questions](docs/faq.md) page which we will update periodically.
-- **[Start a discussion](https://github.com/microsoft/WindowsAppSDK/discussions):** Discussions can be about any topics or ideas related to the Windows App SDK. For example, you might start a Discussion issue to see if others are interested in a cool new idea you've been thinking about that isn't quite ready to be filed as a more formal Feature Proposal.
-- **[Code contributions](docs/contributor-guide.md):** More information regarding [contributing and developer guidelines here](docs/contributor-guide.md).
+- **[Ask a question](https://github.com/microsoft/WindowsAppSDK/discussions/categories/q-a):** Also, have a look at our [FAQ on WinAppSDK](docs/faq.md) page, which we will update periodically.
+- **[Start a discussion](https://github.com/microsoft/WindowsAppSDK/discussions):** Let's start a Discussion issue to see if others are interested in a cool new idea you've been thinking about that isn't quite ready to be filed as a more formal Feature Proposal.
+- **[Code contributions](docs/contributor-guide.md):** See our [contributing guidelines](docs/contributor-guide.md).
+
+## Data collection
+
+This project collects usage data and sends it to Microsoft to help improve our products and services. Note, however, that no data collection is performed when using your private builds.
+
+Privacy information can be found at https://privacy.microsoft.com
+
+## Code of Conduct
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct).
+
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq) or
+contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
