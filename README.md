@@ -6,6 +6,14 @@
 
 <h1 align="center">Windows App SDK</h1>
 
+<h3 align="center">
+  <a href="https://aka.ms/winappsdk">About Windows App SDK</a>
+  <span> · </span>
+  <a href="https://learn.microsoft.com/windows/apps/desktop">Documentation</a>
+  <span> · </span>
+  <a href="https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/release-channels">Release notes</a>
+</h3>
+
 <p align="center">
   <a style="text-decoration:none" href="https://www.nuget.org/packages/Microsoft.WindowsAppSDK">
     <img src="https://img.shields.io/nuget/v/Microsoft.WindowsAppSDK" alt="WindowsAppSDK NuGet" /></a>
@@ -13,7 +21,7 @@
 
 [Windows App SDK](https://aka.ms/winappsdk) (F.K.A. Project Reunion) is a set of libraries, frameworks, components, and tools that you can use in your apps to access powerful Windows platform functionality from all kinds of apps on many versions of Windows. The Windows App SDK combines the powers of Win32 native applications alongside modern API usage techniques, so your apps light up everywhere your users are.
 
-- **WinUI3 support:** WinUI embodies Fluent Design to enable intuitive, accessible, and powerful experiences and the latest user interface patterns.
+- **WinUI 3 support:** WinUI embodies Fluent Design to enable intuitive, accessible, and powerful experiences and the latest user interface patterns.
 - **Access modern features:** [Modern resource tooling](https://github.com/microsoft/WindowsAppSDK/issues/11), [modern lifecycle helpers](https://github.com/microsoft/WindowsAppSDK/issues/9), [startup tasks](https://github.com/microsoft/WindowsAppSDK/issues/10), and more without having to rewrite your app
 - **Backwards compatibility:** Down to Windows 10 1809 (build 17763). There may be some API that are dependent on new OS features
 (like new Action Center functionality), however we will do our best to ensure this is the exception and not the norm, and provide reasonable fallbacks when possible.
