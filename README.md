@@ -11,7 +11,7 @@
   <span> · </span>
   <a href="https://learn.microsoft.com/windows/apps/desktop">Documentation</a>
   <span> · </span>
-  <a href="https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/release-channels">Release notes</a>
+  <a href="https://learn.microsoft.com/windows/apps/windows-app-sdk/release-channels">Release notes</a>
   <span> · </span>
   <a href="https://github.com/microsoft/WindowsAppSDK-Samples">Samples</a>
 </h3>
