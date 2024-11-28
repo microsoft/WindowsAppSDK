@@ -7,7 +7,7 @@
 <h1 align="center">Windows App SDK</h1>
 
 <h3 align="center">
-  <a href="https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk">About Windows App SDK</a>
+  <a href="https://learn.microsoft.com/windows/apps/windows-app-sdk">About Windows App SDK</a>
   <span> · </span>
   <a href="https://learn.microsoft.com/windows/apps/desktop">Documentation</a>
   <span> · </span>
