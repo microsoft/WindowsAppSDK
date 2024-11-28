@@ -37,7 +37,7 @@
 * [Contribution guide](docs/contributor-guide.md)
 * [Roadmap](./docs/roadmap.md)
 * [FAQ](docs/faq.md)
-* [Developer documentations](https://aka.ms/windowsappsdkdocs)
+* [Developer documentation](https://aka.ms/windowsappsdkdocs)
 * Windows App SDK family repositories
   * [WinUI](https://github.com/microsoft/microsoft-ui-xaml)
   * [C++/WinRT](https://github.com/microsoft/CppWinRT) and [C#/WinRT](https://github.com/microsoft/CsWinRT)
