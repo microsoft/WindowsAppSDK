@@ -28,7 +28,7 @@
 - **Backwards compatibility:** Down to Windows 10 1809 (build 17763). There may be some API that are dependent on new OS features
 (like new Action Center functionality), however we will do our best to ensure this is the exception and not the norm, and provide reasonable fallbacks when possible.
 - **Wide platform support:** Win32, WPF, WinForms, and more.
-- **MSIX support:** You can still use your current installer, but there are [many benefits](https://docs.microsoft.com/windows/msix/overview#key-features) to using MSIX.
+- **Use your current installer:** no requirement to use MSIX, but there are [reliability/security benefits to using MSIX](https://docs.microsoft.com/windows/msix/overview#key-features).
 
 ## 📋 Getting started with Windows App SDK
 
