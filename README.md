@@ -34,7 +34,7 @@
 
 * [Build your first app with Windows App SDK](https://learn.microsoft.com/windows/apps/winui/winui3/create-your-first-winui3-app)
 * [Samples](https://github.com/microsoft/WindowsAppSDK-Samples)
-* [WinAppSDK contribution guide](docs/contributor-guide.md)
+* [Contribution guide](docs/contributor-guide.md)
 * [WinAppSDK roadmap](./docs/roadmap.md)
 * [FAQ on WinAppSDK](docs/faq.md)
 * [Developer documentations](https://aka.ms/windowsappsdkdocs)
