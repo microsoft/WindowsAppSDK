@@ -50,7 +50,7 @@ You also can find and tag us on X using [#WindowsAppSDK](https://twitter.com/sea
 
 ## 🖼️ WinUI 3 Gallery
 
-Make sure to also check out the [WinUI 3 Gallery](https://aka.ms/winui-gallery), our interactive sample experience showing everything you can do with WinUI.
+Make sure to also check out the [WinUI 3 Gallery](https://aka.ms/winui-gallery), our interactive sample experience showing everything you can do with WinUI and Windows App SDK.
 
 <p align="center"><img src="./docs/images/winui-gallery.png" alt="WinUI 3 Gallery" width="400"/></p>
 
