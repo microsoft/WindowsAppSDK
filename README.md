@@ -7,11 +7,13 @@
 <h1 align="center">Windows App SDK</h1>
 
 <h3 align="center">
-  <a href="https://aka.ms/winappsdk">About Windows App SDK</a>
+  <a href="https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk">About Windows App SDK</a>
   <span> · </span>
   <a href="https://learn.microsoft.com/windows/apps/desktop">Documentation</a>
   <span> · </span>
   <a href="https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/release-channels">Release notes</a>
+  <span> · </span>
+  <a href="https://github.com/microsoft/WindowsAppSDK-Samples">Samples</a>
 </h3>
 
 <p align="center">
@@ -21,12 +23,12 @@
 
 [Windows App SDK](https://aka.ms/winappsdk) (F.K.A. Project Reunion) is a set of libraries, frameworks, components, and tools that you can use in your apps to access powerful Windows platform functionality from all kinds of apps on many versions of Windows. The Windows App SDK combines the powers of Win32 native applications alongside modern API usage techniques, so your apps light up everywhere your users are.
 
-- **WinUI 3 support:** WinUI embodies Fluent Design to enable intuitive, accessible, and powerful experiences and the latest user interface patterns.
-- **Access modern features:** [Modern resource tooling](https://github.com/microsoft/WindowsAppSDK/issues/11), [modern lifecycle helpers](https://github.com/microsoft/WindowsAppSDK/issues/9), [startup tasks](https://github.com/microsoft/WindowsAppSDK/issues/10), and more without having to rewrite your app
+- **WinUI 3 support:** [WinUI](https://aka.ms/winui) embodies Fluent Design to enable intuitive, accessible, and powerful experiences and the latest user interface patterns.
+- **Access modern features:** [Modern resource tooling](https://github.com/microsoft/WindowsAppSDK/issues/11), [modern lifecycle helpers](https://github.com/microsoft/WindowsAppSDK/issues/9), [startup tasks](https://github.com/microsoft/WindowsAppSDK/issues/10), and more without having to rewrite your app.
 - **Backwards compatibility:** Down to Windows 10 1809 (build 17763). There may be some API that are dependent on new OS features
 (like new Action Center functionality), however we will do our best to ensure this is the exception and not the norm, and provide reasonable fallbacks when possible.
-- **Wide platofrm support:** Win32, WPF, WinForms, and more.
-- **MSIX support:** You can still use your current installer, but there are [many benefits to using MSIX](https://docs.microsoft.com/windows/msix/overview#key-features).
+- **Wide platform support:** Win32, WPF, WinForms, and more.
+- **MSIX support:** You can still use your current installer, but there are [many benefits](https://docs.microsoft.com/windows/msix/overview#key-features) to using MSIX.
 
 ## 📋 Getting started with Windows App SDK
 
@@ -36,6 +38,10 @@
 * [WinAppSDK roadmap](./docs/roadmap.md)
 * [FAQ on WinAppSDK](docs/faq.md)
 * [Developer documentations](https://aka.ms/windowsappsdkdocs)
+* Windows App SDK family repositories
+  * [WinUI](https://github.com/microsoft/microsoft-ui-xaml)
+  * [C++/WinRT](https://github.com/microsoft/CppWinRT) and [C#/WinRT](https://github.com/microsoft/CsWinRT)
+  * [MSIX packaging](https://github.com/microsoft/msix-packaging)
 
 ## 👨‍💻 Join in and stay connected
 
