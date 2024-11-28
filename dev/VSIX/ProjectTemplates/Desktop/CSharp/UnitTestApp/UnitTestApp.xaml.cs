@@ -27,13 +27,15 @@ namespace $safeprojectname$;
 /// </summary>
 public partial class UnitTestApp : Application
 {
+    private Window? _window;
+    
     /// <summary>
     /// Initializes the singleton application object.  This is the first line of authored code
     /// executed, and as such is the logical equivalent of main() or WinMain().
     /// </summary>
     public UnitTestApp()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 
     /// <summary>
@@ -44,13 +46,11 @@ public partial class UnitTestApp : Application
     {
         Microsoft.VisualStudio.TestPlatform.TestExecutor.UnitTestClient.CreateDefaultUI();
 
-        m_window = new UnitTestAppWindow();
-        m_window.Activate();
+        _window = new UnitTestAppWindow();
+        _window.Activate();
 
-        UITestMethodAttribute.DispatcherQueue = m_window.DispatcherQueue;
+        UITestMethodAttribute.DispatcherQueue = _window.DispatcherQueue;
 
         Microsoft.VisualStudio.TestPlatform.TestExecutor.UnitTestClient.Run(Environment.CommandLine);
     }
-
-    private Window? m_window;
 }

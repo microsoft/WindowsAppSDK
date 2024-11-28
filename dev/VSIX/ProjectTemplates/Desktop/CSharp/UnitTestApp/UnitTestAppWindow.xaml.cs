@@ -22,6 +22,6 @@ public sealed partial class UnitTestAppWindow : Window
 {
     public UnitTestAppWindow()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 }

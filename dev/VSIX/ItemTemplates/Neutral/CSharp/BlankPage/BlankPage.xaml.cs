@@ -25,6 +25,6 @@ public sealed partial class $safeitemname$ : Page
 {
     public $safeitemname$()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 }

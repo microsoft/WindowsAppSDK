@@ -25,6 +25,6 @@ public sealed partial class $safeitemname$ : Window
 {
     public $safeitemname$()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 }

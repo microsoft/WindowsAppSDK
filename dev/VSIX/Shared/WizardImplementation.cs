@@ -43,6 +43,7 @@ public partial class NuGetPackageInstaller : IWizard
             _nuGetPackages = packages.Split(';').Where(p => !string.IsNullOrEmpty(p));
         }
     }        
+
     public void ProjectFinishedGenerating(Project project)
     {
         ThreadHelper.ThrowIfNotOnUIThread();
@@ -61,6 +62,7 @@ public partial class NuGetPackageInstaller : IWizard
             }
         }
     }
+
     private async Task InstallNuGetPackagesAsync()
     {
         await ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
@@ -116,13 +118,16 @@ public partial class NuGetPackageInstaller : IWizard
     public void BeforeOpeningFile(ProjectItem _)
     {
     }        
+
     public void ProjectItemFinishedGenerating(ProjectItem _)
     {
     }        
+
     public void RunFinished()
     {
 
     }
+
     private void SaveAllProjects()
     {
         ThreadHelper.ThrowIfNotOnUIThread("SaveAllProjects must be called on the UI thread.");
@@ -139,6 +144,7 @@ public partial class NuGetPackageInstaller : IWizard
             }
         }
     }
+
     private void OnSolutionRestoreFinished(IReadOnlyList<string> projects)
     {
         // Debouncing prevents multiple rapid executions of 'InstallNuGetPackageAsync'
@@ -151,6 +157,7 @@ public partial class NuGetPackageInstaller : IWizard
         var joinableTaskFactory = new JoinableTaskFactory(ThreadHelper.JoinableTaskContext);
         _ = joinableTaskFactory.RunAsync(InstallNuGetPackagesAsync);
     }
+
     private void LogError(string message)
     {
         ThreadHelper.ThrowIfNotOnUIThread();
@@ -164,6 +171,7 @@ public partial class NuGetPackageInstaller : IWizard
             }
         });
     }
+    
     public bool ShouldAddProjectItem(string _)
     {
         return true;
