@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://aka.ms/winappsdk">
-    <img src="./docs/images/header.png" alt="WinUI Banner" />
+    <img src="./docs/images/header.png" alt="Windows App SDK Banner" />
   </a>
 </p>
 
