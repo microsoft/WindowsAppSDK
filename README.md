@@ -36,7 +36,7 @@
 * [Samples](https://github.com/microsoft/WindowsAppSDK-Samples)
 * [Contribution guide](docs/contributor-guide.md)
 * [Roadmap](./docs/roadmap.md)
-* [FAQ on WinAppSDK](docs/faq.md)
+* [FAQ](docs/faq.md)
 * [Developer documentations](https://aka.ms/windowsappsdkdocs)
 * Windows App SDK family repositories
   * [WinUI](https://github.com/microsoft/microsoft-ui-xaml)
