@@ -33,11 +33,11 @@
 ## 📋 Getting started with Windows App SDK
 
 * [Build your first app with Windows App SDK](https://learn.microsoft.com/windows/apps/winui/winui3/create-your-first-winui3-app)
+* [Developer documentation](https://aka.ms/windowsappsdkdocs)
 * [Samples](https://github.com/microsoft/WindowsAppSDK-Samples)
+* [FAQ](docs/faq.md)
 * [Contribution guide](docs/contributor-guide.md)
 * [Roadmap](./docs/roadmap.md)
-* [FAQ](docs/faq.md)
-* [Developer documentation](https://aka.ms/windowsappsdkdocs)
 * Windows App SDK family repositories
   * [WinUI](https://github.com/microsoft/microsoft-ui-xaml)
   * [C++/WinRT](https://github.com/microsoft/CppWinRT) and [C#/WinRT](https://github.com/microsoft/CsWinRT)
