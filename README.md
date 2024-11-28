@@ -45,7 +45,7 @@
 
 ## 👨‍💻 Join in and stay connected
 
-If you're interested in WinUI/WinAppSDK, come join us on the live Windows Development [Community Calls](https://www.youtube.com/playlist?list=PLI_J2v67C23ZqsolUDaHoFkF1GKvGrttB), which are hosted quarterly.
+Interested in WinUI and Windows App SDK? Come join us on the quarterly [WinUI Community Calls](https://www.youtube.com/playlist?list=PLI_J2v67C23ZqsolUDaHoFkF1GKvGrttB).
 You also can find and tag us on X using [#WindowsAppSDK](https://twitter.com/search?q=%23WindowsAppSDK).
 
 ## 🖼️ WinUI 3 Gallery
