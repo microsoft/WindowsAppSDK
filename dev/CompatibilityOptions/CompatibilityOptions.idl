@@ -3,16 +3,6 @@
 
 #include <TerminalVelocityFeatures-CompatibilityOptions.h>
 
-namespace features
-{
-#ifdef MUX_PRERELEASE
-    // In prerelease, the feature is disabled by default (giving it the [experimental] tag)
-    feature_name Feature_C = { DisabledByDefault, FALSE };
-#else
-    // In release, the experimental feature is disabled, removing it from the final WinMD
-    feature_name Feature_Experimental = { AlwaysDisabled, FALSE };
-#endif
-}
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
     [contractversion(1)]
@@ -26,11 +16,13 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         UInt32 Patch;
     };
 
+    // TODO: Get agreement and add a generic Feature_Experimental
     [contract(CompatibilityContract, 1), feature(Feature_CompatibilityOptions)]
     runtimeclass CompatibilityOptions
     {
-        IVector<WindowsAppRuntimeVersion> PatchModes { get; };
-        IVector<UInt64> DisabledFixesList{ get; };
+        WindowsAppRuntimeVersion PatchMode1 { get; set; };
+        WindowsAppRuntimeVersion PatchMode2 { get; set; };
+        IVector<UInt64> DisabledChanges{ get; };
         void Apply();
     }
 }
