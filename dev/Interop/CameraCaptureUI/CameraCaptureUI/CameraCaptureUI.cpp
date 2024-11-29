@@ -10,6 +10,8 @@
 #include "CameraCaptureUITelemetry.h"
 #include "TelemetryHelper.h"
 
+// example
+
 using namespace winrt::Windows::UI;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
