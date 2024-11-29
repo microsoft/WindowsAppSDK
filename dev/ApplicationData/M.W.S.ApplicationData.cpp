@@ -21,10 +21,25 @@ static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::Applicati
 
 namespace winrt::Microsoft::Windows::Storage::implementation
 {
-    ApplicationData::ApplicationData(winrt::Windows::Storage::ApplicationData const& value, hstring const& packageFamilyName) :
+    ApplicationData::ApplicationData(hstring const& packageFamilyName) :
+        m_unpackagedApplicationData(),
+        m_applicationData(nullptr),
+        m_packageFamilyName(packageFamilyName)
+    {
+    }
+    ApplicationData::ApplicationData(winrt::Windows::Storage::ApplicationData& value, hstring const& packageFamilyName) :
+        m_unpackagedApplicationData(),
         m_applicationData(value),
         m_packageFamilyName(packageFamilyName)
     {
+    }
+    ApplicationData::ApplicationData(hstring const& publisher, hstring const& product) :
+        m_unpackagedApplicationData(),
+        m_applicationData(nullptr),
+        m_packageFamilyName()
+    {
+        auto unpackagedApplicationData{ new ::Microsoft::Windows::Storage::UnpackagedApplicationData(publisher, product) };
+        m_unpackagedApplicationData.reset(unpackagedApplicationData);
     }
     winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetDefault()
     {
@@ -84,7 +99,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
                 {
                     // The package family has package(s) registered for the user with at least 1 Framework package
                     // (and a package family can't have Framework and not-Framework packages in the same package family)
-                    return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(nullptr, packageFamilyName);
+                    return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(packageFamilyName);
                 }
             }
 
@@ -92,10 +107,11 @@ namespace winrt::Microsoft::Windows::Storage::implementation
             throw;
         }
     }
-    winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUnpackaged(hstring const& /*publisher*/, hstring const& /*product*/)
+    winrt::Microsoft::Windows::Storage::ApplicationData ApplicationData::GetForUnpackaged(hstring const& publisher, hstring const& product)
     {
-        // TODO implement GetForUnpackaged
-        throw hresult_not_implemented();
+        THROW_HR_IF_MSG(E_INVALIDARG, publisher.empty(), "Publisher not valid");
+        THROW_HR_IF_MSG(E_INVALIDARG, product.empty(), "Product not valid");
+        return winrt::make<winrt::Microsoft::Windows::Storage::implementation::ApplicationData>(publisher, product);
     }
     bool ApplicationData::IsMachinePathSupported()
     {
