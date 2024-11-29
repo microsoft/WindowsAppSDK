@@ -5,6 +5,8 @@
 
 #include "Microsoft.Windows.Storage.ApplicationData.g.h"
 
+#include "UnpackagedApplicationData.h"
+
 namespace winrt::Microsoft::Windows::Storage::implementation
 {
     struct ApplicationData : ApplicationDataT<ApplicationData>
@@ -41,6 +43,7 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         static hstring StorageFolderToPath(winrt::Windows::Storage::StorageFolder storageFolder);
 
     private:
+        std::unique_ptr<::Microsoft::Windows::Storage::UnpackagedApplicationData> m_unpackagedApplicationData;
         winrt::Windows::Storage::ApplicationData m_applicationData;
         winrt::hstring m_packageFamilyName;
     };
