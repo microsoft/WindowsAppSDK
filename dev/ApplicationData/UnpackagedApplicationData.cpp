@@ -56,7 +56,16 @@ namespace Microsoft::Windows::Storage
     }
     winrt::hstring UnpackagedApplicationData::TemporaryPath()
     {
-        throw winrt::hresult_not_implemented();
+        if (m_temporaryPath.empty())
+        {
+            //TODO LocalSystem
+            // GetTempPath() + \...publisher...\...product...
+            auto path{ std::filesystem::temp_directory_path() };
+            path /= m_publisher.c_str();
+            path /= m_product.c_str();
+            m_temporaryPath = path.c_str();
+        }
+        return m_temporaryPath;
     }
     winrt::Windows::Storage::StorageFolder UnpackagedApplicationData::LocalCacheFolder()
     {

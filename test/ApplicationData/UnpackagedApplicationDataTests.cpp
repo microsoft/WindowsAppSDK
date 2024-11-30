@@ -55,21 +55,28 @@ namespace Test::ApplicationData::Tests
             VERIFY_SUCCEEDED(wil::CreateDirectoryDeepNoThrow(localPath.c_str()),
                              WEX::Common::String().Format(L"MKDIR %s", localPath.c_str()));
 
-            const auto temporaryPath{ UserLocalPath(Publisher, Product) };
+            const auto temporaryPath{ UserTemporaryPath(Publisher, Product) };
             VERIFY_SUCCEEDED(wil::CreateDirectoryDeepNoThrow(temporaryPath.c_str()),
                              WEX::Common::String().Format(L"MKDIR %s", temporaryPath.c_str()));
         }
 
         void DeleteResources()
         {
-            const auto localPath{ UserLocalPath(Publisher, Product) };
-            const auto removeOptions{ wil::RemoveDirectoryOptions::RemoveReadOnly };
-            VERIFY_SUCCEEDED(wil::RemoveDirectoryRecursiveNoThrow(localPath.c_str(), removeOptions),
-                             WEX::Common::String().Format(L"RMDIR %s", localPath.c_str()));
+            const std::filesystem::path temporaryPath{ UserTemporaryPath(Publisher).c_str() };
+            if (PathExists(temporaryPath))
+            {
+                const auto removeOptions{ wil::RemoveDirectoryOptions::RemoveReadOnly };
+                VERIFY_SUCCEEDED(wil::RemoveDirectoryRecursiveNoThrow(temporaryPath.c_str(), removeOptions),
+                                 WEX::Common::String().Format(L"RMDIR %s", temporaryPath.c_str()));
+            }
 
-            const auto temporaryPath{ UserLocalPath(Publisher, Product) };
-            VERIFY_SUCCEEDED(wil::RemoveDirectoryRecursiveNoThrow(temporaryPath.c_str(), removeOptions),
-                             WEX::Common::String().Format(L"RMDIR %s", temporaryPath.c_str()));
+            const std::filesystem::path localPath{ UserLocalPath(Publisher).c_str() };
+            if (PathExists(localPath))
+            {
+                const auto removeOptions{ wil::RemoveDirectoryOptions::RemoveReadOnly };
+                VERIFY_SUCCEEDED(wil::RemoveDirectoryRecursiveNoThrow(localPath.c_str(), removeOptions),
+                                 WEX::Common::String().Format(L"RMDIR %s", localPath.c_str()));
+            }
         }
 
         TEST_METHOD(GetForUnpackaged_InvalidParameter)
@@ -105,7 +112,13 @@ namespace Test::ApplicationData::Tests
             VERIFY_IS_NOT_NULL(applicationData);
         }
 
-        winrt::hstring UserLocalPath(winrt::hstring const& publisher, winrt::hstring const& product)
+        static bool PathExists(std::filesystem::path const& path)
+        {
+            const std::filesystem::directory_entry directoryEntry{ path };
+            return directoryEntry.is_directory();
+        }
+
+        std::filesystem::path UserLocalPath(winrt::hstring const& publisher)
         {
             // %LOCALAPPDATA%\...publisher...\...product...
             wil::unique_cotaskmem_string localAppData;
@@ -113,6 +126,12 @@ namespace Test::ApplicationData::Tests
             VERIFY_SUCCEEDED(SHGetKnownFolderPath(FOLDERID_LocalAppData, KF_FLAG_DEFAULT /*TODO KF_FLAG_CREATE | KF_FLAG_DONT_VERIFY*/, nullptr, wil::out_param(localAppData)));
             std::filesystem::path path{ localAppData.get() };
             path /= publisher.c_str();
+            return path;
+        }
+
+        winrt::hstring UserLocalPath(winrt::hstring const& publisher, winrt::hstring const& product)
+        {
+            auto path{ UserLocalPath(publisher) };
             path /= product.c_str();
             return winrt::hstring{ path.c_str() };
         }
@@ -123,14 +142,19 @@ namespace Test::ApplicationData::Tests
             return winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(path).get();
         }
 
+        std::filesystem::path UserTemporaryPath(winrt::hstring const& publisher)
+        {
+            //TODO LocalSystem
+            // GetTempPath() + \...publisher...\...product...
+            auto path{ std::filesystem::temp_directory_path() };
+            path /= publisher.c_str();
+            return path;
+        }
+
         winrt::hstring UserTemporaryPath(winrt::hstring const& publisher, winrt::hstring const& product)
         {
             // %LOCALAPPDATA%\...publisher...\...product...
-            wil::unique_cotaskmem_string localAppData;
-            //TODO FOLDERID_LocalAppDataLow
-            VERIFY_SUCCEEDED(SHGetKnownFolderPath(FOLDERID_LocalAppData, KF_FLAG_DEFAULT /*TODO KF_FLAG_CREATE | KF_FLAG_DONT_VERIFY*/, nullptr, wil::out_param(localAppData)));
-            std::filesystem::path path{ localAppData.get() };
-            path /= publisher.c_str();
+            auto path{ UserTemporaryPath(publisher) };
             path /= product.c_str();
             return winrt::hstring{ path.c_str() };
         }
@@ -141,7 +165,7 @@ namespace Test::ApplicationData::Tests
             return winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(path).get();
         }
 
-        TEST_METHOD(FolderAndPath)
+        TEST_METHOD(LocalCacheFolderAndPath)
         {
             auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
             VERIFY_IS_NOT_NULL(applicationData);
@@ -165,6 +189,12 @@ namespace Test::ApplicationData::Tests
             {
                 VERIFY_ARE_EQUAL(E_NOTIMPL, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
+        }
+
+        TEST_METHOD(LocalFolderAndPath)
+        {
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
+            VERIFY_IS_NOT_NULL(applicationData);
 
             const auto localFolder{ applicationData.LocalFolder() };
             const auto localPath{ applicationData.LocalPath() };
@@ -172,6 +202,12 @@ namespace Test::ApplicationData::Tests
             const auto expectedLocalFolder{ UserLocalFolder(Publisher, Product) };
             const auto expectedLocalPath{ UserLocalPath(Publisher, Product) };
             VERIFY_ARE_EQUAL(localPath, expectedLocalPath);
+        }
+
+        TEST_METHOD(SharedLocalFolderAndPath)
+        {
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
+            VERIFY_IS_NOT_NULL(applicationData);
 
             try
             {
@@ -192,6 +228,12 @@ namespace Test::ApplicationData::Tests
             {
                 VERIFY_ARE_EQUAL(E_NOTIMPL, e.code(), WEX::Common::String().Format(L"0x%X %s", e.code(), e.message().c_str()));
             }
+        }
+
+        TEST_METHOD(TemporaryFolderAndPath)
+        {
+            auto applicationData{ winrt::Microsoft::Windows::Storage::ApplicationData::GetForUnpackaged(Publisher, Product) };
+            VERIFY_IS_NOT_NULL(applicationData);
 
             const auto temporaryFolder{ applicationData.TemporaryFolder() };
             const auto temporaryPath{ applicationData.TemporaryPath() };

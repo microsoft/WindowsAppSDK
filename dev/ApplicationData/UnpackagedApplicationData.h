@@ -40,5 +40,6 @@ namespace Microsoft::Windows::Storage
         winrt::hstring m_product;
         winrt::hstring m_localPath;
         std::filesystem::path m_machinePath;
+        winrt::hstring m_temporaryPath;
     };
 }
