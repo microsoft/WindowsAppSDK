@@ -120,11 +120,21 @@ namespace Test::ApplicationData::Tests
 
         std::filesystem::path UserLocalPath(winrt::hstring const& publisher)
         {
-            // %LOCALAPPDATA%\...publisher...\...product...
-            wil::unique_cotaskmem_string localAppData;
-            //TODO FOLDERID_LocalAppDataLow
-            VERIFY_SUCCEEDED(SHGetKnownFolderPath(FOLDERID_LocalAppData, KF_FLAG_DEFAULT /*TODO KF_FLAG_CREATE | KF_FLAG_DONT_VERIFY*/, nullptr, wil::out_param(localAppData)));
-            std::filesystem::path path{ localAppData.get() };
+            // Caller is LocalSystem    : %PROGRAMDATA%\...publisher...\...product...
+            // Caller is <MediumIL (Low): %USERPROFILE%\AppData\LocalLow\...publisher...\...product...
+            // Caller is >=MediumIL     : %USERPROFILE%\AppData\Local\...publisher...\...product...
+            auto folderId{ FOLDERID_LocalAppData };
+            if (::Security::User::IsLocalSystem())
+            {
+                folderId = FOLDERID_ProgramData;
+            }
+            else if (::Security::IntegrityLevel::GetIntegrityLevel() < SECURITY_MANDATORY_MEDIUM_RID)
+            {
+                folderId = FOLDERID_LocalAppDataLow;
+            }
+            wil::unique_cotaskmem_string rootPath;
+            VERIFY_SUCCEEDED(SHGetKnownFolderPath(folderId, KF_FLAG_DEFAULT/*TODO KF_FLAG_CREATE | KF_FLAG_DONT_VERIFY*/, nullptr, wil::out_param(rootPath)));
+            std::filesystem::path path{ rootPath.get() };
             path /= publisher.c_str();
             return path;
         }
@@ -277,10 +287,10 @@ namespace Test::ApplicationData::Tests
 
             VERIFY_IS_FALSE(applicationData.IsMachinePathSupported());
 
-            const auto machineFolder{ applicationData.MachineFolder() };
-            VERIFY_IS_NULL(machineFolder);
             const auto machinePath{ applicationData.MachinePath() };
             VERIFY_ARE_EQUAL(machinePath, null_hstring);
+            const auto machineFolder{ applicationData.MachineFolder() };
+            VERIFY_IS_NULL(machineFolder);
         }
 
         TEST_METHOD(LocalSettings)

@@ -34,10 +34,21 @@ namespace Microsoft::Windows::Storage
     {
         if (m_localPath.empty())
         {
-            wil::unique_cotaskmem_string localAppData;
-            //TODO FOLDERID_LocalAppDataLow
-            THROW_IF_FAILED(SHGetKnownFolderPath(FOLDERID_LocalAppData, KF_FLAG_DEFAULT /*TODO KF_FLAG_CREATE | KF_FLAG_DONT_VERIFY*/, nullptr, wil::out_param(localAppData)));
-            std::filesystem::path path{ localAppData.get() };
+            // Caller is LocalSystem    : %PROGRAMDATA%\...publisher...\...product...
+            // Caller is <MediumIL (Low): %USERPROFILE%\AppData\LocalLow\...publisher...\...product...
+            // Caller is >=MediumIL     : %USERPROFILE%\AppData\Local\...publisher...\...product...
+            auto folderId{ FOLDERID_LocalAppData };
+            if (::Security::User::IsLocalSystem())
+            {
+                folderId = FOLDERID_ProgramData;
+            }
+            else if (::Security::IntegrityLevel::GetIntegrityLevel() < SECURITY_MANDATORY_MEDIUM_RID)
+            {
+                folderId = FOLDERID_LocalAppDataLow;
+            }
+            wil::unique_cotaskmem_string rootPath;
+            THROW_IF_FAILED(SHGetKnownFolderPath(folderId, KF_FLAG_DEFAULT/*TODO KF_FLAG_CREATE | KF_FLAG_DONT_VERIFY*/, nullptr, wil::out_param(rootPath)));
+            std::filesystem::path path{ rootPath.get() };
             path /= m_publisher.c_str();
             path /= m_product.c_str();
             m_localPath = path.c_str();
@@ -69,23 +80,48 @@ namespace Microsoft::Windows::Storage
     }
     winrt::Windows::Storage::StorageFolder UnpackagedApplicationData::LocalCacheFolder()
     {
-        return winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(LocalCachePath()).get();
+        const auto path{ LocalCachePath() };
+        if (path.empty())
+        {
+            return nullptr;
+        }
+        return winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(path).get();
     }
     winrt::Windows::Storage::StorageFolder UnpackagedApplicationData::LocalFolder()
     {
-        return winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(LocalPath()).get();
+        const auto path{ LocalPath() };
+        if (path.empty())
+        {
+            return nullptr;
+        }
+        return winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(path).get();
     }
     winrt::Windows::Storage::StorageFolder UnpackagedApplicationData::MachineFolder()
     {
-        return winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(MachinePath()).get();
+        const auto path{ MachinePath() };
+        if (path.empty())
+        {
+            return nullptr;
+        }
+        return winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(path).get();
     }
     winrt::Windows::Storage::StorageFolder UnpackagedApplicationData::SharedLocalFolder()
     {
-        return winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(SharedLocalPath()).get();
+        const auto path{ SharedLocalPath() };
+        if (path.empty())
+        {
+            return nullptr;
+        }
+        return winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(path).get();
     }
     winrt::Windows::Storage::StorageFolder UnpackagedApplicationData::TemporaryFolder()
     {
-        return winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(TemporaryPath()).get();
+        const auto path{ TemporaryPath() };
+        if (path.empty())
+        {
+            return nullptr;
+        }
+        return winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(path).get();
     }
     winrt::Microsoft::Windows::Storage::ApplicationDataContainer UnpackagedApplicationData::LocalSettings()
     {
@@ -120,10 +156,9 @@ namespace Microsoft::Windows::Storage
     }
     std::filesystem::path UnpackagedApplicationData::_MachinePath(winrt::hstring const& publisher, winrt::hstring const& product)
     {
-        // Path = %ProgramData%\...publisher...\...product...
-        wil::unique_cotaskmem_string programData;
-        THROW_IF_FAILED(SHGetKnownFolderPath(FOLDERID_AppDataProgramData, KF_FLAG_DEFAULT /*TODO KF_FLAG_CREATE | KF_FLAG_DONT_VERIFY*/, nullptr, wil::out_param(programData)));
-        std::filesystem::path path{ programData.get() };
+        wil::unique_cotaskmem_string rootPath;
+        THROW_IF_FAILED(SHGetKnownFolderPath(FOLDERID_ProgramData, KF_FLAG_DEFAULT/*TODO KF_FLAG_CREATE | KF_FLAG_DONT_VERIFY*/, nullptr, wil::out_param(rootPath)));
+        std::filesystem::path path{ rootPath.get() };
         path /= publisher.c_str();
         path /= product.c_str();
 
