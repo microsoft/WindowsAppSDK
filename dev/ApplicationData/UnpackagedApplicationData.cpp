@@ -111,20 +111,24 @@ namespace Microsoft::Windows::Storage
     }
     std::filesystem::path UnpackagedApplicationData::_MachinePath(winrt::hstring const& publisher, winrt::hstring const& product)
     {
-        std::filesystem::path path;
-        if (path.empty())
+        // Path = %ProgramData%\...publisher...\...product...
+        wil::unique_cotaskmem_string programData;
+        THROW_IF_FAILED(SHGetKnownFolderPath(FOLDERID_AppDataProgramData, KF_FLAG_DEFAULT /*TODO KF_FLAG_CREATE | KF_FLAG_DONT_VERIFY*/, nullptr, wil::out_param(programData)));
+        std::filesystem::path path{ programData.get() };
+        path /= publisher.c_str();
+        path /= product.c_str();
+
+        // Does it exist?
+        if (_PathExists(path))
         {
-            wil::unique_cotaskmem_string programData;
-            THROW_IF_FAILED(SHGetKnownFolderPath(FOLDERID_AppDataProgramData, KF_FLAG_DEFAULT /*TODO KF_FLAG_CREATE | KF_FLAG_DONT_VERIFY*/, nullptr, wil::out_param(programData)));
-            path = programData.get();
-            path /= publisher.c_str();
-            path /= product.c_str();
+            return path;
         }
-        return path;
+        return std::filesystem::path{};
     }
 
     bool UnpackagedApplicationData::_PathExists(std::filesystem::path const& path)
     {
-        throw winrt::hresult_not_implemented();
+        const std::filesystem::directory_entry directoryEntry{ path };
+        return directoryEntry.is_directory();
     }
 }
