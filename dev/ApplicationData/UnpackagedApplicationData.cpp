@@ -69,9 +69,8 @@ namespace Microsoft::Windows::Storage
     {
         if (m_temporaryPath.empty())
         {
-            //TODO LocalSystem
-            // GetTempPath() + \...publisher...\...product...
-            auto path{ std::filesystem::temp_directory_path() };
+            // GetTempPath[2]() + \...publisher...\...product...
+            auto path{ ::Microsoft::FileSystem::Path::GetTempDirectory() };
             path /= m_publisher.c_str();
             path /= m_product.c_str();
             m_temporaryPath = path.c_str();

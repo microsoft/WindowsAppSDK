@@ -26,6 +26,7 @@
 #include <WexTestClass.h>
 
 #include <AppModel.Package.h>
+#include <Microsoft.FileSystem.Path.h>
 #include <Security.IntegrityLevel.h>
 #include <Security.User.h>
 

@@ -22,8 +22,13 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Identity.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Package.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.PackageGraph.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ExportLoader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IsWindowsVersion.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Configuration.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.FileSystem.Path.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Foundation.String.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.RoApi.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.TraceLogging.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Utf8.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NotificationTelemetryHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Security.IntegrityLevel.h" />
