@@ -124,11 +124,11 @@ namespace Microsoft::Windows::Storage
     }
     winrt::Microsoft::Windows::Storage::ApplicationDataContainer UnpackagedApplicationData::LocalSettings()
     {
-        throw winrt::hresult_not_implemented();
+        throw winrt::hresult_not_implemented(); //TODO LocalSettings
     }
     winrt::Windows::Foundation::IAsyncAction UnpackagedApplicationData::ClearAsync(winrt::Microsoft::Windows::Storage::ApplicationDataLocality locality)
     {
-        throw winrt::hresult_not_implemented();
+        throw winrt::hresult_not_implemented(); //TODO ClearAsync(locality)
     }
     winrt::Windows::Foundation::IAsyncAction UnpackagedApplicationData::ClearPublisherCacheFolderAsync(winrt::hstring folderName)
     {
@@ -137,7 +137,7 @@ namespace Microsoft::Windows::Storage
     }
     void UnpackagedApplicationData::Close()
     {
-        throw winrt::hresult_not_implemented();
+        throw winrt::hresult_not_implemented(); //TODO Close
     }
     winrt::hstring UnpackagedApplicationData::GetPublisherCachePath(winrt::hstring const& folderName)
     {
@@ -151,7 +151,7 @@ namespace Microsoft::Windows::Storage
     }
     winrt::Windows::Foundation::IAsyncAction UnpackagedApplicationData::ClearMachineFolderAsync()
     {
-        throw winrt::hresult_not_implemented();
+        throw winrt::hresult_not_implemented(); //TODO ClearMachineFolderAsync
     }
     std::filesystem::path UnpackagedApplicationData::_MachinePath(winrt::hstring const& publisher, winrt::hstring const& product)
     {
