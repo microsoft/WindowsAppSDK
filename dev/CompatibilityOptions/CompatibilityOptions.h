@@ -26,11 +26,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     };
 }
 
-#if FALSE
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::factory_implementation
 {
     struct CompatibilityOptions : CompatibilityOptionsT<CompatibilityOptions, implementation::CompatibilityOptions>
     {
     };
 }
-#endif
