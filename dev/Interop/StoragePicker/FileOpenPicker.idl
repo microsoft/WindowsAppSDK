@@ -1,14 +1,13 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
 namespace Microsoft.Storage.Pickers
 {
-    [default_interface]
+    [contractversion(1)]
+    apicontract FileOpenPickerContract {};
+
+    [contract(FileOpenPickerContract, 1)]
     runtimeclass FileOpenPicker
     {
-        FileOpenPicker(Microsoft.UI.WindowId windowId);
+        FileOpenPicker();
 
-        String CommitButtonText;
-
-        [remote_sync]Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> PickSingleFileAsync();
-    }
+        Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> PickSingleFileAsync();
+    };
 }

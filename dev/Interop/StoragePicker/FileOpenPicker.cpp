@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include "pch.h"
 #include "FileOpenPicker.h"
-// #include "FileOpenPicker.g.cpp"
+#include "Microsoft.Storage.Pickers.FileOpenPicker.g.cpp"
 #include <windows.h>
 #include <shobjidl.h> 
 #include <wil/cppwinrt.h>
