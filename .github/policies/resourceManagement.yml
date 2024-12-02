@@ -214,7 +214,7 @@ configuration:
           reply: >- 
               Hi @${issueAuthor}. Please file this issue on Feedback Hub [Windows]+[f] and paste 
               the link here so we can more easily find your information on the back end. The link 
-              can be found at the bottom of the feedback report. Please use "Developer Platform" and "WindowsAppSDK" 
+              can be found at the bottom of the feedback report. Please use "Developer Platform" and "Windows App SDK" 
               for the Category. 
       - closeIssue
       - removeLabel:
